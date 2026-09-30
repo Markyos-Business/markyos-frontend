@@ -50,11 +50,31 @@ export function CanvasFrame({
   dir,
   children,
   isAr,
+  reserved = 0,
 }: {
   breakpoint: Breakpoint;
   dir: "ltr" | "rtl";
   children: ReactNode;
   isAr: boolean;
+  /**
+   * Width that a panel has taken from the canvas and that the scale must
+   * pretend is still there.
+   *
+   * This is the fix for the editor shaking on its most common gesture.
+   * Selecting a section opens the inspector, which is a 300px flex sibling, so
+   * the canvas host went 912px → 612px and the frame re-fitted 0.76 → 0.65.
+   * The page being edited physically shrank by 14% over 260ms at the exact
+   * moment somebody clicked a line of text to rewrite it — and grew back on
+   * Escape, so clicking around made it pulse. Measured: eleven layout shifts
+   * from three selections.
+   *
+   * Adding the panel's width back means opening it changes `available` by
+   * nothing, so the zoom holds and the canvas scrolls instead — which is what
+   * every design tool does, and why a Figma panel never resizes the artboard.
+   * A genuine change, like resizing the window or collapsing the tools rail,
+   * moves `clientWidth` without moving this, and still re-fits.
+   */
+  reserved?: number;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -66,7 +86,7 @@ export function CanvasFrame({
 
     function fit() {
       if (!host) return;
-      const available = host.clientWidth;
+      const available = host.clientWidth + reserved;
       if (available <= 0) return;
       // Never scale *up*. A phone frame blown up to fill a 27-inch display
       // would be a picture of nothing anyone owns, and the type would be
@@ -79,7 +99,7 @@ export function CanvasFrame({
     const observer = new ResizeObserver(fit);
     observer.observe(host);
     return () => observer.disconnect();
-  }, [width]);
+  }, [width, reserved]);
 
   const label =
     breakpoint === "desktop"

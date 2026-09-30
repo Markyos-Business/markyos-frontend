@@ -11,6 +11,7 @@ import { ManualTemplate } from "@/components/workspace/guideline/templates/Manua
 import { MosaicTemplate } from "@/components/workspace/guideline/templates/MosaicTemplate";
 import { BlockScopeProvider } from "@/components/workspace/BlockRenderer";
 import { BrandFonts } from "@/components/workspace/guideline/BrandFonts";
+import { GuidelineMotion } from "@/components/workspace/guideline/GuidelineMotion";
 
 /** A real, addressable URL for one custom guideline page — same gating and
  *  nav chrome as Home, but the content area shows only that page's own
@@ -134,6 +135,7 @@ export default function ClientGuidePageViewer() {
   return (
     <BlockScopeProvider blocks={v.allBlocks}>
       <BrandFonts fonts={v.fonts} isAr={isAr}>
+        <GuidelineMotion sectionIds={v.sections.map((s) => s.id)} />
         {ws.guidelineTemplate === "docs" ? (
           <DocsTemplate {...templateProps} />
         ) : ws.guidelineTemplate === "deck" ? (

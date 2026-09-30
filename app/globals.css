@@ -898,6 +898,95 @@ summary::-webkit-details-marker { display: none; }
   color: var(--text);
 }
 
+/* ------------------------------------------------------------------------
+ * The client-facing guideline site.
+ *
+ * A different surface with a different argument. Everything above is chrome for
+ * a tool somebody has open all day, where motion that carries no meaning is
+ * just latency. Below is the document a studio hands to its client: read once,
+ * top to bottom, to decide whether the thing they need is in it. There, pacing
+ * *is* meaning — it says a section has arrived and gives the eye somewhere to
+ * land on a page ten thousand pixels long.
+ *
+ * Applied only under the `/v/<slug>` routes, through GuidelineMotion. The same
+ * templates render inside the builder, which mounts none of this.
+ * ------------------------------------------------------------------------ */
+
+/*
+ * A section, arriving.
+ *
+ * Only an element the script has claimed is ever hidden — see SectionReveal.
+ * Without JavaScript, without IntersectionObserver, or under reduced motion,
+ * no element carries `data-reveal` at all and the page renders as it always
+ * did. A decoration must not be able to fail into invisible content.
+ */
+[data-reveal="pending"] {
+  opacity: 0;
+  /* Vertical only, so there is nothing to mirror: the page reads downward in
+     both directions. */
+  transform: translateY(20px);
+}
+[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 620ms cubic-bezier(0.22, 0.7, 0.3, 1),
+    transform 620ms cubic-bezier(0.22, 0.7, 0.3, 1);
+}
+
+/*
+ * A section whose cards do the moving only fades.
+ *
+ * Otherwise the section rises and its contents rise inside it, which reads as
+ * two things happening to the same content — the sort of motion that makes a
+ * page feel busy rather than composed. Here the section arrives and its cards
+ * settle into it.
+ */
+[data-reveal="pending"][data-reveal-items] {
+  transform: none;
+}
+
+/* The cards, arriving one after another. `--reveal-delay` is set per card by
+   claimCards; the fallback keeps this meaningful if it is ever absent. */
+[data-reveal="pending"] [data-reveal-item] {
+  opacity: 0;
+  transform: translateY(16px);
+}
+[data-reveal="in"] [data-reveal-item] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 540ms cubic-bezier(0.22, 0.7, 0.3, 1) var(--reveal-delay, 0ms),
+    transform 540ms cubic-bezier(0.22, 0.7, 0.3, 1) var(--reveal-delay, 0ms);
+}
+
+/*
+ * How far through the document you are.
+ *
+ * `scaleX` from the leading edge, so it fills the way the language reads.
+ * `transform-origin` has no logical keyword, so the direction is switched
+ * rather than computed.
+ */
+.g-progress-track {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: transparent;
+}
+.g-progress-bar {
+  height: 100%;
+  background: var(--g-accent, var(--accent));
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+[dir="rtl"] .g-progress-bar {
+  transform-origin: right center;
+}
+
 /*
  * A control that has been pressed.
  *
@@ -1203,6 +1292,17 @@ input.disabled\:opacity-40:disabled {
   .mk-card:hover { transform: none; }
   button:not(:disabled):active,
   [role="button"]:active { transform: none; }
+  /*
+   * Guideline sections stay put and stay visible.
+   *
+   * SectionReveal already declines to claim anything when this preference is
+   * set, so normally no element here carries `data-reveal` at all. This is for
+   * the case it is turned on *during* a visit, when sections may already be
+   * mid-reveal: without it, a page could be left holding an element at zero
+   * opacity with its transition cancelled.
+   */
+  [data-reveal],
+  [data-reveal-item] { opacity: 1 !important; transform: none !important; }
   /* The hover veil stays. Reduced motion means no *movement*, not no feedback
      — removing the one signal that says "this is interactive" would be reading
      the preference as "make this harder to use". */

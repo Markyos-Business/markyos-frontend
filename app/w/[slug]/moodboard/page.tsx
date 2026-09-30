@@ -17,7 +17,7 @@ import { MOODBOARD_TEMPLATES } from "@/lib/moodboard/templates";
 import { zoneForKind } from "@/lib/moodboard/zones";
 import { sampleImage } from "@/lib/moodboard/sampleImage";
 import { Moodboard, MoodboardItem, MoodboardZone } from "@/lib/types";
-import { fileToDataUrl } from "@/lib/utils";
+import { fileToDownscaledDataUrl } from "@/lib/imageDownscale";
 import { useLocalPref } from "@/lib/useLocalPref";
 
 /**
@@ -343,13 +343,19 @@ export default function MoodboardPage() {
 
     const ids: string[] = [];
     for (const file of list) {
-      const url = await fileToDataUrl(file);
+      // Reduced to a size a card can use. A board is filled straight off a
+      // camera, and full-resolution photographs cost hundreds of megabytes of
+      // decoded bitmap to draw thumbnails with — see lib/imageDownscale.ts.
+      const url = await fileToDownscaledDataUrl(file);
       ids.push(
         addAsset(ws!.id, {
           type: "photo",
           fileName: file.name,
           url,
-          sizeKB: Math.max(1, Math.round(file.size / 1024)),
+          // Measured from what is stored, not from what was chosen: a 6MB
+          // photo kept as a 400KB reference should not claim 6MB of the
+          // workspace's budget in the file list.
+          sizeKB: Math.max(1, Math.round((url.length * 0.75) / 1024)),
           tags: ["moodboard"],
           // The whole reason this page is safe to fill with other people's work.
           status: "exploration",

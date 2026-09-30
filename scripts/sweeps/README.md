@@ -54,6 +54,18 @@ templates. And it skips elements an ancestor clips with `overflow: hidden`,
 because `getBoundingClientRect` reports full geometry regardless — decorative
 artwork bleeding inside a slide frame is not overflow anyone can see.
 
+It also walks each combination to the bottom and fails if the guideline site's
+scroll reveal left any section or card invisible. That check lives here because
+this is the only sweep that drives all eight templates, and the rule that finds
+the cards to stagger is generic — a `display: grid` whose children are all the
+same element — so it has to hold against templates nobody had open while it was
+written. A stranded section is a hole in a client's deliverable, not a cosmetic
+slip. Broken deliberately it reports 1,276 stranded elements.
+
+Note that until 2026-10-01 this sweep **printed** its layout findings and still
+exited 0, so a finding could never fail the chain, contrary to the promise at
+the top of this file. It exits non-zero now.
+
 ### `persistence.mjs`
 The regression suite for the `BrandRepository` seam: edit, reload, confirm it
 came back. Also covers the hydration backfills, the session-alive marker, and

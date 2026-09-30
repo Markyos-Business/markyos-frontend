@@ -627,6 +627,16 @@ export default function BuilderPage() {
     : selectedFixedId
       ? ws.sectionStyles[selectedFixedId]
       : undefined;
+  /**
+   * How much width the selection-driven panel on the end edge is occupying.
+   *
+   * Handed to CanvasFrame so the canvas does not re-fit when it opens. The
+   * inspector is 300px and the reveal tab that stands in for it is 24px, and
+   * both appear only once something is selected — so without this, clicking a
+   * section resized the page being edited. See `reserved` in CanvasFrame.
+   */
+  const inspectorShown = !!(selectedId && (selected || selectedFixedId));
+  const reservedForPanel = inspectorShown ? (rightOpen ? 300 : 24) : 0;
   const autoFillCount = ws.assets.filter((a) => a.type === "mockup" || a.type === "export").length;
   const previewHref = activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`;
   // Every edit bumps updatedAt, so anything newer than the last publish is a
@@ -1144,16 +1154,23 @@ export default function BuilderPage() {
             <span className="text-[11.5px] truncate" style={{ color: "var(--text-faint)" }}>
               {activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}
             </span>
-            <span className="ms-auto flex items-center gap-2.5 shrink-0">
-              <ViewSwitcher
-                breakpoint={breakpoint}
-                onBreakpoint={setBreakpoint}
-                lang={canvasLang}
-                onLang={setPreviewLang}
-                isAr={isAr}
-              />
-              <span className="text-[11.5px] hidden xl:flex items-center gap-2" style={{ color: "var(--text-faint)" }}>
-                {selectedId ? (
+            {/*
+              The hint sits outside the control group and takes all the slack.
+
+              It used to be between the view switcher and Auto-fill, and it says
+              something different depending on whether anything is selected —
+              "Click any text to edit it in place" against "Selected: overview".
+              Those are different widths, so the whole group resized and the
+              view switcher slid sideways every time somebody clicked a section.
+              Prose can reflow; a control somebody is aiming at may not move.
+              `flex-1` gives this box a fixed size and right-aligns the words
+              inside it, so the message can change without anything else moving.
+            */}
+            <span
+              className="flex-1 min-w-0 text-[11.5px] hidden xl:flex items-center justify-end gap-2"
+              style={{ color: "var(--text-faint)" }}
+            >
+              {selectedId ? (
                   <>
                     {isAr ? "المحدد:" : "Selected:"}
                     <span style={{ color: "var(--text-muted)" }}>
@@ -1175,7 +1192,19 @@ export default function BuilderPage() {
                     {isAr ? "للتراجع" : "to undo"}
                   </>
                 )}
-              </span>
+            </span>
+
+            {/* The controls, pinned to the end edge. `ms-auto` still carries
+                them there below xl, where the hint above is not rendered and
+                there is no flexible box to take the slack. */}
+            <span className="ms-auto xl:ms-2.5 flex items-center gap-2.5 shrink-0">
+              <ViewSwitcher
+                breakpoint={breakpoint}
+                onBreakpoint={setBreakpoint}
+                lang={canvasLang}
+                onLang={setPreviewLang}
+                isAr={isAr}
+              />
               {!activePage && (
                 <button
                   type="button"
@@ -1212,7 +1241,7 @@ export default function BuilderPage() {
                 <SecondaryViewBanner ctx={view} isAr={isAr} />
               </div>
             )}
-            <CanvasFrame breakpoint={breakpoint} dir={view.dir} isAr={isAr}>
+            <CanvasFrame breakpoint={breakpoint} dir={view.dir} isAr={isAr} reserved={reservedForPanel}>
               <LiveCanvas
                 slug={ws.slug}
                 pageSlug={activePage?.slug}

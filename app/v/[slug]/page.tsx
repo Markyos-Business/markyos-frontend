@@ -11,6 +11,7 @@ import { ManualTemplate } from "@/components/workspace/guideline/templates/Manua
 import { MosaicTemplate } from "@/components/workspace/guideline/templates/MosaicTemplate";
 import { BlockScopeProvider } from "@/components/workspace/BlockRenderer";
 import { BrandFonts } from "@/components/workspace/guideline/BrandFonts";
+import { GuidelineMotion } from "@/components/workspace/guideline/GuidelineMotion";
 
 export default function ClientViewerPage() {
   const params = useParams<{ slug: string }>();
@@ -118,6 +119,7 @@ export default function ClientViewerPage() {
   return (
     <BlockScopeProvider blocks={v.allBlocks}>
       <BrandFonts fonts={v.fonts} isAr={isAr}>
+        <GuidelineMotion sectionIds={v.sections.map((s) => s.id)} />
         {ws.guidelineTemplate === "docs" ? (
           <DocsTemplate {...templateProps} />
         ) : ws.guidelineTemplate === "deck" ? (

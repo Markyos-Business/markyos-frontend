@@ -307,14 +307,36 @@ export function Canvas(props: CanvasProps) {
     return map;
   }, [placed]);
 
+  /*
+   * The live pan and zoom, mirrored where a callback can read it without
+   * depending on it.
+   *
+   * This is what made panning the one gesture the memo boundaries could not
+   * help. `toBoard` needs the current view, so it listed `view` as a
+   * dependency — and `view` changes on every frame of a pan. Every handler
+   * built on `toBoard` therefore got a new identity thirty times a second,
+   * which broke the prop comparison on every card and every frame at once.
+   * Dragging a card was smooth because a card drag does not move the view;
+   * panning re-rendered the whole board on every pointer move, and was
+   * measurably the worst gesture on the canvas.
+   *
+   * Read through a ref, `toBoard` never changes, and a pan re-renders only the
+   * one element whose transform actually moved.
+   */
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+
   /** Client coordinates → board coordinates. */
   const toBoard = useCallback(
     (clientX: number, clientY: number) => {
       const rect = hostRef.current?.getBoundingClientRect();
       if (!rect) return { x: 0, y: 0 };
-      return { x: (clientX - rect.left - view.x) / view.zoom, y: (clientY - rect.top - view.y) / view.zoom };
+      const v = viewRef.current;
+      return { x: (clientX - rect.left - v.x) / v.zoom, y: (clientY - rect.top - v.y) / v.zoom };
     },
-    [view],
+    [],
   );
 
   /**
@@ -621,16 +643,23 @@ export function Canvas(props: CanvasProps) {
 
   function onPointerMove(e: React.PointerEvent) {
     if (gesture.kind === "none") return;
+
+    // Pan works in client pixels and never asks where the pointer is on the
+    // board, so it returns before `toBoard` is called at all. That also keeps
+    // the one case where the view is moving away from the one reader of
+    // `viewRef` — nothing can observe it a frame behind itself.
+    if (gesture.kind === "pan") {
+      setView((v) => ({
+        ...v,
+        x: gesture.origin.x + (e.clientX - gesture.from.x),
+        y: gesture.origin.y + (e.clientY - gesture.from.y),
+      }));
+      return;
+    }
+
     const at = toBoard(e.clientX, e.clientY);
 
     switch (gesture.kind) {
-      case "pan":
-        setView((v) => ({
-          ...v,
-          x: gesture.origin.x + (e.clientX - gesture.from.x),
-          y: gesture.origin.y + (e.clientY - gesture.from.y),
-        }));
-        break;
       case "move-item":
       case "move-zone": {
         const x = at.x - gesture.grab.x;

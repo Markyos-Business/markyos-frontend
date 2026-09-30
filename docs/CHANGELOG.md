@@ -5,6 +5,123 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 (later) — The shake I had not found, the lag I had half-fixed, and motion for the guideline site
+
+Reported as *still* bad after the previous pass, which was correct on both
+counts. The earlier fixes were real, but each addressed a smaller cause than the
+one that mattered.
+
+### The editor shook because selecting resized the page
+
+The insert-gap fix earlier today was genuine and is still in. It was not the
+thing anybody was feeling.
+
+Selecting a section opens the inspector, a 300px flex sibling of the canvas. So
+the canvas host went **912px → 612px**, and `CanvasFrame` re-fitted the frame
+from **0.76 → 0.65**: the page being edited physically shrank by 14% over 260ms
+at the exact moment somebody clicked a line of text in order to rewrite it. Escape
+grew it back. Click, escape, click, and it pulses.
+
+Measured with `layout-shift` performance entries, which name the nodes that
+moved: three selections produced **eleven shifts**, sourced to the canvas frame
+itself.
+
+The frame now takes a `reserved` width and adds it back before computing the
+scale, so opening a panel changes the available width by nothing and the canvas
+scrolls instead — which is why a Figma panel never resizes the artboard. A real
+change, like resizing the window or collapsing the tools rail, still re-fits.
+Total CLS across a selection went **0.0287 → 0.0001**.
+
+The top bar also moved: its hint swaps between "Click any text to edit it in
+place" and "Selected: overview", which are different widths, and it shared a box
+with the view switcher and Auto-fill. Prose can reflow; a control somebody is
+aiming at may not. The hint now takes the slack and the controls hold still.
+
+**A probe fault worth recording.** The first run of this measurement reported a
+perfectly still editor. `layout-shift` entries carry `hadRecentInput`, set for
+shifts within 500ms of a click or keypress, and Core Web Vitals excuses those
+because the person asked for them. "It shakes when you use it" is a complaint
+about exactly those. Filtering them hid the entire fault.
+
+### The moodboard lagged on the gesture I had not measured
+
+Dragging a card was fixed and stayed fixed. **Panning** was the slow one — p95
+frame 50ms, 122 frames over 32ms in a single pan — and panning is most of what
+"grab any part of it" means.
+
+The cause was the memo boundaries I had added failing exactly where they were
+needed most. `toBoard` converts client coordinates to board ones, so it depended
+on `view`; `view` changes on every frame of a pan; every handler built on
+`toBoard` therefore got a new identity thirty times a second, and every card and
+frame re-rendered. A card drag was smooth because a card drag does not move the
+view. Reading the view through a ref makes `toBoard` permanent.
+
+| 34 cards, CPU 6× | before | after |
+| --- | --- | --- |
+| pan, p95 frame | 50.1ms | 16.7ms |
+| pan, frames over 32ms | 122 | 0 |
+| pan, script | 4763ms | 777ms |
+| zoom, frames over 32ms | 24 | 0 |
+
+**And the boards were holding half a gigabyte of bitmap.** `fileToDataUrl`
+stores whatever it is handed, and a moodboard is filled by dragging photographs
+straight off a camera. Twelve 4000×3000 photos measured **576MB of decoded
+bitmap** to draw cards of 2,533 pixels each. None of it shows in the file sizes,
+because the encoded bytes are small — it is the decode that costs, and it is
+paid on every raster. `lib/imageDownscale.ts` now caps uploads at 1600px on the
+long edge, the same ceiling `stockImages.ts` already applied to fetched photos:
+**576MB → 92MB**. It is a deliberate no-op below the ceiling, so nothing is
+re-encoded that did not need to be, and the palette reader still pulls exact hex
+values out of the original pixels.
+
+### Motion for the guideline site
+
+The app's rule is that nothing animates purely for decoration — on a tool people
+use all day, motion that carries no meaning is latency. The client-facing site
+is the other surface and the rule lands differently: it is a document a studio
+*presents*, read once, top to bottom, and there pacing is the meaning.
+
+`GuidelineMotion` adds two things, mounted only by the `/v/<slug>` routes and
+never by the builder — the same templates render inside the editor, where
+sections fading past while somebody edits would be the opposite of helpful:
+
+- **Sections arrive as they are reached**, and the cards inside them arrive one
+  after another. The rule that finds cards is drawn from what the templates
+  actually emit rather than from class names, which differ in all six: a card
+  grid is a `display: grid` whose children are all the same element. Heading
+  rows are `display: flex` with two children of mixed purpose, so the test
+  excludes them by construction. A section whose cards do the moving only fades,
+  so nothing moves twice.
+- **A progress bar**, because a guideline is long, has no pagination, and is
+  often opened to decide whether the thing you need is in it.
+
+Fail-open throughout: only an element the script has *claimed* is ever hidden,
+so without JavaScript, without IntersectionObserver, or under reduced motion, no
+element carries the attribute and the page renders exactly as it did. A
+decoration must not be able to fail into invisible content. `beforeprint` reveals
+everything, and a dead observer is caught by a timer.
+
+**Three faults found while building it**, all of which looked like it working:
+
+- The first fail-safe revealed every pending section on a plain two-second
+  timer, so the page quietly un-hid itself before anyone had scrolled. The
+  animation was never seen, and the probe reported zero sections pending and
+  read as a pass. It now fires only when the observer has not called back at all.
+- The effect depended on `sectionIds`, built with `.map()` in the viewer's
+  render. The viewer re-renders on every scroll because the scroll-spy tracks
+  the active section — so the effect tore itself down and rebuilt on every
+  scroll event, deleting every attribute as it went.
+- The probe checked sections for stranded content but not cards, which is the
+  failure mode the cards introduced.
+
+`responsive.mjs` now walks all **32** template/language/viewport combinations to
+the bottom and fails if the reveal left anything invisible — a stranded section
+is a hole in a client's deliverable. Broken deliberately it reports 1,276
+stranded elements and exits 1. That sweep also now exits non-zero on its layout
+findings, which it printed but never failed on, contrary to its own README.
+
+---
+
 ## 2026-10-01 — The real logo, and two things that were measurably slow
 
 Three pieces of work: the brand artwork was replaced with the finished files,
