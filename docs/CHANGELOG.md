@@ -5,6 +5,117 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 — The real logo, and two things that were measurably slow
+
+Three pieces of work: the brand artwork was replaced with the finished files,
+the guidelines editor stopped shaking, and dragging a moodboard card went from
+136ms of JavaScript per pointer move to 7.5ms.
+
+### The artwork
+
+`Logo-01/02/03.svg` replaced the placeholders in `public/` as
+`markyos-lockup.svg`, `markyos-wordmark.svg` and `markyos-mark.svg`. The
+proportions changed — the mark went from 0.83:1 to square, the lockup from
+3.78:1 to 5.01:1 — so every place they render was checked rather than assumed.
+All five call sites size by `height` or by a width that still fits, so none
+needed adjusting; the sidebar, auth shell, brands list, studio board and the
+new-brand screen were each looked at rather than reasoned about.
+
+**The pattern arrived as a 17490×7022 PNG, and ships as a 941px tile.** It is a
+seamless repeat, so the whole sheet is 3MB of the same information over and
+over. Finding the period took some doing: the file is black-on-transparent, so
+every colour channel reads zero and the first three attempts measured a blank
+image — the artwork is entirely in the alpha channel. Chromium also refuses to
+rasterise 122 megapixels through `drawImage`; `createImageBitmap` with a crop
+decodes it. The repeat is exactly 941px square (mean absolute difference 0.37
+of 255, so: exact), and one tile resampled to 512px is 35KB — 1.1% of the
+sheet, and crisp at any size because it now tiles instead of scaling.
+
+### The guidelines editor shook
+
+`.live-insert` — the gap between two sections, offering to put something in it —
+sat in the page's own flow at 14px and grew to 38px on `:hover`. So pointing at
+a gap pushed every section below it down 24px, and a page with fourteen gaps
+jolted fourteen times on the way down it.
+
+It also genuinely oscillated, which is the part that made it *shake* rather than
+merely jump: the growth moved the strip out from under a pointer that was
+standing still, which closed it, which moved it back. Measured at ten scroll
+positions on the Vault canvas, the frame's content height flipped between two
+values 24px apart with nothing touching it.
+
+The gap now holds its 14px at all times and draws its button *over* the page
+instead of wedged into it. This is the rule `--canvas-scale` already applies to
+the section toolbar and the drag grip, stated once more: the page being
+previewed owns the layout, and the tools for editing it are not part of the page
+and may not move it. The drop target is the button rather than the strip, so
+aiming at a gap mid-drag got easier at the same time — drag events bubble by DOM
+tree, not geometry, so the strip's own handlers still receive them.
+
+`CanvasFrame`'s resize loop was suspected first and cleared: the canvas scale
+was swept across every window width from 1000 to 1800px and settles at all of
+them. The published site at `/v/<slug>` was checked too and never moved.
+
+### Dragging a moodboard card
+
+The board held 60fps on an idle desktop, which is why this needed measuring
+rather than eyeballing. With 34 cards and the CPU throttled 6× — an ordinary
+laptop with a browser full of tabs — the p95 frame was **650ms** and the worst
+was **1067ms**. The board froze for a second at a time.
+
+Chrome's own counters said where it went: **92% script**, with style recalc and
+layout together under 1%. So it was not the `left`/`top` positioning, which was
+the obvious suspect and the wrong one. It was React re-rendering the entire
+board on every pointer move, because every handler was written inline in the
+render and so was a new function for all forty children each time.
+
+The handlers now take the card or zone as an argument instead of capturing it,
+which lets one function serve every child, and `CardOnCanvas`, `Frame` and
+`BoardToolbar` sit behind memo boundaries. Boxes compare by value, because a box
+is derived from the live gesture and rebuilt every render — comparing by
+identity would report every card as changed on every move, which is the whole
+thing being avoided.
+
+`PlacedItem` compares by value too, and that one is worth its own line: one
+person voting on one card cost a **1062ms** task, because `placeBoard` rebuilds
+every item from the board and so gave all thirty-four new identities. Every
+field is listed in the comparison, including the ones the canvas does not draw —
+a comparison that quietly calls two different cards equal shows stale content,
+which is a much worse failure than a redraw that was not needed.
+
+| 34 cards, CPU throttled 6× | before | after |
+| --- | --- | --- |
+| script per drag | 73.6s | 4.05s |
+| median frame | 33.3ms | 16.7ms |
+| p95 frame | 650ms | 33.3ms |
+| frames over 32ms | 190 of 363 | 28 of 341 |
+| card's distance from the pointer | 5.8px | 0.9px |
+| one vote click | 1062ms | 450ms |
+
+Persistence was suspected and cleared: the snapshot is 59KB and writes in
+0.2ms, because uploads already live in IndexedDB behind reference tokens.
+
+### The check that could not fail
+
+The shake is now a check in the builder sweep, and it took three attempts to
+write one that actually catches it. Both earlier versions passed against the
+exact CSS they were written to detect:
+
+- **Synthetic events prove nothing about `:hover`.** A dispatched `PointerEvent`
+  moves no cursor, and `:hover` follows the cursor.
+- **A sweep steps over what it is looking for.** These strips are 14px in a
+  600px frame; sampling every 45px walks between them and reports a page that
+  never moved.
+- **Sequential hovers cancel out.** Going straight from one gap to the next
+  closes one as it opens the next, so a page lurching 20px at every gap reported
+  a single change across the whole run. The pointer now parks clear of the
+  canvas between measurements.
+
+The check addresses all fifteen gaps by element. Restored to the old CSS it
+fails 15 of 15; with the fix it passes.
+
+---
+
 ## 2026-09-30 — A UX pass: what the screen says before you touch it
 
 A sweep of the whole product against the usability principles it already claims

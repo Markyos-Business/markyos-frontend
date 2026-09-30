@@ -298,6 +298,59 @@ async function run() {
     else fail("palette", `dropping added ${countAfter - countBefore} blocks where 1 was expected`);
   }
 
+  /* ------------------------------------------- the page holds still ---------
+     The editor shook. `.live-insert` — the gap between two sections, offering
+     to put something in it — sat in the page's own flow at 14px and grew to
+     38px on hover, so pointing at a gap pushed every section below it down
+     24px. A page with fourteen gaps jolted fourteen times on the way down it,
+     and it oscillated: the growth moved the strip out from under a pointer that
+     was standing still, which closed it, which moved it back.
+
+     So this hovers every gap on the page and watches the frame's own content
+     height. Each one must still *open* — it is the only way to add a section
+     between two others — and none may cost a pixel of height.
+
+     Every gap, rather than a sweep of the pointer down the canvas. Two earlier
+     versions of this check passed against the very CSS it was written to catch,
+     and each failure is worth recording:
+
+     The pointer has to be the real one. `:hover` follows where the mouse
+     actually is, so a synthetic PointerEvent — which moves no cursor — proves
+     nothing.
+
+     And a sweep steps over the thing it is looking for. These strips are 14px
+     tall in a 600px frame; sampling every 45px walks between them and reports
+     a page that never moved. Addressing the elements is exact and cannot miss. */
+  const gapCount = await page.locator("[data-canvas-frame] .live-insert").count();
+  const moved = [];
+  let neverOpened = 0;
+  for (let i = 0; i < gapCount; i++) {
+    const gap = page.locator("[data-canvas-frame] .live-insert").nth(i);
+    await gap.scrollIntoViewIfNeeded();
+    // Park the pointer clear of the canvas first. Going straight from one gap
+    // to the next measures nothing: the one behind closes as the next one
+    // opens, the two cancel, and a page that lurches 20px every time reports a
+    // single change across the whole run.
+    await page.mouse.move(8, 400);
+    await page.waitForTimeout(160);
+    const before = await page.evaluate(() => document.querySelector("[data-canvas-frame]").scrollHeight);
+    await gap.hover({ force: true });
+    await page.waitForTimeout(200);
+    const opened = await gap.evaluate((el) => Number(getComputedStyle(el).opacity) > 0.5);
+    const after = await page.evaluate(() => document.querySelector("[data-canvas-frame]").scrollHeight);
+    if (!opened) neverOpened++;
+    if (before !== after) moved.push(after - before);
+  }
+  if (gapCount === 0) {
+    fail("canvas", "found no insertion gaps on the canvas to test");
+  } else if (neverOpened > 0) {
+    fail("canvas", `${neverOpened} of ${gapCount} insertion gaps stayed invisible on hover`);
+  } else if (moved.length > 0) {
+    fail("canvas", `pointing at a gap moved the page (${moved.length} of ${gapCount}, by ${[...new Set(moved)].join("/")}px)`);
+  } else {
+    ok(`all ${gapCount} insertion gaps open on hover without moving the page`);
+  }
+
   /* ---------------------------------------------- the handle on a section ---
      The only drag handle used to live inside the toolbar of an already-selected
      section, so reordering was click → wait → press-and-hold → drag, with

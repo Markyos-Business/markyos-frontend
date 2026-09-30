@@ -154,6 +154,27 @@ looks smaller. A frame that scales its contents while staying full width shows
 a squashed desktop layout and calls it a phone, and no screenshot can tell the
 difference.
 
+It also holds the check that the canvas does not move under the pointer — the
+editor used to shake, because the insertion gap between two sections grew 24px
+in the page's own flow when you pointed at it. That check took three attempts,
+and each failure is a trap worth knowing before writing another one like it:
+
+- **A synthetic `PointerEvent` cannot test `:hover`.** Dispatching one moves no
+  cursor, and `:hover` follows the cursor. The first version passed against the
+  exact CSS it was written to catch.
+- **Sweeping the pointer steps over small targets.** The strips are 14px tall in
+  a 600px frame; sampling every 45px walks between them and reports a page that
+  never moved. Address the elements instead — `locator(...).nth(i)` cannot miss.
+- **Sequential hovers cancel out.** Moving from one gap straight to the next
+  closes one as it opens the other, so a page lurching at every gap reported a
+  single change across the whole run. Park the pointer clear of the target
+  between measurements, or you are measuring a difference of two faults.
+
+The general lesson, and the reason it is written down here rather than in a
+comment: **a new check is not finished until it has been made to fail.** Break
+the fix, watch the check go red, then restore it. All three of these looked
+correct and asserted nothing.
+
 It also drives the responsive cascade end to end — set a phone override through
 the real inspector, confirm a `max-width:809px` rule is emitted, confirm the
 desktop value is untouched and marked as overridden elsewhere.
