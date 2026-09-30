@@ -5,6 +5,89 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 — Spatial culling, from the Milanote spec
+
+Two reference specifications came in — a Canva-style whiteboard and a
+Milanote-style workspace — as inspiration for the moodboard. Worth recording
+that **they contradict each other on the central decision**: Canva's calls for
+Konva or PixiJS on WebGL, Milanote's says explicitly not to use `<canvas>` or
+WebGL and to build on DOM elements with a CSS `transform`, "to support native
+text selection, inputs, and accessibility".
+
+Markyos already does the second, and for that reason. The board holds notes you
+type into and swatches you pick colours from; a WebGL canvas would mean
+re-implementing text editing, focus, selection and screen-reader access from
+nothing. The camera model the specs describe — a global `x, y, scale` applied as
+one `transform` on a board container, with every node at absolute board
+coordinates — is what `Canvas.tsx` has been doing all along.
+
+So most of both documents describes the architecture already in place. One thing
+did not exist, and it is the one the Milanote spec singles out for exactly this
+product: **spatial culling**, "to render hundreds of images … only render those"
+nodes intersecting the viewport.
+
+Measured before building it, on a 150-card board: **150 cards in the DOM, 24 on
+screen.** Every one of the other 126 cost an element, a prop comparison on every
+frame of every gesture, and an image for the browser to hold. Dragging a card
+had a worst frame of 1.5 seconds.
+
+The canvas now renders only what is near the window, with a margin of 0.4 of a
+screen in each direction so cards mount before they are reached. The margin is
+in board units, so it widens as you zoom out — zoomed out, a screen of pan
+covers more board. 0.4 rather than the 0.75 first tried, because the margin
+costs area quadratically: 0.75 covers 6.25 screens and still kept 70 cards
+mounted; 0.4 covers 3.2 and keeps 40.
+
+| 150 cards, CPU 4× | before | after |
+| --- | --- | --- |
+| cards in the DOM | 150 | 40 |
+| pan, p95 frame | 50.0ms | 16.8ms |
+| pan, frames over 32ms | 62 | 5 |
+| drag, p95 frame | 50.1ms | 16.8ms |
+| drag, frames over 32ms | 51 | 6 |
+| drag, worst frame | 1516ms | 550ms |
+
+At **400** cards the DOM still holds 40 and pan is unchanged, which is the
+actual claim: cost now tracks what is visible rather than what exists.
+
+Culling is a rendering decision only — nothing about what is stored, what is
+selected, or what the list view shows. That matters for more than tidiness: the
+list is documented as the view that works without a pointer, so it remains the
+one a screen reader can walk end to end.
+
+### A check that was measuring something impossible
+
+The obvious risk is a card vanishing out of the hand dragging it, so a check was
+written to drag one far past the edge. It is not in the suite, and the reason is
+worth keeping: **a pointer cannot put a dragged card outside the rendered
+region.** The card follows the pointer, the pointer stays inside the window, and
+the region extends beyond the window on every side. The check drove the mouse to
+x=2400 on a 1440px viewport, where Chromium dispatches nothing, and then read
+the resulting motionless card as the bug it was hunting.
+
+The guard in `Canvas.tsx` stays, and what exercises it is an older check: "a
+card dropped in the tray is filed under unsorted" ends its drag on a zone
+outside the visible region, and it fails without it. A check that fails for the
+wrong reason is worse than no check, because it is evidence of the wrong thing.
+
+### Still needs provisioning
+
+Both specs are mostly about real-time collaboration — Yjs CRDTs, a
+`y-websocket` provider, the awareness protocol for live cursors, Redis for
+ephemeral session state, Postgres for persistence. None of it is written here,
+because all of it needs a server, and server work is blocked on provisioning
+rather than on code. The data model is not far off what those specs assume: a
+board is already a flat list of nodes carrying absolute coordinates and a size,
+which is the shape a `Y.Array` of nodes wants.
+
+Two things from the specs are **not** wanted and should not be added by
+accident. Canva's `rotation` belongs to a design tool, not a board of reference
+photographs. And its deeply-nested scene graph is explicitly warned against in
+its own text for complicating CRDT sync; zones here are regions decided by
+geometry on drop, not DOM parents, which is the same conclusion.
+
+---
+
 ## 2026-10-01 (later) — The shake I had not found, the lag I had half-fixed, and motion for the guideline site
 
 Reported as *still* bad after the previous pass, which was correct on both

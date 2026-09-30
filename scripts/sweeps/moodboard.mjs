@@ -796,6 +796,77 @@ async function run() {
     }
   }
 
+  /* ------------------------------------------------- a board that scales ---
+     The canvas renders only the cards near the window. A board is an infinite
+     surface and a studio fills it: at 150 cards, 150 were in the DOM and 24 were
+     on screen, and each of the other 126 cost an element, a comparison on every
+     frame of every gesture, and an image for the browser to hold. Dragging on
+     that board had a worst frame of 1.5 seconds.
+
+     Seeded by cloning the cards already on the board rather than uploading a
+     hundred more files — what is being measured is the number of nodes, and the
+     render path is identical. */
+  {
+    const seeded = await page.evaluate(() => {
+      const raw = JSON.parse(localStorage.getItem("markyos:v1"));
+      const ws = raw.workspaces.find((w) => w.slug === "nadeen-studio");
+      const board = ws.moodboards[0];
+      const zone = board.zones.find((z) => z.items.length > 0);
+      if (!zone) return 0;
+      const seeds = [...zone.items];
+      let n = 0;
+      // Spread over a wide grid, so most of them are far from any one screenful.
+      while (zone.items.length < 140) {
+        const src = seeds[n % seeds.length];
+        const col = n % 12;
+        const row = Math.floor(n / 12);
+        zone.items.push({ ...src, id: `bulk${n}`, order: `${src.order}z${n}`, x: 60 + col * 300, y: 60 + row * 250, w: 250, h: 200, votes: [] });
+        n++;
+      }
+      localStorage.setItem("markyos:v1", JSON.stringify(raw));
+      return zone.items.length;
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(1500);
+    const boardTab = page.locator('button[role="tab"]:has-text("Board")');
+    if ((await boardTab.count()) > 0) await boardTab.click();
+    await page.waitForTimeout(1200);
+
+    const drawn = await page.evaluate(() => ({
+      inDom: document.querySelectorAll("[data-mood-item]").length,
+      onScreen: [...document.querySelectorAll("[data-mood-item]")].filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+      }).length,
+    }));
+
+    if (seeded < 100) {
+      fail("culling", `could not seed a large board (got ${seeded} cards)`);
+    } else if (drawn.inDom >= seeded) {
+      fail("culling", `every one of ${seeded} cards is in the DOM — the canvas is not culling`);
+    } else {
+      ok(`a ${seeded}-card board renders ${drawn.inDom} of them, not all ${seeded}`);
+    }
+
+    /*
+     * There is deliberately no check here that a dragged card survives leaving
+     * the rendered region, because a pointer cannot put it there.
+     *
+     * The card follows the pointer, the pointer stays inside the window, and
+     * the region extends 0.4 of a screen *beyond* the window — so the card
+     * being dragged is always inside it. A check written for this drove the
+     * mouse to x=2400 on a 1440px viewport, where Chromium dispatches nothing,
+     * and then reported the resulting motionless card as the very bug it was
+     * looking for.
+     *
+     * The canvas keeps the guard anyway (`inGesture` in Canvas.tsx), and what
+     * exercises it is the existing "a card dropped in the tray is filed under
+     * unsorted" check further up: that drag ends on a zone outside the visible
+     * region, and it fails without the guard.
+     */
+  }
+
   // ------------------------------------------------- never on the client ---
   await page.goto(`${BASE}/w/${SLUG}/builder`, { waitUntil: "networkidle" });
   await page.waitForTimeout(800);

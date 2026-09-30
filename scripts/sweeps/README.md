@@ -105,6 +105,22 @@ that looks moved and wrote nothing jumps back on reload), that where a card land
 decides which zone it belongs to, that two cards can be connected and
 disconnected, and that deleting a card takes its connections with it.
 
+It also seeds a 140-card board — by cloning the cards already there, since what
+is being measured is the number of nodes and the render path is identical — and
+asserts the canvas renders a fraction of them. The board is an infinite surface
+and a studio fills it; without culling, 150 cards meant 150 in the DOM for 24 on
+screen.
+
+There is deliberately **no** check that a dragged card survives leaving the
+rendered region, and the reason is a trap worth knowing: **a pointer cannot put
+it there.** The card follows the pointer, the pointer stays inside the window,
+and the region extends beyond the window on every side. A check written for it
+drove the mouse to x=2400 on a 1440px viewport — where Chromium dispatches
+nothing — and then read the motionless card as the bug it was hunting. The guard
+in `Canvas.tsx` is exercised instead by the older "a card dropped in the tray is
+filed under unsorted" check, whose drag ends on a zone outside the visible
+region and which fails without it.
+
 Everything on the canvas is asserted against **stored state**, never pixels —
 with two exceptions where geometry *is* the thing being tested. The toolbar has
 to be at the bottom centre of the board, and in Arabic every frame has to be

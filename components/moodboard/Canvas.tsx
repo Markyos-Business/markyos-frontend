@@ -308,6 +308,63 @@ export function Canvas(props: CanvasProps) {
   }, [placed]);
 
   /*
+   * The size of the window onto the board, tracked so the canvas can work out
+   * what is actually in view. See `viewport` below.
+   */
+  const [hostSize, setHostSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const observer = new ResizeObserver(() => {
+      setHostSize((prev) =>
+        prev.w === host.clientWidth && prev.h === host.clientHeight
+          ? prev
+          : { w: host.clientWidth, h: host.clientHeight },
+      );
+    });
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  /*
+   * What the window covers, in board coordinates, plus a margin.
+   *
+   * Cards outside it are not rendered at all. A board is an infinite surface
+   * and a studio fills it: at 150 cards, **150 were in the DOM and 24 were on
+   * screen**, and every one of the other 126 still cost an element, a memo
+   * comparison on every frame of every gesture, and an image for the browser to
+   * keep. Dragging a card on that board had a worst frame of 1.5 seconds.
+   *
+   * This is the "spatial culling" a Milanote-style canvas is built on, and it
+   * is the one thing that makes the board scale with how much is on it rather
+   * than with how much is visible.
+   *
+   * The margin is 40% of a screen in each direction, so cards mount before they
+   * are reached and a pan does not pop them into place. It is measured in board
+   * units, so it widens as you zoom out — which is right: zoomed out, a screen's
+   * worth of pan covers more board. The figure is a balance rather than a guess:
+   * at 0.75 a 150-card board still kept 70 cards mounted for 24 on screen, and
+   * the margin costs area quadratically — 0.75 covers 6.25 screens, 0.4 covers
+   * 3.2.
+   *
+   * Culling is a *rendering* decision only. Nothing here touches what is
+   * stored, what is selected, or what the list view shows — which remains the
+   * view that works without a pointer, and so the one a screen reader can walk
+   * end to end.
+   */
+  const viewport = useMemo(() => {
+    if (hostSize.w === 0 || hostSize.h === 0) return null;
+    const padX = (hostSize.w * 0.4) / view.zoom;
+    const padY = (hostSize.h * 0.4) / view.zoom;
+    return {
+      x0: -view.x / view.zoom - padX,
+      y0: -view.y / view.zoom - padY,
+      x1: (-view.x + hostSize.w) / view.zoom + padX,
+      y1: (-view.y + hostSize.h) / view.zoom + padY,
+    };
+  }, [view, hostSize]);
+
+  /*
    * The live pan and zoom, mirrored where a callback can read it without
    * depending on it.
    *
@@ -1073,32 +1130,51 @@ export function Canvas(props: CanvasProps) {
           />
 
           {placed.map((zone) =>
-            zone.items.map((item) => (
-              <CardOnCanvas
-                key={item.id}
-                item={item}
-                box={boxOfItem(item)}
-                asset={item.assetId ? props.assets.get(item.assetId) : undefined}
-                isAr={isAr}
-                me={props.me}
-                tool={tool}
-                selected={selected.includes(item.id)}
-                connectTarget={connecting?.over === item.id}
-                dragging={
-                  gesture.kind === "move-item" &&
-                  gesture.moved &&
-                  (gesture.id === item.id || gesture.others.some((o) => o.id === item.id))
-                }
-                onSelect={selectItem}
-                onGrab={grabItem}
-                onSize={sizeItem}
-                onConnectStart={connectFrom}
-                onVote={voteItem}
-                onRemove={removeItem}
-                onEdit={editItem}
-                onSampleColor={onSampleColor}
-              />
-            )),
+            zone.items.map((item) => {
+              const box = boxOfItem(item);
+              const inGesture =
+                (gesture.kind === "move-item" || gesture.kind === "size-item") &&
+                (gesture.id === item.id ||
+                  (gesture.kind === "move-item" && gesture.others.some((o) => o.id === item.id)));
+              /*
+               * Off-screen cards are not rendered. See `viewport`.
+               *
+               * Whatever a live gesture is touching is always drawn, however far
+               * it has been taken: a card dragged past the edge of the window
+               * must not vanish out of the hand holding it, and neither may the
+               * rest of a group moving with it. The connection being drawn keeps
+               * both of its ends for the same reason.
+               */
+              const keep =
+                inGesture ||
+                connecting?.from === item.id ||
+                connecting?.over === item.id ||
+                !viewport ||
+                (box.x < viewport.x1 && box.x + box.w > viewport.x0 && box.y < viewport.y1 && box.y + box.h > viewport.y0);
+              if (!keep) return null;
+              return (
+                <CardOnCanvas
+                  key={item.id}
+                  item={item}
+                  box={box}
+                  asset={item.assetId ? props.assets.get(item.assetId) : undefined}
+                  isAr={isAr}
+                  me={props.me}
+                  tool={tool}
+                  selected={selected.includes(item.id)}
+                  connectTarget={connecting?.over === item.id}
+                  dragging={gesture.kind === "move-item" && gesture.moved && inGesture}
+                  onSelect={selectItem}
+                  onGrab={grabItem}
+                  onSize={sizeItem}
+                  onConnectStart={connectFrom}
+                  onVote={voteItem}
+                  onRemove={removeItem}
+                  onEdit={editItem}
+                  onSampleColor={onSampleColor}
+                />
+              );
+            }),
           )}
 
           {/* The rubber band, in board coordinates so it stays over the same
