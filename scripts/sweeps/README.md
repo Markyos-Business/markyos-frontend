@@ -216,6 +216,40 @@ it reorders the page, and that the new order reaches storage — the tree is a
 view of the flow, so moving a row in the tree that did not move the section
 would be worse than not being able to move it.
 
+**The page review** is checked in two halves, and the order matters. The half
+that rots is the *quiet* one: a linter reporting findings on a page with nothing
+wrong with it is wrong in the way that gets linters switched off, and no other
+check here would notice. So "the home page reviews clean" runs first, before
+anything else in the sweep touches the page. An earlier version ran it at the
+end and blamed the rules for a section the sweep had added itself, two hundred
+lines earlier.
+
+The loud half needs blocks that are genuinely broken, and those are **seeded into
+`localStorage` rather than built through the palette** — `blockDefaults` gives
+every new block real starting content on purpose, so there is no way to create an
+empty one from the UI. That is the product being right and the sweep needing
+another door. The context is thrown away when the run ends, so the seed never
+outlives it.
+
+Two things not to hardcode in these checks:
+
+- **The error count.** An earlier version asserted the publish warning said
+  "2 things", which made it a record of how many steps happened to run before it —
+  other checks in the same file add sections of their own. It now reads the count
+  off the chip and asserts the dialog agrees, which is the more interesting claim
+  anyway.
+- **A wait long enough for an animation.** "Clicking a finding reveals its
+  section" first failed because it slept 600ms while a smooth scroll took 1,600ms
+  to cross the page. A fixed sleep tests the animation's speed, not the
+  behaviour — poll until the element is on screen, and assert the *duration*
+  separately if the duration is the point. Here it is: the check now requires a
+  far jump to land in under 400ms, and that one fails at 992ms if the distance
+  rule is removed.
+
+`[data-review-row]` is the hook for finding rows, and it exists because the first
+version counted `.mk-nav-item` — which is the sidebar's hover class. It reported
+twelve findings on a clean page and every one of them was a navigation link.
+
 The palette drag is held rather than dropped for one check, so the canvas can be
 asked what it is showing while the gesture is in flight. A landing strip that
 only appears at the moment of release is a landing strip nobody can aim at.

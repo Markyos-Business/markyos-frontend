@@ -5,6 +5,113 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 (later) — Reversibility, and a feedback loop, from the Framer teardown
+
+A teardown of Framer came in as a reference for the guidelines builder. Most of
+what it recommends is already how this builder is built, and it is worth saying
+which parts so nobody re-derives them from the document as a to-do list:
+
+- **One renderer for the canvas and the published page.** The teardown calls
+  this the decision that cannot be deferred. `LiveCanvas` mounts
+  `LiveEditProvider` over the same six template components `/v/[slug]` mounts
+  bare — there is no separate preview to drift.
+- **Override-only replicas.** `BlockStyle.bp` / `.rtl` store what differs and
+  nothing more, resolved desktop-first, with the inspector showing a dot where a
+  value differs elsewhere and offering a reset.
+- **A layers tree, breakpoint frames, direct manipulation.** All present.
+
+Two of its recommendations are deliberately *not* taken. Its `<canvas>`/WebGL
+option is wrong here for the reason recorded under spatial culling below. And
+its free-CSS property model is wrong for a bilingual page: `BlockStyle` stays a
+small set of semantic choices — `start`, not `left` — because a hard pixel offset
+mirrors wrongly in Arabic, and the guideline site ships in both directions.
+
+Three things were genuinely missing.
+
+### Undo had no way back
+
+There was a 60-deep undo stack and no redo. Undo alone is a trap rather than a
+safety net: it makes trying something out cost an edit you cannot recover if you
+change your mind twice. `redo` is now the mirror of it, on `Ctrl+Shift+Z` and
+`Ctrl+Y` both, with its own button beside Undo. A fresh edit clears the redo
+branch, because otherwise redo would restore a state the page never came from.
+
+### The editor could say what a page *was*, not what was wrong with it
+
+The way to find out that a section would render empty on the client's site, or
+that a button pointed nowhere, was to publish and look. The teardown describes
+three feedback loops Framer's agent gets after every edit — layout rectangles, a
+design linter, rendered screenshots — and the linter is the one that is just as
+useful to a person, and the only one that needs no server.
+
+`lib/pageReview.ts` is that linter: pure, deterministic, 29 unit tests, no React
+and no store. It reports empty sections, brand sections whose data is missing,
+links that go nowhere or resolve inside the guideline site, forms with no
+recipient, and bilingual gaps — and it runs the existing `lib/copyLint.ts` rules
+over what is on the page, which until now could only be reached by pasting text
+into the Compliance page.
+
+Two of its rules were wrong when first written, and both were found by reading
+the renderer rather than by reasoning:
+
+- **Severity follows the fallback.** `BlockRenderer` resolves a field as
+  `(isAr && block.arTitle) || block.title`. Missing Arabic therefore falls back
+  to the English and the page is readable — a warning. Missing English falls back
+  to nothing and the page renders a gap — an error. The asymmetry is the rule; the
+  other way round would flag the normal state of a page being written as broken
+  and the actually-broken one as a nicety.
+- **A rule per real empty state.** The first draft flagged a type specimen with
+  no typeface and a files section on a workspace with no files. Neither is a
+  thing the client ever sees: `TypeSpecimen` always renders, and a files block
+  shows its own chosen `assetIds` rather than mirroring the workspace. Both rules
+  were deleted and `BrandDataPresence` lost the two fields that fed them, so the
+  same mistake cannot be made again by filling in a field that is sitting there.
+
+Untranslated-Arabic findings collapse into one counted row. A studio drafting in
+English has no Arabic anywhere yet, and a linter that reports that once per field
+is a linter people switch off — which would take the specific findings with it.
+
+Publishing a page with errors now **asks** rather than refusing. Sending a client
+a half-finished page to look at is a normal thing to do, and a builder that
+decided which pages were allowed out would be wrong about that regularly. What it
+can do is make sure nobody publishes an empty section without having been told.
+
+### Selecting a section did not show it to you
+
+The panel's own copy says "click a finding to jump to the section", and that was
+false: selection alone does not scroll. Both editing shells now carry
+`data-flow-id` — Framer's `data-node-id` convention, one addressable id per
+rendered element — and the builder reveals as well as selects. The layers tree
+got the same treatment, for the same reason.
+
+The first version used `behavior: "smooth"`, and measuring it is why it doesn't:
+Chromium gives a smooth scroll however long the distance demands, which was
+**1.6 seconds to cross a 9,900px guideline**. That is a teleport in a scroll's
+clothing — you watch the whole page stream past and arrive unsure whether you
+moved or it did — and on a page this long it is the normal case, not the edge one.
+Smooth is now kept for a hop under 1.5 screens and a long jump is instant, which
+also respects `prefers-reduced-motion`. Measured through the real click path:
+**992ms → 70ms.**
+
+### The check that was crying wolf
+
+`scripts/no-physical-props.mjs` failed the build on the word "right:" in the
+middle of an English sentence — a comment explaining why the code beneath it was
+correct. That is the exact failure the script's own header warns about twice,
+arriving from the one direction it hadn't guarded. It now skips lines that are
+entirely comment, and the interior of block comments. Deliberately conservative:
+a declaration sharing a line with a trailing comment stays in scope, and nothing
+tries to parse strings, because blanking everything after a `//` would truncate
+the line holding `"https://…"` and silently stop checking what followed. Verified
+by putting a real `right: 0` back on a line with a prose comment and watching it
+get caught.
+
+Builder sweep: 23 checks → 36. The "reviews clean" check runs *first*, before the
+sweep's own palette drop adds a section — an earlier version ran at the end and
+blamed the rules for a block the sweep had added itself.
+
+---
+
 ## 2026-10-01 — Spatial culling, from the Milanote spec
 
 Two reference specifications came in — a Canva-style whiteboard and a

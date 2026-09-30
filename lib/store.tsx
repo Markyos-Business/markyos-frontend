@@ -553,6 +553,9 @@ interface AppContextValue {
    */
   undo: () => void;
   canUndo: boolean;
+  /** Steps forward again through what undo walked back. Cleared by a new edit. */
+  redo: () => void;
+  canRedo: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -613,11 +616,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * Each entry is the array itself, not a deep copy: every mutation rebuilds
    * only the workspace it touched, so the other entries are shared by
    * reference and a step of history costs one array rather than a clone of
-   * every brand. `undoDepth` mirrors its length as state, because a ref
-   * changing can't re-render the button that reads it.
+   * every brand. `depth` mirrors both stacks' lengths as state, because a ref
+   * changing can't re-render the buttons that read them.
    */
   const undoStack = useRef<Workspace[][]>([]);
-  const [undoDepth, setUndoDepth] = useState(0);
+  /**
+   * The states undone away from, most recent last.
+   *
+   * Undo without redo is a trap rather than a safety net: it makes trying
+   * something out cost an edit you can't get back if you change your mind
+   * twice. Same shape and same sharing as the undo stack — a step is one array.
+   */
+  const redoStack = useRef<Workspace[][]>([]);
+  const [depth, setDepth] = useState({ undo: 0, redo: 0 });
   /**
    * The committed state, readable from a callback that must not re-create
    * itself on every change. Kept in sync here rather than listed as a
@@ -635,7 +646,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // passed to setState has to stay pure, and React may run it more than
       // once, which would push the same step twice.
       undoStack.current = [...undoStack.current.slice(-(UNDO_LIMIT - 1)), stateRef.current.workspaces];
-      setUndoDepth(undoStack.current.length);
+      // A fresh edit is a new branch of history: what was undone is no longer
+      // reachable forward, which is how every editor behaves and the only rule
+      // that keeps redo from restoring a state this edit never came from.
+      redoStack.current = [];
+      setDepth({ undo: undoStack.current.length, redo: 0 });
       setState((prev) => ({
         ...prev,
         workspaces: prev.workspaces.map((w) => (w.id === workspaceId ? fn(w) : w)),
@@ -646,9 +661,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const undo = useCallback(() => {
     const previous = undoStack.current.pop();
-    setUndoDepth(undoStack.current.length);
-    if (!previous) return;
+    if (!previous) {
+      setDepth((d) => (d.undo === 0 ? d : { ...d, undo: 0 }));
+      return;
+    }
+    redoStack.current = [...redoStack.current.slice(-(UNDO_LIMIT - 1)), stateRef.current.workspaces];
+    setDepth({ undo: undoStack.current.length, redo: redoStack.current.length });
     setState((prev) => ({ ...prev, workspaces: previous }));
+  }, []);
+
+  const redo = useCallback(() => {
+    const next = redoStack.current.pop();
+    if (!next) {
+      setDepth((d) => (d.redo === 0 ? d : { ...d, redo: 0 }));
+      return;
+    }
+    undoStack.current = [...undoStack.current.slice(-(UNDO_LIMIT - 1)), stateRef.current.workspaces];
+    setDepth({ undo: undoStack.current.length, redo: redoStack.current.length });
+    setState((prev) => ({ ...prev, workspaces: next }));
   }, []);
 
   const logAudit = useCallback((action: string, target: string) => {
@@ -3174,7 +3204,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       removePage,
       reorderPages,
       undo,
-      canUndo: undoDepth > 0,
+      canUndo: depth.undo > 0,
+      redo,
+      canRedo: depth.redo > 0,
     }),
     [
       state,
@@ -3316,7 +3348,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       removePage,
       reorderPages,
       undo,
-      undoDepth,
+      redo,
+      depth,
     ]
   );
 

@@ -98,6 +98,38 @@ const GEOMETRY_ONLY = [
  */
 const ALLOW = /physical-ok:/;
 
+/**
+ * Whether a line is nothing but comment.
+ *
+ * Prose is not a declaration. The sentence "it is measured in board units, so it
+ * widens as you zoom out — which is right: zoomed out, a screen's worth of pan
+ * covers more board" failed this check, on the word "right:" in the middle of an
+ * explanation of why the code around it is correct. That is the crying-wolf
+ * failure this file warns about twice, arriving from the one direction it didn't
+ * guard.
+ *
+ * Deliberately conservative: only lines that are *entirely* comment, plus the
+ * interior of a block comment. A declaration that shares a line with a trailing
+ * comment stays in scope, and nothing tries to parse strings or regex literals —
+ * blanking out everything after a `//` would truncate the line holding
+ * `"https://…"` and quietly stop checking whatever followed it.
+ */
+function makeCommentTracker() {
+  let inBlock = false;
+  return (line) => {
+    const trimmed = line.trim();
+    const wasInBlock = inBlock;
+    if (inBlock) {
+      if (trimmed.includes("*/")) inBlock = false;
+    } else {
+      const opens = (trimmed.match(/\/\*/g) || []).length;
+      const closes = (trimmed.match(/\*\//g) || []).length;
+      if (opens > closes) inBlock = true;
+    }
+    return wasInBlock || trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*");
+  };
+}
+
 function walk(dir) {
   const out = [];
   let entries;
@@ -121,8 +153,12 @@ const findings = [];
 for (const file of files) {
   const rules = geometry.has(file) ? [...EVERYWHERE, ...GEOMETRY_ONLY] : EVERYWHERE;
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
+  const isComment = makeCommentTracker();
   lines.forEach((line, i) => {
-    if (ALLOW.test(line)) return;
+    // Called for every line, before any early return: the tracker is a state
+    // machine and skipping a line would lose its place inside a block comment.
+    const commented = isComment(line);
+    if (commented || ALLOW.test(line)) return;
     for (const rule of rules) {
       rule.re.lastIndex = 0;
       const match = rule.re.exec(line);

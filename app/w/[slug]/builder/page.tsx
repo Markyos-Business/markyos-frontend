@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/lib/store";
@@ -18,6 +18,8 @@ import { SecondaryViewBanner, ViewSwitcher } from "@/components/builder/ViewSwit
 import { CanvasFrame } from "@/components/builder/CanvasFrame";
 import { DesignInspector } from "@/components/builder/DesignInspector";
 import { LayersTab } from "@/components/builder/LayersTab";
+import { ReviewChip } from "@/components/builder/ReviewPanel";
+import { reviewPage } from "@/lib/pageReview";
 import { useGuidelineViewer } from "@/lib/useGuidelineViewer";
 import { ALL_BLOCK_KINDS, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "@/lib/blockCatalog";
 import { DESIGN_SYSTEMS } from "@/lib/designSystem";
@@ -477,6 +479,8 @@ export default function BuilderPage() {
     setSectionStyle,
     undo,
     canUndo,
+    redo,
+    canRedo,
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
@@ -557,6 +561,64 @@ export default function BuilderPage() {
   }, [query]);
 
   /**
+   * Selects a section and brings it on screen.
+   *
+   * Plain selection is enough for a click on the canvas, where the thing clicked
+   * is by definition already visible. It is not enough for anything that names a
+   * section from *outside* the canvas: the review panel points at the section
+   * you haven't looked at, which is exactly why it has a finding. `data-flow-id`
+   * is the hook, set by both editing shells.
+   */
+  const revealFlow = useCallback((flowId: string | null) => {
+    setSelectedId(flowId);
+    // Deselecting has nowhere to scroll to.
+    if (!flowId) return;
+    // Next frame: selecting draws the section's toolbar, which changes its box.
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-flow-id="${CSS.escape(flowId)}"]`);
+      if (!el) return;
+      /*
+       * Smooth for a short hop, instant for a long one.
+       *
+       * Chromium gives a smooth scroll however long the distance demands:
+       * measured at 1.6 seconds to cross a 9,900px guideline. That is a
+       * teleport in a scroll's clothing — you watch the whole page stream past
+       * and arrive unsure whether you moved or it did, and for a page this long
+       * it is the normal case rather than the edge one. A jump is at least
+       * honest about having jumped.
+       */
+      const far = Math.abs(el.getBoundingClientRect().top) > window.innerHeight * 1.5;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: far || reduced ? "auto" : "smooth", block: "center" });
+    });
+  }, []);
+
+  /**
+   * The review of whichever page is on the canvas.
+   *
+   * Memoised, and above the `!ws` bail so the hook order never changes. The copy
+   * rules are a real pass over every string on the page, and the builder
+   * re-renders on every keystroke in the inspector — recomputing per keystroke
+   * would put a regex sweep in the typing path. `ws` is rebuilt by each edit, so
+   * this still re-runs exactly when the page changes.
+   */
+  const review = useMemo(() => {
+    if (!ws) return { findings: [], errors: 0, warnings: 0, checked: 0 };
+    const page = activePageId ? ws.pages.find((p) => p.id === activePageId) : undefined;
+    return reviewPage({
+      blocks: page ? page.blocks : ws.customBlocks,
+      traits: ws.strategy.voiceTraits,
+      // Only the three the renderer has an empty state for — see
+      // `BrandDataPresence`.
+      brand: {
+        logoSlotsFilled: Object.values(ws.logo).filter((s) => s.phase === "attached").length,
+        colorCount: ws.colors.length,
+        iconAssetCount: ws.assets.filter((a) => a.type === "icon").length,
+      },
+    });
+  }, [ws, activePageId]);
+
+  /**
    * Keyboard control for the canvas.
    *
    * Every shortcut here bails the moment focus is inside a text field — a
@@ -583,14 +645,23 @@ export default function BuilderPage() {
         setSelectedId(null);
         return;
       }
-      if (e.key.toLowerCase() === "z" && (e.metaKey || e.ctrlKey) && !e.shiftKey && !typing()) {
+      if (typing()) return;
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "z" && !e.shiftKey) {
         e.preventDefault();
         undo();
+        return;
+      }
+      // Both spellings, because both are muscle memory: Shift+Z is the Mac and
+      // Adobe convention, Ctrl+Y the Windows one.
+      if (mod && ((e.key.toLowerCase() === "z" && e.shiftKey) || e.key.toLowerCase() === "y")) {
+        e.preventDefault();
+        redo();
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [undo, removeBlock, selectedId, ws, activePageId]);
+  }, [undo, redo, removeBlock, selectedId, ws, activePageId]);
 
   if (!ws) return null;
   const isAr = ws.lang === "ar";
@@ -643,7 +714,29 @@ export default function BuilderPage() {
   // change the client hasn't been shown yet.
   const hasUnpublished = !ws.publishedAt || ws.updatedAt > ws.publishedAt;
 
-  function handlePublish() {
+  /**
+   * Publishing asks once when the review found something broken.
+   *
+   * It asks rather than refuses. A studio sending a client a half-finished page
+   * to look at is a normal thing to do, and a builder that decides for them
+   * which pages are allowed out would be wrong about that regularly. What it can
+   * do is make sure nobody publishes an empty section without having been told
+   * it was empty.
+   */
+  async function handlePublish() {
+    if (review.errors > 0) {
+      const ok = await confirm({
+        title: isAr
+          ? `${review.errors} مشكلة في هذه الصفحة — أتريد النشر؟`
+          : `${review.errors} thing${review.errors === 1 ? "" : "s"} on this page look${review.errors === 1 ? "s" : ""} broken. Publish anyway?`,
+        body: isAr
+          ? "راجع القائمة بجوار زر النشر لرؤية ما هي — أقسام فارغة أو روابط لا تعمل يراها العميل كما هي."
+          : "The list beside the Publish button says what they are. Empty sections and dead links reach the client exactly as they are here.",
+        confirmLabel: isAr ? "انشر على أي حال" : "Publish anyway",
+        isAr,
+      });
+      if (!ok) return;
+    }
     publishGuideline(ws!.id);
     showToast(isAr ? "تم نشر الدليل للعملاء." : "Published — clients now see these changes.", "success");
   }
@@ -749,17 +842,38 @@ export default function BuilderPage() {
         arSection="محرر الدليل"
         right={
           <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => undo()}
-              disabled={!canUndo}
-              title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"}
-              aria-label={isAr ? "تراجع" : "Undo"}
-              className="h-9 w-9 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
-              style={{ background: "var(--surface-2)", color: "var(--text)" }}
-            >
-              <Icon name="undo" size={14} />
-            </button>
+            {/* Undo and redo as a pair. A lone undo button is the shape of an
+                editor that can walk you back but not forward again, which makes
+                trying something out cost more than it should. */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => undo()}
+                disabled={!canUndo}
+                title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"}
+                aria-label={isAr ? "تراجع" : "Undo"}
+                className="h-9 w-9 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                style={{ background: "var(--surface-2)", color: "var(--text)" }}
+              >
+                <Icon name="undo" size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => redo()}
+                disabled={!canRedo}
+                title={isAr ? "إعادة (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z)"}
+                aria-label={isAr ? "إعادة" : "Redo"}
+                className="h-9 w-9 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                style={{ background: "var(--surface-2)", color: "var(--text)" }}
+              >
+                {/* The undo glyph flipped, rather than a separate icon: these
+                    are rotational arrows, counter-clockwise against clockwise,
+                    which is why the pair reads the same in both directions and
+                    needs no RTL variant. */}
+                <Icon name="undo" size={14} style={{ transform: "scaleX(-1)" }} />
+              </button>
+            </div>
+            <ReviewChip report={review} isAr={isAr} onSelect={revealFlow} />
             <span className="text-[11.5px] whitespace-nowrap" style={{ color: hasUnpublished ? "var(--warning)" : "var(--text-faint)" }}>
               {!ws.publishedAt
                 ? isAr ? "غير منشور" : "Not published"
@@ -777,7 +891,7 @@ export default function BuilderPage() {
             </Link>
             <button
               type="button"
-              onClick={handlePublish}
+              onClick={() => void handlePublish()}
               disabled={!!ws.publishedAt && !hasUnpublished}
               // A blocked action that does not say what is blocking it sends
               // someone hunting through settings for a permission they already
@@ -912,7 +1026,10 @@ export default function BuilderPage() {
               pageSlug={activePage?.slug}
               lang={canvasLang}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              // Reveals as well as selects: picking a section out of the tree
+              // and then having to go find it on the canvas is the same gap the
+              // review panel had.
+              onSelect={revealFlow}
               isAr={isAr}
             />
           ) : tab === "elements" ? (

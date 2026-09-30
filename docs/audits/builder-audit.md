@@ -87,7 +87,7 @@ Measured against the build spec's §7, before this pass:
 | No `Op[]` write path | **Not started.** `lib/doc/core/ops.ts` exists and is tested; nothing calls it yet |
 | No block registry | **Not started** |
 | Layout primitives (Stack/Grid, Fit/Fill/Fixed) | **Not started.** The sizing model is specified and tested in `lib/doc/css/emit.ts` |
-| Missing-translation counter | **Not started.** `resolve.ts` reports `missing`; no UI reads it |
+| Missing-translation counter | **Shipped for the model that exists**, not for this one. `lib/pageReview.ts` reports bilingual gaps over `PageBlock` and the builder shows them beside Publish; `resolve.ts`'s own `missing` report is still read by nothing, and becomes the counter's source when `BlockNode` becomes the storage format |
 
 ---
 
@@ -116,6 +116,24 @@ user benefit — and applied it to the model that exists:
 
 The consequence worth stating: **people learn the cascade now, on the model that
 exists, and WS2 changes what is underneath rather than how it behaves.**
+
+---
+
+### Added 1 October 2026, from the Framer teardown
+
+Three gaps that were not on the list above, because the spec this audit was
+written against did not name them:
+
+| Gap | Status |
+| :--- | :--- |
+| Undo with no redo | **Closed.** `redo` / `canRedo` in `lib/store.tsx`, `Ctrl+Shift+Z` and `Ctrl+Y`, redo branch cleared by a fresh edit |
+| No feedback loop — the editor could say what a page *was*, not what was wrong with it | **Closed.** `lib/pageReview.ts` (pure, 29 tests) surfaced as a chip beside Publish; clicking a finding reveals its section |
+| Selecting a section from outside the canvas did not reveal it | **Closed.** `data-flow-id` on both editing shells, read by the review panel and the layers tree |
+
+The teardown agrees with §5 below on the shell question and adds nothing to it.
+Two of its recommendations are refused on purpose: a `<canvas>`/WebGL editor, and
+a free-CSS property model in place of `BlockStyle`'s semantic one — see the
+changelog entry for the reasoning, which is the bilingual argument in both cases.
 
 ---
 

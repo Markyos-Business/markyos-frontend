@@ -56,6 +56,30 @@ async function run() {
   await signIn(page);
   await openBuilder(page);
 
+  /* ------------------------------------------------- the review stays quiet ---
+     First, before this sweep touches anything. The half of a linter that rots is
+     the quiet half: one that reports findings on a page with nothing wrong with
+     it is wrong in the way that gets linters switched off, and nothing else here
+     would notice. It has to run before the palette drop further down adds a
+     section of its own — an earlier version of this check ran at the end and
+     blamed the rules for a block the sweep had added itself. */
+  const chip = page.locator('button[aria-label="Review this page"]');
+  if ((await chip.count()) === 0) {
+    fail("review", "no review chip in the builder's top bar");
+  } else {
+    const verdict = (await chip.first().innerText()).trim();
+    if (/to fix|to review|All clear/.test(verdict)) ok(`the review chip states a verdict ("${verdict}")`);
+    else fail("review", `the review chip says something unexpected: "${verdict}"`);
+
+    await chip.first().click();
+    await page.waitForTimeout(250);
+    const cleanRows = await page.locator("[data-review-row]").count();
+    if (cleanRows === 0) ok("the seeded workspace's home page reviews clean");
+    else fail("review", `${cleanRows} findings on a page that should be clean — the rules cry wolf`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+  }
+
   // ---------------------------------------------------------- layers tree ---
   const tree = page.locator('[role="tree"]');
   if ((await tree.count()) === 0) {
@@ -366,6 +390,175 @@ async function run() {
     if (visible) ok("hovering a section reveals its drag handle, before any click");
     else fail("canvas", "the section's drag handle stayed invisible on hover");
   }
+
+  /* ------------------------------------------------------- the page review ---
+     The editor's feedback loop. Two halves worth guarding separately: that it
+     stays quiet about a page with nothing wrong with it, and that it speaks up
+     about one with something wrong.
+
+     The quiet half is the one that rots. A linter that reports findings on the
+     seeded workspace would be wrong in the way that gets linters switched off,
+     and nothing else in this suite would notice. */
+  /* Blocks that are genuinely broken, seeded past the store.
+
+     Not built through the palette: `blockDefaults` gives every new block real
+     starting content on purpose, so there is no way to *create* an empty one
+     from the UI. That is the product being right, and this sweep needing
+     another door. The context is thrown away when the run ends, so the seed
+     never outlives it. */
+  const seeded = await page.evaluate(() => {
+    const raw = localStorage.getItem("markyos:v1");
+    if (!raw) return "no state";
+    const state = JSON.parse(raw);
+    const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+    if (!ws) return "no workspace";
+    const top = Math.max(0, ...ws.customBlocks.map((b) => b.order || 0));
+    ws.customBlocks.push(
+      { id: "sweep-empty", kind: "text", order: top + 1 },
+      { id: "sweep-link", kind: "button", order: top + 2, title: "Go", arTitle: "اذهب", linkUrl: "studio.com/x" },
+      { id: "sweep-argap", kind: "text", order: top + 3, title: "English only heading" }
+    );
+    // Seeding behind the store's back leaves updatedAt alone, and Publish is
+    // disabled while nothing has changed since the last publish.
+    ws.updatedAt = Date.now();
+    localStorage.setItem("markyos:v1", JSON.stringify(state));
+    return "ok";
+  });
+  if (seeded !== "ok") {
+    fail("review", `could not seed broken blocks: ${seeded}`);
+  } else {
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+    await page.waitForTimeout(600);
+
+    const dirty = (await chip.first().innerText()).trim();
+    if (/to fix/.test(dirty)) ok(`broken sections change the verdict ("${dirty}")`);
+    else fail("review", `three broken sections and the chip still says "${dirty}"`);
+
+    await chip.first().click();
+    await page.waitForTimeout(300);
+    const listed = await page.evaluate(() =>
+      [...document.querySelectorAll("[data-review-row]")].map((el) => ({
+        severity: el.getAttribute("data-review-row"),
+        text: el.innerText.replace(/\s+/g, " "),
+      }))
+    );
+    const hasEmpty = listed.some((r) => r.severity === "error" && /no heading and no text/i.test(r.text));
+    const hasLink = listed.some((r) => r.severity === "error" && /studio\.com\/x/.test(r.text) && /404/.test(r.text));
+    const hasGroup = listed.some((r) => r.severity === "warning" && /no Arabic yet/i.test(r.text));
+    if (hasEmpty && hasLink) ok("the empty section and the schemeless link are both reported as errors");
+    else fail("review", `expected both an empty-section and a dead-link error, got ${JSON.stringify(listed)}`);
+    if (hasGroup) ok("untranslated fields collapse into one counted row rather than one row each");
+    else fail("review", "the untranslated heading was not reported as a counted group");
+    if (listed.length > 1 && listed[0].severity === "error") ok("errors sort above warnings");
+    else fail("review", `findings are not sorted by severity: ${listed.map((r) => r.severity).join(",")}`);
+
+    /* Clicking a finding has to *reveal* the section, not just select it — the
+       section a finding is about is normally the one you cannot see, which is
+       part of why it has a finding. And it has to arrive promptly: a smooth
+       scroll takes as long as the distance demands, which measured 1.6s across
+       a 9,900px guideline and reads as the page having run away from you. */
+    await page.evaluate(() => {
+      const s = document.querySelector("[data-flow-id]")?.closest(".overflow-y-auto");
+      if (s) s.scrollTop = 0;
+      window.__t0 = performance.now();
+      window.__landed = null;
+      const tick = () => {
+        const el = document.querySelector(".live-flow[data-active]");
+        if (el) {
+          const r = el.getBoundingClientRect();
+          if (r.bottom > 0 && r.top < window.innerHeight && window.__landed === null) {
+            window.__landed = Math.round(performance.now() - window.__t0);
+            return;
+          }
+        }
+        if (performance.now() - window.__t0 < 3000) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await page.locator('[data-review-row="error"]').first().click();
+    await page.waitForTimeout(1200);
+    const landed = await page.evaluate(() => window.__landed);
+    if (landed === null) fail("review", "clicking a finding never brought its section on screen");
+    else if (landed >= 400) fail("review", `a finding's section took ${landed}ms to arrive — a jump should be immediate`);
+    else ok(`clicking a finding brings its section on screen in ${landed}ms`);
+
+    /* Publishing a page with errors asks rather than refusing. Refusing would be
+       wrong — sending a client a half-finished page to look at is normal — but
+       nobody should publish an empty section without having been told. */
+    // The count the chip is showing, rather than a number written in here: other
+    // checks in this sweep add sections of their own, and a hardcoded 2 made this
+    // check a record of how many steps happened to run before it.
+    const chipCount = Number(((await chip.first().innerText()).match(/(\d+) to fix/) || [])[1]);
+    await page.locator('button:has-text("Publish")').first().click();
+    await page.waitForTimeout(500);
+    const dialog = page.locator('[role="dialog"]');
+    if ((await dialog.count()) === 0) {
+      fail("review", "publishing a page with errors did not ask first");
+    } else {
+      const text = (await dialog.first().innerText()).replace(/\s+/g, " ");
+      const counted = new RegExp(`${chipCount} thing(s)? on this page look(s)? broken`).test(text);
+      const offersAnyway = (await dialog.locator('button:has-text("Publish anyway")').count()) > 0;
+      if (counted && offersAnyway) ok(`publishing asks first and agrees with the chip's count (${chipCount})`);
+      else fail("review", `the publish warning is wrong: counted=${counted} offersAnyway=${offersAnyway} — "${text.slice(0, 120)}"`);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(250);
+    }
+  }
+
+  /* --------------------------------------------------------- undo and redo ---
+     Undo without redo is a trap rather than a safety net: it makes trying
+     something out cost an edit you cannot get back if you change your mind
+     twice. */
+  await page.keyboard.press("Escape");
+  const countSections = () => page.locator("[data-canvas-frame] .live-flow").count();
+  await page.locator('button[role="tab"]:has-text("Insert")').click();
+  await page.waitForTimeout(250);
+  const quoteCard = page.locator('button.mk-card[draggable="true"]').filter({ hasText: "Quote" }).first();
+  await quoteCard.scrollIntoViewIfNeeded();
+  await quoteCard.click();
+  await page.waitForTimeout(600);
+  const added = await countSections();
+
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Control+z");
+  await page.waitForTimeout(500);
+  const afterUndo = await countSections();
+  if (afterUndo === added - 1) ok("Ctrl+Z removes the section just added");
+  else fail("history", `undo left ${afterUndo} sections, expected ${added - 1}`);
+
+  await page.keyboard.press("Control+Shift+z");
+  await page.waitForTimeout(500);
+  const afterRedo = await countSections();
+  if (afterRedo === added) ok("Ctrl+Shift+Z puts it back");
+  else fail("history", `redo left ${afterRedo} sections, expected ${added}`);
+
+  await page.keyboard.press("Control+z");
+  await page.waitForTimeout(400);
+  await page.keyboard.press("Control+y");
+  await page.waitForTimeout(400);
+  if ((await countSections()) === added) ok("Ctrl+Y redoes as well, for the Windows hand");
+  else fail("history", "Ctrl+Y did not redo");
+
+  await page.keyboard.press("Control+y");
+  await page.waitForTimeout(350);
+  if ((await countSections()) === added) ok("a redo with nothing left to redo does nothing");
+  else fail("history", "redoing past the end of the history changed the page");
+
+  /* A fresh edit has to drop the redo branch, or redo would restore a state the
+     page never came from. */
+  await page.keyboard.press("Control+z");
+  await page.waitForTimeout(400);
+  await page.locator('button[role="tab"]:has-text("Insert")').click();
+  await page.waitForTimeout(200);
+  const dividerCard = page.locator('button.mk-card[draggable="true"]').filter({ hasText: "Divider" }).first();
+  await dividerCard.scrollIntoViewIfNeeded();
+  await dividerCard.click();
+  await page.waitForTimeout(500);
+  const redoBtn = page.locator('button[aria-label="Redo"]').first();
+  if ((await redoBtn.count()) === 0) fail("history", "no redo button in the builder's top bar");
+  else if (await redoBtn.isDisabled()) ok("a fresh edit drops the redo branch");
+  else fail("history", "redo stayed available after a new edit — it would restore a state this page never came from");
 
   if (consoleErrors.length) {
     for (const e of consoleErrors.slice(0, 5)) fail("console", e.slice(0, 200));

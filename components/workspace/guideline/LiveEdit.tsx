@@ -390,6 +390,17 @@ export function FlowShell({
   return (
     <div
       className="live-flow"
+      /*
+       * The section's own id, on the element.
+       *
+       * Anything that names a section from outside the canvas — the review
+       * panel, the layers tree — needs to be able to find it in the DOM, and
+       * the section it names is usually the one you can't currently see.
+       * Selecting without revealing is the failure this exists to prevent.
+       * (Framer does the same with `data-node-id`, for the same reason: one
+       * stable id per rendered element, addressable from the host.)
+       */
+      data-flow-id={flowId}
       data-active={active || undefined}
       data-dragging={isDragging || undefined}
       data-drop={isOver && !isDragging ? "" : undefined}
@@ -714,6 +725,9 @@ export function BlockShell({
   return (
     <div
       className="live-block"
+      /* The same hook as FlowShell's — a nested block is addressed by the same
+         flow id everywhere else, so it must be findable by it too. */
+      data-flow-id={flowId}
       data-active={active || undefined}
       data-dragging={isDragging || undefined}
       data-drop={isOver && !isDragging ? "" : undefined}
