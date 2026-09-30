@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/markyos-design-system-93001f6d-a0e3-4d26-87f2-01be59cb8668/tokens/fonts.css">
+<link rel="stylesheet" href="assets/icons.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+<script src="_ds/markyos-design-system-93001f6d-a0e3-4d26-87f2-01be59cb8668/_ds_bundle.js"></script>
+<style>
+@font-face{font-family:"Bricolage Display";src:url("_ds/markyos-design-system-93001f6d-a0e3-4d26-87f2-01be59cb8668/assets/fonts/BricolageGrotesque-SemiBold.ttf") format("truetype");font-weight:600;font-display:swap}
+@font-face{font-family:"Bricolage Display";src:url("_ds/markyos-design-system-93001f6d-a0e3-4d26-87f2-01be59cb8668/assets/fonts/BricolageGrotesque-Medium.ttf") format("truetype");font-weight:500;font-display:swap}
+body{margin:0;background:#f0eee9;font-family:Inter,system-ui,sans-serif}
+a{color:#0099ff;text-decoration:none}a:hover{color:#5cbaff}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 Inter,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Inter,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#090909;border:1px solid rgba(0,0,0,.14);border-radius:10px;overflow:hidden}
+.dv-opt:target .dv-oid{background:#0099ff;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 Inter,sans-serif;color:rgba(0,0,0,.5)}
+</style></helmet>
+
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Ownership transfer — screens 17–21</span></div>
+
+<div style="max-width:900px;margin:0 0 28px;padding:20px 24px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;font:13px/1.65 Inter,sans-serif;color:#2a2a2a">
+<div style="font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:10px">Calls I made</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 28px">
+<div>· <strong>Transfer lives in Settings as its own tab</strong> (<a class="dv-oid" href="#17a">17a</a>), not buried in the workspace menu — it's account-level and irreversible.</div>
+<div>· <strong>Binary handoff is stated in the copy</strong>, not implied: "You will lose access" appears twice before the button enables. No demote-to-Editor language until RBAC exists.</div>
+<div>· <strong>19a is built like the client viewer</strong>, not like an internal dialog — full-bleed, brand-forward, since it's a stranger's first frame of Markyos.</div>
+<div>· <strong>The paywall reframes, it doesn't re-price</strong> (<a class="dv-oid" href="#20a">20a</a>): same $19 pass card as <a class="dv-oid" href="#13a">13a</a>, plus a monthly option since a client keeps editing.</div>
+<div>· <strong>Pending state is visible on both sides</strong> — the sender's gallery card and the recipient's inbox both show "Transfer pending" rather than going silent.</div>
+<div>· <strong>Decline is a real choice</strong>, equally weighted, no dark pattern — a wrong-recipient transfer must be easy to refuse.</div>
+</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="19a"><div class="dv-olabel"><a class="dv-oid" href="#19a">19a</a>19 · Accept transfer — the recipient's first frame of Markyos</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 44px"><img src="assets/markyos-wordmark.svg" alt="Markyos" style="height:12px;filter:invert(1);opacity:.8"><span style="font:400 12px/1 Inter,sans-serif;color:#8a8a94">Signed in as ops@almaraifoods.com</span></div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1.05fr 1fr;gap:44px;padding:0 44px 44px">
+<div style="display:flex;flex-direction:column;justify-content:center;gap:26px">
+<div style="display:flex;align-items:center;gap:12px"><span style="width:38px;height:38px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif;color:#8a8a94">ND</span><span style="font:400 13px/1.4 Inter,sans-serif;color:#8a8a94">Nadeen Darwish · nadeen@studio.com</span></div>
+<h1 style="margin:0;font:600 42px/1.12 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">Nadeen Studio wants to hand you the Almarai Foods brand book</h1>
+<p style="margin:0;font:400 16px/1.7 Inter,sans-serif;color:#c9c9d1;max-width:52ch">Accepting makes you the owner: you can edit every section, share it with your own clients, and map it to your domain. Nadeen Studio loses access the moment it completes.</p>
+<div style="padding:16px 20px;background:#141414;border-left:2px solid #0099ff;border-radius:0 12px 12px 0"><p style="margin:0;font:400 14px/1.7 Inter,sans-serif;color:#c9c9d1">"Everything's in here — the Arabic lockup, the new palette and the type pairing. Shout if the packaging colours need another pass."</p></div>
+<div style="display:flex;gap:12px">
+<div style="height:48px;padding:0 26px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">Accept and continue</div>
+<div style="height:48px;padding:0 26px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)">Decline</div>
+</div>
+<span style="font:400 12px/1.6 Inter,sans-serif;color:#8a8a94">A plan is needed to keep editing — you'll pick one on the next step. Nothing is charged until then. Invite expires 15 Sep.</span>
+</div>
+<div style="display:flex;flex-direction:column;justify-content:center;gap:16px">
+<div style="background:#141414;border-radius:18px;overflow:hidden">
+<div style="height:200px;background:#1c1c1c;display:grid;place-items:center;font:600 44px/1 'Bricolage Display',Inter,sans-serif;color:#3d3d44">AF</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+<div><div style="font:600 17px/1.3 Inter,sans-serif">Almarai Foods</div><div style="font:400 13px/1.4 Inter,sans-serif;color:#8a8a94">4 sections · Arabic and English · updated 2d ago</div></div>
+<div style="display:flex;gap:8px"><span style="flex:1;height:34px;border-radius:8px;background:#090909;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"></span><span style="flex:1;height:34px;border-radius:8px;background:#0099ff"></span><span style="flex:1;height:34px;border-radius:8px;background:#fff"></span><span style="flex:1;height:34px;border-radius:8px;background:#8a8a94"></span></div>
+<div style="display:flex;flex-direction:column;gap:9px;font:400 13px/1 Inter,sans-serif;color:#c9c9d1">
+<div style="display:flex;align-items:center;gap:9px"><i class="las la-check-circle" style="font-size:16px;color:#7ce7ac"></i>Logo system · 3 files</div>
+<div style="display:flex;align-items:center;gap:9px"><i class="las la-check-circle" style="font-size:16px;color:#7ce7ac"></i>Color · 6 swatches</div>
+<div style="display:flex;align-items:center;gap:9px"><i class="las la-check-circle" style="font-size:16px;color:#7ce7ac"></i>Typography · 2 families</div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#141414;border-radius:12px;font:400 12px/1.5 Inter,sans-serif;color:#8a8a94"><i class="las la-lock" style="font-size:16px;color:#0099ff"></i>Declining tells Nadeen Studio and changes nothing on their side.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="17a"><div class="dv-olabel"><a class="dv-oid" href="#17a">17a</a>17 · Transfer ownership — initiate, from Settings</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif;color:#8a8a94"><i class="las la-arrow-left" style="font-size:17px"></i>Your brands</div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+<div style="flex:1;min-height:0;padding:34px 40px;display:flex;flex-direction:column;gap:24px;overflow:hidden">
+<h1 style="margin:0;font:600 32px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Settings</h1>
+<div style="display:flex;gap:26px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.08);font:500 14px/1 Inter,sans-serif">
+<span style="padding:0 2px 14px;color:#8a8a94">Profile</span><span style="padding:0 2px 14px;color:#8a8a94">Billing</span><span style="padding:0 2px 14px;color:#8a8a94">Sharing defaults</span><span style="padding:0 2px 14px;color:#fff;box-shadow:inset 0 -2px 0 #0099ff">Ownership</span>
+</div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:start">
+<div style="background:#141414;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px">
+<div><div style="font:600 15px/1.3 Inter,sans-serif;margin-bottom:5px">Transfer a workspace</div><div style="font:400 13px/1.6 Inter,sans-serif;color:#8a8a94">The recipient becomes the owner and needs their own plan. You lose access — there is no viewer role yet.</div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Workspace</span>
+<div style="height:48px;padding:0 16px;background:#1c1c1c;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);display:flex;align-items:center;gap:12px"><span style="width:26px;height:26px;border-radius:6px;background:#252525;display:grid;place-items:center;font:600 10px/1 Inter,sans-serif;color:#8a8a94">AF</span><span style="flex:1;font:500 14px/1 Inter,sans-serif">Almarai Foods</span><i class="las la-angle-down" style="font-size:15px;color:#8a8a94"></i></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Recipient email</span><input type="email" value="ops@almaraifoods.com" style="height:48px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px #0099ff, 0 0 0 3px rgba(0,153,255,.16);color:#fff;font:400 14px/1 Inter,sans-serif;outline:none"><span style="font:400 12px/1.5 Inter,sans-serif;color:#8a8a94">No Markyos account yet — they'll sign up first, then land on the accept screen.</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Note (optional)</span><div style="min-height:84px;padding:14px 16px;background:#1c1c1c;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);font:400 14px/1.6 Inter,sans-serif;color:#c9c9d1">Everything's in here — the Arabic lockup, the new palette and the type pairing.</div></div>
+<div style="display:flex;gap:12px;padding-top:2px"><div style="height:44px;padding:0 22px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Continue</div><div style="height:44px;padding:0 22px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Cancel</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px rgba(244,190,94,.3)">
+<div style="display:flex;align-items:center;gap:9px"><i class="las la-info-circle" style="font-size:17px;color:#f4be5e"></i><span style="font:600 14px/1 Inter,sans-serif">What you give up</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;font:400 13px/1.5 Inter,sans-serif;color:#c9c9d1">
+<span>· Editing, sharing and the client link</span><span>· The custom domain mapping moves with it</span><span>· Your Project Pass for this brand does not refund</span>
+</div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<span style="font:600 14px/1 Inter,sans-serif">Pending transfers</span>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#1c1c1c;border-radius:10px"><span style="width:28px;height:28px;border-radius:7px;background:#252525;display:grid;place-items:center;font:600 10px/1 Inter,sans-serif;color:#8a8a94">WR</span><div style="flex:1"><div style="font:500 13px/1.3 Inter,sans-serif">Wadi Rum Coffee</div><div style="font:400 11px/1.3 Inter,sans-serif;color:#8a8a94">Sent 1d ago · hello@wadirum.co</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(244,190,94,.14);color:#f4be5e">Pending</span></div>
+<span style="font:500 13px/1 Inter,sans-serif;color:#0099ff">Cancel that transfer</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="18a"><div class="dv-olabel"><a class="dv-oid" href="#18a">18a</a>18 · Type-to-confirm — before and after the name matches</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;position:relative;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="position:absolute;inset:0;background:rgba(9,9,9,.8)"></div>
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:36px;padding:0 44px">
+<div style="width:480px;background:#141414;border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><h2 style="margin:0;font:600 21px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Transfer Almarai Foods?</h2><i class="las la-times" style="font-size:19px;color:#8a8a94"></i></div>
+<p style="margin:0;font:400 14px/1.65 Inter,sans-serif;color:#c9c9d1">Ownership moves to <span style="color:#fff;font-weight:500">ops@almaraifoods.com</span>. You lose access to this workspace, its client link and its domain as soon as they accept. This cannot be undone.</p>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Type <span style="font-family:ui-monospace,Menlo,monospace;color:#fff">Almarai Foods</span> to confirm</span><input type="text" placeholder="Workspace name" style="height:48px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 ui-monospace,Menlo,monospace;outline:none"></div>
+<div style="display:flex;gap:10px"><div style="flex:1;height:46px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Cancel</div><div style="flex:1;height:46px;border-radius:999px;background:#252525;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;color:#5a5a62">Transfer</div></div>
+<span style="align-self:center;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">Disabled until it matches</span>
+</div>
+<div style="width:480px;background:#141414;border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><h2 style="margin:0;font:600 21px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Transfer Almarai Foods?</h2><i class="las la-times" style="font-size:19px;color:#8a8a94"></i></div>
+<p style="margin:0;font:400 14px/1.65 Inter,sans-serif;color:#c9c9d1">Ownership moves to <span style="color:#fff;font-weight:500">ops@almaraifoods.com</span>. You lose access to this workspace, its client link and its domain as soon as they accept. This cannot be undone.</p>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Type <span style="font-family:ui-monospace,Menlo,monospace;color:#fff">Almarai Foods</span> to confirm</span>
+<div style="height:48px;padding:0 16px;background:#1c1c1c;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(124,231,172,.5);display:flex;align-items:center;gap:10px"><span style="flex:1;font:400 14px/1 ui-monospace,Menlo,monospace">Almarai Foods</span><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i></div></div>
+<div style="display:flex;gap:10px"><div style="flex:1;height:46px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Cancel</div><div style="flex:1;height:46px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Transfer</div></div>
+<span style="align-self:center;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7ce7ac">Armed</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="20a"><div class="dv-olabel"><a class="dv-oid" href="#20a">20a</a>20 · Claim &amp; subscribe — the transfer pauses here</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 44px"><img src="assets/markyos-wordmark.svg" alt="Markyos" style="height:12px;filter:invert(1);opacity:.8"><span style="font:400 12px/1 Inter,sans-serif;color:#8a8a94">Step 2 of 2 · claiming Almarai Foods</span></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:0 44px 44px">
+<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;background:#141414;border-radius:999px"><i class="las la-lock" style="font-size:16px;color:#f4be5e"></i><span style="font:400 13px/1 Inter,sans-serif;color:#c9c9d1">Accepted — the workspace is held for you until billing is set up</span></div>
+<div style="text-align:center"><h1 style="margin:0 0 8px;font:600 34px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.028em">Choose a plan to claim this workspace</h1><p style="margin:0;font:400 15px/1.6 Inter,sans-serif;color:#8a8a94">Same brand, same files. Pick how you'll keep using it.</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;width:800px">
+<div style="background:#141414;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font:600 15px/1 Inter,sans-serif">Project Pass</span><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.07);color:#8a8a94">One time</span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 40px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">$19</span><span style="font:400 13px/1 Inter,sans-serif;color:#8a8a94">once, this brand only</span></div>
+<div style="display:flex;flex-direction:column;gap:9px;font:400 13px/1.5 Inter,sans-serif;color:#c9c9d1">
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>Edit and publish this workspace</span>
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>Client link, password and domain</span>
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>No renewal, no expiry</span>
+</div>
+<div style="margin-top:auto;height:46px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)">Claim with a pass</div>
+</div>
+<div style="background:#141414;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:16px;box-shadow:inset 0 0 0 1px rgba(0,153,255,.5)">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font:600 15px/1 Inter,sans-serif">Studio</span><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(0,153,255,.14);color:#0099ff">For ongoing work</span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 40px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">$12</span><span style="font:400 13px/1 Inter,sans-serif;color:#8a8a94">per month, all brands</span></div>
+<div style="display:flex;flex-direction:column;gap:9px;font:400 13px/1.5 Inter,sans-serif;color:#c9c9d1">
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>Everything in Project Pass</span>
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>Unlimited workspaces of your own</span>
+<span style="display:flex;gap:9px"><i class="las la-check" style="font-size:16px;color:#7ce7ac"></i>Cancel anytime — published links stay live</span>
+</div>
+<div style="margin-top:auto;height:46px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Claim with Studio</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:20px;font:400 12px/1 Inter,sans-serif;color:#8a8a94"><span style="display:flex;align-items:center;gap:7px"><i class="las la-lock" style="font-size:15px"></i>Stripe handles payment</span><span>Held until 15 Sep, then it returns to Nadeen Studio</span><a href="#19a">Back to the invite</a></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="21a"><div class="dv-olabel"><a class="dv-oid" href="#21a">21a</a>21 · Transfer complete — both sides</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:700px;display:flex;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 64px;text-align:center;box-shadow:inset -1px 0 0 rgba(255,255,255,.07)">
+<span style="width:60px;height:60px;border-radius:999px;background:rgba(124,231,172,.13);display:grid;place-items:center"><i class="las la-check" style="font-size:28px;color:#7ce7ac"></i></span>
+<div><h2 style="margin:0 0 9px;font:600 27px/1.2 'Bricolage Display',Inter,sans-serif;letter-spacing:-.022em">Almarai Foods is yours</h2><p style="margin:0;font:400 14px/1.7 Inter,sans-serif;color:#8a8a94">Nadeen Studio's access was revoked. Everything else — files, palette, client link — carried over untouched.</p></div>
+<div style="width:100%;background:#141414;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px;text-align:left"><span style="width:34px;height:34px;border-radius:8px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">AF</span><div style="flex:1"><div style="font:600 14px/1.3 Inter,sans-serif">Almarai Foods</div><div style="font:400 12px/1.3 Inter,sans-serif;color:#8a8a94">Owner · Studio plan · 4 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Active</span></div>
+<div style="width:100%;display:flex;flex-direction:column;gap:10px"><div style="height:46px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Open the brand book</div><div style="height:46px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Go to your brands</div></div>
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">New owner</span>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:0 56px">
+<div style="display:flex;align-items:center;gap:11px;padding:13px 16px;background:#141414;border-radius:12px"><i class="las la-share-square" style="font-size:17px;color:#0099ff"></i><span style="font:400 13px/1.4 Inter,sans-serif;color:#c9c9d1">Almarai Foods was transferred to ops@almaraifoods.com</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px"><div style="height:96px;border-radius:10px;background:#1c1c1c;display:grid;place-items:center"><img src="assets/markyos-mark.svg" alt="" style="height:32px;filter:invert(1)"></div><div><div style="font:600 14px/1.3 Inter,sans-serif">Nadeen Studio</div><div style="font:400 11px/1.3 Inter,sans-serif;color:#8a8a94">Edited 10m ago</div></div></div>
+<div style="border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"><div style="height:96px;border-radius:10px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);font:600 24px/1 'Bricolage Display',Inter,sans-serif;color:#3d3d44">AF</div><div><div style="font:600 14px/1.3 Inter,sans-serif;color:#8a8a94">Almarai Foods</div><div style="font:400 11px/1.3 Inter,sans-serif;color:#8a8a94">Transferred 8 Sep</div></div></div>
+</div>
+<p style="margin:0;font:400 13px/1.6 Inter,sans-serif;color:#8a8a94">The card stays visible for 30 days as a record, then drops off. Your receipts and the $19 pass stay in Billing.</p>
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">Original owner's gallery</span>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "show the recipient's signup-first path into <a class="dv-oid" href="#19a">19a</a>" · "add the email that starts the flow" · "what the sender sees while it's pending"</p>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Brand asset upload — three slots, nine states (screen 1 revised)</span></div>
+
+<div style="max-width:900px;margin:0 0 28px;padding:20px 24px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;font:13px/1.65 Inter,sans-serif;color:#2a2a2a">
+<div style="font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:10px">How the flow shaped the screen</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 28px">
+<div>· <strong>Three slots replace the single dropzone</strong> — Arabic lockup, Latin lockup, shared mark. <a class="dv-oid" href="#1b">1b</a> is the section rebuilt around them; <a class="dv-oid" href="#1a">1a</a> stays as the single-logo version.</div>
+<div>· <strong>Every state lives on the slot card</strong> (progress, PNG warning, failure + retry) — <a class="dv-oid" href="#1c">1c</a> is the state set. No toasts, no modal: with three slots you must see <em>which</em> one failed.</div>
+<div>· <strong>PNG warns, never blocks</strong> — amber inline note naming what it costs (no clearspace math, no converter later). Wrong file type is the only hard reject.</div>
+<div>· <strong>Step 4 preview is its own moment</strong> (<a class="dv-oid" href="#1d">1d</a>): true size on light and dark before anything is saved, since dark-canvas failure is the common mistake.</div>
+<div>· <strong>Clearspace is per slot</strong> — each lockup has its own bounding box, so the 0.5× guide and min-size differ between Arabic and Latin.</div>
+<div>· <strong>No font upload anywhere</strong> — the Typography section stays a picker. Flag it if custom fonts are actually expected.</div>
+</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>1 · Logo system with three variant slots — two filled, one empty</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8a8a94;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-file-alt" style="font-size:18px"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;color:#fff;font-weight:500"><i class="las la-shapes" style="font-size:18px;color:#0099ff"></i>Logo system<span style="margin-left:auto;font:500 10px/1 ui-monospace,Menlo,monospace;color:#8a8a94">2/3</span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-palette" style="font-size:18px"></i>Color</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-font" style="font-size:18px"></i>Typography</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Logo system</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div style="display:flex;padding:3px;background:#141414;border-radius:999px"><div style="padding:6px 16px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">EN</div><div style="padding:6px 16px;border-radius:999px;color:#8a8a94;font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+</div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Logo system</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">Three slots. Arabic and Latin are separate lockups — the mark is shared.</p></div>
+<div style="height:36px;padding:0 18px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Download assets</div>
+</div>
+<div style="flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font:600 13px/1 Inter,sans-serif">Arabic lockup</span><span style="font:500 10px/1 ui-monospace,Menlo,monospace;padding:5px 7px;border-radius:5px;background:rgba(255,255,255,.07);color:#8a8a94">ar-SA</span><i class="las la-ellipsis-h" style="margin-left:auto;font-size:16px;color:#8a8a94"></i></div>
+<div style="height:150px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center;position:relative"><span dir="rtl" style="font:600 40px/1.2 'IBM Plex Sans Arabic',Inter,sans-serif">ندين</span><div style="position:absolute;inset:26px;border:1px dashed rgba(0,153,255,.55);border-radius:3px"></div></div>
+<div style="display:flex;flex-direction:column;gap:5px;font:400 11px/1.5 ui-monospace,Menlo,monospace;color:#8a8a94"><span>nadeen-ar.svg · 9 KB</span><span style="color:#0099ff">clearspace 0.5× = 34 px · min 22 px</span></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span><span style="font:500 10px/1 ui-monospace,Menlo,monospace;padding:5px 7px;border-radius:5px;background:rgba(255,255,255,.07);color:#8a8a94">en-US</span><i class="las la-ellipsis-h" style="margin-left:auto;font-size:16px;color:#8a8a94"></i></div>
+<div style="height:150px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center;position:relative"><img src="assets/markyos-lockup.svg" alt="" style="width:180px;filter:invert(1)"><div style="position:absolute;inset:26px;border:1px dashed rgba(0,153,255,.55);border-radius:3px"></div></div>
+<div style="display:flex;flex-direction:column;gap:5px;font:400 11px/1.5 ui-monospace,Menlo,monospace;color:#8a8a94"><span>nadeen-latin.svg · 14 KB</span><span style="color:#0099ff">clearspace 0.5× = 43 px · min 24 px</span></div>
+</div>
+<div style="border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font:600 13px/1 Inter,sans-serif">Symbol / mark</span><span style="font:500 10px/1 ui-monospace,Menlo,monospace;padding:5px 7px;border-radius:5px;background:rgba(255,255,255,.07);color:#8a8a94">shared</span></div>
+<div style="flex:1;min-height:150px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"><i class="las la-plus" style="font-size:22px;color:#8a8a94"></i><span style="font:500 13px/1 Inter,sans-serif;color:#c9c9d1">Drop SVG or PNG</span><span style="font:400 11px/1 Inter,sans-serif;color:#8a8a94">or click to browse · 10 MB max</span></div>
+<span style="font:400 11px/1.5 Inter,sans-serif;color:#8a8a94">Used in the rail, favicon and small sizes.</span>
+</div>
+</div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+<div style="background:#141414;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 13px/1 Inter,sans-serif">Both lockups, side by side</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94">true size · 1:1</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="border-radius:11px;background:#1c1c1c;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:170px;filter:invert(1)"></div>
+<div style="border-radius:11px;background:#f5f5f5;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:170px"></div>
+</div>
+<span style="font:400 12px/1.5 Inter,sans-serif;color:#8a8a94">Dark first: it is the canvas the client viewer uses by default.</span>
+</div>
+<div style="background:#141414;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<span style="font:600 13px/1 Inter,sans-serif">Slot checklist</span>
+<div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif"><i class="las la-check-circle" style="font-size:17px;color:#7ce7ac"></i>Arabic lockup · SVG</div>
+<div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif"><i class="las la-check-circle" style="font-size:17px;color:#7ce7ac"></i>Latin lockup · SVG</div>
+<div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif;color:#8a8a94"><i class="las la-info-circle" style="font-size:17px;color:#f4be5e"></i>Symbol missing</div>
+<span style="margin-top:auto;font:400 12px/1.6 Inter,sans-serif;color:#8a8a94">The section publishes without the symbol, but the client viewer falls back to the Latin lockup in the header.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>1 · Slot states — steps 1, 2, 5, 7, 8, 9 on one card</div>
+<div class="dv-card" style="width:1280px">
+<div style="padding:32px 32px 34px;display:flex;flex-direction:column;gap:22px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div><h2 style="margin:0 0 5px;font:600 24px/1.2 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">One slot, every state</h2><p style="margin:0;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">All feedback stays inside the slot card — the only way three parallel uploads stay legible.</p></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">1 · Empty</span>
+<div style="border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"><i class="las la-plus" style="font-size:20px;color:#8a8a94"></i><span style="font:500 12px/1 Inter,sans-serif;color:#c9c9d1">Drop SVG or PNG</span></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#0099ff">1 · Drag over</span>
+<div style="border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,153,255,.6);background:rgba(0,153,255,.06);padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:inset 0 0 0 1px rgba(0,153,255,.45)"><i class="las la-file-code" style="font-size:20px;color:#0099ff"></i><span style="font:500 12px/1 Inter,sans-serif;color:#fff">Release to upload</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94">nadeen-latin.svg</span></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ff808b">2 · Rejected type</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1px rgba(255,128,139,.5)">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 16px;text-align:center"><i class="las la-exclamation-circle" style="font-size:20px;color:#ff808b"></i><span style="font:500 12px/1.4 Inter,sans-serif;color:#fff">.ai isn't supported</span><span style="font:400 11px/1.4 Inter,sans-serif;color:#8a8a94">Export as SVG and try again</span></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#f4be5e">2 · PNG accepted, warned</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:140px;filter:invert(1)"></div>
+<div style="display:flex;gap:9px;padding:10px 12px;border-radius:9px;background:rgba(244,190,94,.1)"><i class="las la-info-circle" style="font-size:16px;color:#f4be5e"></i><span style="font:400 11px/1.5 Inter,sans-serif;color:#c9c9d1">PNG works, but clearspace is measured from pixels — upload SVG for exact guides.</span></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">5 · Uploading</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:140px;filter:invert(1);opacity:.35"></div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="height:4px;border-radius:999px;background:#1c1c1c;overflow:hidden"><div style="width:64%;height:100%;background:#0099ff"></div></div>
+<div style="display:flex;justify-content:space-between;font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94"><span>Uploading to R2</span><span>64%</span></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7ce7ac">7 · Attached</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:8px"><span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span><i class="las la-check-circle" style="font-size:15px;color:#7ce7ac"></i><i class="las la-ellipsis-h" style="margin-left:auto;font-size:16px;color:#8a8a94"></i></div>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:grid;place-items:center;position:relative"><img src="assets/markyos-lockup.svg" alt="" style="width:140px;filter:invert(1)"><div style="position:absolute;inset:20px;border:1px dashed rgba(0,153,255,.5);border-radius:3px"></div></div>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94">14 KB · 0.5× = 43 px</span>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">8 · Hover a filled slot</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Latin lockup</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;position:relative;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:140px;filter:invert(1);opacity:.25"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(9,9,9,.55);border-radius:10px"><span style="height:34px;padding:0 15px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif">Replace</span><span style="height:34px;padding:0 15px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)">Remove</span></div></div>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94">14 KB · 0.5× = 43 px</span>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ff808b">9 · Upload failed</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1px rgba(255,128,139,.5)">
+<span style="font:600 13px/1 Inter,sans-serif">Symbol / mark</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-align:center"><i class="las la-undo" style="font-size:19px;color:#ff808b"></i><span style="font:500 12px/1.4 Inter,sans-serif">Upload stopped at 41%</span><span style="height:32px;padding:0 15px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif">Retry</span></div>
+<span style="font:400 11px/1.5 Inter,sans-serif;color:#8a8a94">Other two slots kept their files.</span>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">6 · Guide recomputed</span>
+<div style="background:#141414;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Arabic lockup</span>
+<div style="height:118px;border-radius:10px;background:#1c1c1c;display:grid;place-items:center;position:relative"><span dir="rtl" style="font:600 32px/1.2 'IBM Plex Sans Arabic',Inter,sans-serif">ندين</span><div style="position:absolute;inset:24px;border:1px dashed rgba(0,153,255,.55);border-radius:3px"></div><span style="position:absolute;left:8px;top:8px;font:500 10px/1 ui-monospace,Menlo,monospace;color:#0099ff">0.5×</span></div>
+<span style="font:400 11px/1.5 Inter,sans-serif;color:#8a8a94">Measured client-side from the Arabic bounding box — not copied from Latin.</span>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>1 · Step 4 — instant preview before saving</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:620px;padding:34px 36px;display:flex;flex-direction:column;gap:22px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h2 style="margin:0 0 5px;font:600 24px/1.2 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Check it before it lands</h2><p style="margin:0;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">nadeen-latin.svg · 1080 × 286 · shown at true size on both grounds</p></div>
+<div style="display:flex;gap:10px"><div style="height:40px;padding:0 20px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Choose another file</div><div style="height:40px;padding:0 22px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Attach to slot</div></div>
+</div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr 300px;gap:16px">
+<div style="background:#141414;border-radius:16px;position:relative;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:260px;filter:invert(1)"><span style="position:absolute;left:16px;top:14px;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8a8a94">On canvas #090909</span></div>
+<div style="background:#f5f5f5;border-radius:16px;position:relative;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:260px"><span style="position:absolute;left:16px;top:14px;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6c6c76">On light #F5F5F5</span></div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="background:#141414;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:11px">
+<span style="font:600 13px/1 Inter,sans-serif">Read from the file</span>
+<div style="display:flex;justify-content:space-between;font:400 12px/1 Inter,sans-serif"><span style="color:#8a8a94">Format</span><span style="font-family:ui-monospace,Menlo,monospace">SVG · vector</span></div>
+<div style="display:flex;justify-content:space-between;font:400 12px/1 Inter,sans-serif"><span style="color:#8a8a94">Bounding box</span><span style="font-family:ui-monospace,Menlo,monospace">1080 × 286</span></div>
+<div style="display:flex;justify-content:space-between;font:400 12px/1 Inter,sans-serif"><span style="color:#8a8a94">Clearspace 0.5×</span><span style="font-family:ui-monospace,Menlo,monospace;color:#0099ff">143 px</span></div>
+<div style="display:flex;justify-content:space-between;font:400 12px/1 Inter,sans-serif"><span style="color:#8a8a94">Min digital size</span><span style="font-family:ui-monospace,Menlo,monospace">24 px</span></div>
+</div>
+<div style="background:#141414;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Small sizes</span>
+<div style="display:flex;align-items:flex-end;gap:16px;padding:12px 0"><img src="assets/markyos-lockup.svg" alt="" style="width:120px;filter:invert(1)"><img src="assets/markyos-lockup.svg" alt="" style="width:72px;filter:invert(1)"><img src="assets/markyos-lockup.svg" alt="" style="width:44px;filter:invert(1)"></div>
+<span style="font:400 11px/1.5 Inter,sans-serif;color:#8a8a94">At 44 px the counters close up — that's why min size is 24 px tall, not 12.</span>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:9px;font:400 12px/1.5 Inter,sans-serif;color:#8a8a94"><i class="las la-lock" style="font-size:15px;color:#0099ff"></i>Nothing is uploaded until you attach.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "add the drag-over state to the whole section, not just one slot" · "show <a class="dv-oid" href="#1b">1b</a> mirrored in Arabic" · "make the three slots a vertical list instead"</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Inventory update — #7 becomes a gallery, #16 becomes Settings</span></div>
+
+<div style="max-width:900px;margin:0 0 28px;padding:20px 24px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;font:13px/1.65 Inter,sans-serif;color:#2a2a2a">
+<div style="font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:10px">What changed</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 28px">
+<div>· <strong>#7 is now two states of one screen:</strong> the empty state stays as designed in <a class="dv-oid" href="#7a">7a</a>; <a class="dv-oid" href="#7b">7b</a> is the populated gallery every returning user lands on.</div>
+<div>· <strong>#16 is now Settings, not Billing:</strong> <a class="dv-oid" href="#16b">16b</a> Profile and <a class="dv-oid" href="#16c">16c</a> Billing under one tab bar. The old billing-only screen <a class="dv-oid" href="#16a">16a</a> is superseded.</div>
+<div>· <strong>Gallery card = brand identity, not a file thumb:</strong> the mark on its own tile, so a wall of six workspaces still reads as six brands.</div>
+<div>· <strong>Pass state lives on the card</strong> — "Shared" vs "Draft" — so the buy prompt sits where the work is, not in a banner.</div>
+</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="7b"><div class="dv-olabel"><a class="dv-oid" href="#7b">7b</a>7 · Project gallery — populated (pairs with <a class="dv-oid" href="#7a">7a</a>)</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<img src="assets/markyos-wordmark.svg" alt="Markyos" style="height:13px;filter:invert(1)">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="display:flex;align-items:center;gap:10px;height:36px;padding:0 16px;border-radius:999px;background:#141414;min-width:220px"><i class="las la-search" style="font-size:16px;color:#8a8a94"></i><span style="font:400 13px/1 Inter,sans-serif;color:#8a8a94">Search brands</span></div>
+<span style="font:400 13px/1 Inter,sans-serif;color:#8a8a94">Settings</span>
+<div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;padding:34px 40px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h1 style="margin:0 0 6px;font:600 32px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Your brands</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">6 workspaces · 3 shared with clients</p></div>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="height:36px;padding:0 14px;border-radius:999px;background:#141414;display:flex;align-items:center;gap:8px;font:500 12px/1 Inter,sans-serif;color:#8a8a94">Last edited<i class="las la-angle-down" style="font-size:14px"></i></div>
+<div style="height:36px;padding:0 18px;border-radius:999px;background:#fff;color:#090909;display:flex;align-items:center;gap:8px;font:600 13px/1 Inter,sans-serif"><i class="las la-plus" style="font-size:15px"></i>New workspace</div>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="height:132px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center"><img src="assets/markyos-mark.svg" alt="" style="height:44px;filter:invert(1)"></div>
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font:600 15px/1.3 Inter,sans-serif">Nadeen Studio</div><div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Edited 10m ago · 4 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Shared</span></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="height:132px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center;font:600 34px/1 'Bricolage Display',Inter,sans-serif;color:#3d3d44">AF</div>
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font:600 15px/1.3 Inter,sans-serif">Almarai Foods</div><div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Edited 2d ago · 3 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#8a8a94">Draft</span></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="height:132px;border-radius:11px;background:#0099ff;display:grid;place-items:center;font:600 34px/1 'Bricolage Display',Inter,sans-serif;color:#fff">WR</div>
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font:600 15px/1.3 Inter,sans-serif">Wadi Rum Coffee</div><div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Edited 6d ago · 4 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Shared</span></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="height:132px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center"><span dir="rtl" style="font:600 30px/1 'IBM Plex Sans Arabic',Inter,sans-serif;color:#3d3d44">بيت</span></div>
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font:600 15px/1.3 Inter,sans-serif">Beit Rima</div><div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Edited 3w ago · 4 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Shared</span></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="height:132px;border-radius:11px;background:#1c1c1c;display:grid;place-items:center;font:600 34px/1 'Bricolage Display',Inter,sans-serif;color:#3d3d44">HK</div>
+<div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font:600 15px/1.3 Inter,sans-serif">Hala Kitchens</div><div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Edited 1mo ago · 2 sections</div></div><span style="font:600 10px/1 Inter,sans-serif;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#8a8a94">Draft</span></div>
+</div>
+<div style="border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#8a8a94;min-height:216px"><i class="las la-plus" style="font-size:24px"></i><span style="font:500 13px/1 Inter,sans-serif">New workspace</span><span style="font:400 11px/1 Inter,sans-serif;color:#8a8a94">Starts empty — see <a href="#7a">7a</a></span></div>
+</div>
+<div style="margin-top:auto;font:400 12px/1 Inter,sans-serif;color:#6c6c76">Deleting a workspace revokes its client link immediately.</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="16b"><div class="dv-olabel"><a class="dv-oid" href="#16b">16b</a>16 · Settings — Profile tab</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif;color:#8a8a94"><i class="las la-arrow-left" style="font-size:17px"></i>Your brands</div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+<div style="flex:1;min-height:0;padding:34px 40px;display:flex;flex-direction:column;gap:24px;overflow:hidden">
+<h1 style="margin:0;font:600 32px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Settings</h1>
+<div style="display:flex;gap:26px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.08);font:500 14px/1 Inter,sans-serif">
+<span style="padding:0 2px 14px;color:#fff;box-shadow:inset 0 -2px 0 #0099ff">Profile</span>
+<span style="padding:0 2px 14px;color:#8a8a94">Billing</span>
+<span style="padding:0 2px 14px;color:#8a8a94">Sharing defaults</span>
+</div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="background:#141414;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px">
+<span style="font:600 15px/1 Inter,sans-serif">Account</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Full name</span><input type="text" value="Nadeen Darwish" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 Inter,sans-serif;outline:none"></div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Email</span><input type="email" value="nadeen@studio.com" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 Inter,sans-serif;outline:none"></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Interface language</span>
+<div style="display:flex;padding:4px;background:#1c1c1c;border-radius:999px;align-self:flex-start"><span style="padding:9px 20px;border-radius:999px;background:#fff;color:#090909;font:600 13px/1 Inter,sans-serif">English</span><span style="padding:9px 20px;border-radius:999px;color:#8a8a94;font:600 13px/1 'IBM Plex Sans Arabic',Inter,sans-serif">العربية</span></div>
+<span style="font:400 12px/1.5 Inter,sans-serif;color:#6c6c76">Separate from the AR/EN switch inside a brand — that one previews content, this one changes the app.</span></div>
+<div style="display:flex;gap:10px;padding-top:2px"><div style="height:42px;padding:0 20px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Save changes</div><div style="height:42px;padding:0 20px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Cancel</div></div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<span style="font:600 15px/1 Inter,sans-serif">Password</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Current</span><input type="password" value="••••••••••" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 Inter,sans-serif;outline:none"></div>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">New</span><input type="password" placeholder="At least 10 characters" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 Inter,sans-serif;outline:none"></div>
+</div>
+<div style="height:42px;padding:0 20px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);align-self:flex-start">Update password</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="background:#141414;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<span style="font:600 15px/1 Inter,sans-serif">Plan</span>
+<div style="display:flex;align-items:center;gap:12px"><span style="font:600 11px/1 Inter,sans-serif;padding:8px 12px;border-radius:999px;background:rgba(0,153,255,.14);color:#0099ff">Pay per brand</span><span style="font:400 13px/1 Inter,sans-serif;color:#8a8a94">3 passes bought</span></div>
+<span style="font:400 13px/1.6 Inter,sans-serif;color:#8a8a94">Payments, receipts and cards live under <span style="color:#fff;font-weight:500">Billing</span>.</span>
+<a href="#16c" style="font:600 13px/1 Inter,sans-serif">Open Billing</a>
+</div>
+<div style="background:#141414;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 1px rgba(255,128,139,.28)">
+<span style="font:600 15px/1 Inter,sans-serif">Delete account</span>
+<span style="font:400 13px/1.6 Inter,sans-serif;color:#8a8a94">Removes 6 workspaces and revokes every client link. Purchased passes are not refunded.</span>
+<div style="height:42px;padding:0 20px;border-radius:999px;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;color:#ff808b;box-shadow:inset 0 0 0 1px rgba(255,128,139,.45);align-self:flex-start">Delete account</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="16c"><div class="dv-olabel"><a class="dv-oid" href="#16c">16c</a>16 · Settings — Billing tab (supersedes <a class="dv-oid" href="#16a">16a</a>)</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="flex:none;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:10px;font:400 13px/1 Inter,sans-serif;color:#8a8a94"><i class="las la-arrow-left" style="font-size:17px"></i>Your brands</div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+<div style="flex:1;min-height:0;padding:34px 40px;display:flex;flex-direction:column;gap:24px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between"><h1 style="margin:0;font:600 32px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Settings</h1><div style="height:36px;padding:0 16px;border-radius:999px;background:#1c1c1c;display:flex;align-items:center;gap:8px;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Manage billing in Stripe<i class="las la-external-link-alt" style="font-size:15px;color:#8a8a94"></i></div></div>
+<div style="display:flex;gap:26px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.08);font:500 14px/1 Inter,sans-serif">
+<span style="padding:0 2px 14px;color:#8a8a94">Profile</span>
+<span style="padding:0 2px 14px;color:#fff;box-shadow:inset 0 -2px 0 #0099ff">Billing</span>
+<span style="padding:0 2px 14px;color:#8a8a94">Sharing defaults</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+<div style="background:#141414;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Active passes</span><span style="font:600 30px/1 'Bricolage Display',Inter,sans-serif">3</span><span style="font:400 12px/1.4 Inter,sans-serif;color:#6c6c76">Nadeen Studio · Wadi Rum · Beit Rima</span></div>
+<div style="background:#141414;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Spent to date</span><span style="font:600 30px/1 'Bricolage Display',Inter,sans-serif">$57</span><span style="font:400 12px/1.4 Inter,sans-serif;color:#6c6c76">No renewals — passes don't expire</span></div>
+<div style="background:#141414;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Payment method</span><span style="font:600 18px/1.2 Inter,sans-serif">Visa ·· 4242</span><span style="font:400 12px/1.4 Inter,sans-serif;color:#6c6c76">Expires 04/29 · edited in Stripe</span></div>
+</div>
+<div style="flex:1;min-height:0;background:#141414;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:15px 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><span style="font:600 13px/1 Inter,sans-serif">Payments</span><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.08em;color:#0099ff">DOWNLOAD ALL</span></div>
+<div style="flex:none;display:flex;padding:11px 20px;font:500 11px/1 Inter,sans-serif;letter-spacing:.08em;color:#6c6c76;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px">DATE</span><span style="flex:1">ITEM</span><span style="width:120px">METHOD</span><span style="width:90px;text-align:right">AMOUNT</span><span style="width:110px;text-align:right">RECEIPT</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px;color:#8a8a94">8 Sep 2026</span><span style="flex:1;font-weight:500">Project Pass · Nadeen Studio</span><span style="width:120px;color:#8a8a94">Visa ·· 4242</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px;color:#8a8a94">14 Aug 2026</span><span style="flex:1;font-weight:500">Project Pass · Wadi Rum Coffee</span><span style="width:120px;color:#8a8a94">Mada ·· 1097</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif"><span style="width:120px;color:#8a8a94">2 Jul 2026</span><span style="flex:1;font-weight:500">Project Pass · Beit Rima</span><span style="width:120px;color:#8a8a94">Visa ·· 4242</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="margin-top:auto;padding:14px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);font:400 12px/1 Inter,sans-serif;color:#6c6c76">Refunds, card changes and VAT details are handled in Stripe's portal.</div>
+</div>
+<div style="flex:none;display:flex;align-items:center;gap:12px;padding:15px 18px;background:#141414;border-radius:12px"><i class="las la-info-circle" style="font-size:18px;color:#0099ff"></i><span style="flex:1;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Almarai Foods and Hala Kitchens are drafts — a pass is only needed when you share.</span><a href="#13a" style="font:600 13px/1 Inter,sans-serif">Buy a pass</a></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "add a row/list view to <a class="dv-oid" href="#7b">7b</a>" · "show the Sharing defaults tab" · "make the gallery cards show real logo files instead of initials"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">v1.0 (Weeks 4–6) — client delivery &amp; commerce, screens 9–16</span></div>
+
+<div style="max-width:900px;margin:0 0 28px;padding:20px 24px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;font:13px/1.65 Inter,sans-serif;color:#2a2a2a">
+<div style="font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:10px">Calls I made on the open questions</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 28px">
+<div>· <strong>Dark vs light client viewer:</strong> built both — <a class="dv-oid" href="#9a">9a</a> dark (house direction) and <a class="dv-oid" href="#9b">9b</a> light "document for sign-off". Same content, same grid. Pick one before #10 ships.</div>
+<div>· <strong>#11 + #12 collapsed</strong> into one Share panel; the DNS walk-through is an expandable step inside it (<a class="dv-oid" href="#11a">11a</a> collapsed → <a class="dv-oid" href="#12a">12a</a> expanded), not a separate screen.</div>
+<div>· <strong>Stripe:</strong> <a class="dv-oid" href="#14a">14a</a> designs only the two edges we own — the trigger and the return states. The middle is Stripe's hosted page, drawn as a stub.</div>
+<div>· <strong>Billing</strong> is one table plus a status badge and a deep-link out to Stripe's portal — nothing custom (<a class="dv-oid" href="#16a">16a</a>).</div>
+<div>· <strong>Chrome removal:</strong> the client viewer has no rail, no AR/EN pill in Markyos styling — the language switch becomes part of the agency's own header.</div>
+<div>· <strong>Price:</strong> $19 one-time, shown as a single card with 4 inclusions and no comparison tiers.</div>
+</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="9a"><div class="dv-olabel"><a class="dv-oid" href="#9a">9a</a>9 · Client viewer — dark, on the agency's own domain</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;overflow:hidden;font:14px/1.5 Inter,sans-serif;color:#fff;display:flex;flex-direction:column">
+<div style="flex:none;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 44px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:12px"><img src="assets/markyos-mark.svg" alt="" style="height:20px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif">Nadeen Studio</span><span style="font:400 12px/1 Inter,sans-serif;color:#6c6c76;padding-left:12px;box-shadow:inset 1px 0 0 rgba(255,255,255,.1)">&nbsp;&nbsp;Brand guidelines · v3</span></div>
+<div style="display:flex;align-items:center;gap:18px">
+<div style="display:flex;gap:2px;font:500 12px/1 Inter,sans-serif"><span style="padding:7px 12px;border-radius:999px;background:#1c1c1c">EN</span><span style="padding:7px 12px;border-radius:999px;color:#8a8a94;font-family:'IBM Plex Sans Arabic',Inter,sans-serif">ع</span></div>
+<div style="height:36px;padding:0 18px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Download kit</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;display:flex">
+<div style="width:210px;flex:none;padding:34px 0 0 44px;display:flex;flex-direction:column;gap:11px;font:400 13px/1 Inter,sans-serif;color:#6c6c76">
+<span style="color:#fff;font-weight:500;position:relative">Overview<span style="position:absolute;left:-14px;top:2px;bottom:2px;width:2px;background:#0099ff"></span></span>
+<span>Logo</span><span>Color</span><span>Typography</span>
+<span style="margin-top:auto;padding:0 0 26px;font:400 11px/1.5 Inter,sans-serif;color:#3d3d44">Read-only · shared 12 Sep<br>brand.nadeen.studio</span>
+</div>
+<div style="flex:1;min-width:0;padding:34px 44px 0 24px;overflow:hidden">
+<h1 style="margin:0 0 12px;font:600 44px/1.1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em;max-width:22ch">The Nadeen Studio brand, in two directions</h1>
+<p style="margin:0 0 30px;font:400 16px/1.7 Inter,sans-serif;color:#c9c9d1;max-width:62ch">Everything on this page is the current, approved version. If a file here disagrees with a file in your inbox, this page wins.</p>
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;height:330px">
+<div style="background:#141414;border-radius:16px;position:relative;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="Markyos lockup" style="width:300px;filter:invert(1)"><span style="position:absolute;left:20px;top:18px;font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Primary lockup</span><span style="position:absolute;left:20px;bottom:18px;font:500 13px/1 Inter,sans-serif;color:#0099ff">Download SVG</span></div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="flex:1;background:#141414;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Palette</span><div style="flex:1;display:flex;gap:8px"><div style="flex:1;border-radius:8px;background:#090909;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)"></div><div style="flex:1;border-radius:8px;background:#0099ff"></div><div style="flex:1;border-radius:8px;background:#fff"></div><div style="flex:1;border-radius:8px;background:#8a8a94"></div></div></div>
+<div style="flex:1;background:#141414;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Type</span><div style="display:flex;align-items:baseline;gap:14px"><span style="font:500 30px/1 Inter,sans-serif">Aa</span><span dir="rtl" style="font:500 30px/1.2 'IBM Plex Sans Arabic',Inter,sans-serif">أبجد</span></div><span style="font:400 12px/1.5 Inter,sans-serif;color:#8a8a94">Inter Variable · IBM Plex Sans Arabic</span></div>
+</div>
+</div>
+</div>
+</div>
+<div style="flex:none;padding:14px 44px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;font:400 11px/1 Inter,sans-serif;color:#3d3d44"><span>© Nadeen Studio 2026</span><span style="display:flex;align-items:center;gap:6px">Powered by<img src="assets/markyos-wordmark.svg" alt="Markyos" style="height:9px;filter:invert(1);opacity:.45"></span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="9b"><div class="dv-olabel"><a class="dv-oid" href="#9b">9b</a>9 · Client viewer — light, "official document" for sign-off</div>
+<div class="dv-card" style="width:1280px;background:#fbfbfa">
+<div style="height:800px;overflow:hidden;font:14px/1.5 Inter,sans-serif;color:#111;display:flex;flex-direction:column">
+<div style="flex:none;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 44px;box-shadow:inset 0 -1px 0 rgba(0,0,0,.09)">
+<div style="display:flex;align-items:center;gap:12px"><img src="assets/markyos-mark.svg" alt="" style="height:20px"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif">Nadeen Studio</span><span style="font:400 12px/1 Inter,sans-serif;color:#7a7a80">· Brand guidelines · v3 · approved 12 Sep</span></div>
+<div style="display:flex;align-items:center;gap:18px">
+<div style="display:flex;gap:2px;font:500 12px/1 Inter,sans-serif"><span style="padding:7px 12px;border-radius:999px;background:#eeeeec">EN</span><span style="padding:7px 12px;border-radius:999px;color:#7a7a80;font-family:'IBM Plex Sans Arabic',Inter,sans-serif">ع</span></div>
+<div style="height:36px;padding:0 18px;border-radius:999px;background:#111;color:#fff;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Download kit</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;display:flex">
+<div style="width:210px;flex:none;padding:34px 0 0 44px;display:flex;flex-direction:column;gap:11px;font:400 13px/1 Inter,sans-serif;color:#7a7a80">
+<span style="color:#111;font-weight:500;position:relative">Overview<span style="position:absolute;left:-14px;top:2px;bottom:2px;width:2px;background:#0099ff"></span></span>
+<span>Logo</span><span>Color</span><span>Typography</span>
+<span style="margin-top:auto;padding:0 0 26px;font:400 11px/1.5 Inter,sans-serif;color:#a3a3a8">Read-only · shared 12 Sep<br>brand.nadeen.studio</span>
+</div>
+<div style="flex:1;min-width:0;padding:34px 44px 0 24px;overflow:hidden">
+<h1 style="margin:0 0 12px;font:600 44px/1.1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em;max-width:22ch">The Nadeen Studio brand, in two directions</h1>
+<p style="margin:0 0 30px;font:400 16px/1.7 Inter,sans-serif;color:#4a4a50;max-width:62ch">Everything on this page is the current, approved version. If a file here disagrees with a file in your inbox, this page wins.</p>
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;height:330px">
+<div style="background:#fff;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.09);position:relative;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="Markyos lockup" style="width:300px"><span style="position:absolute;left:20px;top:18px;font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#a3a3a8">Primary lockup</span><span style="position:absolute;left:20px;bottom:18px;font:500 13px/1 Inter,sans-serif;color:#0077cc">Download SVG</span></div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="flex:1;background:#fff;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.09);padding:18px;display:flex;flex-direction:column;gap:12px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#a3a3a8">Palette</span><div style="flex:1;display:flex;gap:8px"><div style="flex:1;border-radius:8px;background:#090909"></div><div style="flex:1;border-radius:8px;background:#0099ff"></div><div style="flex:1;border-radius:8px;background:#fbfbfa;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></div><div style="flex:1;border-radius:8px;background:#8a8a94"></div></div></div>
+<div style="flex:1;background:#fff;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.09);padding:18px;display:flex;flex-direction:column;gap:8px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#a3a3a8">Type</span><div style="display:flex;align-items:baseline;gap:14px"><span style="font:500 30px/1 Inter,sans-serif">Aa</span><span dir="rtl" style="font:500 30px/1.2 'IBM Plex Sans Arabic',Inter,sans-serif">أبجد</span></div><span style="font:400 12px/1.5 Inter,sans-serif;color:#7a7a80">Inter Variable · IBM Plex Sans Arabic</span></div>
+</div>
+</div>
+</div>
+</div>
+<div style="flex:none;padding:14px 44px;box-shadow:inset 0 1px 0 rgba(0,0,0,.09);display:flex;align-items:center;justify-content:space-between;font:400 11px/1 Inter,sans-serif;color:#a3a3a8"><span>© Nadeen Studio 2026</span><span style="display:flex;align-items:center;gap:6px">Powered by<img src="assets/markyos-wordmark.svg" alt="Markyos" style="height:9px;opacity:.5"></span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="10a"><div class="dv-olabel"><a class="dv-oid" href="#10a">10a</a>10 · Client access gate — resting and wrong-password</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:0 88px;box-shadow:inset -1px 0 0 rgba(255,255,255,.07)">
+<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><img src="assets/markyos-mark.svg" alt="" style="height:34px;filter:invert(1)"><div style="text-align:center"><div style="font:600 22px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Nadeen Studio</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Brand guidelines · protected</div></div></div>
+<div style="width:100%;display:flex;flex-direction:column;gap:12px">
+<input type="password" placeholder="Access password" style="height:52px;padding:0 18px;background:#141414;border:0;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:#fff;font:400 15px/1 Inter,sans-serif;outline:none">
+<div style="height:48px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">View guidelines</div>
+</div>
+<span style="font:400 12px/1.6 Inter,sans-serif;color:#6c6c76;text-align:center;max-width:34ch">The password came with your hand-off email. Ask Nadeen Studio if you don't have it.</span>
+<span style="margin-top:6px;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#3d3d44">Resting</span>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:0 88px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:14px"><img src="assets/markyos-mark.svg" alt="" style="height:34px;filter:invert(1)"><div style="text-align:center"><div style="font:600 22px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Nadeen Studio</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Brand guidelines · protected</div></div></div>
+<div style="width:100%;display:flex;flex-direction:column;gap:12px">
+<input type="password" value="••••••••" style="height:52px;padding:0 18px;background:#141414;border:0;border-radius:12px;box-shadow:inset 0 0 0 1px #ff6b6b;color:#fff;font:400 15px/1 Inter,sans-serif;outline:none">
+<div style="display:flex;align-items:center;gap:8px;font:400 12px/1 Inter,sans-serif;color:#ff8f8f"><i class="las la-exclamation-circle" style="font-size:15px"></i>That password doesn't match. 2 tries left.</div>
+<div style="height:48px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">View guidelines</div>
+</div>
+<span style="font:400 12px/1.6 Inter,sans-serif;color:#6c6c76;text-align:center;max-width:34ch">After 3 tries the link locks for 15m and the studio is notified.</span>
+<span style="margin-top:6px;font:500 10px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#3d3d44">Wrong password</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="11a"><div class="dv-olabel"><a class="dv-oid" href="#11a">11a</a>11 · Share &amp; access — designer side (domain step collapsed)</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;position:relative;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;opacity:.4">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px"><div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif">Nadeen Studio</span></div></div>
+<div style="flex:1;padding:26px 28px"><h1 style="margin:0 0 20px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif">Overview</h1><div style="height:400px;background:#141414;border-radius:16px"></div></div>
+</div>
+<div style="position:absolute;inset:0;background:rgba(9,9,9,.74)"></div>
+<div style="position:absolute;top:0;right:0;bottom:0;width:520px;background:#141414;box-shadow:inset 1px 0 0 rgba(255,255,255,.08);display:flex;flex-direction:column">
+<div style="flex:none;padding:24px 28px 18px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+<div><h2 style="margin:0 0 4px;font:600 22px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Share with client</h2><p style="margin:0;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Read-only guideline · 4 sections</p></div>
+<i class="las la-times" style="font-size:20px;color:#8a8a94"></i>
+</div>
+<div style="flex:1;min-height:0;padding:22px 28px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;gap:14px;padding:15px 16px;background:#1c1c1c;border-radius:12px"><span style="width:34px;height:34px;border-radius:999px;background:rgba(124,231,172,.14);display:grid;place-items:center"><i class="las la-check" style="font-size:17px;color:#7ce7ac"></i></span><div style="flex:1"><div style="font:600 14px/1.3 Inter,sans-serif">Link is live</div><div style="font:400 12px/1.3 Inter,sans-serif;color:#8a8a94">Created 12 Sep · 8 views</div></div><span style="width:44px;height:26px;border-radius:999px;background:#0099ff;position:relative"><span style="position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:999px;background:#fff"></span></span></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Client link</span>
+<div style="display:flex;align-items:center;gap:10px;padding:13px 14px;background:#1c1c1c;border-radius:10px"><i class="las la-link" style="font-size:17px;color:#0099ff"></i><span style="flex:1;min-width:0;font:400 12px/1 ui-monospace,Menlo,monospace;color:#c9c9d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">brand.nadeen.studio</span><span style="font:600 12px/1 Inter,sans-serif;color:#0099ff">Copy</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Password</span>
+<div style="display:flex;gap:10px"><input type="text" value="nadeen-2026" style="flex:1;height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);color:#fff;font:400 14px/1 ui-monospace,Menlo,monospace;outline:none"><div style="height:46px;padding:0 18px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Reset</div></div>
+<span style="font:400 12px/1.5 Inter,sans-serif;color:#6c6c76">Resetting invalidates the old password immediately.</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Custom domain</span>
+<div style="display:flex;align-items:center;gap:12px;padding:15px 16px;background:#1c1c1c;border-radius:12px"><i class="las la-globe" style="font-size:18px;color:#8a8a94"></i><div style="flex:1"><div style="font:500 14px/1.3 Inter,sans-serif;font-family:ui-monospace,Menlo,monospace">brand.nadeen.studio</div><div style="font:400 12px/1.3 Inter,sans-serif;color:#8a8a94">CNAME verified 2d ago</div></div><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Verified</span><i class="las la-angle-down" style="font-size:16px;color:#6c6c76"></i></div>
+<div style="display:flex;align-items:center;gap:12px;padding:15px 16px;background:#1c1c1c;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(244,190,94,.35)"><i class="las la-globe" style="font-size:18px;color:#f4be5e"></i><div style="flex:1"><div style="font:500 14px/1.3 ui-monospace,Menlo,monospace">brand.almaraifoods.com</div><div style="font:400 12px/1.3 Inter,sans-serif;color:#8a8a94">Waiting on DNS · added 10m ago</div></div><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(244,190,94,.14);color:#f4be5e">Pending</span><i class="las la-angle-down" style="font-size:16px;color:#6c6c76"></i></div>
+<div style="display:flex;align-items:center;gap:8px;font:500 13px/1 Inter,sans-serif;color:#0099ff;padding:2px 0"><i class="las la-plus" style="font-size:16px"></i>Add a domain</div>
+</div>
+</div>
+<div style="flex:none;padding:20px 28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;gap:12px"><div style="flex:1;height:44px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Revoke access</div><div style="flex:1;height:44px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Copy link &amp; password</div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="12a"><div class="dv-olabel"><a class="dv-oid" href="#12a">12a</a>12 · Same panel, DNS step expanded — not a separate screen</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;position:relative;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="position:absolute;inset:0;background:rgba(9,9,9,.74)"></div>
+<div style="position:absolute;top:0;right:0;bottom:0;width:520px;background:#141414;box-shadow:inset 1px 0 0 rgba(255,255,255,.08);display:flex;flex-direction:column">
+<div style="flex:none;padding:24px 28px 18px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07);display:flex;align-items:center;gap:12px">
+<i class="las la-arrow-left" style="font-size:19px;color:#8a8a94"></i>
+<div style="flex:1"><h2 style="margin:0 0 3px;font:600 20px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">brand.almaraifoods.com</h2><p style="margin:0;font:400 12px/1.4 ui-monospace,Menlo,monospace;color:#f4be5e">Pending · checked 40s ago</p></div>
+<i class="las la-times" style="font-size:20px;color:#8a8a94"></i>
+</div>
+<div style="flex:1;min-height:0;padding:22px 28px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;gap:14px">
+<div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:24px;height:24px;border-radius:999px;background:#0099ff;color:#fff;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif">1</span><span style="flex:1;width:1px;background:rgba(255,255,255,.1)"></span></div>
+<div style="flex:1;padding-bottom:6px"><div style="font:600 14px/1.3 Inter,sans-serif;margin-bottom:8px">Add this CNAME at your DNS provider</div>
+<div style="background:#1c1c1c;border-radius:10px;overflow:hidden;font:400 12px/1 ui-monospace,Menlo,monospace">
+<div style="display:flex;padding:11px 14px;color:#6c6c76;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)"><span style="width:64px">TYPE</span><span style="width:96px">NAME</span><span style="flex:1">VALUE</span></div>
+<div style="display:flex;align-items:center;padding:13px 14px;color:#c9c9d1"><span style="width:64px">CNAME</span><span style="width:96px">brand</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cname.markyos.com</span><span style="font-family:Inter,sans-serif;font-weight:600;color:#0099ff">Copy</span></div>
+</div>
+<div style="margin-top:8px;font:400 12px/1.5 Inter,sans-serif;color:#6c6c76">Leave TTL at your provider's default. Do not proxy the record while verifying.</div></div>
+</div>
+<div style="display:flex;gap:14px">
+<div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:24px;height:24px;border-radius:999px;background:rgba(244,190,94,.16);color:#f4be5e;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif">2</span><span style="flex:1;width:1px;background:rgba(255,255,255,.1)"></span></div>
+<div style="flex:1;padding-bottom:6px"><div style="font:600 14px/1.3 Inter,sans-serif;margin-bottom:8px">We check every 60s</div>
+<div style="display:flex;flex-direction:column;gap:8px;font:400 12px/1 Inter,sans-serif">
+<div style="display:flex;align-items:center;gap:9px;color:#c9c9d1"><i class="las la-check-circle" style="font-size:16px;color:#7ce7ac"></i>Domain reachable</div>
+<div style="display:flex;align-items:center;gap:9px;color:#c9c9d1"><i class="las la-circle-notch" style="font-size:16px;color:#f4be5e"></i>CNAME propagating — seen at 3 of 8 resolvers</div>
+<div style="display:flex;align-items:center;gap:9px;color:#6c6c76"><i class="las la-lock" style="font-size:16px"></i>TLS certificate issues automatically after this</div>
+</div></div>
+</div>
+<div style="display:flex;gap:14px">
+<div style="flex:none"><span style="width:24px;height:24px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#6c6c76;display:grid;place-items:center;font:600 12px/1 Inter,sans-serif">3</span></div>
+<div style="flex:1"><div style="font:600 14px/1.3 Inter,sans-serif;color:#8a8a94;margin-bottom:6px">Go live</div><div style="font:400 12px/1.5 Inter,sans-serif;color:#6c6c76">The client link switches to this domain automatically. The markyos.com link keeps working as a fallback.</div></div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:13px 14px;background:#1c1c1c;border-radius:10px;font:400 12px/1.5 Inter,sans-serif;color:#8a8a94"><i class="las la-question-circle" style="font-size:17px;color:#0099ff"></i>Provider-specific steps for Cloudflare, Route 53 and GoDaddy</div>
+</div>
+<div style="flex:none;padding:20px 28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;gap:12px"><div style="flex:1;height:44px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Remove domain</div><div style="flex:1;height:44px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Check now</div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="13a"><div class="dv-olabel"><a class="dv-oid" href="#13a">13a</a>13 · Project Pass — $19 one-off</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;align-items:center;justify-content:center;gap:56px;padding:0 96px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="flex:1;max-width:420px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#0099ff">Project Pass</span>
+<h1 style="margin:14px 0 14px;font:600 40px/1.1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">Hand this brand over properly</h1>
+<p style="margin:0 0 26px;font:400 16px/1.7 Inter,sans-serif;color:#c9c9d1">One payment per brand. No subscription, no seat count, no expiry on what you've already published.</p>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px"><i class="las la-check" style="font-size:18px;color:#7ce7ac"></i><div><div style="font:500 14px/1.4 Inter,sans-serif">Password-protected client viewer</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Read-only, on your own domain</div></div></div>
+<div style="display:flex;gap:12px"><i class="las la-check" style="font-size:18px;color:#7ce7ac"></i><div><div style="font:500 14px/1.4 Inter,sans-serif">Custom domain + TLS</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">brand.yourclient.com, verified in minutes</div></div></div>
+<div style="display:flex;gap:12px"><i class="las la-check" style="font-size:18px;color:#7ce7ac"></i><div><div style="font:500 14px/1.4 Inter,sans-serif">Unlimited asset downloads</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">SVG, PNG, WebP · direct links</div></div></div>
+<div style="display:flex;gap:12px"><i class="las la-check" style="font-size:18px;color:#7ce7ac"></i><div><div style="font:500 14px/1.4 Inter,sans-serif">Arabic and English, both live</div><div style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Same page, one switch</div></div></div>
+</div>
+</div>
+<div style="width:400px;flex:none;background:#141414;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 52px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">$19</span><span style="font:400 14px/1 Inter,sans-serif;color:#8a8a94">one time</span></div><span style="font:600 11px/1 Inter,sans-serif;padding:8px 12px;border-radius:999px;background:rgba(0,153,255,.14);color:#0099ff">Per brand</span></div>
+<div style="height:1px;background:rgba(255,255,255,.08)"></div>
+<div style="display:flex;flex-direction:column;gap:11px;font:400 13px/1 Inter,sans-serif">
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Brand</span><span style="font-weight:500">Nadeen Studio</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Sections</span><span style="font-weight:500">4</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Billed to</span><span style="font-weight:500">nadeen@studio.com</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">VAT</span><span style="font-weight:500">Added at checkout</span></div>
+</div>
+<div style="height:48px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">Buy Project Pass</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;font:400 12px/1 Inter,sans-serif;color:#6c6c76"><i class="las la-lock" style="font-size:15px"></i>Payment handled by Stripe</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="14a"><div class="dv-olabel"><a class="dv-oid" href="#14a">14a</a>14 · Stripe hand-off — only the two edges we own</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;padding:40px 44px;display:flex;flex-direction:column;gap:26px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div><h1 style="margin:0 0 6px;font:600 26px/1.2 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Checkout hand-off</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">Stripe Checkout owns the middle step. Markyos designs the trigger and the two return states.</p></div>
+<div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">1 · Ours — trigger</span>
+<div style="flex:1;background:#141414;border-radius:16px;padding:26px;display:flex;flex-direction:column;justify-content:center;gap:16px">
+<span style="font:600 34px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.03em">$19</span>
+<span style="font:400 13px/1.6 Inter,sans-serif;color:#8a8a94">One brand, one payment. Redirects to Stripe.</span>
+<div style="height:46px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Buy Project Pass</div>
+<div style="height:46px;border-radius:999px;background:#1c1c1c;color:#8a8a94;display:flex;align-items:center;justify-content:center;gap:10px;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><i class="las la-circle-notch" style="font-size:16px"></i>Opening Stripe…</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">2 · Stripe-hosted — not designed</span>
+<div style="flex:1;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;text-align:center">
+<i class="las la-credit-card" style="font-size:30px;color:#6c6c76"></i>
+<div style="font:600 15px/1.3 Inter,sans-serif;color:#c9c9d1">Stripe Checkout</div>
+<div style="font:400 12px/1.6 Inter,sans-serif;color:#6c6c76;max-width:26ch">Card, Apple Pay, Mada. Stripe's own layout, our logo and accent set in Branding settings.</div>
+<div style="margin-top:6px;font:400 11px/1.5 ui-monospace,Menlo,monospace;color:#3d3d44">success_url → 15<br>cancel_url → back to 13</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px"><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">3 · Ours — returns</span>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="flex:1;background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:10px"><span style="width:34px;height:34px;border-radius:999px;background:rgba(124,231,172,.14);display:grid;place-items:center"><i class="las la-check" style="font-size:18px;color:#7ce7ac"></i></span><div style="font:600 15px/1.3 Inter,sans-serif">Paid — pass active</div><div style="font:400 12px/1.6 Inter,sans-serif;color:#8a8a94">Webhook flips the workspace before the redirect lands.</div></div>
+<div style="flex:1;background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:10px"><span style="width:34px;height:34px;border-radius:999px;background:rgba(244,190,94,.14);display:grid;place-items:center"><i class="las la-undo" style="font-size:17px;color:#f4be5e"></i></span><div style="font:600 15px/1.3 Inter,sans-serif">Cancelled</div><div style="font:400 12px/1.6 Inter,sans-serif;color:#8a8a94">Back to the price card. Nothing lost, no nagging banner.</div></div>
+</div>
+</div>
+</div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px;background:#141414;border-radius:12px;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94"><i class="las la-info-circle" style="font-size:17px;color:#0099ff"></i>Only two things to build here: the redirect trigger and the webhook that unlocks the workspace.</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="15a"><div class="dv-olabel"><a class="dv-oid" href="#15a">15a</a>15 · Purchase confirmation</div>
+<div class="dv-card" style="width:626px">
+<div style="height:800px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:0 76px;text-align:center;font:14px/1.5 Inter,sans-serif;color:#fff">
+<span style="width:64px;height:64px;border-radius:999px;background:rgba(124,231,172,.13);display:grid;place-items:center"><i class="las la-check" style="font-size:30px;color:#7ce7ac"></i></span>
+<div><h1 style="margin:0 0 10px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Project Pass is active</h1><p style="margin:0;font:400 15px/1.7 Inter,sans-serif;color:#8a8a94">Nadeen Studio can now be shared with a password and mapped to your own domain.</p></div>
+<div style="width:100%;background:#141414;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;text-align:left;font:400 13px/1 Inter,sans-serif">
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Paid</span><span style="font-weight:500">$19.00 · 8 Sep 2026</span></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Receipt</span><a href="#15a" style="font-weight:500">Sent to nadeen@studio.com</a></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#8a8a94">Reference</span><span style="font:400 12px/1 ui-monospace,Menlo,monospace;color:#c9c9d1">pi_3PnQ…7Kd2</span></div>
+</div>
+<div style="width:100%;display:flex;flex-direction:column;gap:10px">
+<div style="height:48px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">Go to your guideline</div>
+<div style="height:48px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Set up the client link</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="16a"><div class="dv-olabel"><a class="dv-oid" href="#16a">16a</a>16 · Billing — one table, one badge, one way out</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Account</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-user" style="font-size:18px"></i>Profile</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;font-weight:500"><i class="las la-receipt" style="font-size:18px;color:#0099ff"></i>Billing</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-share-square" style="font-size:18px"></i>Sharing</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Account<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Billing</span></div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Billing</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">Passes are per brand and don't renew.</p></div>
+<div style="height:36px;padding:0 16px;border-radius:999px;background:#1c1c1c;display:flex;align-items:center;gap:8px;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Manage billing<i class="las la-external-link-alt" style="font-size:15px;color:#8a8a94"></i></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div style="background:#141414;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font:600 14px/1 Inter,sans-serif">Nadeen Studio</span><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(124,231,172,.14);color:#7ce7ac">Pass active</span></div><span style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Purchased 8 Sep 2026 · client link live</span></div>
+<div style="background:#141414;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font:600 14px/1 Inter,sans-serif">Almarai Foods</span><span style="font:600 11px/1 Inter,sans-serif;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.07);color:#8a8a94">No pass</span></div><span style="font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Draft only · <a href="#13a">buy a pass</a> to share it</span></div>
+</div>
+<div style="flex:1;min-height:0;background:#141414;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:15px 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><span style="font:600 13px/1 Inter,sans-serif">Payments</span><span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.08em;color:#0099ff">DOWNLOAD ALL</span></div>
+<div style="flex:none;display:flex;padding:11px 20px;font:500 11px/1 Inter,sans-serif;letter-spacing:.08em;color:#6c6c76;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px">DATE</span><span style="flex:1">ITEM</span><span style="width:120px">METHOD</span><span style="width:90px;text-align:right">AMOUNT</span><span style="width:110px;text-align:right">RECEIPT</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px;color:#8a8a94">8 Sep 2026</span><span style="flex:1;font-weight:500">Project Pass · Nadeen Studio</span><span style="width:120px;color:#8a8a94">Visa ·· 4242</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)"><span style="width:120px;color:#8a8a94">14 Aug 2026</span><span style="flex:1;font-weight:500">Project Pass · Wadi Rum Coffee</span><span style="width:120px;color:#8a8a94">Mada ·· 1097</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="display:flex;align-items:center;padding:17px 20px;font:400 13px/1 Inter,sans-serif"><span style="width:120px;color:#8a8a94">2 Jul 2026</span><span style="flex:1;font-weight:500">Project Pass · Beit Rima</span><span style="width:120px;color:#8a8a94">Visa ·· 4242</span><span style="width:90px;text-align:right;font-weight:600">$19.00</span><span style="width:110px;text-align:right;color:#0099ff;font-weight:500">PDF</span></div>
+<div style="margin-top:auto;padding:14px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);font:400 12px/1 Inter,sans-serif;color:#6c6c76">Refunds, card changes and invoices live in Stripe's portal.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "go with <a class="dv-oid" href="#9b">9b</a> and make the rest of the client viewer light" · "add the client viewer in Arabic" · "collapse <a class="dv-oid" href="#13a">13a</a> into a modal instead of a full screen"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Markyos MVP — 8 screens, dark direction</span></div>
+
+<div style="max-width:900px;margin:0 0 28px;padding:20px 24px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;font:13px/1.65 Inter,sans-serif;color:#2a2a2a">
+<div style="font:600 12px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:10px">Assumptions I made</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 28px">
+<div>· <strong>Display face:</strong> GT Walsheim / Mona Sans aren't licensed here — Bricolage Grotesque (the Markyos brand face) stands in, same geometric-humanist weight.</div>
+<div>· <strong>Arabic face:</strong> IBM Plex Sans Arabic, weight-matched to Inter for the AR/EN swap.</div>
+<div>· <strong>Nav:</strong> left rail, 232px — sections are few but the AR/EN toggle needs top-bar prominence.</div>
+<div>· <strong>Section template:</strong> Overview / Color / Typography share one header + content-well pattern (see <a class="dv-oid" href="#5a">5a</a>).</div>
+<div>· <strong>Clearspace:</strong> guide = 0.5 × mark height, live-recomputed; slider is interactive in <a class="dv-oid" href="#1a">1a</a>.</div>
+<div>· <strong>Frames:</strong> 1280 × 800 desktop; single-user MVP, no client-viewer entry points anywhere.</div>
+</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>1 · Logo system — clearspace calculator (interactive slider)</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;background:#090909;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-file-alt" style="font-size:18px"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;color:#fff;font-weight:500"><i class="las la-shapes" style="font-size:18px;color:#0099ff"></i>Logo system</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-palette" style="font-size:18px"></i>Color</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-font" style="font-size:18px"></i>Typography</div>
+</div>
+<div style="margin-top:auto;padding:12px;background:#141414;border-radius:10px;display:flex;flex-direction:column;gap:6px">
+<div style="font:500 12px/1 Inter,sans-serif;color:#fff">Draft — not published</div>
+<div style="font:400 12px/1.4 Inter,sans-serif;color:#8a8a94">Client viewer arrives in v1.0</div>
+</div>
+</div>
+
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Logo system</span></div>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="display:flex;padding:3px;background:#141414;border-radius:999px">
+<div style="padding:6px 16px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">EN</div>
+<div style="padding:6px 16px;border-radius:999px;color:#8a8a94;font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div>
+</div>
+<div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div>
+</div>
+</div>
+
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;gap:24px;overflow:hidden">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:18px">
+<div>
+<h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Logo system</h1>
+<p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94;max-width:52ch">Primary lockup, mark and wordmark. Clearspace and minimum sizes are computed from the uploaded file, not typed in.</p>
+</div>
+<div style="flex:1;min-height:0;background:#141414;border-radius:16px;position:relative;display:grid;place-items:center;overflow:hidden">
+<div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:32px 32px"></div>
+<div style="position:relative;padding:{{ csPx }}px">
+<div style="position:absolute;inset:0;border:1px dashed rgba(0,153,255,.65);border-radius:3px"></div>
+<div style="position:absolute;left:0;right:0;top:-1px;height:1px;background:rgba(0,153,255,.2)"></div>
+<img src="assets/markyos-lockup.svg" alt="Markyos lockup" style="display:block;width:360px;filter:invert(1)">
+<div style="position:absolute;top:50%;left:0;transform:translate(-50%,-50%) rotate(-90deg);font:600 10px/1 ui-monospace,Menlo,monospace;color:#0099ff;background:#141414;padding:3px 5px">{{ csLabel }}</div>
+<div style="position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);font:600 10px/1 ui-monospace,Menlo,monospace;color:#0099ff;background:#141414;padding:3px 5px">{{ csLabel }}</div>
+</div>
+<div style="position:absolute;left:20px;bottom:18px;font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">markyos-lockup.svg · 1080 × 286</div>
+</div>
+<div style="flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<div style="height:104px;background:#1c1c1c;border-radius:10px;display:grid;place-items:center;position:relative"><img src="assets/markyos-lockup.svg" alt="" style="width:130px;filter:invert(1)"><span style="position:absolute;left:12px;top:10px;font:500 10px/1 Inter,sans-serif;color:#8a8a94">Reversed</span></div>
+<div style="height:104px;background:#f5f5f5;border-radius:10px;display:grid;place-items:center;position:relative"><img src="assets/markyos-lockup.svg" alt="" style="width:130px"><span style="position:absolute;left:12px;top:10px;font:500 10px/1 Inter,sans-serif;color:#6c6c76">Positive</span></div>
+<div style="height:104px;background:#1c1c1c;border-radius:10px;display:grid;place-items:center;position:relative;box-shadow:inset 0 0 0 1px rgba(0,153,255,.5)"><img src="assets/markyos-mark.svg" alt="" style="height:52px;filter:invert(1)"><span style="position:absolute;left:12px;top:10px;font:500 10px/1 Inter,sans-serif;color:#8a8a94">Mark only</span></div>
+</div>
+</div>
+
+<div style="width:308px;flex:none;display:flex;flex-direction:column;gap:14px">
+<div style="background:#141414;border-radius:14px;padding:18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px"><span style="font:600 13px/1 Inter,sans-serif">Clearspace</span><span style="font:600 13px/1 ui-monospace,Menlo,monospace;color:#0099ff">{{ csMul }}×</span></div>
+<input type="range" min="0.25" max="1" step="0.05" value="{{ cs }}" onChange="{{ onCs }}" style="width:100%;accent-color:#0099ff;background:transparent">
+<div style="display:flex;justify-content:space-between;margin-top:8px;font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76"><span>0.25×</span><span>1×</span></div>
+<p style="margin:14px 0 0;font:400 12px/1.55 Inter,sans-serif;color:#8a8a94">Measured from the mark's cap height ({{ capPx }} px at this preview scale). Exported guides use the same ratio at any size.</p>
+</div>
+<div style="background:#141414;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<span style="font:600 13px/1 Inter,sans-serif">Minimum size</span>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#1c1c1c;border-radius:8px"><span style="font:400 12px/1 Inter,sans-serif;color:#8a8a94">Digital</span><span style="font:600 13px/1 ui-monospace,Menlo,monospace">24 px</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#1c1c1c;border-radius:8px"><span style="font:400 12px/1 Inter,sans-serif;color:#8a8a94">Print</span><span style="font:600 13px/1 ui-monospace,Menlo,monospace">8 mm</span></div>
+<div style="display:flex;align-items:center;gap:8px;font:400 11px/1.4 Inter,sans-serif;color:#6c6c76"><i class="las la-info-circle" style="font-size:15px"></i>Below this the counter in the mark closes up.</div>
+</div>
+<div style="background:#141414;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+<span style="font:600 13px/1 Inter,sans-serif">Files</span>
+<div style="display:flex;align-items:center;gap:10px"><i class="las la-file-code" style="font-size:18px;color:#8a8a94"></i><span style="flex:1;min-width:0;font:400 12px/1 Inter,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">markyos-lockup.svg</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">14 KB</span></div>
+<div style="display:flex;align-items:center;gap:10px"><i class="las la-file-code" style="font-size:18px;color:#8a8a94"></i><span style="flex:1;min-width:0;font:400 12px/1 Inter,sans-serif">markyos-mark.svg</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">4 KB</span></div>
+<div style="display:flex;align-items:center;gap:10px"><i class="las la-file-code" style="font-size:18px;color:#8a8a94"></i><span style="flex:1;min-width:0;font:400 12px/1 Inter,sans-serif">markyos-wordmark.svg</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">11 KB</span></div>
+<div style="display:flex;align-items:center;gap:8px;padding:9px 0 0;font:500 12px/1 Inter,sans-serif;color:#8a8a94"><i class="las la-plus" style="font-size:15px"></i>Replace or add a variant</div>
+</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+<div style="height:44px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Download assets</div>
+<div style="height:44px;border-radius:999px;background:#1c1c1c;color:#fff;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Copy share link</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>2 · Typography — bidirectional specimen (toggle flips reading order)</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;background:#090909;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-file-alt" style="font-size:18px"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-shapes" style="font-size:18px"></i>Logo system</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-palette" style="font-size:18px"></i>Color</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;color:#fff;font-weight:500"><i class="las la-font" style="font-size:18px;color:#0099ff"></i>Typography</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Typography</span></div>
+<div style="display:flex;align-items:center;gap:14px">
+<span style="font:400 12px/1 Inter,sans-serif;color:#6c6c76">Previewing</span>
+<div style="display:flex;padding:3px;background:#141414;border-radius:999px;box-shadow:0 0 0 3px rgba(0,153,255,.18)">
+<div style="padding:6px 16px;border-radius:999px;background:{{ enBg }};color:{{ enFg }};font:600 12px/1 Inter,sans-serif;cursor:pointer" onClick="{{ setEn }}">EN</div>
+<div style="padding:6px 16px;border-radius:999px;background:{{ arBg }};color:{{ arFg }};font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif;cursor:pointer" onClick="{{ setAr }}">ع</div>
+</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div>
+<h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Typography</h1>
+<p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">Two scripts, one scale. Arabic is set natively — never a transliteration of the Latin metrics.</p>
+</div>
+<div style="display:flex;gap:8px"><div style="height:36px;padding:0 16px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Upload font</div></div>
+</div>
+<div dir="{{ dirAttr }}" style="flex:none;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div style="background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 13px/1 Inter,sans-serif">Inter Variable</span><span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.08em;padding:5px 8px;border-radius:999px;background:rgba(0,153,255,.14);color:#0099ff">en-US · BODY</span></div>
+<div dir="ltr" style="font:500 76px/1 Inter,sans-serif;letter-spacing:-.03em">Aa Bb</div>
+<div dir="ltr" style="font:400 15px/1.55 Inter,sans-serif;color:#c9c9d1">Brand governance for studios that ship in two directions.</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">300</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">400</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">500</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">600</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">700</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76;padding:6px 9px;background:#1c1c1c;border-radius:6px">.woff2 · 82 KB</span>
+</div>
+</div>
+<div style="background:#141414;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 13px/1 Inter,sans-serif">IBM Plex Sans Arabic</span><span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.08em;padding:5px 8px;border-radius:999px;background:rgba(0,153,255,.14);color:#0099ff">ar-SA · BODY</span></div>
+<div dir="rtl" style="font:500 76px/1.1 'IBM Plex Sans Arabic',Inter,sans-serif">أبجد</div>
+<div dir="rtl" style="font:400 15px/1.7 'IBM Plex Sans Arabic',Inter,sans-serif;color:#c9c9d1">إدارة الهوية البصرية للاستوديوهات التي تعمل باتجاهين.</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">300</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">400</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">500</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">600</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#8a8a94;padding:6px 9px;background:#1c1c1c;border-radius:6px">700</span>
+<span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76;padding:6px 9px;background:#1c1c1c;border-radius:6px">.woff2 · 96 KB</span>
+</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;background:#141414;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)"><span style="font:600 13px/1 Inter,sans-serif">Type scale</span><span style="font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">4 steps · locked to 1.25 ratio</span></div>
+<div dir="{{ dirAttr }}" style="flex:1;min-height:0;display:flex;flex-direction:column">
+<div style="flex:1;display:flex;align-items:center;gap:24px;padding:0 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)">
+<div style="width:150px;flex:none"><div style="font:600 13px/1.3 Inter,sans-serif">Display</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:#6c6c76">56 / 60 · 600</div></div>
+<div dir="ltr" style="flex:1;min-width:0;font:600 40px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Brand, both ways</div>
+<div dir="rtl" style="flex:1;min-width:0;font:600 34px/1.2 'IBM Plex Sans Arabic',Inter,sans-serif;overflow:hidden;white-space:nowrap">هوية باتجاهين</div>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:24px;padding:0 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)">
+<div style="width:150px;flex:none"><div style="font:600 13px/1.3 Inter,sans-serif">Heading</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:#6c6c76">32 / 40 · 600</div></div>
+<div dir="ltr" style="flex:1;min-width:0;font:600 24px/1.2 Inter,sans-serif;letter-spacing:-.01em">Asset library and rights</div>
+<div dir="rtl" style="flex:1;min-width:0;font:600 22px/1.4 'IBM Plex Sans Arabic',Inter,sans-serif">مكتبة الأصول والحقوق</div>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:24px;padding:0 20px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)">
+<div style="width:150px;flex:none"><div style="font:600 13px/1.3 Inter,sans-serif">Body</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:#6c6c76">16 / 26 · 400</div></div>
+<div dir="ltr" style="flex:1;min-width:0;font:400 16px/1.5 Inter,sans-serif;color:#c9c9d1">Every field, review step and layout works in both scripts.</div>
+<div dir="rtl" style="flex:1;min-width:0;font:400 16px/1.7 'IBM Plex Sans Arabic',Inter,sans-serif;color:#c9c9d1">كل حقل وخطوة مراجعة تعمل بالنصين.</div>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:24px;padding:0 20px">
+<div style="width:150px;flex:none"><div style="font:600 13px/1.3 Inter,sans-serif">Caption</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:#6c6c76">13 / 20 · 400</div></div>
+<div dir="ltr" style="flex:1;min-width:0;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Updated 12 Sep · 2 files</div>
+<div dir="rtl" style="flex:1;min-width:0;font:400 13px/1.6 'IBM Plex Sans Arabic',Inter,sans-serif;color:#8a8a94">تم التحديث ١٢ سبتمبر · ملفان</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>3 · Workspace shell + AR/EN toggle states and RTL mirror</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="flex:1;min-height:0;display:flex">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="flex:1;font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span><i class="las la-angle-down" style="font-size:14px;color:#6c6c76"></i></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;font-weight:500"><i class="las la-file-alt" style="font-size:18px;color:#0099ff"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-shapes" style="font-size:18px"></i>Logo system<span style="margin-left:auto;font:500 10px/1 ui-monospace,Menlo,monospace;color:#6c6c76">3</span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-palette" style="font-size:18px"></i>Color<span style="margin-left:auto;font:500 10px/1 ui-monospace,Menlo,monospace;color:#6c6c76">6</span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-font" style="font-size:18px"></i>Typography<span style="margin-left:auto;font:500 10px/1 ui-monospace,Menlo,monospace;color:#6c6c76">2</span></div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:9px 10px;color:#8a8a94"><i class="las la-cog" style="font-size:18px"></i>Settings</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Overview</span></div>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="display:flex;padding:3px;background:#141414;border-radius:999px"><div style="padding:6px 16px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">EN</div><div style="padding:6px 16px;border-radius:999px;color:#8a8a94;font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div>
+<div style="height:36px;padding:0 18px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Share</div>
+<div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div>
+</div>
+</div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:16px">
+<h1 style="margin:0;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Overview</h1>
+<div style="flex:1;background:#141414;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)"></div>
+</div>
+</div>
+</div>
+<div style="flex:none;height:280px;background:#0d0d0d;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);padding:22px 28px;display:flex;gap:32px">
+<div style="flex:none;display:flex;flex-direction:column;gap:16px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">AR / EN toggle — states</div>
+<div style="display:flex;align-items:center;gap:20px">
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;padding:4px;background:#141414;border-radius:999px"><div style="padding:9px 22px;border-radius:999px;background:#fff;color:#090909;font:600 15px/1 Inter,sans-serif">EN</div><div style="padding:9px 22px;border-radius:999px;color:#8a8a94;font:600 15px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><span style="font:400 11px/1 Inter,sans-serif;color:#6c6c76">Latin active</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;padding:4px;background:#141414;border-radius:999px"><div style="padding:9px 22px;border-radius:999px;color:#8a8a94;font:600 15px/1 Inter,sans-serif">EN</div><div style="padding:9px 22px;border-radius:999px;background:#fff;color:#090909;font:600 15px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><span style="font:400 11px/1 Inter,sans-serif;color:#6c6c76">Arabic active</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;padding:4px;background:#141414;border-radius:999px;box-shadow:0 0 0 2px #0099ff"><div style="padding:9px 22px;border-radius:999px;background:#fff;color:#090909;font:600 15px/1 Inter,sans-serif">EN</div><div style="padding:9px 22px;border-radius:999px;color:#8a8a94;font:600 15px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><span style="font:400 11px/1 Inter,sans-serif;color:#0099ff">Keyboard focus</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;padding:4px;background:#141414;border-radius:999px"><div style="padding:9px 22px;border-radius:999px;background:#fff;color:#090909;font:600 15px/1 Inter,sans-serif">EN</div><div style="padding:9px 22px;border-radius:999px;background:#1c1c1c;color:#fff;font:600 15px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><span style="font:400 11px/1 Inter,sans-serif;color:#6c6c76">Hover on ع</span></div>
+</div>
+<p style="margin:0;max-width:60ch;font:400 12px/1.6 Inter,sans-serif;color:#8a8a94">Two segments only — no dropdown, no flags. The label of each segment is set in its own script, so the control reads correctly in both modes. Switching sets <span style="font-family:ui-monospace,Menlo,monospace;color:#c9c9d1">dir</span> on the shell; the rail moves to the right, chevrons flip, the mark does not.</p>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Shell mirrored — ar-SA</div>
+<div dir="rtl" style="flex:1;min-height:0;background:#090909;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);display:flex;overflow:hidden">
+<div style="width:150px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:12px 10px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:7px"><img src="assets/markyos-mark.svg" alt="" style="height:14px;filter:invert(1)"><span style="font:600 11px/1 'IBM Plex Sans Arabic',Inter,sans-serif">استوديو ندين</span></div>
+<div style="display:flex;flex-direction:column;gap:2px;font:400 11px/1 'IBM Plex Sans Arabic',Inter,sans-serif">
+<div style="padding:7px 8px;border-radius:6px;background:#1c1c1c;color:#fff">نظرة عامة</div>
+<div style="padding:7px 8px;border-radius:6px;color:#8a8a94">الشعار</div>
+<div style="padding:7px 8px;border-radius:6px;color:#8a8a94">الألوان</div>
+<div style="padding:7px 8px;border-radius:6px;color:#8a8a94">الخطوط</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:38px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<span style="font:400 11px/1 'IBM Plex Sans Arabic',Inter,sans-serif;color:#8a8a94">دليل الهوية</span>
+<div style="display:flex;padding:2px;background:#141414;border-radius:999px"><div style="padding:4px 9px;border-radius:999px;color:#8a8a94;font:600 9px/1 Inter,sans-serif">EN</div><div style="padding:4px 9px;border-radius:999px;background:#fff;color:#090909;font:600 9px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div>
+</div>
+<div style="flex:1;padding:12px;display:flex;flex-direction:column;gap:8px"><div style="font:600 15px/1.3 'IBM Plex Sans Arabic',Inter,sans-serif">نظرة عامة</div><div style="flex:1;background:#141414;border-radius:8px"></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>4 · Color palette — swatch documentation</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-file-alt" style="font-size:18px"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-shapes" style="font-size:18px"></i>Logo system</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;font-weight:500"><i class="las la-palette" style="font-size:18px;color:#0099ff"></i>Color</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-font" style="font-size:18px"></i>Typography</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Color</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div style="display:flex;padding:3px;background:#141414;border-radius:999px"><div style="padding:6px 16px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">EN</div><div style="padding:6px 16px;border-radius:999px;color:#8a8a94;font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+</div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Color</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">6 colors · values generated from HEX, editable per space.</p></div>
+<div style="display:flex;gap:8px"><div style="height:36px;padding:0 16px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Import from file</div><div style="height:36px;padding:0 16px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif">Add color</div></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+<div style="background:#141414;border-radius:14px;overflow:hidden"><div style="height:104px;background:#090909;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Canvas</span><i class="las la-ellipsis-h" style="font-size:16px;color:#6c6c76"></i></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#090909<br>9 · 9 · 9<br>0 0 0 96</div></div></div>
+<div style="background:#141414;border-radius:14px;overflow:hidden"><div style="height:104px;background:#141414;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Surface 1</span><i class="las la-ellipsis-h" style="font-size:16px;color:#6c6c76"></i></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#141414<br>20 · 20 · 20<br>0 0 0 92</div></div></div>
+<div style="background:#141414;border-radius:14px;overflow:hidden"><div style="height:104px;background:#1c1c1c;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Surface 2</span><i class="las la-ellipsis-h" style="font-size:16px;color:#6c6c76"></i></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#1C1C1C<br>28 · 28 · 28<br>0 0 0 89</div></div></div>
+<div style="background:#141414;border-radius:14px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,153,255,.5)"><div style="height:104px;background:#0099ff"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Accent</span><span style="font:500 10px/1 Inter,sans-serif;letter-spacing:.08em;padding:5px 8px;border-radius:999px;background:rgba(0,153,255,.16);color:#0099ff">PRIMARY</span></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#0099FF<br>0 · 153 · 255<br>100 40 0 0</div></div></div>
+<div style="background:#141414;border-radius:14px;overflow:hidden"><div style="height:104px;background:#fff"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Ink reversed</span><i class="las la-ellipsis-h" style="font-size:16px;color:#6c6c76"></i></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#FFFFFF<br>255 · 255 · 255<br>0 0 0 0</div></div></div>
+<div style="background:#141414;border-radius:14px;overflow:hidden"><div style="height:104px;background:#8a8a94"></div><div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 14px/1 Inter,sans-serif">Muted</span><i class="las la-ellipsis-h" style="font-size:16px;color:#6c6c76"></i></div><div style="font:400 11px/1.7 ui-monospace,Menlo,monospace;color:#8a8a94">#8A8A94<br>138 · 138 · 148<br>7 7 0 42</div></div></div>
+<div style="border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:220px;color:#8a8a94"><i class="las la-plus" style="font-size:22px"></i><span style="font:500 13px/1 Inter,sans-serif">Add color</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#141414;border-radius:12px"><i class="las la-adjust" style="font-size:18px;color:#0099ff"></i><span style="font:400 13px/1.4 Inter,sans-serif;color:#c9c9d1">Accent on Canvas passes AA at 16px and above.</span><a href="#4a" style="margin-left:auto;font:500 13px/1 Inter,sans-serif">Contrast report</a></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="5a"><div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>5 · Overview — the shared section template</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:flex;height:800px;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif;letter-spacing:-.01em">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76;padding:0 8px 10px">Brand book</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;background:#1c1c1c;font-weight:500"><i class="las la-file-alt" style="font-size:18px;color:#0099ff"></i>Overview</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-shapes" style="font-size:18px"></i>Logo system</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-palette" style="font-size:18px"></i>Color</div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#8a8a94"><i class="las la-font" style="font-size:18px"></i>Typography</div>
+</div>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">Brand book<i class="las la-angle-right" style="font-size:14px"></i><span style="color:#fff;font-weight:500">Overview</span></div>
+<div style="display:flex;align-items:center;gap:14px"><span style="font:400 12px/1 Inter,sans-serif;color:#6c6c76">Saved 10m ago</span><div style="display:flex;padding:3px;background:#141414;border-radius:999px"><div style="padding:6px 16px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">EN</div><div style="padding:6px 16px;border-radius:999px;color:#8a8a94;font:600 12px/1 'IBM Plex Sans Arabic',Inter,sans-serif">ع</div></div><div style="width:30px;height:30px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:#8a8a94">ND</div></div>
+</div>
+<div style="flex:1;min-height:0;padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:space-between">
+<div><h1 style="margin:0 0 6px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.02em">Overview</h1><p style="margin:0;font:400 14px/1.5 Inter,sans-serif;color:#8a8a94">Section template: header, one content well, one action cluster. Color and Typography inherit this exactly.</p></div>
+<div style="height:36px;padding:0 16px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 13px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Add Arabic version</div>
+</div>
+<div style="flex:1;min-height:0;background:#141414;border-radius:16px;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;align-items:center;gap:4px;padding:10px 16px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07);color:#8a8a94">
+<i class="las la-heading" style="font-size:18px;padding:6px;border-radius:6px;background:#1c1c1c;color:#fff"></i>
+<i class="las la-bold" style="font-size:18px;padding:6px"></i><i class="las la-italic" style="font-size:18px;padding:6px"></i><i class="las la-link" style="font-size:18px;padding:6px"></i><i class="las la-list-ul" style="font-size:18px;padding:6px"></i><i class="las la-quote-right" style="font-size:18px;padding:6px"></i>
+<span style="width:1px;height:18px;background:rgba(255,255,255,.1);margin:0 8px"></span>
+<span style="font:500 12px/1 Inter,sans-serif">Paragraph</span><i class="las la-angle-down" style="font-size:13px"></i>
+<span style="margin-left:auto;font:400 11px/1 ui-monospace,Menlo,monospace;color:#6c6c76">248 words</span>
+</div>
+<div style="flex:1;min-height:0;padding:32px 40px;max-width:74ch">
+<h2 style="margin:0 0 14px;font:600 26px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">A studio that reads both ways</h2>
+<p style="margin:0 0 16px;font:400 16px/1.7 Inter,sans-serif;color:#c9c9d1">Nadeen Studio builds identity systems for clients in Riyadh, Amman and Berlin. Every system ships in Arabic and Latin at the same time — not as a localisation pass, but as two equal drafts of the same idea.</p>
+<p style="margin:0 0 16px;font:400 16px/1.7 Inter,sans-serif;color:#c9c9d1">This brand book is the single source for the studio's own mark, palette and type. Sections stay short on purpose: a rule that needs a paragraph of defence is usually the wrong rule.</p>
+<div style="padding:16px 20px;border-left:2px solid #0099ff;background:#1c1c1c;border-radius:0 10px 10px 0;font:400 15px/1.7 Inter,sans-serif;color:#c9c9d1">Set the Arabic first. If the layout survives it, the Latin will be fine.</div>
+<p style="margin:16px 0 0;font:400 13px/1.6 Inter,sans-serif;color:#6c6c76">Type <span style="font-family:ui-monospace,Menlo,monospace;color:#8a8a94">/</span> for blocks · <span style="font-family:ui-monospace,Menlo,monospace;color:#8a8a94">⌘⇧A</span> to switch script mid-paragraph</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="6a"><div class="dv-olabel"><a class="dv-oid" href="#6a">6a</a>6 · Download / export — slide-over from the Logo section</div>
+<div class="dv-card" style="width:1280px">
+<div style="height:800px;position:relative;font:14px/1.5 Inter,sans-serif;color:#fff;overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;filter:saturate(.6)">
+<div style="width:232px;flex:none;box-shadow:inset -1px 0 0 rgba(255,255,255,.07);padding:20px 16px;display:flex;flex-direction:column;gap:26px;opacity:.5">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:22px;filter:invert(1)"><span style="font:600 15px/1 'Bricolage Display',Inter,sans-serif">Nadeen Studio</span></div>
+<div style="display:flex;flex-direction:column;gap:2px;color:#8a8a94"><div style="padding:9px 10px">Overview</div><div style="padding:9px 10px;background:#1c1c1c;border-radius:8px;color:#fff">Logo system</div><div style="padding:9px 10px">Color</div><div style="padding:9px 10px">Typography</div></div>
+</div>
+<div style="flex:1;padding:26px 28px;opacity:.45"><h1 style="margin:0 0 20px;font:600 30px/1.15 'Bricolage Display',Inter,sans-serif">Logo system</h1><div style="height:380px;background:#141414;border-radius:16px;display:grid;place-items:center"><img src="assets/markyos-lockup.svg" alt="" style="width:300px;filter:invert(1)"></div></div>
+</div>
+<div style="position:absolute;inset:0;background:rgba(9,9,9,.72)"></div>
+<div style="position:absolute;top:0;right:0;bottom:0;width:480px;background:#141414;box-shadow:inset 1px 0 0 rgba(255,255,255,.08);display:flex;flex-direction:column">
+<div style="flex:none;padding:24px 28px 18px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+<div><h2 style="margin:0 0 4px;font:600 22px/1.25 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Download assets</h2><p style="margin:0;font:400 13px/1.5 Inter,sans-serif;color:#8a8a94">Logo system · 3 source files</p></div>
+<i class="las la-times" style="font-size:20px;color:#8a8a94"></i>
+</div>
+<div style="flex:1;min-height:0;padding:22px 28px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Formats</span>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#1c1c1c;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,153,255,.45)"><span style="width:18px;height:18px;border-radius:4px;background:#0099ff;display:grid;place-items:center"><i class="las la-check" style="font-size:13px;color:#fff"></i></span><span style="flex:1;font:500 14px/1 Inter,sans-serif">SVG</span><span style="font:400 12px/1 ui-monospace,Menlo,monospace;color:#8a8a94">vector · 29 KB</span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#1c1c1c;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,153,255,.45)"><span style="width:18px;height:18px;border-radius:4px;background:#0099ff;display:grid;place-items:center"><i class="las la-check" style="font-size:13px;color:#fff"></i></span><span style="flex:1;font:500 14px/1 Inter,sans-serif">PNG</span><div style="display:flex;gap:6px">
+<span style="font:500 11px/1 ui-monospace,Menlo,monospace;padding:6px 9px;border-radius:6px;background:#fff;color:#090909">1×</span>
+<span style="font:500 11px/1 ui-monospace,Menlo,monospace;padding:6px 9px;border-radius:6px;background:#252525;color:#8a8a94">2×</span>
+<span style="font:500 11px/1 ui-monospace,Menlo,monospace;padding:6px 9px;border-radius:6px;background:#fff;color:#090909">3×</span></div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#1c1c1c;border-radius:10px"><span style="width:18px;height:18px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)"></span><span style="flex:1;font:500 14px/1 Inter,sans-serif;color:#c9c9d1">WebP</span><span style="font:400 12px/1 ui-monospace,Menlo,monospace;color:#6c6c76">smallest</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Variants</span>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="padding:9px 14px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">Reversed</span>
+<span style="padding:9px 14px;border-radius:999px;background:#1c1c1c;color:#c9c9d1;font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Positive</span>
+<span style="padding:9px 14px;border-radius:999px;background:#fff;color:#090909;font:600 12px/1 Inter,sans-serif">Mark only</span>
+<span style="padding:9px 14px;border-radius:999px;background:#1c1c1c;color:#c9c9d1;font:600 12px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Wordmark</span>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 11px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6c6c76">Direct link</span>
+<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#1c1c1c;border-radius:10px"><i class="las la-link" style="font-size:17px;color:#0099ff"></i><span style="flex:1;min-width:0;font:400 12px/1 ui-monospace,Menlo,monospace;color:#c9c9d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cdn.markyos.com/nadeen/logo-kit.zip</span><span style="font:600 12px/1 Inter,sans-serif;color:#0099ff">Copy</span></div>
+<span style="font:400 12px/1.5 Inter,sans-serif;color:#6c6c76">Link stays valid while the section is published. Regenerating replaces it.</span>
+</div>
+</div>
+<div style="flex:none;padding:20px 28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;align-items:center;gap:14px">
+<div style="flex:1"><div style="font:600 14px/1.3 Inter,sans-serif">6 files</div><div style="font:400 12px/1.3 ui-monospace,Menlo,monospace;color:#8a8a94">2.4 Mb · zip</div></div>
+<div style="height:44px;padding:0 22px;border-radius:999px;background:#1c1c1c;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)">Cancel</div>
+<div style="height:44px;padding:0 26px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif">Download</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="7a"><div class="dv-olabel"><a class="dv-oid" href="#7a">7a</a>7 · Create workspace — deliberately bare</div>
+<div class="dv-card" style="width:626px">
+<div style="height:800px;display:flex;flex-direction:column;font:14px/1.5 Inter,sans-serif;color:#fff">
+<div style="height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px"><img src="assets/markyos-mark.svg" alt="Markyos" style="height:20px;filter:invert(1)"><span style="font:400 12px/1 Inter,sans-serif;color:#6c6c76">Log out</span></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:0 72px">
+<h1 style="margin:0 0 10px;font:600 34px/1.15 'Bricolage Display',Inter,sans-serif;letter-spacing:-.025em">Name your brand</h1>
+<p style="margin:0 0 30px;font:400 15px/1.6 Inter,sans-serif;color:#8a8a94">One workspace per brand. You can rename it later.</p>
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:26px">
+<input type="text" placeholder="Nadeen Studio" style="height:52px;padding:0 18px;background:#141414;border:0;border-radius:12px;box-shadow:inset 0 0 0 1px #0099ff, 0 0 0 3px rgba(0,153,255,.18);color:#fff;font:400 16px/1 Inter,sans-serif;outline:none">
+<span style="font:400 12px/1 Inter,sans-serif;color:#6c6c76">markyos.com/nadeen-studio</span>
+</div>
+<div style="height:48px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 15px/1 Inter,sans-serif">Create workspace</div>
+</div>
+<div style="flex:none;padding:0 72px 40px;font:400 12px/1 Inter,sans-serif;color:#6c6c76">Arabic and English are both on by default.</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="8a"><div class="dv-olabel"><a class="dv-oid" href="#8a">8a</a>8 · Log in — boilerplate, on brand</div>
+<div class="dv-card" style="width:626px">
+<div style="height:800px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;font:14px/1.5 Inter,sans-serif;color:#fff;padding:0 72px">
+<img src="assets/markyos-lockup.svg" alt="Markyos" style="width:190px;filter:invert(1)">
+<div style="width:100%;background:#141414;border-radius:18px;padding:30px;display:flex;flex-direction:column;gap:16px">
+<h1 style="margin:0;font:600 22px/1.2 'Bricolage Display',Inter,sans-serif;letter-spacing:-.015em">Log in</h1>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Email</span><input type="email" placeholder="you@studio.com" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;color:#fff;font:400 15px/1 Inter,sans-serif;outline:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)"></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;justify-content:space-between"><span style="font:500 12px/1 Inter,sans-serif;color:#8a8a94">Password</span><a href="#8a" style="font:500 12px/1 Inter,sans-serif">Forgot?</a></div><input type="password" value="••••••••••" style="height:46px;padding:0 16px;background:#1c1c1c;border:0;border-radius:10px;color:#fff;font:400 15px/1 Inter,sans-serif;outline:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)"></div>
+<div style="height:46px;border-radius:999px;background:#fff;color:#090909;display:grid;place-items:center;font:600 14px/1 Inter,sans-serif;margin-top:4px">Log in</div>
+<div style="display:flex;align-items:center;gap:12px;color:#6c6c76;font:400 11px/1 Inter,sans-serif"><span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span>OR<span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span></div>
+<div style="height:46px;border-radius:999px;background:#1c1c1c;display:flex;align-items:center;justify-content:center;gap:10px;font:600 14px/1 Inter,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><i class="lab la-google" style="font-size:17px"></i>Continue with Google</div>
+</div>
+<div style="display:flex;gap:8px;font:400 13px/1 Inter,sans-serif;color:#8a8a94">New here?<a href="#8a">Create an account</a></div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "make the nav a top bar instead in <a class="dv-oid" href="#3a">3a</a>" · "show <a class="dv-oid" href="#1a">1a</a> fully mirrored in Arabic" · "tighter, denser version of the section template"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { cs: 0.5, lang: 'en' };
+  renderVals() {
+    const cs = this.state.cs, cap = 86, px = Math.round(cap * cs);
+    const ar = this.state.lang === 'ar';
+    return {
+      cs, csMul: cs.toFixed(2).replace(/0$/, ''), csPx: px, capPx: cap,
+      csLabel: px + ' px',
+      onCs: e => this.setState({ cs: parseFloat(e.target.value) }),
+      dirAttr: ar ? 'rtl' : 'ltr',
+      setEn: () => this.setState({ lang: 'en' }),
+      setAr: () => this.setState({ lang: 'ar' }),
+      enBg: ar ? 'transparent' : '#fff', enFg: ar ? '#8a8a94' : '#090909',
+      arBg: ar ? '#fff' : 'transparent', arFg: ar ? '#090909' : '#8a8a94'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+/* Markyos spacing. The kit is not on a strict 4/8 grid — these are the
+   measured values that recur in its components and layouts. */
+:root{
+  --space-1:4px;
+  --space-2:5px;
+  --space-3:8px;
+  --space-4:10px;
+  --space-5:14px;
+  --space-6:18px;
+  --space-7:19px;
+  --space-8:25px;
+  --space-9:26px;
+  --space-10:32px;
+  --space-11:40px;
+
+  /* Component metrics lifted from the source */
+  --control-h:46px;          /* plain & icon buttons */
+  --control-h-sm:40px;       /* tabs, pagination cells */
+  --field-h:72px;            /* input block incl. title + underline */
+  --tag-h:36px;
+  --status-tag-h:28px;
+  --badge-h:24px;
+  --rail-w:84px;             /* icon navigation rail */
+  --rail-item-h:64px;
+  --rail-item-box:48px;
+  --topbar-h:84px;
+  --widget-row-h:72px;
+}

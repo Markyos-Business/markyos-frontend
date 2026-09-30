@@ -1,0 +1,38 @@
+/* Markyos type tokens.
+   Product UI = Lato (headings, labels, body) + Source Sans 3 (kit input specimens).
+   Brand/marketing display = Bricolage Grotesque, the Markyos wordmark typeface. */
+:root{
+  --font-brand:"Bricolage Grotesque","Lato",system-ui,sans-serif;
+  --font-brand-condensed:"Bricolage Grotesque Condensed","Bricolage Grotesque",system-ui,sans-serif;
+  --font-ui:"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-alt:"Source Sans 3","Source Sans Pro",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-icon:"Line Awesome Free","la-solid-900",sans-serif;
+
+  --weight-light:300;
+  --weight-regular:400;
+  --weight-bold:700;
+  --weight-black:900;
+
+  /* Sizes as used in the kit — no invented steps */
+  --size-h1:32px;  --lh-h1:48px;
+  --size-h2:26px;  --lh-h2:40px;
+  --size-h3:20px;  --lh-h3:32px;
+  --size-h4:18px;  --lh-h4:27px;
+  --size-h5:16px;  --lh-h5:24px;
+  --size-body:14px;      --lh-body:21px;
+  --size-secondary:12px; --lh-secondary:18px;
+
+  /* Roles */
+  --type-h1:var(--weight-bold) var(--size-h1)/var(--lh-h1) var(--font-ui);
+  --type-h2:var(--weight-bold) var(--size-h2)/var(--lh-h2) var(--font-ui);
+  --type-h3:var(--weight-bold) var(--size-h3)/var(--lh-h3) var(--font-ui);
+  --type-h4:var(--weight-bold) var(--size-h4)/var(--lh-h4) var(--font-ui);
+  --type-h5:var(--weight-bold) var(--size-h5)/var(--lh-h5) var(--font-ui);
+  --type-body:var(--weight-regular) var(--size-body)/var(--lh-body) var(--font-ui);
+  --type-body-bold:var(--weight-bold) var(--size-body)/var(--lh-body) var(--font-ui);
+  --type-secondary:var(--weight-regular) var(--size-secondary)/var(--lh-secondary) var(--font-ui);
+  --type-secondary-bold:var(--weight-bold) var(--size-secondary)/var(--lh-secondary) var(--font-ui);
+  --type-button:var(--weight-bold) var(--size-body)/1 var(--font-ui);
+  --type-overline:var(--weight-black) var(--size-secondary)/1 var(--font-ui);
+  --overline-transform:uppercase; /* @kind other */
+}

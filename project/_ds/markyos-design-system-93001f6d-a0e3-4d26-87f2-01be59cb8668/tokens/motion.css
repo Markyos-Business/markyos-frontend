@@ -1,0 +1,9 @@
+/* Markyos motion. The source kit is a static file: it defines states, not
+   timings. These are the minimum needed to animate between the states the kit
+   draws (resting -> hover -> active) without inventing new expression. */
+:root{
+  --ease-standard:cubic-bezier(0.4,0,0.2,1); /* @kind other */
+  --duration-fast:120ms; /* @kind other */
+  --duration-base:180ms; /* @kind other */
+  --transition-state:background-color var(--duration-fast) var(--ease-standard),color var(--duration-fast) var(--ease-standard),box-shadow var(--duration-fast) var(--ease-standard),opacity var(--duration-fast) var(--ease-standard); /* @kind other */
+}

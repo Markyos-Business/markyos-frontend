@@ -1,0 +1,14 @@
+/* Markyos — webfonts.
+   Bricolage Grotesque = brand typeface (user-supplied TTFs, assets/fonts/).
+   Lato + Source Sans Pro = product UI typefaces named by the source kit; the kit
+   shipped no binaries, so they load from Google Fonts. Line Awesome is the kit's
+   icon font (la-solid-900 / la-regular-400 / la-brands-400) loaded from CDN. */
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Source+Sans+3:wght@400;600&display=swap");
+@import url("https://cdn.jsdelivr.net/gh/icons8/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css");
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-Light.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("../assets/fonts/BricolageGrotesque-ExtraBold.ttf") format("truetype");font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque Condensed";src:url("../assets/fonts/BricolageGrotesque_24pt_Condensed-Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}

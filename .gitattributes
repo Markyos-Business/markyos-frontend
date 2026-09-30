@@ -1,0 +1,2 @@
+# Normalize line endings so Windows and cloud sessions produce clean diffs
+* text=auto

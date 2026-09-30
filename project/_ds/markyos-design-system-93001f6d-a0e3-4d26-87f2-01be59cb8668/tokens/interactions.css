@@ -1,0 +1,13 @@
+/* Markyos base interaction styles.
+   The source kit draws hover and press as a #1C1D21 @ 35% scrim over the resting
+   fill — the same treatment on primary buttons, tags and colour swatches. */
+.mk-btn{position:relative;-webkit-tap-highlight-color:transparent}
+.mk-btn::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--ink-35);opacity:0;transition:opacity var(--duration-fast) var(--ease-standard);pointer-events:none}
+.mk-btn:hover:not(:disabled)::after{opacity:1}
+.mk-btn:active:not(:disabled)::after{opacity:1}
+.mk-btn:disabled::after{opacity:0}
+.mk-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.mk-linkbtn:hover{color:var(--primary)}
+.mk-linkbtn:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+a{color:var(--text-link);text-decoration:none}
+a:hover{color:var(--primary-deep);text-decoration:underline}

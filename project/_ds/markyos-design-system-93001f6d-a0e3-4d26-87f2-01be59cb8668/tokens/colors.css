@@ -1,0 +1,76 @@
+/* Markyos colour tokens — values transcribed verbatim from the source kit's
+   Ui / ColorPalette frame and its component fills. Do not round or re-derive. */
+:root{
+  /* ── Base ramp ───────────────────────────────────────── */
+  --primary:#5E81F4;            /* Primary */
+  --primary-deep:#1B51E5;       /* Primary, pressed / brand fill in artwork */
+  --primary-dark:#1C1D21;       /* Primary dark — the ink colour */
+  --primary-grey:#8181A5;       /* Primary grey — secondary text */
+  --secondary-indigo:#9698D6;
+  --secondary-cyan:#40E1FA;
+  --secondary-cyan-alt:#2DE6FF;
+  --secondary-red:#FF808B;
+  --secondary-green:#7CE7AC;
+  --secondary-green-light:#8AF1B9;
+  --secondary-yellow:#F4BE5E;
+  --secondary-violet:#CB68FE;
+  --slate-700:#464A5F;
+  --slate-800:#3F3D56;
+  --indigo-ink:#4D4CAC;
+
+  /* ── Neutrals / lines ────────────────────────────────── */
+  --white:#FFFFFF;
+  --bg-light:#F5F5FA;           /* Background light */
+  --outline:#F0F0F3;            /* Outline */
+  --outline-resting:#ECECF2;    /* Resting outline */
+  --grey-200:#E2E2EC;
+  --grey-300:#D6D8E0;
+  --grey-400:#C4C4C4;
+  --grey-500:#98A9BC;
+  --off-white:#FAFBFF;
+
+  /* ── 10% tints (the kit's fill-at-10%-on-white pattern) ─ */
+  --primary-10:rgba(94,129,244,0.1);
+  --red-10:rgba(255,128,139,0.1);
+  --green-10:rgba(124,231,172,0.1);
+  --yellow-10:rgba(244,190,94,0.1);
+  --cyan-10:rgba(64,225,250,0.1);
+  --indigo-10:rgba(150,152,214,0.1);
+  --ink-10:rgba(28,29,33,0.1);
+  --ink-35:rgba(28,29,33,0.35);   /* the universal hover/press scrim */
+  --bg-light-40:rgba(245,245,250,0.4);
+
+  /* ── Semantic aliases ────────────────────────────────── */
+  --text-heading:var(--primary-dark);
+  --text-body:var(--primary-dark);
+  --text-muted:var(--primary-grey);
+  --text-inverted:var(--white);
+  --text-link:var(--primary);
+  --text-on-primary:var(--white);
+
+  --surface-page:var(--bg-light);
+  --surface-card:var(--white);
+  --surface-panel:var(--white);
+  --surface-sunken:var(--bg-light-40);
+  --surface-inverted:var(--primary-dark);
+
+  --border-subtle:var(--outline);
+  --border-default:var(--outline-resting);
+  --border-strong:var(--grey-200);
+  --border-focus:var(--primary);
+
+  --action-primary:var(--primary);
+  --action-primary-scrim:var(--ink-35);
+  --action-ghost-bg:var(--primary-10);
+
+  --status-success:var(--secondary-green);
+  --status-warning:var(--secondary-yellow);
+  --status-danger:var(--secondary-red);
+  --status-info:var(--secondary-cyan);
+  --status-neutral:var(--primary-grey);
+
+  --success-soft:var(--green-10);
+  --warning-soft:var(--yellow-10);
+  --danger-soft:var(--red-10);
+  --info-soft:var(--cyan-10);
+}

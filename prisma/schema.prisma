@@ -1,0 +1,992 @@
+// Markyos — database schema.
+//
+// This is the MVP Foundation target described in the architecture revision:
+// the client-side prototype's `lib/types.ts` model, expressed as Postgres, plus
+// the fields later phases depend on. Per architecture principle 10 the whole
+// shape exists from the first migration even where the feature that uses it
+// ships later — adding `stage`, `AssetStatus` or the brief tables to live data
+// later means retrofitting real workspaces instead of writing one migration.
+//
+// Two conventions carried over from the prototype and worth keeping in mind:
+//
+//   * Bilingual fields come in pairs, `field` and `fieldAr`. A persona is one
+//     person described twice, not two people, so the pairing lives on the field
+//     rather than the record. NULL means "not written yet" and the reader falls
+//     back to the other language instead of rendering a blank.
+//
+//   * Timestamps are `DateTime` here though the prototype stores epoch
+//     milliseconds. The conversion belongs in the ServerAdapter, not in the
+//     database, which should hold a real instant.
+
+generator client {
+  // Prisma 7 default: the Rust-free client. A driver adapter is supplied at
+  // runtime; connection settings live in prisma.config.ts, not in this block.
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  // No `url` here. Prisma 7 moved connection settings to prisma.config.ts and
+  // rejects the property outright; the client takes a driver adapter instead.
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------- enums ----
+
+enum WorkspaceStage {
+  DISCOVERY
+  STRATEGY
+  DESIGN
+  REVIEW
+  DELIVERED
+  LIVE
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+  CLIENT
+}
+
+enum Lang {
+  EN
+  AR
+}
+
+enum SiteMode {
+  AUTO
+  LIGHT
+  DARK
+}
+
+enum GuidelineTemplate {
+  VAULT
+  DOCS
+  STUDIO
+  DECK
+  MANUAL
+  MOSAIC
+}
+
+enum StudioStyle {
+  ATLAS
+  PRISM
+  SIGNAL
+}
+
+enum SlotKind {
+  ARABIC
+  LATIN
+  SYMBOL
+}
+
+enum UploadPhase {
+  EMPTY
+  UPLOADING
+  FAILED
+  ATTACHED
+}
+
+enum FileFormat {
+  SVG
+  PNG
+}
+
+enum AssetType {
+  PHOTO
+  ICON
+  PDF
+  FONT
+  MOCKUP
+  EXPORT
+  PATTERN
+  GRAPHIC
+  ILLUSTRATION
+}
+
+// Exploration never reaches a public surface. Only APPROVED assets may be
+// referenced by a published snapshot, an export or the API — this is the enum
+// that makes architecture principle 2 enforceable rather than a convention.
+enum AssetStatus {
+  EXPLORATION
+  APPROVED
+  ARCHIVED
+}
+
+enum AssetOrigin {
+  UPLOAD
+  MOODBOARD
+  MOCKUP
+  AI_BACKGROUND
+  IMPORT
+}
+
+// What a moodboard zone is for. UNSORTED is the tray everything lands in when
+// nobody has decided yet — a real place to put things beats a decision the
+// person collecting references is not ready to make.
+enum ZoneKind {
+  IMAGERY
+  PALETTE
+  TYPE
+  TEXTURE
+  WORDS
+  REFERENCES
+  UNSORTED
+  CUSTOM
+}
+
+enum MoodItemKind {
+  ASSET
+  NOTE
+  SWATCH
+  LINK
+  FONT
+}
+
+enum DomainStatus {
+  NONE
+  PENDING
+  VERIFIED
+}
+
+enum PlanKind {
+  FREE
+  PASS
+  SUBSCRIPTION
+}
+
+enum PinSection {
+  OVERVIEW
+  LOGO
+  COLOR
+  TYPOGRAPHY
+}
+
+enum SectionKey {
+  OVERVIEW
+  LOGO
+  COLOR
+  TYPOGRAPHY
+}
+
+enum DeptItemType {
+  SECTION
+  PURPOSE
+  MISSION
+  PERSONA
+  VOICE_TRAIT
+}
+
+enum ShareScope {
+  STRATEGY
+  DEPARTMENT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TranslationSource {
+  MANUAL
+  MACHINE
+}
+
+enum TranslationDirection {
+  EN_AR
+  AR_EN
+}
+
+enum DraftStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  SUPERSEDED
+}
+
+enum DraftSource {
+  BRIEF
+  AI
+  INGESTION
+  PALETTE
+}
+
+enum BriefStatus {
+  DRAFT
+  SENT
+  IN_PROGRESS
+  SUBMITTED
+}
+
+enum AIFeature {
+  INGESTION
+  STRATEGY_ASSISTANT
+  BRAINSTORM
+  MOCKUP_ASSIST
+  COPY_LINT
+  COMPLIANCE
+}
+
+// --------------------------------------------------- identity and access ----
+
+// Better Auth owns authentication and will manage its own user, session,
+// account and verification tables. This model exists so the app's own
+// relations have something to point at; fields Better Auth manages are not
+// duplicated here.
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  name          String
+  createdAt     DateTime     @default(now())
+  memberships   Membership[]
+  ownedBrands   Workspace[]  @relation("WorkspaceOwner")
+  drafts        Draft[]      @relation("DraftRequester")
+  decidedDrafts Draft[]      @relation("DraftDecider")
+  aiUsage       AIUsage[]
+  moodItems     MoodboardItem[]
+  moodVotes     MoodboardVote[]
+}
+
+// Authorization lives here, not in a layout. Every read and write goes through
+// a Data Access Layer that checks this row first: in Next.js 16 neither
+// proxy.ts nor a layout protects Server Actions or route handlers.
+model Membership {
+  workspaceId String
+  userId      String
+  role        Role
+  createdAt   DateTime  @default(now())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+  @@index([userId])
+}
+
+// Someone invited by email who has not registered yet. Kept separate from
+// Membership so a pending invitation can never be mistaken for access.
+model Invitation {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String
+  role        Role
+  invitedById String?
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
+}
+
+// ------------------------------------------------------------ workspace ----
+
+model Workspace {
+  id       String @id @default(cuid())
+  slug     String @unique
+  name     String
+  initials String
+
+  ownerId String
+  owner   User   @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+
+  // The lifecycle board ships in v4.0; the field exists from the first
+  // migration so the board has history to display when it arrives.
+  stage WorkspaceStage @default(DISCOVERY)
+
+  lang     Lang     @default(EN)
+  siteMode SiteMode @default(AUTO)
+
+  // Brand details.
+  industry    String @default("")
+  tagline     String @default("")
+  foundedYear String @default("")
+
+  overviewHtml    String    @default("")
+  overviewSavedAt DateTime?
+
+  // Typography is a small value object rather than a table of its own; the two
+  // asset references are nullable because a brand may use a web font.
+  latinFamily        String  @default("")
+  arabicFamily       String  @default("")
+  latinFontAssetId   String?
+  arabicFontAssetId  String?
+
+  // Logo usage guidance authored on the Logo system tab.
+  logoUsageNotes String   @default("")
+  logoColorIds   String[] @default([])
+
+  // Client access.
+  passwordEnabled Boolean      @default(false)
+  // Hashed, never the plaintext the prototype kept. The client viewer checks a
+  // hash server-side; a password the server can read back is not a password.
+  passwordHash    String?
+  customDomain    String       @default("")
+  domainStatus    DomainStatus @default(NONE)
+  subdomain       String       @default("")
+
+  // Billing.
+  plan            PlanKind  @default(FREE)
+  purchasedAt     DateTime?
+  stripeSessionId String?
+
+  // Developer settings.
+  apiKeyHash     String?
+  webhookUrl     String    @default("")
+  figmaConnected Boolean   @default(false)
+  figmaSyncedAt  DateTime?
+
+  // Guideline site presentation.
+  guidelineTemplate GuidelineTemplate @default(VAULT)
+  studioStyle       StudioStyle       @default(ATLAS)
+
+  // Keyed by section id. Structural preferences rather than content, so they
+  // stay JSON instead of becoming tables nothing would ever query across.
+  sectionTitles Json @default("{}")
+  sectionNotes  Json @default("{}")
+  sectionStyles Json @default("{}")
+  sectionOrder  String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships      Membership[]
+  invitations      Invitation[]
+  logoSlots        LogoSlot[]
+  colors           ColorSwatch[]
+  assets           Asset[]
+  strategy         BrandStrategy?
+  departments      DepartmentView[]
+  pages            GuidePage[]
+  blocks           ContentBlock[]
+  signOffPins      SignOffPin[]
+  shareTokens      ShareToken[]
+  snapshots        PublishedSnapshot[]
+  approvals        ApprovalRequest[]
+  versionSnapshots VersionSnapshot[]
+  complianceChecks ComplianceCheck[]
+  briefs           Brief[]
+  drafts           Draft[]
+  moodboards       Moodboard[]
+  aiUsage          AIUsage[]
+
+  @@index([ownerId])
+  @@index([stage])
+}
+
+// ------------------------------------------------ pillar 1: brand assets ----
+
+model LogoSlot {
+  id          String      @id @default(cuid())
+  workspaceId String
+  kind        SlotKind
+  phase       UploadPhase @default(EMPTY)
+
+  fileName   String?
+  fileSizeKB Int?
+  format     FileFormat?
+  r2Key      String?
+  width      Int?
+  height     Int?
+
+  // 0.25–1, the multiplier the clearspace guide is drawn from.
+  clearspaceMultiplier Float @default(0.5)
+
+  // The brand's own reversed artwork for dark grounds. A variant of this
+  // lockup, not a fourth slot: inverting a colour mark guesses wrong, so when
+  // this is set it is used verbatim.
+  lightR2Key    String?
+  lightFileName String?
+  lightSizeKB   Int?
+  lightFormat   FileFormat?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, kind])
+}
+
+model ColorSwatch {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  hex         String
+  isPrimary   Boolean   @default(false)
+  locked      Boolean   @default(false)
+  position    Int       @default(0)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model Asset {
+  id          String      @id @default(cuid())
+  workspaceId String
+  type        AssetType
+  fileName    String
+  // The object key in R2. The prototype kept a data URL or blob handle here;
+  // the server keeps a key and signs a URL when one is asked for.
+  r2Key       String
+  sizeKB      Int
+  tags        String[]    @default([])
+  uploadedAt  DateTime    @default(now())
+
+  // Uploads are approved; moodboard and mockup output starts as exploration
+  // and has to be promoted before it can be published or exported.
+  status AssetStatus @default(APPROVED)
+  origin AssetOrigin @default(UPLOAD)
+
+  // Provenance for third-party inspiration. A CC-BY photo has to carry its
+  // credit wherever it is published, so the credit travels with the asset
+  // rather than being something the studio is trusted to remember.
+  sourceUrl  String?
+  credit     Json?
+
+  // Font metadata on `type: FONT`. A family is several files, one per weight,
+  // and they must share one @font-face family name or the browser fakes the
+  // weights by smearing the regular.
+  font Json?
+
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  versions      AssetVersion[]
+  moodboardRefs MoodboardItem[]
+
+  @@index([workspaceId, type])
+  @@index([workspaceId, status])
+}
+
+model AssetVersion {
+  id        String   @id @default(cuid())
+  assetId   String
+  r2Key     String
+  fileName  String
+  sizeKB    Int
+  createdAt DateTime @default(now())
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+}
+
+// ------------------------------------------------ pillar 3: strategy hub ----
+
+model BrandStrategy {
+  id          String @id @default(cuid())
+  workspaceId String @unique
+
+  purpose                 String  @default("")
+  mission                 String  @default("")
+  vision                  String  @default("")
+  targetAudienceSummary   String  @default("")
+  positioningStatement    String  @default("")
+  uvp                     String  @default("")
+  purposeAr               String?
+  missionAr               String?
+  visionAr                String?
+  targetAudienceSummaryAr String?
+  positioningStatementAr  String?
+  uvpAr                   String?
+
+  // How the Arabic copy came to be. Machine output is marked as machine
+  // output and drives a visible "review this" state; any hand edit clears it,
+  // because a reviewed field is no longer a machine's guess.
+  translationSource    TranslationSource     @default(MANUAL)
+  translatedAt         DateTime?
+  translationDirection TranslationDirection?
+  unreviewedFields     String[]              @default([])
+
+  workspace        Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  personas         Persona[]
+  voiceTraits      VoiceTrait[]
+  coreValues       CoreValue[]
+  competitors      Competitor[]
+  competitorColumns CompetitorColumn[]
+}
+
+model Persona {
+  id            String        @id @default(cuid())
+  strategyId    String
+  name          String
+  role          String
+  description   String        @default("")
+  nameAr        String?
+  roleAr        String?
+  descriptionAr String?
+  position      Int           @default(0)
+  strategy      BrandStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model VoiceTrait {
+  id            String        @id @default(cuid())
+  strategyId    String
+  trait         String
+  doExample     String        @default("")
+  dontExample   String        @default("")
+  traitAr       String?
+  doExampleAr   String?
+  dontExampleAr String?
+  position      Int           @default(0)
+  strategy      BrandStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model CoreValue {
+  id            String        @id @default(cuid())
+  strategyId    String
+  title         String
+  description   String        @default("")
+  titleAr       String?
+  descriptionAr String?
+  position      Int           @default(0)
+  strategy      BrandStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+// Studios compare competitors on whatever axes the category turns on, so the
+// columns are the studio's to define. "notes" is the one built-in column.
+model CompetitorColumn {
+  id         String        @id @default(cuid())
+  strategyId String
+  label      String
+  labelAr    String?
+  position   Int           @default(0)
+  strategy   BrandStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model Competitor {
+  id         String        @id @default(cuid())
+  strategyId String
+  name       String
+  notes      String        @default("")
+  nameAr     String?
+  notesAr    String?
+  // Values for every studio-defined column, keyed by CompetitorColumn id.
+  cells      Json          @default("{}")
+  cellsAr    Json          @default("{}")
+  position   Int           @default(0)
+  strategy   BrandStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+// ------------------------------------------------------ department views ----
+
+// A department view is a selection over existing guideline sections and
+// strategy content, never an independent copy. Items are resolved at render
+// time, which is what makes an edit to the voice matrix propagate everywhere.
+model DepartmentView {
+  id                   String   @id @default(cuid())
+  workspaceId          String
+  name                 String
+  guidelineText        String   @default("")
+  guidelineFileAssetId String?
+  publishToSite        Boolean  @default(false)
+  position             Int      @default(0)
+  createdAt            DateTime @default(now())
+
+  workspace           Workspace                @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  items               DepartmentViewItem[]
+  instructionSections DeptInstructionSection[]
+
+  @@index([workspaceId])
+}
+
+model DepartmentViewItem {
+  id            String         @id @default(cuid())
+  departmentId  String
+  itemType      DeptItemType
+  sectionKey    SectionKey?
+  // Set when itemType is PERSONA or VOICE_TRAIT — the row it points at.
+  refId         String?
+  relevanceNote String?
+  position      Int            @default(0)
+  department    DepartmentView @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@index([departmentId])
+}
+
+// One headed block of a department's handbook. Stored as structure rather than
+// one blob so the page can be navigated and reordered like a document.
+model DeptInstructionSection {
+  id             String         @id @default(cuid())
+  departmentId   String
+  heading        String
+  body           String         @default("")
+  sourceFileName String?
+  position       Int            @default(0)
+  department     DepartmentView @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@index([departmentId])
+}
+
+// ------------------------------------------------- guideline site content ----
+
+model GuidePage {
+  id          String         @id @default(cuid())
+  workspaceId String
+  slug        String
+  name        String
+  arName      String         @default("")
+  // A fractional index, not a counter. Two people inserting a page between the
+  // same pair of neighbours must not have to renumber their siblings, because
+  // a renumber is a write to rows neither of them touched — which is exactly
+  // the write that loses the other person's change.
+  order       String
+  // Bumped once per applyOps batch. The client sends the version it based its
+  // ops on; a mismatch is a conflict it can rebase against.
+  version     Int            @default(0)
+  // True while the page still holds pre-builder sections rendered through the
+  // old renderer. Defaults true so a migrated workspace keeps rendering exactly
+  // as it did; "Convert to blocks" is what clears it.
+  legacy      Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  blocks      ContentBlock[]
+  nodes       BlockNode[]
+
+  @@unique([workspaceId, slug])
+}
+
+// One node of a page document. Flat, not nested: the tree is reconstructed
+// from `parentId` at read time, so moving a subtree is one row's write rather
+// than a rewrite of everything under it.
+//
+// `id` is generated by the client. That is not a shortcut — a client that can
+// name its own nodes can reference a node it just created in the same batch of
+// ops, apply the batch locally before the server has seen it, and reconcile by
+// id afterwards. Server-generated ids would make every create a round trip.
+model BlockNode {
+  id        String   @id
+  pageId    String
+  // null = a root child of the page.
+  parentId  String?
+  // Named child slot, so a block can have more than one place to put children
+  // ("do" and "dont" on a DoDont, for instance) without inventing wrapper nodes.
+  slot      String   @default("children")
+  order     String
+  // A key in lib/blocks/registry.ts. Not an enum: the registry is code and
+  // ships new types without a migration, and an unknown type renders as a
+  // placeholder rather than failing the page.
+  type      String
+  // Desktop / shared values, validated against the registry's schema for `type`.
+  props     Json     @default("{}")
+  // Locale-keyed text: { field: { en?, ar? } }. Separate from props so the two
+  // locales of one field can never conflict with each other.
+  content   Json?
+  // { bp?: { tablet?, phone? }, dir?: { rtl? } } — property overrides only.
+  // Structure is edited once, in the primary view; this is what the secondary
+  // views are allowed to write.
+  overrides Json?
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  page GuidePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, parentId, slot, order])
+}
+
+// A freeform authored section of the client-facing site. `props` and `style`
+// stay JSON because their shape is per block kind and nothing queries across
+// them; the discriminator is `kind`.
+model ContentBlock {
+  id          String    @id @default(cuid())
+  workspaceId String
+  pageId      String?
+  kind        String
+  title       String    @default("")
+  arTitle     String?
+  props       Json      @default("{}")
+  style       Json      @default("{}")
+  position    Int       @default(0)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  page        GuidePage? @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([pageId])
+}
+
+// ----------------------------------------- publishing, sharing, approvals ----
+
+// What clients actually see. A publish takes an immutable copy of the approved
+// content and serves that at /v/<slug>, so a studio can keep editing a live
+// brand book without anything reaching its client until it says so.
+model PublishedSnapshot {
+  id          String    @id @default(cuid())
+  workspaceId String
+  version     Int
+  // Approved content only. `/v/<slug>` reads this and never a live workspace.
+  payload     Json
+  publishedById String?
+  publishedAt DateTime  @default(now())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, version])
+  @@index([workspaceId, publishedAt])
+}
+
+// The token IS the URL. A link is revoked by marking the row, never by
+// deleting it: a revoked link has to keep existing or the page cannot tell
+// "this was switched off" from "this was never real", and those deserve
+// different answers.
+model ShareToken {
+  token        String     @id @default(cuid())
+  workspaceId  String
+  scope        ShareScope
+  departmentId String?
+  label        String     @default("")
+  createdAt    DateTime   @default(now())
+  expiresAt    DateTime?
+  revokedAt    DateTime?
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model SignOffPin {
+  id          String     @id @default(cuid())
+  workspaceId String
+  section     PinSection
+  authorName  String
+  note        String     @default("")
+  resolved    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  // The contrast status captured at the moment of approval, so a sign-off
+  // records what was actually approved rather than what is true today.
+  contrastReport Json?
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, section])
+}
+
+model ApprovalRequest {
+  id          String         @id @default(cuid())
+  workspaceId String
+  summary     String
+  proposedById String?
+  status      ApprovalStatus @default(PENDING)
+  reviewNote  String?
+  createdAt   DateTime       @default(now())
+  resolvedAt  DateTime?
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+}
+
+model VersionSnapshot {
+  id          String    @id @default(cuid())
+  workspaceId String
+  label       String
+  createdById String?
+  createdAt   DateTime  @default(now())
+  payload     Json
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model ComplianceCheck {
+  id               String    @id @default(cuid())
+  workspaceId      String
+  fileName         String
+  matchedSwatchIds String[]  @default([])
+  flaggedColors    String[]  @default([])
+  createdAt        DateTime  @default(now())
+  workspace        Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// --------------------------------------------- v3.0: the creation layer ----
+
+// A curated library, the same pattern as the Section Library. Not workspace
+// scoped: these are the questions Markyos ships, which studios pick from.
+model BriefQuestion {
+  key      String  @id
+  promptEn String
+  promptAr String
+  // text | choice | scale | image | ranking
+  type     String
+  category String
+  // The Strategy Hub field an answer drafts into, when it maps to one.
+  strategyField String?
+  position      Int     @default(0)
+}
+
+model Brief {
+  id          String      @id @default(cuid())
+  workspaceId String
+  // The client answers at /b/<token> without an account.
+  publicToken String      @unique @default(cuid())
+  status      BriefStatus @default(DRAFT)
+  // Ordered BriefQuestion keys, including any the studio added or removed.
+  questions   String[]    @default([])
+  createdAt   DateTime    @default(now())
+  submittedAt DateTime?
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  answers     BriefAnswer[]
+
+  @@index([workspaceId])
+}
+
+model BriefAnswer {
+  id          String   @id @default(cuid())
+  briefId     String
+  questionKey String
+  value       Json
+  answeredAt  DateTime @default(now())
+  brief       Brief    @relation(fields: [briefId], references: [id], onDelete: Cascade)
+
+  @@unique([briefId, questionKey])
+}
+
+// Every brief-, AI-, import- or palette-derived suggestion lands here first.
+// Nothing AI-generated changes a published guideline or a Strategy Hub field
+// until a person accepts it — that is architecture principle 3, and this table
+// is where it is enforced.
+model Draft {
+  id          String      @id @default(cuid())
+  workspaceId String
+  // strategyField | guidelineSection | palette | copy
+  targetType  String
+  targetRef   String
+  content     Json
+  source      DraftSource
+  // Which inputs were used, which model, which prompt version, who asked.
+  provenance  Json
+  status      DraftStatus @default(PENDING)
+  requestedById String?
+  decidedById   String?
+  createdAt   DateTime    @default(now())
+  decidedAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  requester User?     @relation("DraftRequester", fields: [requestedById], references: [id])
+  decider   User?     @relation("DraftDecider", fields: [decidedById], references: [id])
+
+  @@index([workspaceId, status])
+}
+
+model Moodboard {
+  id          String          @id @default(cuid())
+  workspaceId String
+  // The template it was created from, so the zone instructions can be looked
+  // up in code rather than copied into every board at creation time.
+  templateKey String?
+  title       String
+  version     Int             @default(0)
+  createdAt   DateTime        @default(now())
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  zones       MoodboardZone[]
+
+  @@index([workspaceId])
+}
+
+// A band of the board with a declared purpose. The kind is what makes a
+// decision possible: "propose this palette" only means something because the
+// cards under it were put there as colour, not as imagery.
+model MoodboardZone {
+  id           String          @id
+  moodboardId  String
+  kind         ZoneKind
+  title        String
+  arTitle      String          @default("")
+  // The bilingual "how to fill this in" card. Null once someone dismisses it.
+  instructions Json?
+  order        String
+  moodboard    Moodboard       @relation(fields: [moodboardId], references: [id], onDelete: Cascade)
+  items        MoodboardItem[]
+
+  @@index([moodboardId, order])
+}
+
+// References assets, never copies them. Because the assets it points at carry
+// EXPLORATION status, moodboard imagery is excluded from snapshots, exports,
+// share views and the API by the same check that governs everything else.
+//
+// `assetId` is nullable: a note, a swatch and a link are cards on the board
+// without being files in the workspace, and forcing them through the asset
+// table would put text with no bytes into brand files.
+model MoodboardItem {
+  id        String          @id
+  zoneId    String
+  kind      MoodItemKind
+  assetId   String?
+  // note { text: {en,ar} } | swatch { hex, name? } | link { url, title, imageAssetId? }
+  // | font { fontAssetId } | asset { transform? }
+  data      Json            @default("{}")
+  order     String
+  // s | m | l — how many columns the card spans in the masonry.
+  size      String          @default("m")
+  createdById String?
+  createdAt DateTime        @default(now())
+
+  zone    MoodboardZone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  asset   Asset?          @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  creator User?           @relation(fields: [createdById], references: [id])
+  votes   MoodboardVote[]
+
+  @@index([zoneId, order])
+}
+
+// One row per person per item, rather than a counter on the item.
+//
+// A counter cannot answer "did I already pick this one", and two people voting
+// at once on a counter is a lost update — the classic read-modify-write race,
+// on the one number the shortlist is sorted by.
+model MoodboardVote {
+  itemId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  item MoodboardItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, userId])
+}
+
+// --------------------------------------------------- v4.0: mockup studio ----
+
+// Shipped by Markyos rather than owned by a workspace. Mockups place the real
+// vector logo and real fonts through the same `--g-*` contract the guideline
+// templates render with; AI may pick a template or write placeholder copy, but
+// never draws a logo or renders brand text.
+model MockupTemplate {
+  id            String  @id @default(cuid())
+  name          String
+  // stationery | signage | social | packaging | screen
+  category      String
+  // Which --g-* tokens and asset slots this template consumes.
+  tokenContract Json
+  // Perspective / displacement map for photographic templates.
+  placement     Json
+  rtlSupported  Boolean @default(true)
+  position      Int     @default(0)
+}
+
+// -------------------------------------------------------- AI accounting ----
+
+// Every AI call writes a row. Metering exists from the first AI feature
+// because the Creation Layer runs during the free build phase, before any
+// client has paid — the cost arrives before the revenue does.
+model AIUsage {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  userId       String?
+  feature      AIFeature
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  costUsd      Decimal   @db.Decimal(10, 6)
+  credits      Int
+  createdAt    DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@index([workspaceId, createdAt])
+}

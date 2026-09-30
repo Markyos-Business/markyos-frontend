@@ -1,0 +1,23 @@
+/* Markyos radii, borders and shadows — measured from the source kit. */
+:root{
+  --radius-xs:1px;
+  --radius-sm:4px;
+  --radius-md:6px;
+  --radius-lg:8px;
+  --radius-widget:10px;
+  --radius-card:12px;
+  --radius-pill:100px;
+  --radius-switch:12px;
+
+  --border-hairline:1px;
+  --border-rail:2px;
+
+  --inset-primary:inset 0 0 0 1px #5E81F4;
+  --inset-outline:inset 0 0 0 1px #ECECF2;
+  --inset-subtle:inset 0 0 0 1px #F0F0F3;
+
+  --shadow-card:0 0 0 1px rgba(240,240,243,1);
+  --shadow-soft:0 4px 12px rgba(153,155,168,0.1);
+  --shadow-raised:0 6px 18px rgba(0,0,0,0.1);
+  --ring-status:0 0 0 2px #FFFFFF;   /* white halo around presence dots */
+}
