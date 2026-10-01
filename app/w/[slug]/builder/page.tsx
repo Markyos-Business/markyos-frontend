@@ -1421,6 +1421,9 @@ export default function BuilderPage() {
               isAr={isAr}
               ws={ws}
               style={selectedStyle}
+              // Only the derived sections have layouts to choose between — an
+              // authored block's shape is the block kind you picked.
+              sectionId={selectedFixedId}
               view={{ breakpoint, dir: view.dir, scope }}
               onChange={(next) => {
                 // A whole replacement rather than a patch: the inspector has

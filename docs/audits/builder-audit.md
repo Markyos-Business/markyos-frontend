@@ -129,6 +129,7 @@ written against did not name them:
 | Undo with no redo | **Closed.** `redo` / `canRedo` in `lib/store.tsx`, `Ctrl+Shift+Z` and `Ctrl+Y`, redo branch cleared by a fresh edit |
 | No feedback loop — the editor could say what a page *was*, not what was wrong with it | **Closed.** `lib/pageReview.ts` (pure, 29 tests) surfaced as a chip beside Publish; clicking a finding reveals its section |
 | Selecting a section from outside the canvas did not reveal it | **Closed.** `data-flow-id` on both editing shells, read by the review panel and the layers tree |
+| One layout per derived section — a palette could only ever be swatch cards | **Closed.** `lib/sectionVariants.ts` + `SectionLayouts.tsx`; 19 layouts across 6 sections, resolved inside `FixedSectionBody` so all six templates pick them up unedited |
 
 The teardown agrees with §5 below on the shell question and adds nothing to it.
 Two of its recommendations are refused on purpose: a `<canvas>`/WebGL editor, and

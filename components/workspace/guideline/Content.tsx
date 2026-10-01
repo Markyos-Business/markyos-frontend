@@ -13,7 +13,22 @@ import { StrategyDocument } from "@/components/workspace/strategy/StrategyDocume
 import { DepartmentDocument } from "@/components/workspace/departments/DepartmentDocument";
 import { colorFormats, formatRelative } from "@/lib/utils";
 import { gCard, gInset, gPlate, gPlateSm } from "@/components/workspace/guideline/surface";
-import { bestInkOn, contrastRatio } from "@/lib/contrast";
+import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, sampleAt, swatchEdge } from "@/components/workspace/guideline/sectionShared";
+import {
+  ColorBands,
+  ColorChips,
+  ColorFeature,
+  IconDense,
+  IconNamed,
+  LogoHero,
+  LogoLockups,
+  MockupRows,
+  PhotoFeature,
+  PhotoStrip,
+  TypePoster,
+  TypeScaleTable,
+} from "@/components/workspace/guideline/SectionLayouts";
+import { resolveVariantKey } from "@/lib/sectionVariants";
 import { getBrandTheme, isLightHex } from "@/lib/theme";
 
 /**
@@ -31,9 +46,16 @@ import { getBrandTheme, isLightHex } from "@/lib/theme";
  * same component.
  */
 
+/*
+ * `data-layout` on this and the other default arrangements below.
+ *
+ * It carries the key the arrangement is offered under in `lib/sectionVariants.ts`
+ * — see the note at the top of `SectionLayouts.tsx`. These are the defaults, so
+ * they are what a section renders when nobody has chosen anything.
+ */
 export function LogoGrid({ ws, attachedSlots, onDark = true }: { ws: Workspace; attachedSlots: SlotKind[]; onDark?: boolean }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div data-layout="full" className="grid grid-cols-2 sm:grid-cols-3 gap-4">
       {attachedSlots.map((kind) => {
         const slot = ws.logo[kind];
         return (
@@ -398,19 +420,6 @@ export function SocialProfiles({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * reads as a swatch — including #FFFFFF and #000000, which are real entries in
  * most palettes.
  */
-function swatchEdge(hex: string, plate: string): string {
-  const ink = bestInkOn(hex)?.ink ?? "#000000";
-  const rgb = ink === "#ffffff" ? "255,255,255" : "0,0,0";
-  // A swatch that nearly matches the plate it sits on needs a hard edge or it
-  // simply isn't there — "Surface 1" printed on a Surface-1 card is the exact
-  // case, and it is a swatch every palette in this product has. One that
-  // already separates gets a light edge, because a heavy rule around a strong
-  // colour reads as a mistake.
-  const against = contrastRatio(hex, plate);
-  const flush = against !== null && against < 1.6;
-  return `inset 0 0 0 ${flush ? 1.5 : 1}px rgba(${rgb},${flush ? 0.5 : 0.22})`;
-}
-
 export function ColorGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const { showToast } = useToast();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -433,7 +442,7 @@ export function ColorGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   // Four swatches only once there is room for the hex and the CODES toggle
   // side by side; at 390px a quarter-width card clips the toggle.
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div data-layout="cards" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
       {ws.colors.map((c) => {
         const open = openId === c.id;
         const formats = colorFormats(c.hex);
@@ -514,20 +523,6 @@ export function ColorGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * No new stored data: a specimen is the face rendered at known sizes, and the
  * face is already applied through the brand-font custom properties.
  */
-const TYPE_SCALE: { key: string; label: string; arLabel: string; size: number; lead: number; words: number }[] = [
-  // `words` trims the sample to what fits on one line at that size. A specimen
-  // that ends in an ellipsis reads as a layout that broke; one set to the
-  // measure reads as a decision, which is what a guideline is made of.
-  { key: "display", label: "Display", arLabel: "عنوان رئيسي", size: 44, lead: 1.1, words: 3 },
-  { key: "heading", label: "Heading", arLabel: "عنوان", size: 26, lead: 1.25, words: 6 },
-  { key: "body", label: "Body", arLabel: "نص", size: 16, lead: 1.7, words: 9 },
-  { key: "caption", label: "Caption", arLabel: "تعليق", size: 12, lead: 1.5, words: 12 },
-];
-
-const LATIN_SAMPLE = "The quick brown fox jumps over the lazy dog";
-/** A standard Arabic pangram — every letter of the alphabet, in a real sentence. */
-const ARABIC_SAMPLE = "نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق";
-
 function ScriptSpecimen({
   script,
   label,
@@ -585,7 +580,7 @@ function ScriptSpecimen({
               className="block"
               style={{ fontFamily, fontSize: step.size, lineHeight: step.lead, letterSpacing: script === "latin" && step.size > 20 ? "-.02em" : undefined }}
             >
-              {sample.split(" ").slice(0, step.words).join(" ")}
+              {sampleAt(sample, step.words)}
             </span>
           </div>
         ))}
@@ -596,7 +591,7 @@ function ScriptSpecimen({
 
 export function TypeSpecimen({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div data-layout="specimen" className="grid gap-4 md:grid-cols-2">
       <ScriptSpecimen
         script="latin"
         label={isAr ? "لاتيني" : "Latin"}
@@ -623,7 +618,7 @@ export function TypeSpecimen({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
 
 export function PhotoGrid({ assets }: { assets: Asset[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div data-layout="grid" className="grid grid-cols-2 sm:grid-cols-3 gap-4">
       {assets.map((a) => (
         <div key={a.id} className="overflow-hidden h-[140px]" style={gPlate}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -636,7 +631,7 @@ export function PhotoGrid({ assets }: { assets: Asset[] }) {
 
 export function IconGrid({ assets, onDark = true }: { assets: Asset[]; onDark?: boolean }) {
   return (
-    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+    <div data-layout="grid" className="grid grid-cols-4 sm:grid-cols-6 gap-3">
       {assets.map((a) => (
         <div key={a.id} className="grid place-items-center h-[72px]" style={gPlateSm}>
           <BrandMark src={a.url} alt={a.fileName} onDark={onDark} style={{ maxHeight: 28, maxWidth: 28 }} fallbackSize={16} />
@@ -850,7 +845,7 @@ export interface FixedSectionContext {
  */
 export function MockupGrid({ assets }: { assets: Asset[] }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div data-layout="two-up" className="grid gap-4 sm:grid-cols-2">
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-2 m-0">
           <div className="overflow-hidden h-[240px] mk-card" style={gPlate}>
@@ -884,6 +879,16 @@ export function MockupGrid({ assets }: { assets: Asset[] }) {
  * `overrides` is for the places where a template genuinely differs — Atlas
  * lists colour values in its own grid rather than the shared swatch cards —
  * so a template opts out of one body without opting out of the mechanism.
+ *
+ * **The section's chosen layout is resolved here**, from `ws.sectionStyles`,
+ * rather than threaded in as a prop. That is deliberate: `ws` is already in the
+ * context, every template builds the context the same way, and every template
+ * renders its derived sections through this one function — so a layout choice
+ * reaches all six of them, the editing canvas and the published page without any
+ * of them being touched. The shared-renderer property is what makes that true,
+ * and this is it being spent rather than described.
+ *
+ * `variant` names a component, not a value: see `lib/sectionVariants.ts`.
  */
 export function FixedSectionBody({
   id,
@@ -894,11 +899,34 @@ export function FixedSectionBody({
   ctx: FixedSectionContext;
   overrides?: Record<string, ReactNode>;
 }) {
-  if (overrides && id in overrides) return <>{overrides[id]}</>;
   const { ws, isAr, onDark, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments } = ctx;
+  // Unset, or naming a layout that no longer exists, resolves to the section's
+  // default — which is the layout it has always had.
+  const stored = ws.sectionStyles[id]?.variant;
+  const variant = resolveVariantKey(id, stored);
+
+  /*
+   * A template's own body is that template's *default* for the section, and an
+   * explicit layout choice outranks it.
+   *
+   * Three templates render a body of their own — Docs and Atlas their own colour
+   * grids, Manual its own palette and type pages. Letting those win
+   * unconditionally meant choosing a layout did nothing at all in two of the six
+   * templates, silently, which is the worst way for a feature to be broken: the
+   * picker moved, the page didn't, and nothing said why.
+   *
+   * Precedence is therefore: an explicitly chosen non-default layout, then the
+   * template's own body, then the shared default. Choosing the default back again
+   * stores nothing and hands the section to the template, which is the same thing
+   * every other unset field in `BlockStyle` does.
+   */
+  const choosingDefault = variant === resolveVariantKey(id, undefined);
+  if (overrides && id in overrides && choosingDefault) return <>{overrides[id]}</>;
 
   switch (id) {
     case "mockups":
+      if (variant === "one-up") return <MockupRows assets={mockupAssets} columns={1} />;
+      if (variant === "three-up") return <MockupRows assets={mockupAssets} columns={3} />;
       return <MockupGrid assets={mockupAssets} />;
     case "strategy":
       return <StrategySection ws={ws} isAr={isAr} />;
@@ -906,6 +934,25 @@ export function FixedSectionBody({
       // The construction drawings need one lockup to demonstrate on; the first
       // attached slot is the one the rest of the site already treats as primary.
       const primary = attachedSlots.length > 0 ? ws.logo[attachedSlots[0]] : undefined;
+      // The sign-off panel is not part of the layout choice — it is the client's
+      // approval of this section, and every layout of it is the same section.
+      const signOff = <SignOffPanel ws={ws} section="logo" isAr={isAr} />;
+      if (variant === "lockups") {
+        return (
+          <>
+            <LogoLockups ws={ws} attachedSlots={attachedSlots} onDark={onDark} />
+            {signOff}
+          </>
+        );
+      }
+      if (variant === "hero") {
+        return (
+          <>
+            <LogoHero ws={ws} attachedSlots={attachedSlots} onDark={onDark} isAr={isAr} />
+            {signOff}
+          </>
+        );
+      }
       return (
         <>
           <LogoGrid ws={ws} attachedSlots={attachedSlots} onDark={onDark} />
@@ -916,7 +963,7 @@ export function FixedSectionBody({
               stays as the fallback for a workspace with no attached lockup to
               draw the diagram on. */}
           {!primary && <ClearspaceCaption ws={ws} attachedSlots={attachedSlots} isAr={isAr} />}
-          <SignOffPanel ws={ws} section="logo" isAr={isAr} />
+          {signOff}
         </>
       );
     }
@@ -933,20 +980,38 @@ export function FixedSectionBody({
     case "color":
       return (
         <>
-          <ColorGrid ws={ws} isAr={isAr} />
+          {variant === "bands" ? (
+            <ColorBands ws={ws} isAr={isAr} />
+          ) : variant === "chips" ? (
+            <ColorChips ws={ws} isAr={isAr} />
+          ) : variant === "feature" ? (
+            <ColorFeature ws={ws} isAr={isAr} />
+          ) : (
+            <ColorGrid ws={ws} isAr={isAr} />
+          )}
           <SignOffPanel ws={ws} section="color" isAr={isAr} />
         </>
       );
     case "typography":
       return (
         <>
-          <TypeSpecimen ws={ws} isAr={isAr} />
+          {variant === "scale" ? (
+            <TypeScaleTable ws={ws} isAr={isAr} />
+          ) : variant === "poster" ? (
+            <TypePoster ws={ws} isAr={isAr} />
+          ) : (
+            <TypeSpecimen ws={ws} isAr={isAr} />
+          )}
           <SignOffPanel ws={ws} section="typography" isAr={isAr} />
         </>
       );
     case "photography":
+      if (variant === "feature") return <PhotoFeature assets={photoAssets} />;
+      if (variant === "strip") return <PhotoStrip assets={photoAssets} />;
       return <PhotoGrid assets={photoAssets} />;
     case "icons":
+      if (variant === "named") return <IconNamed assets={iconAssets} onDark={onDark} />;
+      if (variant === "dense") return <IconDense assets={iconAssets} onDark={onDark} />;
       return <IconGrid assets={iconAssets} onDark={onDark} />;
     case "personas":
       return <PersonaGrid personas={ws.strategy.personas} />;

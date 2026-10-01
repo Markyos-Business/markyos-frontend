@@ -38,11 +38,19 @@ const WIDTH: Record<NonNullable<BlockStyle["width"]>, string> = {
 export const SCALE_MIN = 0.75;
 export const SCALE_MAX = 1.75;
 
-/** True when nothing has been overridden, so the caller can skip the wrapper. */
+/**
+ * True when nothing has been overridden, so the caller can skip the wrapper.
+ *
+ * `variant` does not count. It picks which component draws the section, not how
+ * the result is styled, so a section that has only had its layout changed still
+ * needs no wrapper — and wrapping it anyway would put a stray `<div>` between a
+ * template's grid and its children the moment somebody chose a layout.
+ */
 export function isEmptyStyle(style: BlockStyle | undefined): boolean {
   if (!style) return true;
-  return Object.values(style).every((v) =>
-    v === undefined || (typeof v === "object" && v !== null && Object.keys(v).length === 0),
+  return Object.entries(style).every(
+    ([key, v]) =>
+      key === "variant" || v === undefined || (typeof v === "object" && v !== null && Object.keys(v).length === 0),
   );
 }
 

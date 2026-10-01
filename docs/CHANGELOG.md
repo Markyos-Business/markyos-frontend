@@ -5,6 +5,92 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 (later still) — Each section, in a layout of its choosing
+
+The six site templates decided the page *and* the inside of every derived section,
+and there was exactly one of each: one way to show a palette, one way to show a
+typeface. A studio could move the colour section, hide it, pad it, put it on a
+brand colour — and could not make it look like anything other than a grid of
+swatch cards.
+
+Nineteen layouts now, across six sections: colour (swatch cards, full-width
+bands, dense chips, primary featured), logo (full system, lockups only, primary
+showcase), typography (specimen, size table, poster), photography (even grid,
+lead image, full-width rows), icons (tiles, named tiles, dense set), and mockups
+(two up, one up, three up). The first of each is the layout that section already
+had, so **nothing in an existing guideline changes until somebody picks
+something.**
+
+### Where the choice lives, and why that was the whole design
+
+`BlockStyle.variant`, on the per-section record that `sectionStyles` already
+holds — so it gets `setSectionStyle`, persistence and undo for free. It is **not**
+a style declaration but a choice of renderer, which is why no CSS emitter reads it
+and why `isEmptyStyle` now ignores it: a section that has only had its layout
+changed still needs no wrapper, and wrapping it anyway would have put a stray
+`<div>` between a template's grid and its children the moment anyone chose
+something.
+
+The layout resolves **inside `FixedSectionBody`**, from `ws.sectionStyles`, rather
+than being threaded in as a prop. `ws` was already in the context every template
+builds, and every template renders its derived sections through that one
+function — so the choice reaches all six templates, the editing canvas and the
+published page with **no template edited at all**. This is the shared-renderer
+property being spent rather than described.
+
+### The precedence was wrong first time, and silently
+
+Three templates render a body of their own: Docs and Atlas their own colour grids,
+Manual its own palette and type pages. Those won unconditionally, so choosing a
+layout did nothing whatsoever in two of the six templates — the picker moved, the
+page didn't, and nothing said why. Found by running the probe across every
+template rather than the one in front of me.
+
+The rule now: an explicitly chosen non-default layout beats the template's own
+body, which beats the shared default. Choosing the default back again stores
+nothing and hands the section to the template, the same as every other unset field
+in `BlockStyle`. Both directions are checked, because fixing the first by deleting
+the override mechanism would have passed half of it.
+
+**Deck is the honest exception.** It composes each section as a fixed 1920×1080
+slide and never calls the shared body, so a layout chosen while it is selected has
+no effect. The picker says so, rather than being a control that moves and changes
+nothing — the same failure as the override bug, which is why it gets a note
+instead of silence. The choice is still stored and applies on switching template.
+
+### `data-layout`
+
+Every arrangement — the alternates and the defaults — puts `data-layout` on its
+root, carrying the key it is offered under. It costs no DOM and makes a rendered
+page say which layout drew each section: it is what the sweep asserts against, and
+the first thing anyone will want to know when a section looks wrong. The
+alternative was measuring element heights, which is a check that breaks every time
+a padding changes.
+
+Shared primitives (the type scale, the two script specs, the swatch edge) moved to
+`sectionShared.ts` for one reason: `Content.tsx` dispatches to
+`SectionLayouts.tsx`, so anything the layouts imported back out of `Content.tsx`
+would be an import cycle.
+
+### A legibility bug these layouts invented, caught by measuring
+
+Several of them set type directly on a client's own colour. `bestInkOn` already
+takes the highest-contrast ink available there, so an opacity applied on top spends
+the only margin that exists — and how much there was depends on a colour this code
+has never seen. The first draft faded the featured block's 9px format labels to
+0.6 and rendered **3.76:1** against a 4.5 bar, in both themes.
+
+Fixed by the rule rather than by the number: **ink on a brand colour is never
+faded.** Hierarchy there comes from size, weight and tracking, which cost nothing
+legible. The contrast sweep now walks the alternate layouts in three rounds — it
+had only ever seen the defaults — and fails if no layout rendered, because a clean
+measure of a canvas that drew nothing proves nothing.
+
+Tests 223 → 236. Builder sweep 36 → 44 checks. Contrast sweep now covers 19
+layouts in 2 themes.
+
+---
+
 ## 2026-10-01 (later) — Reversibility, and a feedback loop, from the Framer teardown
 
 A teardown of Framer came in as a reference for the guidelines builder. Most of

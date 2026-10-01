@@ -192,6 +192,92 @@ for (const theme of ["dark", "light"]) {
   }
 
   /*
+   * The alternate section layouts, which the builder page above renders only in
+   * their defaults.
+   *
+   * These matter more than most surfaces here, because several of them set type
+   * directly *on* a client's own colour — a palette band's name and value, the
+   * featured block's format list. `bestInkOn` picks the highest-contrast ink
+   * available there, so any opacity applied on top spends the only margin that
+   * exists, and how much there was depends on a colour this code has never seen.
+   * The first draft faded 9px format labels to 0.6 and rendered 3.76:1.
+   *
+   * Driven through localStorage rather than through the inspector: setting every
+   * section's Nth layout at once audits the whole set in three reloads instead of
+   * sixteen, and this sweep already pays for two themes.
+   */
+  for (const round of [1, 2, 3]) {
+    const applied = await page.evaluate(
+      ({ slug, n }) => {
+        const s = JSON.parse(localStorage.getItem("markyos:v1"));
+        const ws = (s.workspaces || []).find((w) => w.slug === slug);
+        if (!ws) return [];
+        // Mirrors lib/sectionVariants.ts. Duplicated on purpose: a sweep that
+        // imported the registry would pass by construction when a layout was
+        // dropped from it, which is one of the things worth noticing.
+        const SETS = {
+          color: ["cards", "bands", "chips", "feature"],
+          logo: ["full", "lockups", "hero"],
+          typography: ["specimen", "scale", "poster"],
+          photography: ["grid", "feature", "strip"],
+          icons: ["grid", "named", "dense"],
+          mockups: ["two-up", "one-up", "three-up"],
+        };
+        const out = [];
+        for (const [id, keys] of Object.entries(SETS)) {
+          if (!keys[n]) continue;
+          ws.sectionStyles[id] = { ...(ws.sectionStyles[id] || {}), variant: keys[n] };
+          out.push(`${id}:${keys[n]}`);
+        }
+        ws.updatedAt = Date.now();
+        localStorage.setItem("markyos:v1", JSON.stringify(s));
+        return out;
+      },
+      { slug: WS, n: round }
+    );
+    if (applied.length === 0) continue;
+
+    await page.goto(`${BASE}/w/${WS}/builder`);
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(900);
+
+    // The guard that makes this worth running: a clean measure of a canvas that
+    // never drew the layouts proves nothing. At least one has to be on screen.
+    const drew = await page.evaluate(() => document.querySelectorAll("[data-layout]").length);
+    if (drew === 0) {
+      findings.push({
+        key: `${theme}|layouts-round-${round}|none-rendered`,
+        theme,
+        label: `section layouts (round ${round})`,
+        text: "no [data-layout] element rendered — the layouts were not measured",
+        size: 0,
+        ratio: 0,
+        need: 0,
+        cls: "",
+      });
+    } else {
+      const bad = await page.evaluate(AUDIT);
+      for (const b of bad) {
+        const key = `${theme}|layouts|${b.text}|${b.ratio}`;
+        if (!findings.some((f) => f.key === key)) {
+          findings.push({ key, theme, label: `section layouts (${applied.join(" ")})`, ...b });
+        }
+      }
+    }
+  }
+
+  // Back to the defaults, so nothing after this measures a layout it did not ask
+  // for. The context is thrown away at the end of the theme anyway; this is to
+  // keep the failure messages honest if that ever stops being true.
+  await page.evaluate((slug) => {
+    const s = JSON.parse(localStorage.getItem("markyos:v1"));
+    const ws = (s.workspaces || []).find((w) => w.slug === slug);
+    if (!ws) return;
+    for (const v of Object.values(ws.sectionStyles || {})) delete v.variant;
+    localStorage.setItem("markyos:v1", JSON.stringify(s));
+  }, WS);
+
+  /*
    * The client-facing discovery brief, which no /w/ page covers. It is the one
    * surface someone outside the studio actually fills in, so it gets the same
    * bar as the rest of the chrome — the client's brand does not exist yet, so

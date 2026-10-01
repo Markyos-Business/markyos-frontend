@@ -250,6 +250,32 @@ Two things not to hardcode in these checks:
 version counted `.mk-nav-item` — which is the sidebar's hover class. It reported
 twelve findings on a clean page and every one of them was a navigation link.
 
+**Section layouts** are checked for *reach*, not for the picker having buttons.
+The mechanism resolves a section's chosen layout inside the one shared section
+body, which is what makes it apply in all six templates, on the canvas and on the
+published page without any template being touched — so these checks go looking in
+places the feature was never explicitly wired to:
+
+- **Across templates, not just the current one.** The first version of this check
+  passed against the template in front of it and would have shipped a feature that
+  did nothing in two of the six. Docs, Atlas and Manual render colour or type
+  bodies of their own, and those were winning over the studio's explicit choice.
+- **Both directions of the precedence.** A chosen layout must beat the template's
+  own body, *and* the template's own body must come back on the default. Checking
+  only the first would pass if someone "fixed" it by deleting the override
+  mechanism.
+- **That each layout renders something.** An attribute that changes while the
+  section stays empty is a real risk here, because every layout is a separate
+  component reading the same data. The check requires children and a height.
+
+`data-layout` on every arrangement's root is what makes any of this checkable: the
+page states which layout drew it. The alternative considered was measuring element
+heights to tell a band from a card, which is a check that goes red every time
+somebody changes a padding — a cost paid forever to avoid one attribute.
+
+Telling a template's own colour body from the shared default needs its extra line
+("copy its hex value"), because both legitimately draw `data-layout="cards"`.
+
 The palette drag is held rather than dropped for one check, so the canvas can be
 asked what it is showing while the gesture is in flight. A landing strip that
 only appears at the moment of release is a landing strip nobody can aim at.
@@ -381,3 +407,20 @@ silently rewritten.
 Applying the chrome bar to brand surfaces produced 106 "findings" that were all
 correct by design. If this file starts reporting a lot at once, check which bar
 it is applying before changing any colour.
+
+It also walks the **alternate section layouts**, in three rounds that set every
+section's Nth layout at once. Those need measuring more than most surfaces here
+because several of them set type directly *on* a client's own colour, where
+`bestInkOn` has already taken the highest-contrast ink available — so any opacity
+applied on top spends the only margin there is, and how much there was depends on
+a colour this code has never seen. That is not hypothetical: the first draft faded
+9px format labels to 0.6 and rendered **3.76:1** against a 4.5 bar, in both themes,
+and this pass is what found it. Hierarchy on a brand-colour ground comes from
+size, weight and tracking only.
+
+The layout list is duplicated here rather than imported from
+`lib/sectionVariants.ts`, so that dropping a layout from the registry makes this
+sweep stop finding it instead of silently agreeing with itself. The round also
+fails outright if no `[data-layout]` element rendered — a clean measure of a canvas
+that never drew the layouts proves nothing, which is the standing trap in this
+whole directory.

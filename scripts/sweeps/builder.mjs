@@ -506,6 +506,136 @@ async function run() {
     }
   }
 
+  /* ------------------------------------------------------ section layouts ---
+     Each derived section can be drawn in one of several layouts. The mechanism
+     resolves the choice inside the one shared section body, which is what makes
+     it reach all six templates, the canvas and the published page without any of
+     them being touched — so these checks are about that reach, not about the
+     picker having buttons.
+
+     `data-layout` on every arrangement's root is what makes this checkable: the
+     rendered page says which layout drew it. Measuring element heights instead
+     would be a check that breaks every time a padding changes. */
+  async function layoutOf(sectionId) {
+    return page.evaluate((id) => {
+      const section = document.querySelector(`[data-flow-id="${id}"]`);
+      const el = (section ?? document).querySelector("[data-layout]");
+      return el ? el.getAttribute("data-layout") : null;
+    }, sectionId);
+  }
+
+  await page.keyboard.press("Escape");
+  const colorSection = page.locator('[data-flow-id="color"]').first();
+  if ((await colorSection.count()) === 0) {
+    fail("layouts", "no colour section on the canvas to choose a layout for");
+  } else {
+    const before = await layoutOf("color");
+    if (before === "cards") ok("a section that has never been changed draws its default layout");
+    else fail("layouts", `the colour section's default should be "cards", got ${JSON.stringify(before)}`);
+
+    await colorSection.scrollIntoViewIfNeeded();
+    await colorSection.click();
+    await page.waitForTimeout(600);
+
+    const options = await page.evaluate(() =>
+      [...document.querySelectorAll("[data-layout-option]")].map((el) => ({
+        key: el.getAttribute("data-layout-option"),
+        pressed: el.getAttribute("aria-pressed") === "true",
+        text: el.innerText.replace(/\s+/g, " ").trim(),
+      }))
+    );
+    if (options.length < 2) {
+      fail("layouts", `selecting the colour section offered ${options.length} layouts`);
+    } else {
+      ok(`the colour section offers ${options.length} layouts`);
+      if (options.filter((o) => o.pressed).length === 1 && options[0].pressed) ok("the layout in force is the one marked pressed");
+      else fail("layouts", `exactly one option should be pressed, and it should be the default: ${options.map((o) => `${o.key}:${o.pressed}`).join(",")}`);
+      // A two-word label cannot say which arrangement you want; the sentence can.
+      if (options.every((o) => o.text.length > 20)) ok("every layout says what it is for, not just what it is called");
+      else fail("layouts", "a layout option has no explanatory line");
+    }
+
+    /* Every layout has to draw something. An attribute that changes while the
+       section stays empty is the failure this catches — and it is a real risk,
+       because each layout is its own component reading the same data. */
+    const empties = [];
+    for (const key of ["bands", "chips", "feature", "cards"]) {
+      const opt = page.locator(`[data-layout-option="${key}"]`);
+      if ((await opt.count()) === 0) {
+        empties.push(`${key}: not offered`);
+        continue;
+      }
+      await opt.click();
+      await page.waitForTimeout(450);
+      const got = await page.evaluate((id) => {
+        const root = document.querySelector(`[data-flow-id="${id}"]`)?.querySelector("[data-layout]");
+        if (!root) return null;
+        return { layout: root.getAttribute("data-layout"), children: root.children.length, height: Math.round(root.getBoundingClientRect().height) };
+      }, "color");
+      if (!got || got.layout !== key || got.children === 0 || got.height < 40) empties.push(`${key}: ${JSON.stringify(got)}`);
+    }
+    if (empties.length === 0) ok("all four colour layouts redraw the section with real content");
+    else fail("layouts", `layouts that did not render: ${empties.join(" · ")}`);
+
+    await page.locator('[data-layout-option="bands"]').click();
+    await page.waitForTimeout(500);
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+    await page.waitForTimeout(700);
+    if ((await layoutOf("color")) === "bands") ok("the chosen layout survives a reload");
+    else fail("layouts", `after a reload the colour section drew ${JSON.stringify(await layoutOf("color"))}`);
+
+    /* The precedence that was wrong first time round.
+
+       Three templates render a colour or type body of their own. Letting those
+       win unconditionally meant choosing a layout did nothing at all in two of
+       the six templates, silently. Both directions are checked, because fixing
+       the first by deleting the override mechanism would pass half of this. */
+    async function withTemplate(tpl) {
+      await page.evaluate((t) => {
+        const raw = localStorage.getItem("markyos:v1");
+        const state = JSON.parse(raw);
+        const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+        ws.guidelineTemplate = t;
+        ws.updatedAt = Date.now();
+        localStorage.setItem("markyos:v1", JSON.stringify(state));
+      }, tpl);
+      await page.reload({ waitUntil: "networkidle" });
+      await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+      await page.waitForTimeout(900);
+    }
+
+    await withTemplate("docs");
+    if ((await layoutOf("color")) === "bands") ok("a chosen layout outranks a template's own body for that section");
+    else fail("layouts", `Docs ignored the chosen layout and drew ${JSON.stringify(await layoutOf("color"))}`);
+
+    // Back on the default, the template's own body has to return. Docs adds a
+    // line about the swatches being copyable, which is the only way to tell its
+    // body from the shared default — both draw `data-layout="cards"`.
+    await page.evaluate(() => {
+      const raw = localStorage.getItem("markyos:v1");
+      const state = JSON.parse(raw);
+      const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+      if (ws.sectionStyles.color) delete ws.sectionStyles.color.variant;
+      ws.updatedAt = Date.now();
+      localStorage.setItem("markyos:v1", JSON.stringify(state));
+    });
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+    await page.waitForTimeout(900);
+    const docsOwn = await page.evaluate(() => {
+      const section = document.querySelector('[data-flow-id="color"]');
+      return {
+        layout: section?.querySelector("[data-layout]")?.getAttribute("data-layout") ?? null,
+        hasOwnLine: /copy its hex value/i.test(section?.textContent ?? ""),
+      };
+    });
+    if (docsOwn.layout === "cards" && docsOwn.hasOwnLine) ok("on the default, a template's own body comes back");
+    else fail("layouts", `Docs should draw its own colour body on the default: ${JSON.stringify(docsOwn)}`);
+
+    await withTemplate("vault");
+  }
+
   /* --------------------------------------------------------- undo and redo ---
      Undo without redo is a trap rather than a safety net: it makes trying
      something out cost an edit you cannot get back if you change your mind

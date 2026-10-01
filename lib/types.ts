@@ -821,6 +821,19 @@ export type StudioStyle = "signal" | "atlas" | "prism";
  * template if the studio switches to another one.
  */
 export interface BlockStyle {
+  /**
+   * Which layout this section is drawn in — see `lib/sectionVariants.ts`.
+   *
+   * Not a style declaration but a choice of renderer, which is why no CSS
+   * emitter reads it and why `isEmptyStyle` ignores it. A palette can be swatch
+   * cards, full-width bands or dense chips; those are different components, not
+   * different values of a property, and no amount of padding and alignment turns
+   * one into another.
+   *
+   * Unset means the section's default layout, and a key naming a layout that no
+   * longer exists resolves back to that default rather than rendering nothing.
+   */
+  variant?: string;
   /** Start/end are direction-relative, so they mirror correctly in Arabic. */
   align?: "start" | "center" | "end";
   /**

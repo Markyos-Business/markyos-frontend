@@ -2,6 +2,7 @@
 
 import { Icon } from "@/components/Icon";
 import { backgroundInkWarning, overriddenIn, patchScope, resolveStyle, SCALE_MAX, SCALE_MIN } from "@/lib/blockStyle";
+import { resolveVariantKey, variantsFor } from "@/lib/sectionVariants";
 import type { BlockStyle, ResponsiveStyle, Workspace } from "@/lib/types";
 import type { Breakpoint, Dir } from "@/lib/doc/core/types";
 
@@ -38,12 +39,21 @@ export function DesignInspector({
   ws,
   style,
   view,
+  sectionId,
   onChange,
 }: {
   isAr: boolean;
   ws: Workspace;
   style: BlockStyle | undefined;
   view: InspectorView;
+  /**
+   * The derived section being edited, when it is one.
+   *
+   * Only these have alternate layouts: an authored block's shape is the block
+   * kind that was chosen for it. Null for a block, and for a section with a
+   * single layout the picker renders nothing.
+   */
+  sectionId?: string | null;
   /** Receives a whole replacement style, already scoped. */
   onChange: (next: BlockStyle) => void;
 }) {
@@ -109,6 +119,20 @@ export function DesignInspector({
               : `Changes here are saved as a ${SCOPE_LABEL[view.scope].en} override only.`}
           </span>
         </div>
+      )}
+
+      {sectionId && (
+        <LayoutPicker
+          sectionId={sectionId}
+          style={style}
+          isAr={isAr}
+          // Deck is a slide presentation that composes each section as a fixed
+          // 1920×1080 frame of its own rather than rendering the shared section
+          // bodies, so a layout chosen here has no effect while it is selected.
+          // Saying so beats a control that moves and changes nothing.
+          inert={ws.guidelineTemplate === "deck"}
+          onChange={setBase}
+        />
       )}
 
       <Group label={isAr ? "التخطيط" : "Layout"}>
@@ -270,6 +294,98 @@ export function DesignInspector({
         </span>
       </Group>
     </div>
+  );
+}
+
+/**
+ * Which layout this section is drawn in.
+ *
+ * Top of the panel, above the style controls, because it is the biggest decision
+ * here and the one the rest are adjustments to: padding and alignment applied to
+ * a swatch grid and to a band of colour mean different things, so choosing the
+ * arrangement first is the order the work actually happens in.
+ *
+ * Full-width rows with a sentence each rather than a row of pills. These are not
+ * four values of one property — they are four arrangements of the same
+ * information, and which one you want depends on something a two-word label
+ * can't say ("for a palette with a lot in it").
+ *
+ * It renders nothing when the section has only one layout, so a section that has
+ * never had alternates written for it does not grow an empty picker.
+ */
+function LayoutPicker({
+  sectionId,
+  style,
+  isAr,
+  inert,
+  onChange,
+}: {
+  sectionId: string;
+  style: BlockStyle | undefined;
+  isAr: boolean;
+  /** The active template draws this section itself and ignores the choice. */
+  inert?: boolean;
+  onChange: (patch: Partial<BlockStyle>) => void;
+}) {
+  const options = variantsFor(sectionId);
+  if (options.length < 2) return null;
+  const active = resolveVariantKey(sectionId, style?.variant);
+
+  return (
+    <Group label={isAr ? "تخطيط القسم" : "Section layout"}>
+      {inert && (
+        <div
+          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
+          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
+        >
+          <Icon name="exclamation-circle" size={12} style={{ flexShrink: 0, marginTop: 1, color: "var(--warning)" }} />
+          <span>
+            {isAr
+              ? "قالب Deck يبني كل قسم كشريحة خاصة به، لذا لا يؤثر هذا الاختيار عليه. يُحفظ الاختيار وينطبق عند التبديل إلى قالب آخر."
+              : "The Deck template builds each section as a slide of its own, so this choice has no effect while it is selected. It is still saved, and applies if you switch template."}
+          </span>
+        </div>
+      )}
+      <div className="flex flex-col gap-1.5">
+        {options.map((v, i) => {
+          const on = v.key === active;
+          return (
+            <button
+              key={v.key}
+              type="button"
+              aria-pressed={on}
+              data-layout-option={v.key}
+              // The default is stored as *unset* rather than as its own key, so
+              // a section following the default keeps following it if the
+              // default ever changes — the same argument as every other unset
+              // field in this panel.
+              onClick={() => onChange({ variant: i === 0 ? undefined : v.key })}
+              className="flex flex-col gap-0.5 rounded-xl px-3 py-2.5 text-start cursor-pointer"
+              style={{
+                background: on ? "var(--accent-soft)" : "var(--surface-1)",
+                boxShadow: on ? "inset 0 0 0 1px var(--accent)" : undefined,
+                color: on ? "var(--accent-on-soft)" : "var(--text)",
+              }}
+            >
+              <span className="flex items-center gap-1.5">
+                <span className="text-[12px] font-semibold">{isAr ? v.arLabel : v.label}</span>
+                {i === 0 && (
+                  <span className="text-[9px] font-semibold" style={{ opacity: 0.7 }}>
+                    {isAr ? "(الافتراضي)" : "(DEFAULT)"}
+                  </span>
+                )}
+              </span>
+              <span
+                className="text-[10.5px] leading-[1.45]"
+                style={{ color: on ? "var(--accent-on-soft)" : "var(--text-faint)", opacity: on ? 0.85 : 1 }}
+              >
+                {isAr ? v.arHint : v.hint}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </Group>
   );
 }
 
