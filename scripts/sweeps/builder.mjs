@@ -3,10 +3,15 @@ import { chromium } from "playwright";
 /**
  * The builder shell: layers, the view switcher, and the responsive cascade.
  *
- * The cascade is the part that needs a browser. A phone override is a media
- * query in a `<style>` tag, and whether it actually applies depends on the
- * width the *element* believes it has — which is exactly what the editor's
- * scaled frame is trying to preserve and exactly what no unit test can check.
+ * The cascade is the part that needs a browser, and the part this file got wrong
+ * for a long time. A phone override is a breakpoint rule in a `<style>` tag, and
+ * every assertion here used to be about the rule's *text*: it found
+ * `max-width:809px` in a stylesheet and declared victory. Nothing measured
+ * whether the page changed — and it didn't, because the rule was a `@media`
+ * query and the editor frames the page at 390px inside a 1600px window. A green
+ * run of this file coexisted with the feature not working at all, and the line
+ * it printed at the end said the opposite. The rules are container queries now,
+ * and the check measures the overridden section's rendered height.
  *
  * It also guards against the failure that made an earlier sweep useless: a
  * clean run of a page that never rendered. Every check asserts it found the
@@ -164,7 +169,8 @@ async function run() {
         const el = document.querySelector("[data-canvas-frame]");
         if (!el) return null;
         // offsetWidth is the laid-out width, before any transform — which is
-        // precisely the width the page's media queries resolve against.
+        // precisely the width the page's container queries resolve against, the
+        // page root being the query container.
         return el.offsetWidth;
       });
       if (frameWidth === expected) ok(`the ${expected}px frame lays out at ${expected}px`);
@@ -223,6 +229,47 @@ async function run() {
     });
     if (emitted) ok("a phone override emits a max-width:809px rule");
     else fail("cascade", "no phone media query was emitted for the override");
+
+    /* And that it is a CONTAINER query, which is the only kind that can fire
+       here. A media query resolves against the viewport; the editor frames the
+       page at 390px inside a window four times wider, so `@media` was emitted
+       correctly and applied nowhere. */
+    if (emitted && emitted.includes("@container")) ok("the breakpoint rule is a container query, so the frame can satisfy it");
+    else fail("cascade", `the override was emitted as a viewport media query, which the 390px frame cannot satisfy: ${String(emitted).slice(0, 80)}`);
+
+    /* The check that was missing entirely, and the reason this went unnoticed:
+       every assertion here was about the rule *text*. Nothing measured whether
+       the page changed. A hidden section has to actually collapse. */
+    const applied = await page.evaluate(() => {
+      // The section that was actually overridden is the selected one — whichever
+      // row the tree happened to put first. An earlier version of this check
+      // hardcoded the colour section and reported it as a failure for still being
+      // 790px tall, which it was entitled to be: it was not the hidden one.
+      const flow = document.querySelector(".live-flow[data-active]");
+      const id = flow?.getAttribute("data-flow-id") ?? null;
+      // The override lands on the inner styled element (`.b-<id>`), not on the
+      // editing shell around it — the shell keeps its toolbar and grip, because
+      // a section hidden on phones is still a section you need to be able to
+      // select and put back.
+      const styled = id ? flow.querySelector(`.b-${CSS.escape(id)}`) : null;
+      if (!styled) return { id, height: null };
+      return {
+        id,
+        height: Math.round(styled.getBoundingClientRect().height),
+        frame: document.querySelector("[data-canvas-frame]")?.getAttribute("data-canvas-frame") ?? null,
+        windowWidth: window.innerWidth,
+      };
+    });
+    if (!applied || applied.height === null) {
+      fail("cascade", `could not find the styled element for the overridden section (${applied?.id ?? "no selection"}) to measure`);
+    } else if (applied.height === 0) {
+      ok(`a phone override actually applies on the canvas ("${applied.id}" is 0px tall in the ${applied.frame} frame)`);
+    } else {
+      fail(
+        "cascade",
+        `"${applied.id}" is hidden on phone but still rendered ${applied.height}px tall in the ${applied.frame} frame at window width ${applied.windowWidth}`
+      );
+    }
 
     const dot = page.locator('button[aria-label*="Reset to the Desktop value"]');
     if ((await dot.count()) > 0) ok("the overridden field offers a reset");
@@ -635,6 +682,177 @@ async function run() {
 
     await withTemplate("vault");
   }
+
+  /* ------------------------------------------------------ section options ---
+     Beyond choosing a layout, each part of a section can be switched off or
+     rewritten: which value formats a palette prints, which scripts a specimen
+     sets, the sentence it is set in, how many tiles sit in a row.
+
+     Driven through the real inspector, not through localStorage. The point of
+     these controls is that they are wired, and a check that wrote the store
+     directly would pass with the panel disconnected. */
+  async function openContentTab(sectionId) {
+    const section = page.locator(`[data-flow-id="${sectionId}"]`).first();
+    if ((await section.count()) === 0) return false;
+    await section.scrollIntoViewIfNeeded();
+    await section.click();
+    await page.waitForTimeout(450);
+    const tab = page.locator('button[role="tab"]:has-text("Content")');
+    if ((await tab.count()) === 0) return false;
+    await tab.first().click();
+    await page.waitForTimeout(350);
+    return true;
+  }
+
+  /** The text of a section's rendered body, for comparing before and after. */
+  const bodyText = (sectionId) =>
+    page.evaluate(
+      (id) => (document.querySelector(`[data-flow-id="${id}"] [data-layout]`)?.textContent || "").trim(),
+      sectionId
+    );
+
+  if (!(await openContentTab("color"))) {
+    fail("options", "selecting the colour section gave no Content tab to edit its parts from");
+  } else {
+    const tabNames = await page.evaluate(() =>
+      [...document.querySelectorAll('button[role="tab"]')].map((b) => b.textContent?.trim())
+    );
+    if (["Content", "Style", "Layout"].every((t) => tabNames.includes(t))) ok("the inspector is split into Content, Style and Layout");
+    else fail("options", `the inspector tabs are wrong: ${JSON.stringify(tabNames)}`);
+
+    const withHex = await bodyText("color");
+    await page.locator('[data-option="formats:HEX"]').click();
+    await page.waitForTimeout(450);
+    const withoutHex = await bodyText("color");
+    if (withoutHex !== withHex && /rgb\(/i.test(withoutHex)) {
+      ok("turning a value format off changes what the palette prints");
+    } else {
+      fail("options", `turning HEX off did not change the printed value: ${withHex.slice(0, 40)} → ${withoutHex.slice(0, 40)}`);
+    }
+
+    // Every format off is a real design — swatches and names only — so the
+    // disclosure control has to go rather than open an empty drawer.
+    for (const f of ["RGB", "HSL", "CMYK"]) {
+      await page.locator(`[data-option="formats:${f}"]`).click();
+      await page.waitForTimeout(180);
+    }
+    const bare = await page.evaluate(() => ({
+      buttons: document.querySelectorAll('[data-flow-id="color"] [data-layout] button[aria-expanded]').length,
+      text: (document.querySelector('[data-flow-id="color"] [data-layout]')?.textContent || "").trim().length,
+    }));
+    if (bare.buttons === 0 && bare.text > 0) ok("with every value format off the palette drops its disclosure and keeps its names");
+    else fail("options", `expected no disclosure and some text with all formats off, got ${JSON.stringify(bare)}`);
+    for (const f of ["HEX", "RGB", "HSL", "CMYK"]) {
+      await page.locator(`[data-option="formats:${f}"]`).click();
+      await page.waitForTimeout(160);
+    }
+
+    /* Columns, and the reason the container-query fix matters: one number from
+       the studio has to become a narrower grid inside the editor's own frame. A
+       media query could not do this — the window is 1600px wide. */
+    const six = page.locator('button:has-text("6")').last();
+    if ((await six.count()) === 0) {
+      fail("options", "the colour section offered no column counts");
+    } else {
+      await six.click();
+      await page.waitForTimeout(450);
+      const tracks = () =>
+        page.evaluate(() => {
+          const root = document.querySelector('[data-flow-id="color"] [data-layout]');
+          return root ? getComputedStyle(root).gridTemplateColumns.split(" ").length : null;
+        });
+
+      /* Put the frame on desktop first, explicitly.
+         An earlier version of this check measured whatever width the cascade
+         block above happened to leave behind — which is the phone — and reported
+         "six per row produced 2 tracks" as a failure. It was the right answer to
+         a question the check hadn't meant to ask. */
+      const bpButtons = await page.locator("[data-view-switcher] [role=radio], [data-view-switcher] button").all();
+      if (bpButtons[0]) {
+        await bpButtons[0].click();
+        await page.waitForTimeout(700);
+      }
+      const wide = await tracks();
+      if (wide === 6) ok("a chosen column count lays the grid out in that many tracks");
+      else fail("options", `six per row produced ${wide} tracks in the desktop frame`);
+
+      if (bpButtons[2]) {
+        await bpButtons[2].click();
+        await page.waitForTimeout(800);
+        const narrow = await tracks();
+        if (narrow === 2) ok("and steps down to two inside the phone frame, which only a container query can do");
+        else fail("options", `six per row stayed at ${narrow} tracks in the phone frame`);
+        if (bpButtons[0]) {
+          await bpButtons[0].click();
+          await page.waitForTimeout(600);
+        }
+      }
+    }
+  }
+
+  /* Typography — the section this was asked for by name. */
+  if (!(await openContentTab("typography"))) {
+    fail("options", "selecting the typography section gave no Content tab");
+  } else {
+    const latin = page.locator('button:has-text("Latin")').first();
+    if ((await latin.count()) === 0) {
+      fail("options", "the typography section offered no script choice");
+    } else {
+      await latin.click();
+      await page.waitForTimeout(550);
+      const one = await page.evaluate(() => {
+        const root = document.querySelector('[data-flow-id="typography"] [data-layout]');
+        return { children: root?.children.length ?? 0, arabic: /[؀-ۿ]/.test(root?.textContent || "") };
+      });
+      if (one.children === 1 && !one.arabic) ok("choosing one script drops the other specimen");
+      else fail("options", `Latin only left ${JSON.stringify(one)}`);
+    }
+
+    await page.locator('[data-option="showCharacterSet"]').click();
+    await page.waitForTimeout(450);
+    const charset = await bodyText("typography");
+    if (!charset.includes("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) ok("turning the character set off removes it");
+    else fail("options", "the character set was still rendered after being switched off");
+
+    const sample = page.locator('input[placeholder="The standard pangram"]');
+    if ((await sample.count()) === 0) {
+      fail("options", "no sample-sentence field in the typography options");
+    } else {
+      await sample.fill("Markyos sets type that behaves");
+      await page.waitForTimeout(650);
+      if ((await bodyText("typography")).includes("Markyos sets type")) ok("a studio's own sample sentence reaches the specimen");
+      else fail("options", "the custom sample sentence did not reach the specimen");
+    }
+
+    // And all of it has to survive a reload, since none of it is worth anything
+    // if it lives only in the open panel.
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+    await page.waitForTimeout(800);
+    const after = await page.evaluate(() => {
+      const t = document.querySelector('[data-flow-id="typography"] [data-layout]');
+      const c = document.querySelector('[data-flow-id="color"] [data-layout]');
+      return {
+        sample: (t?.textContent || "").includes("Markyos sets type"),
+        oneScript: t?.children.length === 1,
+        cols: c ? getComputedStyle(c).gridTemplateColumns.split(" ").length : null,
+      };
+    });
+    if (after.sample && after.oneScript && after.cols === 6) ok("every section option survives a reload");
+    else fail("options", `options did not persist: ${JSON.stringify(after)}`);
+  }
+
+  // Back to the defaults, so the checks after this measure a section nobody has
+  // reconfigured. The context is discarded at the end of the run regardless.
+  await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("markyos:v1"));
+    const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+    ws.sectionOptions = {};
+    localStorage.setItem("markyos:v1", JSON.stringify(state));
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForSelector("[data-canvas-frame] .live-flow", { timeout: 15000 });
+  await page.waitForTimeout(600);
 
   /* --------------------------------------------------------- undo and redo ---
      Undo without redo is a trap rather than a safety net: it makes trying

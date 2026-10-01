@@ -5,6 +5,99 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 (fourth pass) — Every part of a section, and the breakpoint bug underneath
+
+A teardown of guidelines.site came in with the clarification that "section
+template" meant *per-part* control, not a choice of preset — "the typography, the
+user will be able to change the way of showing and viewing this section."
+
+Looking for where to put those controls turned up something worse first.
+
+### Responsive overrides did not work in the editor, at all
+
+`emitNode` emitted `@media (max-width: 809px)`. A media query resolves against
+the **viewport**. `CanvasFrame` lays the page out in a 390px-wide element and
+scales it down inside a window that is usually 1400px or more — so the query was
+false on the canvas and a phone override did nothing.
+
+Measured, before the fix: a section with a phone-scoped `display: none` rendered
+**790px tall** in the phone frame, with
+`matchMedia("(max-width:809px)").matches === false`. The rule was emitted, the
+inspector showed its override dot and its reset, the builder sweep went green, and
+the studio saw no change whatsoever.
+
+It went unnoticed because **every assertion about the cascade was about the rule
+text**. The sweep found `max-width:809px` in a `<style>` tag and stopped there;
+nothing measured whether the page changed. Its own closing line claimed "a phone
+override applies at phone width and nowhere else", and `CanvasFrame`'s comment
+claimed the framed element "believes it is 390px, so the same media queries fire
+that fire on a phone" — which is not how `@media` works. Two confident comments
+and a green suite, describing something that never happened.
+
+Fixed with **container queries**, which is also what the teardown recommends
+(§4.3: "the breakpoint is driven by the canvas container, not the window").
+`[data-guideline-surface]` — the one element both the framed canvas and the
+published page have — becomes a named container `g-page`, and every breakpoint
+rule resolves against it. One rule, both surfaces, and the preview stops lying.
+The hidden section now measures 0px in the phone frame and is untouched on
+desktop.
+
+The checks that would have caught it, both added: a unit test that
+`emitNode` **never** emits `@media` for a breakpoint, and a sweep check that
+measures the overridden section's rendered height instead of reading the
+stylesheet.
+
+### What each part of a section shows
+
+`lib/sectionOptions.ts`, modelled on the teardown's content nodes — where a
+palette carries `showName`, `showHex`, `showRgb`, `showCmyk` and `enableCopy`
+rather than a layout name:
+
+- **Colour** — which of HEX / RGB / HSL / CMYK it prints, names on or off,
+  click-to-copy on or off, tiles per row.
+- **Typography** — which scripts it sets (both, Latin, Arabic), the character set,
+  the size scale, and **the sentence it is set in**, per script.
+- **Logo** — the clearspace drawing, the colour variations, lockups per row.
+- **Photography** — tiles per row, and framing (square / landscape / wide /
+  uncropped).
+- **Icons**, **mockups** — tiles per row, captions.
+
+The lesson taken from the teardown is that the options are **flat and shared**
+rather than a bespoke bag per section: `columns` means the same thing on a
+palette, an icon set and a photo grid, so it is one field, one control and one
+renderer path. Six private vocabularies for the same six ideas is how an editor
+becomes impossible to learn.
+
+Stored on a new `Workspace.sectionOptions`, deliberately *not* inside
+`BlockStyle`. A `BlockStyle` is a set of visual declarations that CSS emitters
+read and `isEmptyStyle` counts; these are content decisions no emitter should ever
+see. Keeping them apart is what stops "show the character set" from one day
+becoming a CSS property because it happened to live in a type called Style.
+
+Every field is optional and **unset means "whatever the layout does"** — the same
+contract as `BlockStyle`. A switch turned back on stores `undefined` rather than
+`true`, so a section returns to following its default instead of pinning a value
+that merely equals today's.
+
+`columns` is the one option that needed CSS rather than a conditional: one number
+from the studio becomes three (`--cols`, `--cols-tablet`, `--cols-phone`, halving
+to a floor of two), spent by three rules in `globals.css`. Those rules are
+container queries, so **choosing six per row steps down to two inside the
+editor's phone frame** — which is the breakpoint fix paying for itself
+immediately, and is checked.
+
+### The inspector is tabbed
+
+Content · Style · Layout, the teardown's §3.5 pattern. The panel had grown to a
+900px scroll, and its controls answer three different questions: what the section
+shows, what colour it is, how it sits on the page. A block has no Content tab —
+its shape is the block kind that was chosen for it — and that is derived from the
+selection rather than corrected in an effect.
+
+Tests 236 → 252. Builder sweep 44 → 55 checks.
+
+---
+
 ## 2026-10-01 (later still) — Each section, in a layout of its choosing
 
 The six site templates decided the page *and* the inside of every derived section,

@@ -20,6 +20,7 @@ import { DesignInspector } from "@/components/builder/DesignInspector";
 import { LayersTab } from "@/components/builder/LayersTab";
 import { ReviewChip } from "@/components/builder/ReviewPanel";
 import { reviewPage } from "@/lib/pageReview";
+import { resolveOptions } from "@/lib/sectionOptions";
 import { useGuidelineViewer } from "@/lib/useGuidelineViewer";
 import { ALL_BLOCK_KINDS, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "@/lib/blockCatalog";
 import { DESIGN_SYSTEMS } from "@/lib/designSystem";
@@ -477,6 +478,7 @@ export default function BuilderPage() {
     removeBlock,
     setBlockStyle,
     setSectionStyle,
+    setSectionOptions,
     undo,
     canUndo,
     redo,
@@ -1421,9 +1423,13 @@ export default function BuilderPage() {
               isAr={isAr}
               ws={ws}
               style={selectedStyle}
-              // Only the derived sections have layouts to choose between — an
-              // authored block's shape is the block kind you picked.
+              // Only the derived sections have layouts and parts to choose
+              // between — an authored block's shape is the block kind you picked.
               sectionId={selectedFixedId}
+              options={selectedFixedId ? resolveOptions(selectedFixedId, ws.sectionOptions[selectedFixedId]) : undefined}
+              onOptionsChange={(patch) => {
+                if (selectedFixedId) setSectionOptions(ws!.id, selectedFixedId, patch);
+              }}
               view={{ breakpoint, dir: view.dir, scope }}
               onChange={(next) => {
                 // A whole replacement rather than a patch: the inspector has

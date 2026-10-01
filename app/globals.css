@@ -465,6 +465,54 @@ body {
   background: var(--surface-2);
 }
 
+/*
+ * The guideline page is the thing its own breakpoints measure.
+ *
+ * Every responsive override a studio sets is emitted as
+ * `@container g-page (max-width: …)` — see `lib/doc/css/emit.ts` for why it is a
+ * container query and not a media query. This is the one declaration that makes
+ * those rules resolve, and it has to live on the element both surfaces have: the
+ * template root, which is the editor's framed page and the published page alike.
+ *
+ * `inline-size` and not `size`: the page's height follows its content, and
+ * containing that would collapse every section to nothing.
+ */
+[data-guideline-surface] {
+  container-type: inline-size;
+  container-name: g-page;
+}
+
+/*
+ * A studio's own column count, on any section grid that offers one.
+ *
+ * The element sets three custom properties (`lib/sectionOptions.ts`,
+ * `columnVars`) and these three rules spend them. It has to be a stylesheet
+ * rather than an inline style because the narrower steps are conditional, and a
+ * container query rather than a media query for the reason the whole breakpoint
+ * cascade is: the editor frames the page at 390px inside a wide window, so a
+ * viewport query would never fire on the canvas.
+ *
+ * `[data-cols]` is set only when the studio chose a number. Without it the
+ * layout's own responsive classes are untouched, which is what "unset means
+ * whatever the layout does" means in practice. The attribute alone is the
+ * selector — not `[data-layout][data-cols]` — because a layout can have a second
+ * grid inside it that takes the same count, as the logo showcase does for its
+ * secondary lockups.
+ */
+[data-cols] {
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+@container g-page (max-width: 1199px) {
+  [data-cols] {
+    grid-template-columns: repeat(var(--cols-tablet), minmax(0, 1fr));
+  }
+}
+@container g-page (max-width: 809px) {
+  [data-cols] {
+    grid-template-columns: repeat(var(--cols-phone), minmax(0, 1fr));
+  }
+}
+
 /* The guideline site paints its own palette, so the same markup re-points at
    the brand's tokens instead of the app's. */
 [data-guideline-surface] .rich-text blockquote {

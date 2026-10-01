@@ -1,5 +1,7 @@
 export type Lang = "en" | "ar";
 
+import type { SectionOptions } from "./sectionOptions";
+
 export type SlotKind = "arabic" | "latin" | "symbol";
 
 /**
@@ -1041,6 +1043,18 @@ export interface Workspace {
    * are built from brand data and have no block to hold one.
    */
   sectionStyles: Record<string, BlockStyle>;
+  /**
+   * What each derived section shows inside itself — see `lib/sectionOptions.ts`.
+   *
+   * Keyed the same way as `sectionStyles` and deliberately *not* part of it. A
+   * `BlockStyle` is a set of visual declarations that CSS emitters read and
+   * `isEmptyStyle` counts; these are content decisions — which value formats a
+   * palette prints, which scripts a specimen sets, whether the logo section
+   * carries its construction drawings — that no emitter should ever see. Keeping
+   * them apart is what stops "show the character set" from one day turning into a
+   * CSS property because it happened to live in a type called Style.
+   */
+  sectionOptions: Record<string, SectionOptions>;
   /**
    * The client-facing site's ground. "auto" keeps the original behaviour —
    * inferred from a swatch named canvas/background — which is right when a

@@ -6,7 +6,16 @@ import { bestInkOn } from "@/lib/contrast";
 import { getBrandTheme } from "@/lib/theme";
 import { colorFormats } from "@/lib/utils";
 import { gPlate, gPlateSm } from "@/components/workspace/guideline/surface";
-import { SCRIPTS, TYPE_SCALE, readableFileName, sampleAt, swatchEdge } from "@/components/workspace/guideline/sectionShared";
+import {
+  SCRIPTS,
+  TYPE_SCALE,
+  photoTile,
+  readableFileName,
+  sampleAt,
+  sampleFor,
+  swatchEdge,
+} from "@/components/workspace/guideline/sectionShared";
+import { COLOR_FORMATS, columnVars, scriptsFor, type ColorFormatKey, type SectionOptions } from "@/lib/sectionOptions";
 
 /**
  * The alternate layouts for the derived sections — see `lib/sectionVariants.ts`
@@ -47,12 +56,16 @@ import { SCRIPTS, TYPE_SCALE, readableFileName, sampleAt, swatchEdge } from "@/c
  * colour rather than beneath it is the point: it shows the reader what type looks
  * like on that colour, which is a question they are going to ask anyway.
  */
-export function ColorBands({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function ColorBands({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
   const plate = getBrandTheme(ws).surface1;
+  // A band prints one value beside the name, so it takes the first format the
+  // studio kept rather than always the hex.
+  const wanted = opts.formats ?? COLOR_FORMATS;
   return (
     <div data-layout="bands" className="flex flex-col gap-3">
       {ws.colors.map((c) => {
         const ink = bestInkOn(c.hex)?.ink ?? "#000000";
+        const shown = colorFormats(c.hex).filter((f) => wanted.includes(f.label as ColorFormatKey))[0];
         return (
           <div
             key={c.id}
@@ -65,17 +78,21 @@ export function ColorBands({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
                   {isAr ? "أساسي" : "PRIMARY"}
                 </span>
               )}
-              <span className="text-[17px] font-semibold truncate" style={{ color: ink }}>
-                {c.name}
-              </span>
+              {opts.showNames !== false && (
+                <span className="text-[17px] font-semibold truncate" style={{ color: ink }}>
+                  {c.name}
+                </span>
+              )}
             </div>
-            <span
-              dir="ltr"
-              className="text-[12.5px] shrink-0"
-              style={{ fontFamily: "ui-monospace, Menlo, monospace", color: ink }}
-            >
-              {c.hex.toUpperCase()}
-            </span>
+            {shown && (
+              <span
+                dir="ltr"
+                className="text-[12.5px] shrink-0"
+                style={{ fontFamily: "ui-monospace, Menlo, monospace", color: ink }}
+              >
+                {shown.value}
+              </span>
+            )}
           </div>
         );
       })}
@@ -91,31 +108,44 @@ export function ColorBands({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * twenty-four — a reader scrolling past eighteen cards to find a tint has lost
  * the shape of the palette, which is the one thing a dense grid shows well.
  */
-export function ColorChips({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function ColorChips({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
   const plate = getBrandTheme(ws).surface1;
+  const wanted = opts.formats ?? COLOR_FORMATS;
   return (
-    <div data-layout="chips" className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-2.5">
-      {ws.colors.map((c) => (
-        <div key={c.id} className="flex flex-col gap-1.5">
-          <div
-            className="h-[64px]"
-            style={{ background: c.hex, boxShadow: swatchEdge(c.hex, plate), borderRadius: "var(--g-radius-md)" }}
-            title={c.isPrimary ? (isAr ? `${c.name} — أساسي` : `${c.name} — primary`) : c.name}
-          />
-          <div className="flex flex-col">
-            <span className="text-[10.5px] font-semibold truncate" title={c.name}>
-              {c.name}
-            </span>
-            <span
-              dir="ltr"
-              className="text-[9.5px]"
-              style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)", textAlign: "start" }}
-            >
-              {c.hex.toUpperCase()}
-            </span>
+    <div
+      data-layout="chips"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-2.5"
+    >
+      {ws.colors.map((c) => {
+        const shown = colorFormats(c.hex).filter((f) => wanted.includes(f.label as ColorFormatKey))[0];
+        return (
+          <div key={c.id} className="flex flex-col gap-1.5">
+            <div
+              className="h-[64px]"
+              style={{ background: c.hex, boxShadow: swatchEdge(c.hex, plate), borderRadius: "var(--g-radius-md)" }}
+              title={c.isPrimary ? (isAr ? `${c.name} — أساسي` : `${c.name} — primary`) : c.name}
+            />
+            <div className="flex flex-col">
+              {opts.showNames !== false && (
+                <span className="text-[10.5px] font-semibold truncate" title={c.name}>
+                  {c.name}
+                </span>
+              )}
+              {shown && (
+                <span
+                  dir="ltr"
+                  className="text-[9.5px]"
+                  style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)", textAlign: "start" }}
+                >
+                  {shown.value}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -128,13 +158,14 @@ export function ColorChips({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * colour marked primary the first is used, because a palette's first entry is
  * where every studio puts the one that matters.
  */
-export function ColorFeature({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function ColorFeature({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
   if (ws.colors.length === 0) return null;
   const plate = getBrandTheme(ws).surface1;
   const primary = ws.colors.find((c) => c.isPrimary) ?? ws.colors[0];
   const rest = ws.colors.filter((c) => c.id !== primary.id);
   const ink = bestInkOn(primary.hex)?.ink ?? "#000000";
-  const formats = colorFormats(primary.hex);
+  const wanted = opts.formats ?? COLOR_FORMATS;
+  const formats = colorFormats(primary.hex).filter((f) => wanted.includes(f.label as ColorFormatKey));
 
   return (
     <div data-layout="feature" className="flex flex-col gap-4">
@@ -146,9 +177,11 @@ export function ColorFeature({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
           <span className="text-[10px] font-semibold" style={{ letterSpacing: ".12em", color: ink }}>
             {isAr ? "اللون الأساسي" : "PRIMARY"}
           </span>
-          <span className="text-[26px] font-semibold leading-tight" style={{ color: ink }}>
-            {primary.name}
-          </span>
+          {opts.showNames !== false && (
+            <span className="text-[26px] font-semibold leading-tight" style={{ color: ink }}>
+              {primary.name}
+            </span>
+          )}
         </div>
         {/* The formats inline rather than behind a disclosure: this colour has a
             whole block to itself, so there is room, and the one value a reader
@@ -180,9 +213,11 @@ export function ColorFeature({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
                 className="p-3.5 flex flex-col justify-end h-[104px]"
                 style={{ background: c.hex, boxShadow: swatchEdge(c.hex, plate), borderRadius: "var(--g-radius-md)" }}
               >
-                <span className="text-[12px] font-semibold truncate" style={{ color: chipInk }}>
-                  {c.name}
-                </span>
+                {opts.showNames !== false && (
+                  <span className="text-[12px] font-semibold truncate" style={{ color: chipInk }}>
+                    {c.name}
+                  </span>
+                )}
                 <span
                   dir="ltr"
                   className="text-[10px]"
@@ -206,13 +241,20 @@ export function LogoLockups({
   ws,
   attachedSlots,
   onDark,
+  opts = {},
 }: {
   ws: Workspace;
   attachedSlots: SlotKind[];
   onDark: boolean;
+  opts?: SectionOptions;
 }) {
   return (
-    <div data-layout="lockups" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div
+      data-layout="lockups"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+    >
       {attachedSlots.map((kind) => (
         <div key={kind} className="p-8 grid place-items-center h-[220px]" style={gPlate}>
           <BrandMark src={ws.logo[kind].url} alt={kind} onDark={onDark} style={{ maxHeight: 110, maxWidth: "100%" }} />
@@ -235,11 +277,13 @@ export function LogoHero({
   attachedSlots,
   onDark,
   isAr,
+  opts = {},
 }: {
   ws: Workspace;
   attachedSlots: SlotKind[];
   onDark: boolean;
   isAr: boolean;
+  opts?: SectionOptions;
 }) {
   if (attachedSlots.length === 0) return null;
   const [first, ...rest] = attachedSlots;
@@ -255,7 +299,11 @@ export function LogoHero({
           <span className="text-[10px] font-semibold" style={{ letterSpacing: ".1em", textTransform: "uppercase", color: "var(--g-text-faint)" }}>
             {isAr ? "الصيغ الأخرى" : "Other lockups"}
           </span>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div
+            data-cols={opts.columns ? "" : undefined}
+            style={columnVars(opts.columns)}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+          >
             {rest.map((kind) => (
               <div key={kind} className="p-6 grid place-items-center h-[140px]" style={gPlateSm}>
                 <BrandMark src={ws.logo[kind].url} alt={kind} onDark={onDark} style={{ maxHeight: 64, maxWidth: "100%" }} />
@@ -277,10 +325,11 @@ export function LogoHero({
  * a page needs the size and the line height next to each other in a form they can
  * read off, and the specimen buries those in a caption above each sample.
  */
-export function TypeScaleTable({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function TypeScaleTable({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
+  const scripts = scriptsFor(opts);
   return (
     <div data-layout="scale" className="flex flex-col gap-4">
-      {SCRIPTS.map((s) => (
+      {SCRIPTS.filter((s) => scripts.includes(s.script)).map((s) => (
         <div key={s.script} className="p-5 flex flex-col gap-4" style={gPlate}>
           <div className="flex items-baseline justify-between gap-3">
             <span className="text-[12px] font-semibold" style={{ color: "var(--g-text-muted)" }}>
@@ -318,7 +367,7 @@ export function TypeScaleTable({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
                     letterSpacing: s.script === "latin" && step.size > 20 ? "-.02em" : undefined,
                   }}
                 >
-                  {sampleAt(s.sample, step.words)}
+                  {sampleAt(sampleFor(s.script, s.sample, opts), step.words)}
                 </span>
               </div>
             ))}
@@ -337,10 +386,11 @@ export function TypeScaleTable({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * than a reference for it. The size table is one click away for anyone who needs
  * the numbers.
  */
-export function TypePoster({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function TypePoster({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
+  const scripts = scriptsFor(opts);
   return (
-    <div data-layout="poster" className="grid gap-4 md:grid-cols-2">
-      {SCRIPTS.map((s) => (
+    <div data-layout="poster" className={`grid gap-4 ${scripts.length > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}>
+      {SCRIPTS.filter((s) => scripts.includes(s.script)).map((s) => (
         <div key={s.script} className="p-7 flex flex-col gap-5" style={gPlate}>
           <div
             dir={s.dir}
@@ -367,7 +417,7 @@ export function TypePoster({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
               className="text-[14px] mt-1"
               style={{ fontFamily: s.fontFamily, lineHeight: 1.6, color: "var(--g-text-muted)" }}
             >
-              {sampleAt(s.sample, 9)}
+              {sampleAt(sampleFor(s.script, s.sample, opts), 9)}
             </span>
           </div>
         </div>
@@ -379,17 +429,24 @@ export function TypePoster({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
 // ----------------------------------------------------------- photography ---
 
 /** The first photograph runs wide, the rest fill a grid beneath it. */
-export function PhotoFeature({ assets }: { assets: Asset[] }) {
+export function PhotoFeature({ assets, opts = {} }: { assets: Asset[]; opts?: SectionOptions }) {
   if (assets.length === 0) return null;
   const [lead, ...rest] = assets;
   return (
     <div data-layout="feature" className="flex flex-col gap-4">
+      {/* The lead image keeps its own tall frame whatever the framing choice —
+          that is what makes it the lead. The framing applies to the grid under
+          it, where a mixed set of aspect ratios actually shows. */}
       <div className="overflow-hidden h-[320px]" style={gPlate}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={lead.url} alt={lead.fileName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       {rest.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div
+          data-cols={opts.columns ? "" : undefined}
+          style={columnVars(opts.columns)}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+        >
           {rest.map((a) => (
             <div key={a.id} className="overflow-hidden h-[110px]" style={gPlateSm}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -403,13 +460,22 @@ export function PhotoFeature({ assets }: { assets: Asset[] }) {
 }
 
 /** One photograph per row, edge to edge. */
-export function PhotoStrip({ assets }: { assets: Asset[] }) {
+export function PhotoStrip({ assets, opts = {} }: { assets: Asset[]; opts?: SectionOptions }) {
+  // Taller than the grid's tiles, because a full-width row is the layout you
+  // choose when the photograph is the point. `original` still means uncropped.
+  const tile = photoTile(opts.aspect);
+  const height = opts.aspect === "original" ? undefined : Math.max(tile.height ?? 0, 260);
   return (
     <div data-layout="strip" className="flex flex-col gap-4">
       {assets.map((a) => (
-        <div key={a.id} className="overflow-hidden h-[260px]" style={gPlate}>
+        <div key={a.id} className="overflow-hidden" style={{ ...gPlate, height }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={a.url} alt={a.fileName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img
+            src={a.url}
+            alt={a.fileName}
+            loading="lazy"
+            style={{ width: "100%", height: height ? "100%" : "auto", objectFit: tile.fit, display: "block" }}
+          />
         </div>
       ))}
     </div>
@@ -424,9 +490,14 @@ export function PhotoStrip({ assets }: { assets: Asset[] }) {
  * So a developer can ask for one by name. The plain tile grid shows a reader what
  * the set looks like and gives them no way to refer to anything in it.
  */
-export function IconNamed({ assets, onDark }: { assets: Asset[]; onDark: boolean }) {
+export function IconNamed({ assets, onDark, opts = {} }: { assets: Asset[]; onDark: boolean; opts?: SectionOptions }) {
   return (
-    <div data-layout="named" className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div
+      data-layout="named"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3"
+    >
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-1.5 m-0">
           <div className="grid place-items-center h-[84px]" style={gPlateSm}>
@@ -442,9 +513,14 @@ export function IconNamed({ assets, onDark }: { assets: Asset[]; onDark: boolean
 }
 
 /** Smaller tiles, many to a row — for a set of twenty or more. */
-export function IconDense({ assets, onDark }: { assets: Asset[]; onDark: boolean }) {
+export function IconDense({ assets, onDark, opts = {} }: { assets: Asset[]; onDark: boolean; opts?: SectionOptions }) {
   return (
-    <div data-layout="dense" className="grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-10 gap-2">
+    <div
+      data-layout="dense"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-10 gap-2"
+    >
       {assets.map((a) => (
         <div key={a.id} className="grid place-items-center h-[52px]" style={gPlateSm}>
           <BrandMark src={a.url} alt={a.fileName} onDark={onDark} style={{ maxHeight: 22, maxWidth: 22 }} fallbackSize={13} />
@@ -465,20 +541,27 @@ export function IconDense({ assets, onDark }: { assets: Asset[]; onDark: boolean
  * to look symmetrical with the colour section would be three places to fix the
  * next caption bug.
  */
-export function MockupRows({ assets, columns }: { assets: Asset[]; columns: 1 | 3 }) {
+export function MockupRows({ assets, columns, opts = {} }: { assets: Asset[]; columns: 1 | 3; opts?: SectionOptions }) {
   const cls = columns === 1 ? "grid gap-4 grid-cols-1" : "grid gap-3 grid-cols-2 sm:grid-cols-3";
   const height = columns === 1 ? 420 : 170;
   return (
-    <div data-layout={columns === 1 ? "one-up" : "three-up"} className={cls}>
+    <div
+      data-layout={columns === 1 ? "one-up" : "three-up"}
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className={cls}
+    >
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-2 m-0">
           <div className="overflow-hidden mk-card" style={{ ...gPlate, height }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={a.url} alt={a.fileName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
-          <figcaption dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--g-text-faint)" }}>
-            {readableFileName(a.fileName)}
-          </figcaption>
+          {opts.showNames !== false && (
+            <figcaption dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--g-text-faint)" }}>
+              {readableFileName(a.fileName)}
+            </figcaption>
+          )}
         </figure>
       ))}
     </div>

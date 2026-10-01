@@ -78,7 +78,7 @@ describe("sizingCss", () => {
 });
 
 describe("emitNode", () => {
-  it("emits base, both media queries and the RTL rule, in that order", () => {
+  it("emits base, both breakpoint queries and the RTL rule, in that order", () => {
     const css = emitNode("n1", {
       base: { gap: 24 },
       tablet: { gap: 16 },
@@ -88,11 +88,26 @@ describe("emitNode", () => {
     expect(css).toBe(
       [
         ".b-n1{gap:24px}",
-        "@media (max-width:1199px){.b-n1{gap:16px}}",
-        "@media (max-width:809px){.b-n1{gap:8px}}",
+        "@container g-page (max-width:1199px){.b-n1{gap:16px}}",
+        "@container g-page (max-width:809px){.b-n1{gap:8px}}",
         '[dir="rtl"] .b-n1{margin-inline-start:4px}',
       ].join("\n"),
     );
+  });
+
+  /*
+   * A container query, never a media query.
+   *
+   * A media query resolves against the viewport, and the editor frames the page
+   * at 390px inside a window four times that wide — so every phone override was
+   * emitted correctly and applied nowhere. This test is the one that would have
+   * caught it, and it is written as a prohibition because the mistake is to reach
+   * for `@media` by habit.
+   */
+  it("never emits a viewport media query for a breakpoint", () => {
+    const css = emitNode("n1", { base: { gap: 24 }, tablet: { gap: 16 }, phone: { gap: 8 } });
+    expect(css).not.toContain("@media");
+    expect(css.match(/@container g-page/g)).toHaveLength(2);
   });
 
   it("emits nothing for a node with nothing to say", () => {

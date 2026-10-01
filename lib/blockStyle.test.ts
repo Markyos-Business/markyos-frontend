@@ -129,9 +129,15 @@ describe("blockStyleRules", () => {
     expect(blockStyleRules("x", { padding: "lg", align: "center" })).toBe("");
   });
 
-  it("emits a media query for the scope that differs", () => {
+  /*
+   * A container query, not a media query — see `emitNode`. The editor frames the
+   * page at 390px inside a window four times wider, so a viewport query is
+   * emitted correctly and applies nowhere.
+   */
+  it("emits a container query for the scope that differs", () => {
     const css = blockStyleRules("abc", { padding: "lg", bp: { phone: { padding: "none" } } });
-    expect(css).toContain("@media (max-width:809px)");
+    expect(css).toContain("@container g-page (max-width:809px)");
+    expect(css).not.toContain("@media");
     expect(css).toContain(".b-abc{padding:0px}");
     expect(css).not.toContain("1199px");
   });
@@ -143,7 +149,7 @@ describe("blockStyleRules", () => {
    */
   it("does not repeat the base declarations", () => {
     const css = blockStyleRules("abc", { padding: "lg", bp: { phone: { padding: "none" } } });
-    expect(css.startsWith("@media")).toBe(true);
+    expect(css.startsWith("@container")).toBe(true);
   });
 
   it("hides a section at one width only", () => {

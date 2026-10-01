@@ -58,6 +58,7 @@ import {
   WorkspaceStage,
   ZoneKind,
 } from "./types";
+import type { SectionOptions } from "./sectionOptions";
 import { between, nBetween } from "./doc/core/order";
 import { zonesFromTemplate } from "./moodboard/zones";
 import { withoutPosition } from "./moodboard/layout";
@@ -526,6 +527,12 @@ interface AppContextValue {
     patch: Partial<BlockStyle>,
     opts?: { replace?: boolean },
   ) => void;
+  /**
+   * What a derived section shows inside itself — which value formats a palette
+   * prints, which scripts a specimen sets, and so on. A patch; `undefined` for a
+   * key returns that part to its default. See `lib/sectionOptions.ts`.
+   */
+  setSectionOptions: (workspaceId: string, sectionId: string, patch: Partial<SectionOptions>) => void;
   /** Rewrites a derived section's heading. An empty value clears the override
    *  and the section goes back to its template's own wording. */
   setSectionTitle: (workspaceId: string, sectionId: string, lang: Lang, value: string) => void;
@@ -1020,6 +1027,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       strategyTranslation: { source: "manual", translatedAt: null, direction: null, unreviewed: [] },
       sectionOrder: [],
       sectionStyles: {},
+      sectionOptions: {},
       siteMode: "auto",
       published: null,
       publishedAt: null,
@@ -2993,6 +3001,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace]
   );
 
+  /**
+   * What a derived section shows inside itself — see `lib/sectionOptions.ts`.
+   *
+   * A patch, merged. `undefined` for a key removes it, which is how a control
+   * returns a part to its default rather than storing the default as a choice: a
+   * section that is following the default keeps following it if the default ever
+   * changes. A record with nothing left in it is deleted outright, so an
+   * untouched section stores nothing at all.
+   */
+  const setSectionOptions = useCallback(
+    (workspaceId: string, sectionId: string, patch: Partial<SectionOptions>) => {
+      mutateWorkspace(workspaceId, (ws) => {
+        const map = { ...ws.sectionOptions };
+        const merged: Record<string, unknown> = { ...(map[sectionId] ?? {}) };
+        for (const [key, value] of Object.entries(patch)) {
+          if (value === undefined) delete merged[key];
+          else merged[key] = value;
+        }
+        if (Object.keys(merged).length === 0) delete map[sectionId];
+        else map[sectionId] = merged as SectionOptions;
+        return touchWorkspace(ws, { sectionOptions: map });
+      });
+    },
+    [mutateWorkspace, touchWorkspace]
+  );
+
   const setSectionTitle = useCallback(
     (workspaceId: string, sectionId: string, lang: Lang, value: string) =>
       setSectionOverride(workspaceId, "sectionTitles", sectionId, lang, value),
@@ -3192,6 +3226,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSectionOrder,
       setBlockStyle,
       setSectionStyle,
+      setSectionOptions,
       setSectionTitle,
       setSectionNote,
       setSiteMode,
@@ -3336,6 +3371,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSectionOrder,
       setBlockStyle,
       setSectionStyle,
+      setSectionOptions,
       setSectionTitle,
       setSectionNote,
       setSiteMode,

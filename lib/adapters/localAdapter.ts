@@ -350,6 +350,7 @@ function migrate(parsed: AppState): AppState {
         : { source: "manual", translatedAt: null, direction: null, unreviewed: [] },
     sectionOrder: Array.isArray(ws.sectionOrder) ? ws.sectionOrder : [],
     sectionStyles: ws.sectionStyles && typeof ws.sectionStyles === "object" ? ws.sectionStyles : {},
+    sectionOptions: ws.sectionOptions && typeof ws.sectionOptions === "object" ? ws.sectionOptions : {},
     siteMode: ws.siteMode === "light" || ws.siteMode === "dark" ? ws.siteMode : "auto",
     published: ws.published ?? null,
     publishedAt: typeof ws.publishedAt === "number" ? ws.publishedAt : null,

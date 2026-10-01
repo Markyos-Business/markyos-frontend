@@ -1,4 +1,5 @@
 import { bestInkOn, contrastRatio } from "@/lib/contrast";
+import type { SectionOptions } from "@/lib/sectionOptions";
 
 /**
  * The pieces more than one section layout needs.
@@ -88,9 +89,42 @@ export const SCRIPTS: ScriptSpec[] = [
   },
 ];
 
+/**
+ * The sentence a specimen is set in, for one script.
+ *
+ * A studio's own line when they wrote one, the built-in pangram when they didn't.
+ * Here rather than in each layout because "which sample" is one decision and
+ * three layouts were about to answer it three ways.
+ */
+export function sampleFor(script: "latin" | "arabic", fallback: string, opts: SectionOptions): string {
+  const given = script === "arabic" ? opts.sampleTextAr : opts.sampleText;
+  return given?.trim() || fallback;
+}
+
 /** Trims a sample to the words that fit on one line at a given step. */
 export function sampleAt(sample: string, words: number): string {
   return sample.split(" ").slice(0, words).join(" ");
+}
+
+/**
+ * How tall a photograph's tile stands, for a chosen framing.
+ *
+ * `original` is the one that is not a height at all: it lets the image set its
+ * own, which is the only framing that never crops. The others are fixed heights
+ * with `object-fit: cover`, because a grid of mixed aspect ratios is exactly what
+ * a photography section exists to avoid looking like.
+ */
+export function photoTile(aspect: SectionOptions["aspect"]): { height?: number; fit: "cover" | "contain" } {
+  switch (aspect) {
+    case "square":
+      return { height: 200, fit: "cover" };
+    case "wide":
+      return { height: 120, fit: "cover" };
+    case "original":
+      return { fit: "contain" };
+    default:
+      return { height: 140, fit: "cover" };
+  }
 }
 
 /** A file name as a human would say it — no extension, no separators. */

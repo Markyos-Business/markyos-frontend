@@ -13,7 +13,7 @@ import { StrategyDocument } from "@/components/workspace/strategy/StrategyDocume
 import { DepartmentDocument } from "@/components/workspace/departments/DepartmentDocument";
 import { colorFormats, formatRelative } from "@/lib/utils";
 import { gCard, gInset, gPlate, gPlateSm } from "@/components/workspace/guideline/surface";
-import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, sampleAt, swatchEdge } from "@/components/workspace/guideline/sectionShared";
+import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, photoTile, sampleAt, swatchEdge } from "@/components/workspace/guideline/sectionShared";
 import {
   ColorBands,
   ColorChips,
@@ -29,6 +29,14 @@ import {
   TypeScaleTable,
 } from "@/components/workspace/guideline/SectionLayouts";
 import { resolveVariantKey } from "@/lib/sectionVariants";
+import {
+  COLOR_FORMATS,
+  columnVars,
+  resolveOptions,
+  scriptsFor,
+  type ColorFormatKey,
+  type SectionOptions,
+} from "@/lib/sectionOptions";
 import { getBrandTheme, isLightHex } from "@/lib/theme";
 
 /**
@@ -53,9 +61,24 @@ import { getBrandTheme, isLightHex } from "@/lib/theme";
  * — see the note at the top of `SectionLayouts.tsx`. These are the defaults, so
  * they are what a section renders when nobody has chosen anything.
  */
-export function LogoGrid({ ws, attachedSlots, onDark = true }: { ws: Workspace; attachedSlots: SlotKind[]; onDark?: boolean }) {
+export function LogoGrid({
+  ws,
+  attachedSlots,
+  onDark = true,
+  opts = {},
+}: {
+  ws: Workspace;
+  attachedSlots: SlotKind[];
+  onDark?: boolean;
+  opts?: SectionOptions;
+}) {
   return (
-    <div data-layout="full" className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div
+      data-layout="full"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+    >
       {attachedSlots.map((kind) => {
         const slot = ws.logo[kind];
         return (
@@ -420,9 +443,12 @@ export function SocialProfiles({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * reads as a swatch — including #FFFFFF and #000000, which are real entries in
  * most palettes.
  */
-export function ColorGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function ColorGrid({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
   const { showToast } = useToast();
   const [openId, setOpenId] = useState<string | null>(null);
+  // Which formats the studio asked for, in the canonical order rather than the
+  // order they happened to tick them in.
+  const wanted = opts.formats ?? COLOR_FORMATS;
   // The plate each chip is drawn on, so a chip that matches it can be given a
   // harder edge. Same source the CSS token comes from, so the two can't drift.
   const plate = getBrandTheme(ws).surface1;
@@ -442,60 +468,105 @@ export function ColorGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   // Four swatches only once there is room for the hex and the CODES toggle
   // side by side; at 390px a quarter-width card clips the toggle.
   return (
-    <div data-layout="cards" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div
+      data-layout="cards"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+    >
       {ws.colors.map((c) => {
         const open = openId === c.id;
-        const formats = colorFormats(c.hex);
+        const formats = colorFormats(c.hex).filter((f) => wanted.includes(f.label as ColorFormatKey));
         return (
           <div key={c.id} className="overflow-hidden" style={gPlate}>
-            <button
-              type="button"
-              onClick={() => setOpenId(open ? null : c.id)}
-              aria-expanded={open}
-              className="w-full text-start cursor-pointer"
-            >
-              <div className="h-[104px]" style={{ background: c.hex, boxShadow: swatchEdge(c.hex, plate) }} />
-              <div className="px-3.5 py-3 flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-1.5">
-                  <span className="font-semibold text-[13px] truncate">{c.name}</span>
-                  {c.isPrimary && (
-                    <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded shrink-0" style={{ background: "var(--g-accent-soft)", color: "var(--g-accent-on-soft)" }}>
-                      {isAr ? "أساسي" : "PRIMARY"}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center justify-between gap-1.5">
-                  <span className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-muted)" }}>
-                    {c.hex.toUpperCase()}
-                  </span>
-                  <span className="text-[10px] font-semibold flex items-center gap-1" style={{ color: "var(--g-accent)" }}>
-                    {open ? (isAr ? "إخفاء" : "HIDE") : isAr ? "الصيغ" : "CODES"}
-                    <Icon name={open ? "angle-up" : "angle-down"} size={10} />
-                  </span>
-                </div>
-              </div>
-            </button>
+            {/*
+             * The card stops being a button when there is nothing to disclose.
+             * A studio can turn every value format off — a palette page that is
+             * swatches and names and nothing else is a real design — and a
+             * control that opens an empty drawer would be worse than no control.
+             */}
+            {(() => {
+              const body = (
+                <>
+                  <div className="h-[104px]" style={{ background: c.hex, boxShadow: swatchEdge(c.hex, plate) }} />
+                  <div className="px-3.5 py-3 flex flex-col gap-1.5">
+                    {(opts.showNames !== false || c.isPrimary) && (
+                      <div className="flex items-center justify-between gap-1.5">
+                        {opts.showNames !== false && <span className="font-semibold text-[13px] truncate">{c.name}</span>}
+                        {c.isPrimary && (
+                          <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded shrink-0" style={{ background: "var(--g-accent-soft)", color: "var(--g-accent-on-soft)" }}>
+                            {isAr ? "أساسي" : "PRIMARY"}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {formats.length > 0 && (
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-muted)" }}>
+                          {/* The first format the studio kept, not always the hex
+                              — turning HEX off and still printing it would make
+                              the control a lie. */}
+                          {formats[0].value}
+                        </span>
+                        {formats.length > 1 && (
+                          <span className="text-[10px] font-semibold flex items-center gap-1" style={{ color: "var(--g-accent)" }}>
+                            {open ? (isAr ? "إخفاء" : "HIDE") : isAr ? "الصيغ" : "CODES"}
+                            <Icon name={open ? "angle-up" : "angle-down"} size={10} />
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              );
+              if (formats.length < 2) return <div className="w-full text-start">{body}</div>;
+              return (
+                <button
+                  type="button"
+                  onClick={() => setOpenId(open ? null : c.id)}
+                  aria-expanded={open}
+                  className="w-full text-start cursor-pointer"
+                >
+                  {body}
+                </button>
+              );
+            })()}
 
             {open && (
               <div className="px-3.5 pb-3 flex flex-col gap-1.5">
-                {formats.map((f) => (
-                  <button
-                    key={f.label}
-                    type="button"
-                    onClick={() => copy(f.label, f.value)}
-                    title={isAr ? `نسخ ${f.label}` : `Copy ${f.label}`}
-                    className="flex items-center gap-2 px-2.5 py-2 cursor-pointer text-start"
-                    style={gInset}
-                  >
-                    <span className="text-[9.5px] font-semibold shrink-0 w-[38px]" style={{ letterSpacing: ".06em", color: "var(--g-text-faint)" }}>
-                      {f.label}
-                    </span>
-                    <span dir="ltr" className="flex-1 min-w-0 truncate text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>
-                      {f.value}
-                    </span>
-                    <Icon name="copy" size={11} style={{ color: "var(--g-text-faint)", flexShrink: 0 }} />
-                  </button>
-                ))}
+                {formats.map((f) => {
+                  const row = (
+                    <>
+                      <span className="text-[9.5px] font-semibold shrink-0 w-[38px]" style={{ letterSpacing: ".06em", color: "var(--g-text-faint)" }}>
+                        {f.label}
+                      </span>
+                      <span dir="ltr" className="flex-1 min-w-0 truncate text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>
+                        {f.value}
+                      </span>
+                      {opts.enableCopy !== false && <Icon name="copy" size={11} style={{ color: "var(--g-text-faint)", flexShrink: 0 }} />}
+                    </>
+                  );
+                  // With copying off the row is still worth showing and still
+                  // worth selecting by hand — it just stops claiming to be a
+                  // button, since a button that does nothing is the thing the
+                  // studio turned off.
+                  return opts.enableCopy === false ? (
+                    <div key={f.label} className="flex items-center gap-2 px-2.5 py-2" style={gInset}>
+                      {row}
+                    </div>
+                  ) : (
+                    <button
+                      key={f.label}
+                      type="button"
+                      onClick={() => copy(f.label, f.value)}
+                      title={isAr ? `نسخ ${f.label}` : `Copy ${f.label}`}
+                      className="flex items-center gap-2 px-2.5 py-2 cursor-pointer text-start"
+                      style={gInset}
+                    >
+                      {row}
+                    </button>
+                  );
+                })}
                 {formats.some((f) => f.note) && (
                   <span className="text-[10px] leading-[1.4]" style={{ color: "var(--g-text-faint)" }}>
                     {isAr ? formats.find((f) => f.arNote)?.arNote : formats.find((f) => f.note)?.note}
@@ -532,6 +603,7 @@ function ScriptSpecimen({
   characters,
   sample,
   isAr,
+  opts = {},
 }: {
   script: "latin" | "arabic";
   label: string;
@@ -541,6 +613,7 @@ function ScriptSpecimen({
   characters: string;
   sample: string;
   isAr: boolean;
+  opts?: SectionOptions;
 }) {
   const dir = script === "arabic" ? "rtl" : "ltr";
   return (
@@ -555,17 +628,24 @@ function ScriptSpecimen({
       </div>
 
       {/* The character set: what the face actually gives you to work with. */}
-      <div
-        dir={dir}
-        style={{ fontFamily, fontSize: 14, lineHeight: 1.9, color: "var(--g-text-muted)", wordSpacing: script === "arabic" ? "0.15em" : undefined }}
-      >
-        {characters}
-      </div>
+      {opts.showCharacterSet !== false && (
+        <div
+          dir={dir}
+          style={{ fontFamily, fontSize: 14, lineHeight: 1.9, color: "var(--g-text-muted)", wordSpacing: script === "arabic" ? "0.15em" : undefined }}
+        >
+          {characters}
+        </div>
+      )}
 
-      <div style={{ height: 1, background: "var(--g-hairline)" }} />
+      {/* The rule only earns its place between two things. With the character set
+          or the scale turned off it would be a line under the last element. */}
+      {opts.showCharacterSet !== false && opts.showScale !== false && (
+        <div style={{ height: 1, background: "var(--g-hairline)" }} />
+      )}
 
       {/* The scale, with the line heights — the part that keeps six people from
           inventing six different heading sizes. */}
+      {opts.showScale !== false && (
       <div className="flex flex-col gap-3.5">
         {TYPE_SCALE.map((step) => (
           <div key={step.key} className="flex flex-col gap-1">
@@ -585,53 +665,81 @@ function ScriptSpecimen({
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
 
-export function TypeSpecimen({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function TypeSpecimen({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
+  const scripts = scriptsFor(opts);
   return (
-    <div data-layout="specimen" className="grid gap-4 md:grid-cols-2">
-      <ScriptSpecimen
-        script="latin"
-        label={isAr ? "لاتيني" : "Latin"}
-        family={ws.typography.latinFamily}
-        fontFamily="var(--font-sans)"
-        showing="Aa Bb Cc"
-        characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789"
-        sample={LATIN_SAMPLE}
-        isAr={isAr}
-      />
-      <ScriptSpecimen
-        script="arabic"
-        label={isAr ? "عربي" : "Arabic"}
-        family={ws.typography.arabicFamily}
-        fontFamily="var(--font-arabic)"
-        showing="أ ب ج"
-        characters="ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ٠١٢٣٤٥٦٧٨٩"
-        sample={ARABIC_SAMPLE}
-        isAr={isAr}
-      />
+    <div
+      data-layout="specimen"
+      // One script fills the width rather than leaving half the section empty.
+      className={`grid gap-4 ${scripts.length > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}
+    >
+      {scripts.includes("latin") && (
+        <ScriptSpecimen
+          script="latin"
+          label={isAr ? "لاتيني" : "Latin"}
+          family={ws.typography.latinFamily}
+          fontFamily="var(--font-sans)"
+          showing="Aa Bb Cc"
+          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789"
+          sample={opts.sampleText?.trim() || LATIN_SAMPLE}
+          isAr={isAr}
+          opts={opts}
+        />
+      )}
+      {scripts.includes("arabic") && (
+        <ScriptSpecimen
+          script="arabic"
+          label={isAr ? "عربي" : "Arabic"}
+          family={ws.typography.arabicFamily}
+          fontFamily="var(--font-arabic)"
+          showing="أ ب ج"
+          characters="ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ٠١٢٣٤٥٦٧٨٩"
+          sample={opts.sampleTextAr?.trim() || ARABIC_SAMPLE}
+          isAr={isAr}
+          opts={opts}
+        />
+      )}
     </div>
   );
 }
 
-export function PhotoGrid({ assets }: { assets: Asset[] }) {
+export function PhotoGrid({ assets, opts = {} }: { assets: Asset[]; opts?: SectionOptions }) {
+  const tile = photoTile(opts.aspect);
   return (
-    <div data-layout="grid" className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div
+      data-layout="grid"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+    >
       {assets.map((a) => (
-        <div key={a.id} className="overflow-hidden h-[140px]" style={gPlate}>
+        <div key={a.id} className="overflow-hidden" style={{ ...gPlate, height: tile.height }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={a.url} alt={a.fileName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img
+            src={a.url}
+            alt={a.fileName}
+            loading="lazy"
+            style={{ width: "100%", height: tile.height ? "100%" : "auto", objectFit: tile.fit, display: "block" }}
+          />
         </div>
       ))}
     </div>
   );
 }
 
-export function IconGrid({ assets, onDark = true }: { assets: Asset[]; onDark?: boolean }) {
+export function IconGrid({ assets, onDark = true, opts = {} }: { assets: Asset[]; onDark?: boolean; opts?: SectionOptions }) {
   return (
-    <div data-layout="grid" className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+    <div
+      data-layout="grid"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid grid-cols-4 sm:grid-cols-6 gap-3"
+    >
       {assets.map((a) => (
         <div key={a.id} className="grid place-items-center h-[72px]" style={gPlateSm}>
           <BrandMark src={a.url} alt={a.fileName} onDark={onDark} style={{ maxHeight: 28, maxWidth: 28 }} fallbackSize={16} />
@@ -843,9 +951,14 @@ export interface FixedSectionContext {
  * which mockups are photographs of real work and which are renders; a client
  * reading a guideline is entitled to know the difference.
  */
-export function MockupGrid({ assets }: { assets: Asset[] }) {
+export function MockupGrid({ assets, opts = {} }: { assets: Asset[]; opts?: SectionOptions }) {
   return (
-    <div data-layout="two-up" className="grid gap-4 sm:grid-cols-2">
+    <div
+      data-layout="two-up"
+      data-cols={opts.columns ? "" : undefined}
+      style={columnVars(opts.columns)}
+      className="grid gap-4 sm:grid-cols-2"
+    >
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-2 m-0">
           <div className="overflow-hidden h-[240px] mk-card" style={gPlate}>
@@ -857,9 +970,11 @@ export function MockupGrid({ assets }: { assets: Asset[] }) {
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </div>
-          <figcaption dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--g-text-faint)" }}>
-            {a.fileName.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]/g, " ")}
-          </figcaption>
+          {opts.showNames !== false && (
+            <figcaption dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--g-text-faint)" }}>
+              {a.fileName.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]/g, " ")}
+            </figcaption>
+          )}
         </figure>
       ))}
     </div>
@@ -904,6 +1019,14 @@ export function FixedSectionBody({
   // default — which is the layout it has always had.
   const stored = ws.sectionStyles[id]?.variant;
   const variant = resolveVariantKey(id, stored);
+  /**
+   * What the studio has turned on and off inside this section.
+   *
+   * Resolved once here, from the same record the variant comes from, and handed
+   * to whichever arrangement renders — so every layout of a section honours the
+   * same options and none of them carries its own idea of a default.
+   */
+  const opts = resolveOptions(id, ws.sectionOptions?.[id]);
 
   /*
    * A template's own body is that template's *default* for the section, and an
@@ -925,9 +1048,9 @@ export function FixedSectionBody({
 
   switch (id) {
     case "mockups":
-      if (variant === "one-up") return <MockupRows assets={mockupAssets} columns={1} />;
-      if (variant === "three-up") return <MockupRows assets={mockupAssets} columns={3} />;
-      return <MockupGrid assets={mockupAssets} />;
+      if (variant === "one-up") return <MockupRows assets={mockupAssets} columns={1} opts={opts} />;
+      if (variant === "three-up") return <MockupRows assets={mockupAssets} columns={3} opts={opts} />;
+      return <MockupGrid assets={mockupAssets} opts={opts} />;
     case "strategy":
       return <StrategySection ws={ws} isAr={isAr} />;
     case "logo": {
@@ -940,7 +1063,7 @@ export function FixedSectionBody({
       if (variant === "lockups") {
         return (
           <>
-            <LogoLockups ws={ws} attachedSlots={attachedSlots} onDark={onDark} />
+            <LogoLockups ws={ws} attachedSlots={attachedSlots} onDark={onDark} opts={opts} />
             {signOff}
           </>
         );
@@ -948,16 +1071,16 @@ export function FixedSectionBody({
       if (variant === "hero") {
         return (
           <>
-            <LogoHero ws={ws} attachedSlots={attachedSlots} onDark={onDark} isAr={isAr} />
+            <LogoHero ws={ws} attachedSlots={attachedSlots} onDark={onDark} isAr={isAr} opts={opts} />
             {signOff}
           </>
         );
       }
       return (
         <>
-          <LogoGrid ws={ws} attachedSlots={attachedSlots} onDark={onDark} />
-          {primary && <ClearspaceDiagram slot={primary} onDark={onDark} isAr={isAr} />}
-          {primary && <LogoVariations ws={ws} slot={primary} isAr={isAr} />}
+          <LogoGrid ws={ws} attachedSlots={attachedSlots} onDark={onDark} opts={opts} />
+          {primary && opts.showClearspace !== false && <ClearspaceDiagram slot={primary} onDark={onDark} isAr={isAr} />}
+          {primary && opts.showVariations !== false && <LogoVariations ws={ws} slot={primary} isAr={isAr} />}
           {/* The diagram states the clearspace rule now, so the sentence that
               used to carry it alone would be the same number printed twice. It
               stays as the fallback for a workspace with no attached lockup to
@@ -981,13 +1104,13 @@ export function FixedSectionBody({
       return (
         <>
           {variant === "bands" ? (
-            <ColorBands ws={ws} isAr={isAr} />
+            <ColorBands ws={ws} isAr={isAr} opts={opts} />
           ) : variant === "chips" ? (
-            <ColorChips ws={ws} isAr={isAr} />
+            <ColorChips ws={ws} isAr={isAr} opts={opts} />
           ) : variant === "feature" ? (
-            <ColorFeature ws={ws} isAr={isAr} />
+            <ColorFeature ws={ws} isAr={isAr} opts={opts} />
           ) : (
-            <ColorGrid ws={ws} isAr={isAr} />
+            <ColorGrid ws={ws} isAr={isAr} opts={opts} />
           )}
           <SignOffPanel ws={ws} section="color" isAr={isAr} />
         </>
@@ -996,23 +1119,23 @@ export function FixedSectionBody({
       return (
         <>
           {variant === "scale" ? (
-            <TypeScaleTable ws={ws} isAr={isAr} />
+            <TypeScaleTable ws={ws} isAr={isAr} opts={opts} />
           ) : variant === "poster" ? (
-            <TypePoster ws={ws} isAr={isAr} />
+            <TypePoster ws={ws} isAr={isAr} opts={opts} />
           ) : (
-            <TypeSpecimen ws={ws} isAr={isAr} />
+            <TypeSpecimen ws={ws} isAr={isAr} opts={opts} />
           )}
           <SignOffPanel ws={ws} section="typography" isAr={isAr} />
         </>
       );
     case "photography":
-      if (variant === "feature") return <PhotoFeature assets={photoAssets} />;
-      if (variant === "strip") return <PhotoStrip assets={photoAssets} />;
-      return <PhotoGrid assets={photoAssets} />;
+      if (variant === "feature") return <PhotoFeature assets={photoAssets} opts={opts} />;
+      if (variant === "strip") return <PhotoStrip assets={photoAssets} opts={opts} />;
+      return <PhotoGrid assets={photoAssets} opts={opts} />;
     case "icons":
-      if (variant === "named") return <IconNamed assets={iconAssets} onDark={onDark} />;
-      if (variant === "dense") return <IconDense assets={iconAssets} onDark={onDark} />;
-      return <IconGrid assets={iconAssets} onDark={onDark} />;
+      if (variant === "named") return <IconNamed assets={iconAssets} onDark={onDark} opts={opts} />;
+      if (variant === "dense") return <IconDense assets={iconAssets} onDark={onDark} opts={opts} />;
+      return <IconGrid assets={iconAssets} onDark={onDark} opts={opts} />;
     case "personas":
       return <PersonaGrid personas={ws.strategy.personas} />;
     case "voice":

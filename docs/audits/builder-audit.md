@@ -107,8 +107,10 @@ user benefit — and applied it to the model that exists:
 - `BlockStyle` gained `bp: { tablet, phone }` and `rtl`, the same shape as
   `Overrides` and resolved by the same rules (`resolveStyle` in
   `lib/blockStyle.ts` mirrors `resolveProps` in the core).
-- Because inline styles cannot express a media query, `blockStyleRules` emits
-  real `@media` and `[dir="rtl"]` rules **through the core's emitter**, so the
+- Because inline styles cannot express a conditional rule, `blockStyleRules`
+  emits real breakpoint and `[dir="rtl"]` rules **through the core's emitter**
+  (`@container g-page`, not `@media` — see the 1 Oct fourth-pass changelog
+  entry for why that distinction was load-bearing), so the
   logical-property guarantee and the deterministic output apply to them too.
 - The inspector writes into whichever scope the current view owns, shows a dot
   where a field differs elsewhere, and offers a reset — Figma Sites' behaviour,
@@ -130,6 +132,8 @@ written against did not name them:
 | No feedback loop — the editor could say what a page *was*, not what was wrong with it | **Closed.** `lib/pageReview.ts` (pure, 29 tests) surfaced as a chip beside Publish; clicking a finding reveals its section |
 | Selecting a section from outside the canvas did not reveal it | **Closed.** `data-flow-id` on both editing shells, read by the review panel and the layers tree |
 | One layout per derived section — a palette could only ever be swatch cards | **Closed.** `lib/sectionVariants.ts` + `SectionLayouts.tsx`; 19 layouts across 6 sections, resolved inside `FixedSectionBody` so all six templates pick them up unedited |
+| No control over the *parts* of a section | **Closed.** `lib/sectionOptions.ts` + `Workspace.sectionOptions`; formats, scripts, character set, size scale, sample sentence, clearspace, variations, captions, columns, image framing — surfaced in a tabbed inspector (Content / Style / Layout) |
+| **Responsive overrides applied nowhere in the editor** | **Closed, and it was a live bug the whole time.** `emitNode` emitted `@media`, which resolves against the window while the canvas frames the page at 390px. Now `@container g-page`; see the 1 Oct fourth-pass changelog entry |
 
 The teardown agrees with §5 below on the shell question and adds nothing to it.
 Two of its recommendations are refused on purpose: a `<canvas>`/WebGL editor, and

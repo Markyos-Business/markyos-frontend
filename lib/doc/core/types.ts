@@ -111,7 +111,7 @@ export function isPrimaryView(ctx: ViewContext): boolean {
 
 /**
  * Breakpoint widths, in one place because three things have to agree on them:
- * the CSS emitter's media queries, the editor's viewport frame, and the sweep
+ * the CSS emitter's container queries, the editor's viewport frame, and the sweep
  * that measures whether the two match. They follow the design reference rather
  * than Tailwind's scale — this is the published brand page's cascade, not the
  * app chrome's.

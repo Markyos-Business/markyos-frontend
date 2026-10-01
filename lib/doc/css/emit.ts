@@ -126,6 +126,17 @@ export function sizingCss(
   return { [size]: "100%" };
 }
 
+/**
+ * The query container every breakpoint rule resolves against.
+ *
+ * Named rather than anonymous so a nested container — a column layout that wants
+ * its own query one day — cannot accidentally capture a page-level breakpoint.
+ * Declared once in `app/globals.css`, on `[data-guideline-surface]`, which is the
+ * root every one of the templates renders and therefore the one element present
+ * both in the editor's frame and on the published page.
+ */
+export const CONTAINER = "g-page";
+
 export type NodeCss = {
   /** Declarations that hold at every width, in LTR. */
   base: Declarations;
@@ -149,11 +160,30 @@ export function emitNode(id: string, css: NodeCss): string {
   const base = declare(css.base);
   if (base) out.push(`${cls}{${base}}`);
 
+  /*
+   * `@container`, not `@media`. This is a correctness fix, not a preference.
+   *
+   * A media query resolves against the *viewport*. The editor frames the page in
+   * a 390px-wide element and scales it down to fit, inside a window that is
+   * usually 1400px or more — so `@media (max-width:809px)` was simply false
+   * there, and a phone override did nothing at all on the canvas. Measured: a
+   * section with a phone-scoped `display:none` rendered 790px tall in the phone
+   * frame, with `matchMedia("(max-width:809px)").matches === false`. The rule
+   * was emitted, the inspector showed its override dot and its reset, the sweep
+   * went green, and the studio saw no change — the worst shape a feature can
+   * have.
+   *
+   * A container query resolves against the named ancestor, which is the page
+   * itself (`[data-guideline-surface]`, see `app/globals.css`). In the editor
+   * that ancestor is the frame, so it is 390px and the rule fires. On the
+   * published site it is the page, so it tracks the real viewport. One rule, both
+   * places, and the preview stops lying.
+   */
   const tablet = css.tablet ? declare(css.tablet) : "";
-  if (tablet) out.push(`@media (max-width:${BREAKPOINT_MAX.tablet}px){${cls}{${tablet}}}`);
+  if (tablet) out.push(`@container ${CONTAINER} (max-width:${BREAKPOINT_MAX.tablet}px){${cls}{${tablet}}}`);
 
   const phone = css.phone ? declare(css.phone) : "";
-  if (phone) out.push(`@media (max-width:${BREAKPOINT_MAX.phone}px){${cls}{${phone}}}`);
+  if (phone) out.push(`@container ${CONTAINER} (max-width:${BREAKPOINT_MAX.phone}px){${cls}{${phone}}}`);
 
   const rtl = css.rtl ? declare(css.rtl) : "";
   // `[dir="rtl"] .b-x` rather than a second stylesheet: one document, one

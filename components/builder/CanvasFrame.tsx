@@ -15,13 +15,21 @@ import type { Breakpoint } from "@/lib/doc/core/types";
  *
  * So the frame is laid out at the exact pixel width of the chosen breakpoint
  * and then scaled down with a transform to fit the space available. The element
- * still *believes* it is 390px wide, so the same media queries fire that fire
- * on a phone; only the pixels on screen are smaller. Scaling the content and
- * leaving the layout width alone is the version that lies.
+ * still *believes* it is 390px wide; only the pixels on screen are smaller.
+ * Scaling the content and leaving the layout width alone is the version that
+ * lies.
  *
- * `zoom` would be simpler and is wrong here: it changes the viewport width the
- * media queries resolve against in browsers that support it, which is precisely
- * the thing being measured.
+ * **This works because the page's breakpoints are container queries.** An earlier
+ * version of this comment claimed the framed element being 390px meant "the same
+ * media queries fire that fire on a phone", and that is simply not how `@media`
+ * works — it resolves against the viewport, which is the whole window. Every
+ * responsive override a studio set was emitted correctly and applied nowhere on
+ * this canvas. The page root is now a named container (`g-page`, declared in
+ * `app/globals.css`) and the rules resolve against *it*, so this element's width
+ * is genuinely the one they measure. See `lib/doc/css/emit.ts`.
+ *
+ * `zoom` would be simpler and is still wrong here: it changes the width
+ * descendants resolve against, which is precisely the thing being previewed.
  */
 /**
  * How tall the frame stands, per breakpoint — a plausible device, not a guess.

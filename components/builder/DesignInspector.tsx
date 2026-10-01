@@ -1,8 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { backgroundInkWarning, overriddenIn, patchScope, resolveStyle, SCALE_MAX, SCALE_MIN } from "@/lib/blockStyle";
 import { resolveVariantKey, variantsFor } from "@/lib/sectionVariants";
+import {
+  COLOR_FORMATS,
+  COLUMN_CHOICES,
+  SECTION_OPTIONS,
+  hasOptions,
+  type OptionKey,
+  type SectionOptions,
+} from "@/lib/sectionOptions";
 import type { BlockStyle, ResponsiveStyle, Workspace } from "@/lib/types";
 import type { Breakpoint, Dir } from "@/lib/doc/core/types";
 
@@ -34,12 +43,22 @@ const SCOPE_LABEL: Record<Scope, { en: string; ar: string }> = {
   rtl: { en: "Arabic", ar: "العربية" },
 };
 
+type Tab = "content" | "style" | "layout";
+const TABS: Tab[] = ["content", "style", "layout"];
+const TAB_LABEL: Record<Tab, { en: string; ar: string }> = {
+  content: { en: "Content", ar: "المحتوى" },
+  style: { en: "Style", ar: "النمط" },
+  layout: { en: "Layout", ar: "التخطيط" },
+};
+
 export function DesignInspector({
   isAr,
   ws,
   style,
   view,
   sectionId,
+  options = {},
+  onOptionsChange,
   onChange,
 }: {
   isAr: boolean;
@@ -54,9 +73,22 @@ export function DesignInspector({
    * single layout the picker renders nothing.
    */
   sectionId?: string | null;
+  /** What this section currently shows inside itself, already resolved. */
+  options?: SectionOptions;
+  /** A patch; `undefined` for a key returns that part to its default. */
+  onOptionsChange?: (patch: Partial<SectionOptions>) => void;
   /** Receives a whole replacement style, already scoped. */
   onChange: (next: BlockStyle) => void;
 }) {
+  const [tab, setTab] = useState<Tab>("content");
+  /*
+   * A block has no Content tab — its shape is the block kind that was chosen for
+   * it — so the tab is derived rather than stored. Correcting it in an effect
+   * would be a state write during render's aftermath, which this codebase has
+   * already been bitten by once.
+   */
+  const hasContentTab = !!sectionId && (variantsFor(sectionId).length > 1 || hasOptions(sectionId));
+  const active: Tab = tab === "content" && !hasContentTab ? "layout" : tab;
   const resolved = resolveStyle(style, { breakpoint: view.breakpoint, dir: view.dir }) ?? {};
   const scale = resolved.scale ?? 1;
   const inkWarning = backgroundInkWarning(resolved.background);
@@ -121,20 +153,53 @@ export function DesignInspector({
         </div>
       )}
 
-      {sectionId && (
-        <LayoutPicker
-          sectionId={sectionId}
-          style={style}
-          isAr={isAr}
-          // Deck is a slide presentation that composes each section as a fixed
-          // 1920×1080 frame of its own rather than rendering the shared section
-          // bodies, so a layout chosen here has no effect while it is selected.
-          // Saying so beats a control that moves and changes nothing.
-          inert={ws.guidelineTemplate === "deck"}
-          onChange={setBase}
-        />
+      {/*
+       * Three tabs rather than six stacked groups.
+       *
+       * The panel had grown to a 900px scroll, and the controls in it answer
+       * three different questions: what this section shows, what colour it is,
+       * and how it sits on the page. Separating them is also what makes room for
+       * the per-part options to be real controls with labels rather than a row of
+       * unexplained toggles.
+       */}
+      <div className="flex rounded-full p-0.5 shrink-0" style={{ background: "var(--surface-1)" }} role="tablist">
+        {TABS.filter((t) => t !== "content" || hasContentTab).map((t) => (
+          <button
+            key={t}
+            type="button"
+            role="tab"
+            aria-selected={active === t}
+            onClick={() => setTab(t)}
+            className="flex-1 h-7 rounded-full text-[10.5px] font-semibold cursor-pointer"
+            style={{
+              background: active === t ? "var(--surface-2)" : "transparent",
+              color: active === t ? "var(--text)" : "var(--text-faint)",
+            }}
+          >
+            {TAB_LABEL[t][isAr ? "ar" : "en"]}
+          </button>
+        ))}
+      </div>
+
+      {active === "content" && sectionId && (
+        <>
+          <LayoutPicker
+            sectionId={sectionId}
+            style={style}
+            isAr={isAr}
+            // Deck is a slide presentation that composes each section as a fixed
+            // 1920×1080 frame of its own rather than rendering the shared section
+            // bodies, so a layout chosen here has no effect while it is selected.
+            // Saying so beats a control that moves and changes nothing.
+            inert={ws.guidelineTemplate === "deck"}
+            onChange={setBase}
+          />
+          <OptionsPanel sectionId={sectionId} options={options} isAr={isAr} onChange={onOptionsChange} />
+        </>
       )}
 
+      {active === "layout" && (
+      <>
       <Group label={isAr ? "التخطيط" : "Layout"}>
         <Choice
           label={isAr ? "المحاذاة" : "Alignment"}
@@ -220,7 +285,10 @@ export function DesignInspector({
           />
         </div>
       </Group>
+      </>
+      )}
 
+      {active === "style" && (
       <Group label={isAr ? "الألوان" : "Colour"}>
         {/* Colour is one decision for the whole brand page, not a per-width
             one: a section that is navy on desktop and beige on a phone is two
@@ -262,7 +330,9 @@ export function DesignInspector({
           onChange={(textColor) => setBase({ textColor })}
         />
       </Group>
+      )}
 
+      {active === "layout" && (
       <Group label={isAr ? "الظهور" : "Visibility"}>
         <label className="flex items-center gap-2.5 cursor-pointer">
           <input
@@ -293,6 +363,7 @@ export function DesignInspector({
               : "Stays visible to you here; the client never sees it."}
         </span>
       </Group>
+      )}
     </div>
   );
 }
@@ -385,6 +456,191 @@ function LayoutPicker({
           );
         })}
       </div>
+    </Group>
+  );
+}
+
+/**
+ * What the section shows inside itself.
+ *
+ * One control per part, driven by the registry in `lib/sectionOptions.ts` so the
+ * panel can never offer a control the renderers do not honour — the two read the
+ * same list. A section with no options renders nothing at all.
+ *
+ * Everything here writes a patch, and every control has a way back to the
+ * default, because that is the contract the rest of this panel keeps: an unset
+ * field follows the layout, so a studio that turned one thing off has not
+ * silently opted out of every future change to the rest.
+ */
+function OptionsPanel({
+  sectionId,
+  options,
+  isAr,
+  onChange,
+}: {
+  sectionId: string;
+  options: SectionOptions;
+  isAr: boolean;
+  onChange?: (patch: Partial<SectionOptions>) => void;
+}) {
+  const offered = SECTION_OPTIONS[sectionId] ?? [];
+  if (offered.length === 0 || !onChange) return null;
+  const columnChoices = COLUMN_CHOICES[sectionId] ?? [];
+
+  return (
+    <Group label={isAr ? "ما يظهر في القسم" : "What this section shows"}>
+      {offered.map((key) => {
+        switch (key) {
+          case "formats": {
+            const on = options.formats ?? COLOR_FORMATS;
+            return (
+              <div key={key} className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+                  {isAr ? "صيغ القيم" : "Value formats"}
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {COLOR_FORMATS.map((f) => {
+                    const picked = on.includes(f);
+                    return (
+                      <button
+                        key={f}
+                        type="button"
+                        aria-pressed={picked}
+                        data-option={`formats:${f}`}
+                        onClick={() => {
+                          // Order kept canonical rather than click-order, so the
+                          // page never prints CMYK above HEX because of the order
+                          // somebody happened to tick them in.
+                          const next = COLOR_FORMATS.filter((k) => (k === f ? !picked : on.includes(k)));
+                          onChange({ formats: next });
+                        }}
+                        className="h-7 px-2.5 rounded-full text-[10.5px] font-semibold cursor-pointer"
+                        style={{
+                          background: picked ? "var(--accent-soft)" : "var(--surface-1)",
+                          color: picked ? "var(--accent-on-soft)" : "var(--text-faint)",
+                        }}
+                      >
+                        {f}
+                      </button>
+                    );
+                  })}
+                </div>
+                {on.length === 0 && (
+                  <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
+                    {isAr
+                      ? "لا قيم — ستظهر المربعات وأسماؤها فقط."
+                      : "No values — the section shows swatches and names only."}
+                  </span>
+                )}
+              </div>
+            );
+          }
+          case "scripts":
+            return (
+              <Choice
+                key={key}
+                label={isAr ? "النصوص" : "Scripts"}
+                value={options.scripts}
+                onChange={(scripts) => onChange({ scripts })}
+                isAr={isAr}
+                scopes={[]}
+                activeScope={null}
+                onReset={() => {}}
+                options={[
+                  { value: "both" as const, label: isAr ? "الاثنان" : "Both" },
+                  { value: "latin" as const, label: isAr ? "لاتيني" : "Latin" },
+                  { value: "arabic" as const, label: isAr ? "عربي" : "Arabic" },
+                ]}
+              />
+            );
+          case "aspect":
+            return (
+              <Choice
+                key={key}
+                label={isAr ? "إطار الصورة" : "Image framing"}
+                value={options.aspect}
+                onChange={(aspect) => onChange({ aspect })}
+                isAr={isAr}
+                scopes={[]}
+                activeScope={null}
+                onReset={() => {}}
+                options={[
+                  { value: "square" as const, label: isAr ? "مربع" : "Square" },
+                  { value: "landscape" as const, label: isAr ? "أفقي" : "Landscape" },
+                  { value: "wide" as const, label: isAr ? "عريض" : "Wide" },
+                  { value: "original" as const, label: isAr ? "الأصلي" : "Uncropped" },
+                ]}
+              />
+            );
+          case "columns":
+            if (columnChoices.length === 0) return null;
+            return (
+              <Choice
+                key={key}
+                label={isAr ? "عدد الأعمدة" : "Per row"}
+                value={options.columns}
+                onChange={(columns) => onChange({ columns })}
+                isAr={isAr}
+                scopes={[]}
+                activeScope={null}
+                onReset={() => {}}
+                options={columnChoices.map((n) => ({ value: n, label: String(n) }))}
+              />
+            );
+          case "sampleText":
+          case "sampleTextAr": {
+            const ar = key === "sampleTextAr";
+            return (
+              <label key={key} className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+                  {ar ? (isAr ? "نص العيّنة (عربي)" : "Sample sentence (Arabic)") : isAr ? "نص العيّنة" : "Sample sentence"}
+                </span>
+                <input
+                  value={options[key] ?? ""}
+                  dir={ar ? "rtl" : "ltr"}
+                  // Blank is a real value here and means "the built-in pangram",
+                  // so it is stored as undefined rather than as an empty string.
+                  onChange={(e) => onChange({ [key]: e.target.value || undefined } as Partial<SectionOptions>)}
+                  placeholder={ar ? "الجملة المعيارية" : "The standard pangram"}
+                  className="h-8 px-2.5 rounded-lg text-[12px] outline-none"
+                  style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                />
+              </label>
+            );
+          }
+          default: {
+            // The booleans: one checkbox each, with the label that says what
+            // turning it off actually removes.
+            const LABELS: Partial<Record<OptionKey, { en: string; ar: string }>> = {
+              showNames: { en: "Names", ar: "الأسماء" },
+              enableCopy: { en: "Click to copy values", ar: "النسخ بالضغط" },
+              showCharacterSet: { en: "Character set", ar: "مجموعة الحروف" },
+              showScale: { en: "Size scale", ar: "مقاسات الخط" },
+              showClearspace: { en: "Clearspace drawing", ar: "رسم المساحة الآمنة" },
+              showVariations: { en: "Colour variations", ar: "تنويعات الألوان" },
+            };
+            const label = LABELS[key];
+            if (!label) return null;
+            const checked = options[key] !== false;
+            return (
+              <label key={key} className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  data-option={key}
+                  // `undefined` rather than `true` when switched back on, so the
+                  // section returns to following its default instead of storing
+                  // a value that merely equals it today.
+                  onChange={(e) => onChange({ [key]: e.target.checked ? undefined : false } as Partial<SectionOptions>)}
+                  className="cursor-pointer"
+                  style={{ accentColor: "var(--accent)" }}
+                />
+                <span className="text-[12px]">{isAr ? label.ar : label.en}</span>
+              </label>
+            );
+          }
+        }
+      })}
     </Group>
   );
 }

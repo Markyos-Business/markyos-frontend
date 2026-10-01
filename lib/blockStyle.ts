@@ -403,10 +403,12 @@ export function blockStyleCss(style: BlockStyle | undefined, accent?: string): C
 /**
  * The narrow-width and RTL overrides, as real CSS.
  *
- * Inline styles cannot express a media query, so a responsive override has to
- * leave the style attribute and become a rule. This emits one — through the
+ * Inline styles cannot express a conditional rule, so a responsive override has
+ * to leave the style attribute and become one. This emits it — through the
  * document core's emitter, which enforces logical properties and deterministic
- * output — for exactly the scopes that differ from the base.
+ * output, and which writes `@container g-page` rather than `@media` so the rule
+ * resolves against the page instead of the window — for exactly the scopes that
+ * differ from the base.
  *
  * Returns an empty string when there is nothing to say, so a page with no
  * responsive overrides ships no extra bytes and no empty `<style>` tag.

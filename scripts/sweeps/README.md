@@ -276,6 +276,35 @@ somebody changes a padding — a cost paid forever to avoid one attribute.
 Telling a template's own colour body from the shared default needs its extra line
 ("copy its hex value"), because both legitimately draw `data-layout="cards"`.
 
+**The responsive cascade, and the worst failure in this directory's history.**
+Every assertion about a phone override used to be about the rule's *text*: find
+`max-width:809px` in a `<style>` tag, pass. Nothing measured whether the page
+changed — and it didn't. The rule was a `@media` query, which resolves against the
+viewport, and the editor frames the page at 390px inside a 1600px window, so a
+phone override was emitted correctly and applied nowhere. A green run of this file
+coexisted with the feature being completely broken, and the line it printed at the
+end said "a phone override applies at phone width and nowhere else".
+
+The lesson is the one this file keeps relearning in new costumes: **asserting on
+the artefact is not asserting on the behaviour.** A rule in a stylesheet, an
+attribute on an element, a class name — all of them can be perfectly correct while
+nothing happens on screen. The check now reads the overridden section's rendered
+height, and there is a unit test that `emitNode` never emits `@media` at all.
+
+**Section options** are driven through the real inspector, never through
+`localStorage`. The whole point of that pass is that the controls are wired; a
+check that wrote the store directly would pass with the panel disconnected. Two
+traps met while writing them, both the check's fault and both instructive:
+
+- **The frame's width is left wherever the previous block left it.** "Six per row
+  produced 2 tracks" looked like a bug and was the right answer to a question the
+  check hadn't meant to ask — the cascade block above had left the view switcher
+  on phone. Set the breakpoint you mean to measure at, explicitly.
+- **Whether a column count steps down is the interesting half.** Checking only the
+  wide case would pass against an inline `grid-template-columns` that ignores the
+  container entirely, which is what makes a six-across icon grid 50px per tile on
+  a phone.
+
 The palette drag is held rather than dropped for one check, so the canvas can be
 asked what it is showing while the gesture is in flight. A landing strip that
 only appears at the moment of release is a landing strip nobody can aim at.
