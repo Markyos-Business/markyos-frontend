@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/Icon";
+import { useApp } from "@/lib/store";
 import { useLocalPref } from "@/lib/useLocalPref";
 import { useNarrowViewport } from "@/lib/useNarrowViewport";
 import { Workspace } from "@/lib/types";
@@ -52,7 +53,8 @@ const RAIL_W = 60;
 export function Sidebar({ workspace }: { workspace: Workspace }) {
   const pathname = usePathname();
   const base = `/w/${workspace.slug}`;
-  const isAr = workspace.lang === "ar";
+  const { uiLang } = useApp();
+  const isAr = uiLang(workspace) === "ar";
   const settingsActive = pathname === `${base}/settings`;
   const [preference, setCollapsed] = useLocalPref("markyos:ui:sidebar-collapsed", false);
   const narrow = useNarrowViewport();

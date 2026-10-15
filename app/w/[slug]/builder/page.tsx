@@ -482,6 +482,7 @@ export default function BuilderPage() {
     canUndo,
     redo,
     canRedo,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
@@ -665,7 +666,7 @@ export default function BuilderPage() {
   }, [undo, redo, removeBlock, selectedId, ws, activePageId]);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const sortedPages = [...ws.pages].sort((a, b) => a.order - b.order);
   const activePage = activePageId ? sortedPages.find((p) => p.id === activePageId) : undefined;
   /**
@@ -684,12 +685,12 @@ export default function BuilderPage() {
    * "the real view" for every workspace would make RTL permanently second-class
    * for most of this product's users.
    */
-  const canvasLang: Lang = previewLang ?? ws.lang;
+  const canvasLang: Lang = previewLang ?? ws.primaryLocale;
   const view: ViewContext = {
     breakpoint,
     dir: canvasLang === "ar" ? "rtl" : "ltr",
     locale: canvasLang,
-    primaryLocale: ws.lang,
+    primaryLocale: ws.primaryLocale,
   };
   const scope = scopeForView(view);
   /** A derived section is selected: it has a design panel but no content one. */

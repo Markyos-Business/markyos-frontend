@@ -33,10 +33,10 @@ interface Source {
  * claim and only the studio knows the second one.
  */
 export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { addColor } = useApp();
+  const { addColor, uiLang } = useApp();
   const { showToast } = useToast();
   const { resolved } = useTheme();
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   const sources: Source[] = [
     ...(Object.keys(ws.logo) as SlotKind[])

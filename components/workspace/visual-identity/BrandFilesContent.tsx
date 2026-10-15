@@ -93,7 +93,7 @@ interface Row {
 }
 
 export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManageLogo: () => void }) {
-  const { addAsset, removeAsset, setAssetTags } = useApp();
+  const { addAsset, removeAsset, setAssetTags, uiLang } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -194,7 +194,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
     })
     .sort(SORTERS[sort]);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   function toggleSelect(key: string) {
     setSelected((prev) => {

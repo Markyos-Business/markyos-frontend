@@ -55,7 +55,7 @@ type Tab = "pending" | "decided";
 
 export default function DraftsPage() {
   const params = useParams<{ slug: string }>();
-  const { getWorkspace, acceptDraft, rejectDraft } = useApp();
+  const { getWorkspace, acceptDraft, rejectDraft, uiLang } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const ws = getWorkspace(params.slug);
@@ -71,7 +71,7 @@ export default function DraftsPage() {
   }, [ws?.drafts]);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   function targetLabel(d: Draft) {
     if (d.targetType === "strategyField") return FIELD_LABEL[d.targetRef] ?? d.targetRef;

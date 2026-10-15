@@ -37,14 +37,14 @@ const TABS: { key: Tab; label: string; arLabel: string }[] = [
 
 export default function StrategyPage() {
   const params = useParams<{ slug: string }>();
-  const { getWorkspace } = useApp();
+  const { getWorkspace, uiLang } = useApp();
   const ws = getWorkspace(params.slug);
   const [tab, setTab] = useState<Tab>("purpose");
   const [mode, setMode] = useState<Mode>("edit");
   const [importOpen, setImportOpen] = useState(false);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   /**
    * Which copy of the strategy is being written or read.
    *
@@ -54,7 +54,13 @@ export default function StrategyPage() {
    * guessing game, not a choice. Reading the Arabic copy and reading an
    * Arabic interface are the same request.
    */
-  const lang = ws.lang;
+  /* Which language of the brand's strategy is being *edited*.
+     It follows the interface language, which is what the chrome toggle used to
+     do when both were one field — switching the app to Arabic put you in the
+     Arabic copy. Worth separating from the interface language later if a
+     studio wants to read the app in English while writing Arabic, but that is
+     a new control, not a side effect of this split. */
+  const lang = uiLang(ws);
 
   /**
    * Which sections are still blank, in the language being written.

@@ -9,7 +9,7 @@ import { strategyText, textKey } from "@/lib/strategyLang";
 import { Lang, Workspace } from "@/lib/types";
 
 export function VisionMissionTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { setStrategyText } = useApp();
+  const { setStrategyText, uiLang } = useApp();
   const [visionDraft, setVisionDraft] = useState<string | null>(null);
   const [missionDraft, setMissionDraft] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ export function VisionMissionTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
 
   return (
     <Section title={isAr ? "الرؤية والرسالة" : "Vision & mission"} icon="bullseye">
-      {flagged("vision") && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+      {flagged("vision") && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
       <EditableField
         label={isAr ? "الرؤية" : "Vision"}
         placeholder={
@@ -45,7 +45,7 @@ export function VisionMissionTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       />
       {lang === "ar" && <OtherCopyHint text={strategyText(ws.strategy, "vision", "en", false)} />}
 
-      {flagged("mission") && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+      {flagged("mission") && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
       <EditableField
         label={isAr ? "الرسالة" : "Mission"}
         placeholder={

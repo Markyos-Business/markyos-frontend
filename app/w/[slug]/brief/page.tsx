@@ -46,6 +46,7 @@ export default function BriefPage() {
     sendBrief,
     revokeBrief,
     deleteBrief,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -69,7 +70,7 @@ export default function BriefPage() {
   }, []);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const open = ws.briefs.find((b) => b.id === openId) ?? null;
 
   function handleCreate() {

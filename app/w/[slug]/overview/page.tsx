@@ -32,7 +32,7 @@ type ToolbarAction = (typeof TOOLBAR)[number]["action"];
 
 export default function OverviewPage() {
   const params = useParams<{ slug: string }>();
-  const { getWorkspace, setOverview, setLang } = useApp();
+  const { getWorkspace, setOverview, setPrimaryLocale, uiLang } = useApp();
   const { showToast } = useToast();
   const { prompt } = useDialog();
   const ws = getWorkspace(params.slug);
@@ -61,7 +61,7 @@ export default function OverviewPage() {
   );
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   function handleInput() {
     if (!editorRef.current || !ws) return;
@@ -149,7 +149,10 @@ export default function OverviewPage() {
           <button
             type="button"
             onClick={() => {
-              setLang(ws.id, isAr ? "en" : "ar");
+              // The brand's own language, not the reader's: this control's own
+              // toast calls it the preview, and it decides what a client sees
+              // at /v/<slug>.
+              setPrimaryLocale(ws.id, isAr ? "en" : "ar");
               showToast(isAr ? "Switched preview to English." : "Switched preview to Arabic.");
             }}
             className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer"

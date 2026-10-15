@@ -11,7 +11,7 @@ export default function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   const params = useParams<{ slug: string }>();
-  const { state, hydrated, getWorkspace } = useApp();
+  const { state, hydrated, getWorkspace, uiLang } = useApp();
   const router = useRouter();
   const pathname = usePathname();
   const found = getWorkspace(params.slug);
@@ -53,7 +53,7 @@ export default function WorkspaceLayout({
     if (!ws) router.replace("/brands");
   }, [hydrated, state.session, ws, router, params.slug]);
 
-  const isAr = ws?.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   /*
    * The document's own direction follows the brand being worked on.

@@ -43,8 +43,8 @@ export function TopBar({
   tabs?: TopBarTab[];
   tabsRight?: ReactNode;
 }) {
-  const { setLang } = useApp();
-  const isAr = workspace.lang === "ar";
+  const { setAdminLang, uiLang } = useApp();
+  const isAr = uiLang(workspace) === "ar";
 
   /*
    * The tab row scrolls, so two things have to be true that were not.
@@ -107,9 +107,16 @@ export function TopBar({
               these: this one, the canvas's own preview switch, and the one
               belonging to the page inside the canvas. Defaulting all three to
               "Preview language" made them indistinguishable. */}
+          {/* This control already said "Interface language", and now it is
+              one: it sets the reader's own preference instead of the brand's
+              locale. Before the split it wrote `workspace.lang`, so changing
+              the language you read the app in also changed what the client saw
+              at /v/<slug> and which half of every bilingual field counted as
+              authoritative. The brand's own language moved to the preview
+              control on Overview. */}
           <LangToggle
-            value={workspace.lang}
-            onChange={(lang) => setLang(workspace.id, lang)}
+            value={uiLang(workspace)}
+            onChange={(lang) => setAdminLang(lang)}
             label={isAr ? "لغة الواجهة" : "Interface language"}
             scope="chrome"
           />

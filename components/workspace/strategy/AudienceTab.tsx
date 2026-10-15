@@ -11,7 +11,7 @@ import { Lang, Workspace } from "@/lib/types";
 import { InlineText, MiniInput } from "./shared";
 
 export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { setStrategyText, addPersona, updatePersona, removePersona } = useApp();
+  const { setStrategyText, addPersona, updatePersona, removePersona, uiLang } = useApp();
   const { showToast } = useToast();
   const [summaryDraft, setSummaryDraft] = useState<string | null>(null);
   const [addingPersona, setAddingPersona] = useState(false);
@@ -48,7 +48,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
     <div className="flex flex-col gap-5">
       <Section title={isAr ? "الجمهور المستهدف" : "Target audience"} icon="users">
         {ws.strategyTranslation.unreviewed.includes(textKey("targetAudienceSummary", lang)) && (
-          <MachineDraftFlag isAr={ws.lang === "ar"} />
+          <MachineDraftFlag isAr={uiLang(ws) === "ar"} />
         )}
         <EditableField
           label={isAr ? "لمن هذه العلامة" : "Who this is for"}
@@ -160,7 +160,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                       updatePersona(ws.id, p.id, isAr ? { descriptionAr: next } : { description: next })
                     }
                   />
-                  {flagged && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+                  {flagged && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
                   {isAr && (
                     <OtherCopyHint rich={false} text={[p.name, p.role, p.description].filter(Boolean).join(" — ")} />
                   )}

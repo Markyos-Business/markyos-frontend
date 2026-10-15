@@ -61,7 +61,7 @@ export default function ClientGuidePageViewer() {
         arTitle="غير متاح بعد"
         body="This brand guideline hasn't been shared with clients — check back once its owner publishes it."
         arBody="لم تتم مشاركة دليل الهوية هذا مع العملاء بعد — يُرجى المراجعة لاحقًا."
-        isAr={ws.lang === "ar"}
+        isAr={ws.primaryLocale === "ar"}
         theme={theme}
       />
     );
@@ -73,7 +73,7 @@ export default function ClientGuidePageViewer() {
         name={ws.name}
         slug={ws.slug}
         expected={ws.clientAccess.password}
-        isAr={ws.lang === "ar"}
+        isAr={ws.primaryLocale === "ar"}
         theme={theme}
         onUnlock={() => {
           try {
@@ -95,7 +95,7 @@ export default function ClientGuidePageViewer() {
         arTitle="هذه الصفحة غير صالحة"
         body="It may have been renamed or removed — check the guideline's other pages."
         arBody="قد تكون قد أُعيدت تسميتها أو حُذفت — راجع صفحات الدليل الأخرى."
-        isAr={ws.lang === "ar"}
+        isAr={ws.primaryLocale === "ar"}
         theme={theme}
       />
     );

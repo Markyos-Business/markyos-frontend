@@ -102,6 +102,10 @@ export function buildDemoAccount(): Account {
     passwordUpdatedAt: now,
     createdAt: now - 1000 * 60 * 60 * 24 * 60,
     lastLoginAt: null,
+    // No preference, so the chrome follows whichever brand is open — the same
+    // behaviour the single `lang` field gave, which is what the seed should
+    // demonstrate.
+    adminLang: null,
   };
 }
 
@@ -115,7 +119,7 @@ export function buildInitialWorkspaces(): Workspace[] {
     slug: "nadeen-studio",
     name: "Nadeen Studio",
     initials: "NS",
-    lang: "en",
+    primaryLocale: "en",
     sharedStatus: "shared",
     createdAt: now - day * 40,
     updatedAt: now - 1000 * 60 * 10,
@@ -547,7 +551,7 @@ export function buildInitialWorkspaces(): Workspace[] {
     slug: id,
     name,
     initials,
-    lang: "en",
+    primaryLocale: "en",
     sharedStatus,
     createdAt: now - day * (daysAgo + 20),
     updatedAt: now - day * daysAgo,

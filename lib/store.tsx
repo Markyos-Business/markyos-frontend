@@ -218,7 +218,12 @@ interface AppContextValue {
   myWorkspaces: Workspace[];
   getWorkspace: (slug: string) => Workspace | undefined;
   createWorkspace: (name: string) => Workspace;
-  setLang: (workspaceId: string, lang: Lang) => void;
+  /** The brand's own language — what the client sees first. */
+  setPrimaryLocale: (workspaceId: string, primaryLocale: Lang) => void;
+  /** The signed-in person's interface language. `null` follows the brand. */
+  setAdminLang: (adminLang: Lang | null) => void;
+  /** Which language to draw the studio chrome in. See the implementation. */
+  uiLang: (ws?: Pick<Workspace, "primaryLocale"> | null) => Lang;
   setOverview: (workspaceId: string, html: string) => void;
   addColor: (workspaceId: string, swatch: Omit<ColorSwatch, "id">) => void;
   updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => void;
@@ -744,6 +749,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         passwordUpdatedAt: Date.now(),
         createdAt: Date.now(),
         lastLoginAt: Date.now(),
+        // No stated preference: the app follows whichever brand they open,
+        // which is the right first impression for someone who has not been
+        // asked yet.
+        adminLang: null,
       };
       setState((prev) => ({
         ...prev,
@@ -972,7 +981,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       slug,
       name,
       initials: initialsFor(name),
-      lang: "en",
+      primaryLocale: "en",
       sharedStatus: "draft",
       createdAt: now,
       updatedAt: now,
@@ -1039,11 +1048,54 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return ws;
   }, []);
 
-  const setLang = useCallback(
-    (workspaceId: string, lang: Lang) => {
-      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { lang }));
+  /** The brand's own language. Owner-level: it changes what the client sees. */
+  const setPrimaryLocale = useCallback(
+    (workspaceId: string, primaryLocale: Lang) => {
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { primaryLocale }));
     },
     [mutateWorkspace, touchWorkspace]
+  );
+
+  /**
+   * The signed-in person's own interface language.
+   *
+   * Not on a workspace, so it does not go through `mutateWorkspace` and does
+   * not touch `updatedAt` on anything — changing the language you read the app
+   * in is not an edit to a brand, and before the split it was recorded as one.
+   */
+  const setAdminLang = useCallback(
+    (adminLang: Lang | null) => {
+      setState((s) => {
+        const id = s.session?.accountId;
+        if (!id) return s;
+        return { ...s, accounts: s.accounts.map((a) => (a.id === id ? { ...a, adminLang } : a)) };
+      });
+    },
+    [setState]
+  );
+
+  /**
+   * Which language to draw the studio interface in, for the person using it.
+   *
+   * A plain function rather than a hook on purpose: several call sites need it
+   * inside JSX and inside `.map()`, where a hook cannot go.
+   *
+   * Falls back to the brand's own locale when the person has stated no
+   * preference, which is what the single `lang` field used to do — so an
+   * existing browser renders exactly as it did until someone chooses.
+   *
+   * Read off `state` rather than `stateRef`, and listed as a dependency, so
+   * that choosing a language produces a new function identity and the context
+   * consumers actually repaint. Through the ref it would always return the
+   * right answer and never cause anyone to ask for it again.
+   */
+  const adminLangPref =
+    state.accounts.find((a) => a.id === state.session?.accountId)?.adminLang ?? null;
+
+  const uiLang = useCallback(
+    (ws?: Pick<Workspace, "primaryLocale"> | null): Lang =>
+      adminLangPref ?? ws?.primaryLocale ?? "en",
+    [adminLangPref]
   );
 
   const setOverview = useCallback(
@@ -3111,7 +3163,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       myWorkspaces,
       getWorkspace,
       createWorkspace,
-      setLang,
+      setPrimaryLocale,
+      setAdminLang,
+      uiLang,
       setOverview,
       setBrandDetails,
       addColor,
@@ -3256,7 +3310,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       myWorkspaces,
       getWorkspace,
       createWorkspace,
-      setLang,
+      setPrimaryLocale,
+      setAdminLang,
+      uiLang,
       setOverview,
       setBrandDetails,
       addColor,

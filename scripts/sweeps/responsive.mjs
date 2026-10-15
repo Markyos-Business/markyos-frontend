@@ -47,7 +47,11 @@ async function applyTemplate(kind, style, lang) {
           if (!t) return;
           t.guidelineTemplate = kind;
           if (style) t.studioStyle = style;
-          t.lang = lang;
+          // The brand's own language, which is what /v/<slug> opens in. Was
+          // `lang` before that field was split; the studio's own interface
+          // language is a separate, per-person setting and irrelevant here,
+          // because this sweep measures the published page.
+          t.primaryLocale = lang;
           // This run measures layout, not the gate. Leaving the password on
           // means every template "passes" because the only thing rendered is
           // the 62-element password form.

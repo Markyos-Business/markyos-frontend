@@ -5,6 +5,83 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-16 — The brand's language and the reader's are two different things
+
+`Workspace.lang` was one field doing two unrelated jobs, and Revision 3.2 §21.1
+asks for it split before any real data depends on the conflation. It now is:
+
+- **`Workspace.primaryLocale`** — the brand's own language. What `/v/<slug>`
+  opens in, what the canvas previews, what `lib/doc/core/rules.ts` resolves the
+  bilingual fallback against, and what makes a value missing in that language an
+  error while the same gap in the other language is only a warning.
+- **`Account.adminLang`** — the person's interface language, `Lang | null`.
+
+What the single field cost: a studio in Riyadh building an English brand had to
+work in English chrome, and switching the chrome to Arabic quietly changed what
+the client saw and which half of every bilingual field counted as authoritative.
+
+### The interface already claimed this split existed
+
+The top bar's control is labelled **"Interface language" / "لغة الواجهة"**, with
+`scope="chrome"` to distinguish it from the canvas's preview switch. It wrote
+`workspace.lang`. The label had been promising a personal setting while the
+field changed the brand. It now sets `adminLang` and does what it says.
+
+The Overview control went the other way: its own toast reads "Switched preview to
+Arabic", so that one was always about the brand, and it now calls
+`setPrimaryLocale`.
+
+Changing your interface language also stopped counting as editing a brand —
+`setAdminLang` does not go through `mutateWorkspace`, so it touches no
+workspace's `updatedAt`. Before the split it did.
+
+### `null` is the part that makes this safe
+
+`uiLang(ws)` returns `account.adminLang ?? ws.primaryLocale`. A person who has
+stated no preference reads the app in whatever language the open brand is in,
+which is exactly what the single field did — so no existing browser renders
+differently until somebody chooses. Same shape as the first-entry default in
+`sectionVariants.ts`: the migration is inert until used.
+
+The hydration backfill reads the old `lang` name as the source for
+`primaryLocale`, because treating it as a missing field would have reset every
+Arabic brand in an existing browser to English.
+
+### Classifying 51 call sites, not renaming them
+
+38 were studio chrome, 6 were the brand's locale, and 4 were `Brief.lang` — a
+different field holding the language a respondent chose, left alone.
+`tsc --noEmit` enumerated every site, so the split was driven by the compiler
+rather than by eye.
+
+`uiLang` is a plain function on the context rather than a hook, because several
+call sites need it inside JSX and inside `.map()`.
+
+### Two bugs found while verifying, both in the verification
+
+**`uiLang` read through `stateRef` first.** That returns a stable function
+identity, so it would have given the right answer forever and never caused
+anyone to ask for it again — choosing a language would have silently repainted
+nothing. It now derives from `state` and lists that as a dependency.
+
+**The new sweep check reported a leak on a page that was behaving perfectly.**
+It asked whether anything inside the canvas was `dir="rtl"`. An English brand
+still publishes its Arabic typeface, so the type specimen sets `dir="rtl"` on
+the character set (`ا ب ت ث ج`) and the sample sentence regardless of the page's
+language. The question is what direction the *page* is laid out in, and only the
+surface element answers it. Measured properly: `htmlDir=rtl` with
+`surfaceComputedDir=ltr`, 4,701 Latin characters against 135 Arabic.
+
+Three checks added to the builder sweep (59 → 62). One of them is sensitive to
+collapsing `uiLang` back to a single field, which was confirmed by doing it and
+watching it go red; the other two guard the opposite direction and the fallback.
+Every other check in the suite passes whether the fields are separate or not,
+which is how a field ends up doing two jobs twice.
+
+Revision 3.2 §10 item 5, and §3.3's second trap.
+
+---
+
 ## 2026-10-15 — Revision 3.2 becomes the plan, and the sweeps learn to read a status code
 
 Two things, and the second one exists because of a diagnosis the first one

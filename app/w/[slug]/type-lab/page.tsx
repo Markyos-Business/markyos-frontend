@@ -11,7 +11,7 @@ const WEIGHTS = [300, 400, 500, 600, 700] as const;
 
 export default function TypeLabPage() {
   const params = useParams<{ slug: string }>();
-  const { getWorkspace } = useApp();
+  const { getWorkspace, uiLang } = useApp();
   const ws = getWorkspace(params.slug);
 
   const [latinText, setLatinText] = useState("Brand governance for studios that ship in two directions.");
@@ -26,7 +26,7 @@ export default function TypeLabPage() {
   const [arabicWeight, setArabicWeight] = useState<number>(500);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   // The sandbox has to render the face the brand actually ships, or the
   // numbers a designer settles on here don't transfer to anything.
   const fonts = brandFontStacks(ws);

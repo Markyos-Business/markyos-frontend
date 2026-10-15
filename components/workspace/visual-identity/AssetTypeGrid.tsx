@@ -27,13 +27,13 @@ export function AssetTypeGrid({
   arTitle: string;
   hint: string;
 }) {
-  const { addAsset, removeAsset } = useApp();
+  const { addAsset, removeAsset, uiLang } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const items = ws.assets.filter((a) => a.type === type);
 
   function toggle(id: string) {

@@ -67,6 +67,7 @@ export default function MoodboardPage() {
     tidyMoodboard,
     addDraft,
     state,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
@@ -165,7 +166,7 @@ export default function MoodboardPage() {
   }, []);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const me = state.session?.name ?? "You";
   const assets = new Map(ws.assets.map((a) => [a.id, a]));
 

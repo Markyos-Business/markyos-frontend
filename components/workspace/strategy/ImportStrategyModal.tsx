@@ -48,7 +48,7 @@ interface VoiceRow extends ParsedVoiceTrait {
 type Step = "pick" | "parsing" | "review";
 
 export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait } = useApp();
+  const { setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait, uiLang } = useApp();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,7 +62,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
   const [voiceTraits, setVoiceTraits] = useState<VoiceRow[]>([]);
   const [unmatched, setUnmatched] = useState<string[]>([]);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const nothingDetected =
     step === "review" &&
     singles.length === 0 &&

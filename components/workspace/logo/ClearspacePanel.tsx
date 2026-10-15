@@ -20,9 +20,9 @@ export function ClearspacePanel({
   selected: SlotKind;
   onDownload: () => void;
 }) {
-  const { updateLogoSlot } = useApp();
+  const { updateLogoSlot, uiLang } = useApp();
   const slot: LogoSlot = workspace.logo[selected];
-  const isAr = workspace.lang === "ar";
+  const isAr = uiLang(workspace) === "ar";
   const attachedSlots = (Object.keys(workspace.logo) as SlotKind[]).filter(
     (k) => workspace.logo[k].phase === "attached"
   );

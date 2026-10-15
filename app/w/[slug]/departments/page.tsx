@@ -26,14 +26,14 @@ const SECTION_META: Record<SectionKey, { label: string; icon: string; href: stri
 
 export default function DepartmentsPage() {
   const params = useParams<{ slug: string }>();
-  const { getWorkspace, addDepartmentView } = useApp();
+  const { getWorkspace, addDepartmentView, uiLang } = useApp();
   const { prompt } = useDialog();
   const ws = getWorkspace(params.slug);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mode, setMode] = useState<"edit" | "read">("edit");
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const sorted = [...ws.departmentViews].sort((a, b) => a.createdAt - b.createdAt);
   const active = activeId ? sorted.find((d) => d.id === activeId) : sorted[0];
 
@@ -196,6 +196,7 @@ function DepartmentPanel({ ws, viewId }: { ws: Workspace; viewId: string }) {
     addAsset,
     addDeptItem,
     removeDeptItem,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
@@ -210,7 +211,7 @@ function DepartmentPanel({ ws, viewId }: { ws: Workspace; viewId: string }) {
   const [note, setNote] = useState("");
 
   if (!view) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const guidelineFile = view.guidelineFileAssetId ? ws.assets.find((a) => a.id === view.guidelineFileAssetId) : undefined;
 
   async function handleRename() {

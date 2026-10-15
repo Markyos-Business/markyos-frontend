@@ -42,6 +42,7 @@ export default function SettingsPage() {
     addColor,
     updateColor,
     setTypography,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const ws = getWorkspace(params.slug);
@@ -90,7 +91,7 @@ export default function SettingsPage() {
   }, [ws?.id, searchParams]);
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const clientLink = origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}`;
 
   async function copy(text: string, label: string) {

@@ -35,7 +35,7 @@ export function ImportInstructionsModal({
   view: DepartmentView;
   onClose: () => void;
 }) {
-  const { setDeptInstructions } = useApp();
+  const { setDeptInstructions, uiLang } = useApp();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,7 +45,7 @@ export function ImportInstructionsModal({
   const [rows, setRows] = useState<Row[]>([]);
   const [mode, setMode] = useState<"replace" | "append">(view.instructionSections.length ? "append" : "replace");
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const selected = rows.filter((r) => r.include && (r.heading.trim() || r.body.trim()));
 
   async function handleFile(file: File) {

@@ -41,14 +41,14 @@ const SCALE_META = [
 ];
 
 export function TypographyContent({ ws }: { ws: Workspace }) {
-  const { setTypography, setFontAsset, addAsset } = useApp();
+  const { setTypography, setFontAsset, addAsset, uiLang } = useApp();
   const { showToast } = useToast();
   const [editing, setEditing] = useState<"latin" | "arabic" | null>(null);
   const [draft, setDraft] = useState("");
   const [importing, setImporting] = useState<"latin" | "arabic" | null>(null);
   const [uploading, setUploading] = useState<"latin" | "arabic" | null>(null);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const rowDir = isAr ? "rtl" : "ltr";
   const fontAssets = ws.assets.filter((a) => a.type === "font");
 

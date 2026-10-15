@@ -92,7 +92,7 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
     // leaves the page stuck on its blank pre-hydration render forever.
     if (ws) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPreviewLang(ws.lang);
+      setPreviewLang(ws.primaryLocale);
       try {
         setUnlocked(window.sessionStorage.getItem(unlockKey(ws.slug)) === "1");
       } catch {

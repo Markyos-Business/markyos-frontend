@@ -13,13 +13,13 @@ import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
 export function ColorContent({ ws }: { ws: Workspace }) {
-  const { addColor, updateColor, removeColor, setPrimaryColor } = useApp();
+  const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useApp();
   const { showToast } = useToast();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [extracting, setExtracting] = useState(false);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   /** Something to read a palette out of — a logo slot, or any uploaded image. */
   const hasArtwork =
     (Object.keys(ws.logo) as SlotKind[]).some((k) => ws.logo[k].phase === "attached" && ws.logo[k].url) ||

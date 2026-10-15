@@ -364,6 +364,85 @@ async function run() {
     await page.waitForTimeout(400);
   }
 
+  /* -------------------------------- the brand's language is not the reader's ---
+     `Workspace.lang` used to be one field doing two jobs: the brand's own
+     locale and the language of the studio's interface. So a studio in Riyadh
+     building an English brand had to work in English chrome, and switching the
+     chrome to Arabic quietly changed what the client saw at /v/<slug> and which
+     half of every bilingual field counted as authoritative.
+
+     It is now `Workspace.primaryLocale` and `Account.adminLang`. These two
+     checks are the only thing standing between that split and a silent
+     regression back into one field — every other check in this suite passes
+     whether the fields are separate or not, which is exactly how a field ends
+     up doing two jobs again. */
+  {
+    /* The surface's *own* direction, not any descendant's.
+       Asking whether anything inside the canvas is `dir="rtl"` is the obvious
+       check and it is wrong: an English brand still publishes its Arabic
+       typeface, so the type specimen sets `dir="rtl"` on the character set and
+       the sample sentence no matter which language the page is in. That
+       selector reported a leak on a page that was behaving perfectly. The
+       question is what direction the page is laid out in, and only the surface
+       answers it. */
+    const read = () =>
+      page.evaluate(() => {
+        const surface = document.querySelector("[data-guideline-surface]");
+        return {
+          docDir: document.documentElement.getAttribute("dir"),
+          canvasDir: surface ? getComputedStyle(surface).direction : null,
+          canvasLatin: surface ? (surface.innerText.match(/[A-Za-z]/g) || []).length : 0,
+        };
+      });
+
+    const apply = (primaryLocale, adminLang) =>
+      page.evaluate(
+        ({ primaryLocale, adminLang, slug }) => {
+          const s = JSON.parse(localStorage.getItem("markyos:v1"));
+          for (const w of s.workspaces || []) {
+            if (w.slug === slug) w.primaryLocale = primaryLocale;
+          }
+          for (const a of s.accounts || []) a.adminLang = adminLang;
+          localStorage.setItem("markyos:v1", JSON.stringify(s));
+        },
+        { primaryLocale, adminLang, slug: SLUG },
+      );
+
+    // An Arabic-reading studio, an English brand. The chrome must mirror and
+    // the page being designed must not.
+    await apply("en", "ar");
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(900);
+    const split = await read();
+    if (split.docDir === "rtl") ok("a reader's Arabic turns the editor chrome around");
+    else fail("lang", `adminLang=ar did not mirror the chrome (dir=${split.docDir})`);
+    if (split.canvasDir === "ltr" && split.canvasLatin > 200) {
+      ok("and leaves the English brand's page left-to-right");
+    } else {
+      fail(
+        "lang",
+        `the reader's language reached the page being designed — the fields are not separate ` +
+          `(canvas dir=${split.canvasDir}, ${split.canvasLatin} Latin chars)`,
+      );
+    }
+
+    // No preference: the chrome follows the brand, which is what the single
+    // field did. This default is what makes the split change nothing on its own.
+    await apply("ar", null);
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(900);
+    const followed = await read();
+    if (followed.docDir === "rtl") ok("with no preference stated, the chrome follows the brand");
+    else fail("lang", `adminLang=null did not fall back to primaryLocale (dir=${followed.docDir})`);
+
+    await apply("en", null);
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(900);
+  }
+
   /* ------------------------------------------- dragging in a new element ---
      The palette used to be click-only, which meant every new section arrived at
      the bottom of the page and then had to be dragged up past everything else.

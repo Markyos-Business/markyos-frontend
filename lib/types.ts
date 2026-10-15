@@ -738,8 +738,8 @@ export interface Draft {
 // guideline site beyond the fixed Overview/Logo/Color/Typography pages —
 // the "zero-code, drag to reorder" layer. Text/quote content is stored in
 // both languages (unlike overviewHtml/strategy, which are single-language
-// and switched via Workspace.lang) since this is what the client-facing
-// language toggle actually switches between.
+// and switched via Workspace.primaryLocale) since this is what the
+// client-facing language toggle actually switches between.
 
 export type BlockKind =
   // A layout container rather than content: it lays its child blocks out in
@@ -955,7 +955,25 @@ export interface Workspace {
   slug: string;
   name: string;
   initials: string;
-  lang: Lang;
+  /**
+   * The brand's own language — which one the client sees first, and which one
+   * counts as written rather than missing.
+   *
+   * This was `lang`, and it was doing two unrelated jobs. It is a property of
+   * the *brand*: the published site at /v/<slug> opens in it, the canvas
+   * previews in it, `lib/doc/core/rules.ts` resolves the bilingual fallback
+   * against it, and the page review calls a missing value in this language an
+   * error while the same gap in the other language is only a warning.
+   *
+   * It was also, by the same field, the language of the studio's own interface
+   * — so a studio in Riyadh building an English brand had to work in English
+   * chrome, and switching the chrome quietly changed which half of every
+   * bilingual field was treated as authoritative. The interface language
+   * belongs to the person, not the brand, and lives on `Account.adminLang`.
+   *
+   * Chosen when the brand is created; the Owner can change it.
+   */
+  primaryLocale: Lang;
   sharedStatus: "shared" | "draft";
   createdAt: number;
   updatedAt: number;
@@ -1125,6 +1143,20 @@ export interface Account {
   passwordUpdatedAt: number | null;
   createdAt: number;
   lastLoginAt: number | null;
+  /**
+   * Which language this person wants the studio interface in.
+   *
+   * Theirs, not the brand's — see `Workspace.primaryLocale` for the half of
+   * the old `lang` field that stayed with the brand. Two people working on the
+   * same brand can read the app in different languages, which is the ordinary
+   * case for a studio with a bilingual team.
+   *
+   * `null` means "follow whichever brand is open", which is exactly what the
+   * single field used to do. That default is load-bearing: it keeps every
+   * existing browser rendering as it did until somebody states a preference,
+   * so splitting the field changes no behaviour on its own.
+   */
+  adminLang: Lang | null;
 }
 
 export interface AuditEntry {

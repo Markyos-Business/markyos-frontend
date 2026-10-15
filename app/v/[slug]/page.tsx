@@ -60,7 +60,7 @@ export default function ClientViewerPage() {
         arTitle="غير متاح بعد"
         body="This brand guideline hasn't been shared with clients — check back once its owner publishes it."
         arBody="لم تتم مشاركة دليل الهوية هذا مع العملاء بعد — يُرجى المراجعة لاحقًا."
-        isAr={ws.lang === "ar"}
+        isAr={ws.primaryLocale === "ar"}
         theme={theme}
       />
     );
@@ -72,7 +72,7 @@ export default function ClientViewerPage() {
         name={ws.name}
         slug={ws.slug}
         expected={ws.clientAccess.password}
-        isAr={ws.lang === "ar"}
+        isAr={ws.primaryLocale === "ar"}
         theme={theme}
         onUnlock={() => {
           try {

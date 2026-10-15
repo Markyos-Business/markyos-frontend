@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { EmptyHint } from "@/components/workspace/SectionUI";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "@/lib/copyLint";
+import { useApp } from "@/lib/store";
 import { Workspace } from "@/lib/types";
 
 const SEVERITY_TONE: Record<LintSeverity, { bg: string; fg: string; label: string; arLabel: string }> = {
@@ -13,7 +14,8 @@ const SEVERITY_TONE: Record<LintSeverity, { bg: string; fg: string; label: strin
 };
 
 export function CopyLinterContent({ ws }: { ws: Workspace }) {
-  const isAr = ws.lang === "ar";
+  const { uiLang } = useApp();
+  const isAr = uiLang(ws) === "ar";
   const [en, setEn] = useState("");
   const [ar, setAr] = useState("");
 

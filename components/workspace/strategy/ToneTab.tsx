@@ -11,7 +11,7 @@ import { Lang, Workspace } from "@/lib/types";
 import { InlineText, MiniInput } from "./shared";
 
 export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait } = useApp();
+  const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useApp();
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
   const [traitName, setTraitName] = useState("");
@@ -143,7 +143,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
                   </button>
                 </div>
-                {flagged && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+                {flagged && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
                 {isAr && (
                   <OtherCopyHint
                     rich={false}

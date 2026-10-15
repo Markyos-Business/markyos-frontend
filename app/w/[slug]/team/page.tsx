@@ -34,6 +34,7 @@ export default function TeamPage() {
     saveVersionSnapshot,
     restoreVersion,
     resolveSignOffPin,
+    uiLang,
   } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -47,7 +48,7 @@ export default function TeamPage() {
   const [snapshotLabel, setSnapshotLabel] = useState("");
 
   if (!ws) return null;
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   const me = ws.team.find((m) => m.email === state.session?.email);
   const myRole: TeamRole = me?.role ?? "owner";

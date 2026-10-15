@@ -23,8 +23,8 @@ export function InstructionEditor({
   view: DepartmentView;
   onImport: () => void;
 }) {
-  const { setDeptInstructions } = useApp();
-  const isAr = ws.lang === "ar";
+  const { setDeptInstructions, uiLang } = useApp();
+  const isAr = uiLang(ws) === "ar";
   const sections = view.instructionSections;
 
   function write(next: DeptInstructionSection[]) {

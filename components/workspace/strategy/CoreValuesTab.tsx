@@ -11,7 +11,7 @@ import { Lang, Workspace } from "@/lib/types";
 import { InlineText, MiniInput } from "./shared";
 
 export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addCoreValue, updateCoreValue, removeCoreValue } = useApp();
+  const { addCoreValue, updateCoreValue, removeCoreValue, uiLang } = useApp();
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
@@ -115,7 +115,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     updateCoreValue(ws.id, v.id, isAr ? { descriptionAr: next } : { description: next })
                   }
                 />
-                {flagged && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+                {flagged && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
                 {isAr && <OtherCopyHint rich={false} text={[v.title, v.description].filter(Boolean).join(" — ")} />}
               </div>
             );

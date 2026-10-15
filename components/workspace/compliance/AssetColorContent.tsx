@@ -12,7 +12,7 @@ import { ColorSwatch, Workspace } from "@/lib/types";
 const MATCH_THRESHOLD = 45;
 
 export function AssetColorContent({ ws }: { ws: Workspace }) {
-  const { addComplianceCheck } = useApp();
+  const { addComplianceCheck, uiLang } = useApp();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +21,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<DominantColor[] | null>(null);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   function nearestSwatch(hex: string) {
     let best: ColorSwatch | null = null;

@@ -269,13 +269,13 @@ function Cell({
  * moved. Tab-separated is what both actually put on the clipboard.
  */
 function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { setCompetitorColumns, addCompetitor, removeCompetitor } = useApp();
+  const { setCompetitorColumns, addCompetitor, removeCompetitor, uiLang } = useApp();
   const { showToast } = useToast();
   const [text, setText] = useState("");
   const [replace, setReplace] = useState(true);
   const existing = useRef(ws.strategy.competitors.map((c) => c.id));
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
   const grid = text
     .split(/\r?\n/)
     .filter((l) => l.trim())

@@ -19,13 +19,13 @@ const SLOT_ORDER: { kind: SlotKind; label: string; arLabel: string; tag: string 
 ];
 
 export function LogoSystemContent({ ws }: { ws: Workspace }) {
-  const { updateLogoSlot, setLogoUsageNotes, setLogoColorIds } = useApp();
+  const { updateLogoSlot, setLogoUsageNotes, setLogoColorIds, uiLang } = useApp();
   const [selectedKind, setSelectedKind] = useState<SlotKind>("latin");
   const [pending, setPending] = useState<(PendingUpload & { kind: SlotKind }) | null>(null);
   const [showDownload, setShowDownload] = useState(false);
   const [notesDraft, setNotesDraft] = useState<string | null>(null);
 
-  const isAr = ws.lang === "ar";
+  const isAr = uiLang(ws) === "ar";
 
   async function handleFileReady(kind: SlotKind, file: File) {
     const url = await fileToDataUrl(file);

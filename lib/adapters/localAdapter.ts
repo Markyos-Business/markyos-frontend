@@ -207,6 +207,7 @@ function migrate(parsed: AppState): AppState {
             passwordUpdatedAt: legacy.passwordUpdatedAt ?? null,
             createdAt: legacy.createdAt ?? Date.now(),
             lastLoginAt: null,
+            adminLang: null,
           },
         ]
       : [buildDemoAccount()];
@@ -218,6 +219,11 @@ function migrate(parsed: AppState): AppState {
     id: a.id || uid(),
     email: typeof a.email === "string" ? a.email.trim().toLowerCase() : "",
     lastLoginAt: typeof a.lastLoginAt === "number" ? a.lastLoginAt : null,
+    /* Null, not a language. An account written before the interface language
+       became a personal setting has no preference, and inventing one would
+       change what that person's app looks like on their next load. Null means
+       "follow whichever brand is open", which is what the single field did. */
+    adminLang: a.adminLang === "ar" || a.adminLang === "en" ? a.adminLang : null,
   }));
   delete (parsed as unknown as { account?: unknown }).account;
 
@@ -260,7 +266,16 @@ function migrate(parsed: AppState): AppState {
       typeof ws.ownerAccountId === "string" && ws.ownerAccountId
         ? ws.ownerAccountId
         : parsed.accounts[0].id,
-    lang: ws.lang === "ar" || ws.lang === "en" ? ws.lang : "en",
+    /* `lang` became `primaryLocale` when the field was split in two (see
+       Workspace.primaryLocale). A snapshot written before that carries the old
+       name, and reading it as a missing field would reset every Arabic brand to
+       English — so the old name is accepted as the source here. This is the
+       whole job of a hydration backfill, and it is also the reason the split
+       had to happen before anyone's real data depended on it. */
+    primaryLocale: (() => {
+      const next = ws.primaryLocale ?? (ws as unknown as { lang?: unknown }).lang;
+      return next === "ar" || next === "en" ? next : "en";
+    })(),
     sharedStatus: ws.sharedStatus === "shared" || ws.sharedStatus === "draft" ? ws.sharedStatus : "draft",
     overviewHtml: typeof ws.overviewHtml === "string" ? ws.overviewHtml : "",
     overviewSavedAt: typeof ws.overviewSavedAt === "number" ? ws.overviewSavedAt : Date.now(),

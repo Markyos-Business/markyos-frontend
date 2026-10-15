@@ -43,7 +43,7 @@ export function SingleTextTab({
   /** Purpose is one sentence and stays plain; everything longer is rich text. */
   rich?: boolean;
 }) {
-  const { setStrategyText } = useApp();
+  const { setStrategyText, uiLang } = useApp();
   const [draft, setDraft] = useState<string | null>(null);
   const isAr = lang === "ar";
   // No fallback to the other language here: a blank Arabic field has to look
@@ -56,7 +56,7 @@ export function SingleTextTab({
       <p dir="auto" className="bidi-auto text-[13px] -mt-1" style={{ color: "var(--text-muted)" }}>
         {isAr ? arHint : hint}
       </p>
-      {machine && <MachineDraftFlag isAr={ws.lang === "ar"} />}
+      {machine && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
       <EditableField
         label={isAr ? arTitle : title}
         placeholder={isAr ? arPlaceholder : placeholder}
