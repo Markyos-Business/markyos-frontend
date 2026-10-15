@@ -47,3 +47,6 @@ next-env.d.ts
 /_*.mjs
 /_*.png
 *.log
+
+# vitest reporter output, written by `vitest run --reporter=json`
+/.vitest
