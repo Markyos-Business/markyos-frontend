@@ -20,7 +20,7 @@ programmatically. Where something is specified but not built, it says so.
 | Server | None, except one Stripe Checkout route |
 | Database | Prisma schema with **36 models, no migrations generated** |
 | Tests | 252 unit tests, 12 files |
-| Browser sweeps | 13 suites, ~206 named assertions + 4 measurement suites |
+| Browser sweeps | 13 suites, 113 named `ok` assertions + 4 measurement suites |
 | Static gates | 4 (logical properties, token contract, icon names, contrast) |
 | Git history | 7 commits. **The project's real history is `docs/CHANGELOG.md`** (1,403 lines) |
 
@@ -344,7 +344,7 @@ reason the status above can be stated as fact.
 
 | Sweep | Scale |
 | :--- | :--- |
-| `builder` | 59 checks |
+| `builder` | 62 checks |
 | `moodboard` | 44 checks |
 | `brief` | 33 checks |
 | `drafts` | 21 checks |
@@ -464,10 +464,12 @@ the shape a `Y.Array` of nodes wants.
 
 ### Open design questions
 
-- **Primary locale vs. admin UI language share one field.** `Workspace.lang` is
-  used as the primary locale by `rules.ts` *and* switches the admin interface
-  language. The spec wants the primary locale chosen at creation and changeable
-  by the Owner. These are two different ideas and need two fields.
+- ~~**Primary locale vs. admin UI language share one field.**~~ **Closed, 16 Oct
+  2026.** `Workspace.primaryLocale` is the brand's language; `Account.adminLang`
+  is the person's, and `null` falls back to the brand so nothing changed on its
+  own. What remains: the spec wants the primary locale **changeable by the
+  Owner**, and the only control that sets it today is the preview toggle on
+  Overview. It belongs in Settings.
 - **`ContentBlock.position` stayed `Int`** while every document ordering moved to
   fractional keys, because legacy sections are not concurrently reordered by a
   room. Revisit if that stops being true.
@@ -564,8 +566,8 @@ A plausible order:
    implies, widen `BrandRepository` from snapshot-shaped to the five entity
    operations it names, keep `LocalAdapter` working behind the same interface.
    This kills the three-place invariant and every hydration backfill.
-3. **Split `Workspace.lang`** into primary locale and admin UI language. Cheap
-   now, expensive after anyone's data depends on the conflation.
+3. ~~**Split `Workspace.lang`**~~ — done, 16 Oct 2026. What is left of it is a
+   Settings control so an Owner can change the brand's locale.
 4. **Real publish** — per page, with a Stripe webhook confirming purchase
    against a row instead of a redirect.
 5. **Then** choose between collaboration (Yjs, the specs' main subject) and the
