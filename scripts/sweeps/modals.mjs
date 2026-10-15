@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 /**
  * Every modal in the product, opened and then dismissed with the keyboard.
@@ -22,6 +23,10 @@ import { chromium } from "playwright";
 
 const BASE = "http://localhost:3000";
 const SLUG = "nadeen-studio";
+
+// A 500 error page opens no panels, so it has no panel that fails to close on
+// Escape — a dead server passes this sweep. See serverGuard.mjs.
+await assertServerUp(BASE, [`/w/${SLUG}/visual-identity`, `/w/${SLUG}/strategy`]);
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });

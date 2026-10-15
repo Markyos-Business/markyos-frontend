@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 /**
  * The builder shell: layers, the view switcher, and the responsive cascade.
@@ -48,6 +49,13 @@ async function openBuilder(page) {
 }
 
 async function run() {
+  /* A 500 error page has a DOM, and this sweep's checks are about what the
+     editor shows — every one of them would report the error page as a missing
+     control. The builder route is also the heaviest thing here to compile, so
+     it is the first to fail when the dev server's workers die while / and
+     /login still answer 200. See serverGuard.mjs. */
+  await assertServerUp(BASE, [`/w/${SLUG}/builder`]);
+
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const page = await context.newPage();

@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 /**
  * Can you tell where a card is, and can you see what is on it?
@@ -391,6 +392,11 @@ async function auditPage(page, theme, name, path) {
 }
 
 async function run() {
+  /* A 500 error page has a DOM with no cards in it, so it has no card that
+     fails to separate from its background — a dead server passes this sweep.
+     See serverGuard.mjs. */
+  await assertServerUp(BASE, [`/w/${SLUG}/overview`]);
+
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1440, height: 950 } });
   const page = await context.newPage();

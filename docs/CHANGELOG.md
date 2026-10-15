@@ -5,6 +5,97 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-15 — Revision 3.2 becomes the plan, and the sweeps learn to read a status code
+
+Two things, and the second one exists because of a diagnosis the first one
+asked for.
+
+### The plan of record
+
+Revision 3.2 of the architecture roadmap (15 Oct 2026) is now the plan, saved
+beside rev2 outside this repository and pointed at from `docs/specs/README.md`.
+Revision 2.1's row stays, marked superseded, because older audits and changelog
+entries cite it by section number and those citations have to keep resolving.
+Section numbers are revision-specific — §7 is one-sided pricing in 2.1 and
+two-sided in 3.2 — so citations should name the revision when it matters.
+
+`docs/STATUS.md` is the measured build state the revision was checked against.
+Writing it caught two numbers that were wrong from memory: `Workspace` has 50
+top-level fields, and the document core has 86 tests rather than the 85 the
+builder audit records.
+
+The revision's own MVP item 2 was "commit the six verified editor-shell files
+and repoint the specs README", which is what the two commits before this entry
+do.
+
+### A dead server was indistinguishable from a broken page
+
+Running the full sweep against the plan turned up `vault · en · phone: page
+looks empty (0 chars, 34 elements)`. That reads like a broken template. It was
+not: the dev server was returning 500.
+
+The cause is worth recording, because it was self-inflicted and it will happen
+again. The server had been started with its output piped to a process that was
+later killed, so every log write threw `write EPIPE`. Those uncaught errors
+accumulated listeners on the stream — `MaxListenersExceededWarning: 11 unpipe
+listeners added to [SyncWriteStream]` — and eventually took the compile worker
+pool with them:
+
+```
+Error: Jest worker encountered 2 child process exceptions, exceeding retry limit
+```
+
+**A half-dead Next.js dev server looks healthy to a quick check.** Routes that
+were already compiled keep being served from the dev cache, so `/` and `/login`
+answered 200 throughout, while `/w/<slug>/builder` and `/v/<slug>` — the two
+routes that need fresh compilation, and the only ones the sweeps care about —
+both served 500. A five-route curl check reported four of five fine.
+
+### Why every assertion missed it
+
+Same shape as the `@media` bug: **the sweeps asserted on the DOM, and a 500
+error page has a DOM.** The status code was never read by anything.
+
+The consequence is worse than a misleading message. Several sweeps *pass*
+against an error page, because their findings are things that are absent from
+it:
+
+| Sweep | What it looks for | On a 500 page |
+| :--- | :--- | :--- |
+| `surfaces` | a card that does not separate from its background | no cards, so none fails |
+| `bidi` | reversed Latin runs inside Arabic | no Arabic, so none reversed |
+| `interaction` | an unreachable control, a missing focus ring | no controls |
+| `modals` | a panel that will not close on Escape | no panels |
+| `asset-status` | an exploration asset reaching a public surface | the public surface did not render |
+
+A green run against a dead server is the worst outcome available here, and four
+sweeps could produce one.
+
+### `scripts/sweeps/serverGuard.mjs`
+
+Two entry points, because the two failures arrive at different times.
+
+`assertServerUp(BASE, [heavyRoutes])` runs before Playwright launches and
+refuses to start a run the result of which could not mean anything. It is given
+each sweep's own heavy client-rendered routes rather than just `/`, precisely
+because the cheap routes are the ones that stay up. All 13 sweeps call it.
+
+`installServerGuard(page)` watches main-frame document responses for the rest of
+the run, for a server that dies partway. Its `check()` has to be called *before*
+the DOM is measured, or the misleading message gets there first — in
+`responsive.mjs` it is the first line of `assertGuidelineRendered`, above the
+code that produced the original message.
+
+Proven by standing up three fake servers: nothing listening (red), a half-dead
+one serving `/` at 200 and `/v/x` at 500 (red, and it names the asymmetry), and
+a healthy one (green, no false alarm). Then end to end, by stopping the real dev
+server and running a sweep: exit 1, with the actionable sentence first instead of
+`page looks empty`.
+
+Revision 3.2 §10 item 12, and §3.3's third trap.
+
+---
+
 ## 2026-10-01 (fifth pass) — The editor shell, after guidelines.site
 
 "I don't see any updates — it still looks like Framer, not guidelines.site."

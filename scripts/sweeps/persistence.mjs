@@ -1,7 +1,12 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 const BASE = "http://localhost:3000";
 const WS = "nadeen-studio";
+
+// A 500 error page has a DOM, so "the value did not survive a reload" could be
+// a dead server rather than lost state — see serverGuard.mjs.
+await assertServerUp(BASE, [`/w/${WS}/settings`]);
 
 const browser = await chromium.launch();
 const fail = [];

@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 /**
  * Interaction quality, measured rather than eyeballed.
@@ -557,6 +558,11 @@ async function auditPage(page, theme, name, path) {
 }
 
 async function run() {
+  /* A 500 error page has no controls, so it has no unreachable control and no
+     missing focus ring — a dead server passes this sweep too. See
+     serverGuard.mjs. */
+  await assertServerUp(BASE, [`/w/${SLUG}/overview`, `/w/${SLUG}/builder`]);
+
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1440, height: 950 } });
   const page = await context.newPage();

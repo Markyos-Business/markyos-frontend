@@ -1,7 +1,12 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 
 const BASE = "http://localhost:3000";
 const WS = "nadeen-studio";
+
+// A 500 error page has a DOM, and measuring its contrast would pass. Ask the
+// server what it said before trusting what it drew — see serverGuard.mjs.
+await assertServerUp(BASE, [`/w/${WS}/builder`, `/v/${WS}`]);
 
 const browser = await chromium.launch();
 const findings = [];

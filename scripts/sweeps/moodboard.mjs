@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp } from "./serverGuard.mjs";
 import { deflateSync } from "node:zlib";
 
 /**
@@ -86,6 +87,10 @@ async function signIn(page) {
 }
 
 async function run() {
+  /* A 500 error page has a DOM with no cards on it, so the culling and layout
+     checks here have nothing to contradict them. See serverGuard.mjs. */
+  await assertServerUp(BASE, [`/w/${SLUG}/moodboard`]);
+
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1500, height: 1000 } });
   const page = await context.newPage();

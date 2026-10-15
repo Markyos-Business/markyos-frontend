@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { assertServerUp, installServerGuard } from "./serverGuard.mjs";
 
 const BASE = "http://localhost:3000";
 const WS = "nadeen-studio";
@@ -15,9 +16,15 @@ const TEMPLATES = [
   ["deck", null],
 ];
 
+// Before the browser opens: this run drives /v/<slug>, which is client-rendered
+// and needs fresh compilation, so it is exactly the route a dead worker pool
+// cannot serve while / and /login still answer 200.
+await assertServerUp(BASE, [`/v/${WS}`]);
+
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: PHONE, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await ctx.newPage();
+const guard = installServerGuard(page);
 
 // Seed the store once so localStorage exists on this origin.
 await page.goto(`${BASE}/login`);
@@ -61,6 +68,13 @@ async function applyTemplate(kind, style, lang) {
  * already produced a clean sweep of a password form once.
  */
 async function assertGuidelineRendered(name, lang) {
+  /* The status check comes first, and that ordering is the whole point.
+     A 500 error page has a DOM, so every check below it passes judgement on a
+     document the server failed to build — and reports it as "page looks
+     empty", which reads like a broken template. Ask the server what it
+     actually said before measuring what it drew. */
+  guard.check(name);
+
   const { chars, text, els, arabic, rtl } = await page.evaluate(() => ({
     chars: document.body.innerText.trim().length,
     text: document.body.innerText.trim().slice(0, 120),
