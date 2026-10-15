@@ -187,6 +187,12 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
 
   return (
     <div
+      // Named so a sweep can assert where this rail is *not* rendered. The
+      // guidelines editor runs without it — see `focused` in the workspace
+      // layout — and "the studio nav is absent on that route" is a claim worth
+      // holding to account, because it is the whole reason that editor has a
+      // canvas worth looking at.
+      data-studio-nav=""
       className="shrink-0 flex flex-col gap-6 py-5 overflow-y-auto overflow-x-hidden"
       style={{
         width: collapsed ? RAIL_W : OPEN_W,

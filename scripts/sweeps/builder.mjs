@@ -61,6 +61,40 @@ async function run() {
   await signIn(page);
   await openBuilder(page);
 
+  /* --------------------------------------------------------- the editor shell ---
+     The guidelines editor is a focused mode: no studio navigation, no app top
+     bar, and the publish cluster floating in the canvas's own corner rather than
+     taking a row across the window. The point of all three is the same — how
+     much of the screen is the page being designed — so that is what is measured,
+     rather than the presence of any particular element. */
+  const shell = await page.evaluate(() => {
+    const frameRegion = document.querySelector("[data-canvas-frame]")?.closest(".relative");
+    return {
+      studioNav: document.querySelectorAll("[data-studio-nav]").length,
+      wayBack: !!document.querySelector('a[aria-label^="Back to"], a[aria-label^="العودة"]'),
+      canvasWidth: frameRegion ? Math.round(frameRegion.getBoundingClientRect().width) : null,
+      windowWidth: window.innerWidth,
+      // The ship cluster has to be *over* the canvas, not above it: an element
+      // in flow would push the canvas down and take the row back.
+      shipFloats: (() => {
+        const publish = [...document.querySelectorAll("button")].find((b) => /Publish|نشر/.test(b.textContent || ""));
+        const rail = publish?.closest(".absolute");
+        return !!rail;
+      })(),
+    };
+  });
+  if (shell.studioNav === 0) ok("the editor runs without the studio navigation rail");
+  else fail("shell", "the studio navigation rail is still rendered on the editor route");
+  if (shell.wayBack) ok("and carries its own way back out");
+  else fail("shell", "a full-screen editor with no visible way back to the brand");
+  if (shell.shipFloats) ok("the publish cluster floats over the canvas rather than taking a row");
+  else fail("shell", "the publish cluster is in the page flow, so it costs the canvas a row");
+  // The number this restructure exists to move. Below two thirds of the window
+  // the editor is mostly chrome again.
+  const share = shell.canvasWidth && shell.windowWidth ? shell.canvasWidth / shell.windowWidth : 0;
+  if (share >= 0.62) ok(`the canvas region is ${Math.round(share * 100)}% of the window`);
+  else fail("shell", `the canvas region is only ${Math.round(share * 100)}% of the window (${shell.canvasWidth}px of ${shell.windowWidth}px)`);
+
   /* ------------------------------------------------- the review stays quiet ---
      First, before this sweep touches anything. The half of a linter that rots is
      the quiet half: one that reports findings on a page with nothing wrong with

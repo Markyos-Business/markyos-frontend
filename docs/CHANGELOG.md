@@ -5,6 +5,55 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-01 (fifth pass) — The editor shell, after guidelines.site
+
+"I don't see any updates — it still looks like Framer, not guidelines.site."
+
+The controls from the fourth pass were all present and working; a screenshot of
+the editor confirmed the layout picker, the Content/Style/Layout tabs and the
+per-part options rendering correctly. What was wrong was the **shell**. Markyos
+wrapped the canvas in four columns of chrome — studio navigation, tools panel,
+app top bar, inspector — and the page being designed got **51% of a 1600px
+window**. That is Framer's shape. guidelines.site has one sidebar and a canvas,
+with everything else floating (teardown §3.3).
+
+Three changes, all about the same number:
+
+**The editor is a focused mode.** The studio's own navigation is not rendered on
+`/builder`. Every other page here is a form or a list and the sidebar costs it
+nothing; the editor is a canvas, and that rail was the fourth column around it.
+It carries its own way back out instead — a full-screen mode with no visible
+exit is a trap, however much canvas it buys.
+
+**The app top bar is gone.** Undo and redo moved into the one contextual bar the
+editor has left, beside the view switcher.
+
+**Publishing floats in the canvas's own corner.** It is the thing you do at the
+end of a session, not during one, and it had a full row of the window across the
+top. Bottom-end corner now, over the canvas, still the most prominent control on
+screen.
+
+**51% → 85% of the window**, and the sweep asserts that share rather than the
+presence of any particular element, because the share is the thing that matters.
+
+### A regression this caused, and the arithmetic that fixes it
+
+`CanvasFrame.reserved` existed so that opening the inspector would not resize the
+page being edited: it *added* the panel's width back when the panel was open. With
+250px of studio navigation no longer taken, that started computing a scale of 1.0
+for a 1200px frame in a 1040px space — so the page stopped re-fitting and simply
+ran off the end of the window.
+
+The goal is unchanged and the arithmetic is now the other way round: the canvas
+always lays out as though the widest panel were open, whether it is or not.
+Opening it moves `clientWidth` and the reservation by the same amount in opposite
+directions, so the scale does not move — and the frame fits in every state rather
+than in only one of them.
+
+Builder sweep 55 → 59 checks.
+
+---
+
 ## 2026-10-01 (fourth pass) — Every part of a section, and the breakpoint bug underneath
 
 A teardown of guidelines.site came in with the clarification that "section

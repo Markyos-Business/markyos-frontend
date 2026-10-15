@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/lib/store";
 import { Sidebar } from "@/components/workspace/Sidebar";
 
@@ -13,7 +13,20 @@ export default function WorkspaceLayout({
   const params = useParams<{ slug: string }>();
   const { state, hydrated, getWorkspace } = useApp();
   const router = useRouter();
+  const pathname = usePathname();
   const found = getWorkspace(params.slug);
+
+  /**
+   * The guidelines editor runs without the studio's own navigation.
+   *
+   * Every other page here is a form or a list, and the sidebar costs it nothing.
+   * The editor is a canvas, and the sidebar was the fourth column of chrome
+   * around it — studio nav, tools, top bar, inspector — leaving the page being
+   * designed about half the window on a 1600px screen. A design tool earns its
+   * keep by how much of the screen is the thing you are designing, so this one
+   * takes the whole window and carries its own way back out.
+   */
+  const focused = !!pathname && /\/builder(\/|$)/.test(pathname);
   /*
    * The one place brand ownership is enforced.
    *
@@ -80,7 +93,7 @@ export default function WorkspaceLayout({
       className="h-screen flex overflow-hidden"
       style={{ fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
-      <Sidebar workspace={ws} />
+      {!focused && <Sidebar workspace={ws} />}
       <div className="flex-1 min-w-0 min-h-0 flex flex-col">{children}</div>
     </div>
   );

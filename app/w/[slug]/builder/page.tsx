@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useApp } from "@/lib/store";
 import { useToast } from "@/components/Toast";
 import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
 import { Icon } from "@/components/Icon";
 import { EmptyHint } from "@/components/workspace/SectionUI";
 import { ImagePicker } from "@/components/workspace/ImagePicker";
@@ -709,7 +708,24 @@ export default function BuilderPage() {
    * section resized the page being edited. See `reserved` in CanvasFrame.
    */
   const inspectorShown = !!(selectedId && (selected || selectedFixedId));
-  const reservedForPanel = inspectorShown ? (rightOpen ? 300 : 24) : 0;
+  /**
+   * How much narrower the canvas should lay out than the room it has.
+   *
+   * The goal is unchanged — opening the inspector must not resize the page being
+   * edited — but the arithmetic is the other way round now. It used to *add* the
+   * panel's width back when the panel was open, which held the scale steady and,
+   * once the studio sidebar stopped taking 250px off this route, started
+   * computing a scale of 1.0 for a 1200px frame in a 1040px space: the page no
+   * longer re-fitted, it simply ran off the end.
+   *
+   * So the canvas always lays out as though the widest panel were open, whether
+   * it is or not. Opening it changes `clientWidth` and this by the same amount in
+   * opposite directions, so the scale does not move — and the frame fits in every
+   * state rather than in only one of them.
+   */
+  const PANEL_W = 300;
+  const panelTakes = inspectorShown ? (rightOpen ? PANEL_W : 24) : 0;
+  const reservedForPanel = panelTakes - PANEL_W;
   const autoFillCount = ws.assets.filter((a) => a.type === "mockup" || a.type === "export").length;
   const previewHref = activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`;
   // Every edit bumps updatedAt, so anything newer than the last publish is a
@@ -838,83 +854,6 @@ export default function BuilderPage() {
 
   return (
     <>
-      <TopBar
-        workspace={ws}
-        section="Guidelines editor"
-        arSection="محرر الدليل"
-        right={
-          <div className="flex items-center gap-2.5 shrink-0">
-            {/* Undo and redo as a pair. A lone undo button is the shape of an
-                editor that can walk you back but not forward again, which makes
-                trying something out cost more than it should. */}
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => undo()}
-                disabled={!canUndo}
-                title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"}
-                aria-label={isAr ? "تراجع" : "Undo"}
-                className="h-9 w-9 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
-                style={{ background: "var(--surface-2)", color: "var(--text)" }}
-              >
-                <Icon name="undo" size={14} />
-              </button>
-              <button
-                type="button"
-                onClick={() => redo()}
-                disabled={!canRedo}
-                title={isAr ? "إعادة (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z)"}
-                aria-label={isAr ? "إعادة" : "Redo"}
-                className="h-9 w-9 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
-                style={{ background: "var(--surface-2)", color: "var(--text)" }}
-              >
-                {/* The undo glyph flipped, rather than a separate icon: these
-                    are rotational arrows, counter-clockwise against clockwise,
-                    which is why the pair reads the same in both directions and
-                    needs no RTL variant. */}
-                <Icon name="undo" size={14} style={{ transform: "scaleX(-1)" }} />
-              </button>
-            </div>
-            <ReviewChip report={review} isAr={isAr} onSelect={revealFlow} />
-            <span className="text-[11.5px] whitespace-nowrap" style={{ color: hasUnpublished ? "var(--warning)" : "var(--text-faint)" }}>
-              {!ws.publishedAt
-                ? isAr ? "غير منشور" : "Not published"
-                : hasUnpublished
-                  ? isAr ? "تغييرات غير منشورة" : "Unpublished changes"
-                  : isAr ? `نُشر ${formatRelative(ws.publishedAt)}` : `Published ${formatRelative(ws.publishedAt)}`}
-            </span>
-            <Link
-              href={`${previewHref}?preview=1`}
-              target="_blank"
-              className="h-9 px-4 rounded-full text-[12px] font-semibold cursor-pointer grid place-items-center"
-              style={{ background: "var(--surface-2)", color: "var(--text)" }}
-            >
-              {isAr ? "معاينة" : "Preview"}
-            </Link>
-            <button
-              type="button"
-              onClick={() => void handlePublish()}
-              disabled={!!ws.publishedAt && !hasUnpublished}
-              // A blocked action that does not say what is blocking it sends
-              // someone hunting through settings for a permission they already
-              // have. The reason is one sentence and it ends the search.
-              title={
-                !!ws.publishedAt && !hasUnpublished
-                  ? isAr
-                    ? "لا توجد تغييرات منذ آخر نشر."
-                    : "Nothing has changed since the last publish."
-                  : isAr
-                    ? "انشر التغييرات ليراها العميل."
-                    : "Push these changes to the client's site."
-              }
-              className="h-9 px-4 rounded-full text-[12px] font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-            >
-              {isAr ? "نشر" : "Publish"}
-            </button>
-          </div>
-        }
-      />
       <div className="flex-1 min-h-0 flex overflow-hidden">
         {!leftOpen && (
           <PanelReveal
@@ -933,10 +872,35 @@ export default function BuilderPage() {
           className="w-[240px] shrink-0 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-3 mk-panel-in-start"
           style={{ boxShadow: "inset -1px 0 0 var(--hairline)" }}
         >
-          <div className="flex items-center justify-between gap-2 shrink-0">
-            <span className="text-[10.5px] font-semibold uppercase px-1" style={{ letterSpacing: "0.08em", color: "var(--text-faint)" }}>
-              {isAr ? "الأدوات" : "Tools"}
-            </span>
+          {/*
+           * The way back out.
+           *
+           * The studio's own navigation is not rendered on this route — see the
+           * `focused` note in the workspace layout — so the editor has to carry
+           * its own exit, and it has to say which brand you are inside. A
+           * full-screen mode with no visible way out is a trap, however much
+           * canvas it buys.
+           */}
+          <div className="flex items-center gap-2 shrink-0 -mt-1">
+            <Link
+              href={`/w/${ws.slug}/overview`}
+              aria-label={isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`}
+              title={isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`}
+              className="h-7 w-7 rounded-lg grid place-items-center cursor-pointer shrink-0"
+              style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
+            >
+              <Icon name={isAr ? "angle-right" : "angle-left"} size={13} />
+            </Link>
+            <div className="min-w-0 flex-1 flex flex-col">
+              <span className="text-[12.5px] font-semibold truncate leading-tight">{ws.name}</span>
+              <span className="text-[10.5px] truncate" style={{ color: "var(--text-faint)" }}>
+                {isAr ? "محرر الدليل" : "Guidelines editor"}
+              </span>
+            </div>
+            {/* The collapse control belongs here rather than under a "Tools"
+                heading of its own. With the brand named directly above it there
+                was nothing left for that heading to say that the panel's own
+                contents did not. */}
             <button
               type="button"
               onClick={() => setLeftOpen(false)}
@@ -1252,7 +1216,15 @@ export default function BuilderPage() {
         </div>
         )}
 
-        <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+        {/*
+         * The canvas region, and the positioning context for what floats over it.
+         *
+         * `relative` so the ship cluster can sit in its bottom corner rather than
+         * in a bar across the top of the window. That is the one piece of chrome
+         * a studio reaches for at the end of a session rather than during one,
+         * and it is the last thing that should be taking a row of the screen.
+         */}
+        <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative" style={{ background: "var(--surface-1)" }}>
           <div
             className="shrink-0 h-12 px-5 flex items-center gap-2"
             style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
@@ -1317,6 +1289,39 @@ export default function BuilderPage() {
                 them there below xl, where the hint above is not rendered and
                 there is no flexible box to take the slack. */}
             <span className="ms-auto xl:ms-2.5 flex items-center gap-2.5 shrink-0">
+              {/* Undo and redo as a pair, in the one contextual bar this editor
+                  has now that the app's top bar is gone. A lone undo button is
+                  the shape of an editor that can walk you back but not forward
+                  again, which makes trying something out cost more than it
+                  should. */}
+              <span className="flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => undo()}
+                  disabled={!canUndo}
+                  title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"}
+                  aria-label={isAr ? "تراجع" : "Undo"}
+                  className="h-8 w-8 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  <Icon name="undo" size={13} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => redo()}
+                  disabled={!canRedo}
+                  title={isAr ? "إعادة (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z)"}
+                  aria-label={isAr ? "إعادة" : "Redo"}
+                  className="h-8 w-8 rounded-full grid place-items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {/* The undo glyph flipped, rather than a separate icon: these
+                      are rotational arrows, counter-clockwise against clockwise,
+                      which is why the pair reads the same in both directions and
+                      needs no RTL variant. */}
+                  <Icon name="undo" size={13} style={{ transform: "scaleX(-1)" }} />
+                </button>
+              </span>
               <ViewSwitcher
                 breakpoint={breakpoint}
                 onBreakpoint={setBreakpoint}
@@ -1371,6 +1376,85 @@ export default function BuilderPage() {
                 draggingKind={draggingKind}
               />
             </CanvasFrame>
+          </div>
+
+          {/*
+           * Ship, bottom-end corner, floating over the canvas.
+           *
+           * Publishing is the thing you do at the end of a session, not during
+           * one, and it had a full row of the window across the top of the
+           * editor. Down here it is out of the way of the work and still the
+           * most prominent control on screen, which is the right order for it.
+           *
+           * `pointer-events-none` on the rail and `auto` on the cluster: the
+           * rail spans the canvas so the cluster can be positioned against its
+           * corner, and without that it would swallow clicks on everything
+           * beneath it.
+           */}
+          <div className="absolute inset-x-0 bottom-0 pointer-events-none flex justify-end p-4">
+            <div
+              className="pointer-events-auto flex items-center gap-2 rounded-full p-1.5 ps-3.5"
+              style={{
+                /*
+                 * `--surface-2` and an *inset* ring, not `--surface-0` and an
+                 * outer one.
+                 *
+                 * In the light theme `--surface-0` and `--surface-1` are both
+                 * pure white, so a cluster filled with the first and floating
+                 * over the second had no fill separation at all — 1.00:1 — and
+                 * was leaning entirely on a ring. Inset is also the convention
+                 * every card here draws its edge with, and the one the surfaces
+                 * sweep knows how to measure; an outer ring is just as visible
+                 * to a person and invisible to the check, which is the worse
+                 * half of that trade.
+                 */
+                background: "var(--surface-2)",
+                boxShadow: "inset 0 0 0 1px var(--hairline-strong), var(--shadow-pop)",
+              }}
+            >
+              <span
+                className="text-[11px] whitespace-nowrap"
+                style={{ color: hasUnpublished ? "var(--warning)" : "var(--text-faint)" }}
+              >
+                {!ws.publishedAt
+                  ? isAr ? "غير منشور" : "Not published"
+                  : hasUnpublished
+                    ? isAr ? "تغييرات غير منشورة" : "Unpublished changes"
+                    : isAr ? `نُشر ${formatRelative(ws.publishedAt)}` : `Published ${formatRelative(ws.publishedAt)}`}
+              </span>
+              <ReviewChip report={review} isAr={isAr} onSelect={revealFlow} />
+              <Link
+                href={`${previewHref}?preview=1`}
+                target="_blank"
+                title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
+                className="h-9 px-3.5 rounded-full text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
+                style={{ background: "var(--surface-2)", color: "var(--text)" }}
+              >
+                <Icon name="eye" size={13} />
+                {isAr ? "معاينة" : "Preview"}
+              </Link>
+              <button
+                type="button"
+                onClick={() => void handlePublish()}
+                disabled={!!ws.publishedAt && !hasUnpublished}
+                // A blocked action that does not say what is blocking it sends
+                // someone hunting through settings for a permission they already
+                // have. The reason is one sentence and it ends the search.
+                title={
+                  !!ws.publishedAt && !hasUnpublished
+                    ? isAr
+                      ? "لا توجد تغييرات منذ آخر نشر."
+                      : "Nothing has changed since the last publish."
+                    : isAr
+                      ? "انشر التغييرات ليراها العميل."
+                      : "Push these changes to the client's site."
+                }
+                className="h-9 px-4 rounded-full text-[12px] font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
+              >
+                {isAr ? "نشر" : "Publish"}
+              </button>
+            </div>
           </div>
         </div>
 

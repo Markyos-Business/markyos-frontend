@@ -65,8 +65,14 @@ export function CanvasFrame({
   children: ReactNode;
   isAr: boolean;
   /**
-   * Width that a panel has taken from the canvas and that the scale must
-   * pretend is still there.
+   * An adjustment to the width the scale is computed against, so that opening a
+   * panel does not resize the page being edited.
+   *
+   * Signed, and normally negative: the caller lays the canvas out as though the
+   * widest panel were always open. An earlier version added the panel's width
+   * back when it *was* open, which held the scale just as steady and overflowed
+   * once there was enough room for a scale of 1.0 but not enough to draw a
+   * 1200px frame. Reserving downward is the version that also fits.
    *
    * This is the fix for the editor shaking on its most common gesture.
    * Selecting a section opens the inspector, which is a 300px flex sibling, so
