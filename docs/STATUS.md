@@ -19,7 +19,7 @@ programmatically. Where something is specified but not built, it says so.
 | Persistence | **Browser only.** `localStorage["markyos:v1"]` + IndexedDB for file payloads |
 | Server | None, except one Stripe Checkout route |
 | Database | Prisma schema with **60 models, no migrations generated** (reconciled with Rev 3.2 §8.7 on 16 Oct 2026) |
-| Tests | 252 unit tests, 12 files |
+| Tests | 283 unit tests, 13 files |
 | Browser sweeps | 13 suites, 113 named `ok` assertions + 4 measurement suites |
 | Static gates | 4 (logical properties, token contract, icon names, contrast) |
 | Git history | 7 commits. **The project's real history is `docs/CHANGELOG.md`** (1,403 lines) |
@@ -279,10 +279,28 @@ exists:
 - **`ServerAdapter`** (not written) — Server Actions, Prisma, R2. Needs no
   backfills: the database has the columns because a migration added them.
 
-The interface is snapshot-shaped on purpose, which mirrors what the prototype
-genuinely does. **When `ServerAdapter` lands, `save` cannot stay** — you do not
-PUT the universe over HTTP. It splits into `createWorkspace`, `updateSection`,
-`putAsset`, `publish`, `createShareLink`.
+**The interface was widened on 16 October 2026** (MVP item 4). `save` is still
+there and still what every caller uses, but beside it are the nine operations it
+splits into: `createWorkspace`, `updateWorkspace`, `updateSection`, `putAsset`,
+`deleteAsset`, `publish`, `unpublish`, `createShareLink`, `revokeShareLink`.
+`save` cannot survive `ServerAdapter` — you do not PUT the universe over HTTP.
+
+What each operation *means* is a pure state transition in
+`lib/adapters/entityOps.ts`, tested in Node with no browser (31 tests). Both
+adapters share those: `LocalAdapter` applies one and writes a snapshot;
+`ServerAdapter` will apply the same one optimistically while the server
+confirms. Separate copies would drift into a flicker nobody could reproduce.
+
+`publish` is the one worth knowing about. It decides what a client receives, it
+used to be forty lines inline in the store with only a browser sweep covering
+it, and **the store now calls the shared transition rather than keeping a copy**.
+Breaking it deliberately fails a unit test in 8ms and the moodboard sweep in
+about a minute.
+
+**Still to do:** migrating the remaining callers off `save`. Mechanical, and
+deliberately not done in the same pass — two live persistence paths at once,
+against six published templates that must never break, is not a trade worth
+making for one commit.
 
 ### The three-place invariant (a real trap)
 
@@ -342,11 +360,12 @@ name, documented in place so the difference does not read as a gap.
 This is unusual enough to be worth protecting in any replan. It is also the
 reason the status above can be stated as fact.
 
-**252 unit tests** in 12 files:
+**283 unit tests** in 13 files:
 
 | Tests | File |
 | ---: | :--- |
 | 52 | `lib/doc/core/doc.test.ts` |
+| 31 | `lib/adapters/entityOps.test.ts` |
 | 29 | `lib/pageReview.test.ts` |
 | 25 | `lib/moodboard/layout.test.ts` |
 | 22 | `lib/auth.test.ts` |
@@ -527,7 +546,7 @@ This is the editor-shell restructure described in §4 (51% → 85% of window).
 
 ```bash
 npm run dev        # http://localhost:3000
-npm test           # 252 unit tests, ~2s
+npm test           # 283 unit tests, ~2s
 npm run check      # typecheck + lint
 npm run sweep      # all 13 browser sweeps — needs the dev server up
 ```

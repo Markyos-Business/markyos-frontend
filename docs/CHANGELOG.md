@@ -5,6 +5,79 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-16 (later still) — The operations `save` splits into
+
+MVP Foundation item 4: widen `BrandRepository` from one snapshot-shaped `save`
+into the entity operations the architecture names. `save` cannot survive the
+`ServerAdapter` — you do not PUT the universe over HTTP — and `repository.ts`
+has said since it was written that widening the interface is the step that comes
+first, because every caller already goes through that file.
+
+Nine operations: `createWorkspace`, `updateWorkspace`, `updateSection`,
+`putAsset`, `deleteAsset`, `publish`, `unpublish`, `createShareLink`,
+`revokeShareLink`. `LocalAdapter` implements each as read, apply, write — one
+snapshot per call, exactly as the file predicted.
+
+### The part that was worth doing for its own sake
+
+`publish` decides what a client receives. It was forty lines inline in a
+3,300-line store, and its only coverage was a browser sweep. It is now a pure
+function in `lib/adapters/entityOps.ts` with tests that run in Node, and **the
+store calls it rather than keeping a copy** — two implementations of
+"exploration never reaches a client" is one too many, and the one that drifts
+would be the one nobody reads.
+
+Proven load-bearing rather than assumed: removing `moodboards` from the private
+list fails the unit test **in 8 milliseconds** and the moodboard sweep in about a
+minute, with a server. Restored, both green. That ratio is the whole argument
+for the extraction.
+
+Two things the tests found that reading had not. `buildPublishedSnapshot` has to
+deep-copy, not shallow-copy: a test that mutates an asset *inside* the draft
+after publishing catches a shared reference that eyeballing does not. And
+publishing twice must not nest the previous snapshot inside the new one, or the
+stored state doubles every time.
+
+### Pure transitions, and why they are a separate file
+
+Everything in `entityOps.ts` takes state and returns state, touches nothing
+outside its arguments, and reads no clock it was not handed — `now` is a
+parameter, because a transition that calls `Date.now()` itself cannot be tested
+for what it stamps.
+
+Three reasons that separation earns a file. It is testable without a DOM, so
+there is no `localStorage` to shim. Both adapters need the same answer —
+`ServerAdapter` will apply a transition optimistically while the server
+confirms it, and if each owned its own copy the optimistic result and the stored
+one would drift into a flicker nobody could reproduce. And the store calls them,
+which is the only way a rule lives in one place.
+
+`removeAssetFrom` clears the references as well as the asset: a typography font
+id, a department's attached file, a moodboard card. A section holding the id of
+a file that no longer exists renders as a hole, and the hole appears on the
+client's site rather than in the editor where somebody would notice.
+
+### What is deliberately not done
+
+**The callers still use `save`.** Every mutation in `lib/store.tsx` still goes
+through the one effect that persists the whole state, except publish and
+unpublish which now go through the shared transitions. Migrating the rest is
+mechanical and follows; doing it half-way in one commit would leave two
+persistence paths live at once, against a prototype whose six published
+templates must never break.
+
+`putAsset` accepts a `payload` it does not use. The prototype carries a file as
+a data URL inside the asset, and `save` already pulls those into IndexedDB and
+leaves a token — so the bytes are stored by the path that always stored them.
+The parameter is there because `ServerAdapter` needs it, and a caller holding a
+Blob should not have to know which adapter it is talking to.
+
+Unit tests 252 → 283.
+
+Revision 3.2 §10 item 4 (interface and LocalAdapter).
+
+---
+
 ## 2026-10-16 (later) — A shape for the server to land in
 
 MVP Foundation item 3 is "reconcile the 36-model Prisma schema with §8.7, then

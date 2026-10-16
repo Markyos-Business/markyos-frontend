@@ -1,5 +1,26 @@
-import { BrandRepository, SaveResult } from "../repository";
-import { Account, AppState, Competitor, Moodboard, WorkspaceStage } from "../types";
+import { BrandRepository, EntityResult, SaveResult } from "../repository";
+import {
+  Account,
+  AppState,
+  Asset,
+  Competitor,
+  Moodboard,
+  PublishedSnapshot,
+  ShareLink,
+  Workspace,
+  WorkspaceStage,
+} from "../types";
+import {
+  addShareLinkTo,
+  addWorkspaceTo,
+  applySectionPatch,
+  publishWorkspace,
+  putAssetIn,
+  removeAssetFrom,
+  replaceWorkspaceIn,
+  revokeShareLinkIn,
+  unpublishWorkspace,
+} from "./entityOps";
 import { nBetween } from "../doc/core/order";
 import { DEFAULT_TEMPLATE_KEY, zonesFromTemplate } from "../moodboard/zones";
 import {
@@ -394,7 +415,9 @@ export function createLocalAdapter(): BrandRepository {
   /** Keys already written, so a save only stores files that are actually new. */
   let persistedKeys = new Set<string>();
 
-  return {
+  // Bound to a name rather than returned inline, so the entity operations can
+  // go through `load` and `save` instead of duplicating them.
+  const adapter: BrandRepository = {
     async load() {
       try {
         const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -480,5 +503,145 @@ export function createLocalAdapter(): BrandRepository {
     markSessionAlive(alive: boolean) {
       writeSessionAlive(alive);
     },
+
+    /* --------------------------------------------- entity operations ----
+     *
+     * Each one reads the snapshot, applies the matching pure transition from
+     * `entityOps.ts`, and writes the snapshot back — "trivial implementations
+     * of each that still end in one snapshot write", which is what
+     * `repository.ts` said this step would be.
+     *
+     * Read-modify-write per call is right *here* and nowhere else. This
+     * adapter is the storage, so there is nothing to be out of date with:
+     * `localStorage` is synchronous and single-threaded, and no second writer
+     * exists. `ServerAdapter` cannot do this — it will send the operation and
+     * let the server decide — which is exactly why the operations are named
+     * individually rather than left as `save`.
+     */
+
+    async createWorkspace(workspace) {
+      return mutateState<Workspace>((state) => {
+        const next = addWorkspaceTo(state, workspace);
+        // `addWorkspaceTo` returns the state unchanged on a duplicate slug
+        // rather than throwing, so identity is the test for rejection.
+        if (next === state) return { error: "a brand already uses that address" };
+        return { state: next, value: workspace };
+      });
+    },
+
+    async updateWorkspace(workspaceId, patch) {
+      return mutateState<Workspace>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...ws, ...patch, updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: updated };
+      });
+    },
+
+    async updateSection(workspaceId, sectionId, patch) {
+      return mutateState<Workspace>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...applySectionPatch(ws, sectionId, patch), updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: updated };
+      });
+    },
+
+    /**
+     * `payload` is accepted and deliberately unused here.
+     *
+     * The prototype carries a file as a data URL inside the asset itself, and
+     * `save` already pulls every data URL out into IndexedDB and leaves a
+     * token behind — so by the time this returns, the bytes are stored by the
+     * path that has always stored them. The parameter exists because
+     * `ServerAdapter` needs it: there, the bytes go to R2 through a presigned
+     * URL and never pass through the snapshot at all.
+     *
+     * Named rather than dropped from the signature, because a caller that has
+     * a Blob should not have to know which adapter it is talking to.
+     */
+    async putAsset(workspaceId, asset, payload) {
+      void payload;
+      return mutateState<Asset>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...putAssetIn(ws, asset), updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: asset };
+      });
+    },
+
+    async deleteAsset(workspaceId, assetId) {
+      return mutateState<void>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...removeAssetFrom(ws, assetId), updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: undefined };
+      });
+    },
+
+    async publish(workspaceId) {
+      return mutateState<PublishedSnapshot>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = publishWorkspace(ws, Date.now());
+        // The snapshot, not the workspace: what the caller wants to know is
+        // what the client will now be served.
+        return { state: replaceWorkspaceIn(state, updated), value: updated.published! };
+      });
+    },
+
+    async unpublish(workspaceId) {
+      return mutateState<Workspace>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = unpublishWorkspace(ws);
+        return { state: replaceWorkspaceIn(state, updated), value: updated };
+      });
+    },
+
+    async createShareLink(workspaceId, link) {
+      return mutateState<ShareLink>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...addShareLinkTo(ws, link), updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: link };
+      });
+    },
+
+    async revokeShareLink(workspaceId, linkId) {
+      return mutateState<void>((state) => {
+        const ws = state.workspaces.find((w) => w.id === workspaceId);
+        if (!ws) return { error: "no such brand" };
+        const updated = { ...revokeShareLinkIn(ws, linkId, Date.now()), updatedAt: Date.now() };
+        return { state: replaceWorkspaceIn(state, updated), value: undefined };
+      });
+    },
   };
+
+  /**
+   * Read, apply, write — the one place the entity operations share.
+   *
+   * Goes through the adapter's own `load` and `save` rather than touching
+   * `localStorage`, so every operation inherits the migrations on the way in
+   * and the blob stripping on the way out. An operation that wrote storage
+   * directly would be the one that skipped a hydration backfill.
+   *
+   * A transition that cannot proceed returns an error instead of throwing, so
+   * every operation reports failure the same way `save` does.
+   */
+  async function mutateState<T>(
+    apply: (state: AppState) => { state: AppState; value: T } | { error: string },
+  ): Promise<EntityResult<T>> {
+    const state = await adapter.load();
+    if (!state) return { ok: false, error: "nothing is stored yet" };
+
+    const outcome = apply(state);
+    if ("error" in outcome) return { ok: false, error: outcome.error };
+
+    const saved = await adapter.save(outcome.state);
+    if (!saved.ok) return { ok: false, error: saved.error };
+    return { ok: true, value: outcome.value };
+  }
+
+  return adapter;
 }

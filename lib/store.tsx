@@ -40,7 +40,6 @@ import {
   MoodboardZone,
   MoodItemKind,
   PageBlock,
-  PublishedSnapshot,
   PinSection,
   PlanKind,
   Persona,
@@ -84,6 +83,10 @@ import {
 } from "./auth";
 import { validateSubdomain } from "./subdomain";
 import { BrandRepository } from "./repository";
+// The entity operations, as pure state transitions. The store calls these
+// rather than keeping its own copy — see the file's own note on why there is
+// exactly one implementation of what reaches a client.
+import { publishWorkspace, unpublishWorkspace } from "./adapters/entityOps";
 import { createLocalAdapter } from "./adapters/localAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
@@ -2891,50 +2894,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const publishGuideline = useCallback(
     (workspaceId: string) => {
-      mutateWorkspace(workspaceId, (ws) => {
-        // A publish is a full copy rather than a list of the fields the site
-        // happens to read today: adding a field later can't then silently
-        // leak into the live site by being left out of the snapshot.
-        const { published: _prev, publishedAt: _prevAt, ...rest } = ws;
-        void _prev;
-        void _prevAt;
-        const snapshot = JSON.parse(JSON.stringify(rest)) as PublishedSnapshot;
-        /*
-         * Exploration never reaches a client.
-         *
-         * Moodboard imagery and mockup drafts are somebody else's photographs
-         * and a designer's thinking out loud; neither is the studio's to hand
-         * over. Filtering here rather than in each template is what makes that
-         * hold for every surface at once — the published snapshot is the only
-         * thing `/v/<slug>` reads, so an asset absent from it cannot appear on
-         * the site, in an export, or through the API however a template is
-         * written. Archived files go too: retired from the brand is retired.
-         */
-        snapshot.assets = snapshot.assets.filter((a) => a.status === "approved");
-
-        /*
-         * The Creation Layer does not ship.
-         *
-         * Filtering assets by status covered the *files*, and missed everything
-         * around them. A moodboard now holds notes, links and swatches that are
-         * not assets at all — a designer's thinking out loud, plus links to
-         * other people's work — and the drafts queue holds proposals that were
-         * considered and rejected, which is precisely the record a client
-         * should never read. Copying the whole workspace and subtracting is
-         * the right default for anything the site *displays*, because a new
-         * display field then works without being remembered here. It is the
-         * wrong default for anything private, because a new private field
-         * leaks by being forgotten. So the private collections are named.
-         *
-         * If a collection is added to the Creation Layer, it belongs on this
-         * list. The moodboard sweep fails if one is not.
-         */
-        snapshot.moodboards = [];
-        snapshot.drafts = [];
-        snapshot.briefs = [];
-
-        return { ...ws, published: snapshot, publishedAt: Date.now() };
-      });
+      /*
+       * The transition itself lives in `lib/adapters/entityOps.ts`.
+       *
+       * It used to be written out here, and it is the most consequential rule
+       * in the product — what a client does and does not receive — with no
+       * coverage but a browser sweep. It is now a pure function with 11 tests
+       * that run in two seconds, and this calls it rather than keeping a second
+       * copy: two implementations of "exploration never reaches a client" is one
+       * too many, and the one that drifts would be the one nobody reads.
+       *
+       * The reasoning for each subtraction moved with the code. Read it there.
+       */
+      mutateWorkspace(workspaceId, (ws) => publishWorkspace(ws, Date.now()));
       logAudit("Published the guideline site", workspaceId);
     },
     [mutateWorkspace, logAudit]
@@ -2942,7 +2914,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const unpublishGuideline = useCallback(
     (workspaceId: string) => {
-      mutateWorkspace(workspaceId, (ws) => ({ ...ws, published: null, publishedAt: null }));
+      mutateWorkspace(workspaceId, (ws) => unpublishWorkspace(ws));
       logAudit("Took the guideline site offline", workspaceId);
     },
     [mutateWorkspace, logAudit]
