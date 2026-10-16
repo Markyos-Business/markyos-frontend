@@ -5,6 +5,94 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-16 (later) — A shape for the server to land in
+
+MVP Foundation item 3 is "reconcile the 36-model Prisma schema with §8.7, then
+generate migrations". The reconcile half needs no database, so it is done; the
+migrations wait on provisioning.
+
+**36 → 60 models, 27 → 34 enums**, and `prisma validate` passes while
+`prisma generate` produces a client — which is the stronger of the two checks
+and also runs offline.
+
+### Why all of it now rather than per phase
+
+Principle 10: the schema is right from day one. A credit ledger or a workspace
+kind retrofitted onto live orgs means migrating real customers instead of
+writing one migration. Nine of the sixteen MVP items are blocked on
+provisioning; the shape they land in is not.
+
+### The decisions worth recording
+
+**Ownership moved from a person to an org.** `Workspace.ownerOrgId` is the
+Studio workspace while a brand is being made and the client's Company workspace
+afterwards — handing off *is* that field changing, in one transaction with the
+studio's new membership. `ownerId` stays as whoever created it, which is still
+the only answer to who to ask about a one-member workspace, but `Membership` is
+what grants access.
+
+**The credit balance is the sum of ledger rows, never a column.** A grant, a
+reservation, a settlement, a refund and an expiry are each a fact worth keeping.
+That is what lets principle 12 — every call is paid for before it runs — be
+enforced rather than asserted; a single number can say what is left but not what
+happened.
+
+**Quotas are separate from credits.** Quick tone checks and assistant questions
+cost about $0.002 a call, so they draw on a `QuotaCounter` keyed by period start.
+Metering them individually would cost more in hesitation than in tokens.
+
+**A board's nodes are not in Postgres.** `Board` carries the room name and the
+R2 snapshot key; the node list is a Yjs document, because a board under
+multiplayer editing is a stream of CRDT updates and not rows. `BoardAssetRef`
+exists precisely because Postgres cannot read inside that document — without it
+there is no way to answer "is this exploration photograph still referenced" at
+delete time, or to keep a third-party image off a published page (principle 2).
+
+**`ToneCheck` does not store the submitted text.** That is a privacy decision,
+not a storage one: staff paste unreleased campaigns and customer replies into
+the checker, and a brand hub is not where that should accumulate. Scores and
+character-range flags are kept, `savedText` only on opt-in, with `savedUntil`
+and an index for the 30-day sweep §20 asks for. Each check records
+`voiceVersion` — without it a score from last month and one from today are not
+comparable, and the brand-health trend would be measuring its own configuration
+drift.
+
+**`Asset.bytes` beside `sizeKB`.** Plan limits are enforced by summing real
+bytes. `sizeKB` is rounded for display, and rounding every file up to a kilobyte
+inflates a 2 GB cap by a few megabytes — small, and wrong in the direction that
+blocks uploads someone paid for.
+
+**`AIUsage.orgId`.** Credits belong to the workspace that pays for them and do
+not move at handoff, and a studio collaborating inside a client's brand spends
+the *client's* credits (principle 15) — so the brand alone cannot say who was
+billed. `promptVersion` joins it, because the method prompts are the part of
+this product a competitor cannot copy and they will be revised; without the
+version a quality regression cannot be traced to the change that caused it.
+
+### The nine stages, and what they do not line up with
+
+`WorkspaceStage` becomes the nine steps of the §1.2 path. The prototype's six
+(`discovery`, `strategy`, `design`, `review`, `delivered`, `live`) do not map
+cleanly: `ANALYZE`, `EXPLORE` and `DELIVER` have no equivalent, because the AI
+analysis, the boards and the brand-kit intake are not built. The mapping is
+written into the enum's own comment and `ServerAdapter` owns it. The client's
+union is untouched — widening it is a UI change and the prototype is frozen
+until Foundation ships (§3.6).
+
+### One model that looked missing and was not
+
+Cross-checking the schema against §8.7 mechanically — extracting model and enum
+names from both and diffing them — turned up exactly one difference in 34 models
+and 34 enums: `WorkspaceMembership`. It already exists as `Membership`, shape
+matching field for field, so reconciling meant keeping it rather than adding a
+second table meaning the same thing. Documented in place, because the next
+reader to diff the two will look for the other name and reach the same wrong
+conclusion.
+
+Revision 3.2 §10 item 3 (reconcile half) and §8.7.
+
+---
+
 ## 2026-10-16 — The brand's language and the reader's are two different things
 
 `Workspace.lang` was one field doing two unrelated jobs, and Revision 3.2 §21.1

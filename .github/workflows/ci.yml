@@ -1,0 +1,156 @@
+# The quality apparatus, run on every push.
+#
+# Revision 3.2 §22 says it plainly: "the prototype is the asset; the server is
+# the job", and the sweeps are what make the build state something that can be
+# stated as fact rather than hoped for. Running them only on one laptop is how
+# that stops being true.
+#
+# Two jobs, because they cost very different amounts. `check` is seconds and
+# needs nothing but Node; `sweeps` drives a real browser against a real server
+# and takes minutes. Splitting them means a typo fails in under a minute
+# instead of after a browser download.
+#
+# MVP Foundation item 12 (Revision 3.2 §10). The deploy half of that item —
+# GitHub Actions to Cloudflare via OpenNext, or Vercel — waits on provisioning
+# (item 1), which is why this file tests and does not ship.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A second push to the same branch makes the first run's answer worthless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # `prisma validate` runs inside `npm run check`, and it loads
+  # prisma.config.ts, whose `env()` *throws* on a missing variable rather than
+  # yielding undefined. `.env` is gitignored, so without these the whole check
+  # script fails on a step that never opens a connection. Verified by hiding
+  # `.env` locally: "PrismaConfigEnvError: Cannot resolve environment variable:
+  # DATABASE_URL".
+  #
+  # Placeholders on purpose. Nothing in CI connects to a database — there is no
+  # database yet — and a real URL here would be a secret in a public log.
+  DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/markyos_ci
+  SHADOW_DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/markyos_ci_shadow
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  # ------------------------------------------------------------------ check --
+  # tsc, eslint at zero warnings, prisma validate, 252 unit tests, and the four
+  # static gates: contrast, the --g-* token contract, no physical properties,
+  # and icon names. All of it is one script so that what CI runs and what a
+  # person runs before committing cannot drift apart.
+  check:
+    name: types, lint, tests, gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Matches the version this project is developed against. Next 16 and
+          # prisma.config.ts both rely on Node 22 built-ins — the config file
+          # uses `process.loadEnvFile`, which is 22-only.
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate the Prisma client
+        # Prisma 7 dropped the postinstall hook, so `npm ci` does not do this.
+        # Nothing imports the client yet, but generating it here is what proves
+        # the schema can still produce one — a stronger check than `validate`,
+        # and it costs under a second.
+        run: npm run db:generate
+
+      - name: Check
+        run: npm run check
+
+  # ----------------------------------------------------------------- sweeps --
+  # Thirteen Playwright suites driving the real interface: 113 named
+  # assertions, plus the four that measure rather than assert (responsive,
+  # interaction, surfaces, contrast).
+  #
+  # Needs `check` to pass first. There is no point downloading a browser to
+  # discover a type error.
+  sweeps:
+    name: browser sweeps
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: check
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate the Prisma client
+        run: npm run db:generate
+
+      - name: Install Chromium
+        # Only Chromium: every sweep launches `chromium` explicitly, so pulling
+        # Firefox and WebKit would triple the download for nothing.
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Serve
+        # A production server, not `next dev`, and that choice is deliberate.
+        #
+        # `next dev` compiles each route on first request, which makes the first
+        # sweep slow and the dev server's compile worker pool the most fragile
+        # thing in the run. That pool dying is exactly the failure that cost a
+        # diagnosis on 15 Oct 2026: already-compiled routes kept serving 200
+        # while anything needing fresh compilation returned 500, so the suite
+        # reported "page looks empty" and looked like a broken template.
+        #
+        # `next start` serves a finished build. There is nothing left to
+        # compile, so that whole class of failure cannot happen here.
+        #
+        # Waits with curl rather than `npx wait-on`, which is not a declared
+        # dependency here — `npx` would fetch it from the network mid-run, which
+        # is a package resolution standing between a commit and its test result.
+        run: |
+          npm run start > /tmp/server.log 2>&1 &
+          echo $! > /tmp/server.pid
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3000; then
+              echo "server up after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "server did not answer within 60s"
+          tail -50 /tmp/server.log
+          exit 1
+
+      - name: Sweep
+        run: npm run sweep
+
+      - name: Server log
+        # The sweeps say what they measured; the server says what it served.
+        # When a sweep fails for a reason that is not the page's fault, this is
+        # the file that says so.
+        if: always()
+        run: tail -200 /tmp/server.log || true
+
+      - name: Stop the server
+        if: always()
+        run: kill "$(cat /tmp/server.pid)" || true

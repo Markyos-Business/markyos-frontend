@@ -18,7 +18,7 @@ programmatically. Where something is specified but not built, it says so.
 | Size | ~59,900 lines across `app` (30 files), `lib` (67), `components` (87), `scripts` (17) |
 | Persistence | **Browser only.** `localStorage["markyos:v1"]` + IndexedDB for file payloads |
 | Server | None, except one Stripe Checkout route |
-| Database | Prisma schema with **36 models, no migrations generated** |
+| Database | Prisma schema with **60 models, no migrations generated** (reconciled with Rev 3.2 §8.7 on 16 Oct 2026) |
 | Tests | 252 unit tests, 12 files |
 | Browser sweeps | 13 suites, 113 named `ok` assertions + 4 measurement suites |
 | Static gates | 4 (logical properties, token contract, icon names, contrast) |
@@ -315,8 +315,25 @@ behaves.**
 
 ### Prisma
 
-36 models, schema written, **no migrations generated**, `DATABASE_URL` and
-`SHADOW_DATABASE_URL` present in `.env`. Nothing in the app reads from it.
+**60 models and 34 enums**, reconciled with Revision 3.2 §8.7 on 16 October
+2026. `prisma validate` passes and `prisma generate` produces a client, both of
+which run without a database.
+
+**No migrations generated** — that needs the Postgres instance, and it is the
+only half of MVP item 3 still waiting. `DATABASE_URL` and `SHADOW_DATABASE_URL`
+are present in `.env`; nothing in the app reads from the database yet.
+
+What the reconciliation added: the two audiences (`OrgProfile`, org-owned
+workspaces, `StudioCollaboration`, `Initiative`), entitlements (`Subscription`,
+`ProjectPass`, `CreditLedger`, `QuotaCounter`), the project path (`CallNote`,
+`AnalysisReport`, `Handoff`, `PartnerReward`, `BriefTemplate`,
+`BriefRespondent`), boards (`Board`, `BoardGuestLink`, `BoardAssetRef`), the
+intake (`IntakeBatch`), and the company toolkit (`VoiceProfile`,
+`DepartmentVoice`, `Term`, `ToneCheck`, `BrandQuestion`, `ReviewRequest`,
+`AssetEvent`).
+
+§8.7's `WorkspaceMembership` is this schema's `Membership` — same shape, older
+name, documented in place so the difference does not read as a gap.
 
 ---
 
@@ -562,10 +579,11 @@ else on this list unlocks as much.
 A plausible order:
 
 1. **Provision** — Postgres, R2, deploy target, auth secret. Not a coding task.
-2. **`ServerAdapter`.** Generate the migrations the 36-model schema already
-   implies, widen `BrandRepository` from snapshot-shaped to the five entity
-   operations it names, keep `LocalAdapter` working behind the same interface.
-   This kills the three-place invariant and every hydration backfill.
+2. **`ServerAdapter`.** Generate the migrations the 60-model schema already
+   implies (the schema itself is reconciled and valid), widen
+   `BrandRepository` from snapshot-shaped to the entity operations it names,
+   keep `LocalAdapter` working behind the same interface. This kills the
+   three-place invariant and every hydration backfill.
 3. ~~**Split `Workspace.lang`**~~ — done, 16 Oct 2026. What is left of it is a
    Settings control so an Owner can change the brand's locale.
 4. **Real publish** — per page, with a Stripe webhook confirming purchase
