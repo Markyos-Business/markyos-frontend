@@ -86,7 +86,7 @@ import { BrandRepository } from "./repository";
 // The entity operations, as pure state transitions. The store calls these
 // rather than keeping its own copy — see the file's own note on why there is
 // exactly one implementation of what reaches a client.
-import { publishWorkspace, unpublishWorkspace } from "./adapters/entityOps";
+import { publishWorkspace, removeAssetFrom, unpublishWorkspace } from "./adapters/entityOps";
 import { createLocalAdapter } from "./adapters/localAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
@@ -2356,11 +2356,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace, logAudit]
   );
 
+  /**
+   * Delete an asset, and stop pointing at it.
+   *
+   * This used to filter the assets array and nothing else, which left a
+   * deleted file's id behind in up to three places: the two typography font
+   * references, a department's attached guideline file, and any moodboard card
+   * that *was* that asset.
+   *
+   * That was not a visible fault, and it is worth being precise about why —
+   * every reader is already defensive. `brandFontStacks` reports
+   * `latinIsUploaded` as `!!id && assets.some(...)`, so a dead id reads as "no
+   * font applied" and the stack falls back; both department readers use `find`
+   * and render the attachment conditionally. Nothing broke.
+   *
+   * What it left was garbage: a stored pointer to a file that does not exist.
+   * Harmless while every read site checks, and a foreign-key violation the
+   * moment the server enforces integrity — which is the half of this the
+   * migration cares about.
+   *
+   * Shares `removeAssetFrom` with the adapter rather than keeping its own
+   * version, for the same reason publish does.
+   */
   const removeAsset = useCallback(
     (workspaceId: string, assetId: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, { assets: ws.assets.filter((a) => a.id !== assetId) })
-      );
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(removeAssetFrom(ws, assetId), {}));
     },
     [mutateWorkspace, touchWorkspace]
   );
@@ -2934,7 +2954,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   /** Shared by the heading and the note: both are per-language overrides
-   *  keyed on a section id, and both restore their default when emptied. */
+   *  keyed on a section id, and both restore their default when emptied.
+   *
+   *  Deliberately *not* routed through `applySectionPatch`, though that
+   *  function now does the same merge. The difference is the no-op guard
+   *  below: writing the same value back must not count as an edit, because
+   *  this is called per keystroke and every spurious edit bumps `updatedAt`
+   *  and takes a slot in the undo history. A pure transition cannot own that
+   *  rule — it has no idea the caller is a text field — so the guard stays
+   *  here and the merge stays shared. Comparing a produced state against the
+   *  old one to re-derive "did anything change" is the version of this that
+   *  looks tidier and allocates a workspace per keypress.
+   *
+   *  `applySectionPatch` was brought up to this function's standard rather
+   *  than the other way round: it trims, and it stores `undefined` rather than
+   *  `""` for a cleared language. Its own comment records why. */
   const setSectionOverride = useCallback(
     (
       workspaceId: string,

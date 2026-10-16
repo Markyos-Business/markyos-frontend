@@ -57,6 +57,50 @@ id, a department's attached file, a moodboard card. A section holding the id of
 a file that no longer exists renders as a hole, and the hole appears on the
 client's site rather than in the editor where somebody would notice.
 
+### Consolidating the callers, and the one that found a flaw in the new code
+
+`removeAsset` in the store filtered the assets array and nothing else, leaving
+a deleted file's id behind in up to three places: the two typography font
+references, a department's attached guideline file, and any moodboard card that
+*was* that asset. It now shares `removeAssetFrom`.
+
+Worth being precise that this was **not** a visible fault. Every reader is
+already defensive — `brandFontStacks` reports `latinIsUploaded` as
+`!!id && assets.some(...)`, so a dead id reads as "no font applied" and the
+stack falls back, and both department readers use `find` and render the
+attachment conditionally. Nothing broke. What it left behind was garbage: a
+stored pointer to a file that does not exist, harmless while every read site
+checks and a foreign-key violation the moment the server enforces integrity.
+
+Then `setSectionOverride`, which looked like the next easy consolidation and was
+not. Three differences, all of them the store being more careful than the
+function written to replace it:
+
+| | store | first `applySectionPatch` |
+| :--- | :--- | :--- |
+| whitespace | trimmed | kept |
+| a cleared language | `undefined` | `""` |
+| writing the same value back | returns unchanged | a fresh object |
+
+The first two are real: `""` survives `JSON.stringify` where `undefined` is
+dropped, so storing it leaves the key in the snapshot forever. `applySectionPatch`
+was brought up to the store's standard rather than the store being migrated
+down to it, with three tests holding it there.
+
+The third stays in the store and `setSectionOverride` is **not** migrated. It is
+called per keystroke, and the guard exists so that writing the same value back
+does not bump `updatedAt` and take a slot in the undo history. A pure transition
+cannot own that rule — it has no idea its caller is a text field — and
+re-deriving "did anything change" by comparing a produced state against the old
+one is the version that looks tidier and allocates a workspace per keypress.
+
+The general lesson, written down because it will come up again as the remaining
+callers move across: consolidating onto a shared function is only an improvement
+if the shared one is the careful one. Diff the semantics before assuming they
+match.
+
+Unit tests 283 → 286.
+
 ### What is deliberately not done
 
 **The callers still use `save`.** Every mutation in `lib/store.tsx` still goes

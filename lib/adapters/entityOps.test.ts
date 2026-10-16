@@ -137,6 +137,28 @@ describe("applySectionPatch", () => {
     expect(b.sectionTitles.color).toEqual({ en: "Colour", ar: "الألوان" });
   });
 
+  it("trims — a heading of three spaces is not a heading", () => {
+    const a = applySectionPatch(ws(), "color", { title: { en: "  Colour  " } });
+    expect(a.sectionTitles.color).toEqual({ en: "Colour" });
+    const blank = applySectionPatch(ws(), "color", { title: { en: "   " } });
+    expect("color" in blank.sectionTitles).toBe(false);
+  });
+
+  it("stores undefined rather than an empty string when one language is cleared", () => {
+    const both = applySectionPatch(ws(), "color", { title: { en: "Colour", ar: "الألوان" } });
+    const cleared = applySectionPatch(both, "color", { title: { en: "" } });
+    // "" survives JSON.stringify and undefined does not, so storing the empty
+    // string would leave the key in the snapshot forever.
+    expect(cleared.sectionTitles.color?.en).toBeUndefined();
+    expect(JSON.stringify(cleared.sectionTitles.color)).toBe('{"ar":"الألوان"}');
+  });
+
+  it("leaves the other language alone when only one is given", () => {
+    const both = applySectionPatch(ws(), "color", { title: { en: "Colour", ar: "الألوان" } });
+    const renamed = applySectionPatch(both, "color", { title: { ar: "لوحة" } });
+    expect(renamed.sectionTitles.color).toEqual({ en: "Colour", ar: "لوحة" });
+  });
+
   it("drops the key when a rename is cleared in both languages", () => {
     const named = applySectionPatch(ws(), "color", { title: { en: "Colour" } });
     const cleared = applySectionPatch(named, "color", { title: { en: "" } });

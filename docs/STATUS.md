@@ -19,7 +19,7 @@ programmatically. Where something is specified but not built, it says so.
 | Persistence | **Browser only.** `localStorage["markyos:v1"]` + IndexedDB for file payloads |
 | Server | None, except one Stripe Checkout route |
 | Database | Prisma schema with **60 models, no migrations generated** (reconciled with Rev 3.2 §8.7 on 16 Oct 2026) |
-| Tests | 283 unit tests, 13 files |
+| Tests | 286 unit tests, 13 files |
 | Browser sweeps | 13 suites, 113 named `ok` assertions + 4 measurement suites |
 | Static gates | 4 (logical properties, token contract, icon names, contrast) |
 | Git history | 7 commits. **The project's real history is `docs/CHANGELOG.md`** (1,403 lines) |
@@ -360,12 +360,12 @@ name, documented in place so the difference does not read as a gap.
 This is unusual enough to be worth protecting in any replan. It is also the
 reason the status above can be stated as fact.
 
-**283 unit tests** in 13 files:
+**286 unit tests** in 13 files:
 
 | Tests | File |
 | ---: | :--- |
 | 52 | `lib/doc/core/doc.test.ts` |
-| 31 | `lib/adapters/entityOps.test.ts` |
+| 34 | `lib/adapters/entityOps.test.ts` |
 | 29 | `lib/pageReview.test.ts` |
 | 25 | `lib/moodboard/layout.test.ts` |
 | 22 | `lib/auth.test.ts` |
@@ -546,7 +546,7 @@ This is the editor-shell restructure described in §4 (51% → 85% of window).
 
 ```bash
 npm run dev        # http://localhost:3000
-npm test           # 283 unit tests, ~2s
+npm test           # 286 unit tests, ~2s
 npm run check      # typecheck + lint
 npm run sweep      # all 13 browser sweeps — needs the dev server up
 ```

@@ -133,24 +133,8 @@ export function unpublishWorkspace(ws: Workspace): Workspace {
 export function applySectionPatch(ws: Workspace, sectionId: string, patch: SectionPatch): Workspace {
   const next: Workspace = { ...ws };
 
-  if (patch.title) {
-    const titles = { ...ws.sectionTitles };
-    const merged = { ...(titles[sectionId] ?? {}), ...patch.title };
-    // An override that says nothing is not an override. Dropping the key
-    // instead of storing `{}` is what lets a rename be undone back to the
-    // template's own heading.
-    if (!merged.en && !merged.ar) delete titles[sectionId];
-    else titles[sectionId] = merged;
-    next.sectionTitles = titles;
-  }
-
-  if (patch.note) {
-    const notes = { ...ws.sectionNotes };
-    const merged = { ...(notes[sectionId] ?? {}), ...patch.note };
-    if (!merged.en && !merged.ar) delete notes[sectionId];
-    else notes[sectionId] = merged;
-    next.sectionNotes = notes;
-  }
+  if (patch.title) next.sectionTitles = mergeOverride(ws.sectionTitles, sectionId, patch.title);
+  if (patch.note) next.sectionNotes = mergeOverride(ws.sectionNotes, sectionId, patch.note);
 
   if (patch.style !== undefined) {
     const styles = { ...ws.sectionStyles };
@@ -268,6 +252,42 @@ export function replaceWorkspaceIn(state: AppState, ws: Workspace): AppState {
     ...state,
     workspaces: state.workspaces.map((w) => (w.id === ws.id ? ws : w)),
   };
+}
+
+/**
+ * Merge a per-language override, the way the store has always done it.
+ *
+ * Three details, each of which the first version of this function got wrong
+ * and the store had right — worth naming, because "consolidate onto the shared
+ * function" is only an improvement if the shared one is the careful one:
+ *
+ *   * **Trimmed.** A heading of three spaces is not a heading.
+ *
+ *   * **Emptied means `undefined`, not `""`.** Both read as falsy, but an empty
+ *     string survives `JSON.stringify` and `undefined` is dropped, so storing
+ *     `""` leaves the key in the snapshot forever.
+ *
+ *   * **An entry with nothing left in it is deleted**, not kept as `{}`. That
+ *     is what keeps "has this been overridden?" a presence check, and what
+ *     makes clearing a rename genuinely restore the template's own heading.
+ */
+function mergeOverride(
+  map: Record<string, { en?: string; ar?: string }>,
+  sectionId: string,
+  patch: { en?: string; ar?: string },
+): Record<string, { en?: string; ar?: string }> {
+  const next = { ...map };
+  const merged = { ...(next[sectionId] ?? {}) };
+
+  for (const lang of ["en", "ar"] as const) {
+    if (!(lang in patch)) continue;
+    const value = (patch[lang] ?? "").trim();
+    merged[lang] = value || undefined;
+  }
+
+  if (!merged.en && !merged.ar) delete next[sectionId];
+  else next[sectionId] = merged;
+  return next;
 }
 
 /**
