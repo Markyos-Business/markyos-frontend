@@ -121,6 +121,83 @@ const blobShape = await page.evaluate(() => {
 });
 check("snapshot holds no inline data: URLs", !blobShape.hasDataUrls, `${blobShape.len} chars`);
 
+/* ------------------------------- 7. the brand's language is the Owner's ----
+   The spec wants the brand's primary locale chosen at creation and changeable
+   by the Owner. Until `Workspace.lang` was split, the only control that touched
+   it was labelled "Interface language" and lived in the top bar — so the
+   deliverable's language was a side effect of a personal preference.
+
+   Three things are checked here, and the middle one is the point: that pressing
+   this control does *not* also change the language the studio reads the app in.
+   A single field satisfies every other check in this file.
+
+   Signs in again first, because check 6 deliberately corrupts the snapshot to
+   prove a broken store does not blank the app — which also ends the session.
+   Reaching Settings without this lands on /login, and the control is reported
+   missing when it is only out of reach. */
+await page.goto(`${BASE}/login`);
+await page.waitForLoadState("networkidle");
+await page.fill('input[type="email"]', "nadeen@studio.com");
+await page.fill('input[type="password"]', "markyos2026");
+await page.click('button[type="submit"]');
+await page.waitForURL(/\/brands/, { timeout: 20000 });
+
+await page.goto(`${BASE}/w/${WS}/settings`);
+await page.waitForLoadState("networkidle");
+await page.waitForTimeout(500);
+
+// Pin the reader's language, so any movement in it is a leak and not a default.
+await page.evaluate(() => {
+  const s = JSON.parse(localStorage.getItem("markyos:v1"));
+  for (const a of s.accounts || []) a.adminLang = "en";
+  for (const w of s.workspaces || []) w.primaryLocale = "en";
+  localStorage.setItem("markyos:v1", JSON.stringify(s));
+});
+await page.reload();
+await page.waitForLoadState("networkidle");
+await page.waitForTimeout(700);
+
+const brandToggle = page.locator('[data-lang-toggle="brand"] [role="radio"]');
+const segs = await brandToggle.count();
+check("the Owner can set the brand's language from Settings", segs === 2, `${segs} segments`);
+
+if (segs === 2) {
+  await brandToggle.nth(1).click(); // ع
+  await page.waitForTimeout(600);
+  const wrote = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem("markyos:v1"));
+    const w = (s.workspaces || []).find((x) => x.slug === "nadeen-studio");
+    return {
+      primaryLocale: w?.primaryLocale,
+      adminLang: (s.accounts || [])[0]?.adminLang,
+      docDir: document.documentElement.getAttribute("dir"),
+    };
+  });
+  check("it writes the brand's locale", wrote.primaryLocale === "ar", `primaryLocale=${wrote.primaryLocale}`);
+  check(
+    "and leaves the language the studio reads the app in alone",
+    wrote.adminLang === "en" && wrote.docDir === "ltr",
+    `adminLang=${wrote.adminLang} dir=${wrote.docDir}`,
+  );
+
+  await page.reload();
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(700);
+  const survived = await page
+    .locator('[data-lang-toggle="brand"] [role="radio"]')
+    .nth(1)
+    .getAttribute("aria-checked");
+  check("the brand's language survives a reload", survived === "true", `aria-checked=${survived}`);
+
+  // Leave the seed as it was found.
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem("markyos:v1"));
+    for (const w of s.workspaces || []) w.primaryLocale = "en";
+    for (const a of s.accounts || []) a.adminLang = null;
+    localStorage.setItem("markyos:v1", JSON.stringify(s));
+  });
+}
+
 console.log(`\n${pass.length} passed, ${fail.length} failed`);
 if (fail.length) console.log("FAILED:", fail.join(" | "));
 

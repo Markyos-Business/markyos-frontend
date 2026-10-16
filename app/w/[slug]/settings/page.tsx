@@ -8,6 +8,7 @@ import { TopBar } from "@/components/workspace/TopBar";
 import { Icon } from "@/components/Icon";
 import { TextField } from "@/components/TextField";
 import { PillButton } from "@/components/PillButton";
+import { LangToggle } from "@/components/LangToggle";
 import { Section, Row, Switch, Badge } from "@/components/workspace/SectionUI";
 import { formatRelative } from "@/lib/utils";
 import { diffTokens, parseDesignTokens, serializeTokens } from "@/lib/designTokens";
@@ -42,6 +43,7 @@ export default function SettingsPage() {
     addColor,
     updateColor,
     setTypography,
+    setPrimaryLocale,
     uiLang,
   } = useApp();
   const { showToast } = useToast();
@@ -211,6 +213,50 @@ export default function SettingsPage() {
             Overview, which is a fine shortcut and a bad only-route. */}
         <Section title="Brand" icon="shapes">
           <BrandNameRow ws={ws} />
+          {/* The brand's own language, which is a different thing from the one
+              the studio reads the app in — that is a personal setting and lives
+              in the top bar. Until these were split they were one field, so
+              changing the interface language also changed what the client saw.
+
+              It belongs here rather than only on Overview because it is an
+              Owner-level decision about the deliverable: it decides which
+              language the client's site opens in, and which language a missing
+              value counts as an error in rather than a warning. The preview
+              toggle on Overview stays as the shortcut. */}
+          <Row
+            label={isAr ? "لغة الهوية" : "Brand language"}
+            /* "On the next publish", not "now".
+               /v/<slug> serves the published snapshot and never the live
+               workspace, so this reaches the client exactly when every other
+               brand change does. Saying it plainly is cheaper than an Owner
+               switching the language, opening the client link, and concluding
+               the setting is broken. */
+            hint={
+              isAr
+                ? "اللغة التي يفتح بها موقع الدليل عند العميل، عند النشر القادم. لغة واجهتك أنت إعداد منفصل في الشريط الأعلى."
+                : "Which language the client's guideline opens in, from the next publish. Your own interface language is a separate setting in the top bar."
+            }
+            right={
+              <LangToggle
+                value={ws.primaryLocale}
+                onChange={(lang) => {
+                  if (lang === ws.primaryLocale) return;
+                  setPrimaryLocale(ws.id, lang);
+                  showToast(
+                    isAr
+                      ? lang === "ar"
+                        ? "لغة الهوية: العربية. تصل إلى العميل عند النشر."
+                        : "لغة الهوية: الإنجليزية. تصل إلى العميل عند النشر."
+                      : lang === "ar"
+                        ? "Brand language set to Arabic. Publish to show clients."
+                        : "Brand language set to English. Publish to show clients.",
+                  );
+                }}
+                label={isAr ? "لغة الهوية" : "Brand language"}
+                scope="brand"
+              />
+            }
+          />
         </Section>
 
         {/* Client access */}
