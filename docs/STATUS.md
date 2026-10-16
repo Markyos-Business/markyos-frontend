@@ -570,9 +570,10 @@ Two operational notes:
 
 | File | What it holds |
 | :--- | :--- |
-| `docs/CHANGELOG.md` | 1,403 lines. What shipped and **why** — every decision, every bug and how it was found. With 7 git commits, this is the project's actual history |
+| `docs/CHANGELOG.md` | What shipped and **why** — every decision, every bug and how it was found. The project's actual history; git holds a dozen commits, this holds the reasoning |
+| `docs/token-contract.md` | **The contract every brand renderer binds to.** Frozen 16 Oct 2026. Read before building auto-compose, signatures, the templates kit or Mockup Studio |
 | `docs/audits/builder-audit.md` | What the builder does, the gap table against the spec, the Puck decision, WS2 open items |
-| `docs/specs/README.md` | Points at the two governing specs, which are **not in this repo** — the Rev 2.1 roadmap and the builder/moodboard spec |
+| `docs/specs/README.md` | Points at the governing specs, which are **not in this repo** — Revision 3.2 is the plan of record |
 | `scripts/sweeps/README.md` | How the sweeps work |
 | `AGENTS.md` | The Next.js warning |
 

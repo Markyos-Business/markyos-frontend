@@ -31,7 +31,11 @@ decision for Abdullah — ask before committing a copy.
    re-litigated or broken by accident.
 3. **Revision 3.2 §10** — the MVP Foundation task list, which is the current
    phase. §9 has the phase map around it.
-4. **`docs/audits/builder-audit.md`** — if the work touches the builder.
+4. **`docs/token-contract.md`** — if the work renders a brand. Auto-compose,
+   the email-signature generator, the brand-templates kit and Mockup Studio all
+   bind to the same contract, and it says what may be added, what may not be
+   renamed, and why `BrandTheme` rather than `--g-*` is the thing to bind to.
+5. **`docs/audits/builder-audit.md`** — if the work touches the builder.
 
 ## What citations mean
 

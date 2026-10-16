@@ -28,12 +28,27 @@ const THEME = join(ROOT, "lib", "theme.ts");
 const BLOCK_STYLE = join(ROOT, "lib", "blockStyle.ts");
 const GUIDELINE_DIR = join(ROOT, "components", "workspace", "guideline");
 
-/** Tokens the app shell provides to every surface, brand-themed or not. */
-const APP_PROVIDED = new Set([
-  "--g-canvas",
-  "--g-section-bg",
-  "--g-section-ink",
-]);
+/**
+ * Tokens provided from outside the two emitters, and therefore exempt.
+ *
+ * Empty, and that is the finding rather than the starting state. It held three
+ * names on the claim that "the app shell provides these to every surface", and
+ * a repo-wide search found all three provided by nothing of the sort:
+ *
+ *   --g-canvas       is real, but `themeCssVars` and `blockStyle` emit it, so
+ *                    the exemption was redundant — it is already provided.
+ *   --g-section-bg   appeared nowhere in the codebase except this list.
+ *   --g-section-ink  likewise.
+ *
+ * An exemption for a token nothing provides is worse than no exemption: a
+ * template writing `var(--g-section-bg)` would have been waved through as
+ * satisfied and resolved to nothing at runtime, which is this gate telling a
+ * comfortable lie about the exact thing it exists to check.
+ *
+ * Kept as an empty set rather than deleted, because a genuinely app-provided
+ * token is a real possibility and this is where it goes — with evidence.
+ */
+const APP_PROVIDED = new Set([]);
 
 function walk(dir) {
   const out = [];
@@ -124,7 +139,20 @@ if (unused.length) {
 const deckTheme = readFileSync(join(GUIDELINE_DIR, "templates", "deck", "deckTheme.ts"), "utf8");
 const deckFromBrandTheme = /BrandTheme/.test(deckTheme);
 console.log("\n  Derivations from BrandTheme:");
-console.log(`    themeCssVars() -> --g-*        ${provided.size - APP_PROVIDED.size} tokens, 7 templates`);
+/* Counted from each emitter rather than from `provided.size`, which is the
+   union and so over-reports whichever source is named beside it. It read
+   "themeCssVars() -> 35 tokens" while that function emits 34 — the 35th comes
+   from blockStyle, which re-emits a subset when a section carries its own
+   background. A report that attributes a token to the wrong source is how
+   someone later edits the wrong file looking for it. */
+const fromTheme = emitted(THEME);
+const fromBlockStyle = emitted(BLOCK_STYLE);
+const onlyBlockStyle = [...fromBlockStyle].filter((t) => !fromTheme.has(t));
+console.log(`    themeCssVars() -> --g-*        ${fromTheme.size} tokens, 7 templates`);
+console.log(
+  `    blockStyle()   -> --g-*        ${fromBlockStyle.size} re-emitted for a section with its own ground` +
+    (onlyBlockStyle.length ? `, ${onlyBlockStyle.length} of them only here (${onlyBlockStyle.join(", ")})` : ""),
+);
 console.log(
   `    deckTheme()    -> DeckPalette   Deck only${deckFromBrandTheme ? "" : "  [WARNING: no longer derived from BrandTheme]"}`,
 );
