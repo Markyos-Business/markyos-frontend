@@ -20,7 +20,7 @@ programmatically. Where something is specified but not built, it says so.
 | Server | None, except one Stripe Checkout route |
 | Database | Prisma schema with **60 models, no migrations generated** (reconciled with Rev 3.2 §8.7 on 16 Oct 2026) |
 | Tests | 286 unit tests, 13 files |
-| Browser sweeps | 13 suites, 113 named `ok` assertions + 4 measurement suites |
+| Browser sweeps | 13 suites, 115 named `ok` assertions + 4 measurement suites |
 | Static gates | 4 (logical properties, token contract, icon names, contrast) |
 | Git history | 7 commits. **The project's real history is `docs/CHANGELOG.md`** (1,403 lines) |
 
@@ -380,13 +380,13 @@ reason the status above can be stated as fact.
 
 | Sweep | Scale |
 | :--- | :--- |
-| `builder` | 62 checks |
+| `builder` | 64 checks |
 | `moodboard` | 44 checks |
 | `brief` | 33 checks |
 | `drafts` | 21 checks |
 | `persistence` | 16 checks |
 | `board` | 14 checks |
-| `assets` | 12 checks |
+| `assets` | 14 checks |
 | `modals` | 7 checks |
 | `responsive` | 32 combinations (8 templates × en/ar × phone/tablet) |
 | `interaction` | 30 renders, 994 elements sized, 817 hovered, 721 focused |
@@ -509,8 +509,14 @@ the shape a `Y.Array` of nodes wants.
 - **`ContentBlock.position` stayed `Int`** while every document ordering moved to
   fractional keys, because legacy sections are not concurrently reordered by a
   room. Revisit if that stops being true.
-- **Deck cannot take per-section layouts** — it never calls `FixedSectionBody`.
-  Either give it the seam or keep the `inert` notice.
+- ~~**Deck cannot take per-section layouts**~~ **Decided 16 Oct 2026: it keeps
+  the `inert` notice**, now on the options panel as well as the layout picker.
+  Deck decomposes a section into several fixed-size slides rather than rendering
+  one body, so there is no seam to swap, and the 19 layouts assume a scrolling
+  page. If it should ever be stylable it wants its own slide layouts.
+  Investigating this found that Deck also ignored `sectionStyles`, which meant
+  **a parked section was still published there** — fixed in `showSection`, and
+  swept on two templates.
 
 ### Offered and not yet decided
 

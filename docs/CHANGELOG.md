@@ -5,6 +5,87 @@ spec's definition of done (§15).
 
 ---
 
+## 2026-10-16 (fourth pass) — Deck was ignoring three panels, and one of them mattered
+
+Revision 3.2 §11 item 9 asks whether Deck gets the `FixedSectionBody` seam or
+keeps its `inert` notice. Answering it found a content leak two steps further
+down.
+
+### The decision first
+
+**Deck keeps the notice**, and the reason is architectural rather than
+unfinished work. Deck does not render a section as one body — it *decomposes*
+each into a sequence of fixed-size slides: `logo` becomes a chapter opener, a
+primary slide, one per extra lockup, and a usage slide. There is no single seam
+to swap, and the 19 alternate layouts assume a scrolling page where a section is
+one block of content. A full-width band per colour has nowhere to go on a
+1920×1080 frame. If Deck should ever be stylable it wants its own small set of
+slide layouts, not these.
+
+### Then: the options panel was lying
+
+The layout picker told the truth on Deck from the start. The options panel beside
+it did not, and Deck ignores options exactly as completely:
+
+| template | formats on | formats off |
+| :--- | :-: | :-: |
+| vault | 7 HEX values | **1** |
+| deck | 6 HEX values | **6** |
+
+Formats, columns, scripts, the character set, the sample sentence — every
+control live-looking and inert. Worth recording as a pattern and not a one-off:
+fixing a lying control in one panel did not prompt anyone to check the panel
+next to it.
+
+### Then: parking, which is not cosmetic
+
+Deck ignores `sectionStyles` entirely, which raised the question of what else
+writes them. **Parking** does — the control whose entire job is "keep this off
+what the client receives".
+
+| template | not parked | parked |
+| :--- | :-: | :-: |
+| vault | 7 HEX values | **1** — withheld |
+| deck | 6 HEX values | **6** — published anyway |
+
+A studio could park a section, publish, hand over the client link, and the
+client would see the thing they had set aside.
+
+It was enforced in the wrong layer: the wrappers in `LiveEdit.tsx` returned
+`null` for a parked section, so every template rendering through `FlowShell` was
+fine and Deck was not. The fix moved the rule into `showSection`, whose own
+comment already said it exists so the rule lives "once instead of in five
+templates that can drift apart" — which is precisely what happened to this one.
+Gated on `mode === "published"`, because a parked section must keep rendering on
+the editing canvas or a studio cannot bring it back.
+
+After: vault unchanged at 7 → 1, Deck 6 → 0.
+
+### Two things about the checks
+
+**A check that silently did not run.** The first Deck check selected a section
+by clicking the canvas. Deck has no `data-flow-id` — it does not use the editing
+shell — so the whole block skipped while the suite still reported exit 0 at its
+usual 62 checks. Only the unchanged count gave it away. It now selects through
+the layers tree, which is how a studio reaches a section on Deck anyway, and
+fails loudly if that row is missing.
+
+**Two probes thrown away.** The first reported "IGNORED" for Vault, which the
+builder sweep already disproves — it was counting `<style>` tags instead of
+reading the rendered element. A probe whose control case gives a known-wrong
+answer is measuring the wrong thing, and the answer is to fix the probe, not to
+believe it.
+
+Both Deck assertions check the notice *and* the behaviour it claims: asserting
+only the notice would pass if Deck quietly started honouring options, and
+asserting only the behaviour would pass with the controls lying.
+
+Builder sweep 62 → 64, asset-status 12 → 14.
+
+Revision 3.2 §11 item 9.
+
+---
+
 ## 2026-10-16 (later still) — The operations `save` splits into
 
 MVP Foundation item 4: widen `BrandRepository` from one snapshot-shaped `save`
