@@ -194,7 +194,16 @@ export function DesignInspector({
             inert={ws.guidelineTemplate === "deck"}
             onChange={setBase}
           />
-          <OptionsPanel sectionId={sectionId} options={options} isAr={isAr} onChange={onOptionsChange} />
+          <OptionsPanel
+            sectionId={sectionId}
+            options={options}
+            isAr={isAr}
+            // Same reason as the layout picker above, and measured the same
+            // way: Deck never calls FixedSectionBody, which is where both the
+            // layout and these options are resolved.
+            inert={ws.guidelineTemplate === "deck"}
+            onChange={onOptionsChange}
+          />
         </>
       )}
 
@@ -476,11 +485,24 @@ function OptionsPanel({
   sectionId,
   options,
   isAr,
+  inert,
   onChange,
 }: {
   sectionId: string;
   options: SectionOptions;
   isAr: boolean;
+  /**
+   * The active template draws this section itself and reads none of these.
+   *
+   * The layout picker said so from the start; this panel did not, and it was
+   * the same fault one level down. Measured on Deck: a colour section with
+   * every value format turned off still printed six HEX values, because Deck
+   * builds its palette slide from `DeckKit` and never calls
+   * `FixedSectionBody`, which is where options are resolved. Every control in
+   * here — formats, columns, scripts, the character set, the sample sentence —
+   * looked live and changed nothing.
+   */
+  inert?: boolean;
   onChange?: (patch: Partial<SectionOptions>) => void;
 }) {
   const offered = SECTION_OPTIONS[sectionId] ?? [];
@@ -489,6 +511,20 @@ function OptionsPanel({
 
   return (
     <Group label={isAr ? "ما يظهر في القسم" : "What this section shows"}>
+      {inert && (
+        <div
+          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
+          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
+          data-options-inert=""
+        >
+          <Icon name="exclamation-circle" size={12} style={{ flexShrink: 0, marginTop: 1, color: "var(--warning)" }} />
+          <span>
+            {isAr
+              ? "قالب Deck يبني كل قسم كشريحة خاصة به، فلا يقرأ هذه الخيارات. تُحفظ وتنطبق عند التبديل إلى قالب آخر."
+              : "The Deck template builds each section as a slide of its own, so it reads none of these. They are still saved, and apply if you switch template."}
+          </span>
+        </div>
+      )}
       {offered.map((key) => {
         switch (key) {
           case "formats": {

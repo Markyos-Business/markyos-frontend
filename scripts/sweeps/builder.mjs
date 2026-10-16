@@ -801,6 +801,94 @@ async function run() {
     if (docsOwn.layout === "cards" && docsOwn.hasOwnLine) ok("on the default, a template's own body comes back");
     else fail("layouts", `Docs should draw its own colour body on the default: ${JSON.stringify(docsOwn)}`);
 
+    /* ------------------------------------- the one template that cannot ---
+       Deck builds each section as a slide of its own from DeckKit and never
+       calls FixedSectionBody, which is where both the layout and the options
+       are resolved. So neither applies, and the inspector has to say so.
+
+       The layout picker said so from the start. The options panel did not, and
+       it was the same fault one level down: a colour section with every value
+       format turned off still printed six HEX values on Deck, while the same
+       setting on Vault took it from seven to one. Every control in that panel
+       looked live and changed nothing.
+
+       Both halves are checked here — the notice is shown, *and* the thing the
+       notice claims is true. Asserting only the notice would pass if Deck
+       quietly started honouring options, and asserting only the behaviour
+       would pass with the controls lying. */
+    /* Deck gets its own switch rather than `withTemplate`, which waits for
+       `.live-flow`. Deck has no flow — it is a rail of slides — so reusing
+       that wait times out after fifteen seconds and reports a timeout where
+       the real answer is "this template is shaped differently". */
+    await page.evaluate(() => {
+      const state = JSON.parse(localStorage.getItem("markyos:v1"));
+      const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+      ws.guidelineTemplate = "deck";
+      ws.updatedAt = Date.now();
+      localStorage.setItem("markyos:v1", JSON.stringify(state));
+    });
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector("[data-canvas-frame] [data-guideline-surface]", { timeout: 15000 });
+    await page.waitForTimeout(1200);
+
+    /* Selected through the layers tree, not by clicking the canvas.
+       `data-flow-id` comes from FlowShell in LiveEdit, and Deck does not use
+       the editing shell — it renders slides directly — so there is nothing on
+       its canvas to click. The tree is how a studio reaches a section on Deck,
+       so it is how this check reaches it too.
+
+       The first version clicked the canvas, found nothing, and skipped the
+       whole block while the suite still reported exit 0 at its usual 62
+       checks. A check that can silently not run is worth less than no check,
+       so the count is asserted below. */
+    const deckRow = page.locator('[role="tree"] [role="treeitem"]').filter({ hasText: /colou?r|الألوان/i }).first();
+    if ((await deckRow.count()) === 0) {
+      fail("deck", "no colour row in the layers tree on Deck — cannot reach the inspector");
+    } else {
+      await deckRow.click();
+      await page.waitForTimeout(700);
+
+      const notices = await page.evaluate(() => ({
+        layout: !!document.querySelector("[data-layout-picker-inert], [data-options-inert]"),
+        options: !!document.querySelector("[data-options-inert]"),
+      }));
+      if (notices.options) ok("on Deck, the per-part options say they have no effect");
+      else fail("deck", "Deck offered section options with no notice that it ignores them");
+
+      const hexWith = await page.evaluate(() => {
+        const s = document.querySelector("[data-guideline-surface]");
+        return ((s?.innerText ?? "").match(/#[0-9A-Fa-f]{6}/g) || []).length;
+      });
+      await page.evaluate(() => {
+        const state = JSON.parse(localStorage.getItem("markyos:v1"));
+        const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+        ws.sectionOptions = { ...ws.sectionOptions, color: { formats: [] } };
+        ws.updatedAt = Date.now();
+        localStorage.setItem("markyos:v1", JSON.stringify(state));
+      });
+      await page.reload({ waitUntil: "networkidle" });
+      await page.waitForTimeout(1200);
+      const hexWithout = await page.evaluate(() => {
+        const s = document.querySelector("[data-guideline-surface]");
+        return ((s?.innerText ?? "").match(/#[0-9A-Fa-f]{6}/g) || []).length;
+      });
+      if (hexWith === hexWithout) {
+        ok(`and it genuinely ignores them (${hexWithout} values either way)`);
+      } else {
+        fail(
+          "deck",
+          `Deck now honours section options (${hexWith} -> ${hexWithout} values) — the inert notice is lying the other way`,
+        );
+      }
+
+      await page.evaluate(() => {
+        const state = JSON.parse(localStorage.getItem("markyos:v1"));
+        const ws = state.workspaces.find((w) => w.slug === "nadeen-studio");
+        delete ws.sectionOptions.color;
+        localStorage.setItem("markyos:v1", JSON.stringify(state));
+      });
+    }
+
     await withTemplate("vault");
   }
 
