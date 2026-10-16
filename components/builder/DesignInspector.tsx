@@ -90,6 +90,15 @@ export function DesignInspector({
   const hasContentTab = !!sectionId && (variantsFor(sectionId).length > 1 || hasOptions(sectionId));
   const active: Tab = tab === "content" && !hasContentTab ? "layout" : tab;
   const resolved = resolveStyle(style, { breakpoint: view.breakpoint, dir: view.dir }) ?? {};
+
+  /**
+   * The active template resolves none of these section settings.
+   *
+   * True only for Deck, and named for the reason rather than the template so
+   * the next template that composes its own slides reads as covered. See
+   * `InertNotice` for what was measured.
+   */
+  const sectionInert = ws.guidelineTemplate === "deck";
   const scale = resolved.scale ?? 1;
   const inkWarning = backgroundInkWarning(resolved.background);
   const touched = Object.keys(style ?? {}).length > 0;
@@ -191,7 +200,7 @@ export function DesignInspector({
             // 1920×1080 frame of its own rather than rendering the shared section
             // bodies, so a layout chosen here has no effect while it is selected.
             // Saying so beats a control that moves and changes nothing.
-            inert={ws.guidelineTemplate === "deck"}
+            inert={sectionInert}
             onChange={setBase}
           />
           <OptionsPanel
@@ -201,7 +210,7 @@ export function DesignInspector({
             // Same reason as the layout picker above, and measured the same
             // way: Deck never calls FixedSectionBody, which is where both the
             // layout and these options are resolved.
-            inert={ws.guidelineTemplate === "deck"}
+            inert={sectionInert}
             onChange={onOptionsChange}
           />
         </>
@@ -210,6 +219,7 @@ export function DesignInspector({
       {active === "layout" && (
       <>
       <Group label={isAr ? "التخطيط" : "Layout"}>
+        {sectionInert && <InertNotice isAr={isAr} />}
         <Choice
           label={isAr ? "المحاذاة" : "Alignment"}
           value={resolved.align}
@@ -299,6 +309,7 @@ export function DesignInspector({
 
       {active === "style" && (
       <Group label={isAr ? "الألوان" : "Colour"}>
+        {sectionInert && <InertNotice isAr={isAr} />}
         {/* Colour is one decision for the whole brand page, not a per-width
             one: a section that is navy on desktop and beige on a phone is two
             designs, and the second one is the one nobody maintains. */}
@@ -393,6 +404,43 @@ export function DesignInspector({
  * It renders nothing when the section has only one layout, so a section that has
  * never had alternates written for it does not grow an empty picker.
  */
+/**
+ * "The active template reads none of this."
+ *
+ * Shared, because it belongs on four groups and three of them were missing it.
+ * Deck resolves neither the section layout, the per-part options, nor
+ * `sectionStyles` — it composes slides directly and never goes through
+ * `FixedSectionBody` or the wrappers in `LiveEdit` — so alignment, width,
+ * padding, scale, radius and colour are all written, saved, and ignored while
+ * it is selected.
+ *
+ * Measured rather than assumed, per group: a colour section with every value
+ * format off still printed six HEX values on Deck where Vault went from seven
+ * to one, and a `#ff0000` section background painted nothing anywhere in the
+ * canvas.
+ *
+ * Deliberately **not** on the Visibility group. Parking is honoured on Deck as
+ * of the `showSection` fix — a parked section is withheld from the client on
+ * every template — so a notice there would be the same lie in the other
+ * direction.
+ */
+function InertNotice({ isAr }: { isAr: boolean }) {
+  return (
+    <div
+      className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
+      style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
+      data-inert-notice=""
+    >
+      <Icon name="exclamation-circle" size={12} style={{ flexShrink: 0, marginTop: 1, color: "var(--warning)" }} />
+      <span>
+        {isAr
+          ? "قالب Deck يبني كل قسم كشريحة خاصة به، فلا يقرأ هذه الإعدادات. تُحفظ وتنطبق عند التبديل إلى قالب آخر."
+          : "The Deck template builds each section as a slide of its own, so it reads none of these. They are still saved, and apply if you switch template."}
+      </span>
+    </div>
+  );
+}
+
 function LayoutPicker({
   sectionId,
   style,
@@ -413,19 +461,7 @@ function LayoutPicker({
 
   return (
     <Group label={isAr ? "تخطيط القسم" : "Section layout"}>
-      {inert && (
-        <div
-          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
-          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
-        >
-          <Icon name="exclamation-circle" size={12} style={{ flexShrink: 0, marginTop: 1, color: "var(--warning)" }} />
-          <span>
-            {isAr
-              ? "قالب Deck يبني كل قسم كشريحة خاصة به، لذا لا يؤثر هذا الاختيار عليه. يُحفظ الاختيار وينطبق عند التبديل إلى قالب آخر."
-              : "The Deck template builds each section as a slide of its own, so this choice has no effect while it is selected. It is still saved, and applies if you switch template."}
-          </span>
-        </div>
-      )}
+      {inert && <InertNotice isAr={isAr} />}
       <div className="flex flex-col gap-1.5">
         {options.map((v, i) => {
           const on = v.key === active;
@@ -511,20 +547,7 @@ function OptionsPanel({
 
   return (
     <Group label={isAr ? "ما يظهر في القسم" : "What this section shows"}>
-      {inert && (
-        <div
-          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
-          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
-          data-options-inert=""
-        >
-          <Icon name="exclamation-circle" size={12} style={{ flexShrink: 0, marginTop: 1, color: "var(--warning)" }} />
-          <span>
-            {isAr
-              ? "قالب Deck يبني كل قسم كشريحة خاصة به، فلا يقرأ هذه الخيارات. تُحفظ وتنطبق عند التبديل إلى قالب آخر."
-              : "The Deck template builds each section as a slide of its own, so it reads none of these. They are still saved, and apply if you switch template."}
-          </span>
-        </div>
-      )}
+      {inert && <InertNotice isAr={isAr} />}
       {offered.map((key) => {
         switch (key) {
           case "formats": {

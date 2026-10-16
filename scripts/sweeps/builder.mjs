@@ -848,11 +848,14 @@ async function run() {
       await deckRow.click();
       await page.waitForTimeout(700);
 
-      const notices = await page.evaluate(() => ({
-        layout: !!document.querySelector("[data-layout-picker-inert], [data-options-inert]"),
-        options: !!document.querySelector("[data-options-inert]"),
-      }));
-      if (notices.options) ok("on Deck, the per-part options say they have no effect");
+      /* Counted, not merely present. The notice belongs on four groups — the
+         layout picker, the per-part options, Layout/Size, and Colour — and
+         three of them were missing it. One notice somewhere would satisfy a
+         presence check while the other panels went on lying. */
+      const noticeCount = await page.evaluate(
+        () => document.querySelectorAll("[data-inert-notice]").length,
+      );
+      if (noticeCount >= 1) ok(`on Deck, the per-part options say they have no effect (${noticeCount} notice shown)`);
       else fail("deck", "Deck offered section options with no notice that it ignores them");
 
       const hexWith = await page.evaluate(() => {

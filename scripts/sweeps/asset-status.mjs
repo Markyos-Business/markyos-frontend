@@ -182,8 +182,10 @@ async function hexesOnClientPage(template, park) {
         w.sectionStyles = park ? { color: { hidden: true } } : {};
         if (w.clientAccess) w.clientAccess.passwordEnabled = false;
         // Publish the way the real operation does: copy, then subtract.
-        const { published: _p, publishedAt: _pa, ...rest } = w;
-        const snap = JSON.parse(JSON.stringify(rest));
+        // Strip the previous snapshot first, or each publish nests the last.
+        const snap = JSON.parse(JSON.stringify(w));
+        delete snap.published;
+        delete snap.publishedAt;
         snap.assets = snap.assets.filter((a) => a.status === "approved");
         snap.moodboards = [];
         snap.drafts = [];
