@@ -227,9 +227,37 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
 
   const hidden = ws?.hiddenSections ?? [];
 
-  /** Whether a fixed section should render: it has data, and isn't hidden. */
+  /**
+   * Whether a fixed section should render: it has data, isn't hidden, and —
+   * on the client's side — isn't parked.
+   *
+   * The parked clause was missing, and that was a leak rather than an
+   * omission. Parking is the control whose entire job is "keep this off what
+   * the client receives", and it was enforced only by the wrappers in
+   * `LiveEdit.tsx`: a template that renders through `FlowShell` got a `null`
+   * for a parked section, and a template that does not got the section.
+   *
+   * Deck does not use those wrappers — it composes slides directly — so a
+   * studio could park a section on Deck, publish, and the client would still
+   * see it. Measured before and after, parking the colour section and reading
+   * the client's page: Vault went from 7 HEX values to 1, Deck stayed at 6.
+   *
+   * Enforced here because this function is already the one place a template
+   * asks whether a section exists — its own note says the rule lives here
+   * "once instead of in five templates that can drift apart", which is exactly
+   * what happened to this one. Fixing it in Deck would have left the sixth
+   * template to find the same bug again.
+   *
+   * Gated on `mode` and not unconditional: a parked section must keep
+   * rendering on the editing canvas, or a studio cannot see what it has set
+   * aside in order to bring it back.
+   */
   function showSection(id: string): boolean {
-    return !activePage && availableFixed.some((s) => s.id === id) && !hidden.includes(id);
+    if (activePage) return false;
+    if (!availableFixed.some((s) => s.id === id)) return false;
+    if (hidden.includes(id)) return false;
+    if (mode === "published" && (ws?.sectionStyles?.[id]?.hidden === true)) return false;
+    return true;
   }
 
   /**

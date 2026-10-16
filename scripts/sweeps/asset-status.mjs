@@ -153,6 +153,69 @@ const visible = explorationName
   : false;
 check("exploration file name does not appear on the public route", !visible, explorationName || "n/a");
 
+/* ------------------- 7. a parked section is withheld, in every template ----
+   Same family as everything above: a thing the studio has set aside must not
+   reach the client. Parking is the control whose entire job is that.
+
+   Checked across templates because it was enforced in the wrong layer. The
+   wrappers in LiveEdit returned null for a parked section, so every template
+   rendering through them was fine — and Deck, which composes slides directly,
+   published the section anyway. A studio could park it, publish, and the
+   client would see it.
+
+   Measured, not asserted from the code: parking the colour section and reading
+   the client's page, Vault went 7 HEX values -> 1 and Deck stayed at 6. The fix
+   moved the rule into `showSection`, which is already the one place a template
+   asks whether a section exists.
+
+   Both a template that uses the editing shell and one that does not, because
+   fixing only Deck would pass a check that named only Deck. */
+async function hexesOnClientPage(template, park) {
+  await page.evaluate(
+    ({ template, park, slug }) => {
+      const s = JSON.parse(localStorage.getItem("markyos:v1"));
+      for (const w of s.workspaces || []) {
+        if (w.slug !== slug) continue;
+        w.guidelineTemplate = template;
+        w.sharedStatus = "shared";
+        w.hiddenSections = [];
+        w.sectionStyles = park ? { color: { hidden: true } } : {};
+        if (w.clientAccess) w.clientAccess.passwordEnabled = false;
+        // Publish the way the real operation does: copy, then subtract.
+        const { published: _p, publishedAt: _pa, ...rest } = w;
+        const snap = JSON.parse(JSON.stringify(rest));
+        snap.assets = snap.assets.filter((a) => a.status === "approved");
+        snap.moodboards = [];
+        snap.drafts = [];
+        snap.briefs = [];
+        w.published = snap;
+        w.publishedAt = Date.now();
+      }
+      localStorage.setItem("markyos:v1", JSON.stringify(s));
+    },
+    { template, park, slug: WS },
+  );
+  await page.goto(`${BASE}/v/${WS}`);
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(1400);
+  return page.evaluate(() => {
+    const surf = document.querySelector("[data-guideline-surface]");
+    return ((surf?.innerText ?? "").match(/#[0-9A-Fa-f]{6}/g) || []).length;
+  });
+}
+
+for (const template of ["vault", "deck"]) {
+  const open = await hexesOnClientPage(template, false);
+  const parked = await hexesOnClientPage(template, true);
+  // `open > 0` first: if the colour section never rendered, "parked shows
+  // fewer" is satisfied by a page that was empty both times.
+  check(
+    `${template}: a parked section is withheld from the client`,
+    open > 0 && parked < open,
+    `${open} colour values -> ${parked}`,
+  );
+}
+
 console.log(`\n${pass.length} passed, ${fail.length} failed`);
 if (fail.length) console.log("FAILED:", fail.join(" | "));
 await browser.close();
