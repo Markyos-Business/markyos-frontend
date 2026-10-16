@@ -33,20 +33,95 @@ datasource db {
 
 // ---------------------------------------------------------------- enums ----
 
+/**
+ * Where a project has got to along the path in Revision 3.2 §1.2.
+ * These are the nine steps of that path, not the prototype's six. The
+ * prototype's `WorkspaceStage` in `lib/types.ts` still reads
+ * discovery/strategy/design/review/delivered/live, and `/studio/board` groups
+ * brands by it, so the two do not line up yet:
+ * discovery -> DISCOVER      design    -> DESIGN
+ * strategy  -> STRATEGIZE    review    -> BUILD
+ * delivered -> HANDED_OFF    live      -> LIVE
+ * ANALYZE, EXPLORE and DELIVER have no prototype equivalent because the steps
+ * they name (the AI brief analysis, the boards, the brand-kit intake) are not
+ * built yet. `ServerAdapter` owns that mapping; widening the client's own union
+ * is a UI change and the prototype is frozen until Foundation ships (§3.6).
+ * Spelled out here rather than reduced to the six that exist, because
+ * principle 10 is that the schema is right from day one — a stage added to live
+ * data later means retrofitting real workspaces instead of writing one
+ * migration.
+ */
 enum WorkspaceStage {
-  DISCOVERY
-  STRATEGY
+  DISCOVER
+  ANALYZE
+  STRATEGIZE
+  EXPLORE
   DESIGN
-  REVIEW
-  DELIVERED
+  DELIVER
+  BUILD
+  HANDED_OFF
   LIVE
 }
 
+/**
+ * Whether a step was done, skipped, or never started. See `Workspace.steps`.
+ */
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  DONE
+  SKIPPED
+}
+
+/**
+ * EDITOR counts against a plan's seats; VIEWER is free and unlimited on paid
+ * Company plans (§7.4), which is why the two cannot be collapsed into one
+ * "member" role. ADMIN is new in Revision 3.2 §8.7.
+ */
 enum Role {
   OWNER
+  ADMIN
   EDITOR
   VIEWER
   CLIENT
+}
+
+/**
+ * Studio workspaces make brands for clients; Company workspaces run their own.
+ */
+enum OrgKind {
+  STUDIO
+  COMPANY
+}
+
+/**
+ * One key per plan on both ladders (§7.3, §7.4).
+ * What each key *allows* lives in code as a versioned `PLAN_LIMITS` config, not
+ * in Stripe metadata and not here: Stripe says which plan an org is on, the
+ * code says what that plan permits, and grandfathered beta prices are separate
+ * Stripe prices mapping to the same key (§8.5).
+ */
+enum PlanKey {
+  STUDIO_FREE
+  STUDIO_PRO
+  STUDIO_STUDIO
+  STUDIO_AGENCY
+  COMPANY_FREE
+  COMPANY_BRAND
+  COMPANY_TEAM
+  COMPANY_BUSINESS
+  ENTERPRISE
+}
+
+/**
+ * Only an ACTIVE project owned by a Studio workspace counts against that
+ * studio's plan (§7.8). Handing off frees the slot, which is the whole point of
+ * the value metric: studios are paid to finish work.
+ */
+enum ProjectState {
+  ACTIVE
+  DELIVERED
+  ARCHIVED
 }
 
 enum Lang {
@@ -114,9 +189,16 @@ enum AssetStatus {
   ARCHIVED
 }
 
+/**
+ * BOARD replaces MOODBOARD: Revision 3.2 §5.4 merges the moodboard and the
+ * whiteboard into one `Board` with two presets, so the origin is the board
+ * rather than one of its modes. INTAKE is the brand-kit intake (§5.6), which is
+ * the one origin that creates assets already APPROVED.
+ */
 enum AssetOrigin {
   UPLOAD
-  MOODBOARD
+  BOARD
+  INTAKE
   MOCKUP
   AI_BACKGROUND
   IMPORT
@@ -178,9 +260,22 @@ enum DeptItemType {
   VOICE_TRAIT
 }
 
+/**
+ * What a `/s/<token>` link exposes.
+ * ANALYSIS is new in Revision 3.2 §5.2: the brief analysis is shareable with
+ * the client through a revocable link, which is how "here is what we heard" and
+ * the tensions we found reach the next conversation without being emailed as a
+ * PDF nobody can revoke.
+ * PARTNER is the partner-portal link (§6.5.8) — a curated set of approved
+ * assets for an agency, printer or journalist. It is a scope rather than a
+ * table of its own because it is the same mechanism with a different payload,
+ * and share-token revocation already works.
+ */
 enum ShareScope {
   STRATEGY
   DEPARTMENT
+  ANALYSIS
+  PARTNER
 }
 
 enum ApprovalStatus {
@@ -206,8 +301,18 @@ enum DraftStatus {
   SUPERSEDED
 }
 
+/**
+ * Everything a machine or a form proposes arrives as a draft (principle 3), so
+ * this is the list of things allowed to propose. ANALYSIS and WORKSHOP are the
+ * two AI reports (§5.2, §6.5.2); BOARD is art direction and extracted palettes;
+ * TONE is a rewrite or a translation from the checker (§6.5.5).
+ */
 enum DraftSource {
   BRIEF
+  ANALYSIS
+  WORKSHOP
+  BOARD
+  TONE
   AI
   INGESTION
   PALETTE
@@ -220,13 +325,71 @@ enum BriefStatus {
   SUBMITTED
 }
 
+/**
+ * Every metered AI action, because `AIUsage` records one row per call and the
+ * credit table in §7.7 is priced per action. Two groups:
+ * queued (§8.4)      BRIEF_ANALYSIS … INGESTION. Long jobs, through Queues.
+ * interactive        TONE_QUICK … ASK_BRAND. Answers in seconds, straight
+ * from a server action, because a person is waiting.
+ * TONE_QUICK and ASK_BRAND draw on a monthly `QuotaCounter` rather than
+ * credits: at about $0.002 a call they should be used freely, and metering them
+ * individually would cost more in hesitation than in tokens (§7.4).
+ */
 enum AIFeature {
-  INGESTION
+  BRIEF_ANALYSIS
+  STAKEHOLDER_ANALYSIS
+  ART_DIRECTION
   STRATEGY_ASSISTANT
   BRAINSTORM
+  SECTION_COPY
+  INGESTION
+  TONE_QUICK
+  TONE_DEEP
+  REWRITE
+  TRANSLATE
+  DOC_CHECK
+  ASK_BRAND
   MOCKUP_ASSIST
   COPY_LINT
   COMPLIANCE
+}
+
+/**
+ * Why a row moved the credit balance (§8.5).
+ * The balance is the sum of these rows and is never a column: a grant, a
+ * reservation, a settlement, a refund and an expiry are all facts worth keeping,
+ * and a single number cannot answer "what did I spend this on". FREE_ANALYSIS is
+ * the one free run per project recorded as a grant rather than as an exception,
+ * so principle 12 — every call is paid for before it runs — has no special case.
+ */
+enum CreditReason {
+  MONTHLY_GRANT
+  PACK
+  PASS_GRANT
+  FREE_ANALYSIS
+  RESERVE
+  SETTLE
+  REFUND
+  EXPIRE
+  PARTNER_REWARD
+  ADJUSTMENT
+}
+
+/**
+ * A board starts in one of two presets and can be opened up later (§5.4).
+ */
+enum BoardKind {
+  MOODBOARD
+  WHITEBOARD
+}
+
+/**
+ * What a client guest may do on a board they reached by link (§5.4).
+ */
+enum GuestAccess {
+  VIEW
+  COMMENT
+  EDIT
 }
 
 // --------------------------------------------------- identity and access ----
@@ -236,22 +399,58 @@ enum AIFeature {
 // relations have something to point at; fields Better Auth manages are not
 // duplicated here.
 model User {
-  id            String       @id @default(cuid())
-  email         String       @unique
-  name          String
-  createdAt     DateTime     @default(now())
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  /**
+   * Which language this person reads the studio interface in.
+   * Theirs, not the brand's — `Workspace.primaryLocale` is the brand's. Null
+   * means "follow whichever brand is open", which is what the prototype's
+   * single `lang` field did before the two were split, so an account with no
+   * stated preference behaves exactly as it always has.
+   * On the person rather than the membership: someone who works on an Arabic
+   * brand and an English one reads the app in one language, not two.
+   */
+  adminLang Lang?
+
   memberships   Membership[]
-  ownedBrands   Workspace[]  @relation("WorkspaceOwner")
-  drafts        Draft[]      @relation("DraftRequester")
-  decidedDrafts Draft[]      @relation("DraftDecider")
+  ownedBrands   Workspace[]     @relation("WorkspaceOwner")
+  drafts        Draft[]         @relation("DraftRequester")
+  decidedDrafts Draft[]         @relation("DraftDecider")
   aiUsage       AIUsage[]
   moodItems     MoodboardItem[]
   moodVotes     MoodboardVote[]
+
+  // Revision 3.2 additions.
+  toneChecks       ToneCheck[]
+  brandQuestions   BrandQuestion[]
+  submittedReviews ReviewRequest[] @relation("ReviewSubmitter")
+  reviewing        ReviewRequest[] @relation("ReviewReviewer")
+  callNotes        CallNote[]
 }
 
 // Authorization lives here, not in a layout. Every read and write goes through
 // a Data Access Layer that checks this row first: in Next.js 16 neither
 // proxy.ts nor a layout protects Server Actions or route handlers.
+/**
+ * Who may do what inside one brand.
+ *
+ * Revision 3.2 §8.7 calls this `WorkspaceMembership`. It is this model, under
+ * the name it already had, and the shape matches field for field — so
+ * reconciling the schema against that section meant keeping it rather than
+ * adding a second table that means the same thing. Noted here because a reader
+ * diffing the spec against this file will look for the other name and conclude
+ * it is missing.
+ *
+ * Not to be confused with Better Auth's organization membership, which decides
+ * who belongs to a *workspace* in the billing sense. This is per brand: a
+ * studio invited into a client's brand gets a row here and nothing in the
+ * client's org (§6.5.8).
+ *
+ * This, not `Workspace.ownerId`, is what grants access.
+ */
 model Membership {
   workspaceId String
   userId      String
@@ -288,15 +487,74 @@ model Workspace {
   name     String
   initials String
 
+  /**
+   * A brand is owned by a workspace, not by a person.
+   * `ownerOrgId` is the Studio workspace while the brand is being made and the
+   * client's Company workspace afterwards — handing off *is* changing this
+   * field, in one transaction with the studio's new membership (§8.5). No
+   * foreign key, because Better Auth owns the organization table and this
+   * schema only references it by id (§8.7).
+   * `ownerId` stays as the person who created it: useful for "my brands", and
+   * the only answer to who to ask when a workspace has one member. It is no
+   * longer what grants access — `Membership` is.
+   */
+  ownerOrgId        String
+  originStudioOrgId String?
+
   ownerId String
   owner   User   @relation("WorkspaceOwner", fields: [ownerId], references: [id])
 
-  // The lifecycle board ships in v4.0; the field exists from the first
-  // migration so the board has history to display when it arrives.
-  stage WorkspaceStage @default(DISCOVERY)
+  /**
+   * Whether this brand takes up one of a studio's active-project slots.
+   * Only `ACTIVE` plus studio ownership counts (§7.8). Delivered and archived
+   * projects stay readable forever and cost the studio nothing, which is what
+   * makes "finish the work" the profitable move. Reopening one to make changes
+   * for a client puts it back to ACTIVE and it counts again.
+   */
+  state ProjectState @default(ACTIVE)
 
-  lang     Lang     @default(EN)
-  siteMode SiteMode @default(AUTO)
+  // Where the project has got to, and what happened to each step. `steps` is
+  // JSON of stage -> StepStatus rather than nine columns, because the path is a
+  // guide and not a gate (principle 13): a studio may skip Strategize entirely,
+  // and a studio arriving with a finished identity starts at Deliver.
+  stage WorkspaceStage @default(DISCOVER)
+  steps Json?
+
+  /**
+   * The one free AI brief analysis per project (§5.2).
+   * Set atomically when claimed, so duplicating a project does not reset it and
+   * two concurrent requests cannot both win. The matching `CreditLedger` row
+   * with reason FREE_ANALYSIS is the accounting record; this is the lock.
+   */
+  freeAnalysisUsedAt DateTime?
+
+  handedOffAt DateTime?
+
+  // A Project Pass covering this one project, if the studio bought one (§7.5).
+  passId String?
+
+  /**
+   * Brand architecture: a sub-brand inherits its parent's tokens and voice and
+   * overrides only what differs (§6.5.11, Business plan, v5.0).
+   * Here from the first migration rather than added in v5.0, because a
+   * self-relation retrofitted onto live workspaces is a migration nobody wants
+   * to write twice.
+   */
+  parentWorkspaceId String?
+  parentWorkspace   Workspace?  @relation("BrandArchitecture", fields: [parentWorkspaceId], references: [id])
+  subBrands         Workspace[] @relation("BrandArchitecture")
+  tokenOverrides    Json?
+
+  /**
+   * The brand's own language — what the client's site opens in, and which
+   * language a missing value counts as an error in rather than a warning.
+   * Named `primaryLocale` and not `lang`, because the prototype's single `lang`
+   * field was doing this job *and* holding the language the studio read the app
+   * in. Those were split on 16 Oct 2026: the reader's preference is
+   * `User.adminLang`, and `null` there means "follow whichever brand is open".
+   */
+  primaryLocale Lang     @default(EN)
+  siteMode      SiteMode @default(AUTO)
 
   // Brand details.
   industry    String @default("")
@@ -308,10 +566,10 @@ model Workspace {
 
   // Typography is a small value object rather than a table of its own; the two
   // asset references are nullable because a brand may use a web font.
-  latinFamily        String  @default("")
-  arabicFamily       String  @default("")
-  latinFontAssetId   String?
-  arabicFontAssetId  String?
+  latinFamily       String  @default("")
+  arabicFamily      String  @default("")
+  latinFontAssetId  String?
+  arabicFontAssetId String?
 
   // Logo usage guidance authored on the Logo system tab.
   logoUsageNotes String   @default("")
@@ -343,9 +601,9 @@ model Workspace {
 
   // Keyed by section id. Structural preferences rather than content, so they
   // stay JSON instead of becoming tables nothing would ever query across.
-  sectionTitles Json @default("{}")
-  sectionNotes  Json @default("{}")
-  sectionStyles Json @default("{}")
+  sectionTitles Json     @default("{}")
+  sectionNotes  Json     @default("{}")
+  sectionStyles Json     @default("{}")
   sectionOrder  String[] @default([])
 
   createdAt DateTime @default(now())
@@ -371,8 +629,29 @@ model Workspace {
   moodboards       Moodboard[]
   aiUsage          AIUsage[]
 
+  // Revision 3.2 additions.
+  initiatives    Initiative[]
+  collaborations StudioCollaboration[]
+  boards         Board[]
+  callNotes      CallNote[]
+  analyses       AnalysisReport[]
+  intakeBatches  IntakeBatch[]
+  handoffs       Handoff[]
+  partnerRewards PartnerReward[]
+  voiceProfile   VoiceProfile?
+  terms          Term[]
+  toneChecks     ToneCheck[]
+  brandQuestions BrandQuestion[]
+  reviewRequests ReviewRequest[]
+  assetEvents    AssetEvent[]
+
   @@index([ownerId])
   @@index([stage])
+  // The two questions the entitlements service asks on every project create:
+  // which brands does this org own, and how many of them are ACTIVE (§7.8).
+  @@index([ownerOrgId, state])
+  @@index([originStudioOrgId])
+  @@index([parentWorkspaceId])
 }
 
 // ------------------------------------------------ pillar 1: brand assets ----
@@ -420,7 +699,7 @@ model ColorSwatch {
 }
 
 model Asset {
-  id          String      @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   type        AssetType
   fileName    String
@@ -428,8 +707,8 @@ model Asset {
   // the server keeps a key and signs a URL when one is asked for.
   r2Key       String
   sizeKB      Int
-  tags        String[]    @default([])
-  uploadedAt  DateTime    @default(now())
+  tags        String[]  @default([])
+  uploadedAt  DateTime  @default(now())
 
   // Uploads are approved; moodboard and mockup output starts as exploration
   // and has to be promoted before it can be published or exported.
@@ -439,20 +718,51 @@ model Asset {
   // Provenance for third-party inspiration. A CC-BY photo has to carry its
   // credit wherever it is published, so the credit travels with the asset
   // rather than being something the studio is trusted to remember.
-  sourceUrl  String?
-  credit     Json?
+  sourceUrl String?
+  credit    Json?
 
   // Font metadata on `type: FONT`. A family is several files, one per weight,
   // and they must share one @font-face family name or the browser fakes the
   // weights by smearing the regular.
   font Json?
 
+  /**
+   * Exact bytes, for storage accounting.
+   * `sizeKB` is what the prototype showed a person and is rounded. Plan limits
+   * are enforced by summing this across an org (§7.8), and rounding every file
+   * up to a kilobyte quietly inflates a 2 GB cap by a few megabytes — small,
+   * and wrong in the direction that blocks uploads someone paid for.
+   */
+  bytes Int @default(0)
+
+  /**
+   * What this file is *for*: "logo.primary", "logo.icon", "font.display".
+   * Set by the brand-kit intake, which guesses from file names and aspect
+   * ratios and then has the studio confirm (§5.6). Free text rather than an
+   * enum because the intake has to be able to record a role nobody anticipated
+   * without a migration.
+   */
+  role String?
+
+  /**
+   * Whether this file may be handed to the client for download.
+   * Fonts are the reason. A studio licensed to *use* a typeface is often not
+   * licensed to redistribute it, so the intake asks them to confirm per family
+   * (§5.6). Unconfirmed fonts still render the hub — that is the studio's own
+   * licensed use — but are not offered as a download. Defaulting to true keeps
+   * every other kind of asset behaving as it does now.
+   */
+  canDistribute Boolean @default(true)
+
   workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   versions      AssetVersion[]
   moodboardRefs MoodboardItem[]
+  boardRefs     BoardAssetRef[]
+  events        AssetEvent[]
 
   @@index([workspaceId, type])
   @@index([workspaceId, status])
+  @@index([workspaceId, role])
 }
 
 model AssetVersion {
@@ -494,11 +804,11 @@ model BrandStrategy {
   translationDirection TranslationDirection?
   unreviewedFields     String[]              @default([])
 
-  workspace        Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  personas         Persona[]
-  voiceTraits      VoiceTrait[]
-  coreValues       CoreValue[]
-  competitors      Competitor[]
+  workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  personas          Persona[]
+  voiceTraits       VoiceTrait[]
+  coreValues        CoreValue[]
+  competitors       Competitor[]
   competitorColumns CompetitorColumn[]
 }
 
@@ -592,6 +902,10 @@ model DepartmentView {
   workspace           Workspace                @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   items               DepartmentViewItem[]
   instructionSections DeptInstructionSection[]
+
+  // A department page becomes a playbook for a company: the same record, with
+  // a voice dial and key messages hung off it (§6.5.3).
+  voice DepartmentVoice?
 
   @@index([workspaceId])
 }
@@ -694,16 +1008,16 @@ model BlockNode {
 // stay JSON because their shape is per block kind and nothing queries across
 // them; the discriminator is `kind`.
 model ContentBlock {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   workspaceId String
   pageId      String?
   kind        String
-  title       String    @default("")
+  title       String     @default("")
   arTitle     String?
-  props       Json      @default("{}")
-  style       Json      @default("{}")
-  position    Int       @default(0)
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  props       Json       @default("{}")
+  style       Json       @default("{}")
+  position    Int        @default(0)
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   page        GuidePage? @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
@@ -716,14 +1030,14 @@ model ContentBlock {
 // content and serves that at /v/<slug>, so a studio can keep editing a live
 // brand book without anything reaching its client until it says so.
 model PublishedSnapshot {
-  id          String    @id @default(cuid())
-  workspaceId String
-  version     Int
+  id            String    @id @default(cuid())
+  workspaceId   String
+  version       Int
   // Approved content only. `/v/<slug>` reads this and never a live workspace.
-  payload     Json
+  payload       Json
   publishedById String?
-  publishedAt DateTime  @default(now())
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  publishedAt   DateTime  @default(now())
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, version])
   @@index([workspaceId, publishedAt])
@@ -748,31 +1062,31 @@ model ShareToken {
 }
 
 model SignOffPin {
-  id          String     @id @default(cuid())
-  workspaceId String
-  section     PinSection
-  authorName  String
-  note        String     @default("")
-  resolved    Boolean    @default(false)
-  createdAt   DateTime   @default(now())
+  id             String     @id @default(cuid())
+  workspaceId    String
+  section        PinSection
+  authorName     String
+  note           String     @default("")
+  resolved       Boolean    @default(false)
+  createdAt      DateTime   @default(now())
   // The contrast status captured at the moment of approval, so a sign-off
   // records what was actually approved rather than what is true today.
   contrastReport Json?
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace      Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, section])
 }
 
 model ApprovalRequest {
-  id          String         @id @default(cuid())
-  workspaceId String
-  summary     String
+  id           String         @id @default(cuid())
+  workspaceId  String
+  summary      String
   proposedById String?
-  status      ApprovalStatus @default(PENDING)
-  reviewNote  String?
-  createdAt   DateTime       @default(now())
-  resolvedAt  DateTime?
-  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  status       ApprovalStatus @default(PENDING)
+  reviewNote   String?
+  createdAt    DateTime       @default(now())
+  resolvedAt   DateTime?
+  workspace    Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, status])
 }
@@ -806,12 +1120,12 @@ model ComplianceCheck {
 // A curated library, the same pattern as the Section Library. Not workspace
 // scoped: these are the questions Markyos ships, which studios pick from.
 model BriefQuestion {
-  key      String  @id
-  promptEn String
-  promptAr String
+  key           String  @id
+  promptEn      String
+  promptAr      String
   // text | choice | scale | image | ranking
-  type     String
-  category String
+  type          String
+  category      String
   // The Strategy Hub field an answer drafts into, when it maps to one.
   strategyField String?
   position      Int     @default(0)
@@ -827,10 +1141,33 @@ model Brief {
   questions   String[]    @default([])
   createdAt   DateTime    @default(now())
   submittedAt DateTime?
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /**
+   * Who is answering, which decides what the analysis can say.
+   * "client" is the studio's discovery brief: one respondent, and the report
+   * reads their answers (§5.2). "stakeholders" is the company's workshop: one
+   * link per person, and the report *compares* them — where leadership agrees,
+   * where it does not ("premium" from the CEO, "affordable" from sales), and
+   * which questions nobody could answer (§6.5.2). That comparison is the most
+   * useful thing a brand lead can take to a management meeting, and it is only
+   * possible because the respondents are separate records.
+   */
+  mode String @default("client")
+
+  // Company work happens inside an initiative; a studio's brief does not.
+  initiativeId String?
+
+  // Which language the respondent chose, not which the studio sent.
+  locale Lang?
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  initiative  Initiative?       @relation(fields: [initiativeId], references: [id], onDelete: SetNull)
   answers     BriefAnswer[]
+  respondents BriefRespondent[]
+  analyses    AnalysisReport[]
 
   @@index([workspaceId])
+  @@index([initiativeId])
 }
 
 model BriefAnswer {
@@ -849,20 +1186,20 @@ model BriefAnswer {
 // until a person accepts it — that is architecture principle 3, and this table
 // is where it is enforced.
 model Draft {
-  id          String      @id @default(cuid())
-  workspaceId String
+  id            String      @id @default(cuid())
+  workspaceId   String
   // strategyField | guidelineSection | palette | copy
-  targetType  String
-  targetRef   String
-  content     Json
-  source      DraftSource
+  targetType    String
+  targetRef     String
+  content       Json
+  source        DraftSource
   // Which inputs were used, which model, which prompt version, who asked.
-  provenance  Json
-  status      DraftStatus @default(PENDING)
+  provenance    Json
+  status        DraftStatus @default(PENDING)
   requestedById String?
   decidedById   String?
-  createdAt   DateTime    @default(now())
-  decidedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  decidedAt     DateTime?
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   requester User?     @relation("DraftRequester", fields: [requestedById], references: [id])
@@ -912,18 +1249,18 @@ model MoodboardZone {
 // without being files in the workspace, and forcing them through the asset
 // table would put text with no bytes into brand files.
 model MoodboardItem {
-  id        String          @id
-  zoneId    String
-  kind      MoodItemKind
-  assetId   String?
+  id          String       @id
+  zoneId      String
+  kind        MoodItemKind
+  assetId     String?
   // note { text: {en,ar} } | swatch { hex, name? } | link { url, title, imageAssetId? }
   // | font { fontAssetId } | asset { transform? }
-  data      Json            @default("{}")
-  order     String
+  data        Json         @default("{}")
+  order       String
   // s | m | l — how many columns the card spans in the masonry.
-  size      String          @default("m")
+  size        String       @default("m")
   createdById String?
-  createdAt DateTime        @default(now())
+  createdAt   DateTime     @default(now())
 
   zone    MoodboardZone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
   asset   Asset?          @relation(fields: [assetId], references: [id], onDelete: SetNull)
@@ -985,8 +1322,760 @@ model AIUsage {
   credits      Int
   createdAt    DateTime  @default(now())
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user      User?     @relation(fields: [userId], references: [id])
+  /**
+   * Which org paid, and which prompt produced this.
+   * `orgId` because credits belong to the workspace that pays for them and do
+   * not move at handoff — and because a studio collaborating inside a client's
+   * brand spends the *client's* credits (principle 15), so the brand alone
+   * cannot say who was billed.
+   * `promptVersion` because the method prompts are the part of this product a
+   * competitor cannot copy, and they will be revised. Without it, a quality
+   * regression cannot be traced back to the change that caused it.
+   */
+  orgId         String
+  promptVersion String @default("")
+
+  /**
+   * A free grant rather than a purchase — the one analysis per project (§5.2).
+   */
+  free Boolean @default(false)
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?          @relation(fields: [userId], references: [id])
+  ledger    CreditLedger[]
 
   @@index([workspaceId, createdAt])
+  // What the free-tier telemetry asks weekly: cost per org over a period (§7.6).
+  @@index([orgId, createdAt])
+  @@index([feature, createdAt])
+}
+
+// ==========================================================================
+// Revision 3.2 — two audiences, entitlements, boards, company toolkit
+//
+// Everything below is new in Revision 3.2 §8.7. It is here from the first
+// migration rather than added per phase, because principle 10 says the schema
+// is right from day one: a credit ledger or a workspace kind retrofitted onto
+// live orgs means migrating real customers instead of writing one migration.
+//
+// One convention worth stating once. Better Auth owns the user, session,
+// organization and member tables, so an `orgId` in this file is a plain String
+// with no foreign key — Prisma cannot constrain a table it does not manage.
+// Every such field is indexed, because unconstrained ids are the ones a query
+// plan will otherwise scan for.
+// ==========================================================================
+
+// ------------------------------------------- organizations and their plans ----
+
+/**
+ * What the product calls a *workspace*: a Studio or a Company, with its own
+ * plan, billing, members and credits.
+ * A satellite of Better Auth's organization rather than a replacement for it
+ * (§8.7). One person may belong to several of both kinds and switches between
+ * them from the workspace menu — the same model as Slack or Figma, so nobody
+ * has to learn it.
+ * Why the two kinds are separate workspaces rather than one toggle: they count
+ * different things. A studio's capacity is projects that rotate and free up at
+ * handoff; a company's is brands that persist, with viewers free and unlimited.
+ * One toggle would make every limit ambiguous and invite flipping back and
+ * forth to dodge them (§6.3).
+ */
+model OrgProfile {
+  orgId String  @id
+  kind  OrgKind
+  plan  PlanKey
+
+  /**
+   * Seats bought beyond the plan's allowance, at $8/month each (§7.5).
+   */
+  extraSeats Int @default(0)
+
+  stripeCustomerId String? @unique
+
+  /**
+   * Rolling 30-day creation counter for free workspaces.
+   * A free studio gets 3 new projects per 30 days, and a free company 3 new
+   * brands (§7.8). The cap exists because the free tier includes one AI
+   * analysis *per project*, and without it "create, analyze, archive" in a loop
+   * is a free analysis farm. JSON because it is a sliding window of timestamps
+   * and not a number — a counter that resets on a date boundary is gameable by
+   * waiting until midnight.
+   */
+  newProjectsWindow Json?
+
+  /**
+   * Type changes are plan changes, allowed once every 30 days (§6.3).
+   */
+  kindChangedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+  passes        ProjectPass[]
+  ledger        CreditLedger[]
+  quotas        QuotaCounter[]
+  rewardsEarned PartnerReward[]       @relation("RewardStudio")
+  rewardsPaid   PartnerReward[]       @relation("RewardBrand")
+  collaborating StudioCollaboration[]
+
+  @@index([kind, plan])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  orgId                String
+  stripeSubscriptionId String   @unique
+  plan                 PlanKey
+  /**
+   * "month" or "year". Annual billing pays one Stripe fixed fee, not twelve.
+   */
+  interval             String
+  status               String
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  org OrgProfile @relation(fields: [orgId], references: [orgId], onDelete: Cascade)
+
+  @@index([orgId, status])
+}
+
+/**
+ * One extra active project with Pro features, $19 once (§7.5).
+ * `workspaceId` is bound when the pass is first used rather than at purchase,
+ * because a freelancer buys one when the work arrives and has not necessarily
+ * created the project yet. It ends at handoff or after six months, whichever
+ * comes first — `endedAt` records which.
+ */
+model ProjectPass {
+  id              String    @id @default(cuid())
+  orgId           String
+  stripePaymentId String    @unique
+  workspaceId     String?
+  expiresAt       DateTime
+  endedAt         DateTime?
+  createdAt       DateTime  @default(now())
+
+  org OrgProfile @relation(fields: [orgId], references: [orgId], onDelete: Cascade)
+
+  @@index([orgId, endedAt])
+  @@index([workspaceId])
+}
+
+// ------------------------------------------------------ credits and quotas ----
+
+/**
+ * Every movement in an org's credit balance, as a row.
+ * The balance is the sum of these and is deliberately not a column. A grant, a
+ * reservation, a settlement, a refund and an expiry are each a fact worth
+ * keeping: it makes a disputed charge answerable, and it is what lets principle
+ * 12 — every call is paid for before it runs — be enforced rather than
+ * asserted. A single number can say what is left but not what happened.
+ * Monthly credits carry `expiresAt` at the period end and do not roll over;
+ * pack credits last twelve months and are spent only after the monthly
+ * allowance (§7.7).
+ */
+model CreditLedger {
+  id        String       @id @default(cuid())
+  orgId     String
+  /**
+   * Positive for a grant, negative for a use.
+   */
+  delta     Int
+  reason    CreditReason
+  aiUsageId String?
+  expiresAt DateTime?
+  note      String?
+  createdAt DateTime     @default(now())
+
+  org     OrgProfile @relation(fields: [orgId], references: [orgId], onDelete: Cascade)
+  aiUsage AIUsage?   @relation(fields: [aiUsageId], references: [id], onDelete: SetNull)
+
+  // Summing a balance is this index; expiry sweeps are the second.
+  @@index([orgId, createdAt])
+  @@index([orgId, expiresAt])
+  @@index([aiUsageId])
+}
+
+/**
+ * Monthly allowances that are counted rather than charged.
+ * Quick tone checks and assistant questions cost about $0.002 a call, so they
+ * come as a quota a company should use freely — metering them individually
+ * would cost more in hesitation than in tokens (§7.4). Deep checks, rewrites
+ * and translations cost ten to twenty times more and go through credits.
+ * Keyed by period start so a month's usage is one row that cannot be
+ * double-counted under concurrency, which is what the §20 test asks for.
+ * `perUserDaily` holds the per-person caps that stop one viewer draining a
+ * workspace's quota — viewers are unlimited in number, so the quota needs a
+ * floor per person as well as a ceiling per org.
+ */
+model QuotaCounter {
+  orgId        String
+  /**
+   * "tone_quick" or "ask_brand".
+   */
+  kind         String
+  periodStart  DateTime
+  used         Int      @default(0)
+  perUserDaily Json?
+
+  org OrgProfile @relation(fields: [orgId], references: [orgId], onDelete: Cascade)
+
+  @@id([orgId, kind, periodStart])
+}
+
+// --------------------------------------- company work, inside a brand ----
+
+/**
+ * A campaign, launch or refresh inside a brand the company already owns.
+ * This is the answer to "does a company get one project or several" (§6.4). A
+ * company's billing unit is the *brand*, which never ends — so limiting them to
+ * one piece of work would make the product feel like a document. Companies do
+ * continuous work on the same brand: a Ramadan campaign, a product launch, a
+ * new office. Initiatives cost a row and some boards, so paid plans get
+ * unlimited and free gets two active.
+ * Studios have no equivalent: for them the project *is* the work.
+ */
+model Initiative {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  nameAr      String?
+  /**
+   * campaign | launch | refresh | rebrand | other
+   */
+  kind        String    @default("campaign")
+  /**
+   * active | done | archived — free plans allow two active (§7.4).
+   */
+  status      String    @default("active")
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  briefs    Brief[]
+  boards    Board[]
+
+  @@index([workspaceId, status])
+}
+
+/**
+ * A company inviting its studio in to work on a brand it owns.
+ * The studio works under the *company's* plan inside that brand (principle 15):
+ * it does not consume one of the studio's own active-project slots, and it does
+ * not count against the company's editor seats. That asymmetry is deliberate —
+ * it is what makes "keep the studio on" cheaper for both sides than a handoff
+ * followed by a second project.
+ * `endedAt` rather than deletion, because §20 asks that a collaborator lose
+ * access the moment the collaboration ends and that it be provable afterwards.
+ */
+model StudioCollaboration {
+  id          String    @id @default(cuid())
+  workspaceId String
+  studioOrgId String
+  /**
+   * EDITOR or VIEWER. A collaborator is never an OWNER of someone's brand.
+   */
+  role        Role      @default(EDITOR)
+  invitedBy   String
+  createdAt   DateTime  @default(now())
+  endedAt     DateTime?
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  studio    OrgProfile @relation(fields: [studioOrgId], references: [orgId], onDelete: Cascade)
+
+  @@unique([workspaceId, studioOrgId])
+  @@index([studioOrgId, endedAt])
+}
+
+// ------------------------------------------------- handoff and the loop ----
+
+/**
+ * The studio handing a finished brand to its client.
+ * Free on every plan, because it is the growth loop: every handoff creates a
+ * company, and every company is a potential paid plan. The transfer itself is
+ * `Workspace.ownerOrgId` changing in one transaction with the studio's new
+ * membership (§8.5); this record is the invitation and its audit trail.
+ * `toOrgId` is null until the client claims, because the client may not have a
+ * Markyos account yet — the whole point of inviting by email.
+ */
+model Handoff {
+  id          String    @id @default(cuid())
+  workspaceId String
+  fromOrgId   String
+  toOrgId     String?
+  inviteEmail String
+  /**
+   * The role the studio keeps after the transfer.
+   */
+  studioRole  Role      @default(EDITOR)
+  /**
+   * The studio prepaid the client's first year of Company Brand (§7.5).
+   */
+  prepaidHub  Boolean   @default(false)
+  token       String    @unique @default(cuid())
+  createdAt   DateTime  @default(now())
+  claimedAt   DateTime?
+  revokedAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([fromOrgId])
+}
+
+/**
+ * 20% of what a handed-off client pays for their first twelve months, back to
+ * the studio as account credit (25% on Agency).
+ * Credit and not cash, which is the whole reason this is a table and not a
+ * payouts integration: no Stripe Connect, no tax forms, no payout operations.
+ * A studio with five clients on Company Brand earns about what its own Pro plan
+ * costs, which turns every handoff into a reason to recommend the paid plan
+ * rather than the free one.
+ */
+model PartnerReward {
+  id          String   @id @default(cuid())
+  studioOrgId String
+  brandOrgId  String
+  workspaceId String
+  rate        Decimal  @db.Decimal(4, 3)
+  startsAt    DateTime @default(now())
+  /**
+   * Twelve months after the client's first paid invoice.
+   */
+  endsAt      DateTime
+
+  studio    OrgProfile @relation("RewardStudio", fields: [studioOrgId], references: [orgId], onDelete: Cascade)
+  brand     OrgProfile @relation("RewardBrand", fields: [brandOrgId], references: [orgId], onDelete: Cascade)
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([studioOrgId, workspaceId])
+  @@index([brandOrgId, endsAt])
+}
+
+// ------------------------------------------------------ discover, analyze ----
+
+/**
+ * A named starting set of questions: new brand, rebrand, sub-brand, naming
+ * project, product launch (§5.1).
+ * A template is a list of keys into `BriefQuestion`, not copies of the
+ * questions. The library's Arabic and English prompts are written and reviewed
+ * by Abdullah rather than machine-translated, which is the part of this a
+ * competitor cannot clone — so a template must never fork them.
+ */
+model BriefTemplate {
+  id           String   @id
+  name         String
+  nameAr       String?
+  description  String   @default("")
+  questionKeys String[] @default([])
+  /**
+   * "client" for a studio's discovery brief, "stakeholders" for a workshop.
+   */
+  mode         String   @default("client")
+  position     Int      @default(0)
+}
+
+/**
+ * One person answering a stakeholder workshop, with their own link.
+ * The company version of discovery sends the same questions to the CEO, sales,
+ * marketing and customer service separately (§6.5.2). Separate records are what
+ * make the alignment report possible: the analysis compares answers, and it
+ * cannot do that if everyone types into one form.
+ * `roleTitle` is kept because "the CEO said premium and sales said affordable"
+ * is the finding, and it is useless without knowing who said which.
+ */
+model BriefRespondent {
+  id          String    @id @default(cuid())
+  briefId     String
+  name        String
+  roleTitle   String?
+  email       String?
+  token       String    @unique @default(cuid())
+  createdAt   DateTime  @default(now())
+  submittedAt DateTime?
+
+  brief Brief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+
+  @@index([briefId])
+}
+
+/**
+ * Notes from a discovery call, pasted in.
+ * Most studio discovery happens on a call, not in a form. Audio transcription
+ * is deliberately out of scope because it would need a new vendor (§5.1), so
+ * this takes text the studio already has — their own notes, or a transcript
+ * exported from the meeting tool.
+ * An input to the analysis, and therefore untrusted: a transcript can contain
+ * anything, including something that reads like an instruction (§8.4).
+ */
+model CallNote {
+  id          String    @id @default(cuid())
+  workspaceId String
+  text        String
+  /**
+   * pasted | transcript_upload
+   */
+  source      String    @default("pasted")
+  occurredAt  DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [createdBy], references: [id])
+
+  @@index([workspaceId, createdAt])
+}
+
+/**
+ * The AI brief analysis, or a company's stakeholder alignment report (§5.2).
+ * Versioned, and unique per workspace and version, because re-running after
+ * more answers arrive is a paid action and the earlier report is evidence of
+ * what was decided from. Replacing it in place would lose the reason a studio
+ * took a direction.
+ * `content` is the ten sections in both languages as JSON rather than ten
+ * columns: the report is read as a document and exported as a PDF, never
+ * queried section by section. `inputs` records which brief and which notes
+ * produced it, which is half of the provenance principle 3 asks for — the
+ * other half is the `AIUsage` row naming the model and prompt version.
+ */
+model AnalysisReport {
+  id          String   @id @default(cuid())
+  workspaceId String
+  briefId     String?
+  version     Int
+  content     Json
+  inputs      Json
+  aiUsageId   String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brief     Brief?    @relation(fields: [briefId], references: [id], onDelete: SetNull)
+
+  @@unique([workspaceId, version])
+  @@index([briefId])
+}
+
+// ------------------------------------------------------- explore: boards ----
+
+/**
+ * One canvas, two presets (§5.4).
+ * The moodboard that exists and the whiteboard that does not are the same
+ * `Board` underneath, so a moodboard can be opened into freeform mode at any
+ * time. Revision 3.2 §8.3 settles the engine question: extend the DOM canvas
+ * already built — 8 typed zones, k-means palette extraction, spatial culling —
+ * rather than adopting tldraw or Excalidraw. Excalidraw draws onto a `<canvas>`
+ * element, which this codebase has already refused for bilingual text.
+ * `roomId` names the Durable Object that holds the live document; `snapshotKey`
+ * is where its Yjs state is saved in R2. Both are null-free and stable for the
+ * life of the board, because a room that changes name loses its history.
+ * The node list itself is *not* here. It lives as a Yjs document in R2, because
+ * a board under multiplayer editing is a stream of CRDT updates and not rows —
+ * putting it in Postgres would mean a write per cursor movement.
+ */
+model Board {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  initiativeId String?
+  kind         BoardKind @default(MOODBOARD)
+  title        String
+  titleAr      String?
+  roomId       String    @unique @default(cuid())
+  snapshotKey  String?
+  lastActiveAt DateTime?
+  createdBy    String
+  createdAt    DateTime  @default(now())
+
+  workspace  Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  initiative Initiative?      @relation(fields: [initiativeId], references: [id], onDelete: SetNull)
+  guestLinks BoardGuestLink[]
+  assetRefs  BoardAssetRef[]
+
+  @@index([workspaceId, kind])
+  @@index([initiativeId])
+}
+
+/**
+ * A client joining a board without an account.
+ * Working on the direction live with the client is the point of the whiteboard,
+ * and making them sign up first would stop it happening. Revocable, because
+ * §20 asks that a revoked link cannot reconnect — and revocation has to close
+ * connections already open, not merely refuse new ones.
+ * The link is not the credential the sync server trusts. The app's DAL checks
+ * this record and issues a short-lived signed board token; the Sync Worker only
+ * verifies that signature (§8.3), so authorization never leaves the app.
+ */
+model BoardGuestLink {
+  token     String      @id @default(cuid())
+  boardId   String
+  access    GuestAccess @default(VIEW)
+  label     String?
+  createdAt DateTime    @default(now())
+  expiresAt DateTime?
+  revokedAt DateTime?
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, revokedAt])
+}
+
+/**
+ * Which assets a board uses, refreshed whenever the board saves.
+ * The board stores asset ids inside its Yjs document, which Postgres cannot
+ * read — so without this index there is no way to answer "is this exploration
+ * photograph still referenced anywhere" at delete time, or to keep third-party
+ * images off a published page (principle 2). Derived data, rebuilt on save
+ * rather than maintained per edit.
+ */
+model BoardAssetRef {
+  boardId String
+  assetId String
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@id([boardId, assetId])
+  @@index([assetId])
+}
+
+// ------------------------------------------------ deliver: brand-kit intake ----
+
+/**
+ * One run of the brand-kit intake: a folder or zip dropped in, classified, and
+ * confirmed in a single screen (§5.6).
+ * Classification happens in the browser and is rule-based, so it costs nothing
+ * and the file never leaves the machine before the studio has agreed what it
+ * is. This record is the audit trail of what was found and what the studio
+ * corrected — `summary` holds the counts and the detected roles, which is what
+ * makes "we found 6 logo files, 2 font families, 9 colours" reproducible rather
+ * than a one-time message in a dialog.
+ */
+model IntakeBatch {
+  id          String    @id @default(cuid())
+  workspaceId String
+  /**
+   * classifying | confirming | done
+   */
+  status      String    @default("classifying")
+  summary     Json
+  fileCount   Int       @default(0)
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+}
+
+// ----------------------------------------- govern: the company's toolkit ----
+
+/**
+ * What this brand sounds like, and the thing the tone checker checks against.
+ * The checker is only as good as this record, which is why the voice is set up
+ * before the checking starts (§6.5.4) and why a studio can fill it in before
+ * handoff (principle 14) — the client then receives a working voice system
+ * rather than a description of one.
+ * `version` bumps on any change, and every `ToneCheck` records which version it
+ * used. Without that, a score from last month and a score from today are not
+ * comparable, and the brand-health trend in §6.5.10 would be measuring its own
+ * configuration drift.
+ * `languages` holds the part no competitor in this price range does: the Arabic
+ * register per channel (Modern Standard, or Gulf, Egyptian, Levantine), the
+ * English variant, and whether mixed Arabic/English is acceptable there.
+ */
+model VoiceProfile {
+  workspaceId String   @id
+  traits      Json
+  examples    Json
+  channels    Json
+  languages   Json
+  version     Int      @default(1)
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+/**
+ * How one department adjusts the master voice (§6.5.3).
+ * A dial, not a second voice: each trait shifts a step for HR or customer
+ * service or sales while staying recognisably the same brand. Stored as offsets
+ * against `VoiceProfile.traits` rather than as a full copy, so changing the
+ * master voice reaches every department instead of leaving eleven copies to
+ * reconcile — the same rule as principle 1 for the pillars.
+ */
+model DepartmentVoice {
+  departmentId String @id
+  dial         Json
+  keyMessages  Json?
+  doDont       Json?
+
+  department DepartmentView @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+}
+
+/**
+ * A word this brand prefers, bans, or will not have translated.
+ * `translation` is the approved equivalent in the other language, which is what
+ * makes "never translate our product name" and "say عملاؤنا not زبائننا"
+ * enforceable rather than advice. A bilingual company is the audience that
+ * feels this most: a term base is the difference between two languages and one
+ * brand in two languages.
+ */
+model Term {
+  id          String   @id @default(cuid())
+  workspaceId String
+  term        String
+  language    Lang
+  /**
+   * preferred | banned | avoid | never_translate
+   */
+  status      String
+  replacement String?
+  translation String?
+  note        String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, term, language])
+  @@index([workspaceId, status])
+}
+
+/**
+ * One run of the tone checker.
+ * The submitted text is **not** stored by default, and that is a privacy
+ * decision rather than a storage one: staff paste unreleased campaigns and
+ * customer replies into this, and a brand hub is not where that should
+ * accumulate. What is kept is the score, the per-trait scores, and flags
+ * carrying character ranges — enough for the brand-health dashboard and for
+ * showing the person their own result, and not enough to reconstruct the text.
+ * `savedText` is populated only when the person chose "save to history", and
+ * §20 asks for a test that it is gone after 30 days.
+ * `level` spans quick, deep, rewrite, translate and document, because they are
+ * one action at five prices (§7.7) and splitting them into five tables would
+ * make the dashboard a five-way union for no gain.
+ */
+model ToneCheck {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  userId       String?
+  departmentId String?
+  channel      String
+  /**
+   * ar | en | mixed — mixed is ordinary here, not an edge case.
+   */
+  language     String
+  /**
+   * quick | deep | rewrite | translate | document
+   */
+  level        String
+  score        Int?
+  traitScores  Json?
+  flags        Json?
+  voiceVersion Int
+  savedText    String?
+  savedUntil   DateTime?
+  aiUsageId    String?
+  createdAt    DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // The brand-health dashboard reads score by department and channel over time.
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, departmentId, channel])
+  // The retention sweep that deletes saved text after 30 days.
+  @@index([savedUntil])
+}
+
+/**
+ * A question a staff member asked the hub, and whether it could answer.
+ * `answered: false` is the valuable row. An assistant that guesses when the
+ * guidelines are silent is worse than one that says so, so it says so — and the
+ * question goes to the brand lead's gaps list. Over time that list is a
+ * measured account of which parts of the guidelines are missing, which is
+ * something no brand portal currently tells anyone (§6.5.6).
+ * The question text is kept, unlike tone-check input: it is the gaps list, and
+ * a gaps list without the questions is a number.
+ */
+model BrandQuestion {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String?
+  question    String
+  answered    Boolean  @default(true)
+  citations   Json?
+  aiUsageId   String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, answered, createdAt])
+}
+
+/**
+ * A staff member submitting content for approval (§6.5.9, v5.0).
+ * Tone-checked automatically on submission, which is why `toneCheckId` is here:
+ * a reviewer should see what the checker said before deciding, and most
+ * "changes requested" rounds are things the checker already flagged. Keeping
+ * the exchange is the point — it lets more people create without the brand lead
+ * becoming the bottleneck, and it is the record when someone asks why a post
+ * went out that way.
+ */
+model ReviewRequest {
+  id          String    @id @default(cuid())
+  workspaceId String
+  submittedBy String
+  reviewerId  String?
+  content     Json
+  toneCheckId String?
+  /**
+   * pending | approved | changes_requested
+   */
+  status      String    @default("pending")
+  comments    Json?
+  createdAt   DateTime  @default(now())
+  decidedAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  submitter User      @relation("ReviewSubmitter", fields: [submittedBy], references: [id])
+  reviewer  User?     @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@index([reviewerId, status])
+}
+
+/**
+ * A view, a download, or a signature made — the raw material of brand health.
+ * `via` separates the hub from a partner link, the API and the extension,
+ * because "which agency downloaded which asset" is a different question from
+ * "are our own staff using this". A download of an *archived* asset is the
+ * most actionable row in this table: it means someone is still shipping the old
+ * logo, and nothing else in the product would notice.
+ */
+model AssetEvent {
+  id          String   @id @default(cuid())
+  workspaceId String
+  assetId     String?
+  /**
+   * view | download | signature_created
+   */
+  kind        String
+  /**
+   * hub | partner_link | api | extension
+   */
+  via         String   @default("hub")
+  userId      String?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  asset     Asset?    @relation(fields: [assetId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, kind, createdAt])
+  @@index([assetId, createdAt])
 }

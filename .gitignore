@@ -50,3 +50,9 @@ next-env.d.ts
 
 # vitest reporter output, written by `vitest run --reporter=json`
 /.vitest
+
+# The Prisma client, written by `npm run db:generate` into the path the
+# generator block names. Generated from schema.prisma on every install, so
+# committing it means reviewing thousands of lines nobody wrote and risking a
+# client that disagrees with the schema beside it.
+/lib/generated
