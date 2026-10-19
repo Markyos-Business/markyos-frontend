@@ -784,9 +784,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // have accounts here, and it does not help the person who simply
       // mistyped one of the two.
       const WRONG = "That email and password don't match an account.";
+
+      // Development only: any email and password signs in. An unknown email
+      // gets an account made on the spot; a known one skips the password check.
+      // `next build` sets NODE_ENV to production, so this never ships.
+      const devBypass = process.env.NODE_ENV !== "production";
+      if (!account && devBypass) {
+        const clean = normaliseEmail(email);
+        const created: Account = {
+          id: uid(),
+          name: clean.split("@")[0],
+          email: clean,
+          password: await hashPassword(password),
+          passwordUpdatedAt: Date.now(),
+          createdAt: Date.now(),
+          lastLoginAt: Date.now(),
+          adminLang: null,
+        };
+        repo.markSessionAlive(true);
+        setState((prev) => ({
+          ...prev,
+          accounts: [...prev.accounts, created],
+          session: {
+            accountId: created.id,
+            name: created.name,
+            email: created.email,
+            startedAt: Date.now(),
+            remember,
+          },
+        }));
+        return null;
+      }
       if (!account) return WRONG;
 
-      const { ok, needsUpgrade } = await verifyPassword(password, account.password);
+      const { ok: verified, needsUpgrade } = await verifyPassword(password, account.password);
+      const ok = verified || devBypass;
       if (!ok) return WRONG;
 
       // The one moment the plain password is in hand and verified — so it is
