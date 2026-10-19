@@ -3,22 +3,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { EmptyHint } from "@/components/workspace/SectionUI";
-import { PillButton } from "@/components/PillButton";
-import { Zone } from "@/components/moodboard/Zone";
-import type { ZoneAction } from "@/components/moodboard/Zone";
-import { Canvas } from "@/components/moodboard/Canvas";
-import { MOODBOARD_TEMPLATES } from "@/lib/moodboard/templates";
-import { zoneForKind } from "@/lib/moodboard/zones";
-import { sampleImage } from "@/lib/moodboard/sampleImage";
-import { Moodboard, MoodboardItem, MoodboardZone } from "@/lib/types";
-import { fileToDownscaledDataUrl } from "@/lib/imageDownscale";
-import { useLocalPref } from "@/lib/useLocalPref";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon, PillButton } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
+import {
+  Zone,
+  type ZoneAction,
+  Canvas,
+  MOODBOARD_TEMPLATES,
+  zoneForKind,
+  sampleImage,
+  fileToDownscaledDataUrl,
+} from "@/features/moodboard";
+import { Moodboard, MoodboardItem, MoodboardZone } from "@/core/data/types";
+import { useLocalPref } from "@/shared/hooks/useLocalPref";
 
 /**
  * Exploration, kept separate from the brand.

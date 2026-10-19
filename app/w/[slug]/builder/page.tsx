@@ -3,32 +3,39 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { Icon } from "@/components/Icon";
-import { EmptyHint } from "@/components/workspace/SectionUI";
-import { ImagePicker } from "@/components/workspace/ImagePicker";
-import { TemplatePreviewCard, StudioStylePreviewCard } from "@/components/workspace/guideline/TemplatePreviewCard";
-import { ContrastReport } from "@/components/workspace/ContrastReport";
-import { LiveCanvas } from "@/components/workspace/guideline/LiveCanvas";
-import { BLOCK_DRAG_TYPE } from "@/components/workspace/guideline/LiveEdit";
-import { SecondaryViewBanner, ViewSwitcher } from "@/components/builder/ViewSwitcher";
-import { CanvasFrame } from "@/components/builder/CanvasFrame";
-import { DesignInspector } from "@/components/builder/DesignInspector";
-import { LayersTab } from "@/components/builder/LayersTab";
-import { ReviewChip } from "@/components/builder/ReviewPanel";
-import { reviewPage } from "@/lib/pageReview";
-import { resolveOptions } from "@/lib/sectionOptions";
-import { useGuidelineViewer } from "@/lib/useGuidelineViewer";
-import { ALL_BLOCK_KINDS, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "@/lib/blockCatalog";
-import { DESIGN_SYSTEMS } from "@/lib/designSystem";
-import { scopeForView } from "@/lib/doc/core/rules";
-import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
-import { useLocalPref } from "@/lib/useLocalPref";
-import { useNarrowViewport } from "@/lib/useNarrowViewport";
-import { AssetType, BlockKind, BlockStyle, GuidelineTemplate, Lang, PageBlock, SocialLink, StudioStyle, Workspace } from "@/lib/types";
-import { formatBytes, formatRelative, uid } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon } from "@/shared/ui";
+import { EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
+import {
+  ImagePicker,
+  SecondaryViewBanner,
+  ViewSwitcher,
+  CanvasFrame,
+  DesignInspector,
+  LayersTab,
+  ReviewChip,
+  reviewPage,
+} from "@/features/builder";
+import {
+  TemplatePreviewCard,
+  StudioStylePreviewCard,
+  ContrastReport,
+  LiveCanvas,
+  BLOCK_DRAG_TYPE,
+  resolveOptions,
+  useGuidelineViewer,
+  ALL_BLOCK_KINDS,
+  BLOCK_META,
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  DESIGN_SYSTEMS,
+} from "@/features/guideline-site";
+import { scopeForView } from "@/shared/lib/doc/core/rules";
+import type { Breakpoint, ViewContext } from "@/shared/lib/doc/core/types";
+import { useLocalPref } from "@/shared/hooks/useLocalPref";
+import { useNarrowViewport } from "@/shared/hooks/useNarrowViewport";
+import { AssetType, BlockKind, BlockStyle, GuidelineTemplate, Lang, PageBlock, SocialLink, StudioStyle, Workspace } from "@/core/data/types";
+import { formatBytes, formatRelative, uid } from "@/shared/lib/utils";
 
 interface Template {
   key: string;

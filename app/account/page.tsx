@@ -3,14 +3,11 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { Icon } from "@/components/Icon";
-import { TextField } from "@/components/TextField";
-import { Section, Row, Switch, EmptyHint } from "@/components/workspace/SectionUI";
-import { ProfilePanel } from "@/components/account/ProfilePanel";
-import { BillingPanel } from "@/components/account/BillingPanel";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, Icon, TextField } from "@/shared/ui";
+import { Section, Row, Switch, EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { ProfilePanel, BillingPanel } from "@/features/account";
+import { formatRelative } from "@/shared/lib/utils";
 
 type Tab = "profile" | "billing" | "organisation";
 

@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { TopBar } from "@/components/workspace/TopBar";
-import { AssetColorContent } from "@/components/workspace/compliance/AssetColorContent";
-import { CopyLinterContent } from "@/components/workspace/compliance/CopyLinterContent";
+import { useApp } from "@/core/store/store";
+import { TopBar } from "@/features/workspace";
+import { AssetColorContent, CopyLinterContent } from "@/features/compliance";
 
 type Tab = "colors" | "copy";
 

@@ -3,9 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { Icon } from "@/components/Icon";
+import { useApp } from "@/core/store/store";
+import { useToast, Icon } from "@/shared/ui";
 
 interface Template {
   id: string;

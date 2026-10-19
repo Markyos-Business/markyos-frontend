@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { AccountMenu } from "@/components/AccountMenu";
-import { Icon } from "@/components/Icon";
-import { PillButton } from "@/components/PillButton";
-import { WorkspaceCard } from "@/components/WorkspaceCard";
+import { useApp } from "@/core/store/store";
+import { AccountMenu } from "@/features/account";
+import { Icon, PillButton } from "@/shared/ui";
+import { WorkspaceCard } from "@/features/brands";
 
 type SortKey = "updated" | "name";
 

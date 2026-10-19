@@ -24,9 +24,9 @@ import { join, relative } from "node:path";
  */
 
 const ROOT = process.cwd();
-const THEME = join(ROOT, "lib", "theme.ts");
-const BLOCK_STYLE = join(ROOT, "lib", "blockStyle.ts");
-const GUIDELINE_DIR = join(ROOT, "components", "workspace", "guideline");
+const THEME = join(ROOT, "features", "guideline-site", "model", "theme.ts");
+const BLOCK_STYLE = join(ROOT, "features", "guideline-site", "model", "blockStyle.ts");
+const GUIDELINE_DIR = join(ROOT, "features", "guideline-site", "components");
 
 /**
  * Tokens provided from outside the two emitters, and therefore exempt.

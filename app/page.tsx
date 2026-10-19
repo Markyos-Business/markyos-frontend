@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/lib/store";
+import { useApp } from "@/core/store/store";
 
 export default function RootPage() {
   const { state, hydrated } = useApp();

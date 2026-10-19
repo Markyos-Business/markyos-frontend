@@ -2,12 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { slugify } from "@/lib/utils";
-import { TextField } from "@/components/TextField";
-import { PillButton } from "@/components/PillButton";
-import { Icon } from "@/components/Icon";
+import { useApp } from "@/core/store/store";
+import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
+import { slugify } from "@/shared/lib/utils";
 import {
   DetectedFont,
   DocumentAnalysis,
@@ -15,8 +12,8 @@ import {
   nameFromFileName,
   strategyFieldCount,
   suggestedColors,
-} from "@/lib/brandImport";
-import { ParsedStrategy } from "@/lib/docParse";
+} from "@/features/brands";
+import { ParsedStrategy } from "@/shared/lib/docParse";
 
 type Mode = "scratch" | "import";
 type ImportStage = "idle" | "extracting" | "review";

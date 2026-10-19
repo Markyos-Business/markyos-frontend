@@ -2,17 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { BrandMark } from "@/components/BrandMark";
-import { navLogo } from "@/lib/brandLogo";
-import { useTheme } from "@/components/ThemeProvider";
-import { EditableField } from "@/components/workspace/SectionUI";
-import { Workspace } from "@/lib/types";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { BrandMark } from "@/shared/ui/media/BrandMark/BrandMark";
+import { navLogo } from "@/features/guideline-site";
+import { useTheme } from "@/core/providers/ThemeProvider";
+import { EditableField } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { Workspace } from "@/core/data/types";
+import { formatRelative } from "@/shared/lib/utils";
 
 /**
  * Named actions rather than bound callbacks, because "Link" now asks a question

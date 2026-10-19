@@ -3,13 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/lib/store";
-import { AccountMenu } from "@/components/AccountMenu";
-import { Icon } from "@/components/Icon";
-import { Avatar } from "@/components/Avatar";
-import { useToast } from "@/components/Toast";
-import { Workspace, WorkspaceStage } from "@/lib/types";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { AccountMenu } from "@/features/account";
+import { Icon, Avatar, useToast } from "@/shared/ui";
+import { Workspace, WorkspaceStage } from "@/core/data/types";
+import { formatRelative } from "@/shared/lib/utils";
 
 /**
  * Every brand the studio is working on, by where it has got to.

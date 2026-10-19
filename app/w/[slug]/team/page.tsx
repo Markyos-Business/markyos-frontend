@@ -2,15 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { Section, Row, Badge, EmptyHint } from "@/components/workspace/SectionUI";
-import { PillButton } from "@/components/PillButton";
-import { TeamRole } from "@/lib/types";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon, PillButton } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { Section, Row, Badge, EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { TeamRole } from "@/core/data/types";
+import { formatRelative } from "@/shared/lib/utils";
 
 const ROLES: TeamRole[] = ["owner", "editor", "viewer", "client"];
 const ROLE_TONE: Record<TeamRole, "accent" | "success" | "neutral" | "warning"> = {

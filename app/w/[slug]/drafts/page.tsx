@@ -2,15 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { Badge, EmptyHint } from "@/components/workspace/SectionUI";
-import { PillButton } from "@/components/PillButton";
-import { Draft, DraftSource, DraftStatus } from "@/lib/types";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon, PillButton } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { Badge, EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { Draft, DraftSource, DraftStatus } from "@/core/data/types";
+import { formatRelative } from "@/shared/lib/utils";
 
 /**
  * One queue for everything proposed into this brand.

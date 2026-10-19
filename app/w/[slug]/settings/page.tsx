@@ -2,19 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { TextField } from "@/components/TextField";
-import { PillButton } from "@/components/PillButton";
-import { LangToggle } from "@/components/LangToggle";
-import { Section, Row, Switch, Badge } from "@/components/workspace/SectionUI";
-import { formatRelative } from "@/lib/utils";
-import { diffTokens, parseDesignTokens, serializeTokens } from "@/lib/designTokens";
-import { triggerBlobDownload } from "@/lib/rasterize";
-import { PlanKind, Workspace } from "@/lib/types";
-import { suggestSubdomain, validateSubdomain } from "@/lib/subdomain";
+import { useApp } from "@/core/store/store";
+import { useToast, Icon, TextField, PillButton, LangToggle } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { Section, Row, Switch, Badge } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { formatRelative } from "@/shared/lib/utils";
+import { diffTokens, parseDesignTokens, serializeTokens } from "@/features/settings";
+import { triggerBlobDownload } from "@/shared/lib/rasterize";
+import { PlanKind, Workspace } from "@/core/data/types";
+import { suggestSubdomain, validateSubdomain } from "@/features/sharing";
 import Link from "next/link";
 
 function randomPassword(): string {

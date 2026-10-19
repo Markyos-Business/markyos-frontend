@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { Sidebar } from "@/components/workspace/Sidebar";
+import { useApp } from "@/core/store/store";
+import { Sidebar } from "@/features/workspace";
 
 export default function WorkspaceLayout({
   children,

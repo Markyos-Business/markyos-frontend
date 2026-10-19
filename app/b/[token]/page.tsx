@@ -2,13 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { LangToggle } from "@/components/LangToggle";
-import { PillButton } from "@/components/PillButton";
-import { AutoTextarea } from "@/components/AutoTextarea";
-import { CenteredMessage } from "@/components/workspace/guideline/ViewerChrome";
-import { QUESTION_BY_KEY } from "@/lib/briefQuestions";
-import { BriefQuestion, Lang } from "@/lib/types";
+import { useApp } from "@/core/store/store";
+import { LangToggle, PillButton, AutoTextarea } from "@/shared/ui";
+import { CenteredMessage } from "@/features/guideline-site";
+import { QUESTION_BY_KEY } from "@/features/brief";
+import { BriefQuestion, Lang } from "@/core/data/types";
 
 /**
  * The discovery brief, as the client sees it.

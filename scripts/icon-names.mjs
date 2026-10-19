@@ -20,7 +20,7 @@ const CSS = readFileSync(join(ROOT, "app", "icons.css"), "utf8");
 
 const defined = new Set([...CSS.matchAll(/^\.la-([a-z0-9-]+)\s*\{/gm)].map((m) => m[1]));
 
-const SCAN = ["app", "components", "lib"];
+const SCAN = ["app", "core", "features", "shared", "lib"];
 
 function walk(dir) {
   const out = [];

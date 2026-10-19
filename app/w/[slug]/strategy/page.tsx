@@ -2,24 +2,22 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { TopBar, TopBarTab } from "@/components/workspace/TopBar";
-import { ShareLinksPanel } from "@/components/workspace/ShareLinksPanel";
-import { Popover } from "@/components/Popover";
-import { SingleTextTab } from "@/components/workspace/strategy/SingleTextTab";
-import { VisionMissionTab } from "@/components/workspace/strategy/VisionMissionTab";
-import { CoreValuesTab } from "@/components/workspace/strategy/CoreValuesTab";
-import { AudienceTab } from "@/components/workspace/strategy/AudienceTab";
-import { CompetitiveTab } from "@/components/workspace/strategy/CompetitiveTab";
-import { ToneTab } from "@/components/workspace/strategy/ToneTab";
-import { ImportStrategyModal } from "@/components/workspace/strategy/ImportStrategyModal";
-import { TranslateStrategy, TranslationNotice } from "@/components/workspace/strategy/TranslateStrategy";
+import { useApp } from "@/core/store/store";
+import { TopBar, TopBarTab } from "@/features/workspace";
+import { ShareLinksPanel } from "@/features/sharing";
+import { Popover, Icon } from "@/shared/ui";
 import {
-  StrategyContents,
-  StrategyDocument,
-  StrategyProgress,
-} from "@/components/workspace/strategy/StrategyDocument";
-import { Icon } from "@/components/Icon";
+  SingleTextTab,
+  VisionMissionTab,
+  CoreValuesTab,
+  AudienceTab,
+  CompetitiveTab,
+  ToneTab,
+  ImportStrategyModal,
+  TranslateStrategy,
+  TranslationNotice,
+} from "@/features/strategy";
+import { StrategyContents, StrategyDocument, StrategyProgress } from "@/features/guideline-site";
 
 type Tab = "purpose" | "vision-mission" | "core-values" | "audience" | "competitive" | "positioning" | "uvp" | "tone";
 type Mode = "edit" | "read";

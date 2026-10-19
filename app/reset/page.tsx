@@ -3,14 +3,9 @@
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { TextField } from "@/components/TextField";
-import { PillButton } from "@/components/PillButton";
-import { Icon } from "@/components/Icon";
-import { AuthShell, FormError } from "@/components/auth/AuthShell";
-import { PasswordField } from "@/components/auth/PasswordField";
-import { EMAIL_RE, scorePassword } from "@/lib/auth";
+import { useApp } from "@/core/store/store";
+import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
+import { AuthShell, FormError, PasswordField, EMAIL_RE, scorePassword } from "@/features/auth";
 
 /**
  * Resetting a forgotten password.

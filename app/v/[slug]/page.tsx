@@ -1,17 +1,20 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useGuidelineViewer } from "@/lib/useGuidelineViewer";
-import { CenteredMessage, PasswordGate } from "@/components/workspace/guideline/ViewerChrome";
-import { VaultTemplate } from "@/components/workspace/guideline/templates/VaultTemplate";
-import { DocsTemplate } from "@/components/workspace/guideline/templates/DocsTemplate";
-import { StudioTemplate } from "@/components/workspace/guideline/templates/StudioTemplate";
-import { DeckTemplate } from "@/components/workspace/guideline/templates/DeckTemplate";
-import { ManualTemplate } from "@/components/workspace/guideline/templates/ManualTemplate";
-import { MosaicTemplate } from "@/components/workspace/guideline/templates/MosaicTemplate";
-import { BlockScopeProvider } from "@/components/workspace/BlockRenderer";
-import { BrandFonts } from "@/components/workspace/guideline/BrandFonts";
-import { GuidelineMotion } from "@/components/workspace/guideline/GuidelineMotion";
+import {
+  useGuidelineViewer,
+  CenteredMessage,
+  PasswordGate,
+  VaultTemplate,
+  DocsTemplate,
+  StudioTemplate,
+  DeckTemplate,
+  ManualTemplate,
+  MosaicTemplate,
+  BlockScopeProvider,
+  BrandFonts,
+  GuidelineMotion,
+} from "@/features/guideline-site";
 
 export default function ClientViewerPage() {
   const params = useParams<{ slug: string }>();

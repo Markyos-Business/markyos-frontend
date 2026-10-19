@@ -2,10 +2,10 @@
 
 import { useId, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { brandFontStacks } from "@/lib/brandFonts";
+import { useApp } from "@/core/store/store";
+import { TopBar } from "@/features/workspace";
+import { Icon } from "@/shared/ui";
+import { brandFontStacks } from "@/features/guideline-site";
 
 const WEIGHTS = [300, 400, 500, 600, 700] as const;
 

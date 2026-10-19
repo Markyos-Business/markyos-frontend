@@ -2,20 +2,15 @@
 
 import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar, TopBarTab } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { EmptyHint, Switch } from "@/components/workspace/SectionUI";
-import { AutoTextarea } from "@/components/AutoTextarea";
-import { DepartmentDocument } from "@/components/workspace/departments/DepartmentDocument";
-import { ShareLinksPanel } from "@/components/workspace/ShareLinksPanel";
-import { Popover } from "@/components/Popover";
-import { InstructionEditor } from "@/components/workspace/departments/InstructionEditor";
-import { ImportInstructionsModal } from "@/components/workspace/departments/ImportInstructionsModal";
-import { DeptItemType, SectionKey, Workspace } from "@/lib/types";
-import { fileToDataUrl, formatBytes } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon, AutoTextarea, Popover } from "@/shared/ui";
+import { TopBar, TopBarTab } from "@/features/workspace";
+import { EmptyHint, Switch } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { DepartmentDocument } from "@/features/guideline-site";
+import { ShareLinksPanel } from "@/features/sharing";
+import { InstructionEditor, ImportInstructionsModal } from "@/features/departments";
+import { DeptItemType, SectionKey, Workspace } from "@/core/data/types";
+import { fileToDataUrl, formatBytes } from "@/shared/lib/utils";
 
 const SECTION_META: Record<SectionKey, { label: string; icon: string; href: string }> = {
   overview: { label: "Overview", icon: "file-alt", href: "overview" },

@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { Icon } from "@/components/Icon";
-import { LangToggle } from "@/components/LangToggle";
-import { CenteredMessage } from "@/components/workspace/guideline/ViewerChrome";
-import { StrategyDocument, strategyIsEmpty } from "@/components/workspace/strategy/StrategyDocument";
-import { DepartmentDocument } from "@/components/workspace/departments/DepartmentDocument";
-import { Lang } from "@/lib/types";
+import { useApp } from "@/core/store/store";
+import { Icon, LangToggle } from "@/shared/ui";
+import {
+  CenteredMessage,
+  StrategyDocument,
+  strategyIsEmpty,
+  DepartmentDocument,
+} from "@/features/guideline-site";
+import { Lang } from "@/core/data/types";
 
 /**
  * A read-only window onto one brand's thinking.

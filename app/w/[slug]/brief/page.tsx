@@ -2,17 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { useToast } from "@/components/Toast";
-import { useDialog } from "@/components/Dialog";
-import { TopBar } from "@/components/workspace/TopBar";
-import { Icon } from "@/components/Icon";
-import { Badge, EmptyHint, Section } from "@/components/workspace/SectionUI";
-import { PillButton } from "@/components/PillButton";
-import { TextField } from "@/components/TextField";
-import { BRIEF_QUESTIONS, BRIEF_TEMPLATES, QUESTION_BY_KEY } from "@/lib/briefQuestions";
-import { Brief, BriefStatus, BriefTemplateKind, Lang } from "@/lib/types";
-import { formatRelative } from "@/lib/utils";
+import { useApp } from "@/core/store/store";
+import { useToast, useDialog, Icon, PillButton, TextField } from "@/shared/ui";
+import { TopBar } from "@/features/workspace";
+import { Badge, EmptyHint, Section } from "@/shared/ui/composites/SectionUI/SectionUI";
+import { BRIEF_QUESTIONS, BRIEF_TEMPLATES, QUESTION_BY_KEY } from "@/features/brief";
+import { Brief, BriefStatus, BriefTemplateKind, Lang } from "@/core/data/types";
+import { formatRelative } from "@/shared/lib/utils";
 
 /**
  * Where a studio builds a discovery brief and reads what came back.

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe, PROJECT_PASS_PRICE_USD, STUDIO_SUBSCRIPTION_PRICE_USD } from "@/lib/stripe";
+import { getStripe, PROJECT_PASS_PRICE_USD, STUDIO_SUBSCRIPTION_PRICE_USD } from "@/features/billing/services/stripe.server";
 
 /**
  * Creates a real Stripe Checkout Session in test mode for the v1.0 $19

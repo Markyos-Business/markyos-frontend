@@ -1,0 +1,29 @@
+// Public API of the guideline-site feature. Code outside features/guideline-site/
+// imports from "@/features/guideline-site", never from a file inside it.
+export { BlockScopeProvider } from "./components/BlockRenderer";
+export { BrandFonts } from "./components/BrandFonts";
+export { ContrastReport } from "./components/ContrastReport";
+export { GuidelineMotion } from "./components/GuidelineMotion";
+export { LiveCanvas } from "./components/LiveCanvas";
+export { BLOCK_DRAG_TYPE } from "./components/LiveEdit";
+export { StudioStylePreviewCard, TemplatePreviewCard } from "./components/TemplatePreviewCard";
+export { CenteredMessage, PasswordGate } from "./components/ViewerChrome";
+export { DepartmentDocument } from "./components/documents/DepartmentDocument";
+export { DownloadPanel } from "./components/documents/DownloadPanel";
+export { StrategyContents, StrategyDocument, StrategyProgress, strategyIsEmpty } from "./components/documents/StrategyDocument";
+export { DeckTemplate } from "./components/templates/DeckTemplate";
+export { DocsTemplate } from "./components/templates/DocsTemplate";
+export { ManualTemplate } from "./components/templates/ManualTemplate";
+export { MosaicTemplate } from "./components/templates/MosaicTemplate";
+export { StudioTemplate } from "./components/templates/StudioTemplate";
+export { VaultTemplate } from "./components/templates/VaultTemplate";
+export { useGuidelineViewer } from "./hooks/useGuidelineViewer";
+export { ALL_BLOCK_KINDS, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "./model/blockCatalog";
+export { SCALE_MAX, SCALE_MIN, backgroundInkWarning, overriddenIn, patchScope, resolveStyle } from "./model/blockStyle";
+export { brandFontStacks, familyFiles } from "./model/brandFonts";
+export { navLogo } from "./model/brandLogo";
+export { DESIGN_SYSTEMS } from "./model/designSystem";
+export { COLOR_FORMATS, COLUMN_CHOICES, SECTION_OPTIONS, hasOptions, resolveOptions } from "./model/sectionOptions";
+export type { OptionKey, SectionOptions } from "./model/sectionOptions";
+export { resolveVariantKey, variantsFor } from "./model/sectionVariants";
+export { personaIn, strategyText, textKey, traitIn, valueIn } from "./model/strategyLang";

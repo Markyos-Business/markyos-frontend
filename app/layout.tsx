@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { inter, plexArabic, bricolage } from "./fonts";
-import { AppProvider } from "@/lib/store";
-import { ToastProvider } from "@/components/Toast";
-import { DialogProvider } from "@/components/Dialog";
-import { ThemeProvider, THEME_INIT_SCRIPT } from "@/components/ThemeProvider";
+import { AppProvider } from "@/core/store/store";
+import { ToastProvider, DialogProvider } from "@/shared/ui";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/core/providers/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {

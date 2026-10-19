@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/lib/store";
-import { TopBar, TopBarTab } from "@/components/workspace/TopBar";
-import { BrandFilesContent } from "@/components/workspace/visual-identity/BrandFilesContent";
-import { LogoSystemContent } from "@/components/workspace/visual-identity/LogoSystemContent";
-import { ColorContent } from "@/components/workspace/visual-identity/ColorContent";
-import { TypographyContent } from "@/components/workspace/visual-identity/TypographyContent";
-import { AssetTypeGrid } from "@/components/workspace/visual-identity/AssetTypeGrid";
+import { useApp } from "@/core/store/store";
+import { TopBar, TopBarTab } from "@/features/workspace";
+import {
+  BrandFilesContent,
+  LogoSystemContent,
+  ColorContent,
+  TypographyContent,
+  AssetTypeGrid,
+} from "@/features/visual-identity";
 
 type Tab = "files" | "logo" | "color" | "typography" | "patterns" | "graphics" | "illustrations" | "icons";
 
