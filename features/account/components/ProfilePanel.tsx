@@ -35,17 +35,22 @@ export function ProfilePanel() {
   // whether it is still stored in the readable form an older build wrote.
   const readable = isPlaintext(account.password);
 
-  function commitName() {
+  async function commitName() {
     const value = name.trim();
     if (!value || value === account!.name) {
       setName(account!.name);
       return;
     }
-    updateAccount({ name: value });
+    const failed = await updateAccount({ name: value });
+    if (failed) {
+      setName(account!.name);
+      showToast(failed, "danger");
+      return;
+    }
     showToast("Name updated.", "success");
   }
 
-  function commitEmail() {
+  async function commitEmail() {
     const value = email.trim();
     if (value === account!.email) {
       setEmailError(undefined);
@@ -57,7 +62,7 @@ export function ProfilePanel() {
     }
     // The store rejects an email another account already uses — otherwise the
     // two would collide at sign-in and the second person would be locked out.
-    const failed = updateAccount({ email: value });
+    const failed = await updateAccount({ email: value });
     if (failed) {
       setEmailError(failed);
       return;

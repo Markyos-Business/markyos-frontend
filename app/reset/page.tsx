@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/core/store/store";
+import { API_ENABLED } from "@/core/api/client";
 import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
 import { AuthShell, FormError, PasswordField, EMAIL_RE, scorePassword } from "@/features/auth";
 
@@ -15,10 +16,14 @@ import { AuthShell, FormError, PasswordField, EMAIL_RE, scorePassword } from "@/
  * with every brand in it. Now it is a working two-step reset.
  *
  * The honest part is step one. A real product emails a link and tells you
- * nothing about whether the address is registered. There is no mail server in
- * this build, so the code is shown on screen — and the screen says that is what
- * is happening, rather than staging a "check your inbox" for a message that
- * will never arrive.
+ * nothing about whether the address is registered. Without a backend there is
+ * no mail server, so the code is shown on screen — and the screen says that is
+ * what is happening, rather than staging a "check your inbox" for a message
+ * that will never arrive.
+ *
+ * With a backend (`API_ENABLED`) it is the real flow: the request step ends on
+ * "check your inbox", and the emailed link lands back here with `?token=`,
+ * straight on the step that sets the new password.
  */
 export default function ResetPage() {
   return (
@@ -28,7 +33,7 @@ export default function ResetPage() {
   );
 }
 
-type Step = "request" | "confirm";
+type Step = "request" | "sent" | "confirm";
 
 function ResetPageBody() {
   const { requestPasswordReset, resetPassword } = useApp();
@@ -36,10 +41,12 @@ function ResetPageBody() {
   const router = useRouter();
   const search = useSearchParams();
 
-  const [step, setStep] = useState<Step>("request");
+  // A token in the URL is the emailed link: skip straight to the new password.
+  const linkToken = API_ENABLED ? search.get("token") : null;
+  const [step, setStep] = useState<Step>(linkToken ? "confirm" : "request");
   const [email, setEmail] = useState(search.get("email") ?? "");
   const [issued, setIssued] = useState<string | null>(null);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(linkToken ?? "");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<{
@@ -51,14 +58,21 @@ function ResetPageBody() {
   }>({});
   const [busy, setBusy] = useState(false);
 
-  function handleRequest(e: FormEvent) {
+  async function handleRequest(e: FormEvent) {
     e.preventDefault();
+    if (busy) return;
     if (!EMAIL_RE.test(email.trim())) {
       setErrors({ email: "Enter a valid email address." });
       return;
     }
     setErrors({});
-    const code = requestPasswordReset(email);
+    setBusy(true);
+    const code = await requestPasswordReset(email);
+    setBusy(false);
+    if (API_ENABLED) {
+      setStep("sent");
+      return;
+    }
     /*
      * The same screen either way.
      *
@@ -81,7 +95,9 @@ function ResetPageBody() {
     if (busy) return;
 
     const field: typeof errors = {};
-    if (!token.trim()) field.token = "Enter the code.";
+    if (!token.trim()) {
+      field.token = API_ENABLED ? "This page needs the link from your email." : "Enter the code.";
+    }
     if (password.length < 8) field.password = "At least 8 characters.";
     else if (scorePassword(password).score === 0) {
       field.password = "That one is too easy to guess — try something longer.";
@@ -95,7 +111,7 @@ function ResetPageBody() {
     setBusy(false);
 
     if (failed) {
-      if (/code/i.test(failed)) setErrors({ token: failed });
+      if (/code|link/i.test(failed)) setErrors(API_ENABLED ? { form: failed } : { token: failed });
       else setErrors({ form: failed });
       return;
     }
@@ -108,7 +124,11 @@ function ResetPageBody() {
     return (
       <AuthShell
         title="Reset your password"
-        subtitle="We'll generate a one-time code for the account on this email."
+        subtitle={
+          API_ENABLED
+            ? "We'll email a link to reset the password for the account on this email."
+            : "We'll generate a one-time code for the account on this email."
+        }
         footer={
           <>
             Remembered it?
@@ -131,14 +151,44 @@ function ResetPageBody() {
             autoComplete="email"
             autoFocus
           />
-          <PillButton type="submit" variant="primary" className="w-full mt-1">
-            Get a reset code
+          <PillButton type="submit" variant="primary" className="w-full mt-1" disabled={busy}>
+            {API_ENABLED ? (busy ? "Sending…" : "Email me a reset link") : "Get a reset code"}
           </PillButton>
-          <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
-            There is no mail server in this build, so the code appears on the next screen instead of
-            arriving by email. It is good for 30 minutes and works once.
-          </p>
+          {!API_ENABLED && (
+            <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
+              There is no mail server in this build, so the code appears on the next screen instead
+              of arriving by email. It is good for 30 minutes and works once.
+            </p>
+          )}
         </form>
+      </AuthShell>
+    );
+  }
+
+  if (step === "sent") {
+    return (
+      <AuthShell
+        title="Check your inbox"
+        subtitle="If an account exists for that email, a link to reset its password is on its way. It works once, for 60 minutes."
+        footer={
+          <>
+            Wrong address?
+            <button
+              type="button"
+              onClick={() => setStep("request")}
+              className="mk-tap cursor-pointer"
+              style={{ color: "var(--accent-text)" }}
+            >
+              Try another email
+            </button>
+          </>
+        }
+      >
+        <Link href="/login" className="w-full">
+          <PillButton type="button" variant="primary" className="w-full">
+            Back to log in
+          </PillButton>
+        </Link>
       </AuthShell>
     );
   }
@@ -147,9 +197,11 @@ function ResetPageBody() {
     <AuthShell
       title="Choose a new password"
       subtitle={
-        issued
-          ? "Here's your code. Enter it below along with the password you want."
-          : "Enter the code you were given, along with the password you want."
+        API_ENABLED
+          ? "Choose the password you'll sign in with from now on."
+          : issued
+            ? "Here's your code. Enter it below along with the password you want."
+            : "Enter the code you were given, along with the password you want."
       }
       footer={
         <>
@@ -168,9 +220,9 @@ function ResetPageBody() {
       }
     >
       <form onSubmit={handleConfirm} className="flex flex-col gap-4" noValidate>
-        <FormError>{errors.form}</FormError>
+        <FormError>{errors.form ?? (API_ENABLED ? errors.token : undefined)}</FormError>
 
-        {issued ? (
+        {API_ENABLED ? null : issued ? (
           <div
             className="rounded-[10px] px-4 py-3.5 flex items-center gap-3"
             style={{ background: "var(--surface-2)" }}
@@ -203,6 +255,7 @@ function ResetPageBody() {
           </p>
         )}
 
+        {!API_ENABLED && (
         <TextField
           label="Reset code"
           dir="ltr"
@@ -212,6 +265,7 @@ function ResetPageBody() {
           error={errors.token}
           autoComplete="one-time-code"
         />
+        )}
 
         <PasswordField
           label="New password"

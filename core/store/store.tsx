@@ -88,6 +88,10 @@ import { BrandRepository } from "@/core/data/repository";
 // exactly one implementation of what reaches a client.
 import { publishWorkspace, removeAssetFrom, unpublishWorkspace } from "@/core/data/adapters/entityOps";
 import { createLocalAdapter } from "@/core/data/adapters/localAdapter";
+// Accounts and sessions go to the backend when one is configured; see the
+// note on `API_ENABLED`. Brands stay in this browser until they move too.
+import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/core/api/client";
+import * as authApi from "@/features/auth/services/auth.api";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
  *  deep history is an array per step, not a copy of every brand. */
@@ -207,14 +211,15 @@ interface AppContextValue {
   login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
   logout: () => void;
   /** Edits the signed-in person's own details. Returns an error, or null. */
-  updateAccount: (patch: Partial<Pick<Account, "name" | "email">>) => string | null;
+  updateAccount: (patch: Partial<Pick<Account, "name" | "email">>) => Promise<string | null>;
   /** Changes the password. `current` is always required. */
   setAccountPassword: (next: string, current?: string) => Promise<string | null>;
   /**
-   * Starts a reset. Returns the one-time code, or null when no account
-   * matches — callers must say the same thing either way.
+   * Starts a reset. Browser-only: resolves to the one-time code, or null when
+   * no account matches. With a backend: the code is emailed as a link, and
+   * this always resolves to null. Callers must say the same thing either way.
    */
-  requestPasswordReset: (email: string) => string | null;
+  requestPasswordReset: (email: string) => Promise<string | null>;
   /** Completes a reset. Resolves to an error message, or null. */
   resetPassword: (token: string, next: string) => Promise<string | null>;
   /** The signed-in account's own brands. Empty when signed out. */
@@ -575,6 +580,41 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | null>(null);
 
+/**
+ * `state` with `account` signed in, or with nobody signed in when it is null.
+ *
+ * With a backend the server owns the account, so its copy replaces any local
+ * record with the same id. It is still kept in `accounts`, because the profile
+ * panel and the brand gallery read the signed-in person from there.
+ */
+function signedInAs(state: AppState, account: Account | null, remember: boolean): AppState {
+  if (!account) return { ...state, session: null };
+  return {
+    ...state,
+    accounts: [...state.accounts.filter((a) => a.id !== account.id), account],
+    session: {
+      accountId: account.id,
+      name: account.name,
+      email: account.email,
+      startedAt: Date.now(),
+      remember,
+    },
+  };
+}
+
+/** The account the refresh cookie belongs to, or null when there is none. */
+async function restoreServerSession(): Promise<Account | null> {
+  if (!(await refreshSession())) return null;
+  try {
+    return await authApi.fetchMe();
+  } catch {
+    return null;
+  }
+}
+
+const apiMessage = (err: unknown) =>
+  err instanceof ApiError ? err.message : "Something went wrong. Try again.";
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(() => defaultState());
   const [hydrated, setHydrated] = useState(false);
@@ -597,10 +637,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     (async () => {
       const loaded = await repo.load();
+      // With a backend, who is signed in is the server's answer, not whatever
+      // session this browser last saved: the refresh cookie either still
+      // works or it does not.
+      const account = API_ENABLED ? await restoreServerSession() : null;
       if (cancelled) return;
       // A null load means nothing stored yet, or storage that could not be
       // read. Either way the defaults already in state are what to show.
-      if (loaded) setState(loaded);
+      if (API_ENABLED) setState((prev) => signedInAs(loaded ?? prev, account, true));
+      else if (loaded) setState(loaded);
       setHydrated(true);
     })();
     return () => {
@@ -615,6 +660,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     void repo.save(state);
   }, [state, hydrated, repo]);
+
+  // The server ended the session (expired, revoked, or logged out elsewhere):
+  // reflect it here, which sends the person back to the login screen.
+  useEffect(() => {
+    if (!API_ENABLED) return;
+    setSessionExpiredHandler(() => setState((prev) => (prev.session ? { ...prev, session: null } : prev)));
+    return () => setSessionExpiredHandler(null);
+  }, []);
 
   const touchWorkspace = useCallback(
     (ws: Workspace, patch: Partial<Workspace>): Workspace => ({
@@ -738,6 +791,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const clean = normaliseEmail(email);
       if (!EMAIL_RE.test(clean)) return "Enter a valid email address.";
       if (password.length < 8) return "Use at least 8 characters.";
+      if (API_ENABLED) {
+        try {
+          const account = await authApi.signup(name.trim(), clean, password);
+          setState((prev) => signedInAs(prev, account, true));
+          return null;
+        } catch (err) {
+          return apiMessage(err);
+        }
+      }
       if (findByEmail(clean)) {
         return "An account already uses that email. Log in instead, or reset the password.";
       }
@@ -778,6 +840,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string, remember = true): Promise<string | null> => {
+      if (API_ENABLED) {
+        try {
+          const account = await authApi.login(normaliseEmail(email), password, remember);
+          setState((prev) => signedInAs(prev, account, remember));
+          return null;
+        } catch (err) {
+          return apiMessage(err);
+        }
+      }
       const account = findByEmail(email);
       // Same sentence whether the email is unknown or the password is wrong.
       // Telling them apart turns the form into a way to ask which addresses
@@ -848,6 +919,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
+    // Not awaited: the person is signed out here the moment they ask. The
+    // server revoking the refresh token can finish in the background.
+    if (API_ENABLED) void authApi.logout().catch(() => undefined);
     // The account records deliberately survive: signing out is not the same as
     // forgetting who you are, and the derived key has to still be there to
     // check against on the way back in.
@@ -856,10 +930,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [repo]);
 
   const updateAccount = useCallback(
-    (patch: Partial<Pick<Account, "name" | "email">>): string | null => {
+    async (patch: Partial<Pick<Account, "name" | "email">>): Promise<string | null> => {
       const current = stateRef.current;
       const id = current.session?.accountId;
       if (!id) return "You need to be signed in.";
+
+      if (API_ENABLED) {
+        try {
+          const account = await authApi.updateMe(patch);
+          setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
+          return null;
+        } catch (err) {
+          return apiMessage(err);
+        }
+      }
 
       if (patch.email !== undefined) {
         const clean = normaliseEmail(patch.email);
@@ -899,6 +983,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!account) return "You need to be signed in.";
       if (next.length < 8) return "Use at least 8 characters.";
 
+      if (API_ENABLED) {
+        try {
+          await authApi.changePassword(current ?? "", next);
+        } catch (err) {
+          // The backend's wording for a wrong current password is "Incorrect
+          // old password."; say it the way the rest of this form does.
+          return err instanceof ApiError && err.status === 400 && /old password/i.test(err.message)
+            ? "Your current password doesn't match."
+            : apiMessage(err);
+        }
+        setState((prev) => ({
+          ...prev,
+          accounts: prev.accounts.map((a) =>
+            a.id === account.id ? { ...a, passwordUpdatedAt: Date.now() } : a
+          ),
+        }));
+        return null;
+      }
+
       const { ok } = await verifyPassword(current ?? "", account.password);
       if (!ok) return "Your current password doesn't match.";
 
@@ -927,7 +1030,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * thing either way: a reset form that confirms which addresses are
    * registered is a way to enumerate them.
    */
-  const requestPasswordReset = useCallback((email: string): string | null => {
+  const requestPasswordReset = useCallback(async (email: string): Promise<string | null> => {
+    if (API_ENABLED) {
+      // The link goes out by email. Failure is swallowed for the same reason
+      // an unknown address is: the screen says the same thing regardless.
+      await authApi.requestPasswordReset(normaliseEmail(email)).catch(() => undefined);
+      return null;
+    }
     const account = findByEmail(email);
     if (!account) return null;
     const token = newResetToken();
@@ -947,6 +1056,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const resetPassword = useCallback(
     async (token: string, next: string): Promise<string | null> => {
+      if (API_ENABLED) {
+        try {
+          await authApi.resetPassword(token.trim(), next);
+        } catch (err) {
+          return apiMessage(err);
+        }
+        // The server has also signed this account out everywhere.
+        setState((prev) => ({ ...prev, session: null }));
+        return null;
+      }
       const clean = token.trim().toUpperCase();
       const reset = stateRef.current.resets.find((r) => r.token === clean);
       if (!reset) return "That reset code isn't recognised.";
@@ -1105,6 +1224,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (!id) return s;
         return { ...s, accounts: s.accounts.map((a) => (a.id === id ? { ...a, adminLang } : a)) };
       });
+      // Applied here first so the interface switches at once; the server copy
+      // follows. A failed save only costs the preference on the next sign-in.
+      if (API_ENABLED) void authApi.updateMe({ adminLang }).catch(() => undefined);
     },
     [setState]
   );
