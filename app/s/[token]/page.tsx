@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/core/store/store";
+import { useShareLink } from "@/features/sharing";
 import { Icon, LangToggle } from "@/shared/ui";
 import {
   CenteredMessage,
@@ -28,13 +28,12 @@ import { Lang } from "@/core/data/types";
  */
 export default function SharePage() {
   const params = useParams<{ token: string }>();
-  const { hydrated, resolveShareLink } = useApp();
+  const { loaded, found } = useShareLink(params.token);
   const [lang, setLang] = useState<Lang>("en");
 
-  if (!hydrated) return null;
+  if (!loaded) return null;
 
   const isAr = lang === "ar";
-  const found = resolveShareLink(params.token);
 
   if (!found) {
     return (

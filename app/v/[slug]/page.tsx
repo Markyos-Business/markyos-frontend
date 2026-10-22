@@ -74,7 +74,7 @@ export default function ClientViewerPage() {
       <PasswordGate
         name={ws.name}
         slug={ws.slug}
-        expected={ws.clientAccess.password}
+        verify={v.verifyPassword}
         isAr={ws.primaryLocale === "ar"}
         theme={theme}
         onUnlock={() => {

@@ -546,6 +546,12 @@ export interface Brief {
   sentAt: number | null;
   submittedAt: number | null;
   revokedAt: number | null;
+  /**
+   * Set by the server when the client sends the brief from their own
+   * device. The studio's app turns the answers into proposals the next time
+   * it loads the brand, then clears it.
+   */
+  proposalsPending?: boolean;
 }
 
 /**

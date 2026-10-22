@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_ENABLED } from "@/core/api/client";
 import { useApp } from "@/core/store/store";
 import { getBrandTheme } from "@/features/guideline-site/model/theme";
 import { brandFontStacks } from "@/features/guideline-site/model/brandFonts";
@@ -9,6 +10,7 @@ import { brandSocialLinks, graphicAssets, patternAssets } from "@/features/guide
 import { departmentHasContent } from "@/features/guideline-site/components/documents/DepartmentDocument";
 import { strategyNarrativeFilled } from "@/features/guideline-site/components/documents/StrategyDocument";
 import type { TocSection } from "@/features/guideline-site/components/types";
+import { usePublishedSite } from "./usePublishedSite";
 
 function unlockKey(slug: string) {
   return `markyos:client-unlock:${slug}`;
@@ -63,22 +65,42 @@ function applyOrder(natural: string[], preference: string[]): string[] {
  * plus its own customBlocks; a custom page is just its own block list.
  */
 export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "published" | "draft" = "draft") {
-  const { getWorkspace, hydrated } = useApp();
-  const record = getWorkspace(slug);
+  const { getWorkspace, hydrated: storeHydrated } = useApp();
+
+  // With a backend, what clients see comes from the server: the published
+  // snapshot, stripped of anything private, behind a password it checks
+  // itself. That is the only way the link works for anyone but the studio.
+  const fromServer = API_ENABLED && mode === "published";
+  const { site, unlock } = usePublishedSite(slug, fromServer);
+  const serverWs = site?.status === "ok" ? site.ws : site?.status === "locked" ? site.cover : undefined;
+
+  const record = fromServer ? serverWs : getWorkspace(slug);
+  const hydrated = fromServer ? !!site : storeHydrated;
 
   // The client-facing site reads the published snapshot; the editor and the
   // preview read the live draft. Serving the draft publicly is what made every
   // keystroke instantly visible to a studio's clients.
-  const ws: Workspace | undefined =
-    mode === "published"
+  const ws: Workspace | undefined = fromServer
+    ? serverWs
+    : mode === "published"
       ? record?.published
         ? ({ ...(record.published as Workspace), published: null, publishedAt: record.publishedAt } as Workspace)
         : undefined
       : record;
   /** The workspace exists but has never been published. */
-  const notPublished = mode === "published" && !!record && !record.published;
+  const notPublished = fromServer
+    ? site?.status === "not_published"
+    : mode === "published" && !!record && !record.published;
 
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlockedHere, setUnlocked] = useState(false);
+  // From the server, an answer with content in it is the proof of unlocking.
+  const unlocked = fromServer ? site?.status === "ok" : unlockedHere;
+
+  /** Checks a site password: on the server when there is one. */
+  async function verifyPassword(password: string): Promise<boolean> {
+    if (fromServer) return unlock(password);
+    return password === ws?.clientAccess.password;
+  }
   const [checkedStorage, setCheckedStorage] = useState(false);
   const [previewLang, setPreviewLang] = useState<Lang>("en");
   const [downloadOpen, setDownloadOpen] = useState(false);
@@ -375,6 +397,7 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
     checkedStorage,
     unlocked,
     setUnlocked,
+    verifyPassword,
     pageNotFound,
     theme,
     fonts,

@@ -71,7 +71,8 @@ import {
   defaultCompetitorColumns,
   defaultTypography,
 } from "@/core/data/mockData";
-import { BRIEF_TEMPLATES, QUESTION_BY_KEY } from "@/features/brief/model/briefQuestions";
+import { BRIEF_TEMPLATES } from "@/features/brief/model/briefQuestions";
+import { briefProposals, withBriefProposals } from "@/features/brief/model/briefProposals";
 import { initialsFor, slugify, uid } from "@/shared/lib/utils";
 import {
   EMAIL_RE,
@@ -625,7 +626,10 @@ async function restoreServerSession(): Promise<Account | null> {
  */
 function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
   const ids = new Set(server.map((w) => w.id));
-  return { ...state, workspaces: [...server, ...state.workspaces.filter((w) => !ids.has(w.id))] };
+  return {
+    ...state,
+    workspaces: [...server.map(withBriefProposals), ...state.workspaces.filter((w) => !ids.has(w.id))],
+  };
 }
 
 const apiMessage = (err: unknown) =>
@@ -660,7 +664,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           onServerCopy: (ws, previousSlug) => {
             setState((prev) => ({
               ...prev,
-              workspaces: prev.workspaces.map((w) => (w.id === ws.id ? ws : w)),
+              workspaces: prev.workspaces.map((w) => (w.id === ws.id ? withBriefProposals(ws) : w)),
             }));
             if (previousSlug !== ws.slug) {
               setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
@@ -2145,30 +2149,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const now = Date.now();
       const requestedBy = brief.clientName || "the client";
 
-      // Answers become proposals, not writes. This is the whole reason the
-      // brief can be handed to someone outside the studio.
-      const newDrafts: Draft[] = [];
-      for (const answer of brief.answers) {
-        const question = QUESTION_BY_KEY.get(answer.questionKey);
-        if (!question?.strategyField) continue;
-        if (!answer.value.trim()) continue;
-        newDrafts.push({
-          id: uid(),
-          targetType: "strategyField",
-          targetRef: question.strategyField,
-          content: answer.value.trim(),
-          source: "brief",
-          provenance: {
-            summary: `Discovery brief — “${brief.lang === "ar" ? question.promptAr : question.promptEn}”`,
-            inputs: [question.key],
-            requestedBy,
-          },
-          status: "pending",
-          createdAt: now,
-          decidedAt: null,
-          decidedBy: null,
-        });
-      }
+      const newDrafts = briefProposals(brief, now);
 
       mutateWorkspace(workspace.id, (ws) =>
         touchWorkspace(ws, {

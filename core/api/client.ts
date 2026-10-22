@@ -110,6 +110,7 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   /** JSON-encoded, except a `FormData`, which goes as multipart. */
   body?: unknown;
+  headers?: Record<string, string>;
 }
 
 /**
@@ -129,6 +130,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
         // A FormData body sets its own multipart boundary.
         ...(json ? { "Content-Type": "application/json" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...options.headers,
       },
       body: json ? JSON.stringify(options.body) : (options.body as FormData | undefined),
     });

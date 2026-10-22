@@ -2,10 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/core/store/store";
 import { LangToggle, PillButton, AutoTextarea } from "@/shared/ui";
 import { CenteredMessage } from "@/features/guideline-site";
-import { QUESTION_BY_KEY } from "@/features/brief";
+import { QUESTION_BY_KEY, usePublicBrief } from "@/features/brief";
 import { BriefQuestion, Lang } from "@/core/data/types";
 
 /**
@@ -25,11 +24,10 @@ import { BriefQuestion, Lang } from "@/core/data/types";
  */
 export default function BriefPage() {
   const params = useParams<{ token: string }>();
-  const { hydrated, getBriefByToken, answerBrief, submitBrief } = useApp();
+  const { hydrated, found, answer, submit } = usePublicBrief(params.token);
   const [langOverride, setLangOverride] = useState<Lang | null>(null);
   const [justSubmitted, setJustSubmitted] = useState(false);
-
-  const found = hydrated ? getBriefByToken(params.token) : undefined;
+  const [sendError, setSendError] = useState<string | null>(null);
   const lang: Lang = langOverride ?? found?.brief.lang ?? "en";
   const isAr = lang === "ar";
 
@@ -162,7 +160,7 @@ export default function BriefPage() {
                 question={q}
                 isAr={isAr}
                 value={answerFor(q.key)}
-                onChange={(v) => answerBrief(brief.token, q.key, v)}
+                onChange={(v) => answer(q.key, v)}
               />
             ))}
           </section>
@@ -179,15 +177,21 @@ export default function BriefPage() {
           </p>
           <div>
             <PillButton
-              onClick={() => {
-                submitBrief(brief.token);
-                setJustSubmitted(true);
+              onClick={async () => {
+                const error = await submit();
+                setSendError(error);
+                if (!error) setJustSubmitted(true);
               }}
               disabled={answered === 0}
             >
               {isAr ? "إرسال الإجابات" : "Send my answers"}
             </PillButton>
           </div>
+          {sendError && (
+            <span role="alert" className="text-[12px]" style={{ color: "var(--danger)" }}>
+              {sendError}
+            </span>
+          )}
           {answered === 0 && (
             <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
               {isAr ? "أجب عن سؤال واحد على الأقل." : "Answer at least one question first."}

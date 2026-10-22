@@ -26,14 +26,15 @@ function readLockUntil(slug: string): number {
 export function PasswordGate({
   name,
   slug,
-  expected,
+  verify,
   isAr,
   theme,
   onUnlock,
 }: {
   name: string;
   slug: string;
-  expected: string;
+  /** Whether a password is the right one: on the server, when there is one. */
+  verify: (password: string) => boolean | Promise<boolean>;
   isAr: boolean;
   theme: ReturnType<typeof getBrandTheme>;
   onUnlock: () => void;
@@ -59,10 +60,12 @@ export function PasswordGate({
     return () => window.clearInterval(id);
   }, [locked]);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (locked) return;
-    if (value === expected) {
+    // A check that could not be made (offline, rate-limited) counts as a miss.
+    const matched = await Promise.resolve(verify(value)).catch(() => false);
+    if (matched) {
       try {
         window.sessionStorage.removeItem(lockKey(slug));
       } catch {
