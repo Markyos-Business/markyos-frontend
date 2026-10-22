@@ -21,9 +21,12 @@ import { createLocalAdapter } from "./localAdapter";
  *   and that copy replaces this one here (`onServerCopy`) rather than being
  *   overwritten.
  *
- * Files travel as the short references the local adapter stores them under,
- * so the server holds the brand without its images. On another device those
- * references resolve to nothing until uploads move to object storage.
+ * Files go up separately. Before a brand is sent, each inline `data:` URL in
+ * it is uploaded to `/brands/files/` and replaced by the file's URL, so the
+ * server holds links, not megabytes. A brand coming back has those links
+ * (everything under `fileBase`) turned back into `data:` URLs, so the rest
+ * of the app never sees the difference. Both directions are cached, so a
+ * file is uploaded once and downloaded once.
  */
 
 interface ServerBrand {
@@ -31,7 +34,35 @@ interface ServerBrand {
   slug: string;
   version: number;
   updatedAt: string;
+  /** Every uploaded file's URL starts with this. */
+  fileBase: string;
   data: Workspace;
+}
+
+/** `value` with each string replaced by `fn(string)`, one at a time, so a
+ *  file used twice in a brand is uploaded once. */
+async function mapStrings(value: unknown, fn: (s: string) => Promise<string>): Promise<unknown> {
+  if (typeof value === "string") return fn(value);
+  if (Array.isArray(value)) {
+    const out: unknown[] = [];
+    for (const v of value) out.push(await mapStrings(v, fn));
+    return out;
+  }
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) out[k] = await mapStrings(v, fn);
+    return out;
+  }
+  return value;
+}
+
+function readAsDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
 }
 
 interface Synced {
@@ -69,12 +100,67 @@ export function createApiAdapter(options: {
   let running = false;
   let again = false;
 
+  /** data: URL -> its uploaded URL, and back. */
+  const fileUrls = new Map<string, string>();
+  const fileData = new Map<string, string>();
+
   const portableJson = (ws: Workspace) => JSON.stringify(local.toPortable(ws));
+
+  const remember = (dataUrl: string, url: string) => {
+    fileUrls.set(dataUrl, url);
+    fileData.set(url, dataUrl);
+  };
+
+  /** `ws` with every inline file uploaded and swapped for its URL. */
+  function withFileUrls(ws: Workspace): Promise<Workspace> {
+    return mapStrings(ws, async (s) => {
+      if (!s.startsWith("data:")) return s;
+      const known = fileUrls.get(s);
+      if (known) return known;
+      const form = new FormData();
+      form.append("file", await (await fetch(s)).blob(), "file");
+      try {
+        const { url } = await api<{ url: string }>("/brands/files/", { method: "POST", body: form });
+        remember(s, url);
+        return url;
+      } catch (err) {
+        if (!(err instanceof ApiError) || err.status !== 400) throw err;
+        // Too big or a refused type: keep it in this browser only, under the
+        // reference the local adapter stores it by.
+        console.warn(`Markyos: a file in "${ws.name}" stays on this device: ${err.message}`);
+        return local.toPortable(s);
+      }
+    }) as Promise<Workspace>;
+  }
+
+  /** A server brand as the app holds it: files inline, repairs applied. */
+  async function fromServer(brands: ServerBrand[], state: AppState): Promise<Workspace[]> {
+    const inlined: Workspace[] = [];
+    for (const brand of brands) {
+      inlined.push(
+        (await mapStrings(brand.data, async (s) => {
+          if (!brand.fileBase || !s.startsWith(brand.fileBase)) return s;
+          const known = fileData.get(s);
+          if (known) return known;
+          try {
+            const res = await fetch(s);
+            if (!res.ok) return s;
+            const dataUrl = await readAsDataUrl(await res.blob());
+            remember(dataUrl, s);
+            return dataUrl;
+          } catch {
+            return s; // unreachable for now; the link itself still renders
+          }
+        })) as Workspace
+      );
+    }
+    return local.repairWorkspaces(await local.fromPortable(inlined), state);
+  }
 
   /** Take the server's copy: resolve its files, remember it, hand it over. */
   async function adopt(brand: ServerBrand, previousSlug: string) {
-    const [restored] = local.repairWorkspaces(
-      [await local.fromPortable(brand.data)],
+    const [restored] = await fromServer(
+      [brand],
       latest ?? ({ workspaces: [] } as unknown as AppState)
     );
     synced.set(brand.id, { json: portableJson(restored), version: brand.version });
@@ -117,12 +203,12 @@ export function createApiAdapter(options: {
     let retry = false;
     for (const ws of state.workspaces) {
       if (ws.ownerAccountId !== owner) continue;
-      const data = local.toPortable(ws);
-      const json = JSON.stringify(data);
+      const json = portableJson(ws);
       const known = synced.get(ws.id);
       if (known?.json === json) continue;
 
       try {
+        const data = await withFileUrls(ws);
         if (!known) {
           const created = await api<ServerBrand>("/brands/", { method: "POST", body: { data } });
           synced.set(ws.id, { json, version: created.version });
@@ -183,10 +269,7 @@ export function createApiAdapter(options: {
       } catch {
         return null;
       }
-      const restored = local.repairWorkspaces(
-        await local.fromPortable(brands.map((b) => b.data)),
-        state
-      );
+      const restored = await fromServer(brands, state);
       restored.forEach((ws, i) =>
         synced.set(ws.id, { json: portableJson(ws), version: brands[i].version })
       );

@@ -108,6 +108,7 @@ export function refreshSession(): Promise<boolean> {
 
 interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+  /** JSON-encoded, except a `FormData`, which goes as multipart. */
   body?: unknown;
 }
 
@@ -119,15 +120,17 @@ interface RequestOptions {
  * fifteen-minute access token expiring mid-session is invisible.
  */
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const json = options.body !== undefined && !(options.body instanceof FormData);
   const send = () =>
     fetch(`${API_URL}${path}`, {
       method: options.method ?? "GET",
       credentials: "include",
       headers: {
-        ...(options.body !== undefined ? { "Content-Type": "application/json" } : {}),
+        // A FormData body sets its own multipart boundary.
+        ...(json ? { "Content-Type": "application/json" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
-      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      body: json ? JSON.stringify(options.body) : (options.body as FormData | undefined),
     });
 
   let res: Response;
