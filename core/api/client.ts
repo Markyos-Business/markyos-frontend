@@ -40,7 +40,10 @@ export class ApiError extends Error {
     message: string,
     readonly status: number,
     /** Per-field messages from a 400, keyed by field name. */
-    readonly fields: Record<string, string> = {}
+    readonly fields: Record<string, string> = {},
+    /** The parsed response body, for callers that need more than a message
+     *  (a 409 carries the server's current copy). */
+    readonly data: unknown = null
   ) {
     super(message);
     this.name = "ApiError";
@@ -70,7 +73,7 @@ function toApiError(status: number, data: unknown, retryAfter?: string | null): 
     }
   }
   const message = detail ?? Object.values(fields)[0] ?? "Something went wrong. Try again.";
-  return new ApiError(message, status, fields);
+  return new ApiError(message, status, fields, data);
 }
 
 /*

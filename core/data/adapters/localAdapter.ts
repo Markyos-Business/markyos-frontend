@@ -409,7 +409,24 @@ function migrate(parsed: AppState): AppState {
   return parsed;
 }
 
-export function createLocalAdapter(): BrandRepository {
+/**
+ * The local adapter, plus what an adapter syncing to a server needs from it.
+ *
+ * Uploaded files stay in this browser's IndexedDB until they move to object
+ * storage, so a brand sent anywhere else must carry the same short references
+ * this adapter stores them under — and be resolved against the same store
+ * when it comes back.
+ */
+export interface LocalAdapter extends BrandRepository {
+  /** `value` with each inline `data:` URL replaced by its stored reference. */
+  toPortable<T>(value: T): T;
+  /** Inverse of `toPortable`. A reference with no file on this device is "". */
+  fromPortable<T>(value: T): Promise<T>;
+  /** The storage-format repairs `load` applies, for brands from elsewhere. */
+  repairWorkspaces(workspaces: Workspace[], state: AppState): Workspace[];
+}
+
+export function createLocalAdapter(): LocalAdapter {
   /** data: URL -> IndexedDB key, so the same file keeps one stored copy. */
   const blobKeys = new Map<string, string>();
   /** Keys already written, so a save only stores files that are actually new. */
@@ -417,7 +434,39 @@ export function createLocalAdapter(): BrandRepository {
 
   // Bound to a name rather than returned inline, so the entity operations can
   // go through `load` and `save` instead of duplicating them.
-  const adapter: BrandRepository = {
+  const keyFor = (dataUrl: string) => {
+    const existing = blobKeys.get(dataUrl);
+    if (existing) return existing;
+    const key = uid();
+    blobKeys.set(dataUrl, key);
+    return key;
+  };
+
+  const adapter: LocalAdapter = {
+    toPortable<T>(value: T): T {
+      // Same key map as `save`, so the reference sent elsewhere is the one
+      // the payload is written under here.
+      return stripBlobs(value, new Map(), keyFor) as T;
+    },
+
+    async fromPortable<T>(value: T): Promise<T> {
+      let blobs = new Map<string, string>();
+      try {
+        blobs = await readAllBlobs();
+      } catch {
+        // No IndexedDB: references resolve to "" and render as missing.
+      }
+      for (const [key, dataUrl] of blobs) {
+        blobKeys.set(dataUrl, key);
+        persistedKeys.add(key);
+      }
+      return restoreBlobs(value, blobs) as T;
+    },
+
+    repairWorkspaces(workspaces, state) {
+      return migrate({ ...state, workspaces: workspaces.map((w) => ({ ...w })) }).workspaces;
+    },
+
     async load() {
       try {
         const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -454,13 +503,6 @@ export function createLocalAdapter(): BrandRepository {
       // file, which keeps it far below the ~5MB origin quota no matter how
       // much the studio uploads.
       const blobs = new Map<string, string>();
-      const keyFor = (dataUrl: string) => {
-        const existing = blobKeys.get(dataUrl);
-        if (existing) return existing;
-        const key = uid();
-        blobKeys.set(dataUrl, key);
-        return key;
-      };
       const stripped = stripBlobs(state, blobs, keyFor);
 
       try {

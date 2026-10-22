@@ -11,7 +11,7 @@ export default function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   const params = useParams<{ slug: string }>();
-  const { state, hydrated, getWorkspace, uiLang } = useApp();
+  const { state, hydrated, getWorkspace, uiLang, slugMoves } = useApp();
   const router = useRouter();
   const pathname = usePathname();
   const found = getWorkspace(params.slug);
@@ -50,8 +50,13 @@ export default function WorkspaceLayout({
       router.replace(`/login?next=${encodeURIComponent(`/w/${params.slug}/overview`)}`);
       return;
     }
-    if (!ws) router.replace("/brands");
-  }, [hydrated, state.session, ws, router, params.slug]);
+    if (ws) return;
+    // The server moved this brand to a free address after it was created
+    // here; follow it, keeping whichever page of the brand was open.
+    const moved = slugMoves[params.slug];
+    if (moved) router.replace(pathname.replace(`/w/${params.slug}`, `/w/${moved}`));
+    else router.replace("/brands");
+  }, [hydrated, state.session, ws, router, params.slug, slugMoves, pathname]);
 
   const isAr = uiLang(ws) === "ar";
 

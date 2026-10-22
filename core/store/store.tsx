@@ -92,6 +92,7 @@ import { createLocalAdapter } from "@/core/data/adapters/localAdapter";
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/core/api/client";
 import * as authApi from "@/features/auth/services/auth.api";
+import { createApiAdapter, isApiAdapter } from "@/core/data/adapters/apiAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
  *  deep history is an array per step, not a copy of every brand. */
@@ -225,6 +226,8 @@ interface AppContextValue {
   /** The signed-in account's own brands. Empty when signed out. */
   myWorkspaces: Workspace[];
   getWorkspace: (slug: string) => Workspace | undefined;
+  /** Where a brand's address moved to, when the server changed its slug. */
+  slugMoves: Record<string, string>;
   createWorkspace: (name: string) => Workspace;
   /** The brand's own language — what the client sees first. */
   setPrimaryLocale: (workspaceId: string, primaryLocale: Lang) => void;
@@ -612,6 +615,19 @@ async function restoreServerSession(): Promise<Account | null> {
   }
 }
 
+/**
+ * `state` with the server's copy of `accountId`'s brands.
+ *
+ * The server wins for every brand it has. A brand of theirs it does not have
+ * yet (made while the connection was down) is kept, and the next sync creates
+ * it. Other accounts' brands in this browser — the demo, a colleague's — are
+ * left alone.
+ */
+function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
+  const ids = new Set(server.map((w) => w.id));
+  return { ...state, workspaces: [...server, ...state.workspaces.filter((w) => !ids.has(w.id))] };
+}
+
 const apiMessage = (err: unknown) =>
   err instanceof ApiError ? err.message : "Something went wrong. Try again.";
 
@@ -627,7 +643,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * the adapter must be constructed exactly once, and writing a ref while
    * rendering is the pattern that breaks under concurrent rendering.
    */
-  const [repo] = useState<BrandRepository>(() => createLocalAdapter());
+  /**
+   * Addresses the server moved a brand away from, old slug → new.
+   *
+   * A brand created here takes the slug its name gives it, and the page opens
+   * on it at once. If another studio already has that slug, the server stores
+   * it under the next free one (`acme-2`) a moment later — and the open page
+   * has to follow rather than report the brand missing.
+   */
+  const [slugMoves, setSlugMoves] = useState<Record<string, string>>({});
+  const [repo] = useState<BrandRepository>(() =>
+    API_ENABLED
+      ? createApiAdapter({
+          // A newer copy from the server (saved in another tab or device, or
+          // moved to a free slug) replaces this one.
+          onServerCopy: (ws, previousSlug) => {
+            setState((prev) => ({
+              ...prev,
+              workspaces: prev.workspaces.map((w) => (w.id === ws.id ? ws : w)),
+            }));
+            if (previousSlug !== ws.slug) {
+              setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
+            }
+          },
+        })
+      : createLocalAdapter()
+  );
 
   useEffect(() => {
     // One-time hydration on mount — deliberately deferred out of the render
@@ -641,10 +682,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // session this browser last saved: the refresh cookie either still
       // works or it does not.
       const account = API_ENABLED ? await restoreServerSession() : null;
+      const server =
+        account && isApiAdapter(repo) ? await repo.pullWorkspaces(loaded ?? defaultState()) : null;
       if (cancelled) return;
       // A null load means nothing stored yet, or storage that could not be
       // read. Either way the defaults already in state are what to show.
-      if (API_ENABLED) setState((prev) => signedInAs(loaded ?? prev, account, true));
+      if (API_ENABLED) {
+        setState((prev) => {
+          const next = signedInAs(loaded ?? prev, account, true);
+          return server ? withServerWorkspaces(next, server) : next;
+        });
+      }
       else if (loaded) setState(loaded);
       setHydrated(true);
     })();
@@ -781,6 +829,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * an async updater, which React will call more than once.
    */
 
+  /** Load the signed-in account's brands from the server into state. */
+  const pullServerWorkspaces = useCallback(async () => {
+    if (!isApiAdapter(repo)) return;
+    const server = await repo.pullWorkspaces(stateRef.current);
+    if (server) setState((prev) => withServerWorkspaces(prev, server));
+  }, [repo]);
+
   const findByEmail = useCallback((email: string) => {
     const wanted = normaliseEmail(email);
     return stateRef.current.accounts.find((a) => normaliseEmail(a.email) === wanted);
@@ -795,6 +850,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         try {
           const account = await authApi.signup(name.trim(), clean, password);
           setState((prev) => signedInAs(prev, account, true));
+          await pullServerWorkspaces();
           return null;
         } catch (err) {
           return apiMessage(err);
@@ -835,7 +891,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }));
       return null;
     },
-    [findByEmail, repo]
+    [findByEmail, repo, pullServerWorkspaces]
   );
 
   const login = useCallback(
@@ -844,6 +900,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         try {
           const account = await authApi.login(normaliseEmail(email), password, remember);
           setState((prev) => signedInAs(prev, account, remember));
+          // Awaited so the gallery the login page goes to already has them.
+          await pullServerWorkspaces();
           return null;
         } catch (err) {
           return apiMessage(err);
@@ -915,7 +973,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }));
       return null;
     },
-    [findByEmail, repo]
+    [findByEmail, repo, pullServerWorkspaces]
   );
 
   const logout = useCallback(() => {
@@ -3313,6 +3371,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     () => ({
       state,
       hydrated,
+      slugMoves,
       signup,
       login,
       logout,
@@ -3460,6 +3519,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [
       state,
       hydrated,
+      slugMoves,
       signup,
       login,
       logout,
