@@ -21,7 +21,8 @@ import { assertServerUp } from "./serverGuard.mjs";
  * the one thing a screenshot of the open state cannot tell you.
  */
 
-const BASE = "http://localhost:3000";
+// Override with SWEEP_BASE to sweep a server on another port.
+const BASE = process.env.SWEEP_BASE ?? "http://localhost:3000";
 const SLUG = "nadeen-studio";
 
 // A 500 error page opens no panels, so it has no panel that fails to close on

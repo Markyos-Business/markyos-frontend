@@ -20,7 +20,8 @@ import { deflateSync } from "node:zlib";
  * be connected and disconnected.
  */
 
-const BASE = "http://localhost:3000";
+// Override with SWEEP_BASE to sweep a server on another port.
+const BASE = process.env.SWEEP_BASE ?? "http://localhost:3000";
 const EMAIL = "nadeen@studio.com";
 const PASSWORD = "markyos2026";
 const SLUG = "nadeen-studio";

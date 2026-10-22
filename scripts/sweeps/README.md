@@ -19,6 +19,14 @@ npm run sweep:contrast # or one at a time
 
 Each exits non-zero on failure, so they drop straight into CI when it arrives.
 
+They expect the app at `http://localhost:3000`. If that port is taken, run the
+app elsewhere and point the sweeps at it:
+
+```bash
+npx next start -p 3100
+SWEEP_BASE=http://localhost:3100 npm run sweep
+```
+
 Playwright is a standing devDependency rather than something installed and
 removed around each run. That was the old habit, from when these checks were
 throwaway scripts that existed for an afternoon; now that they are committed and

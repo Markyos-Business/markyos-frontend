@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 import { assertServerUp, installServerGuard } from "./serverGuard.mjs";
 
-const BASE = "http://localhost:3000";
+// Override with SWEEP_BASE to sweep a server on another port.
+const BASE = process.env.SWEEP_BASE ?? "http://localhost:3000";
 const WS = "nadeen-studio";
 const PHONE = { width: 390, height: 844 };
 
