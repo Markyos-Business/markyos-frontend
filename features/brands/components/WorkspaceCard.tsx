@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { AssetThumb } from "@/shared/ui/media/AssetThumb/AssetThumb";
-import { Workspace } from "@/core/data/types";
+import { TeamRole, Workspace } from "@/core/data/types";
 import { formatRelative } from "@/shared/lib/utils";
 
-export function WorkspaceCard({ workspace }: { workspace: Workspace }) {
+/**
+ * `role` is the viewer's own role on the brand. Anything but owner means it
+ * came to them through someone else's team, and the card says so — otherwise
+ * a brand they can only look at sits in the gallery like one they run.
+ */
+export function WorkspaceCard({ workspace, role = "owner" }: { workspace: Workspace; role?: TeamRole | null }) {
   const symbol = workspace.logo.symbol;
   const hasSymbol = symbol.phase === "attached" && symbol.url;
 
@@ -43,6 +48,11 @@ export function WorkspaceCard({ workspace }: { workspace: Workspace }) {
             Edited {formatRelative(workspace.updatedAt)} ·{" "}
             {workspace.colors.length > 0 ? "active" : "empty"}
           </div>
+          {role && role !== "owner" && (
+            <div className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+              Shared with you as {role}
+            </div>
+          )}
         </div>
         <span
           className="text-[10px] font-semibold px-2.5 py-1.5 rounded-full shrink-0"

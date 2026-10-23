@@ -62,8 +62,9 @@ function AccountPageBody() {
   if (!hydrated || !state.session) return null;
 
   // Billing and the organisation stats are about this account, so they count
-  // this account's brands — not every brand in the browser.
-  const workspaces = myWorkspaces;
+  // the brands it owns — not every brand in the browser, and not the ones it
+  // was only invited onto, which someone else pays for.
+  const workspaces = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId);
   const totalColors = workspaces.reduce((n, w) => n + w.colors.length, 0);
   const totalLogos = workspaces.reduce((n, w) => n + Object.values(w.logo).filter((s) => s.phase === "attached").length, 0);
   const totalSignOffs = workspaces.reduce((n, w) => n + w.signOffPins.length, 0);

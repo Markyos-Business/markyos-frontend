@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/core/store/store";
+import { canEdit, roleOn } from "@/core/data/access";
 import { Sidebar } from "@/features/workspace";
 
 export default function WorkspaceLayout({
@@ -28,19 +29,40 @@ export default function WorkspaceLayout({
    */
   const focused = !!pathname && /\/builder(\/|$)/.test(pathname);
   /*
-   * The one place brand ownership is enforced.
+   * The one place brand access is enforced in the app.
    *
    * `getWorkspace` is deliberately unfiltered, because the client link at
    * /v/<slug> and a share link at /s/<token> both resolve through it with
    * nobody signed in. This is the studio-admin shell, where the opposite is
-   * true: everything under it can edit, publish, invite and delete, so a brand
-   * belonging to another account in this browser must not open here.
+   * true: only the brand's owner and the people on its team may open it. The
+   * server enforces the same rule on every request; this decides what shows.
    *
    * Treated as "not found" rather than "not allowed", and bounced to the
    * gallery the same way a made-up slug is. Saying "that brand exists but
    * isn't yours" would confirm the slug to someone guessing at them.
    */
-  const ws = found && found.ownerAccountId === state.session?.accountId ? found : undefined;
+  const role = found ? roleOn(found, state.session) : null;
+  const ws = role ? found : undefined;
+  const readOnly = !!ws && !canEdit(role);
+
+  /*
+   * View only, at the source of input.
+   *
+   * The store already refuses a viewer's edits, but many fields keep a draft
+   * of their own and would go on showing what was typed, some with a "saved"
+   * toast after it. Stopping typing, pasting and dropping here, before any
+   * page sees them, keeps every field showing the stored value. Clicks still
+   * go through: tabs, links and anything else that only shows things.
+   */
+  const pane = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = pane.current;
+    if (!el || !readOnly) return;
+    const stop = (e: Event) => e.preventDefault();
+    const events = ["beforeinput", "paste", "drop"] as const;
+    events.forEach((type) => el.addEventListener(type, stop, true));
+    return () => events.forEach((type) => el.removeEventListener(type, stop, true));
+  }, [readOnly, ws]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -99,7 +121,22 @@ export default function WorkspaceLayout({
       style={{ fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
       {!focused && <Sidebar workspace={ws} />}
-      <div className="flex-1 min-w-0 min-h-0 flex flex-col">{children}</div>
+      <div ref={pane} className="flex-1 min-w-0 min-h-0 flex flex-col">
+        {/* Typing does nothing for viewers and clients (above), and this is
+            what tells them why. */}
+        {readOnly && (
+          <div
+            role="status"
+            className="px-7 py-2 text-[12.5px]"
+            style={{ background: "var(--surface-1)", boxShadow: "inset 0 -1px 0 var(--hairline)", color: "var(--text-muted)" }}
+          >
+            {isAr
+              ? "يمكنك عرض هذه العلامة فقط، دون تعديلها."
+              : `You're a ${role} on this brand, so it's view only. Ask the owner if you need to make changes.`}
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   );
 }

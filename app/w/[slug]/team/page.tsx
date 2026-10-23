@@ -7,6 +7,7 @@ import { useToast, useDialog, Icon, PillButton } from "@/shared/ui";
 import { TopBar } from "@/features/workspace";
 import { Section, Row, Badge, EmptyHint } from "@/shared/ui/composites/SectionUI/SectionUI";
 import { TeamRole } from "@/core/data/types";
+import { roleOn } from "@/core/data/access";
 import { formatRelative } from "@/shared/lib/utils";
 
 const ROLES: TeamRole[] = ["owner", "editor", "viewer", "client"];
@@ -47,8 +48,7 @@ export default function TeamPage() {
   if (!ws) return null;
   const isAr = uiLang(ws) === "ar";
 
-  const me = ws.team.find((m) => m.email === state.session?.email);
-  const myRole: TeamRole = me?.role ?? "owner";
+  const myRole: TeamRole = roleOn(ws, state.session) ?? "viewer";
   const canGovern = myRole === "owner";
   const openPins = ws.signOffPins.filter((p) => !p.resolved);
   const actorName = state.session?.name || state.session?.email || "You";

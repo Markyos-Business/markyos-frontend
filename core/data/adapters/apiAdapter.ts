@@ -1,6 +1,7 @@
 import { ApiError, api } from "@/core/api/client";
 import type { BrandRepository, SaveResult } from "../repository";
 import type { AppState, Workspace } from "../types";
+import { canEdit, roleOn } from "../access";
 import { createLocalAdapter } from "./localAdapter";
 import { inlineFiles, withFileUrls } from "./serverFiles";
 
@@ -64,6 +65,13 @@ export function createApiAdapter(options: {
    * the address it had here, so a page open on it can follow a move.
    */
   onServerCopy: (workspace: Workspace, previousSlug: string) => void;
+  /**
+   * A save the server refused, and why. The server's copy has already been
+   * loaded over this one, so the screen shows what is actually stored.
+   */
+  onRefused: (workspace: Workspace, message: string) => void;
+  /** A brand this account can no longer open: taken off its team. */
+  onLost: (workspace: Workspace) => void;
 }): ApiAdapter {
   const local = createLocalAdapter();
   const synced = new Map<string, Synced>();
@@ -130,12 +138,14 @@ export function createApiAdapter(options: {
   /** Send every changed brand. True when something should be retried. */
   async function syncOnce(): Promise<boolean> {
     const state = latest;
-    const owner = state?.session?.accountId;
-    if (!state || !owner) return false;
+    if (!state?.session) return false;
 
     let retry = false;
     for (const ws of state.workspaces) {
-      if (ws.ownerAccountId !== owner) continue;
+      // Only what this account may change: its own brands, and those it
+      // edits. A viewer's local changes stay local; the server refuses them.
+      const role = roleOn(ws, state.session);
+      if (!canEdit(role)) continue;
       const json = portableJson(ws);
       const known = synced.get(ws.id);
       if (known?.json === json) continue;
@@ -143,6 +153,8 @@ export function createApiAdapter(options: {
       try {
         const data = await uploadFiles(ws);
         if (!known) {
+          // Only an owner creates; anyone else's brand came from the server.
+          if (role !== "owner") continue;
           const created = await api<ServerBrand>("/brands/", { method: "POST", body: { data } });
           synced.set(ws.id, { json, version: created.version });
           // The server may have moved it to a free slug (`acme-2`).
@@ -153,6 +165,9 @@ export function createApiAdapter(options: {
             body: { data, version: known.version },
           });
           synced.set(ws.id, { json, version: saved.version });
+          // Ownership moved (this save handed the brand over): take the
+          // server's copy, which has the new owner and this account as editor.
+          if (saved.data.ownerAccountId !== ws.ownerAccountId) await adopt(saved, ws.slug);
         }
       } catch (err) {
         if (!(err instanceof ApiError)) throw err;
@@ -166,6 +181,17 @@ export function createApiAdapter(options: {
           await adopt(body as ServerBrand, ws.slug);
         } else if (err.status === 0 || err.status >= 500 || err.status === 429) {
           retry = true; // offline or server trouble — try again shortly
+        } else if (known && (err.status === 400 || err.status === 403)) {
+          // Refused: handed to someone without an account, an address that
+          // is taken, a role that no longer saves. Going back to the stored
+          // copy beats a screen that disagrees with the server until reload.
+          const current = await api<ServerBrand>(`/brands/${encodeURIComponent(ws.id)}/`).catch(() => null);
+          if (current) await adopt(current, ws.slug);
+          else synced.set(ws.id, { json, version: known.version });
+          options.onRefused(ws, err.message);
+        } else if (known && err.status === 404 && role !== "owner") {
+          synced.delete(ws.id);
+          options.onLost(ws);
         } else {
           // Refused outright (bad slug, id taken, signed out). Remember the
           // attempt so the same document is not resent on every keystroke;

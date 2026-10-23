@@ -73,6 +73,7 @@ import {
 } from "@/core/data/mockData";
 import { BRIEF_TEMPLATES } from "@/features/brief/model/briefQuestions";
 import { briefProposals, withBriefProposals } from "@/features/brief/model/briefProposals";
+import { roleOn } from "@/core/data/access";
 import { initialsFor, slugify, uid } from "@/shared/lib/utils";
 import {
   EMAIL_RE,
@@ -224,11 +225,16 @@ interface AppContextValue {
   requestPasswordReset: (email: string) => Promise<string | null>;
   /** Completes a reset. Resolves to an error message, or null. */
   resetPassword: (token: string, next: string) => Promise<string | null>;
-  /** The signed-in account's own brands. Empty when signed out. */
+  /** The brands the signed-in account owns or is on. Empty when signed out. */
   myWorkspaces: Workspace[];
   getWorkspace: (slug: string) => Workspace | undefined;
   /** Where a brand's address moved to, when the server changed its slug. */
   slugMoves: Record<string, string>;
+  /**
+   * The latest thing the server said no to, for the app to show once. `id`
+   * changes with every notice, so the same message twice is shown twice.
+   */
+  syncNotice: SyncNotice | null;
   createWorkspace: (name: string) => Workspace;
   /** The brand's own language — what the client sees first. */
   setPrimaryLocale: (workspaceId: string, primaryLocale: Lang) => void;
@@ -621,14 +627,28 @@ async function restoreServerSession(): Promise<Account | null> {
  *
  * The server wins for every brand it has. A brand of theirs it does not have
  * yet (made while the connection was down) is kept, and the next sync creates
- * it. Other accounts' brands in this browser — the demo, a colleague's — are
- * left alone.
+ * it. A brand they are only on the team of, and the server no longer lists,
+ * is dropped: they were removed from it. Other accounts' brands in this
+ * browser — the demo, a colleague's — are left alone.
  */
+/** Something the app should say once, as a toast. */
+export interface SyncNotice {
+  /** Changes with every notice, so the same message twice shows twice. */
+  id: number;
+  message: string;
+  tone: "default" | "danger";
+}
+
 function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
   const ids = new Set(server.map((w) => w.id));
+  const removedFrom = (w: Workspace) =>
+    w.ownerAccountId !== state.session?.accountId && roleOn(w, state.session) !== null;
   return {
     ...state,
-    workspaces: [...server.map(withBriefProposals), ...state.workspaces.filter((w) => !ids.has(w.id))],
+    workspaces: [
+      ...server.map(withBriefProposals),
+      ...state.workspaces.filter((w) => !ids.has(w.id) && !removedFrom(w)),
+    ],
   };
 }
 
@@ -656,6 +676,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * has to follow rather than report the brand missing.
    */
   const [slugMoves, setSlugMoves] = useState<Record<string, string>>({});
+  const [syncNotice, setSyncNotice] = useState<SyncNotice | null>(null);
+  const notify = (message: string, tone: SyncNotice["tone"] = "danger") =>
+    setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message, tone }));
+  /** When a viewer's edit was last refused, so a burst of them says so once. */
+  const lastRefusedEdit = useRef(0);
   const [repo] = useState<BrandRepository>(() =>
     API_ENABLED
       ? createApiAdapter({
@@ -669,6 +694,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             if (previousSlug !== ws.slug) {
               setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
             }
+          },
+          onRefused: (ws, message) => notify(`"${ws.name}" wasn't saved: ${message}`),
+          // Taken off the team: the brand leaves this browser too.
+          onLost: (ws) => {
+            setState((prev) => ({ ...prev, workspaces: prev.workspaces.filter((w) => w.id !== ws.id) }));
+            notify(`You no longer have access to "${ws.name}".`);
           },
         })
       : createLocalAdapter()
@@ -762,6 +793,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const mutateWorkspace = useCallback(
     (workspaceId: string, fn: (ws: Workspace) => Workspace) => {
+      /*
+       * Team roles, enforced where every brand edit passes.
+       *
+       * A viewer or client changes nothing: the edit is dropped here, so a
+       * control they touch snaps back instead of seeming to work and then
+       * vanishing on the next load. An editor's change to the team or the
+       * plan is dropped the same way — the owner's call, and the server keeps
+       * the stored copy of both anyway. Nobody signed in (a client filling in
+       * a brief in this same browser) is not a member and is unaffected.
+       */
+      const current = stateRef.current;
+      const target = current.workspaces.find((w) => w.id === workspaceId);
+      const role = target ? roleOn(target, current.session) : null;
+      if (role === "viewer" || role === "client") {
+        if (Date.now() - lastRefusedEdit.current > 4000) {
+          lastRefusedEdit.current = Date.now();
+          setSyncNotice((prev) => ({
+            id: (prev?.id ?? 0) + 1,
+            message: `You're a ${role} on this brand, so nothing here can be changed.`,
+            tone: "default",
+          }));
+        }
+        return;
+      }
+      const apply =
+        role === "editor"
+          ? (ws: Workspace) => ({ ...fn(ws), team: ws.team, billing: ws.billing })
+          : fn;
+
       // Pushed before the change, from the last committed state — an updater
       // passed to setState has to stay pure, and React may run it more than
       // once, which would push the same step twice.
@@ -773,7 +833,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDepth({ undo: undoStack.current.length, redo: 0 });
       setState((prev) => ({
         ...prev,
-        workspaces: prev.workspaces.map((w) => (w.id === workspaceId ? fn(w) : w)),
+        workspaces: prev.workspaces.map((w) => (w.id === workspaceId ? apply(w) : w)),
       }));
     },
     []
@@ -1169,12 +1229,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [state.workspaces]
   );
 
-  /** The signed-in account's own brands — what the gallery and billing list. */
-  const myWorkspaces = useMemo(() => {
-    const id = state.session?.accountId;
-    if (!id) return [];
-    return state.workspaces.filter((w) => w.ownerAccountId === id);
-  }, [state.workspaces, state.session?.accountId]);
+  /** The brands the signed-in account owns or is on the team of. */
+  const myWorkspaces = useMemo(
+    () => state.workspaces.filter((w) => roleOn(w, state.session) !== null),
+    [state.workspaces, state.session]
+  );
 
   const createWorkspace = useCallback((name: string): Workspace => {
     const base = slugify(name);
@@ -3353,6 +3412,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       state,
       hydrated,
       slugMoves,
+      syncNotice,
       signup,
       login,
       logout,
@@ -3501,6 +3561,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       state,
       hydrated,
       slugMoves,
+      syncNotice,
       signup,
       login,
       logout,

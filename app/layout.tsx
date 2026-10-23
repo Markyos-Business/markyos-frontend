@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { inter, plexArabic, bricolage } from "./fonts";
 import { AppProvider } from "@/core/store/store";
 import { ToastProvider, DialogProvider } from "@/shared/ui";
+import { SyncNotices } from "@/core/providers/SyncNotices";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/core/providers/ThemeProvider";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <AppProvider>
             <ToastProvider>
+              <SyncNotices />
               <DialogProvider>{children}</DialogProvider>
             </ToastProvider>
           </AppProvider>

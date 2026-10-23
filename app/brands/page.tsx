@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/core/store/store";
+import { roleOn } from "@/core/data/access";
 import { AccountMenu } from "@/features/account";
 import { Icon, PillButton } from "@/shared/ui";
 import { WorkspaceCard } from "@/features/brands";
@@ -120,7 +121,7 @@ export default function BrandsPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
           {workspaces.map((ws) => (
-            <WorkspaceCard key={ws.id} workspace={ws} />
+            <WorkspaceCard key={ws.id} workspace={ws} role={roleOn(ws, state.session)} />
           ))}
           <Link
             href="/brands/new"
