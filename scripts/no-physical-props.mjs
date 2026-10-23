@@ -29,10 +29,10 @@ const ROOT = process.cwd();
  * write and impossible to check by eye.
  */
 const GEOMETRY_SCOPES = [
-  join("shared", "lib", "doc"),
-  join("features", "moodboard", "model"),
-  join("features", "builder", "components"),
-  join("features", "moodboard", "components"),
+  join("src", "lib", "doc"),
+  join("src", "components", "features", "moodboard", "model"),
+  join("src", "components", "features", "builder", "components"),
+  join("src", "components", "features", "moodboard", "components"),
 ];
 
 /**
@@ -46,7 +46,7 @@ const GEOMETRY_SCOPES = [
  * because `right` is also an ordinary React prop name — `<Row right={…}>` is
  * not a CSS declaration, and a check that cries wolf gets switched off.
  */
-const CHROME_SCOPES = ["app", "core", "features", "shared", "lib"];
+const CHROME_SCOPES = ["src"];
 
 /**
  * Rules, each with the logical property to reach for instead.

@@ -183,7 +183,7 @@ Two decisions here are load-bearing and should survive any rewrite:
 editor lays the page out in a 390px-wide element scaled down inside a 1400px
 window, so a `@media (max-width: 809px)` rule was false on the canvas and a
 phone override did nothing. Declared on `[data-guideline-surface]` in
-`app/globals.css`; a unit test forbids `@media` and a sweep check measures
+`src/app/globals.css`; a unit test forbids `@media` and a sweep check measures
 rendered height rather than rule text.
 
 ### One renderer, two surfaces
@@ -364,7 +364,7 @@ reason the status above can be stated as fact.
 
 | Tests | File |
 | ---: | :--- |
-| 52 | `lib/doc/core/doc.test.ts` |
+| 52 | `src/lib/doc/core/doc.test.ts` |
 | 34 | `lib/adapters/entityOps.test.ts` |
 | 29 | `lib/pageReview.test.ts` |
 | 25 | `lib/moodboard/layout.test.ts` |
@@ -373,7 +373,7 @@ reason the status above can be stated as fact.
 | 20 | `lib/blockStyle.test.ts` |
 | 19 | `lib/contrast.test.ts` |
 | 15 | `lib/sectionOptions.test.ts` |
-| 13 | `lib/doc/core/order.test.ts`, `lib/moodboard/kmeans.test.ts`, `lib/sectionVariants.test.ts` |
+| 13 | `src/lib/doc/core/order.test.ts`, `lib/moodboard/kmeans.test.ts`, `lib/sectionVariants.test.ts` |
 | 10 | `lib/utils.test.ts` |
 
 **13 Playwright sweeps** that drive the real UI (`npm run sweep`):
@@ -492,7 +492,7 @@ the shape a `Y.Array` of nodes wants.
 
 | Item | Note |
 | :--- | :--- |
-| `Op[]` write path | `lib/doc/core/ops.ts` exists and is tested; nothing calls it |
+| `Op[]` write path | `src/lib/doc/core/ops.ts` exists and is tested; nothing calls it |
 | Block registry | From the build spec §7 |
 | Layout primitives (Stack/Grid, Fit/Fill/Fixed) | Sizing model specified and tested in `lib/doc/css/emit.ts` |
 | `Reveal`, `Decoration`, `LogoClearspace` blocks | Specified, not built |
@@ -536,8 +536,8 @@ Verified green — typecheck, 252 tests, lint, all four static gates, full 13-sw
 suite — but not committed:
 
 ```
-app/w/[slug]/builder/page.tsx
-app/w/[slug]/layout.tsx
+src/app/(studio)/w/[slug]/builder/page.tsx
+src/app/(studio)/w/[slug]/layout.tsx
 components/builder/CanvasFrame.tsx
 components/workspace/Sidebar.tsx
 docs/CHANGELOG.md

@@ -4,7 +4,7 @@ import { join, relative, sep } from "node:path";
 /**
  * Every icon name a component asks for has to exist.
  *
- * `app/icons.css` is an offline stand-in for Line Awesome, drawn as CSS masks.
+ * `src/app/icons.css` is an offline stand-in for Line Awesome, drawn as CSS masks.
  * A name it does not define produces no error, no warning and no missing-glyph
  * box — the element falls back to `background-color: currentColor` with no mask
  * to cut it, and renders as a **solid square**. It looks deliberate. It has
@@ -16,11 +16,11 @@ import { join, relative, sep } from "node:path";
  */
 
 const ROOT = process.cwd();
-const CSS = readFileSync(join(ROOT, "app", "icons.css"), "utf8");
+const CSS = readFileSync(join(ROOT, "src", "app", "icons.css"), "utf8");
 
 const defined = new Set([...CSS.matchAll(/^\.la-([a-z0-9-]+)\s*\{/gm)].map((m) => m[1]));
 
-const SCAN = ["app", "core", "features", "shared", "lib"];
+const SCAN = ["src"];
 
 function walk(dir) {
   const out = [];
@@ -133,7 +133,7 @@ if (missing.length) {
   }
   console.log(
     "\nA name icons.css does not define renders as a solid square — no error,\n" +
-      "no warning, and it looks deliberate. Draw the glyph in app/icons.css or\n" +
+      "no warning, and it looks deliberate. Draw the glyph in src/app/icons.css or\n" +
       "ask for one that exists.",
   );
   process.exit(1);

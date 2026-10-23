@@ -1,5 +1,5 @@
 /**
- * Reads the interface tokens straight out of app/globals.css and checks every
+ * Reads the interface tokens straight out of src/app/globals.css and checks every
  * ink against every ground it can be drawn on.
  *
  * This exists because contrast was being eyeballed. Four grey levels that each
@@ -16,7 +16,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const CSS = fs.readFileSync(path.join(ROOT, "app", "globals.css"), "utf8");
+const CSS = fs.readFileSync(path.join(ROOT, "src", "app", "globals.css"), "utf8");
 
 function srgb(c) {
   const v = c / 255;
