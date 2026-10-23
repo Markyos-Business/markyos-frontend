@@ -1,7 +1,8 @@
 "use client";
 
 import { InputHTMLAttributes, ReactNode, useId, useState } from "react";
-import { Icon } from "@/shared/ui";
+import { FieldNote, inputClasses, labelClasses } from "@/shared/form";
+import { IconButton } from "@/shared/ui";
 import { scorePassword } from "@/features/auth/model/auth";
 
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> {
@@ -44,13 +45,14 @@ export function PasswordField({
   const rating = strength && text ? scorePassword(text) : null;
   const note = error ?? hint;
 
-  // Solved against the card, not the canvas — the meter sits on --surface-1.
-  const TONES = ["var(--danger)", "var(--danger)", "var(--warning)", "var(--success)", "var(--success)"];
+  // Solved against the card, not the canvas: the meter sits on surface-1.
+  const BAR = ["bg-danger", "bg-danger", "bg-warning", "bg-success", "bg-success"];
+  const INK = ["text-danger", "text-danger", "text-warning", "text-success", "text-success"];
 
   return (
-    <div className="flex flex-col gap-1.5 w-full">
+    <div className="flex w-full flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-[12px] font-medium cursor-pointer" style={{ color: "var(--text-muted)" }}>
+        <label htmlFor={id} className={labelClasses}>
           {label}
         </label>
         {labelRight}
@@ -64,68 +66,39 @@ export function PasswordField({
           type={shown ? "text" : "password"}
           aria-invalid={error ? true : undefined}
           aria-describedby={[note ? noteId : null, rating ? meterId : null].filter(Boolean).join(" ") || undefined}
-          className="w-full rounded-[10px] ps-4 pe-12 outline-none text-[15px]"
-          style={{
-            height: 46,
-            background: "var(--surface-2)",
-            border: 0,
-            color: "var(--text)",
-            boxShadow: error
-              ? "inset 0 0 0 1px var(--danger)"
-              : "inset 0 0 0 1px var(--hairline-strong)",
-          }}
+          className={`${inputClasses(error)} h-[46px] ps-4 pe-12`}
         />
-        <button
-          type="button"
+        <IconButton
           onClick={() => setShown((v) => !v)}
           // The label says what the button does next, not what state the field
-          // is in — "Show password" is an instruction, "Password hidden" is a
+          // is in: "Show password" is an instruction, "Password hidden" is a
           // status, and a button should read as the former.
-          aria-label={shown ? "Hide password" : "Show password"}
-          title={shown ? "Hide password" : "Show password"}
-          className="mk-icon-btn absolute top-1/2 end-2 -translate-y-1/2 cursor-pointer"
-          style={{ color: "var(--text-muted)" }}
-        >
-          <Icon name={shown ? "eye-slash" : "eye"} size={15} />
-        </button>
+          label={shown ? "Hide password" : "Show password"}
+          icon={shown ? "eye-slash" : "eye"}
+          className="absolute end-2 top-1/2 -translate-y-1/2 text-text-muted"
+        />
       </div>
 
       {rating && (
-        <div id={meterId} className="flex flex-col gap-1.5 mt-0.5">
+        <div id={meterId} className="mt-0.5 flex flex-col gap-1.5">
           <div className="flex items-center gap-1.5">
-            <div className="flex-1 flex gap-1" aria-hidden="true">
+            <div className="flex flex-1 gap-1" aria-hidden="true">
               {[0, 1, 2, 3].map((i) => (
                 <span
                   key={i}
-                  className="flex-1 h-[3px] rounded-full transition-colors"
-                  style={{
-                    background: i < rating.score ? TONES[rating.score] : "var(--surface-3)",
-                  }}
+                  className={`h-[3px] flex-1 rounded-full transition-colors ${
+                    i < rating.score ? BAR[rating.score] : "bg-surface-3"
+                  }`}
                 />
               ))}
             </div>
-            <span className="text-[11px] font-semibold shrink-0" style={{ color: TONES[rating.score] }}>
-              {rating.label}
-            </span>
+            <span className={`shrink-0 text-[11px] font-semibold ${INK[rating.score]}`}>{rating.label}</span>
           </div>
-          {rating.advice && (
-            <span className="text-[11.5px] leading-[1.45]" style={{ color: "var(--text-faint)" }}>
-              {rating.advice}
-            </span>
-          )}
+          {rating.advice && <span className="text-[11.5px] leading-[1.45] text-text-faint">{rating.advice}</span>}
         </div>
       )}
 
-      {note && (
-        <span
-          id={noteId}
-          role={error ? "alert" : undefined}
-          className="text-[12px]"
-          style={{ color: error ? "var(--danger)" : "var(--text-faint)" }}
-        >
-          {note}
-        </span>
-      )}
+      <FieldNote id={noteId} error={error} hint={hint} />
     </div>
   );
 }

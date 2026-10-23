@@ -1,14 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/core/store/store";
-import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
+import { AlertBanner, Button, useToast } from "@/shared/ui";
+import { InputField } from "@/shared/form";
 import {
   AuthShell,
-  FormError,
   PasswordField,
+  SocialSignIn,
   EMAIL_RE,
   normaliseEmail,
   scorePassword,
@@ -108,16 +108,16 @@ export default function SignupPage() {
       footer={
         <>
           Already have an account?
-          <Link href="/login" className="mk-tap" style={{ color: "var(--accent-text)" }}>
+          <Button variant="link" href="/login">
             Log in
-          </Link>
+          </Button>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-        <FormError>{errors.form}</FormError>
+        <AlertBanner message={errors.form} />
 
-        <TextField
+        <InputField
           label="Name"
           type="text"
           dir="auto"
@@ -129,7 +129,7 @@ export default function SignupPage() {
           autoFocus
         />
 
-        <TextField
+        <InputField
           label="Email"
           type="email"
           inputMode="email"
@@ -165,32 +165,18 @@ export default function SignupPage() {
           autoComplete="new-password"
         />
 
-        <PillButton type="submit" variant="primary" className="w-full mt-1" disabled={busy}>
+        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy}>
           {busy ? "Creating…" : "Create account"}
-        </PillButton>
+        </Button>
 
         {/* Said before the button is pressed, not discovered afterwards. */}
-        <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
+        <p className="text-[11.5px] leading-[1.5] text-text-faint">
           This build keeps your account and your brands in this browser. Nothing is sent to a
           server, which also means clearing site data erases them and there is no inbox to recover
           a password from — the reset code appears on screen instead.
         </p>
 
-        <div className="flex items-center gap-3 text-[11px]" style={{ color: "var(--text-faint)" }}>
-          <span className="flex-1 h-px" style={{ background: "var(--hairline)" }} />
-          OR
-          <span className="flex-1 h-px" style={{ background: "var(--hairline)" }} />
-        </div>
-
-        <PillButton
-          type="button"
-          variant="secondary"
-          className="w-full"
-          onClick={() => showToast("Social login isn't wired up in this build.")}
-          icon={<Icon name="google" size={17} />}
-        >
-          Continue with Google
-        </PillButton>
+        <SocialSignIn />
       </form>
     </AuthShell>
   );

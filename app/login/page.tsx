@@ -1,12 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useApp } from "@/core/store/store";
-import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
-import { AuthShell, FormError, PasswordField, EMAIL_RE } from "@/features/auth";
+import { AlertBanner, Button } from "@/shared/ui";
+import { CheckboxField, InputField } from "@/shared/form";
+import { AuthShell, PasswordField, SocialSignIn, EMAIL_RE } from "@/features/auth";
 import { DEMO_EMAIL, DEMO_PASSWORD } from "@/core/data/mockData";
 
 /*
@@ -92,7 +92,6 @@ function LoginPageBody() {
 
 function LoginForm({ next }: { next: string | null }) {
   const { login, state } = useApp();
-  const { showToast } = useToast();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -166,23 +165,27 @@ function LoginForm({ next }: { next: string | null }) {
       footer={
         <>
           New here?
-          <Link href="/signup" className="mk-tap" style={{ color: "var(--accent-text)" }}>
+          <Button variant="link" href="/signup">
             Create an account
-          </Link>
+          </Button>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-        {locked ? (
-          <FormError>
-            Too many attempts. This form unlocks on its own in {countdown}. If you&apos;ve forgotten
-            the password, you can reset it now instead of waiting.
-          </FormError>
-        ) : (
-          <FormError>{errors.form}</FormError>
-        )}
+        <AlertBanner
+          message={
+            locked ? (
+              <>
+                Too many attempts. This form unlocks on its own in {countdown}. If you&apos;ve forgotten
+                the password, you can reset it now instead of waiting.
+              </>
+            ) : (
+              errors.form
+            )
+          }
+        />
 
-        <TextField
+        <InputField
           label="Email"
           type="email"
           inputMode="email"
@@ -204,82 +207,53 @@ function LoginForm({ next }: { next: string | null }) {
           error={errors.password}
           autoComplete="current-password"
           labelRight={
-            <Link
+            <Button
+              variant="link"
               href={`/reset${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`}
-              className="mk-tap text-[12px] font-medium"
-              style={{ color: "var(--accent-text)" }}
+              className="text-[12px] font-medium"
             >
               Forgot?
-            </Link>
+            </Button>
           }
         />
 
-        <label className="mk-tap gap-2.5 cursor-pointer select-none text-[13px]" style={{ color: "var(--text-secondary)" }}>
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-            className="w-4 h-4 cursor-pointer"
-            style={{ accentColor: "var(--accent)" }}
-          />
-          Stay signed in
-        </label>
-        <p className="text-[11.5px] leading-[1.5] -mt-2" style={{ color: "var(--text-faint)" }}>
+        <CheckboxField label="Stay signed in" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+        <p className="-mt-2 text-[11.5px] leading-[1.5] text-text-faint">
           {remember
             ? "You'll stay signed in on this browser until you log out."
             : "You'll be signed out when you close this browser."}
         </p>
 
-        <PillButton type="submit" variant="primary" className="w-full mt-1" disabled={busy || locked}>
+        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy || locked}>
           {busy ? "Checking…" : "Log in"}
-        </PillButton>
+        </Button>
 
-        <div className="flex items-center gap-3 text-[11px]" style={{ color: "var(--text-faint)" }}>
-          <span className="flex-1 h-px" style={{ background: "var(--hairline)" }} />
-          OR
-          <span className="flex-1 h-px" style={{ background: "var(--hairline)" }} />
-        </div>
-
-        <PillButton
-          type="button"
-          variant="secondary"
-          className="w-full"
-          onClick={() => showToast("Social login isn't wired up in this build.")}
-          icon={<Icon name="google" size={17} />}
-        >
-          Continue with Google
-        </PillButton>
+        <SocialSignIn />
       </form>
 
       {showDemo && (
         // Seed data, in a public repo, printed here on purpose: the demo brands
         // belong to a real account now, and there is no other way in.
-        <div
-          className="rounded-[10px] px-3.5 py-3 flex flex-col gap-2 text-[12px]"
-          style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
-        >
-          <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
-            Want to look around first?
-          </span>
+        <div className="flex flex-col gap-2 rounded-[10px] bg-surface-2 px-3.5 py-3 text-[12px] text-text-muted">
+          <span className="font-semibold text-text-secondary">Want to look around first?</span>
           <span className="leading-[1.5]">
             The sample studio and its five brands live on a demo account —{" "}
-            <span dir="ltr" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>{DEMO_EMAIL}</span>{" "}
-            /{" "}
-            <span dir="ltr" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>{DEMO_PASSWORD}</span>.
+            <span dir="ltr" className="font-mono">{DEMO_EMAIL}</span> /{" "}
+            <span dir="ltr" className="font-mono">{DEMO_PASSWORD}</span>.
           </span>
-          <button
+          <Button
             type="button"
+            variant="link"
             disabled={locked || busy}
             onClick={() => {
               setEmail(DEMO_EMAIL);
               setPassword(DEMO_PASSWORD);
               setErrors({});
             }}
-            className="mk-tap text-[12px] font-semibold cursor-pointer self-start disabled:opacity-40"
-            style={{ color: "var(--accent-text)" }}
+            className="self-start text-[12px] font-semibold"
           >
             Fill it in for me
-          </button>
+          </Button>
         </div>
       )}
     </AuthShell>

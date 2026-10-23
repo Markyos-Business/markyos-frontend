@@ -516,20 +516,24 @@ body {
  * card, a sidebar row) where blue text would read as a broken color, not a
  * link. Genuine inline text links opt into --accent explicitly instead.
  */
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* Element defaults sit in Tailwind's base layer, so a class on the element
+   (a link's `text-accent-text`, an input's `font-mono`) wins over them. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-input,
-textarea,
-button {
-  font-family: inherit;
-}
+  input,
+  textarea,
+  button {
+    font-family: inherit;
+  }
 
-input::placeholder,
-textarea::placeholder {
-  color: var(--text-faint);
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-faint);
+  }
 }
 
 /*

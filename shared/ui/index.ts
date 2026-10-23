@@ -10,3 +10,6 @@ export * from "./overlays/Dialog";
 export * from "./overlays/Popover";
 export * from "./overlays/Toast";
 export * from "./composites/RichText";
+export * from "./buttons/Button";
+export * from "./buttons/IconButton";
+export * from "./AlertBanner";

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/core/store/store";
 import { API_ENABLED } from "@/core/api/client";
-import { useToast, TextField, PillButton, Icon } from "@/shared/ui";
-import { AuthShell, FormError, PasswordField, EMAIL_RE, scorePassword } from "@/features/auth";
+import { AlertBanner, Button, Icon, useToast } from "@/shared/ui";
+import { InputField } from "@/shared/form";
+import { AuthShell, PasswordField, EMAIL_RE, scorePassword } from "@/features/auth";
 
 /**
  * Resetting a forgotten password.
@@ -132,14 +133,14 @@ function ResetPageBody() {
         footer={
           <>
             Remembered it?
-            <Link href="/login" className="mk-tap" style={{ color: "var(--accent-text)" }}>
+            <Button variant="link" href="/login">
               Back to log in
-            </Link>
+            </Button>
           </>
         }
       >
         <form onSubmit={handleRequest} className="flex flex-col gap-4" noValidate>
-          <TextField
+          <InputField
             label="Email"
             type="email"
             inputMode="email"
@@ -151,11 +152,11 @@ function ResetPageBody() {
             autoComplete="email"
             autoFocus
           />
-          <PillButton type="submit" variant="primary" className="w-full mt-1" disabled={busy}>
+          <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy}>
             {API_ENABLED ? (busy ? "Sending…" : "Email me a reset link") : "Get a reset code"}
-          </PillButton>
+          </Button>
           {!API_ENABLED && (
-            <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
+            <p className="text-[11.5px] leading-[1.5] text-text-faint">
               There is no mail server in this build, so the code appears on the next screen instead
               of arriving by email. It is good for 30 minutes and works once.
             </p>
@@ -173,22 +174,15 @@ function ResetPageBody() {
         footer={
           <>
             Wrong address?
-            <button
-              type="button"
-              onClick={() => setStep("request")}
-              className="mk-tap cursor-pointer"
-              style={{ color: "var(--accent-text)" }}
-            >
+            <Button type="button" variant="link" onClick={() => setStep("request")}>
               Try another email
-            </button>
+            </Button>
           </>
         }
       >
-        <Link href="/login" className="w-full">
-          <PillButton type="button" variant="primary" className="w-full">
-            Back to log in
-          </PillButton>
-        </Link>
+        <Button href="/login" variant="primary" className="w-full">
+          Back to log in
+        </Button>
       </AuthShell>
     );
   }
@@ -205,50 +199,37 @@ function ResetPageBody() {
       }
       footer={
         <>
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={() => {
               setStep("request");
               setErrors({});
             }}
-            className="mk-tap cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
           >
             Use a different email
-          </button>
+          </Button>
         </>
       }
     >
       <form onSubmit={handleConfirm} className="flex flex-col gap-4" noValidate>
-        <FormError>{errors.form ?? (API_ENABLED ? errors.token : undefined)}</FormError>
+        <AlertBanner message={errors.form ?? (API_ENABLED ? errors.token : undefined)} />
 
         {API_ENABLED ? null : issued ? (
-          <div
-            className="rounded-[10px] px-4 py-3.5 flex items-center gap-3"
-            style={{ background: "var(--surface-2)" }}
-          >
-            <Icon name="key" size={15} style={{ color: "var(--accent-text)", flexShrink: 0 }} />
-            <span
-              dir="ltr"
-              className="text-[17px] font-semibold tracking-[0.12em] flex-1"
-              style={{ fontFamily: "ui-monospace, Menlo, monospace" }}
-            >
+          <div className="flex items-center gap-3 rounded-[10px] bg-surface-2 px-4 py-3.5">
+            <Icon name="key" size={15} className="shrink-0 text-accent-text" />
+            <span dir="ltr" className="flex-1 font-mono text-[17px] font-semibold tracking-[0.12em]">
               {issued}
             </span>
-            <span className="text-[11px] shrink-0" style={{ color: "var(--text-faint)" }}>
-              30 min
-            </span>
+            <span className="shrink-0 text-[11px] text-text-faint">30 min</span>
           </div>
         ) : (
           /* No code was issued, because no account matched — said this way
              rather than naming the address, for the reason in handleRequest. */
-          <p
-            className="rounded-[10px] px-4 py-3.5 text-[12.5px] leading-[1.5]"
-            style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
-          >
+          <p className="rounded-[10px] bg-surface-2 px-4 py-3.5 text-[12.5px] leading-[1.5] text-text-muted">
             If an account exists for that email, its code is shown here. Nothing appeared, so check
             the address — or{" "}
-            <Link href="/signup" style={{ color: "var(--accent-text)" }}>
+            <Link href="/signup" className="text-accent-text">
               create an account
             </Link>
             .
@@ -256,7 +237,7 @@ function ResetPageBody() {
         )}
 
         {!API_ENABLED && (
-        <TextField
+        <InputField
           label="Reset code"
           dir="ltr"
           placeholder="ABCD1234EFGH"
@@ -286,10 +267,10 @@ function ResetPageBody() {
           autoComplete="new-password"
         />
 
-        <PillButton type="submit" variant="primary" className="w-full mt-1" disabled={busy}>
+        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy}>
           {busy ? "Saving…" : "Set new password"}
-        </PillButton>
-        <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
+        </Button>
+        <p className="text-[11.5px] leading-[1.5] text-text-faint">
           You&apos;ll be asked to sign in with the new password — changing it doesn&apos;t sign you
           in by itself.
         </p>

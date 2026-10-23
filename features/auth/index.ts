@@ -1,5 +1,6 @@
 // Public API of the auth feature. Code outside features/auth/
 // imports from "@/features/auth", never from a file inside it.
-export { AuthShell, FormError } from "./components/AuthShell";
+export { AuthShell } from "./components/AuthShell";
 export { PasswordField } from "./components/PasswordField";
+export { SocialSignIn } from "./components/SocialSignIn";
 export { EMAIL_RE, isPlaintext, normaliseEmail, scorePassword } from "./model/auth";

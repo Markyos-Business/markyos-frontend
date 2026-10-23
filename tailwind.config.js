@@ -24,6 +24,17 @@ const config = {
 
         accent: "var(--accent)",
         "accent-soft": "var(--accent-soft)",
+        // Accent as text on a surface: darker than `accent` on the light
+        // theme, so links and small labels keep their contrast.
+        "accent-text": "var(--accent-text)",
+
+        // The solid pill: the opposite of the ground in either theme.
+        solid: "var(--solid)",
+        "solid-ink": "var(--solid-ink)",
+
+        // Borders are drawn as inset rings in these, not 1px borders.
+        hairline: "var(--hairline)",
+        "hairline-strong": "var(--hairline-strong)",
 
         text: "var(--text)",
         "text-secondary": "var(--text-secondary)",
