@@ -1,7 +1,22 @@
 @import "tailwindcss";
 @import "./icons.css";
+/* Tailwind's theme lives in tailwind.config.js; the tokens it names live below. */
+@config "../tailwind.config.js";
 
 :root {
+  /*
+   * Type stacks, the same in both themes.
+   *
+   * The Arabic face sits in the display chain on purpose: Bricolage carries no
+   * Arabic glyphs, so without it every Arabic heading fell through to a generic
+   * system sans instead of the matched-weight Arabic type. Font fallback is
+   * per-character, so Latin still renders in Bricolage.
+   */
+  --font-display: var(--font-bricolage), var(--font-plex-arabic), "Inter", var(--font-inter), sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-arabic: var(--font-plex-arabic), var(--font-inter), sans-serif;
+  --font-mono: ui-monospace, Menlo, monospace;
+
   /*
    * The surface ramp.
    *
@@ -307,39 +322,6 @@
 
   --chrome-mark-invert: none;
   color-scheme: light;
-}
-
-@theme inline {
-  --color-canvas: var(--canvas);
-  --color-surface-0: var(--surface-0);
-  --color-surface-1: var(--surface-1);
-  --color-surface-2: var(--surface-2);
-  --color-surface-3: var(--surface-3);
-
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-
-  --color-text: var(--text);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-text-faint: var(--text-faint);
-
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
-
-  /* The Arabic face sits in the display chain on purpose: Bricolage carries no
-   * Arabic glyphs, so without it every Arabic heading fell through to a generic
-   * system sans instead of the matched-weight Arabic type. Font fallback is
-   * per-character, so Latin still renders in Bricolage. */
-  --font-display: var(--font-bricolage), var(--font-plex-arabic), "Inter", var(--font-inter), sans-serif;
-  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
-  --font-arabic: var(--font-plex-arabic), var(--font-inter), sans-serif;
-  --font-mono: ui-monospace, Menlo, monospace;
-
-  --radius-card: 16px;
-  --radius-widget: 10px;
-  --radius-pill: 999px;
 }
 
 * {
