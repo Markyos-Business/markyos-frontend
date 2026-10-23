@@ -132,7 +132,7 @@ function AccountPageBody() {
           ))}
         </div>
 
-        <div key={tab} className="flex flex-col gap-6 mk-tab-in">
+        <div key={tab} className="flex flex-col gap-6 animate-tab-in">
         {tab === "profile" && <ProfilePanel />}
 
         {tab === "billing" && <BillingPanel workspaces={workspaces} />}

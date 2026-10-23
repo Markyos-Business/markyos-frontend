@@ -160,7 +160,7 @@ export function ProfilePanel() {
         />
 
         {changingPassword && (
-          <form onSubmit={handlePassword} className="rounded-xl p-4 flex flex-col gap-3 mk-fade-in" style={{ background: "var(--surface-2)" }}>
+          <form onSubmit={handlePassword} className="rounded-xl p-4 flex flex-col gap-3 animate-fade-in" style={{ background: "var(--surface-2)" }}>
             <PasswordField
               label="Current password"
               value={current}

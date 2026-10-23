@@ -839,58 +839,12 @@ textarea::placeholder {
  * animates purely for decoration — on a tool people use all day, motion that
  * doesn't carry meaning becomes latency.
  *
- * All of it is disabled wholesale under `prefers-reduced-motion` at the bottom
- * of this block: for a viewer with vestibular sensitivity, the movement is not
- * a flourish, it's a symptom trigger.
+ * The keyframes and `animate-*` classes are in tailwind.config.js; what is
+ * left here is transitions and hover. All of it is disabled wholesale under
+ * `prefers-reduced-motion` at the bottom of this file: for a viewer with
+ * vestibular sensitivity, the movement is not a flourish, it's a symptom
+ * trigger.
  */
-@keyframes mk-fade-in {
-  from { opacity: 0; transform: translateY(-3px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes mk-tab-in {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes mk-spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes mk-pop {
-  0% { transform: scale(0.94); opacity: 0; }
-  60% { transform: scale(1.01); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* Something arrived that wasn't there a moment ago. */
-.mk-fade-in { animation: mk-fade-in 180ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-/* A panel swapped under a tab you pressed — the content moves, the chrome doesn't. */
-.mk-tab-in { animation: mk-tab-in 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-/* Work is in progress and hasn't stalled. */
-.mk-spin { animation: mk-spin 720ms linear infinite; transform-origin: center; }
-.mk-pop { animation: mk-pop 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-
-/*
- * A panel that just came back.
- *
- * It slides in from its own edge rather than fading in place, because the
- * question it answers is "where did that come from" — a panel that materialises
- * in the middle of the window doesn't tell you which edge to send it back to.
- * `inline-start` handles the mirroring, so the Arabic layout slides the other
- * way without a second rule.
- */
-@keyframes mk-panel-in {
-  from { opacity: 0; transform: translateX(8px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes mk-panel-in-rtl {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: none; }
-}
-/* A panel on the trailing edge comes in from the trailing edge… */
-.mk-panel-in { animation: mk-panel-in 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-[dir="rtl"] .mk-panel-in { animation-name: mk-panel-in-rtl; }
-/* …and one on the leading edge from the other side. */
-.mk-panel-in-start { animation: mk-panel-in-rtl 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-[dir="rtl"] .mk-panel-in-start { animation-name: mk-panel-in; }
 
 /*
  * The strip a hidden panel leaves on the edge.

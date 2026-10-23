@@ -295,7 +295,7 @@ function AddMenu({
             // Animated in, like every other menu in the app. A panel that
             // simply exists on the next frame gives no clue where it came
             // from, which is the one thing an entrance is for.
-            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 mk-pop"
+            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 animate-pop"
             style={{
               insetInlineEnd: 0,
               top: "calc(100% + 4px)",

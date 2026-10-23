@@ -45,6 +45,48 @@ const config = {
         widget: "10px",
         pill: "999px",
       },
+      keyframes: {
+        // Something arrived that wasn't there a moment ago.
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(-3px)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        // A panel swapped under a tab you pressed: the content moves, the
+        // chrome doesn't.
+        "tab-in": {
+          "0%": { opacity: "0", transform: "translateY(5px)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        "pop": {
+          "0%": { opacity: "0", transform: "scale(0.94)" },
+          "60%": { transform: "scale(1.01)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        // A side panel slides in from its own edge, so it says which edge to
+        // send it back to. Pair one with its `rtl:` opposite in components.
+        "panel-from-right": {
+          "0%": { opacity: "0", transform: "translateX(8px)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        "panel-from-left": {
+          "0%": { opacity: "0", transform: "translateX(-8px)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        "toast-in": {
+          "0%": { opacity: "0", transform: "translateY(6px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "fade-in": "fade-in 180ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        "tab-in": "tab-in 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        "pop": "pop 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        // Work is in progress and hasn't stalled: quicker than `animate-spin`.
+        "spin-quick": "spin 720ms linear infinite",
+        "panel-from-right": "panel-from-right 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        "panel-from-left": "panel-from-left 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        "toast-in": "toast-in 0.18s ease-out",
+      },
     },
   },
 };

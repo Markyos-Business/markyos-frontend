@@ -303,7 +303,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
     >
       {dragDepth > 0 && (
         <div
-          className="absolute inset-4 z-20 rounded-2xl grid place-items-center pointer-events-none mk-fade-in"
+          className="absolute inset-4 z-20 rounded-2xl grid place-items-center pointer-events-none animate-fade-in"
           style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 2px var(--accent)" }}
         >
           <span className="flex items-center gap-2.5 text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
@@ -679,7 +679,7 @@ function AssetDetailModal({
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
-        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 mk-pop max-h-[86vh] overflow-y-auto"
+        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 animate-pop max-h-[86vh] overflow-y-auto"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

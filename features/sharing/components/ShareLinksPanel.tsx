@@ -111,7 +111,7 @@ export function ShareLinksPanel({
           </button>
 
           {open && (
-            <div className="flex flex-col gap-2 mk-fade-in">
+            <div className="flex flex-col gap-2 animate-fade-in">
               {links.map((l) => {
                 const revoked = !!l.revokedAt;
                 return (

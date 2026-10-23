@@ -79,7 +79,7 @@ export function Popover({
 
       {open && (
         <div
-          className="absolute z-50 mk-fade-in rounded-xl overflow-hidden"
+          className="absolute z-50 animate-fade-in rounded-xl overflow-hidden"
           style={{
             top: "calc(100% + 8px)",
             // Logical inset, so the panel hangs off the same edge of its

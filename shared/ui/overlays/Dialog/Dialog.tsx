@@ -222,7 +222,7 @@ function DialogHost({
   return (
     <div
       dir={isAr ? "rtl" : "ltr"}
-      className="fixed inset-0 z-[120] flex items-center justify-center p-6 mk-fade-in"
+      className="fixed inset-0 z-[120] flex items-center justify-center p-6 animate-fade-in"
       style={{ background: "var(--scrim)" }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onSettle(cancelValue);
@@ -235,7 +235,7 @@ function DialogHost({
         tabIndex={-1}
         aria-labelledby={titleId}
         aria-describedby={options.body ? bodyId : undefined}
-        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 mk-pop"
+        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 animate-pop"
         style={{
           background: "var(--surface-0)",
           outline: "none",

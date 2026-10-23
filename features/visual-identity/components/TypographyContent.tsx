@@ -510,7 +510,7 @@ function FontSources({
           className="mk-tap gap-1.5 text-[11.5px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ color: "var(--accent-text)" }}
         >
-          <Icon name={uploading ? "sync" : "upload"} size={12} className={uploading ? "mk-spin" : undefined} />
+          <Icon name={uploading ? "sync" : "upload"} size={12} className={uploading ? "animate-spin-quick origin-center" : undefined} />
           {uploading
             ? isAr ? "جارٍ التطبيق…" : "Applying…"
             : dragOver

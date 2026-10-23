@@ -92,21 +92,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           </div>
         ))}
       </div>
-      <style jsx global>{`
-        @keyframes toast-in {
-          from {
-            opacity: 0;
-            transform: translateY(6px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-toast-in {
-          animation: toast-in 0.18s ease-out;
-        }
-      `}</style>
     </ToastContext.Provider>
   );
 }

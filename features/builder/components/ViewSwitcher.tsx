@@ -129,7 +129,7 @@ export function SecondaryViewBanner({ ctx, isAr }: { ctx: ViewContext; isAr: boo
   if (!notice) return null;
   return (
     <div
-      className="flex items-start gap-2 px-3 py-2 rounded-lg text-[11.5px] leading-[1.45] mk-fade-in"
+      className="flex items-start gap-2 px-3 py-2 rounded-lg text-[11.5px] leading-[1.45] animate-fade-in"
       style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
     >
       <Icon name="info-circle" size={13} style={{ color: "var(--text-faint)", flexShrink: 0, marginTop: 1 }} />

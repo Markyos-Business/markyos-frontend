@@ -237,7 +237,7 @@ export default function StrategyPage() {
             </p>
           </div>
           <TranslationNotice ws={ws} isAr={isAr} />
-          <div key={`${tab}-${lang}`} className="flex flex-col gap-5 mk-tab-in">
+          <div key={`${tab}-${lang}`} className="flex flex-col gap-5 animate-tab-in">
             {tab === "purpose" && (
               <SingleTextTab
                 ws={ws}
