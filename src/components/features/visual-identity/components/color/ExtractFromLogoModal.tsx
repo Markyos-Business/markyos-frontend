@@ -108,7 +108,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-8"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8"
       style={{ background: "var(--scrim)" }}
       onClick={onClose}
     >

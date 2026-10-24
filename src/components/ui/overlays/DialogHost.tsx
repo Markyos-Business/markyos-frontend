@@ -96,7 +96,7 @@ const DialogHost = ({
   return (
     <div
       dir={isAr ? "rtl" : "ltr"}
-      className="fixed inset-0 z-120 flex animate-fade-in items-center justify-center bg-scrim p-6"
+      className="fixed inset-0 z-dialog flex animate-fade-in items-center justify-center bg-scrim p-6"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onSettle(cancelValue);
       }}
@@ -201,7 +201,7 @@ const DialogHost = ({
                   spellCheck={false}
                   aria-invalid={!armed}
                   className={`h-11 w-full rounded-lg bg-surface-2 px-3.5 pe-10 text-ui-md text-text outline-none ${
-                    armed ? "shadow-edge-valid" : "shadow-edge"
+                    armed ? "shadow-edge-success" : "shadow-edge"
                   }`}
                 />
                 {armed && (

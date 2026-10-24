@@ -309,7 +309,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
   useModalDismiss(onClose);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-8" style={{ background: "var(--scrim)" }} onClick={onClose}>
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-8" style={{ background: "var(--scrim)" }} onClick={onClose}>
       <div
         className="w-full max-w-[600px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}

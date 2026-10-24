@@ -84,7 +84,7 @@ const Popover = ({ button, label, align = "end", width = 260, className, buttonS
 
       {open && (
         <div
-          className={`absolute top-full z-50 mt-2 animate-fade-in overflow-hidden rounded-xl bg-surface-0 shadow-edge-pop ${aligns[align]}`}
+          className={`absolute top-full z-dropdown mt-2 animate-fade-in overflow-hidden rounded-xl bg-surface-0 shadow-edge-pop ${aligns[align]}`}
           style={{ width, maxWidth: "min(92vw, 520px)" }}
         >
           {children(() => setOpen(false))}

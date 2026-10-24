@@ -9,9 +9,12 @@
  *   tailwind/base.js    element defaults and the shared classes the markup
  *                       relies on (rich text, the live editor, focus, motion)
  *
- * The theme below names the tokens for Tailwind, so `bg-surface-1` and an
- * inline `var(--surface-1)` resolve to the same value, and both repaint when
- * the theme changes.
+ * Colours are written out directly, both themes at once:
+ * `light-dark(lightValue, darkValue)`. The browser picks a half from the
+ * `color-scheme` the tokens set on :root (dark) and under [data-theme="light"],
+ * so the theme toggle repaints every utility. The same values also exist as
+ * CSS variables in tailwind/tokens.js for inline `var(--…)` styles and the
+ * contrast audit; tailwind/colors.test.js fails if the two ever disagree.
  *
  * Content scanning is automatic in Tailwind v4, so there is no `content` list,
  * and no RTL plugin: logical utilities (`ms-*`, `ps-*`, `start-*`, `text-start`)
@@ -32,6 +35,10 @@ const percentWidths = Object.fromEntries(
   Array.from({ length: 99 }, (_, i) => [`${i + 1}p`, `${i + 1}%`])
 );
 
+// One curve for everything that arrives: fast out of the gate, gentle at
+// the end. Kept here so animations and transitions can't drift apart.
+const EASE_OUT = "cubic-bezier(0.2, 0.7, 0.3, 1)";
+
 const config = {
   // Light and dark come from `data-theme` on <html>, which the theme toggle
   // sets (see contexts/ThemeProvider). The colour tokens switch on their own;
@@ -40,52 +47,53 @@ const config = {
   theme: {
     extend: {
       colors: {
-        canvas: "var(--canvas)",
-        "surface-0": "var(--surface-0)",
-        "surface-1": "var(--surface-1)",
-        "surface-2": "var(--surface-2)",
-        "surface-3": "var(--surface-3)",
+        canvas: "light-dark(#eeeef2, #060607)",
+        "surface-0": "light-dark(#ffffff, #0c0c0e)",
+        "surface-1": "light-dark(#ffffff, #16161a)",
+        "surface-2": "light-dark(#f0f0f4, #1e1e22)",
+        "surface-3": "light-dark(#e4e4ea, #232326)",
 
-        accent: "var(--accent)",
-        "accent-soft": "var(--accent-soft)",
+        accent: "light-dark(#0062b8, #0099ff)",
+        "accent-soft": "light-dark(rgba(0, 98, 184, 0.1), rgba(0, 153, 255, 0.14))",
         // Accent as text on a surface: darker than `accent` on the light
         // theme, so links and small labels keep their contrast.
-        "accent-text": "var(--accent-text)",
+        "accent-text": "light-dark(#00478f, #5cb9ff)",
         // Text and icons on an `accent-soft` fill.
-        "accent-on-soft": "var(--accent-on-soft)",
+        "accent-on-soft": "light-dark(#004080, #85caff)",
         // Text on a solid `accent` fill, and the accent's focus ring and edge.
-        "accent-ink": "var(--accent-ink)",
-        "accent-ring": "var(--accent-ring)",
-        "accent-edge": "var(--accent-edge)",
+        "accent-ink": "light-dark(#ffffff, #0b0b0d)",
+        "accent-ring": "light-dark(rgba(0, 98, 184, 0.22), rgba(0, 153, 255, 0.18))",
+        "accent-edge": "light-dark(rgba(0, 98, 184, 0.55), rgba(0, 153, 255, 0.55))",
 
         // The solid pill: the opposite of the ground in either theme.
-        solid: "var(--solid)",
-        "solid-ink": "var(--solid-ink)",
+        solid: "light-dark(#101014, #ffffff)",
+        "solid-ink": "light-dark(#ffffff, #090909)",
 
         // Borders are drawn as inset rings in these, not 1px borders.
-        hairline: "var(--hairline)",
-        "hairline-strong": "var(--hairline-strong)",
-        "chip-edge": "var(--chip-edge)",
+        hairline: "light-dark(rgba(9, 9, 11, 0.09), rgba(255, 255, 255, 0.07))",
+        "hairline-strong": "light-dark(rgba(9, 9, 11, 0.22), rgba(255, 255, 255, 0.16))",
+        "chip-edge": "rgba(130, 130, 138, 0.5)",
 
-        text: "var(--text)",
-        "text-secondary": "var(--text-secondary)",
-        "text-muted": "var(--text-muted)",
-        "text-faint": "var(--text-faint)",
+        text: "light-dark(#0d0d0f, #ffffff)",
+        "text-secondary": "light-dark(#262629, #e4e4e9)",
+        "text-muted": "light-dark(#36363c, #ccccd2)",
+        "text-faint": "light-dark(#47474f, #afafb6)",
 
-        success: "var(--success)",
-        warning: "var(--warning)",
-        danger: "var(--danger)",
-        // Tinted fills behind a status badge's text.
-        "success-soft": "rgba(124, 231, 172, 0.14)",
-        "warning-soft": "rgba(244, 190, 94, 0.14)",
-        "danger-soft": "rgba(255, 128, 139, 0.14)",
+        success: "light-dark(#085230, #7ce7ac)",
+        warning: "light-dark(#654000, #f4be5e)",
+        danger: "light-dark(#8a1824, #ffa8b0)",
+        // Tinted fills behind a status badge's text, each a tint of its own
+        // theme's status colour so the text on it keeps its contrast.
+        "success-soft": "light-dark(rgba(8, 82, 48, 0.08), rgba(124, 231, 172, 0.14))",
+        "warning-soft": "light-dark(rgba(101, 64, 0, 0.08), rgba(244, 190, 94, 0.14))",
+        "danger-soft": "light-dark(rgba(138, 24, 36, 0.08), rgba(255, 128, 139, 0.14))",
         // Text on a solid status or danger fill.
-        "status-ink": "var(--status-ink)",
-        "danger-ink": "var(--danger-ink)",
+        "status-ink": "light-dark(#ffffff, #0b0b0d)",
+        "danger-ink": "light-dark(#ffffff, #0b0b0d)",
 
         // The dim layer behind a modal, and text placed on it.
-        scrim: "var(--scrim)",
-        "scrim-ink": "var(--scrim-ink)",
+        scrim: "rgba(9, 9, 9, 0.62)",
+        "scrim-ink": "#ffffff",
 
         // ── Brand ───────────────────────────────────────────────────────────
         // The Markyos brand from the design system (project/_ds, tokens/
@@ -169,6 +177,18 @@ const config = {
         // Field labels above an editable value.
         "caps-wide": "0.08em",
       },
+      zIndex: {
+        // The stacking order, from the page up. Local stacking inside one
+        // component (z-10, z-20) stays numeric.
+        sticky: "40",
+        dropdown: "50",
+        modal: "50",
+        toast: "100",
+        dialog: "120",
+      },
+      transitionTimingFunction: {
+        out: EASE_OUT,
+      },
       width: percentWidths,
       backgroundImage: {
         // A flat tint laid over a fill, for hover and press states that have
@@ -187,13 +207,12 @@ const config = {
         "edge-accent": "inset 0 0 0 1px var(--accent-edge)",
         "edge-pop": "0 0 0 1px var(--hairline-strong), var(--shadow-pop)",
         "edge-modal": "0 0 0 1px var(--hairline-strong), var(--shadow-modal)",
-        // A field whose content has been accepted, e.g. a typed confirmation.
-        "edge-valid": "inset 0 0 0 1px var(--success)",
-        // A rich-text editor while it is open.
-        "edge-editing": "inset 0 0 0 1px rgba(0, 153, 255, 0.5)",
-        // A toast's edge says how it went.
-        "edge-success": "inset 0 0 0 1px rgba(124, 231, 172, 0.5)",
-        "edge-danger": "inset 0 0 0 1px rgba(255, 128, 139, 0.5)",
+        // A rich-text editor while it is open: the accent, at half strength.
+        "edge-editing": "inset 0 0 0 1px light-dark(rgba(0, 98, 184, 0.5), rgba(0, 153, 255, 0.5))",
+        // Something went right or wrong: a toast, a typed confirmation that
+        // now matches.
+        "edge-success": "inset 0 0 0 1px light-dark(rgba(8, 82, 48, 0.5), rgba(124, 231, 172, 0.5))",
+        "edge-danger": "inset 0 0 0 1px light-dark(rgba(138, 24, 36, 0.5), rgba(255, 128, 139, 0.5))",
         // A one-pixel rule along one side: under a header, over a footer.
         "rule-b": "inset 0 -1px 0 var(--hairline)",
         "rule-t": "inset 0 1px 0 var(--hairline)",
@@ -213,7 +232,7 @@ const config = {
         "pop": {
           "0%": { opacity: "0", transform: "scale(0.94)" },
           "60%": { transform: "scale(1.01)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
+          "100%": { opacity: "1", transform: "none" },
         },
         // A side panel slides in from its own edge, so it says which edge to
         // send it back to. Pair one with its `rtl:` opposite in components.
@@ -227,12 +246,12 @@ const config = {
         },
         "toast-in": {
           "0%": { opacity: "0", transform: "translateY(6px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "1", transform: "none" },
         },
         // A page's content settling in after navigation.
         "page-enter": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "1", transform: "none" },
         },
         // A slow breathing glow for something waiting on you.
         "glow-pulse": {
@@ -240,16 +259,20 @@ const config = {
           "50%": { opacity: "0.45" },
         },
       },
+      // Every animation ends at `transform: none`. A leftover transform such
+      // as `translateY(0)` still makes the element a containing block, and a
+      // `position: fixed` modal inside it would then pin to the element
+      // instead of the viewport.
       animation: {
-        "fade-in": "fade-in 180ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
-        "tab-in": "tab-in 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
-        "pop": "pop 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
+        "fade-in": `fade-in 200ms ${EASE_OUT} both`,
+        "tab-in": `tab-in 220ms ${EASE_OUT} both`,
+        "pop": `pop 200ms ${EASE_OUT} both`,
         // Work is in progress and hasn't stalled: quicker than `animate-spin`.
         "spin-quick": "spin 720ms linear infinite",
-        "panel-from-right": "panel-from-right 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
-        "panel-from-left": "panel-from-left 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both",
-        "toast-in": "toast-in 0.18s ease-out",
-        "page-enter": "page-enter 0.25s ease-out both",
+        "panel-from-right": `panel-from-right 200ms ${EASE_OUT} both`,
+        "panel-from-left": `panel-from-left 200ms ${EASE_OUT} both`,
+        "toast-in": `toast-in 200ms ${EASE_OUT} both`,
+        "page-enter": `page-enter 250ms ${EASE_OUT} both`,
         // The curve is CSS's own ease-in-out, written out: the keyword in
         // this file would be read as a class and generate a utility.
         "glow-pulse": "glow-pulse 6s cubic-bezier(0.42, 0, 0.58, 1) infinite",

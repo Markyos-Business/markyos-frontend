@@ -102,7 +102,7 @@ export function StudioPrism(props: TemplateProps) {
         labels sat on a light site as an unexplained black blob.
       */}
       <nav
-        className="sticky top-5 z-40 mx-auto w-fit mt-5 -mb-16 flex items-center gap-1 p-1.5 backdrop-blur"
+        className="sticky top-5 z-sticky mx-auto w-fit mt-5 -mb-16 flex items-center gap-1 p-1.5 backdrop-blur"
         style={{
           ...gPill,
           background: theme.isLight ? "rgba(255,255,255,.72)" : "rgba(0,0,0,.35)",

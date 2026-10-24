@@ -112,7 +112,7 @@ export function MosaicTemplate(props: TemplateProps) {
       {/* One bar, and the download lives in it. A floating pill over a grid of
           tiles covers a tile; here there is a natural place to put it. */}
       <div
-        className="sticky top-0 z-40 flex items-center gap-4 px-5 md:px-8 h-16 shrink-0"
+        className="sticky top-0 z-sticky flex items-center gap-4 px-5 md:px-8 h-16 shrink-0"
         style={{ background: "var(--g-canvas)", boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}
       >
         <div className="flex items-center gap-2.5 shrink-0 min-w-0">

@@ -141,7 +141,7 @@ export function ManualTemplate(props: TemplateProps) {
             scrolling 35 screens is a worse manual. This bar stays thin and
             ruled so it reads as part of the binding rather than as chrome. */}
         <div
-          className="sticky top-0 z-40 h-12 flex items-center justify-between px-6 md:px-10 gap-4 backdrop-blur"
+          className="sticky top-0 z-sticky h-12 flex items-center justify-between px-6 md:px-10 gap-4 backdrop-blur"
           style={{
             background: "color-mix(in srgb, var(--g-canvas) 88%, transparent)",
             boxShadow: "inset 0 -1px 0 var(--g-hairline)",

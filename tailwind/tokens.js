@@ -121,6 +121,10 @@ export const darkTokens = {
   "--success": "#7ce7ac",
   "--warning": "#f4be5e",
   "--danger": "#ffa8b0",
+  /* Tinted fills behind a status badge's text. */
+  "--success-soft": "rgba(124, 231, 172, 0.14)",
+  "--warning-soft": "rgba(244, 190, 94, 0.14)",
+  "--danger-soft": "rgba(255, 128, 139, 0.14)",
   /*
    * The ink to put ON a filled accent/status surface.
    *
@@ -270,6 +274,11 @@ export const lightTokens = {
   "--success": "#085230",
   "--warning": "#654000",
   "--danger": "#8a1824",
+  /* Each a tint of this theme's status colour, so the badge text keeps its
+   * contrast; the dark theme's tints are too pale behind these inks. */
+  "--success-soft": "rgba(8, 82, 48, 0.08)",
+  "--warning-soft": "rgba(101, 64, 0, 0.08)",
+  "--danger-soft": "rgba(138, 24, 36, 0.08)",
   /* Here the accent is deep, so the legible ink on it is white. */
   "--accent-ink": "#ffffff",
   "--status-ink": "#ffffff",

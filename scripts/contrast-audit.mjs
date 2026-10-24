@@ -120,10 +120,18 @@ const FILLED = [
  * `--text-faint` to pass here would flatten it into `--text-muted` everywhere
  * else, which is trading a real hierarchy for one card.
  */
+const BADGE_GROUNDS = ["surface-0", "surface-1", "surface-2"];
 const TINTED = [
   ["accent-on-soft", "accent-soft", SMALL_TEXT_FLOOR],
   ["text-muted", "accent-soft", SMALL_TEXT_FLOOR],
   ["text-secondary", "accent-soft", 4.5],
+  // Status badges: 11px semibold text on its own tint. Held to the grounds a
+  // badge actually sits on (tables, panels, cards), not to `--surface-3`,
+  // which is itself a fill (the neutral badge, the selected row) and leaves
+  // a status ink no room for any tint at all on the light theme.
+  ["success", "success-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
+  ["warning", "warning-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
+  ["danger", "danger-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
 ];
 
 /**
@@ -200,10 +208,10 @@ for (const [name, T] of THEMES) {
     rows.push(`${ok ? "ok  " : "FAIL"}  ${ink.padEnd(15)} on ${ground.padEnd(17)} ${r.toFixed(2)}:1`);
   }
 
-  for (const [ink, tint, floor] of TINTED) {
+  for (const [ink, tint, floor, grounds = GROUNDS] of TINTED) {
     const rgba = T.__alpha[tint];
     if (!rgba) throw new Error(`--${tint} is not an rgba() token in the ${name} theme`);
-    const worst = GROUNDS.map((g) => {
+    const worst = grounds.map((g) => {
       const flat = composite(rgba, T[g]);
       return { g, r: ratio(T[ink], flat) };
     }).sort((a, b) => a.r - b.r)[0];

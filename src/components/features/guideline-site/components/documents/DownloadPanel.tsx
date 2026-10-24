@@ -113,7 +113,7 @@ export function DownloadPanel({
 
   return (
     <div
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-modal"
       style={{ background: "var(--scrim)" }}
       onClick={onClose}
     >

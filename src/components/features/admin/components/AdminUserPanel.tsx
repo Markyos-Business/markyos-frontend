@@ -91,7 +91,7 @@ export function AdminUserPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end">
+    <div className="fixed inset-0 z-modal flex justify-end">
       <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default bg-black/40" />
       <aside
         role="dialog"
