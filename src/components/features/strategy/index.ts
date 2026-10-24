@@ -8,3 +8,5 @@ export { SingleTextTab } from "./components/SingleTextTab";
 export { ToneTab } from "./components/ToneTab";
 export { TranslateStrategy, TranslationNotice } from "./components/TranslateStrategy";
 export { VisionMissionTab } from "./components/VisionMissionTab";
+export { translateText, TranslationError } from "./services/translate";
+export type { TranslateDirection } from "./services/translate";

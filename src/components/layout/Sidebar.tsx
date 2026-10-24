@@ -15,9 +15,9 @@ interface NavItem {
 
 const BOOK_NAV: NavItem[] = [
   { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", href: "" },
-  // First in the list because it is first in the work: the brief goes out
+  // First in the list because it is first in the work: the discovery form goes out
   // before any design decision, and a nav that buries it teaches the opposite.
-  { key: "brief", label: "Discovery brief", arLabel: "موجز التعريف", icon: "clipboard-list", href: "/brief" },
+  { key: "forms", label: "Discovery forms", arLabel: "نماذج الاستكشاف", icon: "clipboard-list", href: "/forms" },
   { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", href: "/moodboard" },
   { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", href: "/visual-identity" },
   { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", href: "/strategy" },
@@ -56,14 +56,6 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
           (n, b) => n + b.zones.reduce((z, zone) => z + zone.items.length, 0),
           0,
         ) || undefined
-      );
-    }
-    // Briefs that are out and not yet submitted — the ones still waiting on
-    // someone else, which is the number worth surfacing.
-    if (key === "brief") {
-      return (
-        workspace.briefs.filter((b) => !b.revokedAt && (b.status === "sent" || b.status === "in_progress")).length ||
-        undefined
       );
     }
     if (key === "team") {

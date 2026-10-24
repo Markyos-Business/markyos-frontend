@@ -102,7 +102,7 @@ function AccountPageBody() {
         </Link>
       </header>
 
-      <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[760px] w-full mx-auto">
+      <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-190 w-full mx-auto">
         <PageHeader
           title="Account"
           description="Your details and sign-in, what this account is paying for, and the organisation-wide controls."

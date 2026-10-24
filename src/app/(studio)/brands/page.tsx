@@ -61,6 +61,9 @@ export default function BrandsPage() {
           {/* On a phone these two fold into the account menu, so the search
               keeps room to type in. Not `mk-tap`: its display is forced and
               would beat `hidden`. */}
+          <Link href="/forms" className="hidden min-h-6.5 items-center text-body font-medium text-text-muted hover:text-text sm:inline-flex">
+            Forms
+          </Link>
           <Link href="/studio/board" className="hidden min-h-6.5 items-center text-body font-medium text-text-muted hover:text-text sm:inline-flex">
             Board
           </Link>
@@ -72,6 +75,7 @@ export default function BrandsPage() {
               question about which one is the real one. */}
           <AccountMenu
             phoneLinks={[
+              { href: "/forms", label: "Forms", arLabel: "النماذج", icon: "clipboard-list" },
               { href: "/studio/board", label: "Board", arLabel: "اللوحة", icon: "th-large" },
               { href: "/templates", label: "Templates", arLabel: "القوالب", icon: "layer-group" },
             ]}

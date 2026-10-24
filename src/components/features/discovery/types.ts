@@ -9,7 +9,8 @@ export type QuestionCategory = "business" | "audience" | "competitors" | "person
 
 export type FormStatus = "draft" | "sent" | "in_progress" | "submitted";
 
-export type Option = { value: string; label: LocalizedText; assetId?: string | null };
+/** `imageUrl` is filled in by the public form endpoint from the option's asset. */
+export type Option = { value: string; label: LocalizedText; assetId?: string | null; imageUrl?: string | null };
 
 /** Every type's config, flattened; each type reads only its own keys (model/questionTypes.ts). */
 export type QuestionConfig = {
@@ -114,6 +115,8 @@ export type FormSettings = {
 export type DiscoveryForm = {
   id: string;
   workspaceId: string;
+  workspaceName: string;
+  workspaceSlug: string;
   templateKey: string;
   name: string;
   languages: Lang[];
@@ -122,6 +125,7 @@ export type DiscoveryForm = {
   theme: FormTheme;
   settings: FormSettings;
   publicToken: string | null;
+  linkRevoked: boolean;
   recipientName: string;
   recipientEmail: string;
   sentAt: string | null;
@@ -131,3 +135,111 @@ export type DiscoveryForm = {
   updatedAt: string;
   sections: FormSection[];
 };
+
+/** A row of the forms list. */
+export type FormSummary = Omit<DiscoveryForm, "sections"> & { answered: number; total: number; lastActivityAt: string };
+
+export type FormListPage = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: FormSummary[];
+  counts: Record<FormStatus | "all", number>;
+};
+
+export type FormListQuery = {
+  status?: FormStatus | "";
+  brand?: string;
+  search?: string;
+  ordering?: "updated" | "created" | "name" | "status";
+  page?: number;
+};
+
+export type LibraryPage = { count: number; next: string | null; previous: string | null; results: LibraryQuestion[] };
+
+export type LibraryQuery = { search?: string; category?: QuestionCategory | ""; type?: QuestionType | ""; page?: number; pageSize?: number };
+
+export type TemplateWithPreview = FormTemplate & {
+  questionCount: number;
+  sectionPreviews: { title: LocalizedText; count: number; sample: LibraryQuestion | null }[];
+};
+
+export type NewForm = { brandId: string; name: string; templateKey: string; languages: Lang[]; primaryLanguage: Lang };
+
+export type FormPatch = Partial<{
+  name: string;
+  languages: Lang[];
+  primaryLanguage: Lang;
+  theme: Partial<FormTheme>;
+  settings: Partial<FormSettings>;
+  recipientName: string;
+  recipientEmail: string;
+}>;
+
+export type QuestionDraft = Partial<{
+  sectionId: string;
+  libraryQuestionId: string;
+  type: QuestionType;
+  title: LocalizedText;
+  help: LocalizedText;
+  required: boolean;
+  config: QuestionConfig;
+  visibility: Visibility;
+  analysisTarget: AnalysisTarget | "";
+}>;
+
+export type FormEventType =
+  | "created"
+  | "sent"
+  | "opened"
+  | "first_answer"
+  | "section_completed"
+  | "submitted"
+  | "reminded"
+  | "reopened"
+  | "analysed";
+
+export type ResponsesView = {
+  form: Omit<DiscoveryForm, "sections">;
+  response: {
+    id: string;
+    respondentName: string;
+    respondentEmail: string;
+    language: Lang;
+    startedAt: string;
+    submittedAt: string | null;
+    lastSavedAt: string | null;
+  } | null;
+  sections: {
+    id: string;
+    title: LocalizedText;
+    questions: (FormQuestion & {
+      visible: boolean;
+      answer: { value: AnswerValue; answeredLanguage: Lang; answeredAt: string; answeredBy: string } | null;
+    })[];
+  }[];
+  events: { type: FormEventType; actor: string; at: string; data: Record<string, unknown> }[];
+  counters: { answered: number; total: number; timeToSubmitSeconds: number | null; respondents: number; files: number };
+  /** The uploaded files answers refer to, by asset id. */
+  files: Record<string, UploadedFile>;
+};
+
+/** A question as the client's form receives it: published content only. */
+export type PublicQuestion = Pick<FormQuestion, "id" | "type" | "title" | "help" | "required" | "config" | "visibility">;
+
+/** What the public form endpoint returns: never internal fields. */
+export type PublicForm = {
+  name: string;
+  studioName: string;
+  languages: Lang[];
+  primaryLanguage: Lang;
+  theme: FormTheme;
+  logoUrl: string | null;
+  status: FormStatus;
+  closesAt: string | null;
+  allowSaveAndResume: boolean;
+  sections: { id: string; title: LocalizedText; questions: PublicQuestion[] }[];
+};
+
+/** A file the client uploaded, as its answer refers to it. */
+export type UploadedFile = { assetId: string; name: string; url?: string | null };

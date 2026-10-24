@@ -5,7 +5,9 @@ import typeCases from "./fixtures/question_type_cases.json";
 import visibilityCases from "./fixtures/visibility_cases.json";
 import { AnswerError, isEmptyAnswer, serialiseAnswer, validateAnswer } from "./questionTypes";
 import { editRefusal, nextStatus } from "./status";
+import { formPalette } from "./theme";
 import { evaluateVisibility, visibilityErrors } from "./visibility";
+import { contrastRatio } from "@/lib/contrast";
 import type { AnswerValue, QuestionConfig, QuestionType, Visibility } from "../types";
 
 type TypeCase = { name: string; type: QuestionType; config: QuestionConfig; value: unknown; ok: boolean; clean?: unknown };
@@ -70,5 +72,25 @@ describe.skipIf(!existsSync(BACKEND))("fixtures match the backend's", () => {
   it.each(["question_type_cases.json", "visibility_cases.json"])("%s", (name) => {
     const ours = readFileSync(resolve(__dirname, "fixtures", name), "utf8");
     expect(ours).toBe(readFileSync(resolve(BACKEND, name), "utf8"));
+  });
+});
+
+describe("client form palette", () => {
+  it("keeps text at 4.5:1 on both backgrounds", () => {
+    for (const background of ["light", "dark"] as const) {
+      const { palette } = formPalette({ accent: null, background });
+      expect(contrastRatio(palette.text, palette.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(palette.muted, palette.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(palette.accentText, palette.surface)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it("warns when the accent can't be read and falls back to the text colour", () => {
+    const pale = formPalette({ accent: "#ffe066", background: "light" });
+    expect(pale.warnings).toContain("accent_as_text");
+    expect(pale.palette.accentText).toBe(pale.palette.text);
+    expect(pale.palette.accent).toBe("#ffe066");
+    expect(pale.palette.accentInk).toBe("#000000");
+    expect(formPalette({ accent: "#0062b8", background: "light" }).warnings).toEqual([]);
   });
 });
