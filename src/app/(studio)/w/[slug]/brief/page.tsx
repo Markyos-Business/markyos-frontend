@@ -288,7 +288,7 @@ export default function BriefPage() {
                       {b.status !== "draft" && !b.revokedAt && (
                         <PillButton
                           size="sm"
-                          variant="secondary"
+                          variant="outline"
                           onClick={async () => {
                             const ok = await confirm({
                               title: "Close this brief?",

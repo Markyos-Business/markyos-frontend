@@ -46,11 +46,11 @@ export function PasswordField({
   const note = error ?? hint;
 
   // Solved against the card, not the canvas: the meter sits on surface-1.
-  const BAR = ["bg-danger", "bg-danger", "bg-warning", "bg-success", "bg-success"];
+  const BAR = ["bg-danger-fill", "bg-danger-fill", "bg-warning", "bg-success", "bg-success"];
   const INK = ["text-danger", "text-danger", "text-warning", "text-success", "text-success"];
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
+    <div className="flex min-h-field w-full flex-col gap-space-2">
       <div className="flex items-center justify-between">
         <label htmlFor={id} className={labelClasses}>
           {label}
@@ -66,7 +66,7 @@ export function PasswordField({
           type={shown ? "text" : "password"}
           aria-invalid={error ? true : undefined}
           aria-describedby={[note ? noteId : null, rating ? meterId : null].filter(Boolean).join(" ") || undefined}
-          className={`${inputClasses(error)} h-[46px] ps-4 pe-12`}
+          className={`${inputClasses} pe-10`}
         />
         <IconButton
           onClick={() => setShown((v) => !v)}
@@ -75,7 +75,7 @@ export function PasswordField({
           // status, and a button should read as the former.
           label={shown ? "Hide password" : "Show password"}
           icon={shown ? "eye-slash" : "eye"}
-          className="absolute end-2 top-1/2 -translate-y-1/2 text-text-muted"
+          className="absolute end-0 top-1/2 -translate-y-1/2 text-text-muted"
         />
       </div>
 
@@ -92,9 +92,9 @@ export function PasswordField({
                 />
               ))}
             </div>
-            <span className={`shrink-0 text-[11px] font-semibold ${INK[rating.score]}`}>{rating.label}</span>
+            <span className={`shrink-0 text-caption font-medium ${INK[rating.score]}`}>{rating.label}</span>
           </div>
-          {rating.advice && <span className="text-[11.5px] leading-[1.45] text-text-faint">{rating.advice}</span>}
+          {rating.advice && <span className="text-caption text-text-faint">{rating.advice}</span>}
         </div>
       )}
 

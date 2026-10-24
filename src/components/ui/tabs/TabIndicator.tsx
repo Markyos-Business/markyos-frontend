@@ -1,27 +1,25 @@
-"use client";
+type TabIndicatorVariant = "pill" | "underline";
 
-import { ViewTransition } from "react";
+// The spec's text tab (§6.11): the active tab sits on a raised pill with a
+// hairline. `underline` is a bar under the label, for a tab row that runs
+// along the top edge of a card.
+const variants: Record<TabIndicatorVariant, string> = {
+  pill: "inset-0 -z-10 rounded-lg bg-surface-2 shadow-edge",
+  underline: "inset-x-0 -bottom-px h-0.5 rounded-full bg-accent",
+};
 
 type TabIndicatorProps = {
-  /**
-   * One name per tab row. The indicator renders inside the active tab only;
-   * when the selection changes inside `startTransition`, React sees the same
-   * name leave one tab and arrive in the next, and the browser slides it
-   * across (the View Transitions API). Without support it simply moves.
-   */
-  group: string;
-  className?: string;
+  variant?: TabIndicatorVariant;
 };
 
 /**
- * The active tab's pill, as its own element so it can travel between tabs.
- * The tab button needs `relative isolate` so the pill sits under its label.
+ * The active tab's highlight, drawn inside the active tab. It doesn't travel
+ * between tabs: motion in the product is colour and opacity only. The tab
+ * button needs `relative isolate` so the pill sits under its label.
  */
-const TabIndicator = ({ group, className = "bg-surface-2" }: TabIndicatorProps) => (
-  <ViewTransition name={`tab-indicator-${group}`} share="tab-slide" default="none">
-    <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 rounded-full ${className}`} />
-  </ViewTransition>
+const TabIndicator = ({ variant = "pill" }: TabIndicatorProps) => (
+  <span aria-hidden className={`pointer-events-none absolute ${variants[variant]}`} />
 );
 
 export { TabIndicator };
-export type { TabIndicatorProps };
+export type { TabIndicatorProps, TabIndicatorVariant };

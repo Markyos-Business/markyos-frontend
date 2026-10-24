@@ -193,7 +193,7 @@ export function DocsTemplate(props: TemplateProps) {
         <div className="mt-auto flex flex-col gap-3">
           <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
           {attachedSlots.length > 0 && (
-            <PillButton variant="secondary" size="sm" onClick={() => setDownloadOpen(true)} className="w-full">
+            <PillButton variant="outline" size="sm" onClick={() => setDownloadOpen(true)} className="w-full">
               {/* An Icon, not a "↗" character: the guideline site ships with an
                   offline icon set and no webfont, so a Unicode arrow that the
                   system font happens not to carry renders as a tofu box on a

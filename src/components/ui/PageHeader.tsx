@@ -9,12 +9,12 @@ type PageHeaderProps = {
 
 /** A page's title, a line under it, and its main actions. */
 const PageHeader = ({ title, description, actions }: PageHeaderProps) => (
-  <div className="flex flex-wrap items-end justify-between gap-4">
+  <div className="flex flex-wrap items-end justify-between gap-space-5">
     <div>
-      <h1 className="mb-1.5 font-display text-display font-semibold tracking-tight">{title}</h1>
-      {description && <p className="text-ui-md text-text-muted">{description}</p>}
+      <h1 className="text-h1 font-medium text-text">{title}</h1>
+      {description && <p className="text-body text-text-muted">{description}</p>}
     </div>
-    {actions && <div className="flex items-center gap-2.5">{actions}</div>}
+    {actions && <div className="flex items-center gap-space-4">{actions}</div>}
   </div>
 );
 

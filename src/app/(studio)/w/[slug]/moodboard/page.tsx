@@ -960,7 +960,7 @@ function TemplatePicker({
       </div>
       {!hasBoard && (
         <div>
-          <PillButton variant="secondary" onClick={onUpload}>
+          <PillButton variant="outline" onClick={onUpload}>
             {isAr ? "أو ارفع مراجع مباشرة" : "Or just upload references"}
           </PillButton>
         </div>

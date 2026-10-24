@@ -80,11 +80,11 @@ const ToastProvider = ({ children }: ToastProviderProps) => {
         {items.map((item) => (
           <div
             key={item.id}
-            className={`max-w-sm rounded-xl bg-surface-2 px-4 py-3 text-ui font-medium text-text ${variants[item.variant]} ${
-              item.leaving ? "pointer-events-none animate-toast-out" : "pointer-events-auto animate-toast-in"
+            className={`max-w-sm rounded-lg bg-surface-2 px-space-6 py-space-5 text-body font-medium text-text ${variants[item.variant]} ${
+              item.leaving ? "pointer-events-none animate-fade-out" : "pointer-events-auto animate-fade-in"
             }`}
           >
-            <span className="flex items-center gap-3">
+            <span className="flex items-center gap-space-5">
               <span dir="auto" className="bidi-auto">
                 {item.message}
               </span>
@@ -95,7 +95,8 @@ const ToastProvider = ({ children }: ToastProviderProps) => {
                     item.action!.run();
                     dismiss(item.id);
                   }}
-                  className="mk-tap h-7 shrink-0 cursor-pointer rounded-full bg-surface-0 px-2.5 text-ui-xs font-semibold text-accent-text"
+                  // The spec's link button: an overline in the accent.
+                  className="mk-tap shrink-0 text-overline uppercase text-accent-text"
                 >
                   {item.action.label}
                 </button>

@@ -18,8 +18,9 @@ const segmentSizes: Record<LangToggleSize, string> = {
   lg: "px-5.5 py-2.25 text-ui-lg",
 };
 
-const segmentBase = "mk-tap justify-center rounded-full font-semibold transition-colors cursor-pointer";
-const segmentState = (on: boolean) => (on ? "bg-solid text-solid-ink" : "bg-transparent text-text-muted");
+// Drawn like text tabs (spec §6.11): the chosen language on a raised pill.
+const segmentBase = "mk-tap justify-center rounded-md font-medium transition-[background-color,color,box-shadow] cursor-pointer";
+const segmentState = (on: boolean) => (on ? "bg-surface-2 text-text shadow-edge" : "bg-transparent text-text-muted");
 
 type LangToggleProps = {
   value: Lang;
@@ -59,7 +60,7 @@ const LangToggle = ({ value, onChange, size = "md", label = "Preview language", 
       role="radiogroup"
       aria-label={label}
       data-lang-toggle={scope}
-      className={`inline-flex rounded-full bg-surface-1 ${groupPadding[size]}`}
+      className={`inline-flex rounded-lg bg-surface-sunken shadow-edge-soft ${groupPadding[size]}`}
     >
       <button
         type="button"

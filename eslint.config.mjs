@@ -78,6 +78,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The Claude Design handoff bundle — not part of this app.
     "project/**",
+    // Components copied from another project, kept only as a porting source.
+    "reference/**",
   ]),
 ]);
 

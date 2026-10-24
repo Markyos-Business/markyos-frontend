@@ -157,12 +157,12 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
 
   return (
     <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-backdrop-in"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in"
       style={{ background: "var(--scrim)" }}
       onClick={onClose}
     >
       <div
-        className="animate-modal-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-fade-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -264,7 +264,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                     </div>
                   </div>
                 )}
-                <PillButton variant="secondary" size="sm" onClick={() => setStep("pick")} className="self-start">
+                <PillButton variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
                   {isAr ? "جرّب ملفًا آخر" : "Try another file"}
                 </PillButton>
               </div>

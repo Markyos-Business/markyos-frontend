@@ -401,7 +401,7 @@ export default function SettingsPage() {
                     </span>
                   </div>
                   <PillButton
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={handleVerifyDomain}
                     disabled={verifying}
@@ -558,10 +558,10 @@ export default function SettingsPage() {
             }
             right={
               <div className="flex gap-2 shrink-0">
-                <PillButton variant="secondary" size="sm" onClick={handleCopyTokens}>
+                <PillButton variant="outline" size="sm" onClick={handleCopyTokens}>
                   Copy JSON
                 </PillButton>
-                <PillButton variant="secondary" size="sm" onClick={handleDownloadTokens}>
+                <PillButton variant="outline" size="sm" onClick={handleDownloadTokens}>
                   Download
                 </PillButton>
               </div>
@@ -582,7 +582,7 @@ export default function SettingsPage() {
             label="Import tokens"
             hint="Adds colors it doesn't have and updates ones whose hex changed. Nothing is deleted."
             right={
-              <PillButton variant="secondary" size="sm" onClick={() => tokenInputRef.current?.click()} disabled={syncing}>
+              <PillButton variant="outline" size="sm" onClick={() => tokenInputRef.current?.click()} disabled={syncing}>
                 {syncing ? "Reading…" : "Choose file"}
               </PillButton>
             }
@@ -793,7 +793,7 @@ function PlanCard({
       <p className="text-[12px] flex-1" style={{ color: "var(--text-muted)" }}>
         {description}
       </p>
-      <PillButton variant={active ? "secondary" : "primary"} size="sm" onClick={onSelect} disabled={active || loading}>
+      <PillButton variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={active || loading}>
         {active ? "Active" : loading ? "Redirecting…" : "Choose plan"}
       </PillButton>
     </div>

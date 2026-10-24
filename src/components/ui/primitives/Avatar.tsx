@@ -14,7 +14,7 @@ type AvatarProps = {
 
 const Avatar = ({ initials, size = 30, tone = "muted" }: AvatarProps) => (
   <div
-    className={`grid shrink-0 place-items-center rounded-full font-semibold ${tones[tone]}`}
+    className={`grid shrink-0 place-items-center rounded-full font-medium ${tones[tone]}`}
     style={{ width: size, height: size, fontSize: Math.max(10, Math.round(size * 0.36)) }}
   >
     {initials}

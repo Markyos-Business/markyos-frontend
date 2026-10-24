@@ -14,11 +14,12 @@ type EmptyStateProps = {
 
 /** What a page or card shows when it has nothing to list yet. */
 const EmptyState = ({ icon, title, description, action }: EmptyStateProps) => (
-  <div className="mk-surface flex flex-col items-center gap-2 rounded-2xl bg-surface-1 px-6 py-12 text-center">
-    <Icon name={icon} size={22} className="text-text-faint" />
-    <div className="text-ui-md font-semibold text-text">{title}</div>
-    <p className="max-w-105 text-ui-sm text-text-muted">{description}</p>
-    {action && <div className="mt-2">{action}</div>}
+  // Type and an icon, no illustration (spec §7).
+  <div className="mk-surface flex flex-col items-center gap-space-3 rounded-card bg-surface-1 px-space-10 py-space-11 text-center">
+    <Icon name={icon} size={22} className="text-text-muted" />
+    <div className="text-body font-medium text-text">{title}</div>
+    <p className="max-w-105 text-body text-text-muted">{description}</p>
+    {action && <div className="mt-space-3">{action}</div>}
   </div>
 );
 

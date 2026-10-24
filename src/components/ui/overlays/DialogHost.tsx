@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "../buttons/Button";
 import { Icon } from "../primitives/Icon";
 import type { DialogRequest } from "./Dialog";
 
@@ -96,7 +97,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
     <div
       dir={isAr ? "rtl" : "ltr"}
       className={`fixed inset-0 z-dialog flex items-center justify-center bg-scrim p-6 ${
-        closing ? "pointer-events-none animate-backdrop-out" : "animate-backdrop-in"
+        closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
       }`}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onSettle(cancelValue);
@@ -109,45 +110,42 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
         tabIndex={-1}
         aria-labelledby={titleId}
         aria-describedby={options.body ? bodyId : undefined}
-        className={`flex w-full max-w-110 flex-col gap-4 rounded-2xl bg-surface-0 p-6 shadow-edge-modal ${
+        className={`flex w-full max-w-110 flex-col gap-space-6 rounded-card bg-surface-1 p-space-10 shadow-edge-modal ${
           isAr ? "font-arabic" : ""
-        } ${closing ? "animate-modal-out" : "animate-modal-in"}`}
+        } ${closing ? "animate-fade-out" : "animate-fade-in"}`}
         // Inline on purpose: the panel takes focus only so the Tab trap has
         // somewhere to start, and the focus-ring rule yields to an inline
         // outline (tailwind/base.js), where it would not yield to a class.
         style={{ outline: "none" }}
       >
         <div className="flex items-start justify-between gap-4">
-          <h2
-            id={titleId}
-            className="font-display text-title-sm font-semibold leading-snug tracking-tight"
-          >
+          <h2 id={titleId} className="text-h4 font-medium text-text">
             {options.title}
           </h2>
           <button
             type="button"
             onClick={() => onSettle(cancelValue)}
             aria-label={cancelLabel}
-            className="-me-1 -mt-1 grid size-7 shrink-0 cursor-pointer place-items-center rounded-full text-text-muted"
+            className="-me-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-text-muted"
           >
             <Icon name="times" size={16} />
           </button>
         </div>
 
         {options.body && (
-          <p id={bodyId} className="text-ui-plus leading-prose text-text-muted">
+          <p id={bodyId} className="text-body text-text-muted">
             {options.body}
           </p>
         )}
 
         {request.kind === "confirm" && request.options.consequences?.length ? (
-          <ul className="flex flex-col gap-1.5 rounded-xl bg-surface-2 px-3.5 py-3">
+          <ul className="flex flex-col gap-1.5 rounded-lg bg-surface-sunken px-space-6 py-space-5">
             {request.options.consequences.map((line) => (
-              <li key={line} className="flex gap-2.5 text-ui-sm">
+              <li key={line} className="flex gap-2.5 text-body">
                 {/* A drawn dot rather than an icon: there is no `minus` glyph in
                     the offline icon set, and a missing glyph renders as a solid
                     square — a bullet is the one thing that must not become one. */}
-                <span aria-hidden className="mt-1.75 size-1 shrink-0 rounded-full bg-text-faint" />
+                <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-text-faint" />
                 <span className="text-text-secondary">{line}</span>
               </li>
             ))}
@@ -156,9 +154,9 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {request.kind === "prompt" && (
-            <label className="flex flex-col gap-1.5">
+            <label className="flex flex-col gap-space-2">
               {request.options.label && (
-                <span className="text-ui-xs font-medium text-text-muted">
+                <span className="text-caption text-text-muted">
                   {request.options.label}
                 </span>
               )}
@@ -167,10 +165,10 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={request.options.placeholder}
-                className="h-11 rounded-lg bg-surface-2 px-3.5 text-ui-md text-text shadow-edge outline-none"
+                className="mk-underline"
               />
               {request.options.hint && (
-                <span className="text-ui-xs text-text-faint">
+                <span className="text-caption text-text-faint">
                   {request.options.hint}
                 </span>
               )}
@@ -178,14 +176,14 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
           )}
 
           {confirmPhrase && (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-ui-xs text-text-muted">
+            <label className="flex flex-col gap-space-2">
+              <span className="text-caption text-text-muted">
                 {request.kind === "confirm" && request.options.confirmPhraseLabel ? (
                   request.options.confirmPhraseLabel
                 ) : (
                   <>
                     {isAr ? "اكتب " : "Type "}
-                    <span className="font-semibold text-text">
+                    <span className="font-medium text-text">
                       {confirmPhrase}
                     </span>
                     {isAr ? " للتأكيد" : " to confirm"}
@@ -201,27 +199,23 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
                   autoComplete="off"
                   spellCheck={false}
                   aria-invalid={!armed}
-                  className={`h-11 w-full rounded-lg bg-surface-2 px-3.5 pe-10 text-ui-md text-text outline-none ${
-                    armed ? "shadow-edge-success" : "shadow-edge"
-                  }`}
+                  data-state={armed ? "success" : undefined}
+                  className="mk-underline w-full pe-8"
                 />
                 {armed && (
-                  <Icon name="check" size={15} className="pointer-events-none absolute end-3 text-success" />
+                  <Icon name="check" size={16} className="pointer-events-none absolute end-1 text-success" />
                 )}
               </div>
             </label>
           )}
 
-          <div className="flex gap-2.5 justify-end">
-            <button
-              type="button"
-              onClick={() => onSettle(cancelValue)}
-              className="h-10 cursor-pointer rounded-full bg-surface-2 px-5 text-ui font-semibold text-text shadow-edge"
-            >
+          <div className="flex gap-space-4 justify-end">
+            <Button type="button" variant="outline" onClick={() => onSettle(cancelValue)}>
               {cancelLabel}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              variant={danger ? "danger" : "primary"}
               disabled={!armed || (request.kind === "prompt" && !value.trim())}
               // Focus lands here only when nothing has to be typed first. When
               // something does, the field is the first stop and this button is
@@ -229,12 +223,9 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
               {...(!confirmPhrase && request.kind === "confirm" && !danger
                 ? { "data-autofocus": true }
                 : {})}
-              className={`h-10 cursor-pointer rounded-full px-5 text-ui font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
-                danger ? "bg-danger text-danger-ink" : "bg-solid text-solid-ink"
-              }`}
             >
               {confirmLabel}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

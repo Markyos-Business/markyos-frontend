@@ -4,16 +4,16 @@ import type { InputHTMLAttributes } from "react";
 import { Icon } from "../../ui/primitives/Icon";
 
 type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> & {
-  /** The field's accessible name; the box shows only a placeholder. */
+  /** The field's accessible name; the field shows only a placeholder. */
   label: string;
 };
 
-/** The rounded search box of list headers. */
+/** The search field of list headers: the underline field with a search glyph. */
 const SearchField = ({ label, ...rest }: SearchFieldProps) => (
-  <label className="flex h-9 w-full items-center gap-2.5 rounded-full bg-surface-1 px-4 sm:w-65">
-    <Icon name="search" size={16} className="text-text-muted" />
+  <label className="mk-underline flex w-full items-center gap-space-3 sm:w-65">
+    <Icon name="search" size={18} className="text-text-muted" />
     <span className="sr-only">{label}</span>
-    <input {...rest} type="search" className="flex-1 bg-transparent text-ui text-text outline-none" />
+    <input {...rest} type="search" className="min-w-0 flex-1 bg-transparent text-body font-medium text-text outline-none placeholder:font-normal placeholder:text-text-disabled" />
   </label>
 );
 

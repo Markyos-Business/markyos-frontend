@@ -195,7 +195,7 @@ export default function DraftsPage() {
                     </PillButton>
                     <PillButton
                       size="sm"
-                      variant="secondary"
+                      variant="outline"
                       onClick={() => {
                         rejectDraft(ws.id, d.id);
                         showToast("Rejected — kept with its reasoning.");

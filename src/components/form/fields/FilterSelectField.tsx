@@ -3,22 +3,27 @@
 import type { SelectHTMLAttributes } from "react";
 import { Icon } from "../../ui/primitives/Icon";
 
-type SelectFieldProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className"> & {
+type FilterSelectFieldProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className"> & {
   /** Always required: it is the control's accessible name even when hidden. */
   label: string;
   /** Hide the label visually, for a filter bar where the options speak for it. */
   hideLabel?: boolean;
+  /** An icon name shown inside the pill, before the value. */
+  icon?: string;
   options: readonly { value: string; label: string }[];
 };
 
-/** A native select in the pill style of the filter bars. */
-const SelectField = ({ label, hideLabel = false, options, ...rest }: SelectFieldProps) => (
-  <label className="flex items-center gap-2 text-ui-xs text-text-muted">
+/** A native select for a toolbar or filter bar, in the outline button's look. */
+const FilterSelectField = ({ label, hideLabel = false, icon, options, ...rest }: FilterSelectFieldProps) => (
+  <label className="flex items-center gap-space-3 text-caption text-text-muted">
     <span className={hideLabel ? "sr-only" : "font-medium"}>{label}</span>
     <span className="relative inline-flex items-center">
+      {icon && <Icon name={icon} size={16} className="pointer-events-none absolute start-space-4 text-text-muted" />}
       <select
         {...rest}
-        className="h-9 cursor-pointer appearance-none rounded-full bg-surface-1 ps-3.5 pe-8 text-ui-xs font-medium text-text outline-none ring-1 ring-inset ring-hairline"
+        className={`h-control-sm cursor-pointer appearance-none rounded-lg bg-ink-soft pe-space-11 text-body font-medium text-text shadow-edge ${
+          icon ? "ps-space-11" : "ps-space-5"
+        }`}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -26,10 +31,10 @@ const SelectField = ({ label, hideLabel = false, options, ...rest }: SelectField
           </option>
         ))}
       </select>
-      <Icon name="angle-down" size={13} className="pointer-events-none absolute end-3 text-text-muted" />
+      <Icon name="angle-down" size={16} className="pointer-events-none absolute end-space-4 text-text-muted" />
     </span>
   </label>
 );
 
-export { SelectField };
-export type { SelectFieldProps };
+export { FilterSelectField };
+export type { FilterSelectFieldProps };

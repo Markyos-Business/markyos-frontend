@@ -6,3 +6,4 @@
 @config "../../tailwind.config.js";
 @source not "../../tailwind";
 @source not "../../docs";
+@source not "../../reference";

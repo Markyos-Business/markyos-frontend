@@ -334,7 +334,7 @@ export default function TeamPage() {
                     {!p.resolved && canGovern && (
                       <PillButton
                         size="sm"
-                        variant="secondary"
+                        variant="outline"
                         onClick={() => {
                           resolveSignOffPin(ws.id, p.id);
                           showToast("Marked as handled.", "success");
@@ -429,7 +429,7 @@ export default function TeamPage() {
               className="flex-1 h-10 px-3 rounded-lg outline-none text-[13px]"
               style={{ background: "var(--surface-2)", color: "var(--text)" }}
             />
-            <PillButton variant="secondary" size="sm" onClick={handleSaveSnapshot}>
+            <PillButton variant="outline" size="sm" onClick={handleSaveSnapshot}>
               Save current as version
             </PillButton>
           </div>

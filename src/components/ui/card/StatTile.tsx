@@ -5,9 +5,11 @@ type StatTileProps = {
 
 /** One number and what it counts. */
 const StatTile = ({ value, label }: StatTileProps) => (
-  <div className="flex flex-col gap-1 rounded-xl bg-surface-2 p-3.5">
-    <span className="font-display text-title font-semibold">{value}</span>
-    <span className="text-ui-2xs text-text-faint">{label}</span>
+  // A counter (spec §6.14): the value large at weight 500 over a 12px label,
+  // on the sunken fill with the widget radius.
+  <div className="flex flex-col gap-space-1 rounded-widget bg-surface-sunken p-space-6 shadow-edge-soft">
+    <span className="text-h2 font-medium text-text">{value}</span>
+    <span className="text-caption text-text-muted">{label}</span>
   </div>
 );
 

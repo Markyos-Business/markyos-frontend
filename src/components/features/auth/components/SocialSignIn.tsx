@@ -14,7 +14,7 @@ export function SocialSignIn() {
       </div>
       <Button
         type="button"
-        variant="secondary"
+        variant="outline"
         className="w-full"
         onClick={() => showToast("Social login isn't wired up in this build.")}
         icon={<Icon name="google" size={17} />}

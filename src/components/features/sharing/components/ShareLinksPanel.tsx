@@ -90,7 +90,7 @@ export function ShareLinksPanel({
                 : "A read-only link to the full strategy — no editor, no rest of the app."}
           </div>
         </div>
-        <PillButton variant="secondary" size="sm" onClick={handleCreate}>
+        <PillButton variant="outline" size="sm" onClick={handleCreate}>
           {isAr ? "إنشاء رابط" : "Create link"}
         </PillButton>
       </div>
@@ -111,7 +111,7 @@ export function ShareLinksPanel({
           </button>
 
           {open && (
-            <div className="flex flex-col gap-2 animate-fade-in">
+            <div className="flex flex-col gap-2">
               {links.map((l) => {
                 const revoked = !!l.revokedAt;
                 return (

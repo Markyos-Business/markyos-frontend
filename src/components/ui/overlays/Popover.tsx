@@ -7,10 +7,10 @@ import { usePresence } from "@/hooks/usePresence";
 type PopoverAlign = "start" | "end";
 
 // Logical insets, so the panel hangs off the same edge of its trigger in
-// Arabic as it does in English, and grows out of the corner nearest it.
+// Arabic as it does in English.
 const aligns: Record<PopoverAlign, string> = {
-  start: "start-0 origin-top-left rtl:origin-top-right",
-  end: "end-0 origin-top-right rtl:origin-top-left",
+  start: "start-0",
+  end: "end-0",
 };
 
 type PopoverProps = {
@@ -86,8 +86,10 @@ const Popover = ({ button, label, align = "end", width = 260, className, buttonS
 
       {mounted && (
         <div
-          className={`absolute top-full z-dropdown mt-2 overflow-hidden rounded-xl bg-surface-0 shadow-edge-pop ${aligns[align]} ${
-            closing ? "pointer-events-none animate-dropdown-out" : "animate-dropdown-in"
+          // A raised surface (spec §1.5): the card fill, its hairline and the
+          // one shadow the system allows, for menus and overlays.
+          className={`absolute top-full z-dropdown mt-2 overflow-hidden rounded-card bg-surface-1 shadow-edge-pop ${aligns[align]} ${
+            closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
           }`}
           style={{ width, maxWidth: "min(92vw, 520px)" }}
         >

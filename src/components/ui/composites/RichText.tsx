@@ -285,7 +285,7 @@ const RichTextEditor = ({
               onClick={() => run(t.action)}
               className="grid size-7 cursor-pointer place-items-center rounded-md hover:text-text"
             >
-              <Icon name={t.icon} size={14} />
+              <Icon name={t.icon} size={16} />
             </button>
           );
         })}
