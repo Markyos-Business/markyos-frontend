@@ -2,7 +2,7 @@
 
 import { useApp } from "@/contexts/AppContext";
 import { Icon, AutoTextarea } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import { DepartmentView, DeptInstructionSection, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
 

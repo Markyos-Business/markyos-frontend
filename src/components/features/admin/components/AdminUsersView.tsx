@@ -12,7 +12,7 @@ import {
   cellClasses,
   rowClasses,
 } from "@/components/ui";
-import { Badge } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Badge } from "@/components/ui/composites/SectionUI";
 import { SearchField, SelectField } from "@/components/form";
 import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUsers } from "../hooks/useAdminUsers";
@@ -85,7 +85,7 @@ export function AdminUsersView() {
         {loading && !data ? (
           <TableLoadingRow colSpan={COLUMNS.length} />
         ) : !data?.results.length ? (
-          <TableEmptyRow colSpan={COLUMNS.length} title="No accounts match" hint="Try another search or clear the filters." />
+          <TableEmptyRow colSpan={COLUMNS.length} title="No accounts match" description="Try another search or clear the filters." />
         ) : (
           data.results.map((u) => {
             const status = u.isActive ? "active" : "inactive";

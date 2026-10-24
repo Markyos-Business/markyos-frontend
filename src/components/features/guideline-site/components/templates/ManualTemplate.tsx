@@ -16,7 +16,7 @@
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { navLogo, navMark } from "@/components/features/guideline-site/model/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
 import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, StatTile, TextField } from "@/components/ui";
-import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { ProfilePanel, BillingPanel } from "@/components/features/account";
 import { formatRelative } from "@/lib/utils";
 

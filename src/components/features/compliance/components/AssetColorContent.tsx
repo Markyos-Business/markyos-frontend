@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import { DominantColor, colorDistance, extractDominantColors } from "@/components/features/compliance/model/colorExtract";
 import { formatRelative } from "@/lib/utils";
 import { ColorSwatch, Workspace } from "@/types";

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { LogoSlotCard } from "@/components/features/visual-identity/components/logo/LogoSlotCard";
 import { ClearspacePanel } from "@/components/features/visual-identity/components/logo/ClearspacePanel";
 import { PreviewModal, PendingUpload } from "@/components/features/visual-identity/components/logo/PreviewModal";

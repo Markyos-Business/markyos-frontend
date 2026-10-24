@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { BrandMark } from "@/components/ui/media";
 import { useTheme } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { Asset, AssetType, Workspace } from "@/types";

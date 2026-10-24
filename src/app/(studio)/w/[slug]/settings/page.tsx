@@ -5,7 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, TextField, PillButton, LangToggle } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Section, Row, Switch, Badge } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, Row, Switch, Badge } from "@/components/ui/composites/SectionUI";
 import { formatRelative } from "@/lib/utils";
 import { diffTokens, parseDesignTokens, serializeTokens } from "@/components/features/settings";
 import { triggerBlobDownload } from "@/lib/rasterize";

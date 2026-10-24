@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import {
   Zone,
   type ZoneAction,

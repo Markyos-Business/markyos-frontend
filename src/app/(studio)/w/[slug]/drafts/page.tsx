@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Badge, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { Draft, DraftSource, DraftStatus } from "@/types";
 import { formatRelative } from "@/lib/utils";
 

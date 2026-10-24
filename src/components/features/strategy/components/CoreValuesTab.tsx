@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
-import { Section, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/BilingualUI";
 import { valueIn } from "@/components/features/guideline-site";
 import { Lang, Workspace } from "@/types";

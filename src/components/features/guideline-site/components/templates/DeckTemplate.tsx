@@ -17,7 +17,7 @@ import Link from "next/link";
 import { LangToggle, Icon } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
 import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { markSources, navMark } from "@/components/features/guideline-site/model/brandLogo";
 import { SectionNoteProvider } from "@/components/features/guideline-site/components/LiveEdit";
 import { PageBlock, SlotKind } from "@/types";

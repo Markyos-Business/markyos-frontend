@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, AutoTextarea } from "@/components/ui";
-import { Section, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { CompetitorColumn, Lang, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
 import { useModalDismiss } from "@/hooks/useModalDismiss";

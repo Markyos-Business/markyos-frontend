@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { TeamRole } from "@/types";
 import { roleOn } from "@/lib/data/access";
 import { formatRelative } from "@/lib/utils";

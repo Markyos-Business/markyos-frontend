@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/components/ui";
-import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 

@@ -1,24 +1,26 @@
 import type { ReactNode } from "react";
 import { Icon } from "../primitives/Icon";
 
-/** What a page or card shows when it has nothing to list yet. */
-export function EmptyState({
-  icon,
-  title,
-  hint,
-  action,
-}: {
+type EmptyStateProps = {
   icon: string;
   title: string;
-  hint?: string;
+  /**
+   * Required so an empty state always says what would be here and how to get
+   * it; a bare "No data" fails type-checking.
+   */
+  description: string;
   action?: ReactNode;
-}) {
-  return (
-    <div className="mk-surface flex flex-col items-center gap-2 rounded-2xl bg-surface-1 px-6 py-12 text-center">
-      <Icon name={icon} size={22} className="text-text-faint" />
-      <div className="text-[14px] font-semibold text-text">{title}</div>
-      {hint && <p className="max-w-[420px] text-[12.5px] leading-normal text-text-muted">{hint}</p>}
-      {action && <div className="mt-2">{action}</div>}
-    </div>
-  );
-}
+};
+
+/** What a page or card shows when it has nothing to list yet. */
+const EmptyState = ({ icon, title, description, action }: EmptyStateProps) => (
+  <div className="mk-surface flex flex-col items-center gap-2 rounded-2xl bg-surface-1 px-6 py-12 text-center">
+    <Icon name={icon} size={22} className="text-text-faint" />
+    <div className="text-ui-md font-semibold text-text">{title}</div>
+    <p className="max-w-105 text-ui-sm text-text-muted">{description}</p>
+    {action && <div className="mt-2">{action}</div>}
+  </div>
+);
+
+export { EmptyState };
+export type { EmptyStateProps };

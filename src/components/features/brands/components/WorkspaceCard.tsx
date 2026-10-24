@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AssetThumb } from "@/components/ui/media/AssetThumb/AssetThumb";
+import { AssetThumb } from "@/components/ui/media";
 import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 

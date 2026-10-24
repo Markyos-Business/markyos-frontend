@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, AutoTextarea, Popover } from "@/components/ui";
 import { TopBar, TopBarTab } from "@/components/layout";
-import { EmptyHint, Switch } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EmptyHint, Switch } from "@/components/ui/composites/SectionUI";
 import { DepartmentDocument } from "@/components/features/guideline-site";
 import { ShareLinksPanel } from "@/components/features/sharing";
 import { InstructionEditor, ImportInstructionsModal } from "@/components/features/departments";

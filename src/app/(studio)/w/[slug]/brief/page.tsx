@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, PillButton, TextField } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Badge, EmptyHint, Section } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Badge, EmptyHint, Section } from "@/components/ui/composites/SectionUI";
 import { BRIEF_QUESTIONS, BRIEF_TEMPLATES, QUESTION_BY_KEY } from "@/components/features/brief";
 import { Brief, BriefStatus, BriefTemplateKind, Lang } from "@/types";
 import { formatRelative } from "@/lib/utils";

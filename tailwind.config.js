@@ -75,6 +75,10 @@ const config = {
         success: "var(--success)",
         warning: "var(--warning)",
         danger: "var(--danger)",
+        // Tinted fills behind a status badge's text.
+        "success-soft": "rgba(124, 231, 172, 0.14)",
+        "warning-soft": "rgba(244, 190, 94, 0.14)",
+        "danger-soft": "rgba(255, 128, 139, 0.14)",
         // Text on a solid status or danger fill.
         "status-ink": "var(--status-ink)",
         "danger-ink": "var(--danger-ink)",
@@ -139,18 +143,31 @@ const config = {
         "7xl": ["4.5rem", { lineHeight: "1" }],
         "8xl": ["6rem", { lineHeight: "1" }],
         "9xl": ["8rem", { lineHeight: "1" }],
-        // The studio's own sizes, named for the pixel sizes used most today:
-        // 10px tags, 11px captions, 12.5px notes, 13–15px controls and body,
-        // and the 32px page title.
-        "3xs": ["0.625rem", { lineHeight: "0.875rem" }],
-        "2xs": ["0.6875rem", { lineHeight: "1rem" }],
-        // The interface sizes keep the 1.5 line height the page inherits, so
-        // swapping a pixel size for one of these never moves a line.
+        // The studio's interface scale. Every step keeps the 1.5 line height
+        // the page inherits, so swapping a pixel size for one of these never
+        // moves a line.
+        "ui-3xs": ["0.5625rem", { lineHeight: "1.5" }],
+        "ui-2xs": ["0.6875rem", { lineHeight: "1.5" }],
+        "ui-xs": ["0.75rem", { lineHeight: "1.5" }],
         "ui-sm": ["0.78125rem", { lineHeight: "1.5" }],
         ui: ["0.8125rem", { lineHeight: "1.5" }],
+        "ui-plus": ["0.84375rem", { lineHeight: "1.5" }],
         "ui-md": ["0.875rem", { lineHeight: "1.5" }],
         "ui-lg": ["0.9375rem", { lineHeight: "1.5" }],
-        display: ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.025em" }],
+        // Headings: a dialog title, a stat, the page title.
+        "title-sm": ["1.125rem", { lineHeight: "1.5" }],
+        title: ["1.375rem", { lineHeight: "1.5" }],
+        display: ["2rem", { lineHeight: "1.5" }],
+      },
+      lineHeight: {
+        // Body copy in dialogs and settings rows: a touch looser than normal.
+        prose: "1.6",
+      },
+      letterSpacing: {
+        // Small uppercase labels, such as table headers.
+        caps: "0.06em",
+        // Field labels above an editable value.
+        "caps-wide": "0.08em",
       },
       width: percentWidths,
       backgroundImage: {
@@ -169,6 +186,14 @@ const config = {
         "edge-soft": "inset 0 0 0 1px var(--hairline)",
         "edge-accent": "inset 0 0 0 1px var(--accent-edge)",
         "edge-pop": "0 0 0 1px var(--hairline-strong), var(--shadow-pop)",
+        "edge-modal": "0 0 0 1px var(--hairline-strong), var(--shadow-modal)",
+        // A field whose content has been accepted, e.g. a typed confirmation.
+        "edge-valid": "inset 0 0 0 1px var(--success)",
+        // A rich-text editor while it is open.
+        "edge-editing": "inset 0 0 0 1px rgba(0, 153, 255, 0.5)",
+        // A toast's edge says how it went.
+        "edge-success": "inset 0 0 0 1px rgba(124, 231, 172, 0.5)",
+        "edge-danger": "inset 0 0 0 1px rgba(255, 128, 139, 0.5)",
         // A one-pixel rule along one side: under a header, over a footer.
         "rule-b": "inset 0 -1px 0 var(--hairline)",
         "rule-t": "inset 0 1px 0 var(--hairline)",

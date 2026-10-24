@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { Asset, LogoSlot, SlotKind, Workspace } from "@/types";
 import { bestInkOn } from "@/lib/contrast";
 import { getBrandTheme } from "@/components/features/guideline-site/model/theme";

@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, TextField, PillButton, Avatar } from "@/components/ui";
-import { Section, Row, Badge } from "@/components/ui/composites/SectionUI/SectionUI";
+import { Section, Row, Badge } from "@/components/ui/composites/SectionUI";
 import { PasswordField, EMAIL_RE, isPlaintext, scorePassword } from "@/components/features/auth";
 import { initialsFor, formatRelative } from "@/lib/utils";
 

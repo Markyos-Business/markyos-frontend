@@ -2,7 +2,7 @@
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { SectionHeading, SectionNote } from "@/components/features/guideline-site/components/LiveEdit";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { DeckPalette } from "./deckTheme";
 
 /**

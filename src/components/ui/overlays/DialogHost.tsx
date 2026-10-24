@@ -1,0 +1,245 @@
+"use client";
+
+import { useEffect, useId, useRef, useState } from "react";
+import type { FormEvent } from "react";
+import { Icon } from "../primitives/Icon";
+import type { DialogRequest } from "./Dialog";
+
+type DialogHostProps = {
+  request: DialogRequest;
+  onSettle: (value: boolean | string | null) => void;
+};
+
+const DialogHost = ({
+  request,
+  onSettle,
+}: DialogHostProps) => {
+  const { options } = request;
+  const isAr = !!options.isAr;
+  const cancelValue = request.kind === "confirm" ? false : null;
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const bodyId = useId();
+
+  const [value, setValue] = useState(
+    request.kind === "prompt" ? request.options.initialValue ?? "" : ""
+  );
+  const [phrase, setPhrase] = useState("");
+
+  const confirmPhrase = request.kind === "confirm" ? request.options.confirmPhrase : undefined;
+  const armed = !confirmPhrase || phrase.trim().toLowerCase() === confirmPhrase.trim().toLowerCase();
+
+  /**
+   * Escape closes, Tab stays inside, and focus goes back where it came from.
+   *
+   * The focus return matters more than it looks: these are triggered from a
+   * row in a list, and without it a keyboard user is dropped at the top of the
+   * document after every rename and has to walk back down the page.
+   */
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const panel = panelRef.current;
+
+    // Focus has to land *inside* the panel or the Tab trap below has nothing
+    // to trap: the opener is still focused, outside the dialog, and the first
+    // Tab walks off into the page behind the scrim. The panel itself is the
+    // fallback for a dialog whose only safe first stop is "read this".
+    const first = panel?.querySelector<HTMLElement>("[data-autofocus]") ?? panel;
+    first?.focus();
+    if (first instanceof HTMLInputElement) first.select();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onSettle(cancelValue);
+        return;
+      }
+      if (e.key !== "Tab" || !panel) return;
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (focusable.length === 0) return;
+      const edge = e.shiftKey ? focusable[0] : focusable[focusable.length - 1];
+      if (document.activeElement === edge) {
+        e.preventDefault();
+        (e.shiftKey ? focusable[focusable.length - 1] : focusable[0]).focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      opener?.focus?.();
+    };
+  }, [onSettle, cancelValue]);
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (request.kind === "prompt") {
+      const trimmed = value.trim();
+      if (!trimmed) return;
+      onSettle(trimmed);
+      return;
+    }
+    if (!armed) return;
+    onSettle(true);
+  }
+
+  const danger = request.kind === "confirm" && request.options.tone === "danger";
+  const cancelLabel = options.cancelLabel ?? (isAr ? "إلغاء" : "Cancel");
+  const confirmLabel =
+    options.confirmLabel ?? (isAr ? "تأكيد" : request.kind === "prompt" ? "Save" : "Confirm");
+
+  return (
+    <div
+      dir={isAr ? "rtl" : "ltr"}
+      className="fixed inset-0 z-120 flex animate-fade-in items-center justify-center bg-scrim p-6"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onSettle(cancelValue);
+      }}
+    >
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
+        aria-labelledby={titleId}
+        aria-describedby={options.body ? bodyId : undefined}
+        className={`flex w-full max-w-110 animate-pop flex-col gap-4 rounded-2xl bg-surface-0 p-6 shadow-edge-modal ${
+          isAr ? "font-arabic" : ""
+        }`}
+        // Inline on purpose: the panel takes focus only so the Tab trap has
+        // somewhere to start, and the focus-ring rule yields to an inline
+        // outline (tailwind/base.js), where it would not yield to a class.
+        style={{ outline: "none" }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <h2
+            id={titleId}
+            className="font-display text-title-sm font-semibold leading-snug tracking-tight"
+          >
+            {options.title}
+          </h2>
+          <button
+            type="button"
+            onClick={() => onSettle(cancelValue)}
+            aria-label={cancelLabel}
+            className="-me-1 -mt-1 grid size-7 shrink-0 cursor-pointer place-items-center rounded-full text-text-muted"
+          >
+            <Icon name="times" size={16} />
+          </button>
+        </div>
+
+        {options.body && (
+          <p id={bodyId} className="text-ui-plus leading-prose text-text-muted">
+            {options.body}
+          </p>
+        )}
+
+        {request.kind === "confirm" && request.options.consequences?.length ? (
+          <ul className="flex flex-col gap-1.5 rounded-xl bg-surface-2 px-3.5 py-3">
+            {request.options.consequences.map((line) => (
+              <li key={line} className="flex gap-2.5 text-ui-sm">
+                {/* A drawn dot rather than an icon: there is no `minus` glyph in
+                    the offline icon set, and a missing glyph renders as a solid
+                    square — a bullet is the one thing that must not become one. */}
+                <span aria-hidden className="mt-1.75 size-1 shrink-0 rounded-full bg-text-faint" />
+                <span className="text-text-secondary">{line}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {request.kind === "prompt" && (
+            <label className="flex flex-col gap-1.5">
+              {request.options.label && (
+                <span className="text-ui-xs font-medium text-text-muted">
+                  {request.options.label}
+                </span>
+              )}
+              <input
+                data-autofocus
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={request.options.placeholder}
+                className="h-11 rounded-lg bg-surface-2 px-3.5 text-ui-md text-text shadow-edge outline-none"
+              />
+              {request.options.hint && (
+                <span className="text-ui-xs text-text-faint">
+                  {request.options.hint}
+                </span>
+              )}
+            </label>
+          )}
+
+          {confirmPhrase && (
+            <label className="flex flex-col gap-1.5">
+              <span className="text-ui-xs text-text-muted">
+                {request.kind === "confirm" && request.options.confirmPhraseLabel ? (
+                  request.options.confirmPhraseLabel
+                ) : (
+                  <>
+                    {isAr ? "اكتب " : "Type "}
+                    <span className="font-semibold text-text">
+                      {confirmPhrase}
+                    </span>
+                    {isAr ? " للتأكيد" : " to confirm"}
+                  </>
+                )}
+              </span>
+              <div className="relative flex items-center">
+                <input
+                  data-autofocus
+                  value={phrase}
+                  onChange={(e) => setPhrase(e.target.value)}
+                  placeholder={confirmPhrase}
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-invalid={!armed}
+                  className={`h-11 w-full rounded-lg bg-surface-2 px-3.5 pe-10 text-ui-md text-text outline-none ${
+                    armed ? "shadow-edge-valid" : "shadow-edge"
+                  }`}
+                />
+                {armed && (
+                  <Icon name="check" size={15} className="pointer-events-none absolute end-3 text-success" />
+                )}
+              </div>
+            </label>
+          )}
+
+          <div className="flex gap-2.5 justify-end">
+            <button
+              type="button"
+              onClick={() => onSettle(cancelValue)}
+              className="h-10 cursor-pointer rounded-full bg-surface-2 px-5 text-ui font-semibold text-text shadow-edge"
+            >
+              {cancelLabel}
+            </button>
+            <button
+              type="submit"
+              disabled={!armed || (request.kind === "prompt" && !value.trim())}
+              // Focus lands here only when nothing has to be typed first. When
+              // something does, the field is the first stop and this button is
+              // where the person arrives after proving they meant it.
+              {...(!confirmPhrase && request.kind === "confirm" && !danger
+                ? { "data-autofocus": true }
+                : {})}
+              className={`h-10 cursor-pointer rounded-full px-5 text-ui font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${
+                danger ? "bg-danger text-danger-ink" : "bg-solid text-solid-ink"
+              }`}
+            >
+              {confirmLabel}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export { DialogHost };
+export type { DialogHostProps };

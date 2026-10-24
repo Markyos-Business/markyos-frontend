@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { useTheme } from "@/contexts/ThemeProvider";
 import { formatBytes } from "@/lib/utils";
 import { useModalDismiss } from "@/hooks/useModalDismiss";

@@ -3,8 +3,8 @@
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon } from "@/components/ui";
-import { AssetThumb } from "@/components/ui/media/AssetThumb/AssetThumb";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { AssetThumb } from "@/components/ui/media";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import { AssetType, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
 import { BulkBar, SelectBox, downloadFiles } from "./BulkBar";

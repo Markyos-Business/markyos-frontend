@@ -5,10 +5,10 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { navLogo } from "@/components/features/guideline-site";
 import { useTheme } from "@/contexts/ThemeProvider";
-import { EditableField } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EditableField } from "@/components/ui/composites/SectionUI";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 

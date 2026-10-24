@@ -3,7 +3,7 @@
 import { FormEvent, ReactNode, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { Asset, DepartmentView, LogoSlot, Persona, PinSection, SlotKind, VoiceTrait, Workspace } from "@/types";
 import { navMarkSlot } from "@/components/features/guideline-site/model/brandLogo";
 import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from "@/components/features/guideline-site/model/guidelineAssets";

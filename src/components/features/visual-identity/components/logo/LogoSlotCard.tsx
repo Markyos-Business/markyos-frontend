@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { useTheme } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind } from "@/types";

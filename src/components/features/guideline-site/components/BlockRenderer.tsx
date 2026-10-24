@@ -2,7 +2,7 @@
 
 import { createContext, FormEvent, useContext, useMemo, useState, ReactNode } from "react";
 import { Icon } from "@/components/ui";
-import { BrandMark } from "@/components/ui/media/BrandMark/BrandMark";
+import { BrandMark } from "@/components/ui/media";
 import { ColorGrid, IconGrid, LogoGrid, TypeSpecimen } from "@/components/features/guideline-site/components/Content";
 import { BlockShell, EditableText, useLiveEdit } from "@/components/features/guideline-site/components/LiveEdit";
 import { formatBytes } from "@/lib/utils";

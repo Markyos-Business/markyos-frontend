@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Icon } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
+import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "@/components/features/compliance/model/copyLint";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
