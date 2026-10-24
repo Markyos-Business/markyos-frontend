@@ -19,31 +19,31 @@ type Presence = {
  * could only ever pop out of existence. This holds it mounted for one fast
  * beat with `closing` set, long enough to fade, and then lets it go. Under
  * reduced motion there is nothing to wait for, so it goes at once.
+ *
+ * Opening is never delayed: `mounted` follows `open` in the same render, so a
+ * menu is on screen the moment it is asked for. Only the exit is held, and
+ * reopening during an exit simply cancels it.
  */
 const usePresence = (open: boolean, exitMs = EXIT_MS): Presence => {
-  const [mounted, setMounted] = useState(open);
-  const [closing, setClosing] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const [wasOpen, setWasOpen] = useState(open);
+
+  // Derived from the previous render rather than set in an effect, so the
+  // exit starts in the same commit that closed it (React's "storing
+  // information from previous renders").
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    setExiting(!open);
+  }
 
   useEffect(() => {
-    if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- following `open` is the effect
-      setMounted(true);
-      setClosing(false);
-      return;
-    }
-    if (!mounted) return;
+    if (!exiting) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setClosing(true);
-    const t = window.setTimeout(() => {
-      setMounted(false);
-      setClosing(false);
-    }, reduce ? 0 : exitMs);
+    const t = window.setTimeout(() => setExiting(false), reduce ? 0 : exitMs);
     return () => window.clearTimeout(t);
-    // `mounted` is read, not followed: the exit starts only when `open` changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, exitMs]);
+  }, [exiting, exitMs]);
 
-  return { mounted, closing };
+  return { mounted: open || exiting, closing: !open && exiting };
 };
 
 export { usePresence };
