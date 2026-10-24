@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState, startTransition } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, StatTile, TextField, TabIndicator } from "@/components/ui";
+import { useToast, Button, Icon, PageHeader, StatTile, Tabs, TextField } from "@/components/ui";
 import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { ProfilePanel, BillingPanel } from "@/components/features/account";
 import { formatRelative } from "@/lib/utils";
@@ -94,43 +94,23 @@ function AccountPageBody() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="h-16 shrink-0 flex items-center gap-4 px-8" style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}>
-        <Link href="/brands" className="mk-tap gap-2 text-[13px]" style={{ color: "var(--text-muted)" }}>
-          <Icon name="angle-left" size={14} />
+      <header className="h-topbar shrink-0 flex items-center px-space-6 sm:px-space-10">
+        {/* The arrow points back the way you came, so it turns in Arabic. */}
+        <Link href="/brands" className="mk-tap gap-space-3 text-body font-medium text-text-muted hover:text-text">
+          <Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />
           Brands
         </Link>
-      </div>
+      </header>
 
-      <div className="flex-1 px-8 py-8 flex flex-col gap-6 max-w-[760px] w-full mx-auto">
-        <div>
-          <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-            Account
-          </h1>
-          <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
-            Your details and sign-in, what this account is paying for, and the organisation-wide
-            controls.
-          </p>
-        </div>
+      <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[760px] w-full mx-auto">
+        <PageHeader
+          title="Account"
+          description="Your details and sign-in, what this account is paying for, and the organisation-wide controls."
+        />
 
-        <div className="flex rounded-full p-0.5 self-start" style={{ background: "var(--surface-1)" }} role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.key}
-              onClick={() => startTransition(() => setTab(t.key))}
-              className="relative isolate h-9 px-4 rounded-full text-[12.5px] font-semibold cursor-pointer flex items-center gap-2"
-              style={{ color: tab === t.key ? "var(--text)" : "var(--text-muted)" }}
-            >
-              {tab === t.key && <TabIndicator group="account" />}
-              <Icon name={t.icon} size={13} />
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <Tabs label="Account" tabs={TABS} active={tab} onChange={setTab} />
 
-        <div key={tab} className="flex flex-col gap-6 animate-tab-in">
+        <div key={tab} className="flex flex-col gap-5">
         {tab === "profile" && <ProfilePanel />}
 
         {tab === "billing" && <BillingPanel workspaces={workspaces} />}
@@ -139,7 +119,7 @@ function AccountPageBody() {
         <>
         {/* Usage analytics */}
         <Section title="Usage analytics" icon="chart-line">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-4">
             <StatTile value={workspaces.length} label="Workspaces" />
             <StatTile value={sharedCount} label="Shared with clients" />
             <StatTile value={totalColors} label="Colors defined" />
@@ -147,22 +127,16 @@ function AccountPageBody() {
             <StatTile value={totalSignOffs} label="Sign-off notes" />
             <StatTile value={totalApprovals} label="Change proposals" />
           </div>
-          <div className="flex flex-col gap-2 mt-1">
-            <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-              Content richness by brand
-            </span>
+          <div className="flex flex-col gap-space-3">
+            <span className="text-caption text-text-muted">Content richness by brand</span>
             {workspaces.map((w) => (
-              <div key={w.id} className="flex items-center gap-3">
-                <span className="text-[12px] w-[140px] truncate shrink-0">{w.name}</span>
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "var(--surface-2)" }}>
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: `${(richness(w) / maxRichness) * 100}%`, background: "var(--accent)" }}
-                  />
+              <div key={w.id} className="flex items-center gap-space-4">
+                <span className="text-caption font-medium w-35 truncate shrink-0">{w.name}</span>
+                {/* The spec's progress bar: a 6px track on the neutral tint. */}
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-ink-soft">
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${(richness(w) / maxRichness) * 100}%` }} />
                 </div>
-                <span className="text-[11px] w-6 text-end" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
-                  {richness(w)}
-                </span>
+                <span className="text-caption font-medium tabular-nums w-6 text-end text-text-muted">{richness(w)}</span>
               </div>
             ))}
           </div>
@@ -182,23 +156,14 @@ function AccountPageBody() {
             }
           />
           {state.sso.enabled && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>Provider</span>
-                <div className="flex gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-6">
+              <div className="flex flex-col gap-space-2">
+                <span className="text-caption text-text-muted">Provider</span>
+                <div className="flex gap-space-3">
                   {["Okta", "Azure AD", "Google"].map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setSso({ provider: p })}
-                      className="h-9 px-3 rounded-full text-[11px] font-semibold cursor-pointer"
-                      style={{
-                        background: state.sso.provider === p ? "var(--solid)" : "var(--surface-2)",
-                        color: state.sso.provider === p ? "var(--solid-ink)" : "var(--text-muted)",
-                      }}
-                    >
+                    <Button key={p} size="sm" variant={state.sso.provider === p ? "ghost" : "outline"} aria-pressed={state.sso.provider === p} onClick={() => setSso({ provider: p })}>
                       {p}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -221,7 +186,7 @@ function AccountPageBody() {
           icon="shield-alt"
           right={
             state.auditLog.length > 0 && (
-              <button type="button" onClick={exportAuditLog} className="mk-tap text-[12px] font-semibold cursor-pointer" style={{ color: "var(--accent-text)" }}>
+              <button type="button" onClick={exportAuditLog} className="mk-tap text-overline uppercase text-accent-text">
                 Export JSON
               </button>
             )
@@ -238,14 +203,11 @@ function AccountPageBody() {
               {state.auditLog.slice(0, 30).map((e, i) => (
                 <div
                   key={e.id}
-                  className="flex items-center gap-3 py-2.5 text-[12px]"
-                  style={i > 0 ? { boxShadow: "inset 0 1px 0 var(--hairline)" } : undefined}
+                  className={`flex items-center gap-space-4 py-space-4 text-caption ${i > 0 ? "shadow-rule-t" : ""}`}
                 >
-                  <span className="w-[90px] shrink-0" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
-                    {formatRelative(e.ts)}
-                  </span>
-                  <span className="w-[110px] shrink-0 truncate font-medium">{e.actor}</span>
-                  <span className="flex-1 min-w-0 truncate" style={{ color: "var(--text-secondary)" }}>{e.action}</span>
+                  <span className="w-22 shrink-0 font-medium tabular-nums text-text-muted">{formatRelative(e.ts)}</span>
+                  <span className="w-28 shrink-0 truncate font-medium">{e.actor}</span>
+                  <span className="flex-1 min-w-0 truncate text-text-secondary">{e.action}</span>
                 </div>
               ))}
             </div>

@@ -17,7 +17,7 @@ export function AdminDashboardView() {
         title="Dashboard"
         description="Everyone on Markyos, and what they're building."
         actions={
-          <Button variant="secondary" size="sm" onClick={reload} disabled={loading}>
+          <Button variant="outline" size="sm" onClick={reload} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
           </Button>
         }
@@ -43,7 +43,7 @@ export function AdminDashboardView() {
             <Breakdown title="Brands by plan" counts={data.brands.byPlan} labels={PLAN_LABELS} />
           </div>
 
-          <p className="text-[12px] text-text-faint">
+          <p className="text-caption text-text-faint">
             {data.users.active} of {data.users.total} accounts are active · {data.users.admins} admin
             {data.users.admins === 1 ? "" : "s"} · {data.users.new30d} joined in the last 30 days
           </p>

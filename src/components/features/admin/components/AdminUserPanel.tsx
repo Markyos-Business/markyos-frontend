@@ -99,21 +99,21 @@ export function AdminUserPanel({
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className={`absolute inset-0 cursor-default bg-black/40 ${closing ? "animate-backdrop-out" : "animate-backdrop-in"}`}
+        className={`absolute inset-0 cursor-default bg-scrim ${closing ? "animate-fade-out" : "animate-fade-in"}`}
       />
       <aside
         role="dialog"
         aria-modal="true"
         aria-label={user.name}
-        className={`mk-surface relative flex h-full w-full max-w-[420px] flex-col gap-5 overflow-y-auto bg-surface-0 p-6 ${
-          closing ? "animate-panel-to-right rtl:animate-panel-to-left" : "animate-panel-from-right rtl:animate-panel-from-left"
+        className={`relative flex h-full w-full max-w-[420px] flex-col gap-space-8 overflow-y-auto bg-surface-1 p-space-10 shadow-edge-modal ${
+          closing ? "animate-fade-out" : "animate-fade-in"
         }`}
       >
         <div className="flex items-start gap-3">
           <Avatar initials={initialsOf(user.name)} size={44} />
           <div className="min-w-0 flex-1">
-            <h2 className="truncate text-[17px] font-semibold">{user.name}</h2>
-            <p className="truncate text-[12.5px] text-text-muted">{user.email}</p>
+            <h2 className="truncate text-h5 font-medium">{user.name}</h2>
+            <p className="truncate text-caption text-text-muted">{user.email}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               <Badge tone={ROLE_TONES[user.role]}>{user.isSuperuser ? "Superuser" : ROLE_LABELS[user.role]}</Badge>
               <Badge tone={STATUS_TONES[status]}>{STATUS_LABELS[status]}</Badge>
@@ -123,7 +123,7 @@ export function AdminUserPanel({
           <IconButton icon="times" label="Close" onClick={onClose} />
         </div>
 
-        <dl className="grid grid-cols-2 gap-3 text-[12.5px]">
+        <dl className="grid grid-cols-2 gap-3 text-caption">
           <div>
             <dt className="text-text-faint">Joined</dt>
             <dd className="font-medium">{formatDate(user.createdAt)}</dd>
@@ -137,37 +137,37 @@ export function AdminUserPanel({
         <AlertBanner message={error} />
 
         <section className="flex flex-col gap-2.5">
-          <h3 className="text-[13px] font-semibold">Brands</h3>
+          <h3 className="text-body font-medium">Brands</h3>
           {brands.loading && !brands.data ? (
-            <p className="text-[12px] text-text-faint">Loading…</p>
+            <p className="text-caption text-text-faint">Loading…</p>
           ) : brands.data?.length ? (
             <ul className="flex flex-col">
               {brands.data.map((b) => (
-                <li key={b.id} className="flex items-center justify-between gap-3 border-t border-hairline py-2.5 first:border-t-0">
+                <li key={b.id} className="flex items-center justify-between gap-space-4 py-space-4 shadow-rule-t first:shadow-none">
                   <div className="min-w-0">
-                    <div className="truncate text-[13px] font-medium">{b.name}</div>
-                    <div className="text-[11.5px] text-text-faint">{STAGE_LABELS[b.stage || "none"] ?? b.stage}</div>
+                    <div className="truncate text-body font-medium">{b.name}</div>
+                    <div className="text-caption text-text-faint">{STAGE_LABELS[b.stage || "none"] ?? b.stage}</div>
                   </div>
                   <Badge tone={b.role === "owner" ? "accent" : "neutral"}>{BRAND_ROLE_LABELS[b.role]}</Badge>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-[12px] text-text-faint">{brands.error ?? "No brands yet."}</p>
+            <p className="text-caption text-text-faint">{brands.error ?? "No brands yet."}</p>
           )}
         </section>
 
         <section className="mt-auto flex flex-col gap-2 border-t border-hairline pt-5">
           {isMe && (
-            <p className="text-[12px] text-text-faint">This is you. Another admin has to change your role or status.</p>
+            <p className="text-caption text-text-faint">This is you. Another admin has to change your role or status.</p>
           )}
-          <Button variant="secondary" onClick={toggleRole} disabled={isMe || saving || user.isSuperuser}>
+          <Button variant="outline" onClick={toggleRole} disabled={isMe || saving || user.isSuperuser}>
             {user.role === "admin" ? "Remove admin access" : "Make admin"}
           </Button>
-          <Button variant="secondary" onClick={signOutEverywhere} disabled={revoking}>
+          <Button variant="outline" onClick={signOutEverywhere} disabled={revoking}>
             Sign out everywhere
           </Button>
-          <Button variant="secondary" onClick={toggleActive} disabled={isMe || saving}>
+          <Button variant="outline" onClick={toggleActive} disabled={isMe || saving}>
             {user.isActive ? "Deactivate account" : "Reactivate account"}
           </Button>
         </section>

@@ -1,12 +1,12 @@
 "use client";
 
-import { Icon, LangToggle, TabIndicator } from "@/components/ui";
+import { LangToggle, TabIndicator } from "@/components/ui";
 import { AccountMenu } from "@/components/features/account";
 import { SidebarMenuButton } from "./SidebarDrawer";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
-import { ReactNode, startTransition, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 export interface TopBarTab {
   key: string;
@@ -90,34 +90,34 @@ export function TopBar({
   }, [activeKey]);
 
   return (
-    <div className="shrink-0 flex flex-col" style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}>
+    // The spec's TopBar (MARKYOS_UI.md §5): 84px and transparent over the
+    // canvas; the breadcrumb sits over the title.
+    <div className="shrink-0 flex flex-col">
       {/* One row from tablet width up. On a phone the page's own actions
           (`right`) drop to a second row under the title and wrap, so the menu
           button and the title never get pushed off screen. Wrapping, not a
           scrolling strip: a menu opening from one of those buttons would be
           clipped by an overflow container. */}
-      <div className="shrink-0 flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 md:h-16 md:flex-nowrap md:px-7 md:py-0">
+      <div className="shrink-0 flex flex-wrap items-center gap-x-space-5 gap-y-space-3 px-space-6 py-space-5 md:h-topbar md:flex-nowrap md:px-space-10 md:py-0">
         <SidebarMenuButton />
-        <div
-          className="flex min-w-0 flex-1 items-center gap-2 text-[13px]"
-          style={{ color: "var(--text-muted)", fontFamily: isAr ? "var(--font-arabic)" : undefined }}
-        >
+        <div className="flex min-w-0 flex-1 flex-col" style={{ fontFamily: isAr ? "var(--font-arabic)" : undefined }}>
           {/* On a phone the section alone: the menu button beside it already
               says where the rest of the brand book is. */}
-          <span className="hidden shrink-0 sm:inline">{isAr ? "دليل الهوية" : "Brand book"}</span>
-          <Icon name={isAr ? "angle-left" : "angle-right"} size={14} className="hidden shrink-0 sm:inline-block" />
-          <span className="truncate text-text font-medium">{isAr && arSection ? arSection : section}</span>
+          <span className="hidden truncate text-caption text-text-muted sm:block">
+            {isAr ? "دليل الهوية" : "Brand book"} · {workspace.name}
+          </span>
+          <span className="truncate text-h4 font-medium text-text">{isAr && arSection ? arSection : section}</span>
         </div>
         {right && (
           // `*:flex-wrap`: a page that groups its actions in its own flex row
           // wraps too, not just this one.
-          <div className="order-last flex w-full flex-wrap items-center gap-2.5 *:flex-wrap md:order-none md:w-auto md:shrink-0 md:flex-nowrap md:gap-3.5 md:*:flex-nowrap">
+          <div className="order-last flex w-full flex-wrap items-center gap-space-4 *:flex-wrap md:order-none md:w-auto md:shrink-0 md:flex-nowrap md:gap-space-5 md:*:flex-nowrap">
             {right}
           </div>
         )}
-        <div className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
+        <div className="flex shrink-0 items-center gap-space-4 sm:gap-space-5">
           {/* Inline from `sm` up; on a phone both move into the account menu. */}
-          <div className="hidden items-center gap-3.5 sm:flex">
+          <div className="hidden items-center gap-space-5 sm:flex">
           <ThemeToggle isAr={isAr} />
           {/* Named for what it is here. The builder screen carries three of
               these: this one, the canvas's own preview switch, and the one
@@ -156,7 +156,7 @@ export function TopBar({
       {tabs && tabs.length > 0 && (
         <div
           ref={railRef}
-          className="flex items-center gap-1.5 px-7 pb-3 overflow-x-auto"
+          className="flex items-center gap-space-3 px-space-6 pb-space-5 overflow-x-auto md:px-space-10"
           style={{
             boxShadow: "inset 0 -1px 0 var(--hairline)",
             // Fades only the ends that have something past them. Physical
@@ -177,17 +177,16 @@ export function TopBar({
               key={t.key}
               type="button"
               data-tab-key={t.key}
-              // A transition, so the active pill slides to the tab chosen
-              // (TabIndicator) instead of jumping.
-              onClick={() => startTransition(t.onSelect)}
+              onClick={t.onSelect}
               aria-pressed={t.active}
-              className="relative isolate h-8 px-3.5 rounded-full text-[12.5px] font-medium cursor-pointer whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
+              // The spec's text tabs: 40px, the active one on a raised pill.
+              className="relative isolate h-control-sm px-space-5 rounded-lg text-body font-medium cursor-pointer whitespace-nowrap shrink-0 transition-colors flex items-center gap-space-3"
               style={{
                 color: t.active ? "var(--text)" : "var(--text-muted)",
                 fontFamily: isAr ? "var(--font-arabic)" : undefined,
               }}
             >
-              {t.active && <TabIndicator group="topbar" />}
+              {t.active && <TabIndicator />}
               {isAr ? t.arLabel : t.label}
               {t.empty && (
                 <span

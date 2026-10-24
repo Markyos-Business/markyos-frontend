@@ -21,7 +21,7 @@ const BOOK_NAV: NavItem[] = [
   { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", href: "/moodboard" },
   { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", href: "/visual-identity" },
   { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", href: "/strategy" },
-  { key: "departments", label: "Company departments", arLabel: "أقسام الشركة", icon: "book", href: "/departments" },
+  { key: "departments", label: "Departments", arLabel: "أقسام الشركة", icon: "book", href: "/departments" },
   { key: "builder", label: "Guidelines editor", arLabel: "محرر الدليل", icon: "layer-group", href: "/builder" },
 ];
 

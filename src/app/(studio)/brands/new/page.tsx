@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, TextField, PillButton, Icon } from "@/components/ui";
+import { useToast, Button, TextField, PillButton, Icon, Tabs } from "@/components/ui";
 import { slugify } from "@/lib/utils";
 import {
   DetectedFont,
@@ -148,7 +148,7 @@ export default function NewWorkspacePage() {
             logout();
             router.push("/login");
           }}
-          className="mk-tap text-[12px] cursor-pointer"
+          className="mk-tap text-caption cursor-pointer"
           style={{ color: "var(--text-faint)" }}
         >
           Log out
@@ -156,22 +156,27 @@ export default function NewWorkspacePage() {
       </div>
 
       <div className="flex-1 flex flex-col justify-center px-[72px] max-w-[680px] w-full mx-auto py-10">
-        <div className="inline-flex rounded-full p-[3px] mb-7 self-start" style={{ background: "var(--surface-1)" }}>
-          <ModeTab label="Start from scratch" active={mode === "scratch"} onClick={() => setMode("scratch")} />
-          <ModeTab label="Import a guideline" active={mode === "import"} onClick={() => setMode("import")} />
-        </div>
+        <Tabs
+          label="How to start"
+          className="mb-space-10 self-start"
+          tabs={[
+            { key: "scratch", label: "Start from scratch" },
+            { key: "import", label: "Import a guideline" },
+          ]}
+          active={mode}
+          onChange={setMode}
+        />
 
         {mode === "scratch" ? (
           <form onSubmit={handleSubmit} className="flex flex-col">
-            <h1 className="text-[34px] font-semibold tracking-tight mb-2.5" style={{ fontFamily: "var(--font-display)" }}>
+            <h1 className="text-h1 font-medium mb-space-3">
               Name your brand
             </h1>
-            <p className="mb-[26px] text-[15px]" style={{ color: "var(--text-muted)" }}>
+            <p className="mb-[26px] text-body" style={{ color: "var(--text-muted)" }}>
               One workspace per brand. You can rename it later.
             </p>
             <div className="mb-[26px]">
               <TextField
-                size="lg"
                 // The <h1> asks for it, but a heading is not a label — this is
                 // the only field on the screen and it still needs a name.
                 aria-label="Brand name"
@@ -182,16 +187,16 @@ export default function NewWorkspacePage() {
                 hint={`markyos.com/${slugify(name || "your-brand")}`}
               />
             </div>
-            <PillButton type="submit" variant="primary" size="lg" disabled={!name.trim()}>
+            <PillButton type="submit" variant="primary" disabled={!name.trim()}>
               Create workspace
             </PillButton>
           </form>
         ) : stage === "idle" ? (
           <div className="flex flex-col">
-            <h1 className="text-[34px] font-semibold tracking-tight mb-2.5" style={{ fontFamily: "var(--font-display)" }}>
+            <h1 className="text-h1 font-medium mb-space-3">
               Import an existing guideline
             </h1>
-            <p className="mb-[26px] text-[15px] max-w-[54ch]" style={{ color: "var(--text-muted)" }}>
+            <p className="mb-[26px] text-body max-w-[54ch]" style={{ color: "var(--text-muted)" }}>
               Upload the PDF or Word file you already have. Markyos renders the pages and samples
               their colours, reads the fonts the file embeds, and matches any strategy headings it
               can find — then shows you everything it found before anything is saved.
@@ -215,24 +220,24 @@ export default function NewWorkspacePage() {
                 const file = e.dataTransfer.files?.[0];
                 if (file) startImport(file);
               }}
-              className="rounded-2xl h-[200px] flex flex-col items-center justify-center gap-3 cursor-pointer"
+              className="rounded-card h-50 flex flex-col items-center justify-center gap-3 cursor-pointer"
               style={{ background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
               <Icon name="upload" size={26} style={{ color: "var(--text-muted)" }} />
-              <span className="text-[14px] font-medium">Drop a PDF or .docx, or click to browse</span>
-              <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
+              <span className="text-body font-medium">Drop a PDF or .docx, or click to browse</span>
+              <span className="text-caption" style={{ color: "var(--text-faint)" }}>
                 Read entirely in your browser — the file is never uploaded anywhere
               </span>
             </div>
           </div>
         ) : stage === "extracting" ? (
           <div className="flex flex-col items-center text-center gap-5 py-10">
-            <div className="w-14 h-14 rounded-full grid place-items-center" style={{ background: "var(--accent-soft)" }}>
+            <div className="size-control rounded-lg grid place-items-center" style={{ background: "var(--accent-soft)" }}>
               <Icon name="circle-notch" size={22} style={{ color: "var(--accent-text)" }} className="animate-spin" />
             </div>
             <div>
-              <div className="font-semibold text-[16px] mb-1">{fileName}</div>
-              <div className="text-[13px]" style={{ color: "var(--text-muted)" }}>
+              <div className="font-medium text-h5 mb-1">{fileName}</div>
+              <div className="text-body" style={{ color: "var(--text-muted)" }}>
                 {progress}
               </div>
             </div>
@@ -261,7 +266,7 @@ export default function NewWorkspacePage() {
         ) : null}
       </div>
 
-      <div className="px-[72px] pb-10 text-[12px]" style={{ color: "var(--text-faint)" }}>
+      <div className="px-[72px] pb-10 text-caption" style={{ color: "var(--text-faint)" }}>
         Arabic and English are both on by default.
       </div>
     </div>
@@ -298,10 +303,10 @@ function ReviewPanel({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-[26px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-h2 font-medium mb-space-2">
           Here&apos;s what&apos;s actually in the file
         </h1>
-        <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>
+        <p className="text-body" style={{ color: "var(--text-muted)" }}>
           {analysis.fileName}
           {analysis.pageCount > 0 && ` · ${analysis.pageCount} pages, ${analysis.pagesRendered} sampled for colour`}.
           Nothing is saved until you confirm.
@@ -311,7 +316,7 @@ function ReviewPanel({
       {analysis.notes.length > 0 && (
         <div className="flex flex-col gap-1.5">
           {analysis.notes.map((n, i) => (
-            <div key={i} className="flex items-start gap-2.5 text-[12px]" style={{ color: "var(--text-faint)" }}>
+            <div key={i} className="flex items-start gap-2.5 text-caption" style={{ color: "var(--text-faint)" }}>
               <Icon name="info-circle" size={14} style={{ flexShrink: 0, marginTop: 1 }} />
               {n}
             </div>
@@ -345,9 +350,9 @@ function ReviewPanel({
                 >
                   <div className="h-10" style={{ background: c.hex }} />
                   <div className="px-2 py-1.5">
-                    <div className="text-[11px] font-medium truncate">{c.name}</div>
+                    <div className="text-caption font-medium truncate">{c.name}</div>
                     <div
-                      className="text-[10px]"
+                      className="text-caption"
                       style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}
                     >
                       {c.hex.toUpperCase()} · {(c.share * 100).toFixed(0)}%
@@ -395,7 +400,7 @@ function ReviewPanel({
             return (
               <span
                 key={key}
-                className="text-[11.5px] px-2.5 py-1.5 rounded-full flex items-center gap-1.5"
+                className="text-caption px-2.5 py-1.5 rounded-lg flex items-center gap-1.5"
                 style={{
                   background: has ? "rgba(124,231,172,.12)" : "var(--surface-2)",
                   color: has ? "var(--success)" : "var(--text-faint)",
@@ -412,14 +417,9 @@ function ReviewPanel({
       </Group>
 
       <div className="flex gap-2.5 mt-1">
-        <button
-          type="button"
-          onClick={onReset}
-          className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
-          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
-        >
+        <Button variant="outline" onClick={onReset}>
           Start over
-        </button>
+        </Button>
         <PillButton variant="primary" onClick={onConfirm}>
           Create workspace from this
         </PillButton>
@@ -441,7 +441,7 @@ function FontRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="text-[12px] font-medium w-[54px] shrink-0 pt-1.5" style={{ color: "var(--text-muted)" }}>
+      <span className="text-caption font-medium w-[54px] shrink-0 pt-1.5" style={{ color: "var(--text-muted)" }}>
         {label}
       </span>
       <div className="flex flex-wrap gap-1.5">
@@ -453,7 +453,7 @@ function FontRow({
               key={f.name}
               type="button"
               onClick={() => onChange(on ? "" : f.name)}
-              className="text-[11px] px-2.5 py-1.5 rounded-full cursor-pointer"
+              className="text-caption px-2.5 py-1.5 rounded-lg cursor-pointer"
               style={{
                 fontFamily: "ui-monospace, Menlo, monospace",
                 background: on ? "var(--accent-soft)" : "var(--surface-2)",
@@ -474,8 +474,8 @@ function FontRow({
 function Group({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[12px] font-semibold">{title}</span>
-      <p className="text-[11.5px] leading-[1.5] max-w-[62ch]" style={{ color: "var(--text-faint)" }}>
+      <span className="text-caption font-medium">{title}</span>
+      <p className="text-caption max-w-[62ch]" style={{ color: "var(--text-faint)" }}>
         {hint}
       </p>
       <div className="mt-1">{children}</div>
@@ -486,23 +486,10 @@ function Group({ title, hint, children }: { title: string; hint: string; childre
 function Blank({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-xl px-4 py-3 text-[12px]"
+      className="rounded-lg px-space-6 py-space-5 text-caption"
       style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}
     >
       {children}
     </div>
-  );
-}
-
-function ModeTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer"
-      style={{ background: active ? "var(--solid)" : "transparent", color: active ? "var(--solid-ink)" : "var(--text-muted)" }}
-    >
-      {label}
-    </button>
   );
 }

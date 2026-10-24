@@ -63,20 +63,16 @@ const DrawerPanel = ({ onClose, closing, isAr, children }: DrawerPanelProps) => 
         tabIndex={-1}
         aria-label={isAr ? "إغلاق القائمة" : "Close menu"}
         onClick={onClose}
-        className={`absolute inset-0 cursor-default bg-scrim ${closing ? "animate-backdrop-out" : "animate-backdrop-in"}`}
+        className={`absolute inset-0 cursor-default bg-scrim ${closing ? "animate-fade-out" : "animate-fade-in"}`}
       />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? "القائمة" : "Menu"}
-        // From the side the reader starts on: the left in English, the right
-        // in Arabic, and back out the same way.
-        className={`absolute inset-y-0 start-0 flex bg-surface-0 shadow-modal ${
-          closing
-            ? "animate-panel-to-left rtl:animate-panel-to-right"
-            : "animate-panel-from-left rtl:animate-panel-from-right"
-        }`}
+        // On the side the reader starts on: the left in English, the right in
+        // Arabic. It crossfades in and out, like every overlay.
+        className={`absolute inset-y-0 start-0 flex bg-surface-1 shadow-edge-modal ${closing ? "animate-fade-out" : "animate-fade-in"}`}
       >
         <SidebarPlacementContext.Provider value="drawer">{children}</SidebarPlacementContext.Provider>
       </div>

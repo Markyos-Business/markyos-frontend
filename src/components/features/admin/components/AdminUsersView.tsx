@@ -8,13 +8,12 @@ import {
   PageHeader,
   Table,
   TableEmptyRow,
-  listItemMotion,
   TableLoadingRow,
   cellClasses,
   rowClasses,
 } from "@/components/ui";
 import { Badge } from "@/components/ui/composites/SectionUI";
-import { SearchField, SelectField } from "@/components/form";
+import { SearchField, FilterSelectField } from "@/components/form";
 import { usePresence } from "@/hooks/usePresence";
 import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUsers } from "../hooks/useAdminUsers";
@@ -66,21 +65,21 @@ export function AdminUsersView() {
 
       <div className="flex flex-wrap items-center gap-2.5">
         <SearchField label="Search users" placeholder="Search name or email" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <SelectField
+        <FilterSelectField
           label="Role"
           hideLabel
           value={query.role ?? ""}
           onChange={(e) => set({ role: e.target.value as AdminUserQuery["role"] })}
           options={[{ value: "", label: "All roles" }, { value: "admin", label: "Admins" }, { value: "member", label: "Members" }]}
         />
-        <SelectField
+        <FilterSelectField
           label="Status"
           hideLabel
           value={query.isActive ?? ""}
           onChange={(e) => set({ isActive: e.target.value as AdminUserQuery["isActive"] })}
           options={[{ value: "", label: "Any status" }, { value: "true", label: "Active" }, { value: "false", label: "Deactivated" }]}
         />
-        <SelectField
+        <FilterSelectField
           label="Sort"
           hideLabel
           value={query.ordering ?? "-created_at"}
@@ -97,15 +96,13 @@ export function AdminUsersView() {
         ) : !data?.results.length ? (
           <TableEmptyRow colSpan={COLUMNS.length} title="No accounts match" description="Try another search or clear the filters." />
         ) : (
-          data.results.map((u, i) => {
+          data.results.map((u) => {
             const status = u.isActive ? "active" : "inactive";
-            const motion = listItemMotion(i);
             return (
               <tr
                 key={u.id}
                 onClick={() => open(u)}
-                className={`${rowClasses} cursor-pointer hover:bg-surface-2 ${motion.className}`}
-                style={motion.style}
+                className={`${rowClasses} cursor-pointer hover:bg-surface-2`}
               >
                 <td className={cellClasses}>
                   <button
@@ -120,7 +117,7 @@ export function AdminUsersView() {
                     <Avatar initials={initialsOf(u.name)} size={32} />
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{u.name}</span>
-                      <span className="block truncate text-[12px] text-text-muted">{u.email}</span>
+                      <span className="block truncate text-caption text-text-muted">{u.email}</span>
                     </span>
                   </button>
                 </td>
@@ -144,14 +141,14 @@ export function AdminUsersView() {
       </Table>
 
       {pages > 1 && (
-        <div className="flex items-center justify-end gap-3 text-[12px] text-text-muted">
+        <div className="flex items-center justify-end gap-3 text-caption text-text-muted">
           <span>
             Page {page} of {pages}
           </span>
-          <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => setQuery((q) => ({ ...q, page: page - 1 }))}>
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setQuery((q) => ({ ...q, page: page - 1 }))}>
             Previous
           </Button>
-          <Button variant="secondary" size="sm" disabled={page >= pages} onClick={() => setQuery((q) => ({ ...q, page: page + 1 }))}>
+          <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setQuery((q) => ({ ...q, page: page + 1 }))}>
             Next
           </Button>
         </div>

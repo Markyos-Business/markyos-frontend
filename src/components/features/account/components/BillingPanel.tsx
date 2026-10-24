@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Icon } from "@/components/ui";
+import { Icon, StatTile } from "@/components/ui";
 import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
@@ -72,10 +72,10 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
           />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Tile value={`$${monthly}`} label="Recurring, per month" />
-          <Tile value={`$${oneTimeTotal}`} label={`One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
-          <Tile value={String(paid.length)} label={`Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
+          <StatTile value={`$${monthly}`} label="Recurring, per month" />
+          <StatTile value={`$${oneTimeTotal}`} label={`One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
+          <StatTile value={String(paid.length)} label={`Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
         </div>
       </Section>
 
@@ -89,26 +89,22 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
               return (
                 <div
                   key={w.id}
-                  className="flex items-center gap-3 py-3"
-                  style={i > 0 ? { boxShadow: "inset 0 1px 0 var(--hairline)" } : undefined}
+                  className={`flex items-center gap-space-4 py-space-4 ${i > 0 ? "shadow-rule-t" : ""}`}
                 >
                   <Link
                     href={`/w/${w.slug}/settings`}
                     dir="auto"
-                    className="mk-tap bidi-auto flex-1 min-w-0 truncate text-[13px] font-medium"
+                    className="mk-tap bidi-auto flex-1 min-w-0 truncate text-body font-medium"
                   >
                     {w.name}
                   </Link>
-                  <span className="text-[12px] w-[120px] shrink-0" style={{ color: "var(--text-muted)" }}>
+                  <span className="text-caption w-30 shrink-0 text-text-muted">
                     {w.billing.purchasedAt ? formatRelative(w.billing.purchasedAt) : "—"}
                   </span>
-                  <span
-                    className="text-[12px] w-[70px] shrink-0 text-end"
-                    style={{ fontFamily: "ui-monospace, Menlo, monospace", color: price.amount ? "var(--text)" : "var(--text-faint)" }}
-                  >
+                  <span className={`text-caption font-medium tabular-nums w-17.5 shrink-0 text-end ${price.amount ? "text-text" : "text-text-faint"}`}>
                     {price.amount ? `$${price.amount}` : "—"}
                   </span>
-                  <span className="w-[110px] shrink-0 flex justify-end">
+                  <span className="w-27.5 shrink-0 flex justify-end">
                     <Badge tone={w.billing.plan === "free" ? "neutral" : "accent"}>{labelOf(w.billing.plan)}</Badge>
                   </span>
                 </div>
@@ -119,8 +115,8 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         {/* Receipts live with the processor that issued them. Reprinting them
             here would mean inventing them, since this build has no record of
             what Stripe actually charged. */}
-        <p className="text-[11.5px] leading-[1.5] flex items-start gap-2" style={{ color: "var(--text-faint)" }}>
-          <Icon name="info-circle" size={13} style={{ marginTop: 1, flexShrink: 0 }} />
+        <p className="text-caption flex items-start gap-space-3 text-text-faint">
+          <Icon name="info-circle" size={16} className="shrink-0" />
           Checkout runs through Stripe in test mode. Receipts and invoices are issued by Stripe and
           sent to your email — this page shows what each brand is on, not a copy of those documents.
         </p>
@@ -129,13 +125,3 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
   );
 }
 
-function Tile({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-xl p-3.5 flex flex-col gap-1" style={{ background: "var(--surface-2)" }}>
-      <span className="text-[22px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-        {value}
-      </span>
-      <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>{label}</span>
-    </div>
-  );
-}

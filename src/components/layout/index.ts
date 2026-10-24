@@ -4,7 +4,6 @@ export * from "./AppLayout";
 export * from "./AppSidebar";
 export * from "./AppTopBar";
 export * from "./PageContainer";
-export * from "./PageTransition";
 export * from "./SidebarDrawer";
 export { Sidebar } from "./Sidebar";
 export { TopBar } from "./TopBar";

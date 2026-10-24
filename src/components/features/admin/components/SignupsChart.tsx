@@ -8,10 +8,10 @@ export function SignupsChart({ signups }: { signups: AdminStats["signups"] }) {
     new Date(`${iso}T00:00:00`).toLocaleDateString("en", { month: "short", day: "numeric" });
 
   return (
-    <section className="mk-surface flex flex-col gap-4 rounded-2xl bg-surface-1 p-5">
+    <section className="mk-surface flex flex-col gap-4 rounded-card bg-surface-1 p-space-8">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-[15px] font-semibold">Signups</h2>
-        <span className="text-[12px] text-text-faint">
+        <h2 className="text-h5 font-medium">Signups</h2>
+        <span className="text-caption text-text-faint">
           {total} in the last {signups.length} days
         </span>
       </div>
@@ -24,13 +24,15 @@ export function SignupsChart({ signups }: { signups: AdminStats["signups"] }) {
           <div
             key={d.date}
             title={`${label(d.date)}: ${d.count}`}
-            className={`flex-1 rounded-t-[3px] ${d.count ? "bg-accent" : "bg-surface-3"}`}
+            // Charts emit light (spec §6.15): a bar fades from the accent down
+            // to the deep blue; an empty day is a stub of the neutral tint.
+            className={`flex-1 rounded-t-sm ${d.count ? "bg-linear-to-t from-accent-deep to-accent" : "bg-ink-soft"}`}
             style={{ height: `${Math.max(3, (d.count / max) * 100)}%` }}
           />
         ))}
       </div>
       {signups.length > 0 && (
-        <div className="flex justify-between text-[11px] text-text-faint">
+        <div className="flex justify-between text-caption text-text-faint">
           <span>{label(signups[0].date)}</span>
           <span>{label(signups[signups.length - 1].date)}</span>
         </div>

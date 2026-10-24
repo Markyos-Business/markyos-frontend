@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, TextField, PillButton, Avatar } from "@/components/ui";
+import { useToast, Button, Icon, TextField, PillButton, Avatar } from "@/components/ui";
 import { Section, Row, Badge } from "@/components/ui/composites/SectionUI";
 import { PasswordField, EMAIL_RE, isPlaintext, scorePassword } from "@/components/features/auth";
 import { initialsFor, formatRelative } from "@/lib/utils";
@@ -102,8 +102,8 @@ export function ProfilePanel() {
         <div className="flex items-center gap-4">
           <Avatar initials={initialsFor(account.name || account.email)} size={56} tone="accent" />
           <div className="min-w-0">
-            <div dir="auto" className="bidi-auto text-[16px] font-semibold truncate">{account.name}</div>
-            <div dir="ltr" className="text-[12.5px] truncate" style={{ color: "var(--text-muted)" }}>{account.email}</div>
+            <div dir="auto" className="bidi-auto text-h5 font-medium truncate">{account.name}</div>
+            <div dir="ltr" className="text-caption truncate text-text-muted">{account.email}</div>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ export function ProfilePanel() {
           right={
             <div className="flex items-center gap-2.5 shrink-0">
               <Badge tone={readable ? "warning" : "success"}>{readable ? "Readable" : "Hashed"}</Badge>
-              <PillButton variant="secondary" size="sm" onClick={() => setChangingPassword((v) => !v)}>
+              <PillButton variant="outline" size="sm" onClick={() => setChangingPassword((v) => !v)}>
                 {changingPassword ? "Cancel" : "Change"}
               </PillButton>
             </div>
@@ -160,7 +160,7 @@ export function ProfilePanel() {
         />
 
         {changingPassword && (
-          <form onSubmit={handlePassword} className="rounded-xl p-4 flex flex-col gap-3 animate-fade-in" style={{ background: "var(--surface-2)" }}>
+          <form onSubmit={handlePassword} className="rounded-widget p-space-8 flex flex-col gap-space-5 bg-surface-sunken shadow-edge-soft">
             <PasswordField
               label="Current password"
               value={current}
@@ -192,7 +192,7 @@ export function ProfilePanel() {
                 this browser, so a password here is a local gate, not an account
                 on a server somewhere. What hashing buys is that the string
                 stored here isn't the one that opens your email too. */}
-            <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
+            <p className="text-caption text-text-faint">
               This build stores your data in this browser, so the password guards this browser&apos;s
               copy — it is never sent anywhere. It is kept as a PBKDF2-derived key rather than the
               password itself, so what sits in storage can&apos;t be read back and tried elsewhere.
@@ -208,18 +208,18 @@ export function ProfilePanel() {
           label="Signed in"
           hint={`Since this browser last authenticated${account.createdAt ? ` · account created ${formatRelative(account.createdAt)}` : ""}.`}
           right={
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              icon={<Icon name="sign-out-alt" size={16} />}
               onClick={() => {
                 logout();
                 showToast("Signed out.");
               }}
-              className="h-9 px-4 rounded-full text-[12px] font-semibold cursor-pointer shrink-0 flex items-center gap-2"
-              style={{ background: "var(--surface-2)", color: "var(--danger)" }}
             >
-              <Icon name="external-link-alt" size={12} />
               Sign out
-            </button>
+            </Button>
           }
         />
       </Section>

@@ -51,18 +51,18 @@ export function AccountMenu({
   }
 
   return (
-    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} />} width={250}>
+    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} size={40} />} width={250}>
       {(close) => (
-        <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-1.5">
-          <div className="px-3.5 py-2.5 flex flex-col gap-0.5" style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}>
-            <span className="text-[13px] font-semibold truncate">{session?.name || (isAr ? "غير مسجل" : "Signed out")}</span>
-            <span dir="ltr" className="text-[11.5px] truncate" style={{ color: "var(--text-muted)", textAlign: isAr ? "right" : "left" }}>
+        <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
+          <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">
+            <span className="text-body font-medium truncate">{session?.name || (isAr ? "غير مسجل" : "Signed out")}</span>
+            <span dir="ltr" className="text-caption truncate" style={{ color: "var(--text-muted)", textAlign: isAr ? "right" : "left" }}>
               {session?.email || "—"}
             </span>
           </div>
 
           {controls && (
-            <div className="flex flex-wrap items-center gap-2.5 px-3.5 py-2.5 shadow-rule-b sm:hidden">{controls}</div>
+            <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b sm:hidden">{controls}</div>
           )}
 
           {phoneLinks.map((item) => (
@@ -70,10 +70,10 @@ export function AccountMenu({
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] sm:hidden"
+              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body sm:hidden"
               style={{ color: "var(--text-secondary)" }}
             >
-              <Icon name={item.icon} size={14} style={{ color: "var(--text-faint)" }} />
+              <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />
               {isAr ? item.arLabel : item.label}
             </Link>
           ))}
@@ -83,10 +83,10 @@ export function AccountMenu({
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-2.5 px-3.5 py-2.5 text-[13px]"
+              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
               style={{ color: "var(--text-secondary)" }}
             >
-              <Icon name={item.icon} size={14} style={{ color: "var(--text-faint)" }} />
+              <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />
               {isAr ? item.arLabel : item.label}
             </Link>
           ))}
@@ -98,10 +98,10 @@ export function AccountMenu({
               logout();
               router.replace("/login");
             }}
-            className="mk-nav-item flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] cursor-pointer text-start"
+            className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body cursor-pointer text-start"
             style={{ color: "var(--text-secondary)", boxShadow: "inset 0 1px 0 var(--hairline)" }}
           >
-            <Icon name="sign-out-alt" size={14} style={{ color: "var(--text-faint)" }} />
+            <Icon name="sign-out-alt" size={16} style={{ color: "var(--text-muted)" }} />
             {isAr ? "تسجيل الخروج" : "Log out"}
           </button>
         </div>

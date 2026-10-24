@@ -20,19 +20,19 @@ export function Breakdown({
   const max = Math.max(1, ...Object.values(counts));
 
   return (
-    <section className="mk-surface flex flex-col gap-3.5 rounded-2xl bg-surface-1 p-5">
-      <h2 className="text-[15px] font-semibold">{title}</h2>
+    <section className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-space-8">
+      <h2 className="text-h5 font-medium">{title}</h2>
       {keys.length === 0 ? (
-        <p className="text-[12px] text-text-faint">Nothing yet.</p>
+        <p className="text-caption text-text-faint">Nothing yet.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {keys.map((k) => (
             <li key={k} className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-[12.5px]">
+              <div className="flex justify-between text-caption">
                 <span className="text-text-secondary">{labels[k] ?? k}</span>
-                <span className="font-semibold tabular-nums">{counts[k]}</span>
+                <span className="font-medium tabular-nums">{counts[k]}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-surface-2">
+              <div className="h-1.5 rounded-full bg-ink-soft">
                 <div className="h-full rounded-full bg-accent" style={{ width: `${(counts[k] / max) * 100}%` }} />
               </div>
             </li>

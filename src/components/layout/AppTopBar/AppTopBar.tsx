@@ -1,15 +1,22 @@
 import type { ReactNode } from "react";
 import { SidebarMenuButton } from "../SidebarDrawer";
 
-/** A plain top bar: where you are on the start side, controls on the end. */
-export function AppTopBar({ title, right }: { title?: ReactNode; right?: ReactNode }) {
+/**
+ * The spec's TopBar (MARKYOS_UI.md §5): 84px and transparent over the canvas,
+ * where you are on the start side (an optional breadcrumb over the title),
+ * 22px actions and the avatar on the end.
+ */
+export function AppTopBar({ title, breadcrumb, right }: { title?: ReactNode; breadcrumb?: ReactNode; right?: ReactNode }) {
   return (
-    <header className="flex h-[64px] shrink-0 items-center justify-between gap-4 px-5 shadow-[inset_0_-1px_0_var(--hairline)] sm:px-7">
-      <div className="flex min-w-0 items-center gap-2">
+    <header className="flex h-topbar shrink-0 items-center justify-between gap-space-5 px-space-6 sm:px-space-10">
+      <div className="flex min-w-0 items-center gap-space-3">
         <SidebarMenuButton />
-        <div className="min-w-0 truncate text-[14px] font-semibold">{title}</div>
+        <div className="min-w-0">
+          {breadcrumb && <div className="truncate text-caption text-text-muted">{breadcrumb}</div>}
+          <div className="truncate text-h4 font-medium text-text">{title}</div>
+        </div>
       </div>
-      <div className="flex shrink-0 items-center gap-3">{right}</div>
+      <div className="flex shrink-0 items-center gap-space-5">{right}</div>
     </header>
   );
 }

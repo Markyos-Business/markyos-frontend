@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
 import { roleOn } from "@/lib/data/access";
 import { AccountMenu } from "@/components/features/account";
-import { Icon, PillButton, listItemMotion } from "@/components/ui";
+import { Button, Icon, PageHeader } from "@/components/ui";
+import { SearchField } from "@/components/form";
 import { WorkspaceCard } from "@/components/features/brands";
 
 type SortKey = "updated" | "name";
@@ -38,46 +39,22 @@ export default function BrandsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Fixed height and a non-wrapping row put the search field, the
-          Templates link and the avatar past the right edge of a phone — the
-          page scrolled sideways and the avatar was off-screen. Wrapping and an
-          auto height cost nothing at desktop width, where it still lays out as
-          one row. */}
-      <div
-        className="min-h-[68px] shrink-0 flex flex-wrap items-center justify-between gap-3 px-5 sm:px-10 py-3"
-        style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
-      >
+      {/* The spec's top bar: 84px and transparent. It wraps on a phone, so the
+          search field and the avatar never push past the edge. */}
+      <header className="min-h-topbar shrink-0 flex flex-wrap items-center justify-between gap-space-5 px-space-6 sm:px-space-10 py-space-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/markyos-wordmark.svg"
-          alt="Markyos"
-          style={{ height: 13, filter: "var(--chrome-mark-invert)", opacity: 0.9 }}
-        />
-        <div className="flex items-center gap-3.5">
-          <label
-            className="flex items-center gap-2.5 h-9 px-4 rounded-full w-[150px] sm:w-[220px]"
-            style={{ background: "var(--surface-1)" }}
-          >
-            <Icon name="search" size={16} style={{ color: "var(--text-muted)" }} />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search brands"
-              className="bg-transparent outline-none text-[13px] flex-1"
-              style={{ color: "var(--text)" }}
-            />
-          </label>
+        <img src="/markyos-wordmark.svg" alt="Markyos" className="h-3.5 [filter:var(--chrome-mark-invert)]" />
+        <div className="flex items-center gap-space-6">
+          <div className="w-36 sm:w-56">
+            <SearchField label="Search brands" placeholder="Search brands…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
           {/* On a phone these two fold into the account menu, so the search
               keeps room to type in. Not `mk-tap`: its display is forced and
               would beat `hidden`. */}
-          <Link href="/studio/board" className="hidden min-h-6.5 items-center text-[13px] sm:inline-flex" style={{ color: "var(--text-muted)" }}>
+          <Link href="/studio/board" className="hidden min-h-6.5 items-center text-body font-medium text-text-muted hover:text-text sm:inline-flex">
             Board
           </Link>
-          <Link
-            href="/templates"
-            className="hidden min-h-6.5 items-center text-[13px] sm:inline-flex"
-            style={{ color: "var(--text-muted)" }}
-          >
+          <Link href="/templates" className="hidden min-h-6.5 items-center text-body font-medium text-text-muted hover:text-text sm:inline-flex">
             Templates
           </Link>
           {/* The text link is gone: the avatar next to it now does the job, and
@@ -90,61 +67,42 @@ export default function BrandsPage() {
             ]}
           />
         </div>
-      </div>
+      </header>
 
-      <div className="flex-1 px-5 sm:px-10 py-8 flex flex-col gap-6 max-w-[1240px] w-full mx-auto">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1
-              className="text-[32px] font-semibold tracking-tight mb-1.5"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Your brands
-            </h1>
-            <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
-              {myWorkspaces.length} workspace{myWorkspaces.length === 1 ? "" : "s"} ·{" "}
-              {sharedCount} shared with clients
-            </p>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => setSort((s) => (s === "updated" ? "name" : "updated"))}
-              className="h-9 px-3.5 rounded-full flex items-center gap-2 text-[12px] font-medium cursor-pointer"
-              style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
-            >
-              {sort === "updated" ? "Last edited" : "Name A–Z"}
-              <Icon name="angle-down" size={14} />
-            </button>
-            <PillButton
-              variant="primary"
-              size="sm"
-              icon={<Icon name="plus" size={15} />}
-              onClick={() => router.push("/brands/new")}
-            >
-              New workspace
-            </PillButton>
-          </div>
-        </div>
+      <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
+        <PageHeader
+          title="Your brands"
+          description={`${myWorkspaces.length} workspace${myWorkspaces.length === 1 ? "" : "s"} · ${sharedCount} shared with clients`}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSort((s) => (s === "updated" ? "name" : "updated"))}
+                icon={<Icon name="arrows-v" size={16} />}
+              >
+                {sort === "updated" ? "Last edited" : "Name A–Z"}
+              </Button>
+              <Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} onClick={() => router.push("/brands/new")}>
+                New workspace
+              </Button>
+            </>
+          }
+        />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
-          {workspaces.map((ws, i) => {
-            const motion = listItemMotion(i);
-            return (
-              // A grid of its own, so the card still fills the cell.
-              <div key={ws.id} className={`grid ${motion.className}`} style={motion.style}>
-                <WorkspaceCard workspace={ws} role={roleOn(ws, state.session)} />
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {workspaces.map((ws) => (
+            // A grid of its own, so the card still fills the cell.
+            <div key={ws.id} className="grid">
+              <WorkspaceCard workspace={ws} role={roleOn(ws, state.session)} />
+            </div>
+          ))}
           <Link
             href="/brands/new"
-            // `hover:bg-[#141414]` painted a near-black tile on the light theme.
-            className="mk-card rounded-2xl min-h-[216px] flex flex-col items-center justify-center gap-2.5"
-            style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)" }}
+            className="mk-card rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong text-text-muted"
           >
-            <Icon name="plus" size={24} />
-            <span className="text-[13px] font-medium">New workspace</span>
+            <Icon name="plus" size={22} />
+            <span className="text-body font-medium">New workspace</span>
           </Link>
         </div>
 
@@ -158,8 +116,8 @@ export default function BrandsPage() {
          * outside the studio, and the legend for a badge that is otherwise left
          * to be inferred.
          */}
-        <div className="mt-auto text-[12px]" style={{ color: "var(--text-faint)" }}>
-          A brand marked <span style={{ color: "var(--success)" }}>Shared</span> has a live client link —
+        <div className="mt-auto text-caption text-text-faint">
+          A brand marked <span className="text-success">Shared</span> has a live client link —
           anyone holding it can open the guideline. Switch it off in that brand&apos;s Settings.
         </div>
       </div>
