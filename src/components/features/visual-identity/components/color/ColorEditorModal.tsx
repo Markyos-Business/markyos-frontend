@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Icon, TextField, PillButton } from "@/components/ui";
+import { Icon, Button } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { isValidHex } from "@/lib/utils";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 
@@ -75,14 +76,14 @@ export function ColorEditorModal({
           }}
         />
 
-        <TextField
+        <InputField
           label="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Accent"
           autoFocus
         />
-        <TextField
+        <InputField
           label="Hex"
           value={hex}
           onChange={(e) => {
@@ -136,9 +137,9 @@ export function ColorEditorModal({
           >
             Cancel
           </button>
-          <PillButton type="submit" variant="primary" size="md">
+          <Button type="submit" variant="primary" size="md">
             {mode === "add" ? "Add color" : "Save"}
-          </PillButton>
+          </Button>
         </div>
       </form>
     </div>

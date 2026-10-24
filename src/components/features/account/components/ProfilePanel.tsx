@@ -2,8 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Button, Icon, TextField, PillButton, Avatar } from "@/components/ui";
-import { Section, Row, Badge } from "@/components/ui/composites/SectionUI";
+import { useToast, Button, Icon, Avatar, Section, Row, Badge } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { PasswordField, EMAIL_RE, isPlaintext, scorePassword } from "@/components/features/auth";
 import { initialsFor, formatRelative } from "@/lib/utils";
 
@@ -108,7 +108,7 @@ export function ProfilePanel() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3">
-          <TextField
+          <InputField
             label="Name"
             value={name}
             dir="auto"
@@ -120,7 +120,7 @@ export function ProfilePanel() {
             }}
             placeholder="Your name"
           />
-          <TextField
+          <InputField
             label="Email"
             type="email"
             value={email}
@@ -152,9 +152,9 @@ export function ProfilePanel() {
           right={
             <div className="flex items-center gap-2.5 shrink-0">
               <Badge tone={readable ? "warning" : "success"}>{readable ? "Readable" : "Hashed"}</Badge>
-              <PillButton variant="outline" size="sm" onClick={() => setChangingPassword((v) => !v)}>
+              <Button variant="outline" size="sm" onClick={() => setChangingPassword((v) => !v)}>
                 {changingPassword ? "Cancel" : "Change"}
-              </PillButton>
+              </Button>
             </div>
           }
         />
@@ -185,9 +185,9 @@ export function ProfilePanel() {
                 autoComplete="new-password"
               />
             </div>
-            <PillButton type="submit" variant="primary" size="sm" className="self-start" disabled={busy}>
+            <Button type="submit" variant="primary" size="sm" className="self-start" disabled={busy}>
               {busy ? "Saving…" : "Change password"}
-            </PillButton>
+            </Button>
             {/* Said plainly rather than implied: this build keeps everything in
                 this browser, so a password here is a local gate, not an account
                 on a server somewhere. What hashing buys is that the string

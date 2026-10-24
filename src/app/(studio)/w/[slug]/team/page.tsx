@@ -3,9 +3,8 @@
 import { FormEvent, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
+import { useToast, useDialog, Icon, Button, Section, Row, Badge, EmptyHint } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Section, Row, Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { TeamRole } from "@/types";
 import { roleOn } from "@/lib/data/access";
 import { formatRelative } from "@/lib/utils";
@@ -332,7 +331,7 @@ export default function TeamPage() {
                       </p>
                     </div>
                     {!p.resolved && canGovern && (
-                      <PillButton
+                      <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
@@ -341,7 +340,7 @@ export default function TeamPage() {
                         }}
                       >
                         Mark handled
-                      </PillButton>
+                      </Button>
                     )}
                   </div>
                 ))}
@@ -388,20 +387,18 @@ export default function TeamPage() {
                   </div>
                   {a.status === "pending" ? (
                     canGovern ? (
-                      <div className="flex gap-1.5 shrink-0">
+                      <div className="flex gap-space-3 shrink-0">
                         <button
                           type="button"
                           onClick={() => resolveApproval(ws.id, a.id, "approved")}
-                          className="h-7 px-2.5 rounded-full text-[11px] font-semibold cursor-pointer"
-                          style={{ background: "rgba(124,231,172,.14)", color: "var(--success)" }}
+                          className="mk-btn h-control-sm px-space-5 rounded-lg text-body font-medium bg-success-soft text-success"
                         >
                           Approve
                         </button>
                         <button
                           type="button"
                           onClick={() => resolveApproval(ws.id, a.id, "rejected")}
-                          className="h-7 px-2.5 rounded-full text-[11px] font-semibold cursor-pointer"
-                          style={{ background: "rgba(255,128,139,.14)", color: "var(--danger)" }}
+                          className="mk-btn h-control-sm px-space-5 rounded-lg text-body font-medium bg-danger-soft text-danger"
                         >
                           Reject
                         </button>
@@ -429,9 +426,9 @@ export default function TeamPage() {
               className="flex-1 h-10 px-3 rounded-lg outline-none text-[13px]"
               style={{ background: "var(--surface-2)", color: "var(--text)" }}
             />
-            <PillButton variant="outline" size="sm" onClick={handleSaveSnapshot}>
+            <Button variant="outline" size="sm" onClick={handleSaveSnapshot}>
               Save current as version
-            </PillButton>
+            </Button>
           </div>
           {ws.versionHistory.length === 0 ? (
             <EmptyHint>No saved versions yet — save one before a risky edit so it&apos;s easy to undo.</EmptyHint>

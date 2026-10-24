@@ -4,8 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Button, Icon, PageHeader, StatTile, Tabs, TextField } from "@/components/ui";
-import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI";
+import { useToast, Button, Icon, PageHeader, StatTile, Tabs, Section, Row, Switch, EmptyHint } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { ProfilePanel, BillingPanel } from "@/components/features/account";
 import { formatRelative } from "@/lib/utils";
 
@@ -167,7 +167,7 @@ function AccountPageBody() {
                   ))}
                 </div>
               </div>
-              <TextField
+              <InputField
                 label="Company domain"
                 value={ssoDomain}
                 onChange={(e) => {

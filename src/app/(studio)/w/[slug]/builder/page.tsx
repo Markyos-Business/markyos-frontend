@@ -4,8 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
 import {
   ImagePicker,
   SecondaryViewBanner,

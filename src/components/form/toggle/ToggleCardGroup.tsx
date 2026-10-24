@@ -1,6 +1,6 @@
 "use client";
 
-import { SwitchTrack } from "./SwitchTrack";
+import { SwitchMark } from "../../ui/primitives/SwitchMark";
 import { labelClasses } from "../fields/InputField";
 
 type ToggleCardOption = { id: string; name: string };
@@ -36,7 +36,7 @@ const ToggleCardGroup = ({
           return (
             <label
               key={option.id}
-              className={`group/toggle flex min-h-widget-row cursor-pointer items-center justify-between gap-space-4 rounded-widget px-space-6 py-space-5 transition-[background-color,box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+              className={`flex min-h-widget-row cursor-pointer items-center justify-between gap-space-4 rounded-widget px-space-6 py-space-5 transition-[background-color,box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
                 on ? "bg-accent-soft shadow-edge-accent" : "bg-surface-1 shadow-edge"
               }`}
             >
@@ -45,7 +45,7 @@ const ToggleCardGroup = ({
                 <span className="text-caption text-text-muted">{on ? onLabel : offLabel}</span>
               </span>
               <input type="checkbox" role="switch" checked={on} onChange={() => toggle(option.id)} className="sr-only" />
-              <SwitchTrack />
+              <SwitchMark checked={on} />
             </label>
           );
         })}

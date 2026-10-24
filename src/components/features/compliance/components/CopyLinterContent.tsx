@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { Icon, EmptyHint } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "@/components/features/compliance/model/copyLint";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
 
 const SEVERITY_TONE: Record<LintSeverity, { bg: string; fg: string; label: string; arLabel: string }> = {
-  error: { bg: "rgba(255,128,139,.14)", fg: "var(--danger)", label: "Fix", arLabel: "خطأ" },
+  error: { bg: "var(--danger-soft)", fg: "var(--danger)", label: "Fix", arLabel: "خطأ" },
   warning: { bg: "rgba(244,190,94,.14)", fg: "var(--warning)", label: "Check", arLabel: "تحقّق" },
   suggestion: { bg: "var(--surface-2)", fg: "var(--text-muted)", label: "Consider", arLabel: "اقتراح" },
 };
@@ -121,7 +120,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
       {touched && total === 0 && (
         <div
           className="rounded-xl px-4 py-3.5 flex items-center gap-3 text-[13px]"
-          style={{ background: "rgba(124,231,172,.12)", color: "var(--success)" }}
+          style={{ background: "var(--success-soft)", color: "var(--success)" }}
         >
           <Icon name="check-circle" size={16} />
           {isAr ? "لا ملاحظات. النص مطابق لقواعد هذه الهوية." : "Nothing flagged. This copy is on brand."}

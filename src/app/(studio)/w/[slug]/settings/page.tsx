@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, TextField, PillButton, LangToggle } from "@/components/ui";
+import { useToast, Icon, Button, LangToggle, Section, Row, Switch, Badge } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { TopBar } from "@/components/layout";
-import { Section, Row, Switch, Badge } from "@/components/ui/composites/SectionUI";
 import { formatRelative } from "@/lib/utils";
 import { diffTokens, parseDesignTokens, serializeTokens } from "@/components/features/settings";
 import { triggerBlobDownload } from "@/lib/rasterize";
@@ -270,7 +270,7 @@ export default function SettingsPage() {
           />
           {ws.clientAccess.passwordEnabled && (
             <div className="flex items-end gap-2.5">
-              <TextField
+              <InputField
                 label="Password"
                 value={ws.clientAccess.password}
                 onChange={(e) => setClientPassword(ws.id, e.target.value)}
@@ -358,7 +358,7 @@ export default function SettingsPage() {
             agency&apos;s link, not Markyos&apos;s.
           </p>
           <div className="flex items-end gap-2.5">
-            <TextField
+            <InputField
               label="Domain"
               value={domainInput}
               onChange={(e) => setDomainInput(e.target.value)}
@@ -400,7 +400,7 @@ export default function SettingsPage() {
                       clients.markyos.app
                     </span>
                   </div>
-                  <PillButton
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={handleVerifyDomain}
@@ -408,7 +408,7 @@ export default function SettingsPage() {
                     className="self-start"
                   >
                     {verifying ? "Checking DNS…" : "I've added the CNAME record"}
-                  </PillButton>
+                  </Button>
                 </>
               )}
             </div>
@@ -521,7 +521,7 @@ export default function SettingsPage() {
             {"  "}-H &quot;Authorization: Bearer {ws.developer.apiKey}&quot;
           </div>
           <div className="flex items-end gap-2.5">
-            <TextField
+            <InputField
               label="Webhook URL"
               value={webhookInput}
               onChange={(e) => setWebhookInput(e.target.value)}
@@ -558,12 +558,12 @@ export default function SettingsPage() {
             }
             right={
               <div className="flex gap-2 shrink-0">
-                <PillButton variant="outline" size="sm" onClick={handleCopyTokens}>
+                <Button variant="outline" size="sm" onClick={handleCopyTokens}>
                   Copy JSON
-                </PillButton>
-                <PillButton variant="outline" size="sm" onClick={handleDownloadTokens}>
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleDownloadTokens}>
                   Download
-                </PillButton>
+                </Button>
               </div>
             }
           />
@@ -582,9 +582,9 @@ export default function SettingsPage() {
             label="Import tokens"
             hint="Adds colors it doesn't have and updates ones whose hex changed. Nothing is deleted."
             right={
-              <PillButton variant="outline" size="sm" onClick={() => tokenInputRef.current?.click()} disabled={syncing}>
+              <Button variant="outline" size="sm" onClick={() => tokenInputRef.current?.click()} disabled={syncing}>
                 {syncing ? "Reading…" : "Choose file"}
-              </PillButton>
+              </Button>
             }
           />
         </Section>
@@ -624,7 +624,7 @@ function BrandNameRow({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <TextField
+      <InputField
         label="Brand name"
         value={draft}
         dir="auto"
@@ -698,7 +698,7 @@ function SubdomainRow({ ws }: { ws: Workspace }) {
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-end gap-2.5">
-        <TextField
+        <InputField
           label="Subdomain"
           value={draft}
           dir="ltr"
@@ -793,9 +793,9 @@ function PlanCard({
       <p className="text-[12px] flex-1" style={{ color: "var(--text-muted)" }}>
         {description}
       </p>
-      <PillButton variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={active || loading}>
+      <Button variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={active || loading}>
         {active ? "Active" : loading ? "Redirecting…" : "Choose plan"}
-      </PillButton>
+      </Button>
     </div>
   );
 }

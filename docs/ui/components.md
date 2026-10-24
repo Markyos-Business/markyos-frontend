@@ -33,8 +33,7 @@ weight 500. `primary` is the accent fill, `outline` the neutral tint with a
 hairline, `ghost` the accent tint, `danger` the red fill for a destructive
 confirm, `light` the white marketing call to action. Disabled is the raised
 fill with the 40% ink. Hover and press are the `mk-btn` scrim; `link` just
-underlines. Plus every native `<button>` attribute. `PillButton` is the old
-name for `Button`, kept while pages move over.
+underlines. Plus every native `<button>` attribute.
 
 ### `IconButton`
 
@@ -181,7 +180,8 @@ A skeleton shaped like the content, with a soft shimmer.
 `Section` (`title`, `icon`, `right`) is the card every settings page is made
 of. `Row` (`label`, `hint`, `right`) is one line of it. `Switch` (`checked`,
 `onToggle`, `label` required). `EmptyHint` is a quiet empty note.
-`EditableField` is a value you click to edit, plain or rich.
+`EditableField` is a value you click to edit, plain or rich. All of them
+import from `@/components/ui`.
 
 ### Tabs — `TabIndicator`
 
@@ -207,7 +207,8 @@ on outside click and Escape, and crossfades in and out.
 missing name). `Avatar` (`initials`, `size`, `tone: "muted" | "accent"`).
 `AutoTextarea` is a textarea that always fits its content. `LangToggle` is
 the EN | ع segmented control (`value`, `onChange`, `size`, `label`).
-`TextField` is the old name for `InputField`.
+`SwitchMark` (`checked`) is the switch as drawn, shared by `Switch` and the
+form toggles; the control around it carries the state.
 
 ## Rich text and media
 

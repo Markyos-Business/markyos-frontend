@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { TopBar, TopBarTab } from "@/components/layout";
 import { ShareLinksPanel } from "@/components/features/sharing";
+import { SegmentedToggle } from "@/components/form";
 import { Popover, Icon } from "@/components/ui";
 import {
   SingleTextTab,
@@ -139,10 +140,13 @@ export default function StrategyPage() {
               )}
             </Popover>
             <TranslateStrategy ws={ws} direction={isAr ? "en-ar" : "ar-en"} isAr={isAr} />
-            <div className="inline-flex rounded-full p-[3px]" style={{ background: "var(--surface-1)" }}>
-              <ModeTab label={isAr ? "تحرير" : "Edit"} icon="pen" active={mode === "edit"} onClick={() => setMode("edit")} />
-              <ModeTab label={isAr ? "قراءة" : "Read"} icon="book" active={mode === "read"} onClick={() => setMode("read")} />
-            </div>
+            <SegmentedToggle
+              label={isAr ? "وضع العرض" : "Mode"}
+              off={{ label: isAr ? "تحرير" : "Edit", icon: "pen" }}
+              on={{ label: isAr ? "قراءة" : "Read", icon: "book" }}
+              value={mode === "read"}
+              onChange={(read) => setMode(read ? "read" : "edit")}
+            />
             <button
               type="button"
               onClick={() => setImportOpen(true)}
@@ -381,32 +385,5 @@ function TabSequence({
         <span />
       )}
     </nav>
-  );
-}
-
-function ModeTab({
-  label,
-  icon,
-  active,
-  onClick,
-}: {
-  label: string;
-  icon: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="h-7 px-3 rounded-full text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
-      style={{
-        background: active ? "var(--solid)" : "transparent",
-        color: active ? "var(--solid-ink)" : "var(--text-muted)",
-      }}
-    >
-      <Icon name={icon} size={11} />
-      {label}
-    </button>
   );
 }

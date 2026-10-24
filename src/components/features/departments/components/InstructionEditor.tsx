@@ -1,8 +1,7 @@
 "use client";
 
 import { useApp } from "@/contexts/AppContext";
-import { Icon, AutoTextarea } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { Icon, AutoTextarea, EmptyHint } from "@/components/ui";
 import { DepartmentView, DeptInstructionSection, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
 

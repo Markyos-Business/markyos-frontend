@@ -2,7 +2,7 @@
 
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { LangToggle, PillButton, Icon } from "@/components/ui";
+import { LangToggle, Button, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
 import { navLogo } from "@/components/features/guideline-site/model/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
@@ -193,14 +193,14 @@ export function DocsTemplate(props: TemplateProps) {
         <div className="mt-auto flex flex-col gap-3">
           <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
           {attachedSlots.length > 0 && (
-            <PillButton variant="outline" size="sm" onClick={() => setDownloadOpen(true)} className="w-full">
+            <Button variant="outline" size="sm" onClick={() => setDownloadOpen(true)} className="w-full">
               {/* An Icon, not a "↗" character: the guideline site ships with an
                   offline icon set and no webfont, so a Unicode arrow that the
                   system font happens not to carry renders as a tofu box on a
                   page the client is being handed. */}
               {isAr ? "تحميل الأصول" : "Download assets"}
               <Icon name="external-link-alt" size={11} style={{ marginInlineStart: 6 }} />
-            </PillButton>
+            </Button>
           )}
         </div>
       </div>

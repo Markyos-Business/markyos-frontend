@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Icon, AutoTextarea, RichText, RichTextEditor, richIsEmpty } from "@/components/ui";
-import { Badge } from "../badges";
+import { AutoTextarea } from "../primitives/AutoTextarea";
+import { Icon } from "../primitives/Icon";
+import { SwitchMark } from "../primitives/SwitchMark";
+import { RichText, RichTextEditor, richIsEmpty } from "./RichText";
 
 type SectionProps = {
   title: string;
@@ -59,13 +61,6 @@ const Row = ({ label, hint, right }: RowProps) => (
   </div>
 );
 
-// The spec's switch (§6.6), the same as form/toggle/SwitchTrack: 40×22, the
-// knob on the reading end when on (right in English, left in Arabic). It
-// rests 3px in from the start and travels 18px by transform in the 180ms
-// reserved for switch knobs, so the slide never animates a layout property.
-const knobRest = "start-0.75";
-const knobTravel = { on: "translate-x-4.5 rtl:-translate-x-4.5", off: "translate-x-0" };
-
 type SwitchProps = {
   checked: boolean;
   onToggle: () => void;
@@ -89,16 +84,10 @@ const Switch = ({ checked, onToggle, label }: SwitchProps) => (
     aria-label={label}
     onClick={onToggle}
     // The button is 24px tall so the target clears WCAG 2.5.8's 24px floor;
-    // the track it draws is the spec's 22px.
+    // the switch it draws is the spec's 22px.
     className="relative flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-switch"
   >
-    <span aria-hidden className={`relative h-5.5 w-10 rounded-switch transition-colors ${checked ? "bg-accent" : "bg-track"}`}>
-      <span
-        className={`absolute top-0.75 size-4 rounded-full transition-[translate,background-color] duration-base ${knobRest} ${
-          checked ? `${knobTravel.on} bg-accent-ink` : `${knobTravel.off} bg-text-muted`
-        }`}
-      />
-    </span>
+    <SwitchMark checked={checked} />
   </button>
 );
 
@@ -179,5 +168,5 @@ const EditableField = ({
   </div>
 );
 
-export { Badge, EditableField, EmptyHint, Row, Section, Switch };
+export { EditableField, EmptyHint, Row, Section, Switch };
 export type { EditableFieldProps, EmptyHintProps, RowProps, SectionProps, SwitchProps };

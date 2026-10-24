@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Icon, TextField, PillButton } from "@/components/ui";
+import { Icon, Button } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { getBrandTheme, themeCssVars } from "@/components/features/guideline-site/model/theme";
 
 /** Wrong guesses allowed before the form stops answering. */
@@ -132,7 +133,7 @@ export function PasswordGate({
         </p>
       </div>
       <form onSubmit={handleSubmit} className="w-full max-w-[360px] rounded-[18px] p-[26px] flex flex-col gap-3.5" style={{ background: "var(--g-surface-1)" }}>
-        <TextField
+        <InputField
           label={isAr ? "كلمة المرور" : "Access password"}
           type="password"
           autoFocus
@@ -144,9 +145,9 @@ export function PasswordGate({
           }}
           error={error}
         />
-        <PillButton type="submit" variant="primary" className="w-full" disabled={locked}>
+        <Button type="submit" variant="primary" className="w-full" disabled={locked}>
           {isAr ? "عرض الدليل" : "View guideline"}
-        </PillButton>
+        </Button>
         <p className="text-[12px] leading-[1.55] text-center" style={{ color: "var(--g-text-muted)" }}>
           {locked
             ? isAr

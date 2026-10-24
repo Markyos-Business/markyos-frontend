@@ -4,9 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
+import { useToast, useDialog, Icon, Button, EmptyHint } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import {
   Zone,
   type ZoneAction,
@@ -960,9 +959,9 @@ function TemplatePicker({
       </div>
       {!hasBoard && (
         <div>
-          <PillButton variant="outline" onClick={onUpload}>
+          <Button variant="outline" onClick={onUpload}>
             {isAr ? "أو ارفع مراجع مباشرة" : "Or just upload references"}
-          </PillButton>
+          </Button>
         </div>
       )}
     </div>

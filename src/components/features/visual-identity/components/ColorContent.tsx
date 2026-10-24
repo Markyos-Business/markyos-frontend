@@ -246,10 +246,10 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                         const level = r === null ? null : r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "AA18" : "Fail";
                         const tone =
                           level === "AAA" || level === "AA"
-                            ? { background: "rgba(124,231,172,.12)", color: "var(--success)" }
+                            ? { background: "var(--success-soft)", color: "var(--success)" }
                             : level === "AA18"
                             ? { background: "rgba(244,190,94,.12)", color: "var(--warning)" }
-                            : { background: "rgba(255,128,139,.12)", color: "var(--danger)" };
+                            : { background: "var(--danger-soft)", color: "var(--danger)" };
                         return (
                           <td key={col.id} className="text-center">
                             <div

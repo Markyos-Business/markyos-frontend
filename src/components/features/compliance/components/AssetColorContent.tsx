@@ -2,8 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { useToast, Icon, EmptyHint } from "@/components/ui";
 import { DominantColor, colorDistance, extractDominantColors } from "@/components/features/compliance/model/colorExtract";
 import { formatRelative } from "@/lib/utils";
 import { ColorSwatch, Workspace } from "@/types";
@@ -145,14 +144,14 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                   {matched ? (
                     <span
                       className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
-                      style={{ background: "rgba(124,231,172,.14)", color: "var(--success)" }}
+                      style={{ background: "var(--success-soft)", color: "var(--success)" }}
                     >
                       Matches {swatch!.name}
                     </span>
                   ) : (
                     <span
                       className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
-                      style={{ background: "rgba(255,128,139,.14)", color: "var(--danger)" }}
+                      style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
                     >
                       Off-palette
                     </span>

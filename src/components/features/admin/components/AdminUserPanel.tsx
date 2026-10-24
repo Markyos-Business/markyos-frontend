@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useCurrentAccount } from "@/contexts/AppContext";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
-import { AlertBanner, Avatar, Button, IconButton, useDialog, useToast } from "@/components/ui";
-import { Badge } from "@/components/ui/composites/SectionUI";
+import { AlertBanner, Avatar, Button, IconButton, useDialog, useToast, Badge } from "@/components/ui";
 import { BRAND_ROLE_LABELS, ROLE_LABELS, ROLE_TONES, STAGE_LABELS, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUserBrands } from "../hooks/useAdminUserBrands";
 import { useRevokeUserSessions } from "../hooks/useRevokeUserSessions";

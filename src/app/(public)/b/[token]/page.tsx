@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { LangToggle, PillButton, AutoTextarea } from "@/components/ui";
+import { LangToggle, Button, AutoTextarea } from "@/components/ui";
 import { CenteredMessage } from "@/components/features/guideline-site";
 import { QUESTION_BY_KEY, usePublicBrief } from "@/components/features/brief";
 import { BriefQuestion, Lang } from "@/types";
@@ -176,7 +176,7 @@ export default function BriefPage() {
               : "When you send this, the studio reads your answers and decides what to use. Nothing is published automatically."}
           </p>
           <div>
-            <PillButton
+            <Button
               onClick={async () => {
                 const error = await submit();
                 setSendError(error);
@@ -185,7 +185,7 @@ export default function BriefPage() {
               disabled={answered === 0}
             >
               {isAr ? "إرسال الإجابات" : "Send my answers"}
-            </PillButton>
+            </Button>
           </div>
           {sendError && (
             <span role="alert" className="text-[12px]" style={{ color: "var(--danger)" }}>

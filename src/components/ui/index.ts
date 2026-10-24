@@ -3,6 +3,7 @@
 export * from "./primitives";
 export * from "./overlays";
 export * from "./composites/RichText";
+export * from "./composites/SectionUI";
 export * from "./buttons";
 export * from "./AlertBanner";
 export * from "./table";

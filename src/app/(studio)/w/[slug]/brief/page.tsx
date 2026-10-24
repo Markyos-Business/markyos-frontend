@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, PillButton, TextField } from "@/components/ui";
+import { useToast, useDialog, Icon, Button, Badge, EmptyHint, Section } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { TopBar } from "@/components/layout";
-import { Badge, EmptyHint, Section } from "@/components/ui/composites/SectionUI";
 import { BRIEF_QUESTIONS, BRIEF_TEMPLATES, QUESTION_BY_KEY } from "@/components/features/brief";
 import { Brief, BriefStatus, BriefTemplateKind, Lang } from "@/types";
 import { formatRelative } from "@/lib/utils";
@@ -158,14 +158,14 @@ export default function BriefPage() {
                 </div>
               </div>
 
-              <TextField
+              <InputField
                 label="Name this brief"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder={`${BRIEF_TEMPLATES[template].label} brief`}
                 hint="For your own reference — the client never sees it."
               />
-              <TextField
+              <InputField
                 label="Who is filling it in"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
@@ -200,7 +200,7 @@ export default function BriefPage() {
               </div>
 
               <div>
-                <PillButton onClick={handleCreate}>Create brief</PillButton>
+                <Button onClick={handleCreate}>Create brief</Button>
               </div>
             </div>
           )}
@@ -275,7 +275,7 @@ export default function BriefPage() {
 
                     <div className="flex items-center gap-2 flex-wrap">
                       {b.status === "draft" && (
-                        <PillButton
+                        <Button
                           size="sm"
                           onClick={() => {
                             sendBrief(ws.id, b.id);
@@ -283,10 +283,10 @@ export default function BriefPage() {
                           }}
                         >
                           Send it
-                        </PillButton>
+                        </Button>
                       )}
                       {b.status !== "draft" && !b.revokedAt && (
-                        <PillButton
+                        <Button
                           size="sm"
                           variant="outline"
                           onClick={async () => {
@@ -303,7 +303,7 @@ export default function BriefPage() {
                           }}
                         >
                           Close link
-                        </PillButton>
+                        </Button>
                       )}
                       <button
                         type="button"

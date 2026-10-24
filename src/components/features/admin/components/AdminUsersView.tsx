@@ -1,18 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  AlertBanner,
-  Avatar,
-  Button,
-  PageHeader,
-  Table,
-  TableEmptyRow,
-  TableLoadingRow,
-  cellClasses,
-  rowClasses,
-} from "@/components/ui";
-import { Badge } from "@/components/ui/composites/SectionUI";
+import { AlertBanner, Avatar, Button, PageHeader, Table, TableEmptyRow, TableLoadingRow, cellClasses, rowClasses, Badge } from "@/components/ui";
 import { SearchField, FilterSelectField } from "@/components/form";
 import { usePresence } from "@/hooks/usePresence";
 import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";

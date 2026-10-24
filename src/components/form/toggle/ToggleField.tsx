@@ -1,6 +1,6 @@
 "use client";
 
-import { SwitchTrack } from "./SwitchTrack";
+import { SwitchMark } from "../../ui/primitives/SwitchMark";
 
 type ToggleFieldProps = {
   /** What the switch turns on. */
@@ -23,7 +23,7 @@ const ToggleField = ({ label, checked, onChange, description, disabled = false, 
   return (
     <div className="flex w-full flex-col gap-space-2">
       <label
-        className={`group/toggle flex min-h-widget-row cursor-pointer items-center justify-between gap-space-5 rounded-widget px-space-6 py-space-5 transition-[background-color,box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent has-disabled:cursor-not-allowed has-disabled:opacity-58 ${
+        className={`flex min-h-widget-row cursor-pointer items-center justify-between gap-space-5 rounded-widget px-space-6 py-space-5 transition-[background-color,box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent has-disabled:cursor-not-allowed has-disabled:opacity-58 ${
           checked ? "bg-accent-soft shadow-edge-accent" : "bg-surface-1 shadow-edge"
         }`}
       >
@@ -39,7 +39,7 @@ const ToggleField = ({ label, checked, onChange, description, disabled = false, 
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only"
         />
-        <SwitchTrack />
+        <SwitchMark checked={checked} />
       </label>
       {error && (
         <span role="alert" className="text-caption text-danger">

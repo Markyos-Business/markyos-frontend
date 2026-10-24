@@ -3,9 +3,8 @@
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, PillButton } from "@/components/ui";
+import { useToast, useDialog, Icon, Button, Badge, EmptyHint } from "@/components/ui";
 import { TopBar } from "@/components/layout";
-import { Badge, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { Draft, DraftSource, DraftStatus } from "@/types";
 import { formatRelative } from "@/lib/utils";
 
@@ -190,10 +189,10 @@ export default function DraftsPage() {
 
                 {d.status === "pending" && (
                   <div className="flex items-center gap-2 pt-1">
-                    <PillButton size="sm" onClick={() => void handleAccept(d)}>
+                    <Button size="sm" onClick={() => void handleAccept(d)}>
                       Accept
-                    </PillButton>
-                    <PillButton
+                    </Button>
+                    <Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
@@ -202,7 +201,7 @@ export default function DraftsPage() {
                       }}
                     >
                       Reject
-                    </PillButton>
+                    </Button>
                   </div>
                 )}
               </article>

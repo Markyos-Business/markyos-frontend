@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, PillButton } from "@/components/ui";
+import { useToast, Icon, Button } from "@/components/ui";
 import { DepartmentView, Workspace } from "@/types";
 import { extractText, parseDocumentSections } from "@/lib/docParse";
 import { uid } from "@/lib/utils";
@@ -135,7 +135,7 @@ export function ImportInstructionsModal({
             {error && (
               <div
                 className="rounded-lg px-3.5 py-2.5 text-[12.5px]"
-                style={{ background: "rgba(255,128,139,.12)", color: "var(--danger)" }}
+                style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
               >
                 {error}
               </div>
@@ -252,9 +252,9 @@ export function ImportInstructionsModal({
                 >
                   {isAr ? "إلغاء" : "Cancel"}
                 </button>
-                <PillButton variant="primary" size="md" onClick={apply} disabled={selected.length === 0}>
+                <Button variant="primary" size="md" onClick={apply} disabled={selected.length === 0}>
                   {isAr ? `أضف ${selected.length}` : `Add ${selected.length} section${selected.length === 1 ? "" : "s"}`}
-                </PillButton>
+                </Button>
               </div>
             </div>
           </>

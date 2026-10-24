@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, PillButton } from "@/components/ui";
+import { useToast, Icon, Button } from "@/components/ui";
 import { Workspace } from "@/types";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import {
@@ -192,7 +192,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
             {error && (
               <div
                 className="rounded-lg px-3.5 py-2.5 text-[12.5px]"
-                style={{ background: "rgba(255,128,139,.12)", color: "var(--danger)" }}
+                style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
               >
                 {error}
               </div>
@@ -264,9 +264,9 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                     </div>
                   </div>
                 )}
-                <PillButton variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
+                <Button variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
                   {isAr ? "جرّب ملفًا آخر" : "Try another file"}
-                </PillButton>
+                </Button>
               </div>
             ) : (
               <div className="flex flex-col gap-3 overflow-y-auto pe-1 -me-1">
@@ -414,9 +414,9 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
             >
               {isAr ? "إلغاء" : "Cancel"}
             </button>
-            <PillButton variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>
+            <Button variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>
               {isAr ? `استيراد ${selectedCount || ""}` : `Import ${selectedCount || ""} ${selectedCount === 1 ? "item" : "items"}`}
-            </PillButton>
+            </Button>
           </div>
         )}
       </div>

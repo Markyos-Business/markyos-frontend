@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Button, TextField, PillButton, Icon, Tabs } from "@/components/ui";
+import { useToast, Button, Icon, Tabs } from "@/components/ui";
+import { InputField } from "@/components/form";
 import { slugify } from "@/lib/utils";
 import {
   DetectedFont,
@@ -176,7 +177,7 @@ export default function NewWorkspacePage() {
               One workspace per brand. You can rename it later.
             </p>
             <div className="mb-[26px]">
-              <TextField
+              <InputField
                 // The <h1> asks for it, but a heading is not a label — this is
                 // the only field on the screen and it still needs a name.
                 aria-label="Brand name"
@@ -187,9 +188,9 @@ export default function NewWorkspacePage() {
                 hint={`markyos.com/${slugify(name || "your-brand")}`}
               />
             </div>
-            <PillButton type="submit" variant="primary" disabled={!name.trim()}>
+            <Button type="submit" variant="primary" disabled={!name.trim()}>
               Create workspace
-            </PillButton>
+            </Button>
           </form>
         ) : stage === "idle" ? (
           <div className="flex flex-col">
@@ -324,7 +325,7 @@ function ReviewPanel({
         </div>
       )}
 
-      <TextField label="Brand name" value={importName} onChange={(e) => onName(e.target.value)} />
+      <InputField label="Brand name" value={importName} onChange={(e) => onName(e.target.value)} />
 
       <Group
         title={`Colours measured from the pages (${analysis.colors.length})`}
@@ -402,7 +403,7 @@ function ReviewPanel({
                 key={key}
                 className="text-caption px-2.5 py-1.5 rounded-lg flex items-center gap-1.5"
                 style={{
-                  background: has ? "rgba(124,231,172,.12)" : "var(--surface-2)",
+                  background: has ? "var(--success-soft)" : "var(--surface-2)",
                   color: has ? "var(--success)" : "var(--text-faint)",
                 }}
                 title={typeof value === "string" ? value.slice(0, 200) : undefined}
@@ -420,9 +421,9 @@ function ReviewPanel({
         <Button variant="outline" onClick={onReset}>
           Start over
         </Button>
-        <PillButton variant="primary" onClick={onConfirm}>
+        <Button variant="primary" onClick={onConfirm}>
           Create workspace from this
-        </PillButton>
+        </Button>
       </div>
     </div>
   );

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { EditableField, Section } from "@/components/ui/composites/SectionUI";
+import { EditableField, Section, richIsEmpty } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/BilingualUI";
-import { richIsEmpty } from "@/components/ui";
 import { strategyText, textKey } from "@/components/features/guideline-site";
 import { Lang, Workspace } from "@/types";
 

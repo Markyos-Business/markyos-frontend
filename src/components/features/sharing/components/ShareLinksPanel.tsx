@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, PillButton } from "@/components/ui";
+import { useToast, Icon, Button } from "@/components/ui";
 import { ShareScope, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 
@@ -90,9 +90,9 @@ export function ShareLinksPanel({
                 : "A read-only link to the full strategy — no editor, no rest of the app."}
           </div>
         </div>
-        <PillButton variant="outline" size="sm" onClick={handleCreate}>
+        <Button variant="outline" size="sm" onClick={handleCreate}>
           {isAr ? "إنشاء رابط" : "Create link"}
-        </PillButton>
+        </Button>
       </div>
 
       {links.length > 0 && (

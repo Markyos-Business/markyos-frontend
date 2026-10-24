@@ -2,8 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
-import { Section, EmptyHint } from "@/components/ui/composites/SectionUI";
+import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/BilingualUI";
 import { valueIn } from "@/components/features/guideline-site";
 import { Lang, Workspace } from "@/types";

@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Icon, useToast } from "@/components/ui";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
+import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
 import { useTheme } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";

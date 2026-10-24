@@ -3,9 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
-import { useToast, useDialog, Icon } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
 import { AssetThumb } from "@/components/ui/media";
-import { EmptyHint } from "@/components/ui/composites/SectionUI";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
 import { fontMetaFromFileName, isFontFile } from "@/components/features/visual-identity/model/fontFile";

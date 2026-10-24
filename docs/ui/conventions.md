@@ -16,7 +16,7 @@ src/lib/       the API client and the data layer
 - **Anything reusable and domain-free goes in `ui/`,** even if only one page
   uses it today. Never copy a component sideways between features: move it up.
 - **A variant of a primitive sits next to it,** for example
-  `ui/buttons/PillButton.tsx`.
+  `ui/buttons/IconButton.tsx` beside `Button.tsx`.
 - **One file per component,** flat in its folder, with an `index.ts` barrel
   per folder.
 
