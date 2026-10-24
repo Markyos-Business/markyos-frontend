@@ -141,7 +141,7 @@ function LoginForm() {
       {showDemo && (
         // Seed data, in a public repo, printed here on purpose: the demo brands
         // belong to a real account now, and there is no other way in.
-        <div className="flex flex-col gap-2 rounded-[10px] bg-surface-2 px-3.5 py-3 text-[12px] text-text-muted">
+        <div className="flex flex-col gap-2 rounded-lg bg-surface-2 px-3.5 py-3 text-[12px] text-text-muted">
           <span className="font-semibold text-text-secondary">Want to look around first?</span>
           <span className="leading-[1.5]">
             The sample studio and its five brands live on a demo account —{" "}

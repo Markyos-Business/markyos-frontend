@@ -160,7 +160,7 @@ export function DownloadPanel({
               onToggle={() => setFormats((f) => ({ ...f, svg: !f.svg }))}
             />
             <div
-              className="flex items-center gap-3 px-3.5 py-[13px] rounded-[10px]"
+              className="flex items-center gap-3 px-3.5 py-[13px] rounded-lg"
               style={{
                 background: "var(--surface-2)",
                 boxShadow: formats.png ? "inset 0 0 0 1px var(--accent-edge)" : "none",
@@ -222,7 +222,7 @@ export function DownloadPanel({
             <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".1em", color: "var(--text-faint)" }}>
               Direct link
             </span>
-            <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-[10px]" style={{ background: "var(--surface-2)" }}>
+            <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-lg" style={{ background: "var(--surface-2)" }}>
               <Icon name="link" size={17} style={{ color: "var(--accent-text)" }} />
               <span
                 className="flex-1 min-w-0 text-[12px] truncate"
@@ -329,7 +329,7 @@ function FormatRow({
     <button
       type="button"
       onClick={onToggle}
-      className="flex items-center gap-3 px-3.5 py-[13px] rounded-[10px] cursor-pointer text-start"
+      className="flex items-center gap-3 px-3.5 py-[13px] rounded-lg cursor-pointer text-start"
       style={{
         background: "var(--surface-2)",
         boxShadow: checked ? "inset 0 0 0 1px var(--accent-edge)" : "none",

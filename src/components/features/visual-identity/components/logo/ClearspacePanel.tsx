@@ -31,7 +31,7 @@ export function ClearspacePanel({
     return (
       <div className="w-[308px] shrink-0 flex flex-col gap-3.5">
         <div
-          className="rounded-[14px] p-[18px] flex flex-col items-center gap-2 text-center"
+          className="rounded-xl p-[18px] flex flex-col items-center gap-2 text-center"
           style={{ background: "var(--surface-1)" }}
         >
           <Icon name="info-circle" size={20} style={{ color: "var(--text-muted)" }} />
@@ -50,7 +50,7 @@ export function ClearspacePanel({
 
   return (
     <div className="w-[308px] shrink-0 flex flex-col gap-3.5">
-      <div className="rounded-[14px] p-[18px]" style={{ background: "var(--surface-1)" }}>
+      <div className="rounded-xl p-[18px]" style={{ background: "var(--surface-1)" }}>
         <div className="flex items-baseline justify-between mb-3.5">
           <span className="font-semibold text-[13px]">
             {isAr ? "الهامش الآمن" : "Clearspace"} — {isAr ? SLOT_META[selected].arLabel : SLOT_META[selected].label}
@@ -93,7 +93,7 @@ export function ClearspacePanel({
         </p>
       </div>
 
-      <div className="rounded-[14px] p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+      <div className="rounded-xl p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
         <span className="font-semibold text-[13px]">Minimum size</span>
         <div
           className="flex items-center justify-between px-3 py-2.5 rounded-lg"
@@ -119,7 +119,7 @@ export function ClearspacePanel({
         </div>
       </div>
 
-      <div className="rounded-[14px] p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
+      <div className="rounded-xl p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
         <span className="font-semibold text-[13px]">Files</span>
         {attachedSlots.map((k) => {
           const s = workspace.logo[k];

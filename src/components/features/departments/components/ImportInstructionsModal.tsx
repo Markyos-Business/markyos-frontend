@@ -107,7 +107,7 @@ export function ImportInstructionsModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[580px] max-h-[86vh] rounded-[20px] p-6 flex flex-col gap-4"
+        className="w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

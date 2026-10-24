@@ -679,7 +679,7 @@ function AssetDetailModal({
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
-        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 animate-pop max-h-[86vh] overflow-y-auto"
+        className="w-full max-w-[440px] rounded-2xl p-6 flex flex-col gap-4 animate-pop max-h-[86vh] overflow-y-auto"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

@@ -4,7 +4,7 @@ import { InputHTMLAttributes, ReactNode, useId } from "react";
 
 /** The box itself, shared with the other fields so they all look alike. */
 export const inputClasses = (error?: string) =>
-  `w-full rounded-[10px] bg-surface-2 text-[15px] text-text outline-none ring-1 ring-inset ${
+  `w-full rounded-lg bg-surface-2 text-[15px] text-text outline-none ring-1 ring-inset ${
     error ? "ring-danger" : "ring-hairline-strong"
   }`;
 

@@ -54,7 +54,7 @@ export function ColorEditorModal({
     >
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-[380px] rounded-[20px] p-6 flex flex-col gap-4"
+        className="w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -68,7 +68,7 @@ export function ColorEditorModal({
         </div>
 
         <div
-          className="h-[88px] rounded-[14px]"
+          className="h-[88px] rounded-xl"
           style={{
             background: previewValid ? normalizedHex : "var(--surface-2)",
             boxShadow: "inset 0 0 0 1px var(--hairline-strong)",

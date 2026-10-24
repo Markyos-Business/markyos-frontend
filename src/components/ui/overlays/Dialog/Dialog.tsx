@@ -235,7 +235,7 @@ function DialogHost({
         tabIndex={-1}
         aria-labelledby={titleId}
         aria-describedby={options.body ? bodyId : undefined}
-        className="w-full max-w-[440px] rounded-[20px] p-6 flex flex-col gap-4 animate-pop"
+        className="w-full max-w-[440px] rounded-2xl p-6 flex flex-col gap-4 animate-pop"
         style={{
           background: "var(--surface-0)",
           outline: "none",
@@ -302,7 +302,7 @@ function DialogHost({
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={request.options.placeholder}
-                className="h-11 rounded-[10px] px-3.5 outline-none text-[14px]"
+                className="h-11 rounded-lg px-3.5 outline-none text-[14px]"
                 style={{
                   background: "var(--surface-2)",
                   color: "var(--text)",
@@ -341,7 +341,7 @@ function DialogHost({
                   autoComplete="off"
                   spellCheck={false}
                   aria-invalid={!armed}
-                  className="w-full h-11 rounded-[10px] px-3.5 pe-10 outline-none text-[14px]"
+                  className="w-full h-11 rounded-lg px-3.5 pe-10 outline-none text-[14px]"
                   style={{
                     background: "var(--surface-2)",
                     color: "var(--text)",

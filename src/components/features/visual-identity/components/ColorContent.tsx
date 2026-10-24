@@ -100,7 +100,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           const rgb = hexToRgb(c.hex);
           const cmyk = rgb ? rgbToCmyk(rgb) : null;
           return (
-            <div key={c.id} className="rounded-[14px] overflow-hidden" style={{ background: "var(--surface-1)" }}>
+            <div key={c.id} className="rounded-xl overflow-hidden" style={{ background: "var(--surface-1)" }}>
               <div
                 className="h-[104px]"
                 style={{
@@ -174,7 +174,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setEditor({ mode: "add" })}
-          className="rounded-[14px] flex flex-col items-center justify-center gap-2.5 cursor-pointer"
+          className="rounded-xl flex flex-col items-center justify-center gap-2.5 cursor-pointer"
           style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)", minHeight: 220 }}
         >
           <Icon name="plus" size={22} />

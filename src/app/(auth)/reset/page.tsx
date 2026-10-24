@@ -216,7 +216,7 @@ function ResetPageBody() {
         <AlertBanner message={errors.form ?? (API_ENABLED ? errors.token : undefined)} />
 
         {API_ENABLED ? null : issued ? (
-          <div className="flex items-center gap-3 rounded-[10px] bg-surface-2 px-4 py-3.5">
+          <div className="flex items-center gap-3 rounded-lg bg-surface-2 px-4 py-3.5">
             <Icon name="key" size={15} className="shrink-0 text-accent-text" />
             <span dir="ltr" className="flex-1 font-mono text-[17px] font-semibold tracking-[0.12em]">
               {issued}
@@ -226,7 +226,7 @@ function ResetPageBody() {
         ) : (
           /* No code was issued, because no account matched — said this way
              rather than naming the address, for the reason in handleRequest. */
-          <p className="rounded-[10px] bg-surface-2 px-4 py-3.5 text-[12.5px] leading-[1.5] text-text-muted">
+          <p className="rounded-lg bg-surface-2 px-4 py-3.5 text-[12.5px] leading-[1.5] text-text-muted">
             If an account exists for that email, its code is shown here. Nothing appeared, so check
             the address — or{" "}
             <Link href="/signup" className="text-accent-text">

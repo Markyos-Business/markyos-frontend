@@ -173,13 +173,6 @@ const config = {
         "rule-b": "inset 0 -1px 0 var(--hairline)",
         "rule-t": "inset 0 1px 0 var(--hairline)",
       },
-      borderRadius: {
-        card: "16px",
-        widget: "10px",
-        pill: "999px",
-        chip: "14px",
-        panel: "20px",
-      },
       keyframes: {
         // Something arrived that wasn't there a moment ago.
         "fade-in": {

@@ -291,7 +291,7 @@ export default function SettingsPage() {
                 onClick={() => copy(ws.clientAccess.password, "Password")}
                 disabled={!ws.clientAccess.password}
                 title={ws.clientAccess.password ? "Copy the password" : "Set a password first"}
-                className="h-[46px] px-4 rounded-[10px] text-[13px] font-semibold cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-[46px] px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
               >
                 Copy
@@ -300,14 +300,14 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setClientPassword(ws.id, randomPassword())}
                 title="Replace it with a new random one"
-                className="h-[46px] px-4 rounded-[10px] text-[13px] font-semibold cursor-pointer shrink-0"
+                className="h-[46px] px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
                 style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
               >
                 Generate
               </button>
             </div>
           )}
-          <div className="mk-surface flex items-center gap-2.5 px-3.5 py-3 rounded-[10px]" style={{ background: "var(--surface-2)" }}>
+          <div className="mk-surface flex items-center gap-2.5 px-3.5 py-3 rounded-lg" style={{ background: "var(--surface-2)" }}>
             <Icon name="link" size={17} style={{ color: "var(--accent-text)" }} />
             <span
               // The full link in a title: this truncates on a narrow window,
@@ -367,14 +367,14 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={handleConnectDomain}
-              className="h-[46px] px-4 rounded-[10px] text-[13px] font-semibold cursor-pointer shrink-0"
+              className="h-[46px] px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
               style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
             >
               Connect
             </button>
           </div>
           {ws.clientAccess.domainStatus !== "none" && (
-            <div className="rounded-[14px] p-4 flex flex-col gap-3" style={{ background: "var(--surface-2)" }}>
+            <div className="rounded-xl p-4 flex flex-col gap-3" style={{ background: "var(--surface-2)" }}>
               <div className="flex items-center justify-between">
                 <span
                   className="text-[12px] font-mono truncate"
@@ -514,7 +514,7 @@ export default function SettingsPage() {
             }
           />
           <div
-            className="rounded-[10px] px-3.5 py-3 text-[12px] overflow-x-auto"
+            className="rounded-lg px-3.5 py-3 text-[12px] overflow-x-auto"
             style={{ background: "var(--surface-2)", fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-secondary)" }}
           >
             curl https://api.markyos.com/v1/workspaces/{ws.slug} \{"\n"}
@@ -534,7 +534,7 @@ export default function SettingsPage() {
                 setWebhookUrl(ws.id, webhookInput.trim());
                 showToast("Webhook URL saved.");
               }}
-              className="h-[46px] px-4 rounded-[10px] text-[13px] font-semibold cursor-pointer shrink-0"
+              className="h-[46px] px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
               style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
               Save
@@ -728,7 +728,7 @@ function SubdomainRow({ ws }: { ws: Workspace }) {
                   ? `Claim ${value}.markyos.app`
                   : "Clear the subdomain"
           }
-          className="h-[46px] px-4 rounded-[10px] text-[13px] font-semibold cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="h-[46px] px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
           {value ? "Claim" : "Clear"}
@@ -777,7 +777,7 @@ function PlanCard({
 }) {
   return (
     <div
-      className="rounded-[14px] p-4 flex flex-col gap-3"
+      className="rounded-xl p-4 flex flex-col gap-3"
       style={{ background: "var(--surface-2)", boxShadow: active ? "inset 0 0 0 1px rgba(0,153,255,.5)" : "none" }}
     >
       <div>

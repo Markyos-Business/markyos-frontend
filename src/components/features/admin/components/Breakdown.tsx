@@ -20,7 +20,7 @@ export function Breakdown({
   const max = Math.max(1, ...Object.values(counts));
 
   return (
-    <section className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
+    <section className="mk-surface flex flex-col gap-3.5 rounded-2xl bg-surface-1 p-5">
       <h2 className="text-[15px] font-semibold">{title}</h2>
       {keys.length === 0 ? (
         <p className="text-[12px] text-text-faint">Nothing yet.</p>
@@ -32,8 +32,8 @@ export function Breakdown({
                 <span className="text-text-secondary">{labels[k] ?? k}</span>
                 <span className="font-semibold tabular-nums">{counts[k]}</span>
               </div>
-              <div className="h-1.5 rounded-pill bg-surface-2">
-                <div className="h-full rounded-pill bg-accent" style={{ width: `${(counts[k] / max) * 100}%` }} />
+              <div className="h-1.5 rounded-full bg-surface-2">
+                <div className="h-full rounded-full bg-accent" style={{ width: `${(counts[k] / max) * 100}%` }} />
               </div>
             </li>
           ))}

@@ -37,7 +37,7 @@ export function PreviewModal({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-[1100px] rounded-[20px] p-8 flex flex-col gap-5"
+        className="w-full max-w-[1100px] rounded-2xl p-8 flex flex-col gap-5"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -101,7 +101,7 @@ export function PreviewModal({
             </span>
           </div>
           <div className="flex flex-col gap-3.5">
-            <div className="rounded-[14px] p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-xl p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
               <span className="font-semibold text-[13px]">Read from the file</span>
               <Row label="Format" value={`${pending.format.toUpperCase()} · ${pending.format === "svg" ? "vector" : "raster"}`} />
               <Row label="Size" value={formatBytes(pending.sizeKB)} />
@@ -117,7 +117,7 @@ export function PreviewModal({
               point where the mark stops resolving — so the rule is something
               you can see rather than something you have to trust.
             */}
-            <div className="rounded-[14px] p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-xl p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
               <span className="font-semibold text-[13px]">Small sizes</span>
               <div className="flex items-end gap-4 flex-wrap">
                 {[minDigital, Math.round(minDigital * 0.66), Math.round(minDigital * 0.5)].map(
@@ -150,7 +150,7 @@ export function PreviewModal({
 
             {pending.format === "png" && (
               <div
-                className="rounded-[10px] p-3 flex gap-2"
+                className="rounded-lg p-3 flex gap-2"
                 style={{ background: "color-mix(in srgb, var(--warning) 12%, transparent)" }}
               >
                 <Icon name="info-circle" size={16} style={{ color: "var(--warning)", flexShrink: 0, marginTop: 1 }} />

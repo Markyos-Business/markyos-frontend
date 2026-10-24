@@ -8,7 +8,7 @@ export function SignupsChart({ signups }: { signups: AdminStats["signups"] }) {
     new Date(`${iso}T00:00:00`).toLocaleDateString("en", { month: "short", day: "numeric" });
 
   return (
-    <section className="mk-surface flex flex-col gap-4 rounded-card bg-surface-1 p-5">
+    <section className="mk-surface flex flex-col gap-4 rounded-2xl bg-surface-1 p-5">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-[15px] font-semibold">Signups</h2>
         <span className="text-[12px] text-text-faint">

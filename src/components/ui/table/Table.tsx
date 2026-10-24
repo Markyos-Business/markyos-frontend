@@ -22,7 +22,7 @@ export function Table({
   children: ReactNode;
 }) {
   return (
-    <div className="mk-surface overflow-x-auto rounded-card bg-surface-1">
+    <div className="mk-surface overflow-x-auto rounded-2xl bg-surface-1">
       <table aria-label={label} className="w-full border-collapse text-start text-[13px]">
         <thead>
           <tr>
@@ -71,7 +71,7 @@ export function TableLoadingRow({ colSpan, rows = 3 }: { colSpan: number; rows?:
       {Array.from({ length: rows }, (_, i) => (
         <tr key={i} className={rowClasses} aria-hidden>
           <td colSpan={colSpan} className={cellClasses}>
-            <div className="h-4 w-full animate-pulse rounded-widget bg-surface-2" />
+            <div className="h-4 w-full animate-pulse rounded-lg bg-surface-2" />
           </td>
         </tr>
       ))}

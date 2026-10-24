@@ -21,7 +21,7 @@ const AlertBanner = ({ message, className = "" }: AlertBannerProps) => {
   return (
     <div
       role="alert"
-      className={`rounded-widget bg-danger/12 px-3.5 py-3 text-ui-sm text-danger ring-1 ring-inset ring-danger/35 ${className}`}
+      className={`rounded-lg bg-danger/12 px-3.5 py-3 text-ui-sm text-danger ring-1 ring-inset ring-danger/35 ${className}`}
     >
       {message}
     </div>

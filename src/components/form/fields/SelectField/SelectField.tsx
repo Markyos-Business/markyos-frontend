@@ -19,7 +19,7 @@ export function SelectField({ label, hideLabel = false, options, ...rest }: Sele
       <span className="relative inline-flex items-center">
         <select
           {...rest}
-          className="h-9 cursor-pointer appearance-none rounded-pill bg-surface-1 ps-3.5 pe-8 text-[12px] font-medium text-text outline-none ring-1 ring-inset ring-hairline"
+          className="h-9 cursor-pointer appearance-none rounded-full bg-surface-1 ps-3.5 pe-8 text-[12px] font-medium text-text outline-none ring-1 ring-inset ring-hairline"
         >
           {options.map((o) => (
             <option key={o.value} value={o.value}>

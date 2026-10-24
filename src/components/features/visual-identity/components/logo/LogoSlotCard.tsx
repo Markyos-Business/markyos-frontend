@@ -418,7 +418,7 @@ function LightVersionStrip({
           e.stopPropagation();
           onPick();
         }}
-        className="h-[42px] rounded-[10px] flex items-center justify-center gap-2 text-[11.5px] font-medium cursor-pointer"
+        className="h-[42px] rounded-lg flex items-center justify-center gap-2 text-[11.5px] font-medium cursor-pointer"
         style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)" }}
         title={
           isAr
@@ -433,7 +433,7 @@ function LightVersionStrip({
   }
 
   return (
-    <div className="flex items-center gap-2.5 rounded-[10px] p-2" style={{ background: "var(--surface-2)" }}>
+    <div className="flex items-center gap-2.5 rounded-lg p-2" style={{ background: "var(--surface-2)" }}>
       <span
         className="w-[62px] h-[34px] rounded-[7px] grid place-items-center shrink-0 overflow-hidden"
         style={{ background: "#111114" }}
