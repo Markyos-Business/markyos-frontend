@@ -2,14 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
+import { usePresence } from "@/hooks/usePresence";
 
 type PopoverAlign = "start" | "end";
 
 // Logical insets, so the panel hangs off the same edge of its trigger in
-// Arabic as it does in English.
+// Arabic as it does in English, and grows out of the corner nearest it.
 const aligns: Record<PopoverAlign, string> = {
-  start: "start-0",
-  end: "end-0",
+  start: "start-0 origin-top-left rtl:origin-top-right",
+  end: "end-0 origin-top-right rtl:origin-top-left",
 };
 
 type PopoverProps = {
@@ -39,6 +40,7 @@ type PopoverProps = {
  */
 const Popover = ({ button, label, align = "end", width = 260, className, buttonStyle, children }: PopoverProps) => {
   const [open, setOpen] = useState(false);
+  const { mounted, closing } = usePresence(open);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -82,9 +84,11 @@ const Popover = ({ button, label, align = "end", width = 260, className, buttonS
         {button}
       </button>
 
-      {open && (
+      {mounted && (
         <div
-          className={`absolute top-full z-dropdown mt-2 animate-fade-in overflow-hidden rounded-xl bg-surface-0 shadow-edge-pop ${aligns[align]}`}
+          className={`absolute top-full z-dropdown mt-2 overflow-hidden rounded-xl bg-surface-0 shadow-edge-pop ${aligns[align]} ${
+            closing ? "pointer-events-none animate-dropdown-out" : "animate-dropdown-in"
+          }`}
           style={{ width, maxWidth: "min(92vw, 520px)" }}
         >
           {children(() => setOpen(false))}

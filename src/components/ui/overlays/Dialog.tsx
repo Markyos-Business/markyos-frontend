@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { usePresence } from "@/hooks/usePresence";
 import { DialogHost } from "./DialogHost";
 
 /**
@@ -73,6 +74,11 @@ type DialogProviderProps = { children: ReactNode };
 
 const DialogProvider = ({ children }: DialogProviderProps) => {
   const [request, setRequest] = useState<DialogRequest | null>(null);
+  // Open and closed is tracked apart from the request, so a dialog that has
+  // just been answered stays on screen for its exit while the caller already
+  // has its answer.
+  const [open, setOpen] = useState(false);
+  const { mounted, closing } = usePresence(open);
   const resolverRef = useRef<((value: never) => void) | null>(null);
   const counter = useRef(0);
 
@@ -84,7 +90,7 @@ const DialogProvider = ({ children }: DialogProviderProps) => {
   const settle = useCallback((value: boolean | string | null) => {
     const resolve = resolverRef.current;
     resolverRef.current = null;
-    setRequest(null);
+    setOpen(false);
     resolve?.(value as never);
   }, []);
 
@@ -94,6 +100,7 @@ const DialogProvider = ({ children }: DialogProviderProps) => {
         resolverRef.current?.(false as never);
         resolverRef.current = resolve as (value: never) => void;
         setRequest({ id: counter.current++, kind: "confirm", options });
+        setOpen(true);
       }),
     []
   );
@@ -104,6 +111,7 @@ const DialogProvider = ({ children }: DialogProviderProps) => {
         resolverRef.current?.(null as never);
         resolverRef.current = resolve as (value: never) => void;
         setRequest({ id: counter.current++, kind: "prompt", options });
+        setOpen(true);
       }),
     []
   );
@@ -111,10 +119,10 @@ const DialogProvider = ({ children }: DialogProviderProps) => {
   return (
     <DialogContext.Provider value={{ confirm, prompt }}>
       {children}
-      {request && (
+      {request && mounted && (
         // Keyed by request id so each dialog mounts with its own fresh field
         // state instead of inheriting the last one's typed text.
-        <DialogHost key={request.id} request={request} onSettle={settle} />
+        <DialogHost key={request.id} request={request} closing={closing} onSettle={settle} />
       )}
     </DialogContext.Provider>
   );

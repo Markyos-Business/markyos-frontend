@@ -37,10 +37,6 @@ const percentWidths = Object.fromEntries(
   Array.from({ length: 99 }, (_, i) => [`${i + 1}p`, `${i + 1}%`])
 );
 
-// One curve for everything that arrives: fast out of the gate, gentle at
-// the end. Kept here so animations and transitions can't drift apart.
-const EASE_OUT = "cubic-bezier(0.2, 0.7, 0.3, 1)";
-
 const config = {
   // Light and dark come from `data-theme` on <html>, which the theme toggle
   // sets (see contexts/ThemeProvider). The colour tokens switch on their own;
@@ -188,8 +184,18 @@ const config = {
         toast: "100",
         dialog: "120",
       },
+      // Motion tokens (tailwind/tokens.js): `duration-fast|base|slow` and
+      // `ease-out|in|in-out`. Use these, never a raw number, so every
+      // element of a kind moves the same way.
+      transitionDuration: {
+        fast: "var(--duration-fast)",
+        base: "var(--duration-base)",
+        slow: "var(--duration-slow)",
+      },
       transitionTimingFunction: {
-        out: EASE_OUT,
+        out: "var(--ease-out)",
+        in: "var(--ease-in)",
+        "in-out": "var(--ease-in-out)",
       },
       width: percentWidths,
       backgroundImage: {
@@ -197,9 +203,12 @@ const config = {
         // to keep the fill underneath.
         "hover-veil": "linear-gradient(var(--hover-veil), var(--hover-veil))",
         "press-veil": "linear-gradient(var(--press-veil), var(--press-veil))",
+        // The light sweeping across a loading skeleton.
+        shimmer: "linear-gradient(90deg, transparent, var(--hover-veil), transparent)",
       },
       boxShadow: {
         // Elevation, already tuned per theme.
+        soft: "var(--shadow-soft)",
         pop: "var(--shadow-pop)",
         modal: "var(--shadow-modal)",
         // Edges are drawn as inset shadows, not borders, so they take no
@@ -220,7 +229,7 @@ const config = {
         "rule-t": "inset 0 1px 0 var(--hairline)",
       },
       keyframes: {
-        // Something arrived that wasn't there a moment ago.
+        // Something small arrived that wasn't there a moment ago.
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(-3px)" },
           "100%": { opacity: "1", transform: "none" },
@@ -231,26 +240,70 @@ const config = {
           "0%": { opacity: "0", transform: "translateY(5px)" },
           "100%": { opacity: "1", transform: "none" },
         },
-        "pop": {
-          "0%": { opacity: "0", transform: "scale(0.94)" },
-          "60%": { transform: "scale(1.01)" },
+        // Menus, popovers and context menus grow from their trigger.
+        "dropdown-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "none" },
+        },
+        "dropdown-out": {
+          "0%": { opacity: "1", transform: "none" },
+          "100%": { opacity: "0", transform: "scale(0.95)" },
+        },
+        // A modal's panel, and the scrim behind it.
+        "modal-in": {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        "modal-out": {
+          "0%": { opacity: "1", transform: "none" },
+          "100%": { opacity: "0", transform: "scale(0.96)" },
+        },
+        "backdrop-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "backdrop-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
         },
         // A side panel slides in from its own edge, so it says which edge to
         // send it back to. Pair one with its `rtl:` opposite in components.
         "panel-from-right": {
-          "0%": { opacity: "0", transform: "translateX(8px)" },
+          "0%": { opacity: "0", transform: "translateX(24px)" },
           "100%": { opacity: "1", transform: "none" },
         },
         "panel-from-left": {
-          "0%": { opacity: "0", transform: "translateX(-8px)" },
+          "0%": { opacity: "0", transform: "translateX(-24px)" },
           "100%": { opacity: "1", transform: "none" },
         },
+        "panel-to-right": {
+          "0%": { opacity: "1", transform: "none" },
+          "100%": { opacity: "0", transform: "translateX(24px)" },
+        },
+        "panel-to-left": {
+          "0%": { opacity: "1", transform: "none" },
+          "100%": { opacity: "0", transform: "translateX(-24px)" },
+        },
         "toast-in": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "none" },
+        },
+        "toast-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
+        // One item of a list or grid; staggered with an animation delay.
+        "list-in": {
           "0%": { opacity: "0", transform: "translateY(6px)" },
           "100%": { opacity: "1", transform: "none" },
         },
-        // A page's content settling in after navigation.
+        // The light crossing a loading skeleton.
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        // A page's content settling in after navigation (outside a view
+        // transition, e.g. a remounted panel).
         "page-enter": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "none" },
@@ -264,17 +317,29 @@ const config = {
       // Every animation ends at `transform: none`. A leftover transform such
       // as `translateY(0)` still makes the element a containing block, and a
       // `position: fixed` modal inside it would then pin to the element
-      // instead of the viewport.
+      // instead of the viewport. Entering uses ease-out, leaving ease-in, and
+      // leaving is always the faster of the two.
       animation: {
-        "fade-in": `fade-in 200ms ${EASE_OUT} both`,
-        "tab-in": `tab-in 220ms ${EASE_OUT} both`,
-        "pop": `pop 200ms ${EASE_OUT} both`,
+        "fade-in": "fade-in var(--duration-base) var(--ease-out) both",
+        "tab-in": "tab-in var(--duration-base) var(--ease-out) both",
+        "dropdown-in": "dropdown-in var(--duration-base) var(--ease-out) both",
+        "dropdown-out": "dropdown-out var(--duration-fast) var(--ease-in) both",
+        "modal-in": "modal-in var(--duration-slow) var(--ease-out) both",
+        "modal-out": "modal-out var(--duration-fast) var(--ease-in) both",
+        "backdrop-in": "backdrop-in var(--duration-slow) var(--ease-out) both",
+        "backdrop-out": "backdrop-out var(--duration-fast) var(--ease-in) both",
+        "panel-from-right": "panel-from-right var(--duration-slow) var(--ease-out) both",
+        "panel-from-left": "panel-from-left var(--duration-slow) var(--ease-out) both",
+        "panel-to-right": "panel-to-right var(--duration-fast) var(--ease-in) both",
+        "panel-to-left": "panel-to-left var(--duration-fast) var(--ease-in) both",
+        "toast-in": "toast-in var(--duration-base) var(--ease-out) both",
+        "toast-out": "toast-out var(--duration-fast) var(--ease-in) both",
+        "list-in": "list-in var(--duration-base) var(--ease-out) both",
+        // Ambient, not an interaction: the one loop allowed past 400ms.
+        shimmer: "shimmer 1.4s var(--ease-in-out) infinite",
+        "page-enter": "page-enter var(--duration-slow) var(--ease-out) both",
         // Work is in progress and hasn't stalled: quicker than `animate-spin`.
         "spin-quick": "spin 720ms linear infinite",
-        "panel-from-right": `panel-from-right 200ms ${EASE_OUT} both`,
-        "panel-from-left": `panel-from-left 200ms ${EASE_OUT} both`,
-        "toast-in": `toast-in 200ms ${EASE_OUT} both`,
-        "page-enter": `page-enter 250ms ${EASE_OUT} both`,
         // The curve is CSS's own ease-in-out, written out: the keyword in
         // this file would be read as a class and generate a utility.
         "glow-pulse": "glow-pulse 6s cubic-bezier(0.42, 0, 0.58, 1) infinite",
@@ -292,7 +357,11 @@ const config = {
   plugins: [
     // Registered as base styles, in the order the old stylesheet had them:
     // the icons, then the tokens, then everything else.
-    plugin(({ addBase }) => {
+    plugin(({ addBase, addVariant }) => {
+      // `hover:` only for a real pointer. Tailwind's own variant checks
+      // `(hover: hover)` alone, which some touch devices report; a hover style
+      // left behind after a tap reads as a stuck button.
+      addVariant("hover", "@media (hover: hover) and (pointer: fine) { &:hover }");
       addBase(iconStyles);
       addBase({ ":root": darkTokens, ':root[data-theme="light"]': lightTokens });
       addBase(baseStyles);

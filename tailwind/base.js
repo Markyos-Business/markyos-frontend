@@ -820,13 +820,14 @@ export const baseStyles = [
   /*
    * A control that has been pressed.
    *
-   * The whole feedback is 1px of travel on pointer-down. It exists because on a
-   * canvas where most clicks change something off to the side, the button itself
-   * should still confirm it received the click.
+   * Every button squeezes to 97% on pointer-down. It exists because on a canvas
+   * where most clicks change something off to the side, the button itself
+   * should still confirm it received the click; the same squeeze everywhere so
+   * no button presses differently from another.
    */
   {
     "button:not(:disabled):active, [role=\"button\"]:active": {
-      "transform": "translateY(0.5px)",
+      "transform": "scale(0.97)",
     },
   },
   /*
@@ -856,7 +857,7 @@ export const baseStyles = [
   /*
    * A card that responds to being pointed at.
    *
-   * The lift is 1px. It is enough to say "this is one object and it is
+   * The lift is 2px. It is enough to say "this is one object and it is
    * interactive" and small enough that a grid of them doesn't ripple as the
    * pointer crosses it. The edge switches to the accent rather than being joined
    * by a second ring outside it — two concentric rings on hover read as the card
@@ -869,19 +870,21 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".mk-card:not([style*=\"transition\"])": {
-        "transition": "box-shadow 140ms ease, transform 140ms ease !important",
+        "transition": "box-shadow var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out) !important",
       },
     },
   },
   {
-    ".mk-card:hover": {
-      "transform": "translateY(-1px)",
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-card:hover, .mk-card:focus-visible": {
+        "transform": "translateY(-2px)",
+      },
     },
   },
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
-    ".mk-card:hover:not([style*=\"box-shadow\"])": {
+    ".mk-card:hover:not([style*=\"box-shadow\"]), .mk-card:focus-visible:not([style*=\"box-shadow\"])": {
       "box-shadow": "inset 0 0 0 1px var(--accent-edge), var(--shadow-pop) !important",
     },
   },
@@ -893,7 +896,9 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition": "background-color 140ms ease, color 140ms ease, opacity 140ms ease, box-shadow 140ms ease !important",
+        "transition-property": "color, background-color, border-color, box-shadow, opacity, transform, translate, scale !important",
+        "transition-duration": "var(--duration-fast) !important",
+        "transition-timing-function": "var(--ease-out) !important",
       },
     },
   },
@@ -955,10 +960,19 @@ export const baseStyles = [
     },
   },
   {
-    "@media (hover: hover)": {
+    // A real pointer only: a touch screen has no hover, and a hover state left
+    // behind after a tap reads as a stuck button.
+    "@media (hover: hover) and (pointer: fine)": {
       "button:not(:disabled):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):hover, summary:hover, a[href]:hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
         "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
       },
+    },
+  },
+  // Keyboard focus gets the same veil as hover, so nothing a mouse user is
+  // shown is withheld from someone tabbing (the focus ring comes on top).
+  {
+    "button:not(:disabled):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):focus-visible, summary:focus-visible, a[href]:focus-visible": {
+      "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
@@ -1030,7 +1044,7 @@ export const baseStyles = [
    * theme blocks at the top of this file.
    */
   {
-    "@media (hover: hover)": {
+    "@media (hover: hover) and (pointer: fine)": {
       "select:not(:disabled):hover, input[type=\"range\"]:not(:disabled):hover, input[type=\"color\"]:not(:disabled):hover": {
         "filter": "var(--hover-shift)",
         "cursor": "pointer",
@@ -1180,15 +1194,102 @@ export const baseStyles = [
       "min-height": "26px !important",
     },
   },
+  /*
+   * Fields settle into focus and error rather than snapping: the ring and
+   * fill ease in on the fast token.
+   */
+  {
+    "input, textarea, select, [contenteditable]": {
+      "transition-property": "color, background-color, border-color, box-shadow",
+      "transition-duration": "var(--duration-fast)",
+      "transition-timing-function": "var(--ease-out)",
+    },
+  },
+  /*
+   * Accordions open and close at their real height instead of jumping. A
+   * native <details> animates its content box where the browser can
+   * (`::details-content`); elsewhere it opens instantly, as it always did.
+   */
+  {
+    "details": {
+      "interpolate-size": "allow-keywords",
+    },
+  },
+  {
+    "details::details-content": {
+      "block-size": "0",
+      "overflow-y": "clip",
+      "transition-property": "block-size, content-visibility",
+      "transition-duration": "var(--duration-base)",
+      "transition-timing-function": "var(--ease-in-out)",
+      "transition-behavior": "allow-discrete",
+    },
+  },
+  {
+    "details[open]::details-content": {
+      "block-size": "auto",
+    },
+  },
+  /*
+   * Route changes, through the View Transitions API (React's
+   * <ViewTransition> in the route templates). The old page leaves quickly,
+   * the new one rises 8px into place. The rest of the document is not
+   * animated: the shell around the page is the same on both sides, and
+   * cross-fading it would only blur it.
+   */
+  {
+    "@keyframes vt-page-out": {
+      "to": { "opacity": "0" },
+    },
+  },
+  {
+    "@keyframes vt-page-in": {
+      "from": { "opacity": "0", "transform": "translateY(8px)" },
+    },
+  },
+  {
+    "::view-transition-old(root), ::view-transition-new(root)": {
+      "animation": "none",
+    },
+  },
+  {
+    "::view-transition-old(.page)": {
+      "animation": "vt-page-out var(--duration-fast) var(--ease-in) both",
+    },
+  },
+  {
+    "::view-transition-new(.page)": {
+      "animation": "vt-page-in var(--duration-slow) var(--ease-out) both",
+    },
+  },
+  /* A tab row's active pill sliding to the tab just chosen (TabIndicator). */
+  {
+    "::view-transition-group(.tab-slide)": {
+      "animation-duration": "var(--duration-base)",
+      "animation-timing-function": "var(--ease-in-out)",
+    },
+  },
+  /* In-page anchors glide; route changes still jump to the top at once
+     (`data-scroll-behavior` on <html> tells Next to switch this off while it
+     navigates). */
+  {
+    "html": {
+      "scroll-behavior": "smooth",
+    },
+  },
   {
     "@media (prefers-reduced-motion: reduce)": {
       "*, *::before, *::after": {
         "animation-duration": "0.01ms !important",
+        "animation-delay": "0ms !important",
         "animation-iteration-count": "1 !important",
         "transition-duration": "0.01ms !important",
         "scroll-behavior": "auto !important",
       },
-      ".mk-card:hover": {
+      "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
+        "animation": "none !important",
+      },
+      ".mk-card:hover, .mk-card:focus-visible": {
         "transform": "none",
       },
       "button:not(:disabled):active, [role=\"button\"]:active": {

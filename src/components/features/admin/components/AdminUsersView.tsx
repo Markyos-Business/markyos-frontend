@@ -8,12 +8,14 @@ import {
   PageHeader,
   Table,
   TableEmptyRow,
+  listItemMotion,
   TableLoadingRow,
   cellClasses,
   rowClasses,
 } from "@/components/ui";
 import { Badge } from "@/components/ui/composites/SectionUI";
 import { SearchField, SelectField } from "@/components/form";
+import { usePresence } from "@/hooks/usePresence";
 import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUsers } from "../hooks/useAdminUsers";
 import type { AdminUser, AdminUserQuery } from "../types";
@@ -34,7 +36,15 @@ const COLUMNS = [
 export function AdminUsersView() {
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState<AdminUserQuery>({ ordering: "-created_at", page: 1 });
-  const [open, setOpen] = useState<AdminUser | null>(null);
+  // The selected account outlives the drawer being open, so the drawer still
+  // has someone to show while it slides away.
+  const [selected, setSelected] = useState<AdminUser | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { mounted, closing } = usePresence(drawerOpen);
+  const open = (u: AdminUser) => {
+    setSelected(u);
+    setDrawerOpen(true);
+  };
   const { data, error, loading, reload } = useAdminUsers(query);
 
   // Wait for a pause in typing, so each keystroke isn't a request.
@@ -87,16 +97,26 @@ export function AdminUsersView() {
         ) : !data?.results.length ? (
           <TableEmptyRow colSpan={COLUMNS.length} title="No accounts match" description="Try another search or clear the filters." />
         ) : (
-          data.results.map((u) => {
+          data.results.map((u, i) => {
             const status = u.isActive ? "active" : "inactive";
+            const motion = listItemMotion(i);
             return (
               <tr
                 key={u.id}
-                onClick={() => setOpen(u)}
-                className={`${rowClasses} cursor-pointer hover:bg-surface-2`}
+                onClick={() => open(u)}
+                className={`${rowClasses} cursor-pointer hover:bg-surface-2 ${motion.className}`}
+                style={motion.style}
               >
                 <td className={cellClasses}>
-                  <button type="button" onClick={() => setOpen(u)} className="flex cursor-pointer items-center gap-3 text-start">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      // The row opens it too; one open per click.
+                      e.stopPropagation();
+                      open(u);
+                    }}
+                    className="flex cursor-pointer items-center gap-3 text-start"
+                  >
                     <Avatar initials={initialsOf(u.name)} size={32} />
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{u.name}</span>
@@ -137,12 +157,13 @@ export function AdminUsersView() {
         </div>
       )}
 
-      {open && (
+      {mounted && selected && (
         <AdminUserPanel
-          user={open}
-          onClose={() => setOpen(null)}
+          user={selected}
+          closing={closing}
+          onClose={() => setDrawerOpen(false)}
           onChange={(u) => {
-            setOpen(u);
+            setSelected(u);
             reload();
           }}
         />

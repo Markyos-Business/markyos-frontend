@@ -48,13 +48,13 @@ export function ColorEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-backdrop-in"
       style={{ background: "var(--scrim)" }}
       onClick={onCancel}
     >
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-modal-in w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

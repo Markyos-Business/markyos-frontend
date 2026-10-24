@@ -7,13 +7,12 @@ import type { DialogRequest } from "./Dialog";
 
 type DialogHostProps = {
   request: DialogRequest;
+  /** Answered and on its way out: play the exit, take no more clicks. */
+  closing?: boolean;
   onSettle: (value: boolean | string | null) => void;
 };
 
-const DialogHost = ({
-  request,
-  onSettle,
-}: DialogHostProps) => {
+const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => {
   const { options } = request;
   const isAr = !!options.isAr;
   const cancelValue = request.kind === "confirm" ? false : null;
@@ -96,7 +95,9 @@ const DialogHost = ({
   return (
     <div
       dir={isAr ? "rtl" : "ltr"}
-      className="fixed inset-0 z-dialog flex animate-fade-in items-center justify-center bg-scrim p-6"
+      className={`fixed inset-0 z-dialog flex items-center justify-center bg-scrim p-6 ${
+        closing ? "pointer-events-none animate-backdrop-out" : "animate-backdrop-in"
+      }`}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onSettle(cancelValue);
       }}
@@ -108,9 +109,9 @@ const DialogHost = ({
         tabIndex={-1}
         aria-labelledby={titleId}
         aria-describedby={options.body ? bodyId : undefined}
-        className={`flex w-full max-w-110 animate-pop flex-col gap-4 rounded-2xl bg-surface-0 p-6 shadow-edge-modal ${
+        className={`flex w-full max-w-110 flex-col gap-4 rounded-2xl bg-surface-0 p-6 shadow-edge-modal ${
           isAr ? "font-arabic" : ""
-        }`}
+        } ${closing ? "animate-modal-out" : "animate-modal-in"}`}
         // Inline on purpose: the panel takes focus only so the Tab trap has
         // somewhere to start, and the focus-ring rule yields to an inline
         // outline (tailwind/base.js), where it would not yield to a class.

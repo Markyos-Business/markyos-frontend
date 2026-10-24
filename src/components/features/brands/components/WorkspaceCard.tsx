@@ -17,7 +17,7 @@ export function WorkspaceCard({ workspace, role = "owner" }: { workspace: Worksp
   return (
     <Link
       href={`/w/${workspace.slug}/overview`}
-      className="mk-card rounded-2xl p-4 flex flex-col gap-3.5"
+      className="group mk-card rounded-2xl p-4 flex flex-col gap-3.5"
       style={{ background: "var(--surface-1)" }}
     >
       <div
@@ -28,10 +28,18 @@ export function WorkspaceCard({ workspace, role = "owner" }: { workspace: Worksp
           // Measured against this well rather than against the theme. A brand
           // whose symbol is a white mark on transparency had a 1.26:1 thumbnail
           // here — a card that looked like it had no logo on it.
-          <AssetThumb src={symbol.url} alt="" ground="--surface-2" style={{ height: 44, width: "auto" }} />
+          <AssetThumb
+            src={symbol.url}
+            alt=""
+            ground="--surface-2"
+            // The mark leans in a little when the card is pointed at; the well
+            // clips it, so nothing spills.
+            className="transition-transform duration-base ease-out motion-safe:group-hover:scale-104 motion-safe:group-focus-visible:scale-104"
+            style={{ height: 44, width: "auto" }}
+          />
         ) : (
           <span
-            className="font-semibold text-[34px]"
+            className="font-semibold text-[34px] transition-transform duration-base ease-out motion-safe:group-hover:scale-104 motion-safe:group-focus-visible:scale-104"
             // Was a literal #3d3d44, which is 1.58:1 on this card in the dark
             // theme — the initials are the only thing identifying a brand with
             // no symbol yet, and they simply weren't visible.

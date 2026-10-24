@@ -24,7 +24,12 @@ type ToastItem = {
   message: string;
   variant: ToastVariant;
   action?: ToastAction;
+  /** Fading out; removed once the exit has played. */
+  leaving?: boolean;
 };
+
+/** How long a toast takes to fade out: `--duration-fast`. */
+const EXIT_MS = 150;
 
 type ToastContextValue = {
   showToast: (message: string, variant?: ToastVariant, action?: ToastAction) => void;
@@ -46,7 +51,9 @@ const ToastProvider = ({ children }: ToastProviderProps) => {
   const counter = useRef(0);
 
   const dismiss = useCallback((id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, leaving: true } : i)));
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.setTimeout(() => setItems((prev) => prev.filter((i) => i.id !== id)), reduce ? 0 : EXIT_MS);
   }, []);
 
   const showToast = useCallback(
@@ -73,7 +80,9 @@ const ToastProvider = ({ children }: ToastProviderProps) => {
         {items.map((item) => (
           <div
             key={item.id}
-            className={`pointer-events-auto max-w-sm animate-toast-in rounded-xl bg-surface-2 px-4 py-3 text-ui font-medium text-text ${variants[item.variant]}`}
+            className={`max-w-sm rounded-xl bg-surface-2 px-4 py-3 text-ui font-medium text-text ${variants[item.variant]} ${
+              item.leaving ? "pointer-events-none animate-toast-out" : "pointer-events-auto animate-toast-in"
+            }`}
           >
             <span className="flex items-center gap-3">
               <span dir="auto" className="bidi-auto">

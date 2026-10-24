@@ -20,6 +20,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // element. Suppressing here is the sanctioned way to say so; without it
       // React logs a hydration mismatch on every page load.
       suppressHydrationWarning
+      // Smooth scrolling for in-page anchors (tailwind/base.js); this tells
+      // Next to switch it off while it navigates, so a route change still
+      // lands at the top at once.
+      data-scroll-behavior="smooth"
       className={`${inter.variable} ${plexArabic.variable} ${bricolage.variable} h-full`}
     >
       <head>

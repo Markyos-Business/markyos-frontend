@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Skeleton } from "../loading/Skeleton";
 
 type TableColumn = {
   key: string;
@@ -66,7 +67,7 @@ const TableLoadingRow = ({ colSpan, rows = 3 }: TableLoadingRowProps) => (
     {Array.from({ length: rows }, (_, i) => (
       <tr key={i} className={rowClasses} aria-hidden>
         <td colSpan={colSpan} className={cellClasses}>
-          <div className="h-4 w-full animate-pulse rounded-lg bg-surface-2" />
+          <Skeleton className="h-4 w-full rounded-lg" />
         </td>
       </tr>
     ))}

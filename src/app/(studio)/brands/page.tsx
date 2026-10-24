@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
 import { roleOn } from "@/lib/data/access";
 import { AccountMenu } from "@/components/features/account";
-import { Icon, PillButton } from "@/components/ui";
+import { Icon, PillButton, listItemMotion } from "@/components/ui";
 import { WorkspaceCard } from "@/components/features/brands";
 
 type SortKey = "updated" | "name";
@@ -120,9 +120,15 @@ export default function BrandsPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
-          {workspaces.map((ws) => (
-            <WorkspaceCard key={ws.id} workspace={ws} role={roleOn(ws, state.session)} />
-          ))}
+          {workspaces.map((ws, i) => {
+            const motion = listItemMotion(i);
+            return (
+              // A grid of its own, so the card still fills the cell.
+              <div key={ws.id} className={`grid ${motion.className}`} style={motion.style}>
+                <WorkspaceCard workspace={ws} role={roleOn(ws, state.session)} />
+              </div>
+            );
+          })}
           <Link
             href="/brands/new"
             // `hover:bg-[#141414]` painted a near-black tile on the light theme.

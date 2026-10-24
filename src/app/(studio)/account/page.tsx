@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, startTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, StatTile, TextField } from "@/components/ui";
+import { useToast, Icon, StatTile, TextField, TabIndicator } from "@/components/ui";
 import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI";
 import { ProfilePanel, BillingPanel } from "@/components/features/account";
 import { formatRelative } from "@/lib/utils";
@@ -119,13 +119,11 @@ function AccountPageBody() {
               type="button"
               role="tab"
               aria-selected={tab === t.key}
-              onClick={() => setTab(t.key)}
-              className="h-9 px-4 rounded-full text-[12.5px] font-semibold cursor-pointer flex items-center gap-2"
-              style={{
-                background: tab === t.key ? "var(--surface-2)" : "transparent",
-                color: tab === t.key ? "var(--text)" : "var(--text-muted)",
-              }}
+              onClick={() => startTransition(() => setTab(t.key))}
+              className="relative isolate h-9 px-4 rounded-full text-[12.5px] font-semibold cursor-pointer flex items-center gap-2"
+              style={{ color: tab === t.key ? "var(--text)" : "var(--text-muted)" }}
             >
+              {tab === t.key && <TabIndicator group="account" />}
               <Icon name={t.icon} size={13} />
               {t.label}
             </button>

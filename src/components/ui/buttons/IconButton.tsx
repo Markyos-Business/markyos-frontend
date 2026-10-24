@@ -18,7 +18,9 @@ const IconButton = ({ icon, label, iconSize = 15, className = "", type = "button
     type={type}
     aria-label={label}
     title={label}
-    className={`inline-flex items-center justify-center min-w-6.5 min-h-6.5 rounded-lg cursor-pointer ${className}`}
+    // Grows a touch toward the pointer or the keyboard; the press squeeze comes
+    // from the shared button rule.
+    className={`inline-flex items-center justify-center min-w-6.5 min-h-6.5 rounded-lg cursor-pointer motion-safe:not-disabled:hover:scale-105 motion-safe:focus-visible:scale-105 ${className}`}
   >
     <Icon name={icon} size={iconSize} />
   </button>

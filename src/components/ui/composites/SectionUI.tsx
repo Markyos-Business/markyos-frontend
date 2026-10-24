@@ -60,11 +60,10 @@ const Row = ({ label, hint, right }: RowProps) => (
 );
 
 // The knob slides the same physical way in both writing directions, like the
-// platform's own switch.
-const knob = {
-  on: "left-5.25", // physical-ok: see the note above
-  off: "left-0.75", // physical-ok: see the note above
-};
+// platform's own switch. It rests 3px in and travels 18px by transform, so
+// the slide never animates a layout property.
+const knobRest = "left-0.75"; // physical-ok: see the note above
+const knobTravel = { on: "translate-x-4.5", off: "translate-x-0" };
 
 type SwitchProps = {
   checked: boolean;
@@ -92,7 +91,11 @@ const Switch = ({ checked, onToggle, label }: SwitchProps) => (
       checked ? "bg-accent shadow-none" : "bg-surface-2 shadow-edge"
     }`}
   >
-    <span className={`absolute top-0.75 size-4.5 rounded-full bg-white transition-all ${checked ? knob.on : knob.off}`} />
+    <span
+      className={`absolute top-0.75 size-4.5 rounded-full bg-white transition-transform duration-fast ease-out ${knobRest} ${
+        checked ? knobTravel.on : knobTravel.off
+      }`}
+    />
   </button>
 );
 

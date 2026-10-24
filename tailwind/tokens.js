@@ -221,6 +221,22 @@ export const darkTokens = {
    */
   "--shadow-pop": "0 10px 28px rgba(0, 0, 0, 0.42)",
   "--shadow-modal": "0 24px 60px rgba(0, 0, 0, 0.55)",
+  /* The lift under a hovered button: soft, close, gone on release. */
+  "--shadow-soft": "0 4px 12px rgba(0, 0, 0, 0.28)",
+  /*
+   * Motion, the same in both themes. Three speeds and three curves, and
+   * nothing else: hover, press and colour changes are fast; things that open
+   * (menus, tabs, accordions) are base; whole surfaces (pages, modals,
+   * drawers) are slow. Entering eases out, leaving eases in, and anything
+   * that moves or resizes in place eases both ways. Leaving is always faster
+   * than arriving.
+   */
+  "--duration-fast": "150ms",
+  "--duration-base": "250ms",
+  "--duration-slow": "400ms",
+  "--ease-out": "cubic-bezier(0.16, 1, 0.3, 1)",
+  "--ease-in": "cubic-bezier(0.7, 0, 0.84, 0)",
+  "--ease-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
   /*
    * How a native control shifts when pointed at. The hover veil handles
    * everything else by tinting toward `currentColor`, which needs no per-theme
@@ -304,6 +320,7 @@ export const lightTokens = {
   like a bruise and wide enough to read as height rather than as an edge. */
   "--shadow-pop": "0 8px 24px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.08)",
   "--shadow-modal": "0 20px 50px rgba(16, 16, 24, 0.2), 0 4px 12px rgba(16, 16, 24, 0.1)",
+  "--shadow-soft": "0 4px 12px rgba(16, 16, 24, 0.12)",
   /* Settle rather than lift: on a light ground a control gets darker when
   pointed at, and `brightness` above 1 on a white control does nothing. */
   "--hover-shift": "brightness(0.95)",

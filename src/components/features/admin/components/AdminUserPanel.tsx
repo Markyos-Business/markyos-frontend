@@ -15,10 +15,13 @@ import { formatDate, initialsOf } from "../utils/format";
 /** One account: who they are, their brands, and what an admin can do to it. */
 export function AdminUserPanel({
   user,
+  closing = false,
   onClose,
   onChange,
 }: {
   user: AdminUser;
+  /** Sliding away: play the exit and take no more clicks. */
+  closing?: boolean;
   onClose: () => void;
   onChange: (user: AdminUser) => void;
 }) {
@@ -91,13 +94,20 @@ export function AdminUserPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-modal flex justify-end">
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default bg-black/40" />
+    <div className={`fixed inset-0 z-modal flex justify-end ${closing ? "pointer-events-none" : ""}`}>
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className={`absolute inset-0 cursor-default bg-black/40 ${closing ? "animate-backdrop-out" : "animate-backdrop-in"}`}
+      />
       <aside
         role="dialog"
         aria-modal="true"
         aria-label={user.name}
-        className="mk-surface relative flex h-full w-full max-w-[420px] animate-panel-from-right flex-col gap-5 overflow-y-auto bg-surface-0 p-6 rtl:animate-panel-from-left"
+        className={`mk-surface relative flex h-full w-full max-w-[420px] flex-col gap-5 overflow-y-auto bg-surface-0 p-6 ${
+          closing ? "animate-panel-to-right rtl:animate-panel-to-left" : "animate-panel-from-right rtl:animate-panel-from-left"
+        }`}
       >
         <div className="flex items-start gap-3">
           <Avatar initials={initialsOf(user.name)} size={44} />

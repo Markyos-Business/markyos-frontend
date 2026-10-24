@@ -1,11 +1,11 @@
 "use client";
 
-import { Icon, LangToggle } from "@/components/ui";
+import { Icon, LangToggle, TabIndicator } from "@/components/ui";
 import { AccountMenu } from "@/components/features/account";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, startTransition, useEffect, useRef, useState } from "react";
 
 export interface TopBarTab {
   key: string;
@@ -146,15 +146,17 @@ export function TopBar({
               key={t.key}
               type="button"
               data-tab-key={t.key}
-              onClick={t.onSelect}
+              // A transition, so the active pill slides to the tab chosen
+              // (TabIndicator) instead of jumping.
+              onClick={() => startTransition(t.onSelect)}
               aria-pressed={t.active}
-              className="h-8 px-3.5 rounded-full text-[12.5px] font-medium cursor-pointer whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
+              className="relative isolate h-8 px-3.5 rounded-full text-[12.5px] font-medium cursor-pointer whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
               style={{
-                background: t.active ? "var(--surface-2)" : "transparent",
                 color: t.active ? "var(--text)" : "var(--text-muted)",
                 fontFamily: isAr ? "var(--font-arabic)" : undefined,
               }}
             >
+              {t.active && <TabIndicator group="topbar" />}
               {isAr ? t.arLabel : t.label}
               {t.empty && (
                 <span

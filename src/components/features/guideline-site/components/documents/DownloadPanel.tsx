@@ -113,7 +113,7 @@ export function DownloadPanel({
 
   return (
     <div
-      className="fixed inset-0 z-modal"
+      className="fixed inset-0 z-modal animate-backdrop-in"
       style={{ background: "var(--scrim)" }}
       onClick={onClose}
     >
@@ -121,7 +121,7 @@ export function DownloadPanel({
           the side the reader finishes on, which in Arabic is the left. Pinned
           physically right it came in over the sidebar. */}
       <div
-        className="absolute top-0 end-0 bottom-0 w-[480px] flex flex-col"
+        className="animate-panel-from-right rtl:animate-panel-from-left absolute top-0 end-0 bottom-0 w-[480px] flex flex-col"
         style={{
           background: "var(--surface-1)",
           // `border-inline-start`, not an inset box-shadow: a shadow offset is

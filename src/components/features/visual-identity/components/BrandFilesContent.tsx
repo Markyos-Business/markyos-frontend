@@ -674,12 +674,12 @@ function AssetDetailModal({
   }
 
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center p-8" style={{ background: "var(--scrim)" }} onClick={onClose}>
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-backdrop-in" style={{ background: "var(--scrim)" }} onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
-        className="w-full max-w-[440px] rounded-2xl p-6 flex flex-col gap-4 animate-pop max-h-[86vh] overflow-y-auto"
+        className="w-full max-w-[440px] rounded-2xl p-6 flex flex-col gap-4 animate-modal-in max-h-[86vh] overflow-y-auto"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
