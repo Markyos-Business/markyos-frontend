@@ -48,8 +48,8 @@ await page.fill('input[type="password"]', "markyos2026");
 await page.click('button[type="submit"]');
 await page.waitForURL(/\/brands/, { timeout: 20000 });
 
-/** The overlay layers these panels all render as. */
-const openLayers = () => page.locator("div.fixed.inset-0.z-50").count();
+/** The overlay layers these panels all render as: the named `modal` layer. */
+const openLayers = () => page.locator("div.fixed.inset-0.z-modal").count();
 
 async function escapes(name, open) {
   await open();
