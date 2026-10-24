@@ -1,5 +1,9 @@
-// Public API of the workspace feature. Code outside features/workspace/
-// imports from "@/features/workspace", never from a file inside it.
+// The signed-in app's shell: the reusable sidebar, layout, top bar and page
+// container, and the brand workspace's own sidebar and top bar built on them.
+export * from "./AppLayout";
+export * from "./AppSidebar";
+export * from "./AppTopBar";
+export * from "./PageContainer";
 export { Sidebar } from "./Sidebar";
 export { TopBar } from "./TopBar";
 export type { TopBarTab } from "./TopBar";

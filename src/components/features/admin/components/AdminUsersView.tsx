@@ -5,6 +5,7 @@ import {
   AlertBanner,
   Avatar,
   Button,
+  PageHeader,
   Table,
   TableEmptyRow,
   TableLoadingRow,
@@ -48,14 +49,10 @@ export function AdminUsersView() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="mb-1.5 font-display text-[32px] font-semibold tracking-tight">Users</h1>
-          <p className="text-[14px] text-text-muted">
-            {data ? `${data.count} account${data.count === 1 ? "" : "s"}` : "Every account on Markyos"}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Users"
+        description={data ? `${data.count} account${data.count === 1 ? "" : "s"}` : "Every account on Markyos"}
+      />
 
       <div className="flex flex-wrap items-center gap-2.5">
         <SearchField label="Search users" placeholder="Search name or email" value={search} onChange={(e) => setSearch(e.target.value)} />

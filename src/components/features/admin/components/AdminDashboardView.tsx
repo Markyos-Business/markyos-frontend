@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertBanner, Button, StatTile } from "@/components/ui";
+import { AlertBanner, Button, PageHeader, StatTile } from "@/components/ui";
 import { PLAN_LABELS, STAGE_LABELS } from "../constants";
 import { useAdminStats } from "../hooks/useAdminStats";
 import { Breakdown } from "./Breakdown";
@@ -13,15 +13,15 @@ export function AdminDashboardView() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="mb-1.5 font-display text-[32px] font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-[14px] text-text-muted">Everyone on Markyos, and what they&apos;re building.</p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={reload} disabled={loading}>
-          {loading ? "Refreshing…" : "Refresh"}
-        </Button>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description="Everyone on Markyos, and what they're building."
+        actions={
+          <Button variant="secondary" size="sm" onClick={reload} disabled={loading}>
+            {loading ? "Refreshing…" : "Refresh"}
+          </Button>
+        }
+      />
 
       <AlertBanner message={error} />
 

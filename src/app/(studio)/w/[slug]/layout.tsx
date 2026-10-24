@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { canEdit, roleOn } from "@/lib/data/access";
-import { Sidebar } from "@/components/layout";
+import { AppLayout, Sidebar } from "@/components/layout";
 
 export default function WorkspaceLayout({
   children,
@@ -109,34 +109,26 @@ export default function WorkspaceLayout({
   if (!hydrated || !state.session || !ws) return null;
 
   return (
-    // Exactly one viewport tall, with the document itself locked: the studio
-    // chrome (workspace sidebar, top bar) has to stay put while only the pane
-    // a page designates scrolls. With `min-h-screen` the shell grew to content
-    // height instead, so the whole document scrolled and took the chrome with
-    // it — and any inner `flex-1 min-h-0 overflow-y-auto` never bounded, so it
-    // never actually scrolled either.
-    <div
+    <AppLayout
       dir={isAr ? "rtl" : "ltr"}
-      className="h-screen flex overflow-hidden"
       style={{ fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
+      sidebar={!focused && <Sidebar workspace={ws} />}
+      paneRef={pane}
     >
-      {!focused && <Sidebar workspace={ws} />}
-      <div ref={pane} className="flex-1 min-w-0 min-h-0 flex flex-col">
-        {/* Typing does nothing for viewers and clients (above), and this is
-            what tells them why. */}
-        {readOnly && (
-          <div
-            role="status"
-            className="px-7 py-2 text-[12.5px]"
-            style={{ background: "var(--surface-1)", boxShadow: "inset 0 -1px 0 var(--hairline)", color: "var(--text-muted)" }}
-          >
-            {isAr
-              ? "يمكنك عرض هذه العلامة فقط، دون تعديلها."
-              : `You're a ${role} on this brand, so it's view only. Ask the owner if you need to make changes.`}
-          </div>
-        )}
-        {children}
-      </div>
-    </div>
+      {/* Typing does nothing for viewers and clients (above), and this is
+          what tells them why. */}
+      {readOnly && (
+        <div
+          role="status"
+          className="px-7 py-2 text-[12.5px]"
+          style={{ background: "var(--surface-1)", boxShadow: "inset 0 -1px 0 var(--hairline)", color: "var(--text-muted)" }}
+        >
+          {isAr
+            ? "يمكنك عرض هذه العلامة فقط، دون تعديلها."
+            : `You're a ${role} on this brand, so it's view only. Ask the owner if you need to make changes.`}
+        </div>
+      )}
+      {children}
+    </AppLayout>
   );
 }

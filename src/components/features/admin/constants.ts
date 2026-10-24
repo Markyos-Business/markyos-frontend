@@ -48,3 +48,17 @@ export const ORDERINGS = [
   { value: "-last_login", label: "Last active" },
   { value: "email", label: "Email A–Z" },
 ] as const;
+
+/** The admin sidebar. Each new admin page adds its link here. */
+export const ADMIN_NAV = [
+  {
+    key: "overview",
+    label: "Overview",
+    items: [{ key: "dashboard", label: "Dashboard", icon: "chart-line", href: "/admin" }],
+  },
+  {
+    key: "manage",
+    label: "Manage",
+    items: [{ key: "users", label: "Users", icon: "users", href: "/admin/users" }],
+  },
+];

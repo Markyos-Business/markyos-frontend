@@ -662,8 +662,8 @@ async function run() {
        actually give the canvas the space, shrink the rail, and hand both back. */
     const sidebarWidth = () =>
       page.evaluate(() => {
-        const link = document.querySelector('a[href="/brands"]');
-        const rail = link?.closest("div.shrink-0.flex.flex-col");
+        // The studio rail names itself, so this survives its markup changing.
+        const rail = document.querySelector("[data-studio-nav]");
         return rail ? Math.round(rail.getBoundingClientRect().width) : -1;
       });
     const canvasHeight = () =>

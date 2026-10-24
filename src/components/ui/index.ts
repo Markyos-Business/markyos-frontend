@@ -16,3 +16,4 @@ export * from "./AlertBanner";
 export * from "./table";
 export * from "./empty";
 export * from "./card";
+export * from "./PageHeader";
