@@ -7,7 +7,7 @@ import { assertServerUp } from "./serverGuard.mjs";
  * Two questions, both reported as one complaint — "there is no contrast between
  * the cards and the background, and none between a logo and the card it sits
  * on" — and both invisible to every check this repo already had. The token audit
- * reads `globals.css` and can only judge the tokens it finds *named*; it cannot
+ * reads `tailwind/tokens.js` and can only judge the tokens it finds *named*; it cannot
  * know that a given card was drawn with no edge at all, because that is a fact
  * about the markup. And a screenshot cannot judge it either: a white wordmark on
  * a white card looks, in a still image, exactly like a card with nothing on it.

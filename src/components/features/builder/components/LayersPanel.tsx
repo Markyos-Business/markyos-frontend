@@ -44,7 +44,7 @@ export type Layer = {
  * finding the colour section into recognition instead of recall, which is the
  * whole point of having icons in a list at all.
  *
- * Every name here has to exist in `app/icons.css`: it is an offline stand-in
+ * Every name here has to exist in `tailwind/icons.js`: it is an offline stand-in
  * for Line Awesome, and a glyph it does not define renders as a solid square.
  */
 const SECTION_ICON: Record<string, string> = {

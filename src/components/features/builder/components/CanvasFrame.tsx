@@ -25,7 +25,7 @@ import type { Breakpoint } from "@/lib/doc/core/types";
  * works — it resolves against the viewport, which is the whole window. Every
  * responsive override a studio set was emitted correctly and applied nowhere on
  * this canvas. The page root is now a named container (`g-page`, declared in
- * `app/globals.css`) and the rules resolve against *it*, so this element's width
+ * `tailwind/base.js`) and the rules resolve against *it*, so this element's width
  * is genuinely the one they measure. See `lib/doc/css/emit.ts`.
  *
  * `zoom` would be simpler and is still wrong here: it changes the width

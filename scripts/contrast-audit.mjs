@@ -1,5 +1,5 @@
 /**
- * Reads the interface tokens straight out of src/app/globals.css and checks every
+ * Reads the interface tokens straight out of tailwind/tokens.js and checks every
  * ink against every ground it can be drawn on.
  *
  * This exists because contrast was being eyeballed. Four grey levels that each
@@ -11,12 +11,7 @@
  * Run with `npm run audit:contrast`. Exits non-zero on any failure.
  */
 
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const CSS = fs.readFileSync(path.join(ROOT, "src", "app", "globals.css"), "utf8");
+import { darkTokens, lightTokens } from "../tailwind/tokens.js";
 
 function srgb(c) {
   const v = c / 255;
@@ -55,29 +50,22 @@ function composite(rgba, groundHex) {
   return toHex([0, 1, 2].map((i) => rgba[i] * rgba[3] + g[i] * (1 - rgba[3])));
 }
 
-/** Pulls `--name: <colour>;` pairs out of one CSS block, hex and rgba alike. */
-function readBlock(selector) {
-  const start = CSS.indexOf(selector);
-  if (start === -1) throw new Error(`Couldn't find ${selector} in globals.css`);
-  const open = CSS.indexOf("{", start);
-  const end = CSS.indexOf("\n}", open);
-  const body = CSS.slice(open, end);
+/** The colour tokens of one theme, hex and rgba alike. */
+function readTokens(block) {
   const tokens = {};
   const alpha = {};
-  for (const m of body.matchAll(/--([a-z0-9-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;/g)) {
-    tokens[m[1]] = m[2];
-  }
-  for (const m of body.matchAll(
-    /--([a-z0-9-]+)\s*:\s*rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)\s*;/g
-  )) {
-    alpha[m[1]] = [+m[2], +m[3], +m[4], +m[5]];
+  for (const [key, value] of Object.entries(block)) {
+    const name = key.replace(/^--/, "");
+    if (/^#[0-9a-fA-F]{3,8}$/.test(value.trim())) tokens[name] = value.trim();
+    const m = value.match(/^rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)$/);
+    if (m) alpha[name] = [+m[1], +m[2], +m[3], +m[4]];
   }
   return { ...tokens, __alpha: alpha };
 }
 
 const THEMES = [
-  ["dark", readBlock(":root {")],
-  ["light", readBlock(':root[data-theme="light"]')],
+  ["dark", readTokens(darkTokens)],
+  ["light", readTokens(lightTokens)],
 ];
 
 /** Every surface a piece of text can land on. */

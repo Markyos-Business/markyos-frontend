@@ -4,7 +4,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { ToastProvider, DialogProvider } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/contexts/ThemeProvider";
-import "./globals.css";
+import "./tailwind.css";
 
 export const metadata: Metadata = {
   title: "Markyos",

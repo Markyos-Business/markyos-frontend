@@ -183,7 +183,7 @@ Two decisions here are load-bearing and should survive any rewrite:
 editor lays the page out in a 390px-wide element scaled down inside a 1400px
 window, so a `@media (max-width: 809px)` rule was false on the canvas and a
 phone override did nothing. Declared on `[data-guideline-surface]` in
-`src/app/globals.css`; a unit test forbids `@media` and a sweep check measures
+`tailwind/base.js`; a unit test forbids `@media` and a sweep check measures
 rendered height rather than rule text.
 
 ### One renderer, two surfaces

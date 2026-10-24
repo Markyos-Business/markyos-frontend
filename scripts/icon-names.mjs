@@ -4,7 +4,7 @@ import { join, relative, sep } from "node:path";
 /**
  * Every icon name a component asks for has to exist.
  *
- * `src/app/icons.css` is an offline stand-in for Line Awesome, drawn as CSS masks.
+ * `tailwind/icons.js` is an offline stand-in for Line Awesome, drawn as CSS masks.
  * A name it does not define produces no error, no warning and no missing-glyph
  * box — the element falls back to `background-color: currentColor` with no mask
  * to cut it, and renders as a **solid square**. It looks deliberate. It has
@@ -16,9 +16,9 @@ import { join, relative, sep } from "node:path";
  */
 
 const ROOT = process.cwd();
-const CSS = readFileSync(join(ROOT, "src", "app", "icons.css"), "utf8");
+const ICONS = readFileSync(join(ROOT, "tailwind", "icons.js"), "utf8");
 
-const defined = new Set([...CSS.matchAll(/^\.la-([a-z0-9-]+)\s*\{/gm)].map((m) => m[1]));
+const defined = new Set([...ICONS.matchAll(/^\s*"\.la-([a-z0-9-]+)":\s*\{/gm)].map((m) => m[1]));
 
 const SCAN = ["src"];
 
@@ -132,8 +132,8 @@ if (missing.length) {
     for (const f of [...files].slice(0, 3)) console.log(`      ${f}`);
   }
   console.log(
-    "\nA name icons.css does not define renders as a solid square — no error,\n" +
-      "no warning, and it looks deliberate. Draw the glyph in src/app/icons.css or\n" +
+    "\nA name tailwind/icons.js does not define renders as a solid square — no error,\n" +
+      "no warning, and it looks deliberate. Draw the glyph in tailwind/icons.js or\n" +
       "ask for one that exists.",
   );
   process.exit(1);

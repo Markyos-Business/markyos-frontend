@@ -17,7 +17,7 @@ export function Section({
   return (
     // `mk-surface` is the edge. A fill alone puts `--surface-1` on `--canvas`,
     // which is 1.06:1 on the dark theme — a panel nobody can find the boundary
-    // of. See the note in app/globals.css.
+    // of. See the note in tailwind/base.js.
     <section className="mk-surface rounded-2xl p-5 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
       <div className="flex items-center gap-2.5">
         <Icon name={icon} size={17} style={{ color: "var(--accent-text)" }} />

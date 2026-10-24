@@ -34,6 +34,6 @@ export const bricolage = localFont({
   // real font that *does* carry Arabic glyphs, it swallowed every Arabic
   // character before the display stack could reach the Arabic face — Arabic
   // headings rendered in Arial. Bricolage is Latin-only, so the stack in
-  // globals.css supplies the Arabic and generic fallbacks instead.
+  // tailwind/tokens.js supplies the Arabic and generic fallbacks instead.
   adjustFontFallback: false,
 });

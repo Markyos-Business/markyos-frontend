@@ -1,0 +1,7 @@
+/* The only CSS entry: load Tailwind and hand it the config, which holds the
+   theme, the tokens and every base style (see tailwind.config.js). The
+   tailwind/ modules are configuration, not markup, so they aren't scanned
+   for class names. */
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+@source not "../../tailwind";

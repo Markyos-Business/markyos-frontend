@@ -1,23 +1,31 @@
 /**
- * Tailwind's theme for Markyos, loaded by `@config` in app/globals.css.
+ * Markyos's whole styling setup. The CSS entry (src/app/tailwind.css) only
+ * loads Tailwind and points here; everything else lives in this file and the
+ * modules beside it:
  *
- * Every value points at a design token rather than repeating it. The tokens
- * themselves stay CSS custom properties in globals.css, because they switch
- * between the dark and light themes at runtime and the contrast audit reads
- * them from there. This file only names them for Tailwind, so the colour, font
- * and radius utilities resolve to the same values the inline `var(--…)` styles
- * use.
+ *   tailwind/tokens.js  the design tokens, as CSS custom properties, for the
+ *                       dark theme (default) and the light theme
+ *   tailwind/icons.js   the icon set, drawn as CSS masks
+ *   tailwind/base.js    element defaults and the shared classes the markup
+ *                       relies on (rich text, the live editor, focus, motion)
+ *
+ * The theme below names the tokens for Tailwind, so `bg-surface-1` and an
+ * inline `var(--surface-1)` resolve to the same value, and both repaint when
+ * the theme changes.
  *
  * Content scanning is automatic in Tailwind v4, so there is no `content` list,
  * and no RTL plugin: logical utilities (`ms-*`, `ps-*`, `start-*`, `text-start`)
  * and the `rtl:` variant are built in.
  *
  * Everything sits under `extend`, so Tailwind's own scales (colours such as
- * `black`/`white`, spacing, the `sm`–`2xl` breakpoints) are still there and
- * nothing already on screen changes.
+ * `black`/`white`, spacing, the `sm`–`2xl` breakpoints) are still there.
  *
  * @type {import("tailwindcss").Config}
  */
+import plugin from "tailwindcss/plugin";
+import { baseStyles } from "./tailwind/base.js";
+import { iconStyles } from "./tailwind/icons.js";
+import { darkTokens, lightTokens } from "./tailwind/tokens.js";
 
 /** Widths as a percentage of the parent: `1p` (1%) up to `99p` (99%). */
 const percentWidths = Object.fromEntries(
@@ -132,10 +140,16 @@ const config = {
         "8xl": ["6rem", { lineHeight: "1" }],
         "9xl": ["8rem", { lineHeight: "1" }],
         // The studio's own sizes, named for the pixel sizes used most today:
-        // 10px tags, 11px captions, 13px body and the 32px page title.
+        // 10px tags, 11px captions, 12.5px notes, 13–15px controls and body,
+        // and the 32px page title.
         "3xs": ["0.625rem", { lineHeight: "0.875rem" }],
         "2xs": ["0.6875rem", { lineHeight: "1rem" }],
-        ui: ["0.8125rem", { lineHeight: "1.25rem" }],
+        // The interface sizes keep the 1.5 line height the page inherits, so
+        // swapping a pixel size for one of these never moves a line.
+        "ui-sm": ["0.78125rem", { lineHeight: "1.5" }],
+        ui: ["0.8125rem", { lineHeight: "1.5" }],
+        "ui-md": ["0.875rem", { lineHeight: "1.5" }],
+        "ui-lg": ["0.9375rem", { lineHeight: "1.5" }],
         display: ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.025em" }],
       },
       width: percentWidths,
@@ -232,6 +246,15 @@ const config = {
       },
     },
   },
+  plugins: [
+    // Registered as base styles, in the order the old stylesheet had them:
+    // the icons, then the tokens, then everything else.
+    plugin(({ addBase }) => {
+      addBase(iconStyles);
+      addBase({ ":root": darkTokens, ':root[data-theme="light"]': lightTokens });
+      addBase(baseStyles);
+    }),
+  ],
 };
 
 export default config;

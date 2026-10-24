@@ -143,7 +143,7 @@ export const COLUMN_CHOICES: Record<string, number[]> = {
  * floor of two — except where the studio asked for one, which stays one, because
  * "one per row" is a composition and not a density.
  *
- * Read by the `[data-cols]` rules in `app/globals.css`, which are container
+ * Read by the `[data-cols]` rules in `tailwind/base.js`, which are container
  * queries on the page — so they fire inside the editor's narrow frame too.
  */
 export function columnVars(columns: number | undefined): Record<string, string> | undefined {

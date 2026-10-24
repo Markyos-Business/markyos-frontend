@@ -46,7 +46,7 @@ const GEOMETRY_SCOPES = [
  * because `right` is also an ordinary React prop name — `<Row right={…}>` is
  * not a CSS declaration, and a check that cries wolf gets switched off.
  */
-const CHROME_SCOPES = ["src"];
+const CHROME_SCOPES = ["src", "tailwind"];
 
 /**
  * Rules, each with the logical property to reach for instead.
@@ -56,11 +56,12 @@ const CHROME_SCOPES = ["src"];
  * check that cries wolf gets switched off.
  */
 const EVERYWHERE = [
-  { re: /(?<![-\w])(?:margin|padding)-(?:left|right)\s*:/g, fix: "margin-inline-start / padding-inline-end" },
+  // The optional quote covers the CSS-in-JS keys in tailwind/ ("margin-left":).
+  { re: /(?<![-\w])(?:margin|padding)-(?:left|right)["']?\s*:/g, fix: "margin-inline-start / padding-inline-end" },
   { re: /(?<![-\w])(?:marginLeft|marginRight|paddingLeft|paddingRight)\s*:/g, fix: "marginInlineStart / paddingInlineEnd" },
-  { re: /(?<![-\w])(?:border-(?:left|right))(?:-\w+)?\s*:/g, fix: "border-inline-start / border-inline-end" },
+  { re: /(?<![-\w])(?:border-(?:left|right))(?:-\w+)?["']?\s*:/g, fix: "border-inline-start / border-inline-end" },
   { re: /(?<![-\w])(?:borderLeft|borderRight)\w*\s*:/g, fix: "borderInlineStart / borderInlineEnd" },
-  { re: /(?<![-\w])text-align\s*:\s*(?:left|right)/g, fix: "text-align: start / end" },
+  { re: /(?<![-\w])text-align["']?\s*:\s*["']?(?:left|right)/g, fix: "text-align: start / end" },
   { re: /textAlign\s*:\s*["'](?:left|right)["']/g, fix: 'textAlign: "start" / "end"' },
   /*
    * `left:` and `right:` with *any* value.
@@ -140,7 +141,7 @@ function walk(dir) {
   for (const entry of entries) {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) out.push(...walk(full));
-    else if (/\.(tsx?|css)$/.test(full) && !/\.test\.tsx?$/.test(full)) out.push(full);
+    else if (/\.(tsx?|css|js)$/.test(full) && !/\.test\.tsx?$/.test(full)) out.push(full);
   }
   return out;
 }

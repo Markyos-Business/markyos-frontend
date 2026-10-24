@@ -131,7 +131,7 @@ export function sizingCss(
  *
  * Named rather than anonymous so a nested container — a column layout that wants
  * its own query one day — cannot accidentally capture a page-level breakpoint.
- * Declared once in `app/globals.css`, on `[data-guideline-surface]`, which is the
+ * Declared once in `tailwind/base.js`, on `[data-guideline-surface]`, which is the
  * root every one of the templates renders and therefore the one element present
  * both in the editor's frame and on the published page.
  */
@@ -174,7 +174,7 @@ export function emitNode(id: string, css: NodeCss): string {
    * have.
    *
    * A container query resolves against the named ancestor, which is the page
-   * itself (`[data-guideline-surface]`, see `app/globals.css`). In the editor
+   * itself (`[data-guideline-surface]`, see `tailwind/base.js`). In the editor
    * that ancestor is the frame, so it is 390px and the rule fires. On the
    * published site it is the page, so it tracks the real viewport. One rule, both
    * places, and the preview stops lying.
