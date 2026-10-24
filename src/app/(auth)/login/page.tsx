@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { homePath } from "@/lib/data/access";
 import { AlertBanner, Button } from "@/components/ui";
 import { CheckboxField, InputField } from "@/components/form";
 import { AuthShell, PasswordField, SocialSignIn, EMAIL_RE } from "@/components/features/auth";
@@ -19,27 +20,30 @@ export default function LoginPage() {
 
 function LoginPageBody() {
   const { state, hydrated } = useApp();
+  const account = useCurrentAccount();
   const router = useRouter();
   const search = useSearchParams();
   const next = search.get("next");
 
-  // Someone already signed in has no business on the login screen; send them
-  // where they were going.
+  // Someone signed in has no business on the login screen; send them where
+  // they were going, or to their start page. This is also what moves them on
+  // after a successful sign-in: the session lands, the form unmounts, and
+  // this runs with the account in hand.
+  const home = homePath(account);
   useEffect(() => {
-    if (hydrated && state.session) router.replace(next || "/brands");
-  }, [hydrated, state.session, router, next]);
+    if (hydrated && state.session) router.replace(next || home);
+  }, [hydrated, state.session, router, next, home]);
 
   // The form is split out so that it mounts only after hydration. That lets it
   // read the lockout straight from `sessionStorage` in a `useState`
   // initialiser: there is no server pass for that first value to disagree
   // with, and no setState-in-effect to cascade a second render.
   if (!hydrated || state.session) return null;
-  return <LoginForm next={next} />;
+  return <LoginForm />;
 }
 
-function LoginForm({ next }: { next: string | null }) {
+function LoginForm() {
   const { login, state } = useApp();
-  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,9 +67,7 @@ function LoginForm({ next }: { next: string | null }) {
 
     if (failed) {
       setErrors({ form: failed });
-      return;
     }
-    router.push(next || "/brands");
   }
 
   // Only offered while the seeded account still has its seeded password. Once
