@@ -1,0 +1,145 @@
+{
+  "_note": "Shared with the frontend, which keeps a verbatim copy in src/components/features/discovery/model/fixtures/ and fails a test if the two differ. Change both together.",
+  "cases": [
+    {
+      "name": "questions without conditions are always shown",
+      "questions": [{ "id": "q1", "visibility": null }, { "id": "q2", "visibility": null }],
+      "answers": {},
+      "visible": ["q1", "q2"]
+    },
+    {
+      "name": "equals on a single choice",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "rebrand" }] } }
+      ],
+      "answers": { "q1": { "selected": ["rebrand"], "other": null } },
+      "visible": ["q1", "q2"]
+    },
+    {
+      "name": "equals not met hides the question",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "rebrand" }] } }
+      ],
+      "answers": { "q1": { "selected": ["new"], "other": null } },
+      "visible": ["q1"]
+    },
+    {
+      "name": "an unanswered question satisfies nothing, not even not_equals",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "not_equals", "value": "x" }] } }
+      ],
+      "answers": {},
+      "visible": ["q1"]
+    },
+    {
+      "name": "includes on a multi choice",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "includes", "value": "sa" }] } }
+      ],
+      "answers": { "q1": { "selected": ["ae", "sa"], "other": null } },
+      "visible": ["q1", "q2"]
+    },
+    {
+      "name": "equals on a multi choice needs exactly that one pick",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "sa" }] } }
+      ],
+      "answers": { "q1": { "selected": ["ae", "sa"], "other": null } },
+      "visible": ["q1"]
+    },
+    {
+      "name": "gte and lte on a scale",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "gte", "value": 4 }] } },
+        { "id": "q3", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "lte", "value": 2 }] } }
+      ],
+      "answers": { "q1": 4 },
+      "visible": ["q1", "q2"]
+    },
+    {
+      "name": "text equals ignores case and spacing; includes finds a word",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "riyadh" }] } },
+        { "id": "q3", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "includes", "value": "yad" }] } }
+      ],
+      "answers": { "q1": "  Riyadh " },
+      "visible": ["q1", "q2", "q3"]
+    },
+    {
+      "name": "match any shows when one condition holds",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": null },
+        { "id": "q3", "visibility": { "match": "any", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "a" }, { "questionId": "q2", "operator": "gte", "value": 3 }] } }
+      ],
+      "answers": { "q1": { "selected": ["b"], "other": null }, "q2": 5 },
+      "visible": ["q1", "q2", "q3"]
+    },
+    {
+      "name": "match all needs every condition",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": null },
+        { "id": "q3", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "a" }, { "questionId": "q2", "operator": "gte", "value": 3 }] } }
+      ],
+      "answers": { "q1": { "selected": ["b"], "other": null }, "q2": 5 },
+      "visible": ["q1", "q2"]
+    },
+    {
+      "name": "a hidden question hides what depends on it, even with a stale answer",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "yes" }] } },
+        { "id": "q3", "visibility": { "match": "all", "conditions": [{ "questionId": "q2", "operator": "gte", "value": 1 }] } }
+      ],
+      "answers": { "q1": { "selected": ["no"], "other": null }, "q2": 5 },
+      "visible": ["q1"]
+    }
+  ],
+  "errors": [
+    {
+      "name": "a condition on an earlier question is fine",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "a" }] } }
+      ],
+      "invalid": []
+    },
+    {
+      "name": "a condition on a later question is refused",
+      "questions": [
+        { "id": "q1", "visibility": { "match": "all", "conditions": [{ "questionId": "q2", "operator": "equals", "value": "a" }] } },
+        { "id": "q2", "visibility": null }
+      ],
+      "invalid": ["q1"]
+    },
+    {
+      "name": "a question can't depend on itself",
+      "questions": [{ "id": "q1", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "a" }] } }],
+      "invalid": ["q1"]
+    },
+    {
+      "name": "a two-question cycle is refused",
+      "questions": [
+        { "id": "q1", "visibility": { "match": "all", "conditions": [{ "questionId": "q2", "operator": "equals", "value": "a" }] } },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "equals", "value": "a" }] } }
+      ],
+      "invalid": ["q1"]
+    },
+    {
+      "name": "an unknown operator is refused",
+      "questions": [
+        { "id": "q1", "visibility": null },
+        { "id": "q2", "visibility": { "match": "all", "conditions": [{ "questionId": "q1", "operator": "contains", "value": "a" }] } }
+      ],
+      "invalid": ["q2"]
+    }
+  ]
+}

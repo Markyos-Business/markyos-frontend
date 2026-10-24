@@ -1,0 +1,48 @@
+{
+  "_note": "Shared with the frontend, which keeps a verbatim copy in src/components/features/discovery/model/fixtures/ and fails a test if the two differ. Change both together.",
+  "cases": [
+    { "name": "short text is trimmed", "type": "text", "config": { "multiline": false }, "value": "  Nour Haddad  ", "ok": true, "clean": "Nour Haddad" },
+    { "name": "control characters are dropped", "type": "text", "config": { "multiline": true }, "value": "line one\nline\u0007 two", "ok": true, "clean": "line one\nline two" },
+    { "name": "bidi marks and joiners are kept", "type": "text", "config": { "multiline": false }, "value": "Markyos \u200f ماركيوس\u200c", "ok": true, "clean": "Markyos \u200f ماركيوس\u200c" },
+    { "name": "short text has a length limit", "type": "text", "config": { "multiline": false, "maxLength": 5 }, "value": "too long", "ok": false },
+    { "name": "text must be a string", "type": "text", "config": {}, "value": 42, "ok": false },
+    { "name": "arabic text passes through", "type": "text", "config": { "multiline": true }, "value": "نصمم هويات ثنائية اللغة", "ok": true, "clean": "نصمم هويات ثنائية اللغة" },
+
+    { "name": "single choice", "type": "choice", "config": { "multiple": false, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }, { "value": "b", "label": { "en": "B", "ar": "ب" } }] }, "value": { "selected": ["a"], "other": null }, "ok": true, "clean": { "selected": ["a"], "other": null } },
+    { "name": "single choice refuses two picks", "type": "choice", "config": { "multiple": false, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }, { "value": "b", "label": { "en": "B", "ar": "ب" } }] }, "value": { "selected": ["a", "b"], "other": null }, "ok": false },
+    { "name": "unknown option is refused", "type": "choice", "config": { "multiple": true, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }] }, "value": { "selected": ["z"], "other": null }, "ok": false },
+    { "name": "something else needs allowOther", "type": "choice", "config": { "multiple": true, "allowOther": false, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }] }, "value": { "selected": [], "other": "Oman" }, "ok": false },
+    { "name": "something else when allowed", "type": "choice", "config": { "multiple": true, "allowOther": true, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }] }, "value": { "selected": ["a"], "other": " Oman " }, "ok": true, "clean": { "selected": ["a"], "other": "Oman" } },
+    { "name": "multi choice respects maxPicks", "type": "choice", "config": { "multiple": true, "maxPicks": 1, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }, { "value": "b", "label": { "en": "B", "ar": "ب" } }] }, "value": { "selected": ["a", "b"], "other": null }, "ok": false },
+    { "name": "a choice can't be picked twice", "type": "choice", "config": { "multiple": true, "options": [{ "value": "a", "label": { "en": "A", "ar": "أ" } }] }, "value": { "selected": ["a", "a"], "other": null }, "ok": false },
+
+    { "name": "scale in range", "type": "scale", "config": { "min": 1, "max": 5 }, "value": 4, "ok": true, "clean": 4 },
+    { "name": "scale out of range", "type": "scale", "config": { "min": 1, "max": 5 }, "value": 6, "ok": false },
+    { "name": "scale must be a whole number", "type": "scale", "config": { "min": 1, "max": 10 }, "value": 2.5, "ok": false },
+    { "name": "scale refuses true", "type": "scale", "config": { "min": 1, "max": 5 }, "value": true, "ok": false },
+
+    { "name": "ranking of every item", "type": "ranking", "config": { "items": [{ "value": "x", "label": { "en": "X", "ar": "س" } }, { "value": "y", "label": { "en": "Y", "ar": "ص" } }] }, "value": ["y", "x"], "ok": true, "clean": ["y", "x"] },
+    { "name": "ranking must include every item", "type": "ranking", "config": { "items": [{ "value": "x", "label": { "en": "X", "ar": "س" } }, { "value": "y", "label": { "en": "Y", "ar": "ص" } }] }, "value": ["x"], "ok": false },
+
+    { "name": "image choice within limits", "type": "image_choice", "config": { "minPicks": 1, "maxPicks": 2, "options": [{ "value": "m", "label": { "en": "M", "ar": "م" } }, { "value": "b", "label": { "en": "B", "ar": "ب" } }, { "value": "l", "label": { "en": "L", "ar": "ل" } }] }, "value": ["m", "l"], "ok": true, "clean": ["m", "l"] },
+    { "name": "image choice over maxPicks", "type": "image_choice", "config": { "minPicks": 1, "maxPicks": 2, "options": [{ "value": "m", "label": { "en": "M", "ar": "م" } }, { "value": "b", "label": { "en": "B", "ar": "ب" } }, { "value": "l", "label": { "en": "L", "ar": "ل" } }] }, "value": ["m", "b", "l"], "ok": false },
+
+    { "name": "upload ids", "type": "upload", "config": { "maxFiles": 2 }, "value": ["asset-1"], "ok": true, "clean": ["asset-1"] },
+    { "name": "upload over maxFiles", "type": "upload", "config": { "maxFiles": 1 }, "value": ["asset-1", "asset-2"], "ok": false },
+
+    { "name": "links are cleaned", "type": "link", "config": { "maxCount": 3 }, "value": [" https://example.com ", ""], "ok": true, "clean": ["https://example.com"] },
+    { "name": "a link needs http or https", "type": "link", "config": { "maxCount": 3 }, "value": ["javascript:alert(1)"], "ok": false },
+    { "name": "links over maxCount", "type": "link", "config": { "maxCount": 1 }, "value": ["https://a.com", "https://b.com"], "ok": false }
+  ],
+  "empty": [
+    { "type": "text", "value": "", "empty": true },
+    { "type": "text", "value": "x", "empty": false },
+    { "type": "choice", "value": { "selected": [], "other": null }, "empty": true },
+    { "type": "choice", "value": { "selected": [], "other": "Oman" }, "empty": false },
+    { "type": "scale", "value": null, "empty": true },
+    { "type": "scale", "value": 1, "empty": false },
+    { "type": "ranking", "value": [], "empty": true },
+    { "type": "upload", "value": ["a"], "empty": false },
+    { "type": "link", "value": [], "empty": true }
+  ]
+}
