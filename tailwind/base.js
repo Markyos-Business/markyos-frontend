@@ -19,11 +19,11 @@ export const baseStyles = [
     "body": {
       "background": "var(--canvas)",
       "color": "var(--text)",
-      "font-family": "var(--font-inter), system-ui, sans-serif",
+      "font-family": "var(--font-sans)",
       "-webkit-font-smoothing": "antialiased",
-      /* Inter's alternate glyph set — the non-default body voice the design
-       * system specifies. Arabic faces simply ignore features they don't ship. */
-      "font-feature-settings": "\"cv01\", \"cv05\", \"cv09\", \"cv11\", \"ss03\", \"ss07\"",
+      /* Inter's alternate glyph set, as the design system specifies. Arabic
+       * faces simply ignore features they don't ship. */
+      "font-feature-settings": "var(--font-features)",
     },
   },
   /*
@@ -261,7 +261,7 @@ export const baseStyles = [
   {
     "::selection": {
       "background": "var(--accent)",
-      "color": "#fff",
+      "color": "var(--accent-ink)",
     },
   },
   /*
@@ -284,8 +284,9 @@ export const baseStyles = [
     },
   },
   {
+    /* Placeholders are the one place the 40% ink is used (spec §2.3). */
     "input::placeholder, textarea::placeholder": {
-      "color": "var(--text-faint)",
+      "color": "var(--text-disabled)",
     },
   },
   /*
@@ -298,7 +299,7 @@ export const baseStyles = [
       "outline": "none",
       "border-radius": "4px",
       "cursor": "text",
-      "transition": "box-shadow 0.12s ease, background 0.12s ease",
+      "transition": "box-shadow var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard)",
     },
   },
   {
@@ -500,7 +501,7 @@ export const baseStyles = [
       "padding": "3px 9px",
       "border-radius": "999px",
       "font-size": "10.5px",
-      "font-weight": "600",
+      "font-weight": "500",
       "background": "#1c1c1c",
       "color": "#fff",
       "box-shadow": "0 0 0 1px rgba(255, 255, 255, 0.14)",
@@ -577,7 +578,7 @@ export const baseStyles = [
       "min-height": "34px",
       "border-radius": "8px",
       "font-size": "11.5px",
-      "font-weight": "600",
+      "font-weight": "500",
       "color": "var(--accent-text)",
       "box-shadow": "inset 0 0 0 1px var(--accent-ring)",
     },
@@ -598,7 +599,7 @@ export const baseStyles = [
       "padding": "0 12px",
       "border-radius": "999px",
       "font-size": "11.5px",
-      "font-weight": "600",
+      "font-weight": "500",
       "cursor": "pointer",
       /* Held at its real size against the canvas scale — see `--canvas-scale`.
       Centred in its strip, so growing it back out grows it evenly. */
@@ -687,13 +688,9 @@ export const baseStyles = [
    *
    * `list-none` on the summary removes the browser's own marker, which is drawn
    * on the wrong side in Arabic and can't be restyled consistently; this is the
-   * replacement, and it rotates the direction the writing runs.
+   * replacement, and it points the direction the writing runs. It turns at
+   * once: motion in the product is colour and opacity only.
    */
-  {
-    ".mk-disclosure": {
-      "transition": "transform 160ms cubic-bezier(0.2, 0.7, 0.3, 1)",
-    },
-  },
   {
     "[dir=\"rtl\"] .mk-disclosure": {
       "transform": "rotate(180deg)",
@@ -818,19 +815,6 @@ export const baseStyles = [
     },
   },
   /*
-   * A control that has been pressed.
-   *
-   * Every button squeezes to 97% on pointer-down. It exists because on a canvas
-   * where most clicks change something off to the side, the button itself
-   * should still confirm it received the click; the same squeeze everywhere so
-   * no button presses differently from another.
-   */
-  {
-    "button:not(:disabled):active, [role=\"button\"]:active": {
-      "transform": "scale(0.97)",
-    },
-  },
-  /*
    * A card, as an object on the page rather than a slightly different grey.
    *
    * Almost every surface in this app is drawn as a fill with no border, and a
@@ -857,11 +841,9 @@ export const baseStyles = [
   /*
    * A card that responds to being pointed at.
    *
-   * The lift is 2px. It is enough to say "this is one object and it is
-   * interactive" and small enough that a grid of them doesn't ripple as the
-   * pointer crosses it. The edge switches to the accent rather than being joined
-   * by a second ring outside it — two concentric rings on hover read as the card
-   * having grown, which is a different message from "this one".
+   * Its edge switches to the accent, and that is all: no lift and no shadow
+   * (spec §1.5, §1.6). The accent edge alone says "this one", and a grid of
+   * cards doesn't ripple as the pointer crosses it.
    */
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
@@ -870,14 +852,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".mk-card:not([style*=\"transition\"])": {
-        "transition": "box-shadow var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out) !important",
-      },
-    },
-  },
-  {
-    "@media (hover: hover) and (pointer: fine)": {
-      ".mk-card:hover, .mk-card:focus-visible": {
-        "transform": "translateY(-2px)",
+        "transition": "box-shadow var(--duration-fast) var(--ease-standard) !important",
       },
     },
   },
@@ -885,7 +860,7 @@ export const baseStyles = [
   // inline style on the element still wins (the :not guard).
   {
     ".mk-card:hover:not([style*=\"box-shadow\"]), .mk-card:focus-visible:not([style*=\"box-shadow\"])": {
-      "box-shadow": "inset 0 0 0 1px var(--accent-edge), var(--shadow-pop) !important",
+      "box-shadow": "inset 0 0 0 1px var(--accent-edge) !important",
     },
   },
   /* Interactive surfaces settle rather than snap. */
@@ -896,9 +871,9 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition-property": "color, background-color, border-color, box-shadow, opacity, transform, translate, scale !important",
+        "transition-property": "color, background-color, border-color, box-shadow, opacity !important",
         "transition-duration": "var(--duration-fast) !important",
-        "transition-timing-function": "var(--ease-out) !important",
+        "transition-timing-function": "var(--ease-standard) !important",
       },
     },
   },
@@ -963,7 +938,7 @@ export const baseStyles = [
     // A real pointer only: a touch screen has no hover, and a hover state left
     // behind after a tap reads as a stuck button.
     "@media (hover: hover) and (pointer: fine)": {
-      "button:not(:disabled):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):hover, summary:hover, a[href]:hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
+      "button:not(:disabled):not(.mk-btn):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):hover, summary:hover, a[href]:not(.mk-btn):hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
         "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
       },
     },
@@ -971,13 +946,55 @@ export const baseStyles = [
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
-    "button:not(:disabled):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):focus-visible, summary:focus-visible, a[href]:focus-visible": {
+    "button:not(:disabled):not(.mk-btn):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
       "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
-    "button:not(:disabled):active, [role=\"button\"]:not([aria-disabled=\"true\"]):active, a[href]:active": {
+    "button:not(:disabled):not(.mk-btn):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
       "background-image": "linear-gradient(var(--press-veil), var(--press-veil)) !important",
+    },
+  },
+  /*
+   * The design system's button (spec §2.1): hover, press and the permanent
+   * `is-active` state are one scrim, `--hover-scrim`, laid over the resting
+   * fill. No lift, no scale, no darker hex. The kit's Button and IconButton
+   * carry `mk-btn`; the veil above covers every other control, including the
+   * inline-styled ones a class can't reach.
+   *
+   * `isolation` keeps the scrim under the label: it paints in the button's
+   * own stacking context, below the content, instead of over it.
+   */
+  {
+    ".mk-btn": {
+      "position": "relative",
+      "isolation": "isolate",
+      "-webkit-tap-highlight-color": "transparent",
+    },
+  },
+  {
+    ".mk-btn::after": {
+      "content": "\"\"",
+      "position": "absolute",
+      "inset": "0",
+      "z-index": "-1",
+      "border-radius": "inherit",
+      "background": "var(--hover-scrim)",
+      "opacity": "0",
+      "pointer-events": "none",
+      "transition": "opacity var(--duration-fast) var(--ease-standard)",
+    },
+  },
+  {
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-btn:not(:disabled):not([aria-disabled=\"true\"]):hover::after": {
+        "opacity": "1",
+      },
+    },
+  },
+  {
+    ".mk-btn:not(:disabled):not([aria-disabled=\"true\"]):active::after, .mk-btn:not(:disabled):focus-visible::after, .mk-btn.is-active::after": {
+      "opacity": "1",
     },
   },
   /*
@@ -1088,6 +1105,65 @@ export const baseStyles = [
   {
     ":focus-visible:not([style*=\"border-radius\"])": {
       "border-radius": "6px !important",
+    },
+  },
+  /*
+   * The text field (spec §6.5), the only text-field shape in the product: no
+   * box and no fill, a 14px value at weight 500 over a 1px underline. State
+   * is the underline's colour and nothing else — resting `--line-strong`,
+   * focused accent with a little light under it, invalid danger, confirmed
+   * success — so these opt out of the focus box above (the element selector
+   * outranks it). Element defaults sit in the base layer, so a utility on the
+   * field (`w-full`, `pe-8`) still adds to or overrides any of this.
+   */
+  {
+    ".mk-underline": {
+      "display": "block",
+      "border": "0",
+      "border-bottom": "1px solid var(--line-strong)",
+      "border-radius": "0",
+      "background": "transparent",
+      "padding-block": "8px",
+      "font-size": "0.875rem",
+      "line-height": "1.3125rem",
+      "font-weight": "500",
+      "color": "var(--text)",
+      "outline": "none",
+      "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
+    },
+  },
+  {
+    ".mk-underline::placeholder": {
+      "font-weight": "400",
+      "color": "var(--text-disabled)",
+    },
+  },
+  {
+    ".mk-underline:focus, .mk-underline:focus-within": {
+      "border-bottom-color": "var(--accent)",
+      "box-shadow": "0 6px 10px -8px var(--accent)",
+    },
+  },
+  {
+    ".mk-underline[aria-invalid=\"true\"], .mk-underline:has([aria-invalid=\"true\"])": {
+      "border-bottom-color": "var(--danger)",
+    },
+  },
+  {
+    ".mk-underline[data-state=\"success\"]": {
+      "border-bottom-color": "var(--success)",
+    },
+  },
+  {
+    ".mk-underline:disabled, .mk-underline:has(:disabled)": {
+      "color": "var(--text-disabled)",
+      "cursor": "not-allowed",
+    },
+  },
+  {
+    ":is(input, textarea, select, div, label).mk-underline:focus-visible, .mk-underline :focus-visible": {
+      "outline": "none !important",
+      "border-radius": "0 !important",
     },
   },
   /*
@@ -1202,71 +1278,7 @@ export const baseStyles = [
     "input, textarea, select, [contenteditable]": {
       "transition-property": "color, background-color, border-color, box-shadow",
       "transition-duration": "var(--duration-fast)",
-      "transition-timing-function": "var(--ease-out)",
-    },
-  },
-  /*
-   * Accordions open and close at their real height instead of jumping. A
-   * native <details> animates its content box where the browser can
-   * (`::details-content`); elsewhere it opens instantly, as it always did.
-   */
-  {
-    "details": {
-      "interpolate-size": "allow-keywords",
-    },
-  },
-  {
-    "details::details-content": {
-      "block-size": "0",
-      "overflow-y": "clip",
-      "transition-property": "block-size, content-visibility",
-      "transition-duration": "var(--duration-base)",
-      "transition-timing-function": "var(--ease-in-out)",
-      "transition-behavior": "allow-discrete",
-    },
-  },
-  {
-    "details[open]::details-content": {
-      "block-size": "auto",
-    },
-  },
-  /*
-   * Route changes, through the View Transitions API (React's
-   * <ViewTransition> in the route templates). The old page leaves quickly,
-   * the new one rises 8px into place. The rest of the document is not
-   * animated: the shell around the page is the same on both sides, and
-   * cross-fading it would only blur it.
-   */
-  {
-    "@keyframes vt-page-out": {
-      "to": { "opacity": "0" },
-    },
-  },
-  {
-    "@keyframes vt-page-in": {
-      "from": { "opacity": "0", "transform": "translateY(8px)" },
-    },
-  },
-  {
-    "::view-transition-old(root), ::view-transition-new(root)": {
-      "animation": "none",
-    },
-  },
-  {
-    "::view-transition-old(.page)": {
-      "animation": "vt-page-out var(--duration-fast) var(--ease-in) both",
-    },
-  },
-  {
-    "::view-transition-new(.page)": {
-      "animation": "vt-page-in var(--duration-slow) var(--ease-out) both",
-    },
-  },
-  /* A tab row's active pill sliding to the tab just chosen (TabIndicator). */
-  {
-    "::view-transition-group(.tab-slide)": {
-      "animation-duration": "var(--duration-base)",
-      "animation-timing-function": "var(--ease-in-out)",
+      "transition-timing-function": "var(--ease-standard)",
     },
   },
   /* In-page anchors glide; route changes still jump to the top at once
@@ -1287,15 +1299,6 @@ export const baseStyles = [
         "animation-iteration-count": "1 !important",
         "transition-duration": "0.01ms !important",
         "scroll-behavior": "auto !important",
-      },
-      "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
-        "animation": "none !important",
-      },
-      ".mk-card:hover, .mk-card:focus-visible": {
-        "transform": "none",
-      },
-      "button:not(:disabled):active, [role=\"button\"]:active": {
-        "transform": "none",
       },
       /*
        * Guideline sections stay put and stay visible.

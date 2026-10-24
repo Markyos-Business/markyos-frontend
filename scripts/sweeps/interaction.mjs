@@ -121,6 +121,9 @@ const COLLECT = `(() => {
       // The first run of this sweep did not look at it and reported the fix as
       // a regression.
       backgroundImage: s.backgroundImage,
+      // The design system's button (\`mk-btn\`) answers with a scrim laid over
+      // its fill from \`::after\`, so the element's own styles don't move.
+      scrim: getComputedStyle(el, '::after').opacity,
       color: s.color,
       opacity: s.opacity,
       boxShadow: s.boxShadow,
@@ -207,6 +210,7 @@ const FINGERPRINT_AT = (i) => `(() => {
   return {
     backgroundColor: s.backgroundColor,
     backgroundImage: s.backgroundImage,
+    scrim: getComputedStyle(el, '::after').opacity,
     color: s.color,
     opacity: s.opacity,
     boxShadow: s.boxShadow,
@@ -281,6 +285,7 @@ function changed(before, after) {
     "filter",
     "outline",
     "backgroundImage",
+    "scrim",
   ]) {
     if (before[key] !== after[key]) reasons.push(key);
   }

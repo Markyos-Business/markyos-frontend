@@ -877,7 +877,7 @@ export default function BuilderPage() {
             invisible. "Hidden" has to mean gone. */}
         {leftOpen && (
         <div
-          className="w-[240px] shrink-0 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-3 animate-panel-from-left rtl:animate-panel-from-right"
+          className="w-[240px] shrink-0 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-3 animate-fade-in"
           style={{ boxShadow: "inset -1px 0 0 var(--hairline)" }}
         >
           {/*
@@ -993,7 +993,7 @@ export default function BuilderPage() {
 
           {/* Keyed on the tab so the swap animates: the content moves, the
               chrome above it doesn't. */}
-          <div key={tab} className="flex flex-col gap-3 animate-tab-in">
+          <div key={tab} className="flex flex-col gap-3">
           {tab === "layers" ? (
             <LayersTab
               ws={ws}
@@ -1101,7 +1101,7 @@ export default function BuilderPage() {
               ))}
 
               {ws.guidelineTemplate === "studio" && (
-                <div className="flex flex-col gap-1.5 mt-1 ps-3 animate-fade-in" style={{ boxShadow: isAr ? "inset -1px 0 0 var(--hairline)" : "inset 1px 0 0 var(--hairline)" }}>
+                <div className="flex flex-col gap-1.5 mt-1 ps-3" style={{ boxShadow: isAr ? "inset -1px 0 0 var(--hairline)" : "inset 1px 0 0 var(--hairline)" }}>
                   <p className="text-[11px] px-1 pb-0.5" style={{ color: "var(--text-faint)" }}>
                     {isAr ? "اختر أحد أنماط Studio الثلاثة" : "Pick one of the 3 Studio looks"}
                   </p>
@@ -1215,7 +1215,7 @@ export default function BuilderPage() {
               {/* Switching the ground is the single change most likely to break
                   legibility, so the consequences are shown right underneath the
                   control that causes them rather than on another page. */}
-              <div className="mk-surface rounded-xl p-3.5 animate-fade-in" style={{ background: "var(--surface-1)" }}>
+              <div className="mk-surface rounded-xl p-3.5" style={{ background: "var(--surface-1)" }}>
                 <ContrastReport ws={ws} isAr={isAr} compact />
               </div>
             </div>
@@ -1477,7 +1477,7 @@ export default function BuilderPage() {
 
         {selectedId && (selected || selectedFixedId) && rightOpen && (
           <div
-            className="w-[300px] shrink-0 overflow-y-auto p-4 flex flex-col gap-5 animate-panel-from-right rtl:animate-panel-from-left"
+            className="w-[300px] shrink-0 overflow-y-auto p-4 flex flex-col gap-5 animate-fade-in"
             style={{ boxShadow: "inset 1px 0 0 var(--hairline)" }}
           >
             <div className="flex items-center justify-between gap-2 shrink-0 -mb-1">

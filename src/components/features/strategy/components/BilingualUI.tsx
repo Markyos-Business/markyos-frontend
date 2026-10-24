@@ -10,7 +10,7 @@ import { Icon, RichText, richIsEmpty, richToPlainText } from "@/components/ui";
 export function MachineDraftFlag({ isAr }: { isAr: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 self-start text-[11px] font-semibold px-2 py-1 rounded-full animate-fade-in"
+      className="inline-flex items-center gap-1.5 self-start text-[11px] font-semibold px-2 py-1 rounded-full"
       style={{ background: "var(--warning-soft, rgba(255,176,32,.14))", color: "var(--warning)" }}
     >
       <Icon name="language" size={11} />

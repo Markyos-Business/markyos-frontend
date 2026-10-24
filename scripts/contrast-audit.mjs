@@ -98,15 +98,20 @@ const INKS = [
   // carry the small-type bar too.
   ["success", SMALL_TEXT_FLOOR],
   ["warning", SMALL_TEXT_FLOOR],
+  ["attention", SMALL_TEXT_FLOOR],
   ["danger", SMALL_TEXT_FLOOR],
+  ["info", SMALL_TEXT_FLOOR],
 ];
 /** Inks that sit on a filled swatch of their own colour rather than on a ground. */
 const FILLED = [
   ["accent-ink", "accent"],
   ["status-ink", "success"],
   ["status-ink", "warning"],
+  ["status-ink", "attention"],
   ["status-ink", "danger"],
   ["danger-ink", "danger"],
+  ["danger-ink", "danger-fill"],
+  ["status-ink", "info"],
   ["solid-ink", "solid"],
 ];
 /**
@@ -131,7 +136,9 @@ const TINTED = [
   // a status ink no room for any tint at all on the light theme.
   ["success", "success-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
   ["warning", "warning-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
+  ["attention", "attention-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
   ["danger", "danger-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
+  ["info", "info-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
 ];
 
 /**
@@ -179,8 +186,13 @@ const NON_TEXT = [
  * deliberately: a card is not a control, and an edge that loud turns a grid of
  * files into a cage. 1.4 is the point at which a 1px line stops being something
  * you have to go looking for.
+ *
+ * The edge floor is the design system's own card edge (docs/MARKYOS_UI.md:
+ * white at 10% on dark), which measures 1.298:1 on a #111 card. It was 1.5
+ * before the system fixed the value; this holds the edge at the spec rather
+ * than above it.
  */
-const EDGE_FLOOR = 1.5;
+const EDGE_FLOOR = 1.29;
 const SEPARATION_FLOOR = 1.4;
 /** The surfaces that are drawn as cards on the page behind them. */
 const CARD_SURFACES = ["surface-0", "surface-1", "surface-2", "surface-3"];

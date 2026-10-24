@@ -17,9 +17,9 @@ import { assertServerUp } from "./serverGuard.mjs";
  *   **Surfaces.** For every element that paints its own background on top of
  *   another one and is big enough and round enough to be a card rather than a
  *   chip: is its boundary findable? Either the fill differs from the ground, or
- *   an edge drawn on it does. The floor is the same 1.4:1 `contrast-audit.mjs`
- *   holds the tokens to — below that a 1px line is something you have to go
- *   looking for, and a fill step is nothing at all.
+ *   an edge drawn on it does. The floor is the design system's own card edge
+ *   (docs/MARKYOS_UI.md: white at 10% on dark, 1.298:1 on a #111 card), the
+ *   same floor `contrast-audit.mjs` holds the edge token to.
  *
  *   **Artwork.** For every image on the page: how far is the file's own mean ink
  *   from the surface behind it? Under 1.5:1 a shape at thumbnail size stops
@@ -36,7 +36,7 @@ const PASSWORD = "markyos2026";
 const SLUG = "nadeen-studio";
 
 /** A card's boundary has to be findable by one route or the other. */
-const SEPARATION_FLOOR = 1.4;
+const SEPARATION_FLOOR = 1.29;
 /** Artwork has to be distinguishable from what is behind it. */
 const ARTWORK_FLOOR = 1.5;
 /** Below this an element is a chip, a pill or a badge, not a card. */

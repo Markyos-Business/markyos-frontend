@@ -1,6 +1,13 @@
 /**
  * Markyos design tokens, as CSS custom properties.
  *
+ * The values come from docs/MARKYOS_UI.md (the Markyos Design System export),
+ * which is the source of truth: its dark values are the dark theme here, and
+ * the light theme is derived from them role for role. The existing names
+ * (`--surface-1`, `--text-muted`, `--accent`…) are kept because the whole app
+ * is written against them; the spec's own names (`--surface-card`,
+ * `--text-body`, `--primary`…) are aliases of them at the end of each block.
+ *
  * The dark theme is the default on :root; the light theme overrides it under
  * [data-theme="light"], which the theme toggle sets on <html>. Every colour,
  * font and radius utility in tailwind.config.js points at one of these, so
@@ -13,40 +20,40 @@ export const darkTokens = {
   /*
    * Type stacks, the same in both themes.
    *
-   * The Arabic face sits in the display chain on purpose: Bricolage carries no
-   * Arabic glyphs, so without it every Arabic heading fell through to a generic
-   * system sans instead of the matched-weight Arabic type. Font fallback is
-   * per-character, so Latin still renders in Bricolage.
+   * The product UI is Inter everywhere, headings included (spec §3). Bricolage
+   * Grotesque is the brand face, for the wordmark and marketing only, never
+   * product chrome; it is `--font-brand`. `--font-display` stays as a name
+   * because a hundred headings use it, and now means the product heading
+   * stack. Arabic falls through to IBM Plex Sans Arabic: the spec names
+   * Thmanya Sans, whose files are not in the repo yet.
    */
-  "--font-display": "var(--font-bricolage), var(--font-plex-arabic), \"Inter\", var(--font-inter), sans-serif",
-  "--font-sans": "var(--font-inter), \"Inter\", system-ui, sans-serif",
+  "--font-display": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",
+  "--font-sans": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",
+  "--font-brand": "var(--font-bricolage), var(--font-plex-arabic), \"Inter\", var(--font-inter), sans-serif",
   "--font-arabic": "var(--font-plex-arabic), var(--font-inter), sans-serif",
   "--font-mono": "ui-monospace, Menlo, monospace",
+  /* Inter's alternate glyphs the spec asks for. Arabic faces ignore them. */
+  "--font-features": "\"cv01\", \"cv05\", \"cv09\", \"cv11\"",
   /*
-   * The surface ramp.
+   * The surface ramp (spec §2.3): a black canvas, #111 cards and panels,
+   * #1A1A1A raised fills (inputs, table heads, resting tabs) and #242424 for
+   * the one step above that. Flat: no gradients, no textures.
    *
-   * Deepened at the bottom and lifted in the middle, which is as far as a *fill*
-   * can go here. A card at #141414 on a #090909 canvas measured **1.06:1** — the
-   * card was not subtle, it was absent, and a page of them read as one dark slab
-   * with no objects on it. Widening the gap gets it to 1.12:1 and no further:
-   * near black, a large luminance step is a small ratio, and the step cannot be
-   * widened without lightening the deepest card the text ramp is solved against.
-   *
-   * That is why every dark interface of this kind draws a border and not a
-   * brighter fill, and why `--hairline-strong` below is the real answer. This
-   * ramp's job is to keep the ordering legible; the edge's job is to say where
-   * one surface stops.
+   * Near black, a fill step is a small ratio (#111 on #000 is 1.1:1), so a
+   * card is found by its edge, `--hairline-strong`, not by its fill.
    */
-  "--canvas": "#060607",
-  "--surface-0": "#0c0c0e",
-  "--surface-1": "#16161a",
-  "--surface-2": "#1e1e22",
-  /* A step under the old #252525 rather than over it: `--text-faint` is solved
-  against this surface at exactly 7:1, and lifting the deepest card in the
-  theme is the one change that would quietly drop the whole small-type floor
-  back under the bar. */
-  "--surface-3": "#232326",
+  "--canvas": "#000000",
+  "--surface-0": "#111111",
+  "--surface-1": "#111111",
+  "--surface-2": "#1a1a1a",
+  "--surface-3": "#242424",
+  /* The unread or highlighted row (spec `--off-white`). */
+  "--surface-highlight": "#161616",
+  /* Widget rows and sunken areas: white at 4% over whatever is underneath. */
+  "--surface-sunken": "rgba(255, 255, 255, 0.04)",
   "--accent": "#0099ff",
+  /* Pressed, and where the glow falls off to. */
+  "--accent-deep": "#0055ff",
   "--accent-soft": "rgba(0, 153, 255, 0.14)",
   "--accent-ring": "rgba(0, 153, 255, 0.18)",
   /*
@@ -112,19 +119,40 @@ export const darkTokens = {
    *
    * The same four ratios are used in the light theme, so the hierarchy reads
    * identically whichever way round the interface is.
+   *
+   * The spec's ladder is white at 100 / 80 / 60%, with 40% for placeholders
+   * and disabled controls only. These are that ladder, neutral grey like the
+   * spec's (no blue cast), each lifted just enough to hold the floors above on
+   * `--surface-3`: white 60% is 6.3:1 there, under the 7:1 small-type bar.
    */
   "--text": "#ffffff",
-  "--text-secondary": "#e4e4e9",
-  "--text-muted": "#ccccd2",
-  "--text-faint": "#afafb6",
-  /* Same rule as the light theme's, lifted rather than deepened. */
-  "--success": "#7ce7ac",
-  "--warning": "#f4be5e",
-  "--danger": "#ffa8b0",
-  /* Tinted fills behind a status badge's text. */
-  "--success-soft": "rgba(124, 231, 172, 0.14)",
-  "--warning-soft": "rgba(244, 190, 94, 0.14)",
-  "--danger-soft": "rgba(255, 128, 139, 0.14)",
+  "--text-secondary": "#dbdbdb",
+  "--text-muted": "#c4c4c4",
+  "--text-faint": "#afafaf",
+  /* Placeholders and disabled labels only: never anything that must be read. */
+  "--text-disabled": "rgba(255, 255, 255, 0.4)",
+  /*
+   * Status (spec §2.3): green, yellow and red for status only, cyan for info.
+   * The spec's red, #FF0066, is 4:1 as small text on a raised fill, so the
+   * text tone is the same hue lifted to 7:1; `--danger-fill` is the spec's
+   * own value, for dots, bars and anything that is colour rather than words.
+   */
+  "--success": "#00de68",
+  "--warning": "#ffbb00",
+  "--info": "#00ccff",
+  /* Needs a look soon, short of a warning: the orange between warning and
+   * danger that the status set uses for "attention". */
+  "--attention": "#ffb37a",
+  "--danger": "#ff8fb4",
+  "--danger-fill": "#ff0066",
+  /* The tint rule (spec §2.2): every soft fill is its hue at about 14%. */
+  "--success-soft": "rgba(0, 222, 104, 0.14)",
+  "--warning-soft": "rgba(255, 187, 0, 0.14)",
+  "--danger-soft": "rgba(255, 0, 102, 0.14)",
+  "--info-soft": "rgba(0, 204, 255, 0.14)",
+  "--attention-soft": "rgba(255, 179, 122, 0.12)",
+  /* A neutral soft fill: the outline button, a progress track. */
+  "--ink-soft": "rgba(255, 255, 255, 0.1)",
   /*
    * The ink to put ON a filled accent/status surface.
    *
@@ -133,6 +161,10 @@ export const darkTokens = {
    * buttons carrying the primary action. On a bright accent the legible ink is
    * dark, and on a deep one it's white, so which one it is has to be a token
    * the theme answers rather than a literal in the markup.
+   *
+   * The spec's `--on-accent` is white. Kept dark here on purpose: white on
+   * #0099FF is 3.0:1, under the 4.5:1 the spec's own definition of done asks
+   * of text, on the label of the primary button.
    */
   "--accent-ink": "#0b0b0d",
   "--status-ink": "#0b0b0d",
@@ -152,16 +184,18 @@ export const darkTokens = {
    * only has to be found when looked for.
    *
    * `--hairline-strong` is the **edge of a card**: where one surface stops and
-   * another begins. It was 0.12, which composites to a 1.4:1 line, and the cards
-   * that carried it were the lucky ones — most had no edge at all and sat on a
-   * canvas 1.06:1 away from them. It is now solved so the composite clears
-   * **1.5:1 against the card it bounds and against the ground it sits on**,
-   * in both themes, and `contrast-audit.mjs` holds it there. That is below the
-   * 3:1 WCAG 1.4.11 asks of a control's boundary and deliberately so — a card is
-   * not a control, and an edge that loud turns a grid of files into a cage.
+   * another begins, drawn as an inset shadow, never a border (spec §1.4). The
+   * spec draws it at white 10%, which composites to 1.3:1 on a #111 card and
+   * 1.44:1 against the black canvas; `contrast-audit.mjs` holds it there. Well
+   * below the 3:1 WCAG 1.4.11 asks of a control's boundary, deliberately — a
+   * card is not a control, and an edge that loud turns a grid into a cage.
+   *
+   * `--line-strong` is the spec's `--border-strong`: the resting underline of
+   * an input, the one real border in the system.
    */
-  "--hairline": "rgba(255, 255, 255, 0.07)",
-  "--hairline-strong": "rgba(255, 255, 255, 0.16)",
+  "--hairline": "rgba(255, 255, 255, 0.05)",
+  "--hairline-strong": "rgba(255, 255, 255, 0.1)",
+  "--line-strong": "rgba(255, 255, 255, 0.2)",
   /*
    * The ring around a selected card. Dozens of call sites wrote this as a
    * literal `rgba(0,153,255,.5)`, which froze the old accent into the markup —
@@ -216,27 +250,37 @@ export const darkTokens = {
    * `rgba(0,0,0,.35)` or heavier — tuned by eye on this theme, where a black
    * shadow on a near-black canvas does almost nothing, then carried unchanged
    * onto the light theme where the same value is a bruise under every menu.
-   * Each theme now states its own: dark leans on the hairline and a short
-   * shadow, because here elevation is read from the surface getting *lighter*.
+   * Each theme states its own. On dark, depth comes from light, not shadow
+   * (spec §1.5): cards have no drop shadow at all, and the one shadow,
+   * `--shadow-raised`, is for menus and overlays only. `--shadow-pop` and
+   * `--shadow-modal` are the names the app already uses for exactly those.
    */
-  "--shadow-pop": "0 10px 28px rgba(0, 0, 0, 0.42)",
-  "--shadow-modal": "0 24px 60px rgba(0, 0, 0, 0.55)",
-  /* The lift under a hovered button: soft, close, gone on release. */
-  "--shadow-soft": "0 4px 12px rgba(0, 0, 0, 0.28)",
+  "--shadow-raised": "0 20px 40px rgba(0, 0, 0, 0.6)",
+  "--shadow-pop": "0 20px 40px rgba(0, 0, 0, 0.6)",
+  "--shadow-modal": "0 20px 40px rgba(0, 0, 0, 0.6)",
+  "--shadow-soft": "0 0 0 1px rgba(255, 255, 255, 0.08)",
   /*
-   * Motion, the same in both themes. Three speeds and three curves, and
-   * nothing else: hover, press and colour changes are fast; things that open
-   * (menus, tabs, accordions) are base; whole surfaces (pages, modals,
-   * drawers) are slow. Entering eases out, leaving eases in, and anything
-   * that moves or resizes in place eases both ways. Leaving is always faster
-   * than arriving.
+   * Light, for active, focus and highlight only, on about 2% of a layout.
+   * `--glow-line` is a `filter` for chart lines, not a shadow.
    */
-  "--duration-fast": "150ms",
-  "--duration-base": "250ms",
-  "--duration-slow": "400ms",
-  "--ease-out": "cubic-bezier(0.16, 1, 0.3, 1)",
-  "--ease-in": "cubic-bezier(0.7, 0, 0.84, 0)",
-  "--ease-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
+  "--glow-primary": "0 0 6px #0099ff, 0 0 24px rgba(0, 153, 255, 0.6), 0 0 64px rgba(0, 85, 255, 0.4)",
+  "--glow-soft": "0 0 18px rgba(0, 153, 255, 0.35)",
+  "--glow-line": "drop-shadow(0 0 6px rgba(0, 153, 255, 0.8)) drop-shadow(0 0 18px rgba(0, 85, 255, 0.5))",
+  /*
+   * Motion (spec §1.8), the same in both themes, and minimal: 120ms
+   * crossfades for colour, opacity and shadow, 180ms for switch knobs and
+   * progress fills, all on one curve. No bounce, spring, entrance animation
+   * or parallax.
+   */
+  "--duration-fast": "120ms",
+  "--duration-base": "180ms",
+  "--ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+  /*
+   * Hover and press (spec §1.6): one scrim over the resting fill, the same
+   * for every button. No lift, no scale, no darker hex. Black at 35% on
+   * dark; the light theme states a lighter one.
+   */
+  "--hover-scrim": "rgba(0, 0, 0, 0.35)",
   /*
    * How a native control shifts when pointed at. The hover veil handles
    * everything else by tinting toward `currentColor`, which needs no per-theme
@@ -244,8 +288,53 @@ export const darkTokens = {
    * arrow) and so needs a direction stated: lift on dark, settle on light.
    */
   "--hover-shift": "brightness(1.28)",
+  /* The off track of a switch (spec `--grey-400`). */
+  "--track": "#333333",
   "--chrome-mark-invert": "invert(1)",
   "color-scheme": "dark",
+};
+
+/*
+ * The spec's own names (docs/MARKYOS_UI.md §2), as aliases of the tokens
+ * above, so markup or inline styles written straight from the spec work and
+ * follow the theme. Declared once on :root: each resolves against whichever
+ * theme is active. Prefer the Tailwind classes in components.
+ */
+export const specAliases = {
+  "--brand-black": "#000000",
+  "--brand-white": "#ffffff",
+  "--brand-blue": "#0099ff",
+  "--brand-blue-deep": "#0055ff",
+  "--primary": "var(--accent)",
+  "--primary-deep": "var(--accent-deep)",
+  "--primary-10": "var(--accent-soft)",
+  "--on-accent": "var(--accent-ink)",
+  "--surface-page": "var(--canvas)",
+  "--surface-card": "var(--surface-1)",
+  "--surface-panel": "var(--surface-1)",
+  "--bg-light": "var(--surface-2)",
+  "--off-white": "var(--surface-highlight)",
+  "--text-heading": "var(--text)",
+  "--text-body": "var(--text-secondary)",
+  "--text-link": "var(--accent-text)",
+  "--text-40": "var(--text-disabled)",
+  "--border-subtle": "var(--hairline)",
+  "--border-default": "var(--hairline-strong)",
+  "--border-strong": "var(--line-strong)",
+  "--border-focus": "var(--accent)",
+  "--ink-10": "var(--ink-soft)",
+  "--ink-35": "var(--hover-scrim)",
+  "--grey-400": "var(--track)",
+  "--status-success": "var(--success)",
+  "--status-warning": "var(--warning)",
+  "--status-danger": "var(--danger)",
+  "--status-info": "var(--info)",
+  "--green-10": "var(--success-soft)",
+  "--yellow-10": "var(--warning-soft)",
+  "--red-10": "var(--danger-soft)",
+  "--cyan-10": "var(--info-soft)",
+  "--transition-state":
+    "background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard)",
 };
 
 /*
@@ -263,6 +352,8 @@ export const lightTokens = {
   "--surface-1": "#ffffff",
   "--surface-2": "#f0f0f4",
   "--surface-3": "#e4e4ea",
+  "--surface-highlight": "#f6f6f9",
+  "--surface-sunken": "rgba(9, 9, 11, 0.03)",
   /* Each of these was solved against `--surface-3` (#e4e4ea), the greyest
    * ground in the light theme. The previous values were picked against white
    * and dropped to 3.7–4.1:1 the moment they were used on a tinted card.
@@ -273,6 +364,7 @@ export const lightTokens = {
    * 4.31:1 — the Visual identity filter chips, the Builder's page tabs, every
    * selected pill in the product. Solved against that tint instead. */
   "--accent": "#0062b8",
+  "--accent-deep": "#004a8f",
   "--accent-soft": "rgba(0, 98, 184, 0.1)",
   "--accent-ring": "rgba(0, 98, 184, 0.22)",
   /* Same job as the dark theme's, solved the other way: on light the tint
@@ -285,16 +377,24 @@ export const lightTokens = {
   "--text-secondary": "#262629",
   "--text-muted": "#36363c",
   "--text-faint": "#47474f",
+  "--text-disabled": "rgba(13, 13, 15, 0.4)",
   /* Deepened to clear 7:1 at the 10–11px these are almost always set at — a
   "Verified" chip and an "AAA" badge are small type, not headings. */
   "--success": "#085230",
   "--warning": "#654000",
+  "--attention": "#7a3400",
   "--danger": "#8a1824",
+  "--danger-fill": "#d6004f",
+  /* The spec's cyan, deepened the same way, to 7:1 on `--surface-3`. */
+  "--info": "#004a5f",
   /* Each a tint of this theme's status colour, so the badge text keeps its
    * contrast; the dark theme's tints are too pale behind these inks. */
   "--success-soft": "rgba(8, 82, 48, 0.08)",
   "--warning-soft": "rgba(101, 64, 0, 0.08)",
   "--danger-soft": "rgba(138, 24, 36, 0.08)",
+  "--attention-soft": "rgba(122, 52, 0, 0.07)",
+  "--info-soft": "rgba(0, 74, 95, 0.08)",
+  "--ink-soft": "rgba(9, 9, 11, 0.06)",
   /* Here the accent is deep, so the legible ink on it is white. */
   "--accent-ink": "#ffffff",
   "--status-ink": "#ffffff",
@@ -305,6 +405,7 @@ export const lightTokens = {
   a little of the work, and on this one it does almost none. */
   "--hairline": "rgba(9, 9, 11, 0.09)",
   "--hairline-strong": "rgba(9, 9, 11, 0.22)",
+  "--line-strong": "rgba(9, 9, 11, 0.32)",
   "--accent-edge": "rgba(0, 98, 184, 0.55)",
   /* Chip edge and scrim are intentionally identical to the dark theme's — see
    * the note there; both are about the content, not the interface. */
@@ -320,7 +421,17 @@ export const lightTokens = {
   like a bruise and wide enough to read as height rather than as an edge. */
   "--shadow-pop": "0 8px 24px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.08)",
   "--shadow-modal": "0 20px 50px rgba(16, 16, 24, 0.2), 0 4px 12px rgba(16, 16, 24, 0.1)",
-  "--shadow-soft": "0 4px 12px rgba(16, 16, 24, 0.12)",
+  "--shadow-soft": "0 0 0 1px rgba(9, 9, 11, 0.08)",
+  "--shadow-raised": "0 8px 24px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.08)",
+  /* Glow does not read on a light ground, so the same roles are a tighter
+  halo in the deeper accent. */
+  "--glow-primary": "0 0 0 1px rgba(0, 98, 184, 0.5), 0 0 16px rgba(0, 98, 184, 0.35)",
+  "--glow-soft": "0 0 12px rgba(0, 98, 184, 0.3)",
+  "--glow-line": "drop-shadow(0 0 4px rgba(0, 98, 184, 0.45))",
+  /* A black scrim at the dark theme's 35% turns a white button grey; this is
+  the same darkening, at the strength a light ground needs. */
+  "--hover-scrim": "rgba(0, 0, 0, 0.1)",
+  "--track": "#bdbdc4",
   /* Settle rather than lift: on a light ground a control gets darker when
   pointed at, and `brightness` above 1 on a white control does nothing. */
   "--hover-shift": "brightness(0.95)",

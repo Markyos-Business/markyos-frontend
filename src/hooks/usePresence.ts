@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /** How long an exit animation runs: `--duration-fast`. */
-const EXIT_MS = 150;
+const EXIT_MS = 120;
 
 type Presence = {
   /** Render the element at all. */

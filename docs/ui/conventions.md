@@ -37,7 +37,7 @@ type BadgeProps = {
 };
 
 const Badge = ({ tone = "neutral", children }: BadgeProps) => (
-  <span className={`rounded-full px-2.5 py-1 text-ui-2xs font-semibold ${tones[tone]}`}>{children}</span>
+  <span className={`h-badge rounded-xl px-2 text-caption font-medium ${tones[tone]}`}>{children}</span>
 );
 
 export { Badge };

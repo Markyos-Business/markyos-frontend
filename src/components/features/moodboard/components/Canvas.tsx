@@ -1798,7 +1798,7 @@ function AddMenu({
         <>
           <span className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <span
-            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 animate-dropdown-in"
+            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 animate-fade-in"
             style={{
               insetInlineEnd: 0,
               top: "calc(100% + 4px)",

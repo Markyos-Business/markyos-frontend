@@ -3,6 +3,13 @@
 How the Markyos frontend is styled and built: the tokens, the shared
 components, how things move, and the rules every new component follows.
 
+The design itself is specified in [MARKYOS_UI.md](../MARKYOS_UI.md), the
+Markyos Design System export: its values and hard rules are the source of
+truth, and these pages say how they map onto the code. Two deliberate
+differences: the app keeps a light theme, derived from the spec's dark
+values, and where a spec colour is under the contrast floor as text, the text
+token is the same hue lifted (the spec's value stays for fills).
+
 | Read | For |
 | --- | --- |
 | [tokens.md](tokens.md) | Colours, type, radii, shadows, z-index, motion and breakpoints, and the class for each |

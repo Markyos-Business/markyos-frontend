@@ -199,7 +199,7 @@ export function ContrastReport({ ws, isAr, compact = false }: { ws: Workspace; i
       {!compact && <LogoContrast ws={ws} isAr={isAr} theme={theme} />}
 
       {failures.length > 0 && (
-        <p className="text-[11.5px] leading-[1.6] animate-fade-in" style={{ color: "var(--text-muted)" }}>
+        <p className="text-[11.5px] leading-[1.6]" style={{ color: "var(--text-muted)" }}>
           {isAr
             ? "الإصلاح يكون بتعديل اللون في لوحة الألوان أو بتغيير أرضية الموقع — ليس بتكبير النص فقط."
             : "Fix these by adjusting the swatch in your palette or switching the site ground, not by making the type bigger — the ratio is what a screen reader user's low-vision setting can't work around."}

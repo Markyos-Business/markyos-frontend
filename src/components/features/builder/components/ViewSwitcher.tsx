@@ -129,12 +129,12 @@ export function SecondaryViewBanner({ ctx, isAr }: { ctx: ViewContext; isAr: boo
   if (!notice) return null;
   return (
     <div
-      className="flex items-start gap-2 px-3 py-2 rounded-lg text-[11.5px] leading-[1.45] animate-fade-in"
+      className="flex items-start gap-2 px-3 py-2 rounded-lg text-[11.5px] leading-[1.45]"
       style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
     >
       <Icon name="info-circle" size={13} style={{ color: "var(--text-faint)", flexShrink: 0, marginTop: 1 }} />
       <span dir="auto" className="bidi-auto">
-        <strong style={{ color: "var(--text-secondary)", fontWeight: 600 }}>{notice.title}</strong>
+        <strong style={{ color: "var(--text-secondary)", fontWeight: 500 }}>{notice.title}</strong>
         {" — "}
         {notice.body}
       </span>

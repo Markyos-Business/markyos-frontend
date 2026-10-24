@@ -84,7 +84,7 @@ export function ReviewChip({
         background: "var(--surface-2)",
         color: tone.fg,
         fontSize: 11.5,
-        fontWeight: 600,
+        fontWeight: 500,
         whiteSpace: "nowrap",
       }}
       button={

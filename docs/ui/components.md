@@ -14,22 +14,27 @@ extended, use it.
 
 ```tsx
 <Button variant="primary" onClick={save}>Save</Button>
-<Button variant="secondary" size="sm" icon={<Icon name="plus" size={15} />}>Add</Button>
+<Button variant="outline" size="sm" icon={<Icon name="plus" size={18} />}>Add asset</Button>
 <Button variant="link" href="/reset">Forgot?</Button>
 ```
 
 | Prop | Type | Default |
 | --- | --- | --- |
-| `variant` | `"primary" \| "secondary" \| "ghost" \| "link"` | `"secondary"` |
-| `size` | `"sm" \| "md" \| "lg"` (ignored by `link`) | `"md"` |
-| `icon` | `ReactNode` | |
+| `variant` | `"primary" \| "outline" \| "ghost" \| "danger" \| "light" \| "link"` | `"outline"` |
+| `size` | `"sm"` (40px) `\| "md"` (46px); ignored by `link` | `"md"` |
+| `icon` | `ReactNode`, an 18px `Icon` before the label | |
+| `active` | keeps the hover scrim on, for the current choice | |
+| `block` | fills the width | |
 | `href` | `string`: renders a Next `Link` instead of a `<button>` | |
 | `className` | adds classes; never use it to override a variant | |
 
-Plus every native `<button>` attribute. Primary and secondary lift 1px onto a
-soft shadow on hover and focus; `link` grows an underline from the
-reading-start side. `PillButton` is the old name for `Button`, kept while
-pages move over.
+The spec's Button (MARKYOS_UI.md §6.2): 46px, an 8px radius, a 14px label at
+weight 500. `primary` is the accent fill, `outline` the neutral tint with a
+hairline, `ghost` the accent tint, `danger` the red fill for a destructive
+confirm, `light` the white marketing call to action. Disabled is the raised
+fill with the 40% ink. Hover and press are the `mk-btn` scrim; `link` just
+underlines. Plus every native `<button>` attribute. `PillButton` is the old
+name for `Button`, kept while pages move over.
 
 ### `IconButton`
 
@@ -38,7 +43,8 @@ pages move over.
 ```
 
 `icon` (icon name), `label` (required: the accessible name and tooltip),
-`iconSize` (default 15). Grows to 105% on hover and focus.
+`variant`: `quiet` (default, a bare glyph with a 26px hit area), or `primary`
+/ `outline`, the spec's 46px ArrowButton. `iconSize` is 16, 18 or 22.
 
 ## Feedback
 
@@ -60,7 +66,7 @@ showToast("Brand deleted", "default", { label: "Undo", run: restore });
 ```
 
 Variants `default | success | danger`. A toast with an action stays 7s,
-otherwise 2.8s. It slides in, and fades out when dismissed.
+otherwise 2.8s. It fades in, and out when dismissed.
 
 ### `useDialog` — confirm and prompt, instead of `window.confirm`
 
@@ -105,6 +111,51 @@ Reuse `rowClasses` and `cellClasses` so rows line up with the header. Rows
 navigate on `<tr onClick>`. A cell with its own button calls
 `e.stopPropagation()`.
 
+### Badges — `ui/badges`
+
+```tsx
+<Badge tone="success" dot>Active</Badge>
+<Badge tone="attention" size="md" icon={<Icon name="clock" size={12} />}>Due soon</Badge>
+<SolidBadge tone="danger">3</SolidBadge>
+<IconBadge icon="users" tone="info" />
+```
+
+There are seven tones: `neutral`, `info`, `accent`, `success`, `warning`,
+`attention` and `danger`. All of them come from `ui/badges/variants.ts`
+(`SOFT_`, `DOT_` and `SOLID_VARIANT_CLASSES`), use theme tokens, and are
+checked by the contrast audit in both themes.
+
+### `Tooltip`, `FilterChip`, `ActionsDropdown`, `AppDate`
+
+```tsx
+<Tooltip content="Visible to clients" side="end"><IconButton icon="eye" label="Visibility" /></Tooltip>
+<FilterChip label="Dubai" onRemove={clear} />
+<ActionsDropdown items={[{ label: "Delete", icon: "trash", tone: "danger", onSelect: remove }]} />
+<AppDate value={brand.updatedAt} format="relative" locale={isAr ? "ar" : "en-GB"} />
+```
+
+- **`Tooltip`:** sides are `top`, `bottom`, `start` and `end`, so they mirror
+  in Arabic. It shows on hover and on keyboard focus, and describes its
+  trigger for screen readers.
+- **`ActionsDropdown`:** built on `Popover`.
+- **`AppDate`:** renders a `<time>` element. Formats are `month`,
+  `month-year`, `short`, `long`, `datetime` and `relative`.
+
+### `Tabs`, `Faq`, `AsyncStateView`
+
+```tsx
+<Tabs label="Brand" tabs={[{ key: "overview", label: "Overview" }]} active={tab} onChange={setTab} />
+<Faq items={[{ question: "…", answer: "…" }]} allowMultiple />
+<AsyncStateView status={getAsyncStatus(loading, error, rows, (r) => !r.length)} skeleton={<TableLoadingRow colSpan={4} columns={4} />} emptyTitle="No brands yet" emptyDescription="Create one to start." onRetry={reload}>…</AsyncStateView>
+```
+
+- **`Tabs`:** the spec's tabs, 40px: `variant="text"` (the active tab on a
+  raised pill) or `"icon"` (solid accent, overline label). Items may carry an
+  `icon`.
+- **`Faq`:** opens at once; the open card takes the accent edge.
+- **`AsyncStateView`:** covers loading, error with Retry, empty, and the
+  content.
+
 ### `StatTile`, `Badge`
 
 ```tsx
@@ -112,19 +163,18 @@ navigate on `<tr onClick>`. A cell with its own button calls
 <Badge tone="success">Active</Badge>
 ```
 
-Badge tones are `neutral | accent | success | warning | danger`, from the
-shared map in `ui/badges/variants.ts`. Status badges are checked by the
-contrast audit.
+Badge tones are `neutral | info | accent | success | warning | attention |
+danger`, from the shared map in `ui/badges/variants.ts`, checked by the
+contrast audit. `size="sm"` is the spec's 24px Badge, `size="md"` its 36px
+Tag, and `dot` draws the 28px StatusTag, where only the dot carries the tone.
 
-### `Skeleton`, `listItemMotion`
+### `Skeleton`
 
 ```tsx
 <Skeleton className="h-4 w-full rounded-lg" />
-{items.map((item, i) => { const m = listItemMotion(i); return <li key={item.id} className={m.className} style={m.style}>…</li>; })}
 ```
 
-A skeleton shaped like the content, with a soft shimmer. `listItemMotion`
-staggers a list in, 40ms apart and finished within 400ms.
+A skeleton shaped like the content, with a soft shimmer.
 
 ### Settings building blocks — `ui/composites/SectionUI`
 
@@ -136,21 +186,20 @@ of. `Row` (`label`, `hint`, `right`) is one line of it. `Switch` (`checked`,
 ### Tabs — `TabIndicator`
 
 ```tsx
-<button className="relative isolate …" onClick={() => startTransition(() => setTab(key))}>
-  {active && <TabIndicator group="settings" />}
+<button className="relative isolate rounded-lg …" onClick={() => setTab(key)}>
+  {active && <TabIndicator />}
   {label}
 </button>
 ```
 
-The active tab's pill as its own element. When the change runs inside
-`startTransition`, it slides to the tab you chose. Use one `group` name per
-tab row.
+The active tab's raised pill (or `variant="underline"`, a bar), for a tab row
+built by hand. It doesn't travel between tabs.
 
 ## Overlays — `ui/overlays`
 
 `Popover` (`button`, `label`, `align: "start" | "end"`, `width`, and
 `children(close)`) is a menu anchored to its trigger. It isn't modal, closes
-on outside click and Escape, and grows in and shrinks out.
+on outside click and Escape, and crossfades in and out.
 
 ## Primitives — `ui/primitives`
 
@@ -188,6 +237,23 @@ reversed or plated on dark grounds.
 `inputClasses(error)`, `labelClasses` and `FieldNote` let a custom field, such
 as `PasswordField`, match.
 
+Every field below is controlled (`value` and `onChange`) and shares the same
+label, `*` for `required`, hint and error as `InputField`:
+
+| Field | What |
+| --- | --- |
+| `TextareaField` | A labelled multi-line box that can be made taller. |
+| `SelectField`, `SelectInput` | A labelled select, or just the select. A value that matches no option shows as such. |
+| `FilterSelectField`, `SortControl` | Pill selects for filter bars, with an optional `icon`. |
+| `Combobox` | A select with search. Use `multiple` for several values and `emptyActions` for "Create …". It works with arrow keys, Enter and Escape. |
+| `SearchableChecklist` | A checklist with search, "Select all shown" and Clear. Use `layout="chips"` for short labels. |
+| `RadioField`, `RadioCardGroup` | One choice from a few, as tiles or as cards with a hint. |
+| `ToggleField`, `ToggleCardGroup` | One setting, or several, as switch cards. The thumb goes to the reading end. |
+| `SegmentedToggle` | Two named modes with a sliding highlight. |
+| `OtpField`, `PhoneField` | A one-time code with paste support, and a dial code plus number. Both stay left-to-right. |
+| `RepeaterField` | A list of same-shaped rows, with add and remove. |
+| `FileField` | Drop or browse with type and size checks. Use `variant="compact"` for forms with several uploads. The caller does the upload. |
+
 ## Layout — `@/components/layout`
 
 | Component | What |
@@ -204,6 +270,13 @@ as `PasswordField`, match.
 | Hook | What |
 | --- | --- |
 | `usePresence(open)` | Keeps something mounted through its exit animation: `{ mounted, closing }`. |
+| `useFileDrop({ onFiles })` | Drag-and-drop for a drop target: `{ isDragging, dropHandlers }`. |
 | `useRequest(load, key)` | Loads data and reloads when `key` changes: `{ data, error, loading, reload }`. |
 | `useModalDismiss(onClose)` | Escape closes, and focus returns to the opener. |
 | `useLocalPref`, `useNarrowViewport` | A remembered preference, and whether the viewport is under 900px. |
+
+## Gallery
+
+To see every shared component on one page, in both directions and both
+themes, build with `NEXT_PUBLIC_UI_GALLERY=1` and open `/design-system`. The
+page doesn't exist in any other build.
