@@ -13,3 +13,6 @@ export * from "./composites/RichText";
 export * from "./buttons/Button";
 export * from "./buttons/IconButton";
 export * from "./AlertBanner";
+export * from "./table";
+export * from "./empty";
+export * from "./card";

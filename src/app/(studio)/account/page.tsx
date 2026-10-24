@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, TextField } from "@/components/ui";
+import { useToast, Icon, StatTile, TextField } from "@/components/ui";
 import { Section, Row, Switch, EmptyHint } from "@/components/ui/composites/SectionUI/SectionUI";
 import { ProfilePanel, BillingPanel } from "@/components/features/account";
 import { formatRelative } from "@/lib/utils";
@@ -257,17 +257,6 @@ function AccountPageBody() {
         )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatTile({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="rounded-xl p-3.5 flex flex-col gap-1" style={{ background: "var(--surface-2)" }}>
-      <span className="text-[22px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-        {value}
-      </span>
-      <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>{label}</span>
     </div>
   );
 }

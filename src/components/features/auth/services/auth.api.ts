@@ -1,5 +1,5 @@
 import { ApiError, api, setAccessToken } from "@/lib/api/client";
-import type { Account, Lang } from "@/types";
+import type { Account, AccountRole, Lang } from "@/types";
 
 /** The account as the backend sends it (`AccountSerializer`). */
 interface ApiAccount {
@@ -10,6 +10,10 @@ interface ApiAccount {
   createdAt: string;
   lastLoginAt: string | null;
   passwordUpdatedAt: string | null;
+  role: AccountRole;
+  isAdmin: boolean;
+  avatarUrl: string | null;
+  twoFactorEnabled: boolean;
 }
 
 const ms = (iso: string | null) => (iso ? Date.parse(iso) : null);
@@ -30,6 +34,10 @@ export function toAccount(a: ApiAccount): Account {
     createdAt: ms(a.createdAt) ?? Date.now(),
     lastLoginAt: ms(a.lastLoginAt),
     adminLang: a.adminLang,
+    role: a.role,
+    isAdmin: a.isAdmin,
+    avatarUrl: a.avatarUrl,
+    twoFactorEnabled: a.twoFactorEnabled,
   };
 }
 

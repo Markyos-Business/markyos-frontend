@@ -1164,7 +1164,18 @@ export interface Account {
    * so splitting the field changes no behaviour on its own.
    */
   adminLang: Lang | null;
+  /**
+   * Account-wide role, from the server. Brand access never comes from this
+   * (see `TeamRole`); it only opens the platform admin area. Absent on a
+   * browser-only account, which is always a member.
+   */
+  role?: AccountRole;
+  isAdmin?: boolean;
+  avatarUrl?: string | null;
+  twoFactorEnabled?: boolean;
 }
+
+export type AccountRole = "admin" | "member";
 
 export interface AuditEntry {
   id: string;

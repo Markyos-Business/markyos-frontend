@@ -3683,3 +3683,9 @@ export function useApp(): AppContextValue {
   if (!ctx) throw new Error("useApp must be used within AppProvider");
   return ctx;
 }
+
+/** The signed-in person's account, or null when signed out. */
+export function useCurrentAccount(): Account | null {
+  const { state } = useApp();
+  return state.accounts.find((a) => a.id === state.session?.accountId) ?? null;
+}
