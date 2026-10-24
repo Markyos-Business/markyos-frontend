@@ -9,12 +9,14 @@
  *   tailwind/base.js    element defaults and the shared classes the markup
  *                       relies on (rich text, the live editor, focus, motion)
  *
- * Colours are written out directly, both themes at once:
- * `light-dark(lightValue, darkValue)`. The browser picks a half from the
- * `color-scheme` the tokens set on :root (dark) and under [data-theme="light"],
- * so the theme toggle repaints every utility. The same values also exist as
- * CSS variables in tailwind/tokens.js for inline `var(--…)` styles and the
- * contrast audit; tailwind/colors.test.js fails if the two ever disagree.
+ * Colours are written out directly, both themes at once, as the fallback of
+ * their token: `var(--surface-1, light-dark(lightValue, darkValue))`. The
+ * variable always wins at runtime, and that is deliberate: the guideline site
+ * re-points `--surface-*`, `--text-*` and `--hairline*` inside a section with
+ * its own brand background (guideline-site/model/blockStyle.ts), and a literal
+ * colour could not follow it. The variables live in tailwind/tokens.js, for
+ * inline styles and the contrast audit too; tailwind/colors.test.js fails if a
+ * value here ever disagrees with its token.
  *
  * Content scanning is automatic in Tailwind v4, so there is no `content` list,
  * and no RTL plugin: logical utilities (`ms-*`, `ps-*`, `start-*`, `text-start`)
@@ -47,53 +49,53 @@ const config = {
   theme: {
     extend: {
       colors: {
-        canvas: "light-dark(#eeeef2, #060607)",
-        "surface-0": "light-dark(#ffffff, #0c0c0e)",
-        "surface-1": "light-dark(#ffffff, #16161a)",
-        "surface-2": "light-dark(#f0f0f4, #1e1e22)",
-        "surface-3": "light-dark(#e4e4ea, #232326)",
+        canvas: "var(--canvas, light-dark(#eeeef2, #060607))",
+        "surface-0": "var(--surface-0, light-dark(#ffffff, #0c0c0e))",
+        "surface-1": "var(--surface-1, light-dark(#ffffff, #16161a))",
+        "surface-2": "var(--surface-2, light-dark(#f0f0f4, #1e1e22))",
+        "surface-3": "var(--surface-3, light-dark(#e4e4ea, #232326))",
 
-        accent: "light-dark(#0062b8, #0099ff)",
-        "accent-soft": "light-dark(rgba(0, 98, 184, 0.1), rgba(0, 153, 255, 0.14))",
+        accent: "var(--accent, light-dark(#0062b8, #0099ff))",
+        "accent-soft": "var(--accent-soft, light-dark(rgba(0, 98, 184, 0.1), rgba(0, 153, 255, 0.14)))",
         // Accent as text on a surface: darker than `accent` on the light
         // theme, so links and small labels keep their contrast.
-        "accent-text": "light-dark(#00478f, #5cb9ff)",
+        "accent-text": "var(--accent-text, light-dark(#00478f, #5cb9ff))",
         // Text and icons on an `accent-soft` fill.
-        "accent-on-soft": "light-dark(#004080, #85caff)",
+        "accent-on-soft": "var(--accent-on-soft, light-dark(#004080, #85caff))",
         // Text on a solid `accent` fill, and the accent's focus ring and edge.
-        "accent-ink": "light-dark(#ffffff, #0b0b0d)",
-        "accent-ring": "light-dark(rgba(0, 98, 184, 0.22), rgba(0, 153, 255, 0.18))",
-        "accent-edge": "light-dark(rgba(0, 98, 184, 0.55), rgba(0, 153, 255, 0.55))",
+        "accent-ink": "var(--accent-ink, light-dark(#ffffff, #0b0b0d))",
+        "accent-ring": "var(--accent-ring, light-dark(rgba(0, 98, 184, 0.22), rgba(0, 153, 255, 0.18)))",
+        "accent-edge": "var(--accent-edge, light-dark(rgba(0, 98, 184, 0.55), rgba(0, 153, 255, 0.55)))",
 
         // The solid pill: the opposite of the ground in either theme.
-        solid: "light-dark(#101014, #ffffff)",
-        "solid-ink": "light-dark(#ffffff, #090909)",
+        solid: "var(--solid, light-dark(#101014, #ffffff))",
+        "solid-ink": "var(--solid-ink, light-dark(#ffffff, #090909))",
 
         // Borders are drawn as inset rings in these, not 1px borders.
-        hairline: "light-dark(rgba(9, 9, 11, 0.09), rgba(255, 255, 255, 0.07))",
-        "hairline-strong": "light-dark(rgba(9, 9, 11, 0.22), rgba(255, 255, 255, 0.16))",
-        "chip-edge": "rgba(130, 130, 138, 0.5)",
+        hairline: "var(--hairline, light-dark(rgba(9, 9, 11, 0.09), rgba(255, 255, 255, 0.07)))",
+        "hairline-strong": "var(--hairline-strong, light-dark(rgba(9, 9, 11, 0.22), rgba(255, 255, 255, 0.16)))",
+        "chip-edge": "var(--chip-edge, rgba(130, 130, 138, 0.5))",
 
-        text: "light-dark(#0d0d0f, #ffffff)",
-        "text-secondary": "light-dark(#262629, #e4e4e9)",
-        "text-muted": "light-dark(#36363c, #ccccd2)",
-        "text-faint": "light-dark(#47474f, #afafb6)",
+        text: "var(--text, light-dark(#0d0d0f, #ffffff))",
+        "text-secondary": "var(--text-secondary, light-dark(#262629, #e4e4e9))",
+        "text-muted": "var(--text-muted, light-dark(#36363c, #ccccd2))",
+        "text-faint": "var(--text-faint, light-dark(#47474f, #afafb6))",
 
-        success: "light-dark(#085230, #7ce7ac)",
-        warning: "light-dark(#654000, #f4be5e)",
-        danger: "light-dark(#8a1824, #ffa8b0)",
+        success: "var(--success, light-dark(#085230, #7ce7ac))",
+        warning: "var(--warning, light-dark(#654000, #f4be5e))",
+        danger: "var(--danger, light-dark(#8a1824, #ffa8b0))",
         // Tinted fills behind a status badge's text, each a tint of its own
         // theme's status colour so the text on it keeps its contrast.
-        "success-soft": "light-dark(rgba(8, 82, 48, 0.08), rgba(124, 231, 172, 0.14))",
-        "warning-soft": "light-dark(rgba(101, 64, 0, 0.08), rgba(244, 190, 94, 0.14))",
-        "danger-soft": "light-dark(rgba(138, 24, 36, 0.08), rgba(255, 128, 139, 0.14))",
+        "success-soft": "var(--success-soft, light-dark(rgba(8, 82, 48, 0.08), rgba(124, 231, 172, 0.14)))",
+        "warning-soft": "var(--warning-soft, light-dark(rgba(101, 64, 0, 0.08), rgba(244, 190, 94, 0.14)))",
+        "danger-soft": "var(--danger-soft, light-dark(rgba(138, 24, 36, 0.08), rgba(255, 128, 139, 0.14)))",
         // Text on a solid status or danger fill.
-        "status-ink": "light-dark(#ffffff, #0b0b0d)",
-        "danger-ink": "light-dark(#ffffff, #0b0b0d)",
+        "status-ink": "var(--status-ink, light-dark(#ffffff, #0b0b0d))",
+        "danger-ink": "var(--danger-ink, light-dark(#ffffff, #0b0b0d))",
 
         // The dim layer behind a modal, and text placed on it.
-        scrim: "rgba(9, 9, 9, 0.62)",
-        "scrim-ink": "#ffffff",
+        scrim: "var(--scrim, rgba(9, 9, 9, 0.62))",
+        "scrim-ink": "var(--scrim-ink, #ffffff)",
 
         // ── Brand ───────────────────────────────────────────────────────────
         // The Markyos brand from the design system (project/_ds, tokens/
