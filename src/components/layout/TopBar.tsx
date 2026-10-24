@@ -2,6 +2,7 @@
 
 import { Icon, LangToggle, TabIndicator } from "@/components/ui";
 import { AccountMenu } from "@/components/features/account";
+import { SidebarMenuButton } from "./SidebarDrawer";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -90,17 +91,33 @@ export function TopBar({
 
   return (
     <div className="shrink-0 flex flex-col" style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}>
-      <div className="h-16 shrink-0 flex items-center justify-between px-7">
+      {/* One row from tablet width up. On a phone the page's own actions
+          (`right`) drop to a second row under the title and wrap, so the menu
+          button and the title never get pushed off screen. Wrapping, not a
+          scrolling strip: a menu opening from one of those buttons would be
+          clipped by an overflow container. */}
+      <div className="shrink-0 flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 md:h-16 md:flex-nowrap md:px-7 md:py-0">
+        <SidebarMenuButton />
         <div
-          className="flex items-center gap-2 text-[13px]"
+          className="flex min-w-0 flex-1 items-center gap-2 text-[13px]"
           style={{ color: "var(--text-muted)", fontFamily: isAr ? "var(--font-arabic)" : undefined }}
         >
-          {isAr ? "دليل الهوية" : "Brand book"}
-          <Icon name={isAr ? "angle-left" : "angle-right"} size={14} />
-          <span className="text-text font-medium">{isAr && arSection ? arSection : section}</span>
+          {/* On a phone the section alone: the menu button beside it already
+              says where the rest of the brand book is. */}
+          <span className="hidden shrink-0 sm:inline">{isAr ? "دليل الهوية" : "Brand book"}</span>
+          <Icon name={isAr ? "angle-left" : "angle-right"} size={14} className="hidden shrink-0 sm:inline-block" />
+          <span className="truncate text-text font-medium">{isAr && arSection ? arSection : section}</span>
         </div>
-        <div className="flex items-center gap-3.5">
-          {right}
+        {right && (
+          // `*:flex-wrap`: a page that groups its actions in its own flex row
+          // wraps too, not just this one.
+          <div className="order-last flex w-full flex-wrap items-center gap-2.5 *:flex-wrap md:order-none md:w-auto md:shrink-0 md:flex-nowrap md:gap-3.5 md:*:flex-nowrap">
+            {right}
+          </div>
+        )}
+        <div className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
+          {/* Inline from `sm` up; on a phone both move into the account menu. */}
+          <div className="hidden items-center gap-3.5 sm:flex">
           <ThemeToggle isAr={isAr} />
           {/* Named for what it is here. The builder screen carries three of
               these: this one, the canvas's own preview switch, and the one
@@ -119,7 +136,21 @@ export function TopBar({
             label={isAr ? "لغة الواجهة" : "Interface language"}
             scope="chrome"
           />
-          <AccountMenu isAr={isAr} />
+          </div>
+          <AccountMenu
+            isAr={isAr}
+            controls={
+              <>
+                <ThemeToggle isAr={isAr} />
+                <LangToggle
+                  value={uiLang(workspace)}
+                  onChange={(lang) => setAdminLang(lang)}
+                  label={isAr ? "لغة الواجهة" : "Interface language"}
+                  scope="menu"
+                />
+              </>
+            }
+          />
         </div>
       </div>
       {tabs && tabs.length > 0 && (

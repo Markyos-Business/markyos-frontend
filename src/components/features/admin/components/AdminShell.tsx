@@ -55,8 +55,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
           title={current?.label}
           right={
             <>
-              <ThemeToggle />
-              <AccountMenu />
+              {/* On a phone the theme toggle moves into the account menu. */}
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
+              <AccountMenu controls={<ThemeToggle />} />
             </>
           }
         />

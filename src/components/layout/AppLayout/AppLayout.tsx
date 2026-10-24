@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode, Ref } from "react";
+import { MobileSidebar, SidebarDrawerProvider } from "../SidebarDrawer";
 
 /**
  * The signed-in app's frame: a sidebar beside one column that holds an
@@ -27,13 +28,20 @@ export function AppLayout({
   /** The column beside the sidebar, for a shell that listens to it. */
   paneRef?: Ref<HTMLDivElement>;
 }) {
+  const hasSidebar = Boolean(sidebar);
   return (
-    <div dir={dir} className="flex h-screen overflow-hidden" style={style}>
-      {sidebar}
-      <div ref={paneRef} className="flex min-h-0 min-w-0 flex-1 flex-col">
-        {topbar}
-        {children}
+    <SidebarDrawerProvider available={hasSidebar} isAr={dir === "rtl"}>
+      <div dir={dir} className="flex h-screen overflow-hidden" style={style}>
+        {/* Beside the page from tablet width up; on a phone the same sidebar
+            opens as a drawer from the top bar's menu button instead, so the
+            page gets the whole screen. */}
+        {hasSidebar && <div className="hidden md:flex">{sidebar}</div>}
+        <div ref={paneRef} className="flex min-h-0 min-w-0 flex-1 flex-col">
+          {topbar}
+          {children}
+        </div>
+        {hasSidebar && <MobileSidebar>{sidebar}</MobileSidebar>}
       </div>
-    </div>
+    </SidebarDrawerProvider>
   );
 }

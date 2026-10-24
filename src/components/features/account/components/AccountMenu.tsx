@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, Popover } from "@/components/ui";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
@@ -16,14 +17,30 @@ import { API_ENABLED } from "@/lib/api/client";
  * what it looks like it does, and names who is signed in while it's open,
  * which is the other half of what people open an avatar for.
  */
-export function AccountMenu({ isAr = false }: { isAr?: boolean }) {
+type MenuLink = { href: string; label: string; arLabel: string; icon: string };
+
+export function AccountMenu({
+  isAr = false,
+  controls,
+  phoneLinks = [],
+}: {
+  isAr?: boolean;
+  /**
+   * Controls the top bar shows inline but has no room for on a phone (theme,
+   * interface language). Shown in the menu below `sm` only, so they are never
+   * in two places on the same screen.
+   */
+  controls?: ReactNode;
+  /** Header links that fold into the menu on a phone, e.g. Board, Templates. */
+  phoneLinks?: MenuLink[];
+}) {
   const { state, logout } = useApp();
   const account = useCurrentAccount();
   const router = useRouter();
   const session = state.session;
   const initials = session ? session.name.slice(0, 2).toUpperCase() : "ND";
 
-  const items: { href: string; label: string; arLabel: string; icon: string }[] = [
+  const items: MenuLink[] = [
     { href: "/account?tab=profile", label: "Profile", arLabel: "الملف الشخصي", icon: "user" },
     { href: "/account?tab=billing", label: "Subscription & payments", arLabel: "الاشتراك والمدفوعات", icon: "credit-card" },
     { href: "/account?tab=organisation", label: "Organisation", arLabel: "المؤسسة", icon: "shield-alt" },
@@ -43,6 +60,23 @@ export function AccountMenu({ isAr = false }: { isAr?: boolean }) {
               {session?.email || "—"}
             </span>
           </div>
+
+          {controls && (
+            <div className="flex flex-wrap items-center gap-2.5 px-3.5 py-2.5 shadow-rule-b sm:hidden">{controls}</div>
+          )}
+
+          {phoneLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={close}
+              className="mk-nav-item flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] sm:hidden"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <Icon name={item.icon} size={14} style={{ color: "var(--text-faint)" }} />
+              {isAr ? item.arLabel : item.label}
+            </Link>
+          ))}
 
           {items.map((item) => (
             <Link

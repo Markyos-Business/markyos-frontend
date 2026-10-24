@@ -67,12 +67,15 @@ export default function BrandsPage() {
               style={{ color: "var(--text)" }}
             />
           </label>
-          <Link href="/studio/board" className="mk-tap text-[13px]" style={{ color: "var(--text-muted)" }}>
+          {/* On a phone these two fold into the account menu, so the search
+              keeps room to type in. Not `mk-tap`: its display is forced and
+              would beat `hidden`. */}
+          <Link href="/studio/board" className="hidden min-h-6.5 items-center text-[13px] sm:inline-flex" style={{ color: "var(--text-muted)" }}>
             Board
           </Link>
           <Link
             href="/templates"
-            className="mk-tap text-[13px]"
+            className="hidden min-h-6.5 items-center text-[13px] sm:inline-flex"
             style={{ color: "var(--text-muted)" }}
           >
             Templates
@@ -80,7 +83,12 @@ export default function BrandsPage() {
           {/* The text link is gone: the avatar next to it now does the job, and
               two controls side by side going to the same place is just a
               question about which one is the real one. */}
-          <AccountMenu />
+          <AccountMenu
+            phoneLinks={[
+              { href: "/studio/board", label: "Board", arLabel: "اللوحة", icon: "th-large" },
+              { href: "/templates", label: "Templates", arLabel: "القوالب", icon: "layer-group" },
+            ]}
+          />
         </div>
       </div>
 

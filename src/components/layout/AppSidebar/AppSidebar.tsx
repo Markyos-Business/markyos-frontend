@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import { useNarrowViewport } from "@/hooks/useNarrowViewport";
+import { useSidebarPlacement } from "../SidebarDrawer";
 
 export interface SidebarItem {
   key: string;
@@ -75,7 +76,10 @@ export function AppSidebar({
   // The stored preference still belongs to the person; a narrow viewport just
   // outranks it while it lasts, and the preference is waiting when they widen
   // the window again.
-  const collapsed = narrow || preference;
+  // In the phone drawer it is always the full sidebar: the drawer is the
+  // compact form, and a rail inside a drawer would be a rail with nowhere to go.
+  const inDrawer = useSidebarPlacement() === "drawer";
+  const collapsed = !inDrawer && (narrow || preference);
 
   /**
    * `[` collapses and expands the rail.
@@ -84,6 +88,7 @@ export function AppSidebar({
    * brand name should type a bracket, not rearrange the window.
    */
   useEffect(() => {
+    if (inDrawer) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.key !== "[" || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = document.activeElement as HTMLElement | null;
@@ -93,7 +98,7 @@ export function AppSidebar({
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [collapsed, setCollapsed]);
+  }, [collapsed, setCollapsed, inDrawer]);
 
   function renderItem(item: SidebarItem, extra = "") {
     const { active, badge, label: name } = item;
@@ -136,11 +141,13 @@ export function AppSidebar({
     <nav
       aria-label={label}
       {...rootProps}
-      // Width is the only thing that animates. Fading the labels as well
-      // reads as the panel hesitating; they simply aren't there at the other
-      // size, and the eye follows the edge, not the text.
-      className={`flex shrink-0 flex-col gap-6 overflow-y-auto overflow-x-hidden py-5 shadow-[inset_-1px_0_0_var(--hairline)] transition-[width,padding-inline] duration-200 ease-[cubic-bezier(0.2,0.7,0.3,1)] rtl:shadow-[inset_1px_0_0_var(--hairline)] ${
-        collapsed ? RAIL : OPEN
+      // Collapsing snaps rather than animating its width: a width animation
+      // reflows the whole page on every frame (docs/ui/motion.md). In the
+      // phone drawer it fills the drawer, which draws its own edge.
+      className={`flex shrink-0 flex-col gap-6 overflow-y-auto overflow-x-hidden py-5 ${
+        inDrawer
+          ? "h-full w-72 max-w-full px-4"
+          : `shadow-[inset_-1px_0_0_var(--hairline)] rtl:shadow-[inset_1px_0_0_var(--hairline)] ${collapsed ? RAIL : OPEN}`
       }`}
     >
       <div className={`flex shrink-0 items-center ${collapsed ? "justify-center" : "gap-2.5 px-2"}`}>
@@ -159,7 +166,7 @@ export function AppSidebar({
           )}
           {!collapsed && titleBadge}
         </Link>
-        {!collapsed && (
+        {!collapsed && !inDrawer && (
           <CollapseButton collapsed={collapsed} isAr={isAr} labels={collapseLabels} onClick={() => setCollapsed(true)} />
         )}
       </div>
