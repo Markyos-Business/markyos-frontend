@@ -1,0 +1,50 @@
+import type { AccountRole } from "@/types";
+
+type Tone = "neutral" | "accent" | "success" | "warning" | "danger";
+
+export const ROLE_LABELS: Record<AccountRole, string> = {
+  admin: "Admin",
+  member: "Member",
+};
+
+export const ROLE_TONES: Record<AccountRole, Tone> = {
+  admin: "accent",
+  member: "neutral",
+};
+
+export const STATUS_LABELS = { active: "Active", inactive: "Deactivated" } as const;
+
+export const STATUS_TONES: Record<keyof typeof STATUS_LABELS, Tone> = {
+  active: "success",
+  inactive: "danger",
+};
+
+export const STAGE_LABELS: Record<string, string> = {
+  discovery: "Discovery",
+  strategy: "Strategy",
+  design: "Design",
+  review: "Review",
+  delivered: "Delivered",
+  live: "Live",
+  none: "No stage",
+};
+
+export const PLAN_LABELS: Record<string, string> = {
+  free: "Free",
+  subscription: "Subscription",
+  pass: "One-time pass",
+};
+
+export const BRAND_ROLE_LABELS: Record<string, string> = {
+  owner: "Owner",
+  editor: "Editor",
+  viewer: "Viewer",
+  client: "Client",
+};
+
+export const ORDERINGS = [
+  { value: "-created_at", label: "Newest" },
+  { value: "created_at", label: "Oldest" },
+  { value: "-last_login", label: "Last active" },
+  { value: "email", label: "Email A–Z" },
+] as const;

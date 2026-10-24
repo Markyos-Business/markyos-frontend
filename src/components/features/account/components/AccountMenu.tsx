@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, Popover } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { API_ENABLED } from "@/lib/api/client";
 
 /**
  * The way to your own account, from wherever you are.
@@ -17,6 +18,7 @@ import { useApp } from "@/contexts/AppContext";
  */
 export function AccountMenu({ isAr = false }: { isAr?: boolean }) {
   const { state, logout } = useApp();
+  const account = useCurrentAccount();
   const router = useRouter();
   const session = state.session;
   const initials = session ? session.name.slice(0, 2).toUpperCase() : "ND";
@@ -26,6 +28,10 @@ export function AccountMenu({ isAr = false }: { isAr?: boolean }) {
     { href: "/account?tab=billing", label: "Subscription & payments", arLabel: "الاشتراك والمدفوعات", icon: "credit-card" },
     { href: "/account?tab=organisation", label: "Organisation", arLabel: "المؤسسة", icon: "shield-alt" },
   ];
+  // Markyos operators only; the platform admin area needs the backend.
+  if (API_ENABLED && account?.isAdmin) {
+    items.push({ href: "/admin", label: "Platform admin", arLabel: "إدارة المنصة", icon: "key" });
+  }
 
   return (
     <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} />} width={250}>

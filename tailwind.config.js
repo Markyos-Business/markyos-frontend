@@ -27,6 +27,8 @@ const config = {
         // Accent as text on a surface: darker than `accent` on the light
         // theme, so links and small labels keep their contrast.
         "accent-text": "var(--accent-text)",
+        // Text and icons on an `accent-soft` fill.
+        "accent-on-soft": "var(--accent-on-soft)",
 
         // The solid pill: the opposite of the ground in either theme.
         solid: "var(--solid)",
