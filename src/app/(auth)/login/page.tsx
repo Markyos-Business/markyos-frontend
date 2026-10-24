@@ -9,59 +9,6 @@ import { CheckboxField, InputField } from "@/components/form";
 import { AuthShell, PasswordField, SocialSignIn, EMAIL_RE } from "@/components/features/auth";
 import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/data/mockData";
 
-/*
- * Attempt limiting.
- *
- * Client-side, so it stops a person at a keyboard rather than a script — which
- * is the realistic threat against a guideline tool, and the same bar the client
- * password gate already holds. It is not a claim to have stopped an attacker
- * with devtools, and nothing in the copy pretends otherwise.
- *
- * `sessionStorage`, matching the client gate: a lockout that survives closing
- * the browser punishes the person who simply forgot, and one that resets on
- * every reload stops nobody.
- */
-const MAX_TRIES = 5;
-const LOCK_MS = 5 * 60 * 1000;
-const LOCK_KEY = "markyos:login-lock";
-
-/*
- * The count is stored, not just the lock.
- *
- * It was React state to begin with, which meant it reset on every page load —
- * so five tries became five tries *per visit*, and reloading between guesses
- * walked straight past the limit. A counter that a refresh clears is not a
- * counter.
- */
-interface Attempts {
-  tries: number;
-  until: number;
-}
-
-const readAttempts = (): Attempts => {
-  try {
-    const raw = window.sessionStorage.getItem(LOCK_KEY);
-    if (!raw) return { tries: 0, until: 0 };
-    const parsed = JSON.parse(raw) as Partial<Attempts>;
-    const until = Number(parsed.until) || 0;
-    // An expired lock takes the count with it: the pause is the punishment,
-    // and serving it earns a clean slate.
-    if (until && until <= Date.now()) return { tries: 0, until: 0 };
-    return { tries: Number(parsed.tries) || 0, until };
-  } catch {
-    return { tries: 0, until: 0 };
-  }
-};
-
-const writeAttempts = (a: Attempts) => {
-  try {
-    if (!a.tries && !a.until) window.sessionStorage.removeItem(LOCK_KEY);
-    else window.sessionStorage.setItem(LOCK_KEY, JSON.stringify(a));
-  } catch {
-    /* storage blocked — the limit just won't survive this page */
-  }
-};
-
 export default function LoginPage() {
   return (
     <Suspense fallback={null}>
@@ -99,23 +46,10 @@ function LoginForm({ next }: { next: string | null }) {
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({});
   const [busy, setBusy] = useState(false);
-  const [attempts, setAttempts] = useState<Attempts>(() => readAttempts());
-  const [now, setNow] = useState(() => Date.now());
-
-  const lockUntil = attempts.until;
-  const locked = lockUntil > now;
-  useEffect(() => {
-    if (!locked) return;
-    const t = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(t);
-  }, [locked]);
-
-  const remaining = Math.max(0, lockUntil - now);
-  const countdown = `${Math.floor(remaining / 60000)}:${String(Math.floor((remaining % 60000) / 1000)).padStart(2, "0")}`;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (busy || locked) return;
+    if (busy) return;
 
     const field: typeof errors = {};
     if (!EMAIL_RE.test(email.trim())) field.email = "Enter a valid email address.";
@@ -128,27 +62,9 @@ function LoginForm({ next }: { next: string | null }) {
     setBusy(false);
 
     if (failed) {
-      const used = attempts.tries + 1;
-      const updated: Attempts =
-        used >= MAX_TRIES ? { tries: used, until: Date.now() + LOCK_MS } : { tries: used, until: 0 };
-      writeAttempts(updated);
-      setAttempts(updated);
-      setNow(Date.now());
-      if (updated.until) {
-        setErrors({});
-        return;
-      }
-      const left = MAX_TRIES - used;
-      setErrors({
-        form: `${failed} ${left} ${left === 1 ? "try" : "tries"} left before this form pauses for a few minutes.`,
-      });
+      setErrors({ form: failed });
       return;
     }
-
-    // A clean sign-in clears the count — the limit is there for a run of
-    // failures, not as a running tally against the person.
-    writeAttempts({ tries: 0, until: 0 });
-    setAttempts({ tries: 0, until: 0 });
     router.push(next || "/brands");
   }
 
@@ -173,16 +89,7 @@ function LoginForm({ next }: { next: string | null }) {
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
         <AlertBanner
-          message={
-            locked ? (
-              <>
-                Too many attempts. This form unlocks on its own in {countdown}. If you&apos;ve forgotten
-                the password, you can reset it now instead of waiting.
-              </>
-            ) : (
-              errors.form
-            )
-          }
+          message={errors.form}
         />
 
         <InputField
@@ -191,7 +98,6 @@ function LoginForm({ next }: { next: string | null }) {
           inputMode="email"
           placeholder="you@studio.com"
           value={email}
-          disabled={locked}
           onChange={(e) => setEmail(e.target.value)}
           error={errors.email}
           autoComplete="email"
@@ -202,7 +108,6 @@ function LoginForm({ next }: { next: string | null }) {
           label="Password"
           placeholder="••••••••••"
           value={password}
-          disabled={locked}
           onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
           autoComplete="current-password"
@@ -224,7 +129,7 @@ function LoginForm({ next }: { next: string | null }) {
             : "You'll be signed out when you close this browser."}
         </p>
 
-        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy || locked}>
+        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={busy}>
           {busy ? "Checking…" : "Log in"}
         </Button>
 
@@ -244,7 +149,7 @@ function LoginForm({ next }: { next: string | null }) {
           <Button
             type="button"
             variant="link"
-            disabled={locked || busy}
+            disabled={busy}
             onClick={() => {
               setEmail(DEMO_EMAIL);
               setPassword(DEMO_PASSWORD);
