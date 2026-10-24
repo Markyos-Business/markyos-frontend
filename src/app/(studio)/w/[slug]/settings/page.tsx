@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
+import { API_ENABLED, api, getAccessToken } from "@/lib/api/client";
 import { useToast, Icon, Button, LangToggle, Section, Row, Switch, Badge } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { TopBar } from "@/components/layout";
@@ -50,6 +52,10 @@ export default function SettingsPage() {
   const [verifying, setVerifying] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<PlanKind | null>(null);
+  // Prices follow the account type: a freelancer, a studio and a company each
+  // pay their own rate per brand (constants/accountTypes.ts).
+  const account = useCurrentAccount();
+  const { label: typeLabel, prices } = ACCOUNT_TYPES[accountTypeOf(account)];
   const [origin, setOrigin] = useState("");
   const tokenInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +83,7 @@ export default function SettingsPage() {
       const sessionId = searchParams.get("session_id") ?? undefined;
       markPurchased(ws.id, plan, sessionId);
       showToast(
-        plan === "pass" ? "Project Pass activated — this guideline is now shared." : "Studio subscription active.",
+        plan === "pass" ? "Project Pass activated — this guideline is now shared." : `${typeLabel} plan active.`,
         "success"
       );
       router.replace(`/w/${ws.slug}/settings`);
@@ -173,10 +179,19 @@ export default function SettingsPage() {
     if (!ws || plan === "free") return;
     setCheckoutLoading(plan);
     try {
+      // With a backend the price tier comes from the account type the server
+      // holds, so checkout passes the session along instead of a tier. The
+      // `me` call first refreshes the token if it has lapsed.
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (API_ENABLED) {
+        await api("/auth/me/");
+        const token = getAccessToken();
+        if (token) headers.Authorization = `Bearer ${token}`;
+      }
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: ws.slug, plan }),
+        headers,
+        body: JSON.stringify({ slug: ws.slug, plan, accountType: accountTypeOf(account) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -426,14 +441,14 @@ export default function SettingsPage() {
             }
             right={
               <Badge tone={ws.billing.plan === "free" ? "neutral" : "accent"}>
-                {ws.billing.plan === "pass" ? "Project Pass" : ws.billing.plan === "subscription" ? "Studio plan" : "Free"}
+                {ws.billing.plan === "pass" ? "Project Pass" : ws.billing.plan === "subscription" ? `${typeLabel} plan` : "Free"}
               </Badge>
             }
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
             <PlanCard
               name="Project Pass"
-              price="$19"
+              price={`$${prices.pass}`}
               period="one-time"
               description="Unlock the client link for this one guideline. No recurring charge."
               active={ws.billing.plan === "pass"}
@@ -441,8 +456,8 @@ export default function SettingsPage() {
               onSelect={() => handleCheckout("pass")}
             />
             <PlanCard
-              name="Studio plan"
-              price="$29"
+              name={`${typeLabel} plan`}
+              price={`$${prices.subscription}`}
               period="/month"
               description="Unlock every guideline in your account, plus priority sign-off pins."
               active={ws.billing.plan === "subscription"}
@@ -467,7 +482,7 @@ export default function SettingsPage() {
         <Section title="White-label" icon="id-badge">
           <Row
             label="Remove Markyos branding"
-            hint="Drops the small 'Guideline delivered with Markyos' footer from the client viewer. Included automatically on the Studio plan."
+            hint={`Drops the small 'Guideline delivered with Markyos' footer from the client viewer. Included automatically on the ${typeLabel} plan.`}
             right={
               <Switch
                 label="Remove Markyos branding"

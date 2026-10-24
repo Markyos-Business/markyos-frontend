@@ -16,6 +16,7 @@ export function listUsers(query: AdminUserQuery = {}): Promise<AdminUserPage> {
   const params = new URLSearchParams();
   if (query.search?.trim()) params.set("search", query.search.trim());
   if (query.role) params.set("role", query.role);
+  if (query.accountType) params.set("account_type", query.accountType);
   if (query.isActive) params.set("is_active", query.isActive);
   if (query.ordering) params.set("ordering", query.ordering);
   if (query.page && query.page > 1) params.set("page", String(query.page));

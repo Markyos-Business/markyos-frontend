@@ -22,6 +22,15 @@ export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
+/**
+ * The current access token, for a request the app's own server makes on the
+ * person's behalf (checkout reads the account type from the backend with it,
+ * rather than trusting a price tier the browser names).
+ */
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
 /*
  * Called when the server ends a session the app still thinks is live: the
  * refresh token expired, was revoked by a password reset elsewhere, or was

@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertBanner, Button, PageHeader, StatTile } from "@/components/ui";
-import { PLAN_LABELS, STAGE_LABELS } from "../constants";
+import { ACCOUNT_TYPE_LABELS, PLAN_LABELS, STAGE_LABELS } from "../constants";
 import { useAdminStats } from "../hooks/useAdminStats";
 import { Breakdown } from "./Breakdown";
 import { SignupsChart } from "./SignupsChart";
@@ -38,7 +38,8 @@ export function AdminDashboardView() {
 
           <SignupsChart signups={data.signups} />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <Breakdown title="Accounts by type" counts={data.users.byType} labels={ACCOUNT_TYPE_LABELS} order={["studio", "freelancer", "company", "none"]} />
             <Breakdown title="Brands by stage" counts={data.brands.byStage} labels={STAGE_LABELS} order={STAGE_ORDER} />
             <Breakdown title="Brands by plan" counts={data.brands.byPlan} labels={PLAN_LABELS} />
           </div>

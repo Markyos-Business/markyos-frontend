@@ -1,9 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe, PROJECT_PASS_PRICE_USD, STUDIO_SUBSCRIPTION_PRICE_USD } from "@/components/features/billing/services/stripe.server";
+import { getStripe, priceInCents } from "@/components/features/billing/services/stripe.server";
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
+import type { AccountType } from "@/types";
+
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+const isAccountType = (v: unknown): v is AccountType => ACCOUNT_TYPE_KEYS.includes(v as AccountType);
 
 /**
- * Creates a real Stripe Checkout Session in test mode for the v1.0 $19
- * Project Pass (one-time) or the Studio subscription (monthly).
+ * The account type to price this checkout at.
+ *
+ * With a backend it is read from the account the caller's token belongs to,
+ * never from the request body: otherwise anyone could name the cheapest tier.
+ * A browser-only build has no server to ask, so there the body's value is
+ * all there is (and that build has no real accounts to protect).
+ */
+async function accountTypeFor(req: NextRequest, claimed: unknown): Promise<AccountType | Response> {
+  if (!API_URL) return isAccountType(claimed) ? claimed : "studio";
+  const auth = req.headers.get("authorization");
+  if (!auth) return NextResponse.json({ error: "Sign in to check out." }, { status: 401 });
+  const me = await fetch(`${API_URL}/auth/me/`, { headers: { Authorization: auth }, cache: "no-store" }).catch(() => null);
+  if (!me?.ok) return NextResponse.json({ error: "Your session has ended. Sign in again." }, { status: 401 });
+  const account = (await me.json()) as { accountType?: unknown };
+  return isAccountType(account.accountType) ? account.accountType : "studio";
+}
+
+/**
+ * Creates a real Stripe Checkout Session in test mode for the Project Pass
+ * (one-time) or the monthly plan, priced by the account type (studio,
+ * freelancer or company; see constants/accountTypes.ts).
  *
  * There's no server-side database in this build — the app's workspace
  * state lives in the browser (see lib/store.tsx). So this route only
@@ -15,7 +40,7 @@ import { getStripe, PROJECT_PASS_PRICE_USD, STUDIO_SUBSCRIPTION_PRICE_USD } from
  * since there's nothing yet for a webhook to persist to.
  */
 export async function POST(req: NextRequest) {
-  let body: { slug?: string; plan?: "pass" | "subscription" };
+  let body: { slug?: string; plan?: "pass" | "subscription"; accountType?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -26,6 +51,9 @@ export async function POST(req: NextRequest) {
   if (!slug || (plan !== "pass" && plan !== "subscription")) {
     return NextResponse.json({ error: "Missing slug or plan." }, { status: 400 });
   }
+  const type = await accountTypeFor(req, body.accountType);
+  if (type instanceof Response) return type;
+  const typeLabel = ACCOUNT_TYPES[type].label;
 
   let stripe;
   try {
@@ -53,7 +81,7 @@ export async function POST(req: NextRequest) {
               {
                 price_data: {
                   currency: "usd",
-                  unit_amount: PROJECT_PASS_PRICE_USD,
+                  unit_amount: priceInCents(type, "pass"),
                   product_data: {
                     name: "Markyos Project Pass",
                     description: `One-time client access pass — ${slug}`,
@@ -71,10 +99,10 @@ export async function POST(req: NextRequest) {
               {
                 price_data: {
                   currency: "usd",
-                  unit_amount: STUDIO_SUBSCRIPTION_PRICE_USD,
+                  unit_amount: priceInCents(type, "subscription"),
                   recurring: { interval: "month" },
                   product_data: {
-                    name: "Markyos Studio plan",
+                    name: `Markyos ${typeLabel} plan`,
                     description: `Monthly subscription — ${slug}`,
                   },
                 },

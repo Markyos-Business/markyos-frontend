@@ -1,4 +1,4 @@
-import type { AccountRole } from "@/types";
+import type { AccountRole, AccountType } from "@/types";
 
 /** `GET /admin/stats/`. */
 export interface AdminStats {
@@ -9,6 +9,8 @@ export interface AdminStats {
     new7d: number;
     new30d: number;
     activeLast30d: number;
+    /** Studios, freelancers and companies; admins under "none". */
+    byType: Record<string, number>;
   };
   signups: { date: string; count: number }[];
   brands: {
@@ -26,6 +28,7 @@ export interface AdminUser {
   name: string;
   email: string;
   role: AccountRole;
+  accountType: AccountType | null;
   isAdmin: boolean;
   isActive: boolean;
   isSuperuser: boolean;
@@ -47,13 +50,14 @@ export interface AdminUserPage {
 export interface AdminUserQuery {
   search?: string;
   role?: AccountRole | "";
+  accountType?: AccountType | "";
   isActive?: "true" | "false" | "";
   ordering?: string;
   page?: number;
 }
 
 /** What an admin may change on an account. */
-export type AdminUserPatch = Partial<Pick<AdminUser, "role" | "isActive">>;
+export type AdminUserPatch = Partial<Pick<AdminUser, "role" | "isActive" | "accountType">>;
 
 /** A row of `GET /admin/users/<id>/brands/`. */
 export interface AdminUserBrand {

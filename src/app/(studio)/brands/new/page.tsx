@@ -2,8 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
-import { useToast, Button, Icon, Tabs } from "@/components/ui";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { useToast, Button, EmptyState, Icon, Tabs } from "@/components/ui";
+import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { InputField } from "@/components/form";
 import { slugify } from "@/lib/utils";
 import {
@@ -37,6 +38,7 @@ export default function NewWorkspacePage() {
     state,
     hydrated,
     logout,
+    myWorkspaces,
     createWorkspace,
     addColor,
     setTypography,
@@ -48,6 +50,7 @@ export default function NewWorkspacePage() {
   } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
+  const account = useCurrentAccount();
   const [mode, setMode] = useState<Mode>("scratch");
   const [name, setName] = useState("");
 
@@ -138,6 +141,30 @@ export default function NewWorkspacePage() {
 
   if (!hydrated || !state.session) return null;
 
+  // Reachable by URL even at the limit, so it says so here too; the server
+  // refuses the create either way.
+  const brandLimit = limitsOf(account).brands;
+  const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
+  if (brandLimit !== null && owned >= brandLimit) {
+    const type = ACCOUNT_TYPES[accountTypeOf(account)];
+    return (
+      <div className="min-h-screen grid place-items-center px-space-6">
+        <div className="w-full max-w-105">
+          <EmptyState
+            icon="lock"
+            title={`You're at your ${type.label.toLowerCase()} limit`}
+            description={`${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`}
+            action={
+              <Button variant="outline" href="/brands">
+                Back to your brands
+              </Button>
+            }
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="h-16 shrink-0 flex items-center justify-between px-6">
@@ -171,10 +198,10 @@ export default function NewWorkspacePage() {
         {mode === "scratch" ? (
           <form onSubmit={handleSubmit} className="flex flex-col">
             <h1 className="text-h1 font-medium mb-space-3">
-              Name your brand
+              {ACCOUNT_TYPES[accountTypeOf(account)].newBrand.title}
             </h1>
             <p className="mb-[26px] text-body" style={{ color: "var(--text-muted)" }}>
-              One workspace per brand. You can rename it later.
+              {ACCOUNT_TYPES[accountTypeOf(account)].newBrand.description}
             </p>
             <div className="mb-[26px]">
               <InputField

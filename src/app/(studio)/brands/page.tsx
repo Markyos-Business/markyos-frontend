@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { roleOn } from "@/lib/data/access";
 import { AccountMenu } from "@/components/features/account";
 import { Button, Icon, PageHeader } from "@/components/ui";
@@ -34,6 +35,15 @@ export default function BrandsPage() {
   }, [myWorkspaces, query, sort]);
 
   const sharedCount = myWorkspaces.filter((w) => w.sharedStatus === "shared").length;
+
+  // The account type names what a brand is here ("client brands" for a
+  // studio, "your brand" for a company) and how many this account may own.
+  const account = useCurrentAccount();
+  const type = ACCOUNT_TYPES[accountTypeOf(account)];
+  const brandLimit = limitsOf(account).brands;
+  const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
+  const atLimit = brandLimit !== null && owned >= brandLimit;
+  const limitNote = `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`;
 
   if (!hydrated || !state.session) return null;
 
@@ -71,8 +81,10 @@ export default function BrandsPage() {
 
       <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
         <PageHeader
-          title="Your brands"
-          description={`${myWorkspaces.length} workspace${myWorkspaces.length === 1 ? "" : "s"} · ${sharedCount} shared with clients`}
+          title={account?.isAdmin ? "Your brands" : type.home.title}
+          description={`${myWorkspaces.length} workspace${myWorkspaces.length === 1 ? "" : "s"} · ${sharedCount} shared with clients${
+            brandLimit !== null ? ` · ${owned} of ${brandLimit} used` : ""
+          }`}
           actions={
             <>
               <Button
@@ -83,7 +95,14 @@ export default function BrandsPage() {
               >
                 {sort === "updated" ? "Last edited" : "Name A–Z"}
               </Button>
-              <Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} onClick={() => router.push("/brands/new")}>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<Icon name="plus" size={18} />}
+                disabled={atLimit}
+                title={atLimit ? limitNote : undefined}
+                onClick={() => router.push("/brands/new")}
+              >
                 New workspace
               </Button>
             </>
@@ -97,13 +116,22 @@ export default function BrandsPage() {
               <WorkspaceCard workspace={ws} role={roleOn(ws, state.session)} />
             </div>
           ))}
-          <Link
-            href="/brands/new"
-            className="mk-card rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong text-text-muted"
-          >
-            <Icon name="plus" size={22} />
-            <span className="text-body font-medium">New workspace</span>
-          </Link>
+          {atLimit ? (
+            // Said where the "new" tile would be, so the limit is found
+            // before anyone goes looking for a way round it.
+            <div className="rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong px-space-10 text-center text-text-muted">
+              <Icon name="lock" size={22} />
+              <span className="text-body">{limitNote}</span>
+            </div>
+          ) : (
+            <Link
+              href="/brands/new"
+              className="mk-card rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong text-text-muted"
+            >
+              <Icon name="plus" size={22} />
+              <span className="text-body font-medium">New workspace</span>
+            </Link>
+          )}
         </div>
 
         {/*

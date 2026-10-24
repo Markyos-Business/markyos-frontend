@@ -1,5 +1,5 @@
 import { ApiError, api, setAccessToken } from "@/lib/api/client";
-import type { Account, AccountRole, Lang } from "@/types";
+import type { Account, AccountRole, AccountType, Lang } from "@/types";
 
 /** The account as the backend sends it (`AccountSerializer`). */
 interface ApiAccount {
@@ -11,6 +11,7 @@ interface ApiAccount {
   lastLoginAt: string | null;
   passwordUpdatedAt: string | null;
   role: AccountRole;
+  accountType: AccountType | null;
   isAdmin: boolean;
   avatarUrl: string | null;
   twoFactorEnabled: boolean;
@@ -35,6 +36,7 @@ export function toAccount(a: ApiAccount): Account {
     lastLoginAt: ms(a.lastLoginAt),
     adminLang: a.adminLang,
     role: a.role,
+    accountType: a.accountType,
     isAdmin: a.isAdmin,
     avatarUrl: a.avatarUrl,
     twoFactorEnabled: a.twoFactorEnabled,
@@ -45,11 +47,12 @@ export async function signup(
   name: string,
   email: string,
   password: string,
+  accountType: AccountType,
   remember = true
 ): Promise<Account> {
   const res = await api<{ access: string; account: ApiAccount }>("/auth/signup/", {
     method: "POST",
-    body: { name, email, password, remember },
+    body: { name, email, password, accountType, remember },
   });
   setAccessToken(res.access);
   return toAccount(res.account);

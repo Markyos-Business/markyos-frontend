@@ -4,7 +4,10 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { AlertBanner, Button, useToast } from "@/components/ui";
-import { InputField } from "@/components/form";
+import { InputField, RadioCardGroup } from "@/components/form";
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
+import type { AccountType } from "@/types";
+import { API_ENABLED } from "@/lib/api/client";
 import {
   AuthShell,
   PasswordField,
@@ -19,11 +22,13 @@ export default function SignupPage() {
   const { showToast } = useToast();
   const router = useRouter();
 
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<{
+    accountType?: string;
     name?: string;
     email?: string;
     password?: string;
@@ -72,6 +77,9 @@ export default function SignupPage() {
     if (busy) return;
 
     const field: typeof errors = {};
+    // Asked first and never preselected: it decides the plans, limits and
+    // wording the account gets, so it has to be a choice, not a default.
+    if (!accountType) field.accountType = "Choose who the account is for.";
     if (!name.trim()) field.name = "Tell us your name.";
     if (!EMAIL_RE.test(email.trim())) field.email = "Enter a valid email address.";
     if (password.length < 8) field.password = "At least 8 characters.";
@@ -86,7 +94,7 @@ export default function SignupPage() {
 
     setBusy(true);
     justRegistered.current = true;
-    const failed = await signup(name, email, password);
+    const failed = await signup(name, email, password, accountType!);
     setBusy(false);
     if (failed) justRegistered.current = false;
 
@@ -97,7 +105,10 @@ export default function SignupPage() {
       return;
     }
 
-    showToast("Account created. Let's set up your first brand.", "success");
+    showToast(
+      accountType === "company" ? "Account created. Let's set up your brand." : "Account created. Let's add your first client brand.",
+      "success"
+    );
     router.push("/brands/new");
   }
 
@@ -116,6 +127,26 @@ export default function SignupPage() {
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
         <AlertBanner message={errors.form} />
+
+        <div className="flex flex-col gap-space-2">
+          <span className="text-caption text-text-muted">Who is this account for?</span>
+          <RadioCardGroup
+            label="Who is this account for?"
+            columns={1}
+            options={ACCOUNT_TYPE_KEYS.map((key) => ({
+              value: key,
+              label: ACCOUNT_TYPES[key].label,
+              hint: ACCOUNT_TYPES[key].description,
+              icon: ACCOUNT_TYPES[key].icon,
+            }))}
+            value={accountType}
+            onChange={(value) => {
+              setAccountType(value);
+              if (errors.accountType) setErrors((x) => ({ ...x, accountType: undefined }));
+            }}
+            error={errors.accountType}
+          />
+        </div>
 
         <InputField
           label="Name"
@@ -169,12 +200,15 @@ export default function SignupPage() {
           {busy ? "Creating…" : "Create account"}
         </Button>
 
-        {/* Said before the button is pressed, not discovered afterwards. */}
-        <p className="text-[11.5px] leading-[1.5] text-text-faint">
-          This build keeps your account and your brands in this browser. Nothing is sent to a
-          server, which also means clearing site data erases them and there is no inbox to recover
-          a password from — the reset code appears on screen instead.
-        </p>
+        {/* Said before the button is pressed, not discovered afterwards — and
+            only in the browser-only build, where it's true. */}
+        {!API_ENABLED && (
+          <p className="text-caption text-text-faint">
+            This build keeps your account and your brands in this browser. Nothing is sent to a
+            server, which also means clearing site data erases them and there is no inbox to recover
+            a password from — the reset code appears on screen instead.
+          </p>
+        )}
 
         <SocialSignIn />
       </form>

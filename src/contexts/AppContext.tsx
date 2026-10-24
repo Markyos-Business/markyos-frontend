@@ -12,6 +12,7 @@ import {
 import {
   ApprovalStatus,
   Account,
+  AccountType,
   AppState,
   Asset,
   AssetStatus,
@@ -205,7 +206,7 @@ interface AppContextValue {
    * Registers a new account and signs it in. Resolves to an error message, or
    * null on success. Rejects an email another account already uses.
    */
-  signup: (name: string, email: string, password: string) => Promise<string | null>;
+  signup: (name: string, email: string, password: string, accountType: AccountType) => Promise<string | null>;
   /**
    * Signs in. Resolves to an error message when the credentials don't match,
    * and null on success — a password that is stored has to actually be
@@ -906,13 +907,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signup = useCallback(
-    async (name: string, email: string, password: string): Promise<string | null> => {
+    async (name: string, email: string, password: string, accountType: AccountType): Promise<string | null> => {
       const clean = normaliseEmail(email);
       if (!EMAIL_RE.test(clean)) return "Enter a valid email address.";
       if (password.length < 8) return "Use at least 8 characters.";
       if (API_ENABLED) {
         try {
-          const account = await authApi.signup(name.trim(), clean, password);
+          const account = await authApi.signup(name.trim(), clean, password, accountType);
           setState((prev) => signedInAs(prev, account, true));
           await pullServerWorkspaces();
           return null;
@@ -938,6 +939,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // which is the right first impression for someone who has not been
         // asked yet.
         adminLang: null,
+        accountType,
       };
       setState((prev) => ({
         ...prev,
@@ -1528,7 +1530,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       mutateWorkspace(workspaceId, (ws) =>
         touchWorkspace(ws, { billing: { plan, purchasedAt: Date.now(), stripeSessionId }, sharedStatus: "shared" })
       );
-      logAudit(`Purchased ${plan === "pass" ? "Project Pass" : "Studio plan"}`, workspaceId);
+      logAudit(`Purchased ${plan === "pass" ? "Project Pass" : "a subscription"}`, workspaceId);
     },
     [mutateWorkspace, touchWorkspace, logAudit]
   );

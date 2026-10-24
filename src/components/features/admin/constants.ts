@@ -1,3 +1,4 @@
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { AccountRole } from "@/types";
 
 type Tone = "neutral" | "accent" | "success" | "warning" | "danger";
@@ -10,6 +11,12 @@ export const ROLE_LABELS: Record<AccountRole, string> = {
 export const ROLE_TONES: Record<AccountRole, Tone> = {
   admin: "accent",
   member: "neutral",
+};
+
+/** Account types, as the dashboard breakdown names them; admins have none. */
+export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
+  ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].label])),
+  none: "No type (admins)",
 };
 
 export const STATUS_LABELS = { active: "Active", inactive: "Deactivated" } as const;

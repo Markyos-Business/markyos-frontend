@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { useToast, useDialog, Icon, Button, Section, Row, Badge, EmptyHint } from "@/components/ui";
 import { TopBar } from "@/components/layout";
 import { TeamRole } from "@/types";
@@ -35,6 +36,7 @@ export default function TeamPage() {
   } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
+  const account = useCurrentAccount();
   const ws = getWorkspace(params.slug);
 
   const [addingMember, setAddingMember] = useState(false);
@@ -49,13 +51,26 @@ export default function TeamPage() {
 
   const myRole: TeamRole = roleOn(ws, state.session) ?? "viewer";
   const canGovern = myRole === "owner";
+  /*
+   * Editor seats, by the owner's account type (constants/accountTypes.ts).
+   * Only owners change the team, so the signed-in account is the owner here.
+   * The server refuses the same thing; this says so before anyone tries.
+   */
+  const editorLimit = limitsOf(account).editors;
+  const editorsFull = canGovern && editorLimit !== null && ws.team.filter((m) => m.role === "editor").length >= editorLimit;
+  const editorsFullNote =
+    editorLimit === 0
+      ? `${ACCOUNT_TYPES[accountTypeOf(account)].label} accounts work solo, so they can't add editors. Add people as a viewer or client.`
+      : `This brand has its ${editorLimit} editor seats filled. Add people as a viewer or client.`;
+  // A full brand can't take another editor, so the invite falls back to viewer.
+  const inviteRole: TeamRole = memberRole === "editor" && editorsFull ? "viewer" : memberRole;
   const openPins = ws.signOffPins.filter((p) => !p.resolved);
   const actorName = state.session?.name || state.session?.email || "You";
 
   function handleAddMember(e: FormEvent) {
     e.preventDefault();
     if (!memberName.trim() || !memberEmail.trim()) return;
-    addTeamMember(ws!.id, memberName.trim(), memberEmail.trim(), memberRole);
+    addTeamMember(ws!.id, memberName.trim(), memberEmail.trim(), inviteRole);
     setMemberName("");
     setMemberEmail("");
     setAddingMember(false);
@@ -188,19 +203,22 @@ export default function TeamPage() {
                   <button
                     key={r}
                     type="button"
+                    disabled={r === "editor" && editorsFull}
+                    title={r === "editor" && editorsFull ? editorsFullNote : undefined}
                     onClick={() => setMemberRole(r)}
                     className="h-8 px-3 rounded-full text-[11px] font-semibold capitalize cursor-pointer"
                     style={{
                       // Was a literal white-on-near-black pill, which is a
                       // white chip on a white card in the light theme.
-                      background: memberRole === r ? "var(--solid)" : "var(--surface-1)",
-                      color: memberRole === r ? "var(--solid-ink)" : "var(--text-muted)",
+                      background: inviteRole === r ? "var(--solid)" : "var(--surface-1)",
+                      color: inviteRole === r ? "var(--solid-ink)" : "var(--text-muted)",
                     }}
                   >
                     {r}
                   </button>
                 ))}
               </div>
+              {editorsFull && <p className="text-caption text-text-muted">{editorsFullNote}</p>}
               <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
                 Add to team
               </button>
@@ -254,7 +272,7 @@ export default function TeamPage() {
                           style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}
                         >
                           {ROLES.map((r) => (
-                            <option key={r} value={r}>
+                            <option key={r} value={r} disabled={r === "editor" && editorsFull && m.role !== "editor"}>
                               {r}
                             </option>
                           ))}

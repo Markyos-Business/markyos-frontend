@@ -1170,12 +1170,21 @@ export interface Account {
    * browser-only account, which is always a member.
    */
   role?: AccountRole;
+  /**
+   * Who the account is for: a studio, a freelancer or a company. Chosen at
+   * signup, changed afterwards only by a platform admin; decides wording,
+   * limits and prices (constants/accountTypes.ts). Absent on a platform admin
+   * and on a browser-only account from before types existed.
+   */
+  accountType?: AccountType | null;
   isAdmin?: boolean;
   avatarUrl?: string | null;
   twoFactorEnabled?: boolean;
 }
 
 export type AccountRole = "admin" | "member";
+
+export type AccountType = "studio" | "freelancer" | "company";
 
 export interface AuditEntry {
   id: string;

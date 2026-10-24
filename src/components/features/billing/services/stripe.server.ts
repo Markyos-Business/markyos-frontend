@@ -1,4 +1,6 @@
 import Stripe from "stripe";
+import { ACCOUNT_TYPES } from "@/constants/accountTypes";
+import type { AccountType } from "@/types";
 
 /**
  * Server-only. Never import this from a "use client" file — it reads the
@@ -13,5 +15,7 @@ export function getStripe(): Stripe {
   return new Stripe(key);
 }
 
-export const PROJECT_PASS_PRICE_USD = 19_00;
-export const STUDIO_SUBSCRIPTION_PRICE_USD = 29_00;
+/** The price of a plan for an account type, in cents (constants/accountTypes.ts). */
+export function priceInCents(type: AccountType, plan: "pass" | "subscription"): number {
+  return ACCOUNT_TYPES[type].prices[plan] * 100;
+}

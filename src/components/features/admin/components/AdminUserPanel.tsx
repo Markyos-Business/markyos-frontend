@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useCurrentAccount } from "@/contexts/AppContext";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import { AlertBanner, Avatar, Button, IconButton, useDialog, useToast, Badge } from "@/components/ui";
+import { SelectField } from "@/components/form";
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
+import type { AccountType } from "@/types";
 import { BRAND_ROLE_LABELS, ROLE_LABELS, ROLE_TONES, STAGE_LABELS, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUserBrands } from "../hooks/useAdminUserBrands";
 import { useRevokeUserSessions } from "../hooks/useRevokeUserSessions";
@@ -76,6 +79,22 @@ export function AdminUserPanel({
     await apply({ role: promote ? "admin" : "member" }, promote ? "Now an admin" : "Admin access removed");
   }
 
+  async function changeType(next: AccountType) {
+    if (next === user.accountType) return;
+    const limits = ACCOUNT_TYPES[next].limits;
+    const ok = await confirm({
+      title: `Make ${user.name} a ${ACCOUNT_TYPES[next].label.toLowerCase()} account?`,
+      body: "Their plans, prices and limits change to match. Nothing they already have is removed.",
+      consequences: [
+        limits.brands === null ? "No limit on brands" : `New brands stop at ${limits.brands} owned (they own ${user.brandsOwned})`,
+        limits.editors === 0 ? "No new editors on their brands" : "Editors as before",
+      ],
+      confirmLabel: "Change type",
+    });
+    if (!ok) return;
+    await apply({ accountType: next }, `Now a ${ACCOUNT_TYPES[next].label.toLowerCase()} account`);
+  }
+
   async function signOutEverywhere() {
     const ok = await confirm({
       title: `Sign ${user.name} out everywhere?`,
@@ -134,6 +153,18 @@ export function AdminUserPanel({
         </dl>
 
         <AlertBanner message={error} />
+
+        {/* Chosen at signup; correctable here. Admins don't have one. */}
+        {user.role !== "admin" && (
+          <SelectField
+            label="Account type"
+            value={user.accountType ?? ""}
+            placeholder="No type"
+            options={ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: ACCOUNT_TYPES[key].label }))}
+            disabled={saving}
+            onChange={(e) => void changeType(e.target.value as AccountType)}
+          />
+        )}
 
         <section className="flex flex-col gap-2.5">
           <h3 className="text-body font-medium">Brands</h3>

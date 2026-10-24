@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlertBanner, Avatar, Button, PageHeader, Table, TableEmptyRow, TableLoadingRow, cellClasses, rowClasses, Badge } from "@/components/ui";
 import { SearchField, FilterSelectField } from "@/components/form";
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import { usePresence } from "@/hooks/usePresence";
 import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";
 import { useAdminUsers } from "../hooks/useAdminUsers";
@@ -14,7 +15,8 @@ const PAGE_SIZE = 25;
 
 const COLUMNS = [
   { key: "person", label: "Person" },
-  { key: "role", label: "Role" },
+  { key: "type", label: "Type" },
+  { key: "role", label: "Role", className: "hidden sm:table-cell" },
   { key: "status", label: "Status" },
   { key: "brands", label: "Brands", className: "hidden md:table-cell" },
   { key: "joined", label: "Joined", className: "hidden lg:table-cell" },
@@ -60,6 +62,13 @@ export function AdminUsersView() {
           value={query.role ?? ""}
           onChange={(e) => set({ role: e.target.value as AdminUserQuery["role"] })}
           options={[{ value: "", label: "All roles" }, { value: "admin", label: "Admins" }, { value: "member", label: "Members" }]}
+        />
+        <FilterSelectField
+          label="Type"
+          hideLabel
+          value={query.accountType ?? ""}
+          onChange={(e) => set({ accountType: e.target.value as AdminUserQuery["accountType"] })}
+          options={[{ value: "", label: "All types" }, ...ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: ACCOUNT_TYPES[key].label }))]}
         />
         <FilterSelectField
           label="Status"
@@ -110,7 +119,8 @@ export function AdminUsersView() {
                     </span>
                   </button>
                 </td>
-                <td className={cellClasses}>
+                <td className={`${cellClasses} text-text-secondary`}>{u.accountType ? ACCOUNT_TYPES[u.accountType].label : "—"}</td>
+                <td className={`${cellClasses} hidden sm:table-cell`}>
                   <Badge tone={ROLE_TONES[u.role]}>{u.isSuperuser ? "Superuser" : ROLE_LABELS[u.role]}</Badge>
                 </td>
                 <td className={cellClasses}>

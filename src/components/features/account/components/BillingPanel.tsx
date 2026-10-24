@@ -2,21 +2,19 @@
 
 import Link from "next/link";
 import { Icon, StatTile, Section, Row, Badge, EmptyHint } from "@/components/ui";
+import { useCurrentAccount } from "@/contexts/AppContext";
+import { ACCOUNT_TYPES, accountTypeOf, type AccountTypeInfo } from "@/constants/accountTypes";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 
-const PLAN_LABEL: Record<Workspace["billing"]["plan"], string> = {
-  free: "Free",
-  pass: "Project Pass",
-  subscription: "Studio plan",
-};
+type Plan = Workspace["billing"]["plan"];
 
-/** What each plan costs, in the same units the checkout charges. */
-const PLAN_PRICE: Record<Workspace["billing"]["plan"], { amount: number; note: string }> = {
-  free: { amount: 0, note: "" },
-  pass: { amount: 19, note: "one-time" },
-  subscription: { amount: 29, note: "per month" },
-};
+/** What each plan is called and costs for this account type, in the units checkout charges. */
+const planTable = (type: AccountTypeInfo): Record<Plan, { label: string; amount: number; note: string }> => ({
+  free: { label: "Free", amount: 0, note: "" },
+  pass: { label: "Project Pass", amount: type.prices.pass, note: "one-time" },
+  subscription: { label: `${type.label} plan`, amount: type.prices.subscription, note: "per month" },
+});
 
 /*
  * Both lookups are total, which they were not before.
@@ -32,10 +30,8 @@ const PLAN_PRICE: Record<Workspace["billing"]["plan"], { amount: number; note: s
  * is shown by name at no price, which is a row someone can look at and ask
  * about, rather than a page that doesn't load.
  */
-const priceOf = (plan: string) =>
-  PLAN_PRICE[plan as Workspace["billing"]["plan"]] ?? { amount: 0, note: "" };
-const labelOf = (plan: string) =>
-  PLAN_LABEL[plan as Workspace["billing"]["plan"]] ?? plan;
+const lookup = (table: ReturnType<typeof planTable>, plan: string) =>
+  table[plan as Plan] ?? { label: plan, amount: 0, note: "" };
 
 /**
  * Everything this account is actually paying for.
@@ -47,26 +43,30 @@ const labelOf = (plan: string) =>
  * checkout, and a brand that has never been paid for says so.
  */
 export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
+  const type = ACCOUNT_TYPES[accountTypeOf(useCurrentAccount())];
+  const table = planTable(type);
+  const priceOf = (plan: string) => lookup(table, plan);
+  const labelOf = (plan: string) => lookup(table, plan).label;
   const paid = workspaces.filter((w) => w.billing.plan !== "free");
   const subscription = workspaces.find((w) => w.billing.plan === "subscription");
   const passes = workspaces.filter((w) => w.billing.plan === "pass");
 
-  const monthly = subscription ? PLAN_PRICE.subscription.amount : 0;
-  const oneTimeTotal = passes.length * PLAN_PRICE.pass.amount;
+  const monthly = subscription ? table.subscription.amount : 0;
+  const oneTimeTotal = passes.length * table.pass.amount;
 
   return (
     <>
       <Section title="Subscription" icon="credit-card">
         {subscription ? (
           <Row
-            label="Studio plan — active"
-            hint={`$${PLAN_PRICE.subscription.amount} per month · started ${formatRelative(subscription.billing.purchasedAt ?? subscription.updatedAt)} · unlocks every brand in this account.`}
+            label={`${table.subscription.label} — active`}
+            hint={`$${table.subscription.amount} per month · started ${formatRelative(subscription.billing.purchasedAt ?? subscription.updatedAt)} · unlocks every brand in this account.`}
             right={<Badge tone="success">Active</Badge>}
           />
         ) : (
           <Row
             label="No subscription"
-            hint="Brands are unlocked one at a time with a Project Pass. A Studio plan unlocks all of them and is bought from any brand's Settings."
+            hint={`Brands are unlocked one at a time with a Project Pass. A ${table.subscription.label} unlocks all of them and is bought from any brand's Settings.`}
             right={<Badge tone="neutral">None</Badge>}
           />
         )}
