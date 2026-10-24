@@ -1271,9 +1271,11 @@ export const baseStyles = [
   },
   /* In-page anchors glide; route changes still jump to the top at once
      (`data-scroll-behavior` on <html> tells Next to switch this off while it
-     navigates). */
+     navigates). Only while something has focus, which a followed anchor link
+     does: a scripted scroll (a reveal, a "scroll into view") stays instant
+     instead of every one of them turning into a glide nobody asked for. */
   {
-    "html": {
+    "html:focus-within": {
       "scroll-behavior": "smooth",
     },
   },

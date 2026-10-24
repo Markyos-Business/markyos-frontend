@@ -237,6 +237,33 @@ function SectionReveal({ ids }: { ids: string[] }) {
       revealAll();
     }, 2500);
 
+    /*
+     * Anything the reader has already reached is revealed, even if the
+     * observer never saw it.
+     *
+     * The observer only reports a change in visibility, so a section that a
+     * fast scroll carries straight past (a fling, a jump link, smooth
+     * scrolling between two far points) never intersects in a sampled frame
+     * and is never reported. It was left at zero opacity above the fold,
+     * which reads as a hole in the page. One check per frame of scrolling
+     * closes that: whatever is at or above the fold is shown.
+     */
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const fold = window.innerHeight * 0.92;
+        for (const el of pending) {
+          if (el.dataset.reveal === "pending" && el.getBoundingClientRect().top < fold) {
+            reveal(el);
+            io.unobserve(el);
+          }
+        }
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+
     // Printing is the other way a page is consumed all at once. A guideline
     // printed with two thirds of its sections at zero opacity would be a
     // decoration destroying the deliverable.
@@ -245,6 +272,8 @@ function SectionReveal({ ids }: { ids: string[] }) {
     return () => {
       io.disconnect();
       window.clearTimeout(failSafe);
+      window.removeEventListener("scroll", onScroll, { capture: true });
+      window.cancelAnimationFrame(frame);
       window.removeEventListener("beforeprint", revealAll);
       // Hand every element back exactly as it was found.
       for (const el of pending) {
