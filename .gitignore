@@ -56,3 +56,7 @@ next-env.d.ts
 # committing it means reviewing thousands of lines nobody wrote and risking a
 # client that disagrees with the schema beside it.
 /lib/generated
+
+# Playwright
+/e2e/test-results/
+/e2e/playwright-report/

@@ -78,6 +78,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The Claude Design handoff bundle — not part of this app.
     "project/**",
+    // Playwright's generated report and failure artefacts.
+    "e2e/playwright-report/**",
+    "e2e/test-results/**",
   ]),
 ]);
 
