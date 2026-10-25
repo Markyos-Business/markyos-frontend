@@ -124,26 +124,20 @@ for (const theme of ["dark", "light"]) {
   await page.waitForURL(/\/brands/, { timeout: 20000 });
 
   // Paint the states that only exist once data is in them: both non-default
-  // asset badges, and a brief that is open for answers rather than already
-  // submitted — otherwise the public page measured is the thank-you screen.
+  // asset badges.
   await page.evaluate((slug) => {
     const s = JSON.parse(localStorage.getItem("markyos:v1"));
     for (const w of s.workspaces || []) {
       if (w.slug !== slug) continue;
       if (w.assets[0]) w.assets[0].status = "exploration";
       if (w.assets[1]) w.assets[1].status = "archived";
-      if (w.briefs?.[0]) {
-        w.briefs[0].status = "sent";
-        w.briefs[0].submittedAt = null;
-        w.briefs[0].revokedAt = null;
-      }
     }
     localStorage.setItem("markyos:v1", JSON.stringify(s));
   }, WS);
 
   const PAGES = [
     "overview",
-    "brief",
+    "forms",
     "moodboard",
     "drafts",
     "visual-identity",
@@ -282,36 +276,6 @@ for (const theme of ["dark", "light"]) {
     for (const v of Object.values(ws.sectionStyles || {})) delete v.variant;
     localStorage.setItem("markyos:v1", JSON.stringify(s));
   }, WS);
-
-  /*
-   * The client-facing discovery brief, which no /w/ page covers. It is the one
-   * surface someone outside the studio actually fills in, so it gets the same
-   * bar as the rest of the chrome — the client's brand does not exist yet, so
-   * none of it is brand-owned.
-   */
-  const token = await page.evaluate(() => {
-    const s = JSON.parse(localStorage.getItem("markyos:v1") || "{}");
-    for (const w of s.workspaces || []) {
-      for (const b of w.briefs || []) if (b.status !== "draft" && !b.revokedAt) return b.token;
-    }
-    return null;
-  });
-  if (token) {
-    await page.goto(`${BASE}/b/${token}`);
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(800);
-    // Guard, for the same reason the responsive sweep has one: a clean measure
-    // of a "this brief isn't ready" card would prove nothing about the form.
-    const isForm = await page.evaluate(() => document.querySelectorAll("textarea").length > 2);
-    if (!isForm) throw new Error("public brief page did not render the form");
-    const bad = await page.evaluate(AUDIT);
-    for (const b of bad) {
-      const key = `${theme}|brief-public|${b.text}|${b.ratio}`;
-      if (!findings.some((f) => f.key === key)) findings.push({ key, theme, label: "brief-public", ...b });
-    }
-  } else {
-    console.log(`  (no sent brief in ${theme} fixture — public brief page not measured)`);
-  }
 
   await ctx.close();
 }

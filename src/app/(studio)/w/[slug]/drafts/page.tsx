@@ -11,14 +11,14 @@ import { formatRelative } from "@/lib/utils";
 /**
  * One queue for everything proposed into this brand.
  *
- * The brief, document import and palette extraction all write here rather than
+ * Discovery forms, document import and palette extraction all write here rather than
  * into the brand, and this is where a person decides. Keeping it in one place
  * is the point: a reviewer should not have to visit eight tabs to find out what
  * is waiting, and a producer should not get to choose whether it is reviewed.
  */
 
 const SOURCE_META: Record<DraftSource, { label: string; arLabel: string; icon: string }> = {
-  brief: { label: "Brief", arLabel: "الموجز", icon: "clipboard-list" },
+  brief: { label: "Discovery form", arLabel: "نموذج الاستكشاف", icon: "clipboard-list" },
   ai: { label: "AI", arLabel: "ذكاء اصطناعي", icon: "robot" },
   ingestion: { label: "Import", arLabel: "استيراد", icon: "file-import" },
   palette: { label: "Palette", arLabel: "لوحة الألوان", icon: "palette" },
@@ -110,7 +110,7 @@ export default function DraftsPage() {
             {isAr ? "المسودات" : "Drafts"}
           </h1>
           <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
-            Everything the brief, an import or a palette read has proposed. Nothing here has changed the
+            Everything a discovery form, an import or a palette read has proposed. Nothing here has changed the
             brand — it changes when you accept it.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function DraftsPage() {
         {shown.length === 0 ? (
           <EmptyHint>
             {tab === "pending"
-              ? "Nothing waiting. Send a discovery brief, or import a document, and answers land here for review."
+              ? "Nothing waiting. Send a discovery form, or import a document, and answers land here for review."
               : "Nothing decided yet."}
           </EmptyHint>
         ) : (

@@ -19,8 +19,6 @@ import {
   AssetType,
   BlockKind,
   BlockStyle,
-  Brief,
-  BriefTemplateKind,
   ColorSwatch,
   ComplianceCheck,
   CoreValue,
@@ -72,8 +70,6 @@ import {
   defaultCompetitorColumns,
   defaultTypography,
 } from "@/lib/data/mockData";
-import { BRIEF_TEMPLATES } from "@/components/features/brief/model/briefQuestions";
-import { briefProposals, withBriefProposals } from "@/components/features/brief/model/briefProposals";
 import { roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
 import {
@@ -376,32 +372,10 @@ interface AppContextValue {
    * next improvement to it never reached a board anyone had tidied.
    */
   tidyMoodboard: (workspaceId: string, boardId: string) => void;
-  // The Creation Layer — discovery brief
-  /** Returns the new brief's id. */
-  createBrief: (workspaceId: string, template: BriefTemplateKind, label: string, clientName: string, lang: Lang) => string;
-  setBriefQuestions: (workspaceId: string, briefId: string, questions: string[]) => void;
-  setBriefMeta: (workspaceId: string, briefId: string, patch: Partial<Pick<Brief, "label" | "clientName" | "lang">>) => void;
-  /** Marks it sent, which is what makes the public link live. */
-  sendBrief: (workspaceId: string, briefId: string) => void;
-  revokeBrief: (workspaceId: string, briefId: string) => void;
-  deleteBrief: (workspaceId: string, briefId: string) => void;
-  /** Look a brief up by its public token — used by /b/[token], with no session. */
-  getBriefByToken: (token: string) => { brief: Brief; workspace: Workspace } | undefined;
-  /** Save one answer as the client types. Flips the brief to in_progress. */
-  answerBrief: (token: string, questionKey: string, value: string) => void;
-  /**
-   * The client is done.
-   *
-   * Every answer whose question maps to a Strategy Hub field becomes a *pending
-   * draft*, never a write. What a client typed into a form is a useful starting
-   * point and not the brand's positioning statement until someone who does this
-   * for a living has read it.
-   */
-  submitBrief: (token: string) => void;
   /**
    * Queue a proposal. Returns its id.
    *
-   * Producers — the discovery brief, document import, palette extraction, and
+   * Producers — discovery forms, document import, palette extraction, and
    * later the AI assistant — call this instead of writing to the brand
    * directly. That is the whole contract: a producer cannot change a published
    * guideline or a Strategy Hub field, because the only route in is a draft
@@ -647,7 +621,7 @@ function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
   return {
     ...state,
     workspaces: [
-      ...server.map(withBriefProposals),
+      ...server,
       ...state.workspaces.filter((w) => !ids.has(w.id) && !removedFrom(w)),
     ],
   };
@@ -690,7 +664,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           onServerCopy: (ws, previousSlug) => {
             setState((prev) => ({
               ...prev,
-              workspaces: prev.workspaces.map((w) => (w.id === ws.id ? withBriefProposals(ws) : w)),
+              workspaces: prev.workspaces.map((w) => (w.id === ws.id ? ws : w)),
             }));
             if (previousSlug !== ws.slug) {
               setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
@@ -1269,7 +1243,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       whiteLabel: false,
       complianceChecks: [],
       drafts: [],
-      briefs: [],
       moodboards: [],
       // A brand nobody has done anything to yet is in discovery by definition.
       stage: "discovery",
@@ -2037,160 +2010,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
     },
     [patchMoodboard]
-  );
-
-  const createBrief = useCallback(
-    (workspaceId: string, template: BriefTemplateKind, label: string, clientName: string, lang: Lang): string => {
-      const id = uid();
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          briefs: [
-            {
-              id,
-              // Longer than a workspace id: this one is guessable from outside
-              // and is the only thing standing between a stranger and a
-              // client's answers.
-              token: `${uid()}${uid()}`,
-              label,
-              clientName,
-              template,
-              status: "draft",
-              questions: BRIEF_TEMPLATES[template].questions,
-              lang,
-              answers: [],
-              createdAt: Date.now(),
-              sentAt: null,
-              submittedAt: null,
-              revokedAt: null,
-            },
-            ...ws.briefs,
-          ],
-        })
-      );
-      logAudit(`Created a discovery brief for ${clientName || "a client"}`, workspaceId);
-      return id;
-    },
-    [mutateWorkspace, touchWorkspace, logAudit]
-  );
-
-  const patchBrief = useCallback(
-    (workspaceId: string, briefId: string, patch: Partial<Brief>) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          briefs: ws.briefs.map((b) => (b.id === briefId ? { ...b, ...patch } : b)),
-        })
-      );
-    },
-    [mutateWorkspace, touchWorkspace]
-  );
-
-  const setBriefQuestions = useCallback(
-    (workspaceId: string, briefId: string, questions: string[]) => {
-      patchBrief(workspaceId, briefId, { questions });
-    },
-    [patchBrief]
-  );
-
-  const setBriefMeta = useCallback(
-    (workspaceId: string, briefId: string, patch: Partial<Pick<Brief, "label" | "clientName" | "lang">>) => {
-      patchBrief(workspaceId, briefId, patch);
-    },
-    [patchBrief]
-  );
-
-  const sendBrief = useCallback(
-    (workspaceId: string, briefId: string) => {
-      patchBrief(workspaceId, briefId, { status: "sent", sentAt: Date.now(), revokedAt: null });
-      logAudit("Sent a discovery brief", workspaceId);
-    },
-    [patchBrief, logAudit]
-  );
-
-  const revokeBrief = useCallback(
-    (workspaceId: string, briefId: string) => {
-      // Marked, not deleted — a dead link has to be able to say "this was
-      // switched off" rather than behave as if it never existed.
-      patchBrief(workspaceId, briefId, { revokedAt: Date.now() });
-      logAudit("Revoked a discovery brief link", workspaceId);
-    },
-    [patchBrief, logAudit]
-  );
-
-  const deleteBrief = useCallback(
-    (workspaceId: string, briefId: string) => {
-      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { briefs: ws.briefs.filter((b) => b.id !== briefId) }));
-    },
-    [mutateWorkspace, touchWorkspace]
-  );
-
-  /*
-   * Reads `state`, not `stateRef`.
-   *
-   * The public /b/<token> page calls this during render, and `stateRef` is
-   * assigned in an effect — so on the render where `hydrated` first flips true
-   * the ref still holds the pre-hydration default state. That made a real brief
-   * report as "doesn't exist", with nothing afterwards to trigger a re-render.
-   * Depending on `state.workspaces` means the lookup re-runs when hydration
-   * lands, which is what every other by-token lookup here already does.
-   */
-  const getBriefByToken = useCallback(
-    (token: string) => {
-      for (const workspace of state.workspaces) {
-        const brief = workspace.briefs.find((b) => b.token === token);
-        if (brief) return { brief, workspace };
-      }
-      return undefined;
-    },
-    [state.workspaces]
-  );
-
-  const answerBrief = useCallback(
-    (token: string, questionKey: string, value: string) => {
-      const found = getBriefByToken(token);
-      if (!found) return;
-      const { workspace, brief } = found;
-      if (brief.revokedAt || brief.status === "submitted") return;
-
-      mutateWorkspace(workspace.id, (ws) =>
-        touchWorkspace(ws, {
-          briefs: ws.briefs.map((b) => {
-            if (b.id !== brief.id) return b;
-            const answers = b.answers.some((a) => a.questionKey === questionKey)
-              ? b.answers.map((a) => (a.questionKey === questionKey ? { ...a, value, answeredAt: Date.now() } : a))
-              : [...b.answers, { questionKey, value, answeredAt: Date.now() }];
-            // "Sent" and "started" are different conversations to have with a
-            // client, so the first saved answer moves it on.
-            return { ...b, answers, status: b.status === "submitted" ? b.status : "in_progress" };
-          }),
-        })
-      );
-    },
-    [getBriefByToken, mutateWorkspace, touchWorkspace]
-  );
-
-  const submitBrief = useCallback(
-    (token: string) => {
-      const found = getBriefByToken(token);
-      if (!found) return;
-      const { workspace, brief } = found;
-      if (brief.revokedAt || brief.status === "submitted") return;
-
-      const now = Date.now();
-      const requestedBy = brief.clientName || "the client";
-
-      const newDrafts = briefProposals(brief, now);
-
-      mutateWorkspace(workspace.id, (ws) =>
-        touchWorkspace(ws, {
-          briefs: ws.briefs.map((b) =>
-            b.id === brief.id ? { ...b, status: "submitted" as const, submittedAt: now } : b
-          ),
-          drafts: [...newDrafts, ...ws.drafts],
-        })
-      );
-      logAudit(`${requestedBy} submitted the discovery brief`, workspace.id);
-    },
-    [getBriefByToken, mutateWorkspace, touchWorkspace, logAudit]
   );
 
   const addDraft = useCallback(
@@ -3439,15 +3258,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       labelMoodboardEdge,
       setMoodboardView,
       tidyMoodboard,
-      createBrief,
-      setBriefQuestions,
-      setBriefMeta,
-      sendBrief,
-      revokeBrief,
-      deleteBrief,
-      getBriefByToken,
-      answerBrief,
-      submitBrief,
       addDraft,
       acceptDraft,
       rejectDraft,
@@ -3588,15 +3398,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       labelMoodboardEdge,
       setMoodboardView,
       tidyMoodboard,
-      createBrief,
-      setBriefQuestions,
-      setBriefMeta,
-      sendBrief,
-      revokeBrief,
-      deleteBrief,
-      getBriefByToken,
-      answerBrief,
-      submitBrief,
       addDraft,
       acceptDraft,
       rejectDraft,

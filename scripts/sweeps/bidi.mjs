@@ -74,7 +74,7 @@ const sweep = () =>
 
 const PAGES = [
   "overview",
-  "brief",
+  "forms",
   "moodboard",
   "drafts",
   "visual-identity",

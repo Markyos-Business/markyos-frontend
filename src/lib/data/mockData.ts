@@ -366,7 +366,7 @@ export function buildInitialWorkspaces(): Workspace[] {
       },
     ],
     /*
-     * Two answers from the client's discovery brief, waiting on the studio.
+     * Two answers from the client's discovery form, waiting on the studio.
      *
      * Deliberately pending rather than already written into the strategy: what
      * a client typed into a form is a useful starting point and not the brand's
@@ -382,7 +382,7 @@ export function buildInitialWorkspaces(): Workspace[] {
           "For founders launching in the Gulf who need to look credible in Arabic and English from day one, Nadeen Studio builds brand systems that read as native in both — not a Latin brand with Arabic bolted on.",
         source: "brief",
         provenance: {
-          summary: "Discovery brief — “Finish this: For [who] who need [what]…”",
+          summary: "Discovery form — “Finish this: For [who] who need [what]…”",
           inputs: ["positioning", "who-for"],
           requestedBy: "Nadeen Darwish",
         },
@@ -398,7 +398,7 @@ export function buildInitialWorkspaces(): Workspace[] {
         content: "Arabic-first brand systems, delivered as a living site rather than a PDF nobody opens twice.",
         source: "brief",
         provenance: {
-          summary: "Discovery brief — “What do you do better than anyone near you?”",
+          summary: "Discovery form — “What do you do better than anyone near you?”",
           inputs: ["why-you"],
           requestedBy: "Nadeen Darwish",
         },
@@ -406,64 +406,6 @@ export function buildInitialWorkspaces(): Workspace[] {
         createdAt: now - day * 1,
         decidedAt: null,
         decidedBy: null,
-      },
-    ],
-    /*
-     * The brief those drafts came out of. A studio briefing its own brand is
-     * ordinary practice, and it means the seed shows the whole loop — sent,
-     * answered, submitted, proposals waiting — on the workspace the demo
-     * account actually opens.
-     */
-    briefs: [
-      {
-        id: "brief-1",
-        token: "nadeen-self-2026",
-        label: "Nadeen Studio — own brand",
-        clientName: "Nadeen Darwish",
-        template: "rebrand",
-        status: "submitted",
-        questions: [
-          "what-you-do",
-          "why-exists",
-          "who-for",
-          "audience-language",
-          "why-you",
-          "positioning",
-          "three-words",
-          "three-words-not",
-        ],
-        lang: "en",
-        answers: [
-          {
-            questionKey: "what-you-do",
-            value: "We build brand systems for companies that have to work in Arabic and English at the same time.",
-            answeredAt: now - day * 2,
-          },
-          {
-            questionKey: "who-for",
-            value:
-              "Founders and marketing leads launching in the Gulf, who have been handed a Latin brand with Arabic bolted on and know it reads badly.",
-            answeredAt: now - day * 2,
-          },
-          { questionKey: "audience-language", value: "both-equally", answeredAt: now - day * 2 },
-          {
-            questionKey: "why-you",
-            value: "Arabic-first brand systems, delivered as a living site rather than a PDF nobody opens twice.",
-            answeredAt: now - day * 2,
-          },
-          {
-            questionKey: "positioning",
-            value:
-              "For founders launching in the Gulf who need to look credible in Arabic and English from day one, Nadeen Studio builds brand systems that read as native in both — not a Latin brand with Arabic bolted on.",
-            answeredAt: now - day * 2,
-          },
-          { questionKey: "three-words", value: "Precise, bilingual, unfussy", answeredAt: now - day * 2 },
-          { questionKey: "three-words-not", value: "Generic, decorative, translated", answeredAt: now - day * 2 },
-        ],
-        createdAt: now - day * 4,
-        sentAt: now - day * 3,
-        submittedAt: now - day * 2,
-        revokedAt: null,
       },
     ],
     // Empty on purpose: a moodboard is built from images a studio has actually
@@ -593,7 +535,6 @@ export function buildInitialWorkspaces(): Workspace[] {
     whiteLabel: false,
     complianceChecks: [],
     drafts: [],
-    briefs: [],
     moodboards: [],
     // Shared with a client means it has been delivered; the rest are mid-flight.
     stage: sharedStatus === "shared" ? "delivered" : "design",

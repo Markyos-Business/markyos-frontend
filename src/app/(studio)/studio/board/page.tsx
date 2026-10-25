@@ -194,7 +194,6 @@ function BoardCard({
   onMove: (dir: 1 | -1) => void;
 }) {
   const pendingDrafts = ws.drafts.filter((d) => d.status === "pending").length;
-  const openBriefs = ws.briefs.filter((b) => !b.revokedAt && b.status !== "submitted" && b.status !== "draft").length;
 
   return (
     <article
@@ -222,7 +221,7 @@ function BoardCard({
         </span>
       </Link>
 
-      {(pendingDrafts > 0 || openBriefs > 0) && (
+      {pendingDrafts > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap">
           {pendingDrafts > 0 && (
             <Link
@@ -231,15 +230,6 @@ function BoardCard({
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
             >
               {pendingDrafts} waiting
-            </Link>
-          )}
-          {openBriefs > 0 && (
-            <Link
-              href={`/w/${ws.slug}/brief`}
-              className="mk-tap text-[10.5px] font-semibold px-2 rounded"
-              style={{ background: "var(--surface-3)", color: "var(--text-muted)" }}
-            >
-              brief out
             </Link>
           )}
         </div>

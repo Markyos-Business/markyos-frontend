@@ -894,18 +894,17 @@ async function run() {
       count: tagged.length,
       boards: (snapshot.moodboards ?? []).length,
       drafts: (snapshot.drafts ?? []).length,
-      briefs: (snapshot.briefs ?? []).length,
     };
   });
   if (!leaked.checked) {
     fail("publish", "nothing was published, so the exclusion could not be checked");
-  } else if (leaked.count === 0 && leaked.boards === 0 && leaked.drafts === 0 && leaked.briefs === 0) {
+  } else if (leaked.count === 0 && leaked.boards === 0 && leaked.drafts === 0) {
     ok("a publish leaves the whole Creation Layer out of the snapshot");
   } else {
     fail(
       "publish",
-      `snapshot carried ${leaked.count} exploration assets, ${leaked.boards} boards, ` +
-        `${leaked.drafts} drafts and ${leaked.briefs} briefs`,
+      `snapshot carried ${leaked.count} exploration assets, ${leaked.boards} boards ` +
+        `and ${leaked.drafts} drafts`,
     );
   }
 

@@ -26,7 +26,7 @@ export const defaultConfig = (type: QuestionType): QuestionConfig => {
     case "image_choice":
       return { minPicks: 1, maxPicks: 1, options: options(2).map((o) => ({ ...o, assetId: null })) };
     case "upload":
-      return { accept: ["image/*", "application/pdf"], maxSizeMb: 20, maxFiles: 5 };
+      return { accept: ["image/png,image/jpeg,image/webp", "application/pdf"], maxSizeMb: 20, maxFiles: 5 };
     case "link":
       return { maxCount: 3 };
   }

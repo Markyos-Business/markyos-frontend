@@ -64,7 +64,7 @@ await page.waitForTimeout(700);
 
 const body = await page.evaluate(() => document.body.innerText);
 check("queue names the waiting count", /Waiting \(2\)/.test(body), body.slice(0, 60).replace(/\n/g, " "));
-check("provenance is shown to the reviewer", body.includes("Discovery brief"));
+check("provenance is shown to the reviewer", body.includes("Discovery form"));
 check("the proposal text is shown verbatim", body.includes(proposed.content.slice(0, 40)));
 
 const badge = await page.evaluate(() => {

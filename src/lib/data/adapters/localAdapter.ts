@@ -363,7 +363,6 @@ function migrate(parsed: AppState): AppState {
     whiteLabel: typeof ws.whiteLabel === "boolean" ? ws.whiteLabel : false,
     complianceChecks: Array.isArray(ws.complianceChecks) ? ws.complianceChecks : [],
     drafts: Array.isArray(ws.drafts) ? ws.drafts : [],
-    briefs: Array.isArray(ws.briefs) ? ws.briefs : [],
     moodboards: Array.isArray(ws.moodboards) ? ws.moodboards.map(migrateMoodboard) : [],
     // An existing brand has been worked on, so "discovery" would be wrong for
     // it. A published one is live; anything else is somewhere in the middle,

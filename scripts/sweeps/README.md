@@ -91,13 +91,6 @@ wording), reject, supersede, and that a rejected draft is kept rather than
 deleted — "we considered this and said no" is a different answer from "nobody
 ever suggested it".
 
-### `brief.mjs`
-The whole discovery loop: create from a template, adjust the questions, send,
-the client answers at `/b/<token>` with no account, submit. Then the part that
-matters — mapped answers become *pending drafts* and never touch the strategy.
-Also that an unsent brief refuses to open, a closed link says it was switched
-off rather than 404, and resubmitting produces no duplicate drafts.
-
 ### `moodboard.mjs`
 Builds its own PNGs of known colours with `zlib`, so the palette assertion is
 exact rather than "some colours came back" — a 70/30 two-colour image has to
@@ -179,8 +172,8 @@ EXPLORATION, reading an image proposes swatches rather than writing colours, a
 vote is recorded against a person rather than as a count, and a publish leaves
 the whole Creation Layer out of the snapshot. That last check is the one that
 found a real leak — publishing copies the workspace and subtracts, which is right
-for display fields and wrong for private ones, and `moodboards`, `drafts` and
-`briefs` were riding along. If a collection is added to the Creation Layer and
+for display fields and wrong for private ones, and `moodboards` and `drafts`
+were riding along. If a collection is added to the Creation Layer and
 not named in `publishGuideline`, this suite fails.
 
 ### `builder.mjs`

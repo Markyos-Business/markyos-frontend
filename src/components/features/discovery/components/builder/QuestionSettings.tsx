@@ -26,11 +26,13 @@ const Group = ({ title, children }: { title: string; children: ReactNode }) => (
 
 const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
+// No SVG: a client's upload is served from the studio's domain, and an SVG
+// can carry script.
 const FILE_TYPES = [
-  { key: "image/*", en: "Images", ar: "صور" },
+  { key: "image/png,image/jpeg,image/webp", en: "Images", ar: "صور" },
   { key: "application/pdf", en: "PDF", ar: "PDF" },
   { key: ".doc,.docx", en: "Word documents", ar: "مستندات وورد" },
-  { key: ".ai,.eps,.svg", en: "Design files", ar: "ملفات تصميم" },
+  { key: ".ai,.eps", en: "Design files", ar: "ملفات تصميم" },
 ];
 
 /** The selected question's settings: type, required, picks, limits, show/hide, analysis. */

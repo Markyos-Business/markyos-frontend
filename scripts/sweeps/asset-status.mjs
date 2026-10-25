@@ -190,7 +190,6 @@ async function hexesOnClientPage(template, park) {
         snap.assets = snap.assets.filter((a) => a.status === "approved");
         snap.moodboards = [];
         snap.drafts = [];
-        snap.briefs = [];
         w.published = snap;
         w.publishedAt = Date.now();
       }

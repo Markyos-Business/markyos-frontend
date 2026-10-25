@@ -1,11 +1,12 @@
 import { ApiError, api } from "@/lib/api/client";
 import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 import { inlineFiles } from "@/lib/data/adapters/serverFiles";
-import type { AppState, Brief, ShareLink, Workspace } from "@/types";
+import type { AppState, ShareLink, Workspace } from "@/types";
 
 /**
  * What a studio's clients open without an account: the published guideline
- * site, share links and discovery briefs, read from `/api/v1/public/`.
+ * site and share links, read from `/api/v1/public/`. Discovery forms have
+ * their own client (features/discovery).
  *
  * The server strips everything only the studio should see (the gate
  * password, other links, drafts, keys) before any of it leaves, and checks
@@ -91,39 +92,3 @@ export async function fetchShareLink(token: string): Promise<{ ws: Workspace; li
   }
 }
 
-/** Only what the brief page shows of the brand. */
-export interface BriefBrand {
-  id: string;
-  slug: string;
-  name: string;
-}
-
-interface BriefResponse {
-  brief: Brief;
-  brand: BriefBrand;
-}
-
-export async function fetchBrief(token: string): Promise<{ brief: Brief; workspace: BriefBrand } | null> {
-  try {
-    const { brief, brand } = await api<BriefResponse>(`/public/briefs/${encodeURIComponent(token)}/`);
-    return { brief, workspace: brand };
-  } catch (err) {
-    if (notFound(err)) return null;
-    throw err;
-  }
-}
-
-export async function saveBriefAnswer(token: string, questionKey: string, value: string): Promise<Brief> {
-  const { brief } = await api<BriefResponse>(`/public/briefs/${encodeURIComponent(token)}/answers/`, {
-    method: "PUT",
-    body: { questionKey, value },
-  });
-  return brief;
-}
-
-export async function sendBrief(token: string): Promise<Brief> {
-  const { brief } = await api<BriefResponse>(`/public/briefs/${encodeURIComponent(token)}/submit/`, {
-    method: "POST",
-  });
-  return brief;
-}

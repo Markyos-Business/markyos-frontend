@@ -84,12 +84,10 @@ describe("buildPublishedSnapshot", () => {
           provenance: { source: "ai" },
         } as never,
       ],
-      briefs: [{ id: "b", template: "new-brand", status: "draft" } as never],
     });
     const snap = buildPublishedSnapshot(seeded);
     expect(snap.moodboards).toEqual([]);
     expect(snap.drafts).toEqual([]);
-    expect(snap.briefs).toEqual([]);
   });
 
   it("does not nest the previous snapshot inside the new one", () => {

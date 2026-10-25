@@ -80,7 +80,7 @@ const PAGES = [
   ["builder", `/w/${SLUG}/builder`],
   ["moodboard", `/w/${SLUG}/moodboard`],
   ["drafts", `/w/${SLUG}/drafts`],
-  ["brief", `/w/${SLUG}/brief`],
+  ["forms", `/w/${SLUG}/forms`],
   ["departments", `/w/${SLUG}/departments`],
   ["team", `/w/${SLUG}/team`],
   ["settings", `/w/${SLUG}/settings`],

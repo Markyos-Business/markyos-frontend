@@ -440,7 +440,7 @@ export interface ComplianceCheck {
 
 // ---- The Creation Layer: drafts ----
 //
-// Everything a brief answer, an import, a palette extraction or (later) the AI
+// Everything a discovery answer, an import, a palette extraction or (later) the AI
 // assistant proposes lands here first. Nothing written by a machine or by a
 // client reaches a Strategy Hub field or a guideline until a person accepts
 // it — that is the rule the rest of the Creation Layer is built on, and this
@@ -470,88 +470,15 @@ export type DraftTargetType = "strategyField" | "guidelineSection" | "palette" |
  * so the decision stays auditable after the fact.
  */
 export interface DraftProvenance {
-  /** One line naming the origin, e.g. "Discovery brief — Q3, What do you sell?" */
+  /** One line naming the origin, e.g. "Discovery form — Q3, What do you sell?" */
   summary: string;
   /** The inputs it was derived from, by name. */
   inputs: string[];
   /** Set for AI drafts only. */
   model?: string;
   promptVersion?: string;
-  /** Who asked for it — an account name, or the client's name on a brief. */
+  /** Who asked for it — an account name, or the client's name on a discovery form. */
   requestedBy: string;
-}
-
-// ---- The Creation Layer: discovery brief ----
-//
-// The client's first contact with Markyos, on day one of the project rather
-// than at handover. They answer at /b/<token> with no account, in Arabic or
-// English, and the answers become drafts against the Strategy Hub fields they
-// inform — so the brief feeds the strategy instead of being re-typed into it.
-
-export type BriefTemplateKind = "new-brand" | "rebrand" | "sub-brand";
-
-export type BriefQuestionType = "text" | "long" | "choice" | "scale";
-
-export interface BriefChoice {
-  value: string;
-  labelEn: string;
-  labelAr: string;
-}
-
-export interface BriefQuestion {
-  key: string;
-  category: string;
-  type: BriefQuestionType;
-  /** Written as originals in both languages, not translated from the English. */
-  promptEn: string;
-  promptAr: string;
-  helpEn?: string;
-  helpAr?: string;
-  /** The Strategy Hub field this answer drafts into, when it maps to one. */
-  strategyField?: StrategyTextField;
-  choices?: BriefChoice[];
-}
-
-export interface BriefAnswer {
-  questionKey: string;
-  value: string;
-  answeredAt: number;
-}
-
-/**
- * `sent` means a link exists; `in_progress` means the client has saved at least
- * one answer. The distinction is what lets a studio tell "they haven't opened
- * it" from "they started and stalled", which are different conversations.
- */
-export type BriefStatus = "draft" | "sent" | "in_progress" | "submitted";
-
-export interface Brief {
-  id: string;
-  /**
-   * The id IS the URL. Revoking happens by marking the record rather than
-   * deleting it, for the same reason share links work that way: a dead link
-   * has to be able to say "this was switched off" rather than 404.
-   */
-  token: string;
-  label: string;
-  clientName: string;
-  template: BriefTemplateKind;
-  status: BriefStatus;
-  /** Ordered question keys — the studio's selection from the library. */
-  questions: string[];
-  /** Which language the client sees first. They can switch. */
-  lang: Lang;
-  answers: BriefAnswer[];
-  createdAt: number;
-  sentAt: number | null;
-  submittedAt: number | null;
-  revokedAt: number | null;
-  /**
-   * Set by the server when the client sends the brief from their own
-   * device. The studio's app turns the answers into proposals the next time
-   * it loads the brand, then clears it.
-   */
-  proposalsPending?: boolean;
 }
 
 /**
@@ -1017,8 +944,6 @@ export interface Workspace {
    * out what is waiting.
    */
   drafts: Draft[];
-  /** Discovery briefs sent to this brand's client. */
-  briefs: Brief[];
   /** Exploration boards. The images themselves live in `assets`. */
   moodboards: Moodboard[];
   /** Where this brand sits on the studio's lifecycle board. */

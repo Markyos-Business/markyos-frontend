@@ -237,9 +237,21 @@ export type PublicForm = {
   logoUrl: string | null;
   status: FormStatus;
   closesAt: string | null;
+  /** Past its closing date: readable, but nothing more saves. */
+  closed?: boolean;
   allowSaveAndResume: boolean;
   sections: { id: string; title: LocalizedText; questions: PublicQuestion[] }[];
 };
 
 /** A file the client uploaded, as its answer refers to it. */
 export type UploadedFile = { assetId: string; name: string; url?: string | null };
+
+/** This visitor's saved response, as the public form endpoint returns it. */
+export type PublicResponse = {
+  resumeToken: string;
+  language: Lang;
+  respondentName: string;
+  answers: Record<string, AnswerValue>;
+  files: Record<string, UploadedFile>;
+  submittedAt: string | null;
+};

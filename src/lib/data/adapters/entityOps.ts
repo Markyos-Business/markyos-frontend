@@ -56,7 +56,7 @@ export interface SectionPatch {
  * So: if a collection is added to the Creation Layer, it belongs on this list.
  * The moodboard sweep fails if one is not.
  */
-const PRIVATE_COLLECTIONS = ["moodboards", "drafts", "briefs"] as const;
+const PRIVATE_COLLECTIONS = ["moodboards", "drafts"] as const;
 
 /**
  * Build the snapshot `/v/<slug>` will serve.
