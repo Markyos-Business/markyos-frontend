@@ -37,6 +37,9 @@ const SLUG = "nadeen-studio";
 
 /** A card's boundary has to be findable by one route or the other. */
 const SEPARATION_FLOOR = 1.29;
+/** Light is a white page with white cards and a #e5e5e5 border (1.26:1). */
+const LIGHT_SEPARATION_FLOOR = 1.25;
+const separationFloor = (theme) => (theme === "light" ? LIGHT_SEPARATION_FLOOR : SEPARATION_FLOOR);
 /** Artwork has to be distinguishable from what is behind it. */
 const ARTWORK_FLOOR = 1.5;
 /** Below this an element is a chip, a pill or a badge, not a card. */
@@ -357,7 +360,7 @@ async function auditPage(page, theme, name, path) {
     const byFill = ratioOf(fillL, groundL);
     const byEdge = s.edge ? ratioOf(luminance(s.edge), groundL) : 1;
     const best = Math.max(byFill, byEdge);
-    if (best >= SEPARATION_FLOOR) continue;
+    if (best >= separationFloor(theme)) continue;
     record(
       "surface",
       theme,

@@ -47,66 +47,67 @@ const config = {
       colors: {
         // Surfaces (spec §2.3): black canvas, #111 cards, #1A1A1A raised
         // fills, #242424 above that.
-        canvas: "var(--canvas, light-dark(#eeeef2, #000000))",
+        canvas: "var(--canvas, light-dark(#ffffff, #000000))",
+        sidebar: "var(--sidebar, light-dark(#fafafa, #000000))",
         "surface-0": "var(--surface-0, light-dark(#ffffff, #111111))",
         "surface-1": "var(--surface-1, light-dark(#ffffff, #111111))",
-        "surface-2": "var(--surface-2, light-dark(#f0f0f4, #1a1a1a))",
-        "surface-3": "var(--surface-3, light-dark(#e4e4ea, #242424))",
+        "surface-2": "var(--surface-2, light-dark(#f5f5f5, #1a1a1a))",
+        "surface-3": "var(--surface-3, light-dark(#ededed, #242424))",
         // The unread or highlighted row, and widget rows / sunken areas.
-        "surface-highlight": "var(--surface-highlight, light-dark(#f6f6f9, #161616))",
-        "surface-sunken": "var(--surface-sunken, light-dark(rgba(9, 9, 11, 0.03), rgba(255, 255, 255, 0.04)))",
+        "surface-highlight": "var(--surface-highlight, light-dark(#fafafa, #161616))",
+        "surface-sunken": "var(--surface-sunken, light-dark(rgba(10, 10, 10, 0.03), rgba(255, 255, 255, 0.04)))",
 
         // The one accent, #0099FF, and its deep step for pressed states.
-        accent: "var(--accent, light-dark(#0062b8, #0099ff))",
-        "accent-deep": "var(--accent-deep, light-dark(#004a8f, #0055ff))",
-        "accent-soft": "var(--accent-soft, light-dark(rgba(0, 98, 184, 0.1), rgba(0, 153, 255, 0.14)))",
+        accent: "var(--accent, light-dark(#0055ff, #0099ff))",
+        "accent-deep": "var(--accent-deep, light-dark(#0044cc, #0055ff))",
+        "accent-soft": "var(--accent-soft, light-dark(#e6eeff, rgba(0, 153, 255, 0.14)))",
         // Accent as text on a surface: lifted on dark, deeper on light, so
         // links and small labels keep their contrast.
-        "accent-text": "var(--accent-text, light-dark(#00478f, #5cb9ff))",
+        "accent-text": "var(--accent-text, light-dark(#0055ff, #5cb9ff))",
         // Text and icons on an `accent-soft` fill.
-        "accent-on-soft": "var(--accent-on-soft, light-dark(#004080, #85caff))",
+        "accent-on-soft": "var(--accent-on-soft, light-dark(#0055ff, #85caff))",
         // Text on a solid `accent` fill, and the accent's focus ring and edge.
         "accent-ink": "var(--accent-ink, light-dark(#ffffff, #0b0b0d))",
-        "accent-ring": "var(--accent-ring, light-dark(rgba(0, 98, 184, 0.22), rgba(0, 153, 255, 0.18)))",
-        "accent-edge": "var(--accent-edge, light-dark(rgba(0, 98, 184, 0.55), rgba(0, 153, 255, 0.55)))",
+        "accent-ring": "var(--accent-ring, light-dark(rgba(0, 85, 255, 0.22), rgba(0, 153, 255, 0.18)))",
+        "accent-edge": "var(--accent-edge, light-dark(rgba(0, 85, 255, 0.55), rgba(0, 153, 255, 0.55)))",
 
         // The inverted pill: the opposite of the ground in either theme.
-        solid: "var(--solid, light-dark(#101014, #ffffff))",
+        solid: "var(--solid, light-dark(#0a0a0a, #ffffff))",
         "solid-ink": "var(--solid-ink, light-dark(#ffffff, #090909))",
 
         // Borders are drawn as inset rings in these, not 1px borders. The one
         // real border, an input's underline, rests in `line-strong`.
-        hairline: "var(--hairline, light-dark(rgba(9, 9, 11, 0.09), rgba(255, 255, 255, 0.05)))",
-        "hairline-strong": "var(--hairline-strong, light-dark(rgba(9, 9, 11, 0.22), rgba(255, 255, 255, 0.1)))",
-        "line-strong": "var(--line-strong, light-dark(rgba(9, 9, 11, 0.32), rgba(255, 255, 255, 0.2)))",
+        hairline: "var(--hairline, light-dark(#e5e5e5, rgba(255, 255, 255, 0.05)))",
+        "hairline-strong": "var(--hairline-strong, light-dark(rgba(10, 10, 10, 0.106), rgba(255, 255, 255, 0.1)))",
+        "line-strong": "var(--line-strong, light-dark(rgba(10, 10, 10, 0.32), rgba(255, 255, 255, 0.2)))",
         "chip-edge": "var(--chip-edge, rgba(130, 130, 138, 0.5))",
 
         // Hierarchy by lightness, never by hue: heading, body, muted, faint,
         // and `text-disabled` for placeholders and disabled labels only.
-        text: "var(--text, light-dark(#0d0d0f, #ffffff))",
-        "text-secondary": "var(--text-secondary, light-dark(#262629, #dbdbdb))",
-        "text-muted": "var(--text-muted, light-dark(#36363c, #c4c4c4))",
-        "text-faint": "var(--text-faint, light-dark(#47474f, #afafaf))",
-        "text-disabled": "var(--text-disabled, light-dark(rgba(13, 13, 15, 0.4), rgba(255, 255, 255, 0.4)))",
+        text: "var(--text, light-dark(#0a0a0a, #ffffff))",
+        "text-secondary": "var(--text-secondary, light-dark(#171717, #dbdbdb))",
+        "text-muted": "var(--text-muted, light-dark(#6b6b6b, #c4c4c4))",
+        "text-faint": "var(--text-faint, light-dark(#6b6b6b, #afafaf))",
+        "text-disabled": "var(--text-disabled, light-dark(rgba(10, 10, 10, 0.4), rgba(255, 255, 255, 0.4)))",
 
         // Status, for status only. `danger` is the text tone; `danger-fill`
         // is the spec's red for dots, bars and solid badges.
-        success: "var(--success, light-dark(#085230, #00de68))",
-        warning: "var(--warning, light-dark(#654000, #ffbb00))",
+        success: "var(--success, light-dark(#007a52, #00de68))",
+        warning: "var(--warning, light-dark(#8a5c00, #ffbb00))",
         attention: "var(--attention, light-dark(#7a3400, #ffb37a))",
-        danger: "var(--danger, light-dark(#8a1824, #ff8fb4))",
-        "danger-fill": "var(--danger-fill, light-dark(#d6004f, #ff0066))",
+        danger: "var(--danger, light-dark(#c80009, #ff8fb4))",
+        "danger-fill": "var(--danger-fill, light-dark(#e7000b, #ff0066))",
         info: "var(--info, light-dark(#004a5f, #00ccff))",
         // The tint rule: each soft fill is its own hue at about 14%.
-        "success-soft": "var(--success-soft, light-dark(rgba(8, 82, 48, 0.08), rgba(0, 222, 104, 0.14)))",
-        "warning-soft": "var(--warning-soft, light-dark(rgba(101, 64, 0, 0.08), rgba(255, 187, 0, 0.14)))",
-        "danger-soft": "var(--danger-soft, light-dark(rgba(138, 24, 36, 0.08), rgba(255, 0, 102, 0.14)))",
+        "success-soft": "var(--success-soft, light-dark(#e6f5ef, rgba(0, 222, 104, 0.14)))",
+        "warning-soft": "var(--warning-soft, light-dark(#fbf3e6, rgba(255, 187, 0, 0.14)))",
+        "danger-soft": "var(--danger-soft, light-dark(#fdecec, rgba(255, 0, 102, 0.14)))",
         "info-soft": "var(--info-soft, light-dark(rgba(0, 74, 95, 0.08), rgba(0, 204, 255, 0.14)))",
         "attention-soft": "var(--attention-soft, light-dark(rgba(122, 52, 0, 0.07), rgba(255, 179, 122, 0.12)))",
         // A neutral soft fill (the outline button, a progress track) and a
         // switch's off track.
-        "ink-soft": "var(--ink-soft, light-dark(rgba(9, 9, 11, 0.06), rgba(255, 255, 255, 0.1)))",
-        track: "var(--track, light-dark(#bdbdc4, #333333))",
+        "ink-soft": "var(--ink-soft, light-dark(rgba(10, 10, 10, 0.06), rgba(255, 255, 255, 0.1)))",
+        track: "var(--track, light-dark(#bdbdbd, #333333))",
         // Text on a solid status or danger fill.
         "status-ink": "var(--status-ink, light-dark(#ffffff, #0b0b0d))",
         "danger-ink": "var(--danger-ink, light-dark(#ffffff, #0b0b0d))",

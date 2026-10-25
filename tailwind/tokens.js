@@ -49,6 +49,7 @@ export const darkTokens = {
   "--surface-3": "#242424",
   /* The unread or highlighted row (spec `--off-white`). */
   "--surface-highlight": "#161616",
+  "--sidebar": "#000000",
   /* Widget rows and sunken areas: white at 4% over whatever is underneath. */
   "--surface-sunken": "rgba(255, 255, 255, 0.04)",
   "--accent": "#0099ff",
@@ -344,57 +345,52 @@ export const specAliases = {
  * meaning, which is the one thing those colours exist to do.
  */
 export const lightTokens = {
-  /* The ground is deliberately a step greyer than the cards: most surfaces in
-   * this app are drawn as a fill with no border, so on a white-on-white pair
-   * every panel edge would vanish. */
-  "--canvas": "#eeeef2",
+  /* White page and white cards, told apart by the #e5e5e5 hairline. Neutral
+   * greys throughout: blue is kept for actions, focus and data. */
+  "--canvas": "#ffffff",
   "--surface-0": "#ffffff",
   "--surface-1": "#ffffff",
-  "--surface-2": "#f0f0f4",
-  "--surface-3": "#e4e4ea",
-  "--surface-highlight": "#f6f6f9",
-  "--surface-sunken": "rgba(9, 9, 11, 0.03)",
-  /* Each of these was solved against `--surface-3` (#e4e4ea), the greyest
-   * ground in the light theme. The previous values were picked against white
-   * and dropped to 3.7–4.1:1 the moment they were used on a tinted card.
-   *
-   * #0068b8 then failed a ground `--surface-3` doesn't cover: a selected chip
-   * sets its own `--accent-soft` fill and labels it in `--accent`, which put
-   * the accent on a blue-tinted ground rather than a grey one and landed at
-   * 4.31:1 — the Visual identity filter chips, the Builder's page tabs, every
-   * selected pill in the product. Solved against that tint instead. */
-  "--accent": "#0062b8",
-  "--accent-deep": "#004a8f",
-  "--accent-soft": "rgba(0, 98, 184, 0.1)",
-  "--accent-ring": "rgba(0, 98, 184, 0.22)",
+  "--surface-2": "#f5f5f5",
+  "--surface-3": "#ededed",
+  "--surface-highlight": "#fafafa",
+  /* The sidebar sits a shade off the white page, so the two read apart. */
+  "--sidebar": "#fafafa",
+  "--surface-sunken": "rgba(10, 10, 10, 0.03)",
+  /* The deep brand blue. 5.2:1 on #f5f5f5 and 4.8:1 on its own #e6eeff tint,
+   * so it can label a selected chip as well as fill a button. */
+  "--accent": "#0055ff",
+  "--accent-deep": "#0044cc",
+  "--accent-soft": "#e6eeff",
+  "--accent-ring": "rgba(0, 85, 255, 0.22)",
   /* Same job as the dark theme's, solved the other way: on light the tint
    * darkens its ground, so the ink has to go deeper rather than brighter. */
-  "--accent-on-soft": "#004080",
+  "--accent-on-soft": "#0055ff",
   /* The text accent, mirrored — deeper rather than brighter. */
-  "--accent-text": "#00478f",
+  "--accent-text": "#0055ff",
   /* The same 7 / 9.5 / 12 / 15 ramp as the dark theme, mirrored. */
-  "--text": "#0d0d0f",
-  "--text-secondary": "#262629",
-  "--text-muted": "#36363c",
-  "--text-faint": "#47474f",
-  "--text-disabled": "rgba(13, 13, 15, 0.4)",
-  /* Deepened to clear 7:1 at the 10–11px these are almost always set at — a
-  "Verified" chip and an "AAA" badge are small type, not headings. */
-  "--success": "#085230",
-  "--warning": "#654000",
+  "--text": "#0a0a0a",
+  "--text-secondary": "#171717",
+  "--text-muted": "#6b6b6b",
+  "--text-faint": "#6b6b6b",
+  "--text-disabled": "rgba(10, 10, 10, 0.4)",
+  /* Status inks are the text shades: #009966 and #d08700 fall under 4.5:1 as
+   * text on grey, so text uses these deeper tones and the brighter ones are
+   * left to charts. */
+  "--success": "#007a52",
+  "--warning": "#8a5c00",
   "--attention": "#7a3400",
-  "--danger": "#8a1824",
-  "--danger-fill": "#d6004f",
+  "--danger": "#c80009",
+  "--danger-fill": "#e7000b",
   /* The spec's cyan, deepened the same way, to 7:1 on `--surface-3`. */
   "--info": "#004a5f",
   /* Each a tint of this theme's status colour, so the badge text keeps its
    * contrast; the dark theme's tints are too pale behind these inks. */
-  "--success-soft": "rgba(8, 82, 48, 0.08)",
-  "--warning-soft": "rgba(101, 64, 0, 0.08)",
-  "--danger-soft": "rgba(138, 24, 36, 0.08)",
+  "--success-soft": "#e6f5ef",
+  "--warning-soft": "#fbf3e6",
+  "--danger-soft": "#fdecec",
   "--attention-soft": "rgba(122, 52, 0, 0.07)",
   "--info-soft": "rgba(0, 74, 95, 0.08)",
-  "--ink-soft": "rgba(9, 9, 11, 0.06)",
+  "--ink-soft": "rgba(10, 10, 10, 0.06)",
   /* Here the accent is deep, so the legible ink on it is white. */
   "--accent-ink": "#ffffff",
   "--status-ink": "#ffffff",
@@ -403,10 +399,10 @@ export const lightTokens = {
   deeper here than the ratio alone suggests, because a white card on a #eeeef2
   canvas has nothing else separating it: on the dark theme the fill step does
   a little of the work, and on this one it does almost none. */
-  "--hairline": "rgba(9, 9, 11, 0.09)",
-  "--hairline-strong": "rgba(9, 9, 11, 0.22)",
-  "--line-strong": "rgba(9, 9, 11, 0.32)",
-  "--accent-edge": "rgba(0, 98, 184, 0.55)",
+  "--hairline": "#e5e5e5",
+  "--hairline-strong": "rgba(10, 10, 10, 0.106)",
+  "--line-strong": "rgba(10, 10, 10, 0.32)",
+  "--accent-edge": "rgba(0, 85, 255, 0.55)",
   /* Chip edge and scrim are intentionally identical to the dark theme's — see
    * the note there; both are about the content, not the interface. */
   "--chip-edge": "rgba(130, 130, 138, 0.5)",
@@ -414,28 +410,28 @@ export const lightTokens = {
   "--scrim-ink": "#ffffff",
   /* Darker than the dark theme's thumb, for the same 3:1 reason. #83838a
   measured 2.97:1 against `--surface-3` — right idea, one step short. */
-  "--scrollbar-thumb": "#7d7d84",
-  "--scrollbar-thumb-hover": "#63636a",
+  "--scrollbar-thumb": "#7d7d7d",
+  "--scrollbar-thumb-hover": "#636363",
   /* Lighter and wider than the dark theme's. On a light ground the shadow is
   the whole of the elevation signal, so it has to be soft enough not to look
   like a bruise and wide enough to read as height rather than as an edge. */
-  "--shadow-pop": "0 8px 24px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.08)",
-  "--shadow-modal": "0 20px 50px rgba(16, 16, 24, 0.2), 0 4px 12px rgba(16, 16, 24, 0.1)",
-  "--shadow-soft": "0 0 0 1px rgba(9, 9, 11, 0.08)",
-  "--shadow-raised": "0 8px 24px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.08)",
+  "--shadow-pop": "0 8px 24px rgba(10, 10, 10, 0.12), 0 2px 6px rgba(10, 10, 10, 0.06)",
+  "--shadow-modal": "0 20px 50px rgba(10, 10, 10, 0.18), 0 4px 12px rgba(10, 10, 10, 0.08)",
+  "--shadow-soft": "0 0 0 1px #e5e5e5",
+  "--shadow-raised": "0 8px 24px rgba(10, 10, 10, 0.12), 0 2px 6px rgba(10, 10, 10, 0.06)",
   /* Glow does not read on a light ground, so the same roles are a tighter
   halo in the deeper accent. */
-  "--glow-primary": "0 0 0 1px rgba(0, 98, 184, 0.5), 0 0 16px rgba(0, 98, 184, 0.35)",
-  "--glow-soft": "0 0 12px rgba(0, 98, 184, 0.3)",
-  "--glow-line": "drop-shadow(0 0 4px rgba(0, 98, 184, 0.45))",
+  "--glow-primary": "0 0 0 1px rgba(0, 85, 255, 0.5), 0 0 16px rgba(0, 85, 255, 0.3)",
+  "--glow-soft": "0 0 12px rgba(0, 85, 255, 0.28)",
+  "--glow-line": "drop-shadow(0 0 4px rgba(0, 85, 255, 0.4))",
   /* A black scrim at the dark theme's 35% turns a white button grey; this is
   the same darkening, at the strength a light ground needs. */
   "--hover-scrim": "rgba(0, 0, 0, 0.1)",
-  "--track": "#bdbdc4",
+  "--track": "#bdbdbd",
   /* Settle rather than lift: on a light ground a control gets darker when
   pointed at, and `brightness` above 1 on a white control does nothing. */
   "--hover-shift": "brightness(0.95)",
-  "--solid": "#101014",
+  "--solid": "#0a0a0a",
   "--solid-ink": "#ffffff",
   "--chrome-mark-invert": "none",
   "color-scheme": "light",

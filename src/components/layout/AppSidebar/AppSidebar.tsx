@@ -153,7 +153,7 @@ export function AppSidebar({
       className={`flex shrink-0 flex-col gap-space-8 overflow-y-auto overflow-x-hidden py-space-8 ${
         inDrawer
           ? "h-full w-72 max-w-full px-space-3"
-          : `bg-canvas shadow-[inset_-1px_0_0_var(--hairline-strong)] rtl:shadow-[inset_1px_0_0_var(--hairline-strong)] ${collapsed ? RAIL : OPEN}`
+          : `bg-sidebar shadow-[inset_-1px_0_0_var(--hairline-strong)] rtl:shadow-[inset_1px_0_0_var(--hairline-strong)] ${collapsed ? RAIL : OPEN}`
       }`}
     >
       <div className={`flex shrink-0 items-center ${collapsed ? "justify-center" : "gap-space-4 px-space-2"}`}>

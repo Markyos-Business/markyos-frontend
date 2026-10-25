@@ -194,6 +194,18 @@ const NON_TEXT = [
  */
 const EDGE_FLOOR = 1.29;
 const SEPARATION_FLOOR = 1.4;
+
+/*
+ * The light theme follows the light palette brief (Oct 2026): WCAG AA for all
+ * text, a white page with white cards told apart by a #e5e5e5 border (1.26:1),
+ * and two text levels rather than four. So light holds text to 4.5:1, cards to
+ * that border, and skips the four-step ramp, which only the dark theme has.
+ */
+const LIGHT_EDGE_FLOOR = 1.25;
+const floorsFor = (theme) =>
+  theme === "light"
+    ? { small: 4.5, edge: LIGHT_EDGE_FLOOR, separation: LIGHT_EDGE_FLOOR, ramp: false }
+    : { small: SMALL_TEXT_FLOOR, edge: EDGE_FLOOR, separation: SEPARATION_FLOOR, ramp: true };
 /** The surfaces that are drawn as cards on the page behind them. */
 const CARD_SURFACES = ["surface-0", "surface-1", "surface-2", "surface-3"];
 
@@ -203,8 +215,11 @@ let failures = 0;
 for (const [name, T] of THEMES) {
   console.log(`\n=== ${name} ===`);
   const rows = [];
+  const floors = floorsFor(name);
+  const need = (floor) => (floor === SMALL_TEXT_FLOOR ? floors.small : floor);
 
-  for (const [ink, floor] of INKS) {
+  for (const [ink, base] of INKS) {
+    const floor = need(base);
     const worst = GROUNDS.map((g) => ({ g, r: ratio(T[ink], T[g]) })).sort((a, b) => a.r - b.r)[0];
     const ok = worst.r >= floor;
     if (!ok) failures++;
@@ -220,11 +235,13 @@ for (const [name, T] of THEMES) {
     rows.push(`${ok ? "ok  " : "FAIL"}  ${ink.padEnd(15)} on ${ground.padEnd(17)} ${r.toFixed(2)}:1`);
   }
 
-  for (const [ink, tint, floor, grounds = GROUNDS] of TINTED) {
+  for (const [ink, tint, base, grounds = GROUNDS] of TINTED) {
+    const floor = need(base);
+    // A solid tint (the light theme's) is the same colour on every ground.
     const rgba = T.__alpha[tint];
-    if (!rgba) throw new Error(`--${tint} is not an rgba() token in the ${name} theme`);
+    if (!rgba && !T[tint]) throw new Error(`--${tint} is neither rgba() nor hex in the ${name} theme`);
     const worst = grounds.map((g) => {
-      const flat = composite(rgba, T[g]);
+      const flat = rgba ? composite(rgba, T[g]) : T[tint];
       return { g, r: ratio(T[ink], flat) };
     }).sort((a, b) => a.r - b.r)[0];
     const ok = worst.r >= floor;
@@ -249,16 +266,17 @@ for (const [name, T] of THEMES) {
     const edge = composite(edgeRgba, T[surface]);
     const onCard = ratio(edge, T[surface]);
     const fromGround = Math.max(ratio(T[surface], T.canvas), ratio(edge, T.canvas));
-    const ok = onCard >= EDGE_FLOOR && fromGround >= SEPARATION_FLOOR;
+    const ok = onCard >= floors.edge && fromGround >= floors.separation;
     if (!ok) failures++;
     rows.push(
       `${ok ? "ok  " : "FAIL"}  ${`edge on ${surface}`.padEnd(15)} ` +
-        `${onCard.toFixed(2)}:1 on the card (needs ${EDGE_FLOOR}), ` +
-        `${fromGround.toFixed(2)}:1 from the canvas (needs ${SEPARATION_FLOOR})`
+        `${onCard.toFixed(2)}:1 on the card (needs ${floors.edge}), ` +
+        `${fromGround.toFixed(2)}:1 from the canvas (needs ${floors.separation})`
     );
   }
 
   console.log(rows.join("\n"));
+  if (!floors.ramp) continue;
 
   // The ramp has to stay a ramp: four levels nobody can tell apart is not a
   // hierarchy, however well each one passes on its own.
@@ -274,7 +292,7 @@ for (const [name, T] of THEMES) {
 
 console.log(
   failures === 0
-    ? `\nAll interface tokens pass — 4.5:1, and ${SMALL_TEXT_FLOOR}:1 for the levels used at 10–11px.\n`
+    ? `\nAll interface tokens pass — 4.5:1, and in the dark theme ${SMALL_TEXT_FLOOR}:1 for the levels used at 10–11px.\n`
     : `\n${failures} failing token(s).\n`
 );
 process.exit(failures === 0 ? 0 : 1);

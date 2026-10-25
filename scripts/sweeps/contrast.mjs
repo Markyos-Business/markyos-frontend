@@ -14,10 +14,12 @@ const findings = [];
 
 /**
  * Rendered contrast, measured against the actual painted background rather
- * than against the token the element claims to use. Small text carries the
- * 7:1 bar: 4.5 is calibrated for ~16px and this UI sets a lot of 9–11px type.
+ * than against the token the element claims to use. In the dark theme small
+ * text carries the 7:1 bar: 4.5 is calibrated for ~16px and this UI sets a lot
+ * of 9–11px type. The light theme follows its palette brief: AA throughout.
  */
-const AUDIT = () => {
+const smallFloorFor = (theme) => (theme === "light" ? 4.5 : 7);
+const AUDIT = (smallFloor) => {
   const SMALL = 12.5;
   const parse = (c) => {
     const m = c.match(/rgba?\(([^)]+)\)/);
@@ -91,10 +93,10 @@ const AUDIT = () => {
      * and no more: pushing a studio's blue to AAA stops it being their blue.
      * Everything above that bar is surfaced to the studio by the in-app
      * ContrastReport rather than silently rewritten. Only app chrome — the
-     * part Markyos owns — carries the 7:1 small-text bar.
+     * part Markyos owns — carries the small-text bar.
      */
     const brandOwned = !!el.closest("[data-guideline-surface]");
-    const need = large ? 3 : brandOwned ? 4.5 : size < SMALL ? 7 : 4.5;
+    const need = large ? 3 : brandOwned ? 4.5 : size < SMALL ? smallFloor : 4.5;
     const r = ratio(fg, bg);
     if (r + 0.01 < need) {
       out.push({
@@ -178,7 +180,7 @@ for (const theme of ["dark", "light"]) {
         }
       }
 
-      const bad = await page.evaluate(AUDIT);
+      const bad = await page.evaluate(AUDIT, smallFloorFor(theme));
       for (const b of bad) {
         const key = `${theme}|${slug}|${b.text}|${b.ratio}`;
         if (!findings.some((f) => f.key === key)) findings.push({ key, theme, label: slug, ...b });
@@ -256,7 +258,7 @@ for (const theme of ["dark", "light"]) {
         cls: "",
       });
     } else {
-      const bad = await page.evaluate(AUDIT);
+      const bad = await page.evaluate(AUDIT, smallFloorFor(theme));
       for (const b of bad) {
         const key = `${theme}|layouts|${b.text}|${b.ratio}`;
         if (!findings.some((f) => f.key === key)) {
