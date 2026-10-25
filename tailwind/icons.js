@@ -11,6 +11,12 @@ export const iconStyles = [
   /* Builder view switcher and moodboard card kinds. A name this file does not
   define renders as a solid square, so each one has to be drawn before it can
   be asked for. */
+  /* Call notes: a call in the discovery timeline. */
+  {
+    ".la-phone": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5.5 3.5h3l1.5 4-2 1.3a10.5 10.5 0 0 0 7.2 7.2l1.3-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 3.5 5.7a2 2 0 0 1 2-2.2z\"/></svg>')",
+    },
+  },
   {
     ".la-tablet": {
       "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5\" y=\"2.5\" width=\"14\" height=\"19\" rx=\"2\"/><path d=\"M10.5 18.8h3\"/></svg>')",

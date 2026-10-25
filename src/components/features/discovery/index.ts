@@ -6,4 +6,7 @@ export { editRefusal, nextStatus } from "./model/status";
 export type { FormAction, FormChange } from "./model/status";
 export { AnswersView, BuilderView, ClientForm, DiscoveryFrame, FormsListView, NewFormView, PublicFormView, ThemeSendView, publicUrl } from "./components";
 export type { LogoChoice, SaveState } from "./components";
+export { SaveStatus } from "./components/SaveStatus";
+export { STATUS_META } from "./constants";
+export { formatAgo, formatDay } from "./utils/format";
 export type * from "./types";

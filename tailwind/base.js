@@ -57,6 +57,17 @@ export const baseStyles = [
     },
   },
   /*
+   * A one-line label in either script (a title, a person's name), ordered by
+   * its own first strong character. Its start edge follows its text too, so
+   * give it a box sized to its content (`items-start` on the column) and the
+   * box sits at the page's start in either direction.
+   */
+  {
+    ".bidi-plain": {
+      "unicode-bidi": "plaintext",
+    },
+  },
+  /*
    * Rich-text bodies mix scripts paragraph by paragraph, so each block picks its
    * own base direction from its first strong character instead of inheriting one
    * direction for the whole document. Without this, an English paragraph inside

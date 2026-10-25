@@ -11,13 +11,16 @@ interface NavItem {
   arLabel: string;
   icon: string;
   href: string;
+  /** Other paths under the brand that count as this item. */
+  also?: string[];
 }
 
 const BOOK_NAV: NavItem[] = [
   { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", href: "" },
-  // First in the list because it is first in the work: the discovery form goes out
-  // before any design decision, and a nav that buries it teaches the opposite.
-  { key: "forms", label: "Discovery forms", arLabel: "نماذج الاستكشاف", icon: "clipboard-list", href: "/forms" },
+  // First in the list because it is first in the work: discovery happens before
+  // any design decision, and a nav that buries it teaches the opposite. Forms
+  // and call notes both live under it.
+  { key: "discovery", label: "Discovery", arLabel: "الاستكشاف", icon: "clipboard-list", href: "/discovery", also: ["/forms"] },
   { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", href: "/moodboard" },
   { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", href: "/visual-identity" },
   { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", href: "/strategy" },
@@ -72,7 +75,10 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       label: isAr ? item.arLabel : item.label,
       icon: item.icon,
       href: item.href === "" ? `${base}/overview` : href,
-      active: item.href === "" ? pathname === base || pathname === `${base}/overview` : pathname.startsWith(href),
+      active:
+        item.href === ""
+          ? pathname === base || pathname === `${base}/overview`
+          : [item.href, ...(item.also ?? [])].some((h) => pathname.startsWith(`${base}${h}`)),
       badge: badgeFor(item.key),
     };
   }

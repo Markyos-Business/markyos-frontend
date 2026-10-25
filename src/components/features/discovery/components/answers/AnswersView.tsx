@@ -19,6 +19,8 @@ type AnswersViewProps = {
   isAr: boolean;
   /** The AI analysis action, when the brand has one (phase 7). */
   analysis?: React.ReactNode;
+  /** Extra blocks for the side column, under the timeline (related calls). */
+  aside?: React.ReactNode;
 };
 
 const EVENT_LABELS: Record<FormEventType, { en: string; ar: string; icon: string }> = {
@@ -37,7 +39,7 @@ const EVENT_LABELS: Record<FormEventType, { en: string; ar: string; icon: string
  * What the client said: the timeline, the counters, and every answer by
  * section, each in the language it was written in.
  */
-export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr, analysis }: AnswersViewProps) {
+export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr, analysis, aside }: AnswersViewProps) {
   const { data, error, loading, reload } = useResponses(formId);
   const { confirm } = useDialog();
   const { showToast } = useToast();
@@ -174,6 +176,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               })}
             </ol>
           </section>
+          {aside}
         </div>
 
         <div className="flex min-w-0 flex-col gap-5">
