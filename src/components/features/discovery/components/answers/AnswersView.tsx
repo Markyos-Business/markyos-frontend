@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDialog, useToast } from "@/components/ui";
 import { translateText } from "@/components/features/strategy";
+import { useCitationJump } from "@/hooks/useCitationJump";
 import { STATUS_META } from "../../constants";
 import { useResponses } from "../../hooks/useResponses";
 import { textIn } from "../../model/questionTypes";
@@ -45,6 +46,8 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
   const { showToast } = useToast();
   const [sectionId, setSectionId] = useState<string | null>(null);
   const lang = isAr ? "ar" : "en";
+  // A citation in the analysis opens the exact answer (`?q=<question id>`).
+  useCitationJump(!!data?.response, (params) => (params.get("q") ? `q-${params.get("q")}` : null));
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
   if (error && !data) return <EmptyState icon="exclamation-circle" title={t("Couldn't load the answers", "تعذّر تحميل الإجابات")} description={error} />;
@@ -231,7 +234,10 @@ function AnswerRow({ question, lang, isAr, files }: { question: Row; lang: "en" 
   };
 
   return (
-    <div className={`flex flex-col gap-space-3 px-space-8 py-space-6 shadow-rule-t first:shadow-none ${question.visible ? "" : "opacity-60"}`}>
+    <div
+      id={`q-${question.id}`}
+      className={`flex scroll-mt-space-10 flex-col gap-space-3 px-space-8 py-space-6 shadow-rule-t transition-colors duration-base ease-standard first:shadow-none motion-reduce:transition-none ${question.visible ? "" : "opacity-60"}`}
+    >
       <div className="flex flex-wrap items-baseline justify-between gap-space-3">
         <h3 className="text-body font-medium text-text-secondary" dir="auto">
           {textIn(question.title, lang)}

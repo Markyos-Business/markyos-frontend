@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Tabs, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay } from "@/components/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../constants";
+import { AnalysisPanel } from "./AnalysisPanel";
 import { useDiscoveryFeed } from "../hooks/useDiscoveryFeed";
 import { deleteNote, setIncluded } from "../services/callNotesService";
 import type { FeedCall, FeedForm } from "../types";
@@ -17,8 +18,6 @@ type DiscoveryViewProps = {
   brandId: string;
   brandSlug: string;
   isAr: boolean;
-  /** Shown above the timeline: the analysis action and status (phase 5). */
-  analysis?: React.ReactNode;
 };
 
 const base = (slug: string) => `/w/${slug}/discovery`;
@@ -29,7 +28,7 @@ const formHref = (slug: string, form: FeedForm) => `/w/${slug}/forms/${form.id}/
  * Everything the client has told the studio, in one place: form answers and
  * call notes on a single timeline, newest first.
  */
-export function DiscoveryView({ brandId, brandSlug, isAr, analysis }: DiscoveryViewProps) {
+export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { data, error, loading, reload } = useDiscoveryFeed(brandId);
   const [tab, setTab] = useState<Tab>("all");
@@ -64,7 +63,6 @@ export function DiscoveryView({ brandId, brandSlug, isAr, analysis }: DiscoveryV
         }
       />
 
-      {analysis}
       <AlertBanner message={error} />
 
       <section className="mk-surface flex flex-col rounded-card bg-surface-1">
@@ -121,6 +119,8 @@ export function DiscoveryView({ brandId, brandSlug, isAr, analysis }: DiscoveryV
           </ul>
         )}
       </section>
+
+      {data && <AnalysisPanel brandId={brandId} brandSlug={brandSlug} canRun={canEdit} isAr={isAr} />}
     </div>
   );
 }

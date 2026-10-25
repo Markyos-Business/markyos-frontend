@@ -5,6 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { TopBar } from "@/components/layout";
 import { AnswersView, DiscoveryFrame } from "@/components/features/discovery";
 import { RelatedCalls } from "@/components/features/callnotes";
+import { Button, Icon } from "@/components/ui";
 
 export default function FormAnswersPage() {
   const { slug, formId } = useParams<{ slug: string; formId: string }>();
@@ -23,6 +24,11 @@ export default function FormAnswersPage() {
           sendHref={`${base}/send`}
           strategyHref={`/w/${ws.slug}/strategy`}
           isAr={isAr}
+          analysis={
+            <Button variant="outline" size="sm" href={`/w/${ws.slug}/discovery#analysis`} icon={<Icon name="chart-line" size={16} />}>
+              {isAr ? "التحليل" : "Analysis"}
+            </Button>
+          }
           aside={<RelatedCalls brandId={ws.id} brandSlug={ws.slug} formId={formId} isAr={isAr} />}
         />
       </DiscoveryFrame>

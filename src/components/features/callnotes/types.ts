@@ -100,3 +100,33 @@ export type DiscoveryFeed = {
 
 /** A form to link a call to: just enough for a picker. */
 export type FormOption = { id: string; name: string };
+
+// ---- The brand's analysis ----
+
+export type CitationRef =
+  | { type: "form"; formId: string; formName: string; questionId: string; number: number }
+  | { type: "call"; noteId: string; title: string; turn?: number; para?: number; speaker?: string; role?: string };
+
+/** Where a claim in the analysis came from: "Form · Q12", "Call · 14 Oct · Omar Aziz". */
+export type Citation = { id: string; label: string; ref: CitationRef };
+
+type Cited = { en: string; ar: string; citations: Citation[] };
+export type Confidence = "clear" | "partial" | "missing";
+export type AnalysisField = Cited & { confidence: Confidence };
+export type NoteTarget = "coreValues" | "personas" | "competitors" | "voice" | "visual" | "naming";
+
+export type Analysis = {
+  id: string;
+  summary: { en: string; ar: string };
+  fields: Record<string, AnalysisField>;
+  notes: (Cited & { target: NoteTarget })[];
+  followUps: Cited[];
+  inputs: { forms: number; calls: number; sources: number; cut: { noteId: string; title: string; wordsSent: number; wordsTotal: number }[] };
+  drafts: number;
+  model: string;
+  promptVersion: string;
+  at: string;
+  by: string;
+};
+
+export type AnalysisState = { analysis: Analysis | null; stale: boolean; configured: boolean };

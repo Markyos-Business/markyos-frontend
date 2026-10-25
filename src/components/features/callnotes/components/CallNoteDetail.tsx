@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
 import { SearchField } from "@/components/form";
+import { useCitationJump } from "@/hooks/useCitationJump";
 import { formatDay } from "@/components/features/discovery";
 import { KIND_META, LANGUAGE_META, ROLE_META } from "../constants";
 import { useCallNote } from "../hooks/useCallNote";
@@ -19,29 +20,6 @@ type CallNoteDetailProps = {
   isAr: boolean;
 };
 
-/** Total time a cited turn stays lit: on, then a 180ms fade. Under 600ms. */
-const HIGHLIGHT_MS = 380;
-
-/**
- * Scrolls to the turn or paragraph a citation names (`?turn=3`, `?para=2`)
- * and lights it briefly. No movement: the fill fades, nothing slides.
- */
-function useCitationJump(ready: boolean) {
-  useEffect(() => {
-    if (!ready) return;
-    const params = new URLSearchParams(window.location.search);
-    const turn = params.get("turn");
-    const para = params.get("para");
-    const target = document.getElementById(turn != null ? `turn-${turn}` : para != null ? `para-${para}` : "");
-    if (!target) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    target.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-    target.classList.add("bg-accent-soft");
-    const t = window.setTimeout(() => target.classList.remove("bg-accent-soft"), HIGHLIGHT_MS);
-    return () => window.clearTimeout(t);
-  }, [ready]);
-}
-
 /** One call note: who was there, whether the analysis reads it, and what was said. */
 export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDetailProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
@@ -54,7 +32,11 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
   const [query, setQuery] = useState("");
   const [original, setOriginal] = useState(false);
   const current = note ?? data;
-  useCitationJump(!!current);
+  useCitationJump(!!current, (params) => {
+    const turn = params.get("turn");
+    const para = params.get("para");
+    return turn != null ? `turn-${turn}` : para != null ? `para-${para}` : null;
+  });
 
   if (error && !current) return <EmptyState icon="exclamation-circle" title={t("Couldn't open these notes", "تعذّر فتح الملاحظات")} description={error} />;
   if (loading && !current) return <Skeleton className="h-96 w-full rounded-card" />;

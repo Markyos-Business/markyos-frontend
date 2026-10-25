@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { CallNote, CallNotePage, DiscoveryFeed, FormOption, NoteDraft, NoteKind, ParsePreview } from "../types";
+import type { AnalysisState, CallNote, CallNotePage, DiscoveryFeed, FormOption, NoteDraft, NoteKind, ParsePreview } from "../types";
 
 const note = (id: string, path = "") => `/call-notes/${id}/${path}`;
 
@@ -44,3 +44,7 @@ export const listBrandForms = async (brand: string): Promise<FormOption[]> => {
   );
   return page.results.map((f) => ({ id: f.id, name: f.name }));
 };
+
+export const getAnalysis = (brand: string) => api<AnalysisState>(`/discovery/analysis/?brand=${encodeURIComponent(brand)}`);
+
+export const runAnalysis = (brandId: string) => api<AnalysisState>("/discovery/analysis/", { method: "POST", body: { brandId } });
