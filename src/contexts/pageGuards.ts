@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { homePath } from "@/lib/data/access";
 import { useApp, useCurrentAccount } from "./AppContext";
 
 /** The brand a /w/[slug] page is about, and the language its chrome is in. Null until it's known. */
@@ -25,4 +26,23 @@ export function useStudioPage(next?: string) {
     if (hydrated && !state.session) router.replace(next ? `/login?next=${next}` : "/login");
   }, [hydrated, state.session, router, next]);
   return { ready: hydrated && !!state.session, isAr: account?.adminLang === "ar" };
+}
+
+/** The app's front door: the signed-in home, or login. */
+export function useHomeRedirect() {
+  const { state, hydrated } = useApp();
+  const home = homePath(useCurrentAccount());
+  const router = useRouter();
+  useEffect(() => {
+    if (!hydrated) return;
+    router.replace(state.session ? home : "/login");
+  }, [hydrated, state.session, router, home]);
+}
+
+/** A route with nothing of its own, which sends you on to `path`. */
+export function useRedirect(path: string) {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace(path);
+  }, [path, router]);
 }

@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRedirect } from "@/contexts/pageGuards";
 
 export default function WorkspaceIndexPage() {
-  const params = useParams<{ slug: string }>();
-  const router = useRouter();
-  useEffect(() => {
-    router.replace(`/w/${params.slug}/overview`);
-  }, [params.slug, router]);
+  const { slug } = useParams<{ slug: string }>();
+  useRedirect(`/w/${slug}/overview`);
   return null;
 }
