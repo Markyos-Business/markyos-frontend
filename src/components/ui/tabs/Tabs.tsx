@@ -4,7 +4,7 @@ import { Icon } from "../primitives/Icon";
 
 type TabItem<T extends string = string> = { key: T; label: string; icon?: string };
 
-type TabsVariant = "text" | "icon";
+type TabsVariant = "text" | "icon" | "pill";
 
 type TabsProps<T extends string> = {
   tabs: TabItem<T>[];
@@ -15,7 +15,8 @@ type TabsProps<T extends string> = {
   /**
    * The spec's two tab styles (§6.11), both 40px tall: `text` puts the active
    * tab on a raised pill with a hairline; `icon` makes it solid accent with an
-   * overline label (LIST / GRID).
+   * overline label (LIST / GRID). `pill` is the compact filter row (Waiting /
+   * Decided): 32px rounded pills, the active one on the accent tint.
    */
   variant?: TabsVariant;
   className?: string;
@@ -23,14 +24,19 @@ type TabsProps<T extends string> = {
 
 const looks: Record<TabsVariant, { base: string; on: string; off: string }> = {
   text: {
-    base: "rounded-lg px-space-5 text-body font-medium",
+    base: "h-control-sm rounded-lg px-space-5 text-body font-medium",
     on: "bg-surface-2 text-text shadow-edge",
     off: "text-text-muted hover:text-text",
   },
   icon: {
-    base: "mk-btn rounded-lg px-space-5 text-overline uppercase",
+    base: "h-control-sm mk-btn rounded-lg px-space-5 text-overline uppercase",
     on: "bg-accent text-accent-ink",
     off: "bg-surface-2 text-text-muted",
+  },
+  pill: {
+    base: "h-8 cursor-pointer rounded-full px-3.5 text-[12px] font-semibold",
+    on: "bg-accent-soft text-accent-on-soft",
+    off: "bg-surface-1 text-text-muted",
   },
 };
 
@@ -49,7 +55,7 @@ const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text
           role="tab"
           aria-selected={active === key}
           onClick={() => onChange(key)}
-          className={`flex h-control-sm shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] ${look.base} ${
+          className={`flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] ${look.base} ${
             active === key ? look.on : look.off
           }`}
         >
