@@ -21,6 +21,7 @@ const BOOK_NAV: NavItem[] = [
   // any design decision, and a nav that buries it teaches the opposite. Forms
   // and call notes both live under it.
   { key: "discovery", label: "Discovery", arLabel: "الاستكشاف", icon: "clipboard-list", href: "/discovery", also: ["/forms"] },
+  { key: "analysis", label: "Analysis", arLabel: "التحليل", icon: "chart-line", href: "/analysis" },
   { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", href: "/moodboard" },
   { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", href: "/visual-identity" },
   { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", href: "/strategy" },

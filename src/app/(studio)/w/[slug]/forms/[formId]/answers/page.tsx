@@ -25,7 +25,7 @@ export default function FormAnswersPage() {
           strategyHref={`/w/${ws.slug}/strategy`}
           isAr={isAr}
           analysis={
-            <Button variant="outline" size="sm" href={`/w/${ws.slug}/discovery#analysis`} icon={<Icon name="chart-line" size={16} />}>
+            <Button variant="outline" size="sm" href={`/w/${ws.slug}/analysis`} icon={<Icon name="chart-line" size={16} />}>
               {isAr ? "التحليل" : "Analysis"}
             </Button>
           }

@@ -6,7 +6,6 @@ import { useState } from "react";
 import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Tabs, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay } from "@/components/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../constants";
-import { AnalysisPanel } from "./AnalysisPanel";
 import { useDiscoveryFeed } from "../hooks/useDiscoveryFeed";
 import { deleteNote, setIncluded } from "../services/callNotesService";
 import type { FeedCall, FeedForm } from "../types";
@@ -120,7 +119,23 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
         )}
       </section>
 
-      {data && <AnalysisPanel brandId={brandId} brandSlug={brandSlug} canRun={canEdit} isAr={isAr} />}
+      <section className="mk-surface flex flex-wrap items-center justify-between gap-space-5 rounded-card bg-surface-1 p-space-8">
+        <div className="flex items-start gap-space-4">
+          <IconBadge icon="chart-line" tone="accent" />
+          <div className="flex flex-col gap-space-1">
+            <h2 className="text-h5 font-medium">{t("Brief analysis", "تحليل الموجز")}</h2>
+            <p className="text-caption text-text-muted">
+              {t(
+                "A strategist's read of everything above: tensions, gaps and routes, every claim cited.",
+                "قراءة استراتيجية لكل ما سبق: التناقضات والفجوات والمسارات، مع مصدر لكل فكرة."
+              )}
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" href={`/w/${brandSlug}/analysis`} icon={<Icon name="chart-line" size={18} />}>
+          {t("Open analysis", "فتح التحليل")}
+        </Button>
+      </section>
     </div>
   );
 }
