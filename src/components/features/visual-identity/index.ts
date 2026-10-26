@@ -5,3 +5,5 @@ export { BrandFilesContent } from "./components/BrandFilesContent";
 export { ColorContent } from "./components/ColorContent";
 export { LogoSystemContent } from "./components/LogoSystemContent";
 export { TypographyContent } from "./components/TypographyContent";
+export { VisualIdentityView } from "./components/VisualIdentityView";
+export { useVisualIdentityPage } from "./hooks/useVisualIdentityPage";
