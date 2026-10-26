@@ -59,3 +59,6 @@ export const CHANNEL_META: Record<"form" | "call", Bilingual> = {
   form: { en: "Ask in a form", ar: "اسأل في نموذج" },
   call: { en: "Ask on a call", ar: "اسأل في مكالمة" },
 };
+
+/** The top bar's name for the Analysis tab. */
+export const PAGE_SECTION = { en: "Analysis", ar: "التحليل" } as const;

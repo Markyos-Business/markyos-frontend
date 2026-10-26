@@ -1,22 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
-import { TopBar } from "@/components/layout";
-import { BuilderView, DiscoveryFrame } from "@/components/features/discovery";
+import { PageShell } from "@/components/layout";
+import { BuilderView, NeedsServer, useFormBuilderPage } from "@/components/features/discovery";
 
 export default function FormBuilderPage() {
   const { slug, formId } = useParams<{ slug: string; formId: string }>();
-  const { getWorkspace, uiLang } = useApp();
-  const ws = getWorkspace(slug);
-  if (!ws) return null;
-  const isAr = uiLang(ws) === "ar";
+  const page = useFormBuilderPage(slug, formId);
+  if (!page) return null;
   return (
-    <>
-      <TopBar workspace={ws} section="Discovery forms" arSection="نماذج الاستكشاف" />
-      <DiscoveryFrame isAr={isAr} wide>
-        <BuilderView formId={formId} sendHref={`/w/${ws.slug}/forms/${formId}/send`} isAr={isAr} />
-      </DiscoveryFrame>
-    </>
+    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} />}>
+      <BuilderView {...page.view} />
+    </PageShell>
   );
 }

@@ -1,23 +1,17 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
-import { TopBar } from "@/components/layout";
-import { DiscoveryFrame } from "@/components/features/discovery";
-import { DiscoveryView } from "@/components/features/callnotes";
+import { PageShell } from "@/components/layout";
+import { DiscoveryView, useDiscoveryPage } from "@/components/features/callnotes";
+import { NeedsServer } from "@/components/features/discovery";
 
 export default function BrandDiscoveryPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { getWorkspace, uiLang } = useApp();
-  const ws = getWorkspace(slug);
-  if (!ws) return null;
-  const isAr = uiLang(ws) === "ar";
+  const page = useDiscoveryPage(slug);
+  if (!page) return null;
   return (
-    <>
-      <TopBar workspace={ws} section="Discovery" arSection="الاستكشاف" />
-      <DiscoveryFrame isAr={isAr}>
-        <DiscoveryView brandId={ws.id} brandSlug={ws.slug} isAr={isAr} />
-      </DiscoveryFrame>
-    </>
+    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} />}>
+      <DiscoveryView {...page.view} />
+    </PageShell>
   );
 }

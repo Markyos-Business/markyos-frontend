@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
-import { Button, Icon, IconButton, Skeleton } from "@/components/ui";
+import { Button, Drawer, Icon, Skeleton } from "@/components/ui";
 import { useCallNote } from "@/components/features/callnotes";
 import { useRequest } from "@/hooks/useRequest";
 import { getFormAnswer } from "../services/briefsService";
@@ -149,31 +149,20 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
 
 /** The side panel a citation opens: the exact answer or call turn, highlighted. */
 export function CitationPanel({ citation, source, slug, onClose, isAr }: { citation: Citation | null; source: SourceRef | null; slug: string; onClose: () => void; isAr: boolean }) {
-  useEffect(() => {
-    if (!citation) return;
-    const close = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [citation, onClose]);
-  if (!citation || !source) return null;
   return (
-    <aside
-      role="dialog"
-      aria-label={isAr ? "المصدر" : "Source"}
-      className="fixed inset-y-0 end-0 z-40 flex w-full max-w-[440px] flex-col gap-space-6 overflow-y-auto bg-surface-1 p-space-8 shadow-raised"
-    >
-      <div className="flex items-center justify-between gap-space-4">
-        <h2 className="text-h5 font-medium">{isAr ? "المصدر" : "Source"}</h2>
-        <IconButton icon="times" label={isAr ? "إغلاق" : "Close"} onClick={onClose} />
-      </div>
-      <blockquote dir="auto" className="rounded-lg bg-surface-sunken px-space-5 py-space-4 text-body text-text-secondary shadow-edge-soft">
-        {citation.quote}
-      </blockquote>
-      {source.ref.type === "call" ? (
-        <CallSource key={citation.sourceId} source={source as Extract<SourceRef, { ref: { type: "call" } }>} citation={citation} slug={slug} isAr={isAr} />
-      ) : (
-        <FormSource key={citation.sourceId} source={source as Extract<SourceRef, { ref: { type: "form" } }>} slug={slug} isAr={isAr} />
+    <Drawer open={!!citation && !!source} title={isAr ? "المصدر" : "Source"} closeLabel={isAr ? "إغلاق" : "Close"} onClose={onClose}>
+      {citation && source && (
+        <>
+          <blockquote dir="auto" className="rounded-lg bg-surface-sunken px-space-5 py-space-4 text-body text-text-secondary shadow-edge-soft">
+            {citation.quote}
+          </blockquote>
+          {source.ref.type === "call" ? (
+            <CallSource key={citation.sourceId} source={source as Extract<SourceRef, { ref: { type: "call" } }>} citation={citation} slug={slug} isAr={isAr} />
+          ) : (
+            <FormSource key={citation.sourceId} source={source as Extract<SourceRef, { ref: { type: "form" } }>} slug={slug} isAr={isAr} />
+          )}
+        </>
       )}
-    </aside>
+    </Drawer>
   );
 }

@@ -21,3 +21,6 @@ export const ROLE_META: Record<ParticipantRole, Bilingual & { dot: string }> = {
 export const UPLOAD_ACCEPT = ".txt,.vtt,.srt,.docx";
 export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 
+
+/** The top bar's name for the discovery pages. */
+export const PAGE_SECTION = { en: "Discovery", ar: "الاستكشاف" } as const;

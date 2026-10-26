@@ -1,23 +1,17 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
-import { TopBar } from "@/components/layout";
-import { DiscoveryFrame } from "@/components/features/discovery";
-import { AnalysisView } from "@/components/features/briefs";
+import { PageShell } from "@/components/layout";
+import { AnalysisView, useAnalysisPage } from "@/components/features/briefs";
+import { NeedsServer } from "@/components/features/discovery";
 
 export default function BrandAnalysisPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { getWorkspace, uiLang } = useApp();
-  const ws = getWorkspace(slug);
-  if (!ws) return null;
-  const isAr = uiLang(ws) === "ar";
+  const page = useAnalysisPage(slug);
+  if (!page) return null;
   return (
-    <>
-      <TopBar workspace={ws} section="Analysis" arSection="التحليل" />
-      <DiscoveryFrame isAr={isAr} wide>
-        <AnalysisView brandId={ws.id} brandSlug={ws.slug} isAr={isAr} />
-      </DiscoveryFrame>
-    </>
+    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} />}>
+      <AnalysisView {...page.view} />
+    </PageShell>
   );
 }

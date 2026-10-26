@@ -74,3 +74,16 @@ export const OPERATORS_FOR: Record<QuestionType, ConditionOperator[]> = {
 };
 
 export const LANGUAGE_LABELS = { en: { en: "English", ar: "الإنجليزية" }, ar: { en: "Arabic", ar: "العربية" } } as const;
+
+/** The top bar's name for each discovery page. */
+export const PAGE_SECTIONS = {
+  forms: { en: "Discovery forms", ar: "نماذج الاستكشاف" },
+  newForm: { en: "New form", ar: "نموذج جديد" },
+} as const;
+
+/** The brand's logo slots, as the form's theme offers them. */
+export const LOGO_LABELS = {
+  latin: { en: "Latin logo", ar: "الشعار اللاتيني" },
+  arabic: { en: "Arabic logo", ar: "الشعار العربي" },
+  symbol: { en: "Symbol", ar: "الرمز" },
+} as const;

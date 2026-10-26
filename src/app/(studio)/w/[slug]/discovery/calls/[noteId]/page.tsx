@@ -1,23 +1,17 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
-import { TopBar } from "@/components/layout";
-import { DiscoveryFrame } from "@/components/features/discovery";
-import { CallNoteDetail, callHref } from "@/components/features/callnotes";
+import { PageShell } from "@/components/layout";
+import { CallNoteDetail, useCallNotePage } from "@/components/features/callnotes";
+import { NeedsServer } from "@/components/features/discovery";
 
 export default function CallNotePage() {
   const { slug, noteId } = useParams<{ slug: string; noteId: string }>();
-  const { getWorkspace, uiLang } = useApp();
-  const ws = getWorkspace(slug);
-  if (!ws) return null;
-  const isAr = uiLang(ws) === "ar";
+  const page = useCallNotePage(slug, noteId);
+  if (!page) return null;
   return (
-    <>
-      <TopBar workspace={ws} section="Discovery" arSection="الاستكشاف" />
-      <DiscoveryFrame isAr={isAr}>
-        <CallNoteDetail noteId={noteId} editHref={`${callHref(ws.slug, noteId)}/edit`} backHref={`/w/${ws.slug}/discovery`} isAr={isAr} />
-      </DiscoveryFrame>
-    </>
+    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} />}>
+      <CallNoteDetail {...page.view} />
+    </PageShell>
   );
 }

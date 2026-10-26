@@ -3,7 +3,7 @@ export { BuilderView } from "./builder/BuilderView";
 export { ClientForm } from "./client/ClientForm";
 export type { SaveState } from "./client/ClientForm";
 export { PublicFormView } from "./client/PublicFormView";
-export { DiscoveryFrame } from "./DiscoveryFrame";
+export { NeedsServer } from "./NeedsServer";
 export { FormsListView } from "./FormsListView";
 export { NewFormView } from "./NewFormView";
 export { ThemeSendView, publicUrl } from "./ThemeSendView";
