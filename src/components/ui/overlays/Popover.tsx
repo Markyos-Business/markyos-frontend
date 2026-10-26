@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { usePresence } from "@/hooks/usePresence";
 
 type PopoverAlign = "start" | "end";
@@ -23,7 +23,6 @@ type PopoverProps = {
   /** Panel width in pixels, capped to the viewport. */
   width?: number;
   className?: string;
-  buttonStyle?: CSSProperties;
   /** `pill` gives the trigger Button's xs/soft look (a top-bar action); `plain` leaves it to its content. */
   trigger?: "plain" | "pill";
   /** Given a `close` so an item can dismiss the panel after acting. */
@@ -45,7 +44,7 @@ const triggers = {
   pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
 };
 
-const Popover = ({ button, label, align = "end", width = 260, className, buttonStyle, trigger = "plain", children }: PopoverProps) => {
+const Popover = ({ button, label, align = "end", width = 260, className, trigger = "plain", children }: PopoverProps) => {
   const [open, setOpen] = useState(false);
   const { mounted, closing } = usePresence(open);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -86,7 +85,6 @@ const Popover = ({ button, label, align = "end", width = 260, className, buttonS
         title={label}
         onClick={() => setOpen((v) => !v)}
         className={triggers[trigger]}
-        style={buttonStyle}
       >
         {button}
       </button>

@@ -52,10 +52,10 @@ export function ReviewChip({
   // than both being some shade of alarm.
   const tone =
     errors > 0
-      ? { fg: "var(--danger)", icon: "exclamation-circle" }
+      ? { fg: "text-danger", icon: "exclamation-circle" }
       : warnings > 0
-        ? { fg: "var(--warning)", icon: "info-circle" }
-        : { fg: "var(--success)", icon: "check-circle" };
+        ? { fg: "text-warning", icon: "info-circle" }
+        : { fg: "text-success", icon: "check-circle" };
 
   const summary =
     errors > 0
@@ -76,22 +76,14 @@ export function ReviewChip({
     <Popover
       label={isAr ? "مراجعة الصفحة" : "Review this page"}
       width={330}
-      buttonStyle={{
-        height: 36,
-        paddingInline: 12,
-        borderRadius: 999,
-        gap: 6,
-        background: "var(--surface-2)",
-        color: tone.fg,
-        fontSize: 11.5,
-        fontWeight: 500,
-        whiteSpace: "nowrap",
-      }}
+      trigger="pill"
       button={
-        <>
-          <Icon name={tone.icon} size={12} />
+        // `contents`, so the icon and summary stay the trigger's own flex
+        // items while taking the severity colour.
+        <span className={`contents ${tone.fg}`}>
+          <Icon name={tone.icon} size={16} />
           {summary}
-        </>
+        </span>
       }
     >
       {(close) => (
