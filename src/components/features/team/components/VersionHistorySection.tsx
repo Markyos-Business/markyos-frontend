@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import {
-  Button,
-  EmptyHint,
-  Row,
-  Section,
-  useDialog,
-  useToast,
-} from "@/components/ui";
+import { Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
 import { TextInput } from "@/components/form";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
@@ -21,11 +14,7 @@ type VersionHistorySectionProps = {
 };
 
 /** Saved versions of the brand's colours and type, and restoring one. */
-export function VersionHistorySection({
-  ws,
-  isAr,
-  actorName,
-}: VersionHistorySectionProps) {
+export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySectionProps) {
   const { saveVersionSnapshot, restoreVersion } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -69,10 +58,7 @@ export function VersionHistorySection({
         </Button>
       </div>
       {ws.versionHistory.length === 0 ? (
-        <EmptyHint>
-          No saved versions yet — save one before a risky edit so it&apos;s easy
-          to undo.
-        </EmptyHint>
+        <EmptyHint>No saved versions yet — save one before a risky edit so it&apos;s easy to undo.</EmptyHint>
       ) : (
         <div className="flex flex-col gap-2">
           {ws.versionHistory.map((v) => (
@@ -81,11 +67,7 @@ export function VersionHistorySection({
               label={v.label}
               hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} colors`}
               right={
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  onClick={() => void restore(v)}
-                >
+                <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
                   Restore
                 </Button>
               }

@@ -7,10 +7,7 @@ export const PAGE_SECTION = {
 
 export const ROLES: TeamRole[] = ["owner", "editor", "viewer", "client"];
 
-export const ROLE_TONE: Record<
-  TeamRole,
-  "accent" | "success" | "neutral" | "warning"
-> = {
+export const ROLE_TONE: Record<TeamRole, "accent" | "success" | "neutral" | "warning"> = {
   owner: "accent",
   editor: "success",
   viewer: "neutral",

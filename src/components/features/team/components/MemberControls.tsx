@@ -1,14 +1,7 @@
 "use client";
 
 import { useApp } from "@/contexts/AppContext";
-import {
-  Badge,
-  Button,
-  Icon,
-  IconButton,
-  useDialog,
-  useToast,
-} from "@/components/ui";
+import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
 import { ROLES, ROLE_TONE } from "../constants";
 
@@ -21,13 +14,7 @@ type MemberControlsProps = {
 };
 
 /** A team row's controls: make owner, the role, and remove — or just the role, for someone who can't govern. */
-export function MemberControls({
-  ws,
-  member: m,
-  isAr,
-  canGovern,
-  editorsFull,
-}: MemberControlsProps) {
+export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: MemberControlsProps) {
   const { removeTeamMember, setTeamRole, transferOwnership } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -47,9 +34,7 @@ export function MemberControls({
       title: `Transfer ${ws.name}?`,
       body: (
         <>
-          Ownership moves to <strong className="text-text">{who}</strong>. You
-          stay on the brand as an editor, and this cannot be undone from your
-          side.
+          Ownership moves to <strong className="text-text">{who}</strong>. You stay on the brand as an editor, and this cannot be undone from your side.
         </>
       ),
       consequences: [
@@ -64,10 +49,7 @@ export function MemberControls({
     });
     if (!ok) return;
     transferOwnership(ws.id, m.id);
-    showToast(
-      `${who} is now the owner. You're an editor on this brand.`,
-      "success",
-    );
+    showToast(`${who} is now the owner. You're an editor on this brand.`, "success");
   }
 
   async function remove() {
@@ -94,11 +76,7 @@ export function MemberControls({
         size="xs"
         disabled={m.role === "owner"}
         onClick={() => void transfer()}
-        title={
-          m.role === "owner"
-            ? `${who} already owns ${ws.name}`
-            : `Transfer ownership of ${ws.name} to ${who}`
-        }
+        title={m.role === "owner" ? `${who} already owns ${ws.name}` : `Transfer ownership of ${ws.name} to ${who}`}
         icon={<Icon name="key" size={16} />}
         className="shrink-0"
       >
@@ -111,11 +89,7 @@ export function MemberControls({
         className="cursor-pointer rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-semibold text-text-secondary capitalize outline-none"
       >
         {ROLES.map((r) => (
-          <option
-            key={r}
-            value={r}
-            disabled={r === "editor" && editorsFull && m.role !== "editor"}
-          >
+          <option key={r} value={r} disabled={r === "editor" && editorsFull && m.role !== "editor"}>
             {r}
           </option>
         ))}

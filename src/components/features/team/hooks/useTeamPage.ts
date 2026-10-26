@@ -2,11 +2,7 @@
 
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
-import {
-  ACCOUNT_TYPES,
-  accountTypeOf,
-  limitsOf,
-} from "@/constants/accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { roleOn } from "@/lib/data/access";
 import type { TeamRole } from "@/types";
 import { PAGE_SECTION } from "../constants";
@@ -27,10 +23,7 @@ export function useTeamPage(slug: string) {
    * The server refuses the same thing; this says so before anyone tries.
    */
   const editorLimit = limitsOf(account).editors;
-  const editorsFull =
-    canGovern &&
-    editorLimit !== null &&
-    ws.team.filter((m) => m.role === "editor").length >= editorLimit;
+  const editorsFull = canGovern && editorLimit !== null && ws.team.filter((m) => m.role === "editor").length >= editorLimit;
   const editorsFullNote =
     editorLimit === 0
       ? `${ACCOUNT_TYPES[accountTypeOf(account)].label} accounts work solo, so they can't add editors. Add people as a viewer or client.`
