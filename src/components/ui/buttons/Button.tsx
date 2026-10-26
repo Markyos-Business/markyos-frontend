@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "danger" | "light" | "solid" | "link";
+type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "success-soft" | "danger-soft" | "danger" | "light" | "solid" | "link";
 type ButtonSize = "xs" | "sm" | "md";
 
 // Spec §6.2: 46px, an 8px radius and a 14px label at weight 500, with the
@@ -30,6 +30,9 @@ const variants: Record<Exclude<ButtonVariant, "link">, string> = {
   ghost: "bg-accent-soft text-accent-on-soft",
   // The raised neutral fill (spec §2.3): a quiet action that still reads as a button.
   soft: "bg-surface-2 text-text",
+  // A decision on a status: the hue's tint with the hue as text (spec §2.2).
+  "success-soft": "bg-success-soft text-success",
+  "danger-soft": "bg-danger-soft text-danger",
   // Confirms something destructive: the spec's red, with the ink solved for it.
   danger: "bg-danger-fill text-danger-ink",
   // White on black whichever theme is on: marketing calls to action only.

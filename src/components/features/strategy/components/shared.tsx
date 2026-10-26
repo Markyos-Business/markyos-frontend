@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AutoTextarea } from "@/components/ui";
+import { TextInput } from "@/components/form";
 
 /**
  * Click-to-edit plain text, sized to its content.
@@ -86,12 +87,6 @@ export function MiniInput({
   placeholder: string;
 }) {
   return (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="h-10 px-3 rounded-lg outline-none text-[13px]"
-      style={{ background: "var(--surface-1)", color: "var(--text)" }}
-    />
+    <TextInput fill="surface-1" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
   );
 }

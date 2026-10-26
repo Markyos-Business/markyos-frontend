@@ -25,12 +25,12 @@ type IconButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">
 };
 
 /** A button that is only an icon, with its label for screen readers. */
-const IconButton = ({ icon, label, variant = "quiet", iconSize, className = "", type = "button", ...props }: IconButtonProps) => (
+const IconButton = ({ icon, label, variant = "quiet", iconSize, className = "", type = "button", title, ...props }: IconButtonProps) => (
   <button
     {...props}
     type={type}
     aria-label={label}
-    title={label}
+    title={title ?? label}
     className={`inline-flex items-center justify-center transition-colors ${variants[variant]} ${className}`}
   >
     <Icon name={icon} size={iconSize ?? (variant === "quiet" ? 16 : 18)} />
