@@ -24,6 +24,8 @@ type PopoverProps = {
   width?: number;
   className?: string;
   buttonStyle?: CSSProperties;
+  /** `pill` gives the trigger Button's xs/soft look (a top-bar action); `plain` leaves it to its content. */
+  trigger?: "plain" | "pill";
   /** Given a `close` so an item can dismiss the panel after acting. */
   children: (close: () => void) => ReactNode;
 };
@@ -38,7 +40,12 @@ type PopoverProps = {
  * deliberately not a dialog — nothing here is modal, and trapping focus for a
  * menu would be worse than not having one.
  */
-const Popover = ({ button, label, align = "end", width = 260, className, buttonStyle, children }: PopoverProps) => {
+const triggers = {
+  plain: "flex cursor-pointer items-center",
+  pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
+};
+
+const Popover = ({ button, label, align = "end", width = 260, className, buttonStyle, trigger = "plain", children }: PopoverProps) => {
   const [open, setOpen] = useState(false);
   const { mounted, closing } = usePresence(open);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -78,7 +85,7 @@ const Popover = ({ button, label, align = "end", width = 260, className, buttonS
         aria-label={label}
         title={label}
         onClick={() => setOpen((v) => !v)}
-        className="flex cursor-pointer items-center"
+        className={triggers[trigger]}
         style={buttonStyle}
       >
         {button}

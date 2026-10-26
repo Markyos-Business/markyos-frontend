@@ -3,26 +3,33 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "outline" | "ghost" | "danger" | "light" | "solid" | "link";
-type ButtonSize = "sm" | "md";
+type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "danger" | "light" | "solid" | "link";
+type ButtonSize = "xs" | "sm" | "md";
 
 // Spec §6.2: 46px, an 8px radius and a 14px label at weight 500, with the
 // icon before it. Hover and press are the shared `mk-btn` scrim over the
 // resting fill (tailwind/base.js): no lift, no scale, no darker colour.
 const base =
-  "mk-btn inline-flex items-center justify-center rounded-lg text-body leading-none font-medium whitespace-nowrap transition-colors " +
+  "mk-btn inline-flex items-center justify-center leading-none font-medium whitespace-nowrap transition-colors " +
   "disabled:bg-surface-2 disabled:text-text-disabled disabled:shadow-none aria-disabled:bg-surface-2 aria-disabled:text-text-disabled aria-disabled:shadow-none";
 
+// Radius and type size live with the size, so a size never fights the base.
 const sizes: Record<ButtonSize, string> = {
+  // A pill for top bars, toolbars and row actions: 32px, fully round, a 12px
+  // label. Smaller than the spec's controls, kept for the dense chrome built
+  // before it.
+  xs: "h-8 rounded-full px-3.5 gap-1.5 text-[12px]",
   // The compact step, for dense toolbars: the spec's 40px control height.
-  sm: "h-control-sm px-space-6 gap-space-3",
-  md: "h-control px-space-8 gap-space-4",
+  sm: "h-control-sm rounded-lg text-body px-space-6 gap-space-3",
+  md: "h-control rounded-lg text-body px-space-8 gap-space-4",
 };
 
 const variants: Record<Exclude<ButtonVariant, "link">, string> = {
   primary: "bg-accent text-accent-ink",
   outline: "bg-ink-soft text-text shadow-edge",
   ghost: "bg-accent-soft text-accent-on-soft",
+  // The raised neutral fill (spec §2.3): a quiet action that still reads as a button.
+  soft: "bg-surface-2 text-text",
   // Confirms something destructive: the spec's red, with the ink solved for it.
   danger: "bg-danger-fill text-danger-ink",
   // White on black whichever theme is on: marketing calls to action only.
