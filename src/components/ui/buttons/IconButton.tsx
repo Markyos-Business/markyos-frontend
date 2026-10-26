@@ -9,7 +9,7 @@ type IconButtonVariant = "quiet" | "primary" | "outline";
 // action). `primary` and `outline` are the spec's ArrowButton (§6.3): a 46px
 // square with an 8px radius, for next/prev, add and toolbar actions.
 const variants: Record<IconButtonVariant, string> = {
-  quiet: "min-w-6.5 min-h-6.5 rounded-lg",
+  quiet: "min-w-6.5 min-h-6.5 rounded-lg disabled:cursor-not-allowed disabled:opacity-40",
   primary: "mk-btn size-control rounded-lg bg-accent text-accent-ink disabled:bg-surface-2 disabled:text-text-disabled",
   outline: "mk-btn size-control rounded-lg bg-ink-soft text-text shadow-edge disabled:bg-surface-2 disabled:text-text-disabled disabled:shadow-none",
 };
