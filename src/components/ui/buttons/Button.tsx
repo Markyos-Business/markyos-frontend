@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "outline" | "ghost" | "danger" | "light" | "link";
+type ButtonVariant = "primary" | "outline" | "ghost" | "danger" | "light" | "solid" | "link";
 type ButtonSize = "sm" | "md";
 
 // Spec §6.2: 46px, an 8px radius and a 14px label at weight 500, with the
@@ -27,6 +27,9 @@ const variants: Record<Exclude<ButtonVariant, "link">, string> = {
   danger: "bg-danger-fill text-danger-ink",
   // White on black whichever theme is on: marketing calls to action only.
   light: "bg-white text-black",
+  // The theme's own ink as the fill: black on light, white on dark. For a
+  // card's single action where the accent would compete with its content.
+  solid: "bg-solid text-solid-ink",
 };
 
 // A text action: "Forgot?", "Log in", "Try another email". No fill and no
