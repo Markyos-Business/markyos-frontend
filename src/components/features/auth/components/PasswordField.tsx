@@ -75,7 +75,7 @@ export function PasswordField({
           // status, and a button should read as the former.
           label={shown ? "Hide password" : "Show password"}
           icon={shown ? "eye-slash" : "eye"}
-          className="absolute end-0 top-1/2 -translate-y-1/2 text-text-muted"
+          className="absolute inset-e-0 top-1/2 -translate-y-1/2 text-text-muted"
         />
       </div>
 
@@ -86,7 +86,7 @@ export function PasswordField({
               {[0, 1, 2, 3].map((i) => (
                 <span
                   key={i}
-                  className={`h-[3px] flex-1 rounded-full transition-colors ${
+                  className={`h-0.75 flex-1 rounded-full transition-colors ${
                     i < rating.score ? BAR[rating.score] : "bg-surface-3"
                   }`}
                 />

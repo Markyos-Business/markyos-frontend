@@ -8,7 +8,6 @@ import { homePath } from "@/lib/data/access";
 import { AlertBanner, Button } from "@/components/ui";
 import { CheckboxField, InputField } from "@/components/form";
 import { AuthShell, PasswordField, SocialSignIn, EMAIL_RE } from "@/components/features/auth";
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/data/mockData";
 
 export default function LoginPage() {
   return (
@@ -43,7 +42,7 @@ function LoginPageBody() {
 }
 
 function LoginForm() {
-  const { login, state } = useApp();
+  const { login } = useApp();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,12 +68,6 @@ function LoginForm() {
       setErrors({ form: failed });
     }
   }
-
-  // Only offered while the seeded account still has its seeded password. Once
-  // someone changes it this disappears rather than printing a password that no
-  // longer works.
-  const demo = state.accounts.find((a) => a.email === DEMO_EMAIL);
-  const showDemo = !!demo && demo.password === `plain$${DEMO_PASSWORD}`;
 
   return (
     <AuthShell
@@ -125,7 +118,7 @@ function LoginForm() {
         />
 
         <CheckboxField label="Stay signed in" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-        <p className="-mt-2 text-[11.5px] leading-[1.5] text-text-faint">
+        <p className="-mt-2 text-[11.5px] leading-normal text-text-faint">
           {remember
             ? "You'll stay signed in on this browser until you log out."
             : "You'll be signed out when you close this browser."}
@@ -138,31 +131,6 @@ function LoginForm() {
         <SocialSignIn />
       </form>
 
-      {showDemo && (
-        // Seed data, in a public repo, printed here on purpose: the demo brands
-        // belong to a real account now, and there is no other way in.
-        <div className="flex flex-col gap-2 rounded-lg bg-surface-2 px-3.5 py-3 text-[12px] text-text-muted">
-          <span className="font-semibold text-text-secondary">Want to look around first?</span>
-          <span className="leading-[1.5]">
-            The sample studio and its five brands live on a demo account —{" "}
-            <span dir="ltr" className="font-mono">{DEMO_EMAIL}</span> /{" "}
-            <span dir="ltr" className="font-mono">{DEMO_PASSWORD}</span>.
-          </span>
-          <Button
-            type="button"
-            variant="link"
-            disabled={busy}
-            onClick={() => {
-              setEmail(DEMO_EMAIL);
-              setPassword(DEMO_PASSWORD);
-              setErrors({});
-            }}
-            className="self-start text-[12px] font-semibold"
-          >
-            Fill it in for me
-          </Button>
-        </div>
-      )}
     </AuthShell>
   );
 }
