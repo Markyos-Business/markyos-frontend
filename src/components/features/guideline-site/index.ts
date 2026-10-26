@@ -2,6 +2,7 @@
 // imports from "@/features/guideline-site", never from a file inside it.
 export { BlockScopeProvider } from "./components/BlockRenderer";
 export { BrandFonts } from "./components/BrandFonts";
+export { ClientGuideView } from "./components/ClientGuideView";
 export { ContrastReport } from "./components/ContrastReport";
 export { GuidelineMotion } from "./components/GuidelineMotion";
 export { LiveCanvas } from "./components/LiveCanvas";
