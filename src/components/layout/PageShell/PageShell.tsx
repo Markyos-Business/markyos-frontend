@@ -16,14 +16,16 @@ type PageShellProps = {
   width?: "default" | "wide" | "full";
   /** Shown instead of the page in the browser-only build, for pages that need the server. */
   offline?: ReactNode;
+  /** False drops the top bar, for a page that has taken the whole window (a board in full screen). */
+  topBar?: boolean;
   children: ReactNode;
 };
 
 /** A brand page: its top bar, then the scrolling body. */
-export function PageShell({ workspace, section, arSection, right, tabs, tabsRight, width = "default", offline, children }: PageShellProps) {
+export function PageShell({ workspace, section, arSection, right, tabs, tabsRight, width = "default", offline, topBar = true, children }: PageShellProps) {
   return (
     <>
-      <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} />
+      {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} />}
       {width === "full" ? (
         children
       ) : (
