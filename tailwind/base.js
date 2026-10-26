@@ -78,6 +78,50 @@ export const baseStyles = [
       "unicode-bidi": "plaintext",
     },
   },
+  /* The overview editor's blocks: the few shapes its toolbar can make. */
+  {
+    ".overview-editor h2": {
+      margin: "0 0 14px",
+      "font-family": "var(--font-display)",
+      "font-size": "26px",
+      "font-weight": "600",
+      "line-height": "1.25",
+      "letter-spacing": "-0.015em",
+    },
+    ".overview-editor p": {
+      margin: "0 0 16px",
+      "font-size": "16px",
+      "line-height": "1.7",
+      color: "var(--text-secondary)",
+    },
+    /*
+     * The accent bar goes on the side the quote starts on, and the corners
+     * follow it. A physical border-left with a physical radius put the bar on
+     * the left of an Arabic quote and rounded the wrong two corners.
+     */
+    ".overview-editor blockquote": {
+      margin: "0",
+      padding: "16px 20px",
+      "border-inline-start": "2px solid var(--accent)",
+      background: "var(--surface-2)",
+      "border-start-start-radius": "0",
+      "border-end-start-radius": "0",
+      "border-start-end-radius": "10px",
+      "border-end-end-radius": "10px",
+      "font-size": "15px",
+      "line-height": "1.7",
+      color: "var(--text-secondary)",
+    },
+    ".overview-editor ul": {
+      margin: "0 0 16px",
+      "padding-inline-start": "22px",
+      color: "var(--text-secondary)",
+    },
+    ".overview-editor a": {
+      color: "var(--accent)",
+      "text-decoration": "underline",
+    },
+  },
   /*
    * Rich strategy copy — one stylesheet for the editor, the studio's read view,
    * and the published guideline site, so what a studio proofreads is exactly
