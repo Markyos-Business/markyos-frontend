@@ -32,6 +32,8 @@ export function useSignupForm() {
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<SignupErrors>({});
   const [busy, setBusy] = useState(false);
+  // Two steps: who the account is for, then the person's details.
+  const [step, setStep] = useState<"type" | "details">("type");
   /*
    * Set the instant registration succeeds, and checked by the redirect below.
    *
@@ -73,6 +75,16 @@ export function useSignupForm() {
   function chooseAccountType(value: AccountType) {
     setAccountType(value);
     if (errors.accountType) setErrors((x) => ({ ...x, accountType: undefined }));
+  }
+
+  /** Step one done: on to name, email and password, once a type is chosen. */
+  function toDetails(e?: FormEvent) {
+    e?.preventDefault();
+    if (!accountType) {
+      setErrors((x) => ({ ...x, accountType: "Choose who the account is for." }));
+      return;
+    }
+    setStep("details");
   }
 
   function changeEmail(value: string) {
@@ -132,6 +144,9 @@ export function useSignupForm() {
   }
 
   return {
+    step,
+    toDetails,
+    toType: () => setStep("type"),
     pending,
     clearPending: () => {
       justRegistered.current = false;

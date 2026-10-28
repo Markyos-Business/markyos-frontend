@@ -34,46 +34,48 @@ export function LoginForm() {
         </>
       }
     >
-      <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
-        <AlertBanner message={form.errors.form} />
-
-        <InputField
-          label="Email"
-          type="email"
-          inputMode="email"
-          placeholder="you@studio.com"
-          value={form.email}
-          onChange={(e) => form.setEmail(e.target.value)}
-          error={form.errors.email}
-          autoComplete="email"
-          autoFocus
-        />
-
-        <PasswordField
-          label="Password"
-          placeholder="••••••••••"
-          value={form.password}
-          onChange={(e) => form.setPassword(e.target.value)}
-          error={form.errors.password}
-          autoComplete="current-password"
-          labelRight={
-            <Button variant="link" href={form.resetHref} className="text-[12px] font-medium">
-              Forgot?
-            </Button>
-          }
-        />
-
-        <CheckboxField label="Stay signed in" checked={form.remember} onChange={(e) => form.setRemember(e.target.checked)} />
-        <p className="-mt-2 text-[11.5px] leading-normal text-text-faint">
-          {form.remember ? "You'll stay signed in on this browser until you log out." : "You'll be signed out when you close this browser."}
-        </p>
-
-        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={form.busy}>
-          {form.busy ? "Checking…" : "Log in"}
-        </Button>
-
+      <div className="flex flex-col gap-4">
         <SocialSignIn google={google} />
-      </form>
+        <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
+          <AlertBanner message={form.errors.form} />
+
+          <InputField
+            label="Email"
+            type="email"
+            inputMode="email"
+            placeholder="you@studio.com"
+            value={form.email}
+            onChange={(e) => form.setEmail(e.target.value)}
+            error={form.errors.email}
+            autoComplete="email"
+            autoFocus
+          />
+
+          <PasswordField
+            label="Password"
+            placeholder="••••••••••"
+            value={form.password}
+            onChange={(e) => form.setPassword(e.target.value)}
+            error={form.errors.password}
+            autoComplete="current-password"
+            labelRight={
+              <Button variant="link" href={form.resetHref} className="text-[12px] font-medium">
+                Forgot?
+              </Button>
+            }
+          />
+
+          <CheckboxField label="Stay signed in" checked={form.remember} onChange={(e) => form.setRemember(e.target.checked)} />
+          <p className="-mt-2 text-[11.5px] leading-normal text-text-faint">
+            {form.remember ? "You'll stay signed in on this browser until you log out." : "You'll be signed out when you close this browser."}
+          </p>
+
+          <Button type="submit" variant="primary" className="mt-1 w-full" disabled={form.busy}>
+            {form.busy ? "Checking…" : "Log in"}
+          </Button>
+
+        </form>
+      </div>
     </AuthShell>
   );
 }

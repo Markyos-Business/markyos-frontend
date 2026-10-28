@@ -3,16 +3,24 @@
 import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
 import type { GoogleSignInState } from "../../hooks/useGoogleSignIn";
 
-/** The "OR" rule and the Google button under the login and signup forms. */
+/** The "OR" rule between the Google button and the form. */
+const OrRule = () => (
+  <div className="flex items-center gap-3 text-[11px] text-text-faint">
+    <span className="h-px flex-1 bg-hairline" />
+    OR
+    <span className="h-px flex-1 bg-hairline" />
+  </div>
+);
+
+/**
+ * The Google button and its "OR" rule. It leads the login and signup forms —
+ * the quickest way in, offered first — so the rule sits under it, before the
+ * form.
+ */
 export function SocialSignIn({ google }: { google: GoogleSignInState }) {
   const { showToast } = useToast();
   return (
     <>
-      <div className="flex items-center gap-3 text-[11px] text-text-faint">
-        <span className="h-px flex-1 bg-hairline" />
-        OR
-        <span className="h-px flex-1 bg-hairline" />
-      </div>
       <AlertBanner message={google.error} />
       <Button
         type="button"
@@ -24,6 +32,7 @@ export function SocialSignIn({ google }: { google: GoogleSignInState }) {
       >
         {google.busy ? "Waiting for Google…" : "Continue with Google"}
       </Button>
+      <OrRule />
     </>
   );
 }

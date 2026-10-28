@@ -5,6 +5,7 @@ test.describe("accounts", () => {
     const email = `e2e-${Date.now()}@studio.com`;
     await page.goto("/signup");
     await page.getByRole("radio", { name: /^Studio/ }).click();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByLabel("Name").fill("Nour Haddad");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
@@ -47,6 +48,7 @@ test.describe("accounts", () => {
       const studio = await newStudio();
       await page.goto("/signup");
       await page.getByRole("radio", { name: /^Studio/ }).click();
+      await page.getByRole("button", { name: "Continue", exact: true }).click();
       await page.getByLabel("Name").fill("Someone else");
       await page.getByLabel("Email").fill(studio.email);
       await page.getByLabel("Password", { exact: true }).fill(PASSWORD);

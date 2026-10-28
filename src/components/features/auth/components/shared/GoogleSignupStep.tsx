@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertBanner, Button } from "@/components/ui";
-import { RadioCardGroup } from "@/components/form";
+import { RadioCardGroup, labelClasses } from "@/components/form";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { GoogleSignInState } from "../../hooks/useGoogleSignIn";
 import { AuthShell } from "./AuthShell";
@@ -21,7 +21,7 @@ export function GoogleSignupStep({ google }: { google: GoogleSignInState }) {
         </p>
         <AlertBanner message={google.error} />
         <div className="flex flex-col gap-space-2">
-          <span className="text-caption text-text-muted">Who is this account for?</span>
+          <span className={labelClasses}>Who is this account for?</span>
           <RadioCardGroup
             label="Who is this account for?"
             columns={1}
