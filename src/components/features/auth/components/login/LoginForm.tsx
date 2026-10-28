@@ -8,6 +8,7 @@ import { AuthShell } from "../shared/AuthShell";
 import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";
 import { SocialSignIn } from "../shared/SocialSignIn";
+import { VerifyEmailStep } from "../verify/VerifyEmailStep";
 
 /** Email, password, stay signed in, and the way to sign up or reset. */
 export function LoginForm() {
@@ -16,6 +17,9 @@ export function LoginForm() {
 
   // Someone new came through Google: finish their account instead.
   if (google.pending) return <GoogleSignupStep google={google} />;
+  // The password was right but the email was never confirmed. Once the code
+  // is in, the session lands and the login view moves on by itself.
+  if (form.pending) return <VerifyEmailStep pending={form.pending} onBack={form.clearPending} />;
 
   return (
     <AuthShell

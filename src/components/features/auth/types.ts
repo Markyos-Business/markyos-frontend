@@ -47,3 +47,12 @@ export type GoogleSignInResult =
   | { kind: "signedIn"; account: Account }
   | ({ kind: "needsAccountType" } & GooglePendingSignup);
 
+/** An account waiting for its email code: what the verify step needs. */
+export type PendingVerification = { email: string; codeSent: boolean; remember: boolean };
+
+/** The server asked for the email code instead of signing in. */
+export type VerificationRequired = { requiresVerification: true; email: string; codeSent: boolean };
+
+/** What signup and login resolve to in the store: done, an error, or "check your email". */
+export type AuthOutcome = { error?: string; verify?: PendingVerification };
+

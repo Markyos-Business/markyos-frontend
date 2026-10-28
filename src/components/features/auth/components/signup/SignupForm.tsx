@@ -10,6 +10,7 @@ import { AuthShell } from "../shared/AuthShell";
 import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";
 import { SocialSignIn } from "../shared/SocialSignIn";
+import { VerifyEmailStep } from "../verify/VerifyEmailStep";
 
 /** Who the account is for, then name, email and a password, twice. */
 export function SignupForm({ form }: { form: SignupFormState }) {
@@ -17,6 +18,7 @@ export function SignupForm({ form }: { form: SignupFormState }) {
   // created at once; with none picked yet, Google asks for it next.
   const google = useGoogleSignIn({ accountType: form.accountType });
   if (google.pending) return <GoogleSignupStep google={google} />;
+  if (form.pending) return <VerifyEmailStep pending={form.pending} onVerified={form.onVerified} onBack={form.clearPending} />;
 
   return (
     <AuthShell

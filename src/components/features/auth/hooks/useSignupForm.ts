@@ -6,6 +6,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { AccountType } from "@/types";
 import { EMAIL_RE } from "../constants";
+import type { PendingVerification } from "../types";
 import { normaliseEmail } from "../utils/email";
 import { scorePassword } from "../utils/password";
 
@@ -44,6 +45,8 @@ export function useSignupForm() {
    * commit, and a state update wouldn't have landed yet.
    */
   const justRegistered = useRef(false);
+  // The new account, waiting for its emailed code.
+  const [pending, setPending] = useState<PendingVerification | null>(null);
 
   useEffect(() => {
     if (justRegistered.current) return;
@@ -99,8 +102,9 @@ export function useSignupForm() {
 
     setBusy(true);
     justRegistered.current = true;
-    const failed = await signup(name, email, password, accountType!);
+    const out = await signup(name, email, password, accountType!);
     setBusy(false);
+    const failed = out.error;
     if (failed) justRegistered.current = false;
 
     if (failed) {
@@ -110,6 +114,16 @@ export function useSignupForm() {
       return;
     }
 
+    // With the backend, the account waits for its emailed code.
+    if (out.verify) {
+      setPending(out.verify);
+      return;
+    }
+    welcome();
+  }
+
+  /** Where a new account goes first: straight to making its first brand. */
+  function welcome() {
     showToast(
       accountType === "company" ? "Account created. Let's set up your brand." : "Account created. Let's add your first client brand.",
       "success"
@@ -118,6 +132,13 @@ export function useSignupForm() {
   }
 
   return {
+    pending,
+    clearPending: () => {
+      justRegistered.current = false;
+      setPending(null);
+    },
+    /** The code went in: the session is live, so move on like a fresh signup. */
+    onVerified: welcome,
     accountType,
     chooseAccountType,
     name,

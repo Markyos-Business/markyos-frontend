@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- API responses in tests are read loosely; the backend has its own typed tests. */
+import { execFileSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { test as base, expect, type Page } from "@playwright/test";
 
 export const API = process.env.E2E_API ?? "http://localhost:8010/api/v1";
@@ -18,13 +21,51 @@ export async function call<T = any>(path: string, { method = "GET", body, token 
   return data as T;
 }
 
+const backendDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  process.env.E2E_BACKEND_DIR ?? "../markyos-backend"
+);
+
+/**
+ * The newest signup code emailed to `email`, read where the inbox would be:
+ * the backend's database (dev email only prints to its console).
+ */
+export function signupCode(email: string): string {
+  const out = execFileSync(
+    process.env.E2E_PYTHON ?? "python3",
+    [
+      "manage.py",
+      "shell",
+      "-c",
+      `from apps.authentication.models import OTPCode; print(OTPCode.objects.filter(user__email=${JSON.stringify(email)}, purpose="register", is_used=False).latest("created_at").code)`,
+    ],
+    { cwd: backendDir }
+  );
+  return out.toString().trim().split("\n").pop() ?? "";
+}
+
+/** Types a code into the "Check your email" step and confirms it. */
+export async function enterSignupCode(page: Page, email: string) {
+  await expect(page.getByText("Check your email")).toBeVisible();
+  const code = signupCode(email);
+  const boxes = page.locator("fieldset input");
+  for (let i = 0; i < 6; i++) await boxes.nth(i).fill(code[i]);
+  await page.getByRole("button", { name: "Confirm email" }).click();
+}
+
 const stamp = () => `${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
 export type Studio = { email: string; token: string; name: string };
 
 export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
   const email = `e2e-${stamp()}@studio.com`;
-  const { access } = await call("/auth/signup/", { method: "POST", body: { name, email, password: PASSWORD, accountType: "studio" } });
+  await call("/auth/signup/", { method: "POST", body: { name, email, password: PASSWORD, accountType: "studio" } });
+  // Usable once the emailed code is in.
+  const { access } = await call("/auth/otp/verify/", {
+    method: "POST",
+    body: { email, code: signupCode(email), purpose: "register" },
+  });
   return { email, token: access, name };
 }
 

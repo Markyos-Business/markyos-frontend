@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { EMAIL_RE } from "../constants";
+import type { PendingVerification } from "../types";
 
 type LoginErrors = { email?: string; password?: string; form?: string };
 
@@ -14,6 +15,9 @@ export function useLoginForm() {
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [busy, setBusy] = useState(false);
+  // Set when the account's email was never confirmed: the form gives way to
+  // the code step, and the server has already emailed a fresh code.
+  const [pending, setPending] = useState<PendingVerification | null>(null);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -26,15 +30,27 @@ export function useLoginForm() {
     if (Object.keys(field).length > 0) return;
 
     setBusy(true);
-    const failed = await login(email, password, remember);
+    const out = await login(email, password, remember);
     setBusy(false);
 
-    if (failed) {
-      setErrors({ form: failed });
-    }
+    if (out.error) setErrors({ form: out.error });
+    else if (out.verify) setPending(out.verify);
   }
 
   const resetHref = `/reset${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`;
 
-  return { email, setEmail, password, setPassword, remember, setRemember, errors, busy, submit, resetHref };
+  return {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    remember,
+    setRemember,
+    errors,
+    busy,
+    submit,
+    resetHref,
+    pending,
+    clearPending: () => setPending(null),
+  };
 }

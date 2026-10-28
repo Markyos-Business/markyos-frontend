@@ -89,7 +89,12 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
 import * as authApi from "@/components/features/auth/services/authService";
-import type { GoogleSignInBody, GooglePendingSignup } from "@/components/features/auth/types";
+import type {
+  AuthOutcome,
+  GoogleSignInBody,
+  GooglePendingSignup,
+  PendingVerification,
+} from "@/components/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
@@ -198,16 +203,23 @@ interface AppContextValue {
   state: AppState;
   hydrated: boolean;
   /**
-   * Registers a new account and signs it in. Resolves to an error message, or
-   * null on success. Rejects an email another account already uses.
+   * Registers a new account. With the backend it isn't signed in yet: it
+   * resolves to `{ verify }` and the emailed code (`verifyEmail`) signs it in.
+   * The browser-only build signs straight in (`{}`). `{ error }` on failure,
+   * including an email another account already uses.
    */
-  signup: (name: string, email: string, password: string, accountType: AccountType) => Promise<string | null>;
+  signup: (name: string, email: string, password: string, accountType: AccountType) => Promise<AuthOutcome>;
   /**
-   * Signs in. Resolves to an error message when the credentials don't match,
-   * and null on success — a password that is stored has to actually be
-   * checked, or the change-password form is decoration.
+   * Signs in. Resolves to `{}`, to `{ error }` when the credentials don't
+   * match — a password that is stored has to actually be checked, or the
+   * change-password form is decoration — or to `{ verify }` for an account
+   * whose email was never confirmed (a fresh code has been emailed).
    */
-  login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
+  login: (email: string, password: string, remember?: boolean) => Promise<AuthOutcome>;
+  /** Enters the emailed signup code; signs in. Resolves to an error, or null. */
+  verifyEmail: (pending: PendingVerification, code: string) => Promise<string | null>;
+  /** Emails a fresh signup code. Resolves to an error, or null. */
+  resendVerification: (email: string) => Promise<string | null>;
   /**
    * Continue with Google. Signs in and resolves to `{}`; to `{ pending }` for
    * someone new, who picks an account type and calls again with the token;
@@ -886,22 +898,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signup = useCallback(
-    async (name: string, email: string, password: string, accountType: AccountType): Promise<string | null> => {
+    async (name: string, email: string, password: string, accountType: AccountType): Promise<AuthOutcome> => {
       const clean = normaliseEmail(email);
-      if (!EMAIL_RE.test(clean)) return "Enter a valid email address.";
-      if (password.length < 8) return "Use at least 8 characters.";
+      if (!EMAIL_RE.test(clean)) return { error: "Enter a valid email address." };
+      if (password.length < 8) return { error: "Use at least 8 characters." };
       if (API_ENABLED) {
         try {
-          const account = await authApi.signup(name.trim(), clean, password, accountType);
-          setState((prev) => signedInAs(prev, account, true));
-          await pullServerWorkspaces();
-          return null;
+          // The account exists but isn't usable until the emailed code is in.
+          const res = await authApi.signup(name.trim(), clean, password, accountType);
+          return { verify: { email: res.email, codeSent: res.codeSent, remember: true } };
         } catch (err) {
-          return apiMessage(err);
+          return { error: apiMessage(err) };
         }
       }
       if (findByEmail(clean)) {
-        return "An account already uses that email. Log in instead, or reset the password.";
+        return { error: "An account already uses that email. Log in instead, or reset the password." };
       }
       const displayName = name.trim() || clean.split("@")[0];
       const hashed = await hashPassword(password);
@@ -934,22 +945,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           remember: true,
         },
       }));
-      return null;
+      return {};
     },
-    [findByEmail, repo, pullServerWorkspaces]
+    [findByEmail, repo]
   );
 
   const login = useCallback(
-    async (email: string, password: string, remember = true): Promise<string | null> => {
+    async (email: string, password: string, remember = true): Promise<AuthOutcome> => {
       if (API_ENABLED) {
         try {
-          const account = await authApi.login(normaliseEmail(email), password, remember);
+          const res = await authApi.login(normaliseEmail(email), password, remember);
+          if ("requiresVerification" in res) return { verify: { email: res.email, codeSent: res.codeSent, remember } };
+          const account = res;
           setState((prev) => signedInAs(prev, account, remember));
           // Awaited so the gallery the login page goes to already has them.
           await pullServerWorkspaces();
-          return null;
+          return {};
         } catch (err) {
-          return apiMessage(err);
+          return { error: apiMessage(err) };
         }
       }
       const account = findByEmail(email);
@@ -958,10 +971,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // have accounts here, and it does not help the person who simply
       // mistyped one of the two.
       const WRONG = "That email and password don't match an account.";
-      if (!account) return WRONG;
+      if (!account) return { error: WRONG };
 
       const { ok, needsUpgrade } = await verifyPassword(password, account.password);
-      if (!ok) return WRONG;
+      if (!ok) return { error: WRONG };
 
       // The one moment the plain password is in hand and verified — so it is
       // the only chance to re-hash a record left in the clear by an older
@@ -984,7 +997,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           remember,
         },
       }));
-      return null;
+      return {};
     },
     [findByEmail, repo, pullServerWorkspaces]
   );
@@ -999,6 +1012,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     repo.markSessionAlive(false);
     setState((prev) => ({ ...prev, session: null }));
   }, [repo]);
+
+  const verifyEmail = useCallback(
+    async (pending: PendingVerification, code: string): Promise<string | null> => {
+      try {
+        const account = await authApi.verifyEmail(pending.email, code, pending.remember);
+        setState((prev) => signedInAs(prev, account, pending.remember));
+        await pullServerWorkspaces();
+        return null;
+      } catch (err) {
+        return apiMessage(err);
+      }
+    },
+    [pullServerWorkspaces]
+  );
+
+  const resendVerification = useCallback(async (email: string): Promise<string | null> => {
+    try {
+      await authApi.resendVerification(email);
+      return null;
+    } catch (err) {
+      return apiMessage(err);
+    }
+  }, []);
 
   const signInWithGoogle = useCallback(
     async (body: GoogleSignInBody): Promise<{ error?: string; pending?: GooglePendingSignup }> => {
@@ -3234,6 +3270,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signup,
       login,
       signInWithGoogle,
+      verifyEmail,
+      resendVerification,
       logout,
       updateAccount,
       setAccountPassword,
@@ -3375,6 +3413,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signup,
       login,
       signInWithGoogle,
+      verifyEmail,
+      resendVerification,
       logout,
       updateAccount,
       setAccountPassword,

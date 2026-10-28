@@ -1,4 +1,4 @@
-import { PASSWORD, expect, newStudio, signIn, test } from "./fixtures";
+import { PASSWORD, enterSignupCode, expect, newStudio, signIn, test } from "./fixtures";
 
 test.describe("accounts", () => {
   test("sign up, stay signed in, sign out", async ({ page }) => {
@@ -10,6 +10,9 @@ test.describe("accounts", () => {
     await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
     await page.getByLabel("Confirm password").fill(PASSWORD);
     await page.locator('button[type="submit"]').click();
+    // Not in until the email is confirmed.
+    await expect(page).toHaveURL(/\/signup/);
+    await enterSignupCode(page, email);
     await expect(page).toHaveURL(/\/brands\/new/);
 
     // No token is ever readable by page scripts.
