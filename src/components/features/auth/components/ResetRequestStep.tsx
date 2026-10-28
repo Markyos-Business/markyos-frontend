@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui";
+import { AlertBanner, Button } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { API_ENABLED } from "@/lib/api/client";
 import type { ResetState } from "../hooks/useResetPassword";
@@ -26,6 +26,7 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
       }
     >
       <form onSubmit={reset.request} className="flex flex-col gap-4" noValidate>
+        <AlertBanner message={reset.errors.form} />
         <InputField
           label="Email"
           type="email"

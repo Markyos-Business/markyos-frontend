@@ -1098,9 +1098,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const requestPasswordReset = useCallback(async (email: string): Promise<string | null> => {
     if (API_ENABLED) {
-      // The link goes out by email. Failure is swallowed for the same reason
-      // an unknown address is: the screen says the same thing regardless.
-      await authApi.requestPasswordReset(normaliseEmail(email)).catch(() => undefined);
+      // The link goes out by email. An unknown address gets the same 200 as a
+      // known one, so only a failed send (5xx, or no network) lands here — and
+      // the screen says so instead of promising an email that isn't coming.
+      try {
+        await authApi.requestPasswordReset(normaliseEmail(email));
+      } catch (err) {
+        if (!(err instanceof ApiError) || err.status >= 500) throw err;
+      }
       return null;
     }
     const account = findByEmail(email);

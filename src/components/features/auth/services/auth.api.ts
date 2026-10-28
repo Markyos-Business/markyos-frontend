@@ -90,10 +90,12 @@ export async function updateMe(
 }
 
 export async function changePassword(current: string, next: string): Promise<void> {
-  await api<void>("/auth/password-change/", {
+  // The server ends every session and hands this browser a fresh one.
+  const res = await api<{ access?: string }>("/auth/password-change/", {
     method: "POST",
     body: { old_password: current, new_password: next },
   });
+  if (res?.access) setAccessToken(res.access);
 }
 
 /** Always resolves the same way, whether or not the address has an account. */

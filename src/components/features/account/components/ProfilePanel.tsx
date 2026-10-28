@@ -5,6 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast, Button, Icon, Avatar, Section, Row, Badge } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { PasswordField, EMAIL_RE, isPlaintext, scorePassword } from "@/components/features/auth";
+import { API_ENABLED } from "@/lib/api/client";
 import { initialsFor, formatRelative } from "@/lib/utils";
 
 /**
@@ -33,7 +34,8 @@ export function ProfilePanel() {
   if (!account) return null;
   // Every account has one now — registration requires it. What varies is
   // whether it is still stored in the readable form an older build wrote.
-  const readable = isPlaintext(account.password);
+  // With a backend the server holds it, so there is nothing local to judge.
+  const readable = !API_ENABLED && isPlaintext(account.password);
 
   async function commitName() {
     const value = name.trim();
@@ -93,7 +95,12 @@ export function ProfilePanel() {
     setCurrent("");
     setNext("");
     setConfirm("");
-    showToast("Password changed — it's checked the next time you sign in.", "success");
+    showToast(
+      API_ENABLED
+        ? "Password changed. Other devices are signed out."
+        : "Password changed — it's checked the next time you sign in.",
+      "success"
+    );
   }
 
   return (
@@ -151,7 +158,7 @@ export function ProfilePanel() {
           }
           right={
             <div className="flex items-center gap-2.5 shrink-0">
-              <Badge tone={readable ? "warning" : "success"}>{readable ? "Readable" : "Hashed"}</Badge>
+              {!API_ENABLED && <Badge tone={readable ? "warning" : "success"}>{readable ? "Readable" : "Hashed"}</Badge>}
               <Button variant="outline" size="sm" onClick={() => setChangingPassword((v) => !v)}>
                 {changingPassword ? "Cancel" : "Change"}
               </Button>
@@ -193,11 +200,9 @@ export function ProfilePanel() {
                 on a server somewhere. What hashing buys is that the string
                 stored here isn't the one that opens your email too. */}
             <p className="text-caption text-text-faint">
-              This build stores your data in this browser, so the password guards this browser&apos;s
-              copy — it is never sent anywhere. It is kept as a PBKDF2-derived key rather than the
-              password itself, so what sits in storage can&apos;t be read back and tried elsewhere.
-              Clearing site data still erases the account, and a forgotten password is reset from
-              the login screen.
+              {API_ENABLED
+                ? "Changing it signs you out on every other device. This browser stays signed in."
+                : "This build stores your data in this browser, so the password guards this browser's copy — it is never sent anywhere. It is kept as a PBKDF2-derived key rather than the password itself, so what sits in storage can't be read back and tried elsewhere. Clearing site data still erases the account, and a forgotten password is reset from the login screen."}
             </p>
           </form>
         )}

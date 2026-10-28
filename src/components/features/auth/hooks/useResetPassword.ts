@@ -50,7 +50,14 @@ export function useResetPassword() {
     }
     setErrors({});
     setBusy(true);
-    const code = await requestPasswordReset(email);
+    let code: string | null;
+    try {
+      code = await requestPasswordReset(email);
+    } catch {
+      setBusy(false);
+      setErrors({ form: "We couldn't send the email. Try again shortly." });
+      return;
+    }
     setBusy(false);
     if (API_ENABLED) {
       setStep("sent");
