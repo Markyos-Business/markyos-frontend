@@ -69,3 +69,20 @@ export const ADMIN_NAV = [
     items: [{ key: "users", label: "Users", icon: "users", href: "/admin/users" }],
   },
 ];
+
+/** Brand stages in the order a brand moves through them. */
+export const STAGE_ORDER = ["discovery", "strategy", "design", "review", "delivered", "live"];
+
+/** Accounts per page on the users list. */
+export const PAGE_SIZE = 25;
+
+/** The users table; narrower screens drop the less useful columns. */
+export const USER_COLUMNS = [
+  { key: "person", label: "Person" },
+  { key: "type", label: "Type" },
+  { key: "role", label: "Role", className: "hidden sm:table-cell" },
+  { key: "status", label: "Status" },
+  { key: "brands", label: "Brands", className: "hidden md:table-cell" },
+  { key: "joined", label: "Joined", className: "hidden lg:table-cell" },
+  { key: "last", label: "Last signed in", className: "hidden lg:table-cell" },
+];

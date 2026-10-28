@@ -1,4 +1,4 @@
-import type { AdminStats } from "../types";
+import type { AdminStats } from "../../types";
 
 /** New accounts per day, as bars. Each bar names its day and count on hover. */
 export function SignupsChart({ signups }: { signups: AdminStats["signups"] }) {

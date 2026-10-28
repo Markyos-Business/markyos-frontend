@@ -5,23 +5,11 @@ import { AlertBanner, Avatar, Button, PageHeader, Table, TableEmptyRow, TableLoa
 import { SearchField, FilterSelectField } from "@/components/form";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import { usePresence } from "@/hooks/usePresence";
-import { ORDERINGS, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES } from "../constants";
-import { useAdminUsers } from "../hooks/useAdminUsers";
-import type { AdminUser, AdminUserQuery } from "../types";
-import { formatDate, initialsOf } from "../utils/format";
+import { ORDERINGS, PAGE_SIZE, ROLE_LABELS, ROLE_TONES, STATUS_LABELS, STATUS_TONES, USER_COLUMNS } from "../../constants";
+import { useAdminUsers } from "../../hooks/useAdminUsers";
+import type { AdminUser, AdminUserQuery } from "../../types";
+import { formatDate, initialsOf } from "../../utils/format";
 import { AdminUserPanel } from "./AdminUserPanel";
-
-const PAGE_SIZE = 25;
-
-const COLUMNS = [
-  { key: "person", label: "Person" },
-  { key: "type", label: "Type" },
-  { key: "role", label: "Role", className: "hidden sm:table-cell" },
-  { key: "status", label: "Status" },
-  { key: "brands", label: "Brands", className: "hidden md:table-cell" },
-  { key: "joined", label: "Joined", className: "hidden lg:table-cell" },
-  { key: "last", label: "Last signed in", className: "hidden lg:table-cell" },
-];
 
 export function AdminUsersView() {
   const [search, setSearch] = useState("");
@@ -88,11 +76,11 @@ export function AdminUsersView() {
 
       <AlertBanner message={error} />
 
-      <Table label="Users" columns={COLUMNS}>
+      <Table label="Users" columns={USER_COLUMNS}>
         {loading && !data ? (
-          <TableLoadingRow colSpan={COLUMNS.length} />
+          <TableLoadingRow colSpan={USER_COLUMNS.length} />
         ) : !data?.results.length ? (
-          <TableEmptyRow colSpan={COLUMNS.length} title="No accounts match" description="Try another search or clear the filters." />
+          <TableEmptyRow colSpan={USER_COLUMNS.length} title="No accounts match" description="Try another search or clear the filters." />
         ) : (
           data.results.map((u) => {
             const status = u.isActive ? "active" : "inactive";

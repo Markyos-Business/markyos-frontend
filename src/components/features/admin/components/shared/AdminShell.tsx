@@ -7,7 +7,7 @@ import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 import { AccountMenu } from "@/components/features/account";
 import { AppLayout, AppSidebar, AppTopBar, PageContainer } from "@/components/layout";
-import { ADMIN_NAV } from "../constants";
+import { ADMIN_NAV } from "../../constants";
 
 /**
  * The platform admin area's frame, and its gate.

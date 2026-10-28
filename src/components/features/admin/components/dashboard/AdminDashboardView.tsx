@@ -1,12 +1,10 @@
 "use client";
 
 import { AlertBanner, Button, PageHeader, StatTile } from "@/components/ui";
-import { ACCOUNT_TYPE_LABELS, PLAN_LABELS, STAGE_LABELS } from "../constants";
-import { useAdminStats } from "../hooks/useAdminStats";
+import { ACCOUNT_TYPE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
+import { useAdminStats } from "../../hooks/useAdminStats";
 import { Breakdown } from "./Breakdown";
 import { SignupsChart } from "./SignupsChart";
-
-const STAGE_ORDER = ["discovery", "strategy", "design", "review", "delivered", "live"];
 
 export function AdminDashboardView() {
   const { data, error, loading, reload } = useAdminStats();
