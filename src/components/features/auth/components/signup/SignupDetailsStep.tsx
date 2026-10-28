@@ -50,24 +50,30 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
         autoComplete="email"
       />
 
-      <PasswordField
-        label="Password"
-        placeholder="At least 8 characters"
-        value={form.password}
-        strength
-        onChange={(e) => form.setPassword(e.target.value)}
-        error={form.errors.password}
-        autoComplete="new-password"
-      />
+      {/* The browser-only build has no inbox, so its password is set here;
+          with the backend it comes from the emailed link. */}
+      {!API_ENABLED && (
+        <>
+          <PasswordField
+            label="Password"
+            placeholder="At least 8 characters"
+            value={form.password}
+            strength
+            onChange={(e) => form.setPassword(e.target.value)}
+            error={form.errors.password}
+            autoComplete="new-password"
+          />
 
-      <PasswordField
-        label="Confirm password"
-        placeholder="Type it again"
-        value={form.confirm}
-        onChange={(e) => form.setConfirm(e.target.value)}
-        error={form.errors.confirm}
-        autoComplete="new-password"
-      />
+          <PasswordField
+            label="Confirm password"
+            placeholder="Type it again"
+            value={form.confirm}
+            onChange={(e) => form.setConfirm(e.target.value)}
+            error={form.errors.confirm}
+            autoComplete="new-password"
+          />
+        </>
+      )}
 
       <Button type="submit" variant="primary" className="mt-1 w-full" disabled={form.busy}>
         {form.busy ? "Creating…" : "Create account"}

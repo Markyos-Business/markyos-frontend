@@ -12,9 +12,11 @@ import { PasswordField } from "../shared/PasswordField";
 export function ResetConfirmStep({ reset }: { reset: ResetState }) {
   return (
     <AuthShell
-      title="Choose a new password"
+      title={reset.setup ? "Set your password" : "Choose a new password"}
       subtitle={
-        API_ENABLED
+        reset.setup
+          ? "The last step: choose the password you'll sign in with."
+          : API_ENABLED
           ? "Choose the password you'll sign in with from now on."
           : reset.issued
             ? "Here's your code. Enter it below along with the password you want."
@@ -84,7 +86,7 @@ export function ResetConfirmStep({ reset }: { reset: ResetState }) {
         />
 
         <Button type="submit" variant="primary" className="mt-1 w-full" disabled={reset.busy}>
-          {reset.busy ? "Saving…" : "Set new password"}
+          {reset.busy ? "Saving…" : reset.setup ? "Set password and continue" : "Set new password"}
         </Button>
         <p className="text-[11.5px] leading-[1.5] text-text-faint">
           You&apos;ll be asked to sign in with the new password — changing it doesn&apos;t sign you

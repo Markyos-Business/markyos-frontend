@@ -93,6 +93,7 @@ import type {
   AuthOutcome,
   GoogleSignInBody,
   GooglePendingSignup,
+  PasswordSetResult,
   PendingVerification,
 } from "@/components/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
@@ -237,8 +238,12 @@ interface AppContextValue {
    * this always resolves to null. Callers must say the same thing either way.
    */
   requestPasswordReset: (email: string) => Promise<string | null>;
-  /** Completes a reset. Resolves to an error message, or null. */
-  resetPassword: (token: string, next: string) => Promise<string | null>;
+  /**
+   * Sets a password from a reset or set-password link. With the backend it
+   * signs in, and says whether it was a new account's first password.
+   * Resolves to `{ error }` on failure.
+   */
+  resetPassword: (token: string, next: string) => Promise<PasswordSetResult>;
   /** The brands the signed-in account owns or is on. Empty when signed out. */
   myWorkspaces: Workspace[];
   getWorkspace: (slug: string) => Workspace | undefined;
@@ -901,16 +906,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async (name: string, email: string, password: string, accountType: AccountType): Promise<AuthOutcome> => {
       const clean = normaliseEmail(email);
       if (!EMAIL_RE.test(clean)) return { error: "Enter a valid email address." };
-      if (password.length < 8) return { error: "Use at least 8 characters." };
       if (API_ENABLED) {
         try {
-          // The account exists but isn't usable until the emailed code is in.
-          const res = await authApi.signup(name.trim(), clean, password, accountType);
-          return { verify: { email: res.email, codeSent: res.codeSent, remember: true } };
+          // No password here: the emailed link sets it, and signs them in.
+          const res = await authApi.signup(name.trim(), clean, accountType);
+          return { setup: { email: res.email, emailSent: res.emailSent } };
         } catch (err) {
           return { error: apiMessage(err) };
         }
       }
+      // The browser-only build has no inbox, so the password is set here.
+      if (password.length < 8) return { error: "Use at least 8 characters." };
       if (findByEmail(clean)) {
         return { error: "An account already uses that email. Log in instead, or reset the password." };
       }
@@ -1186,26 +1192,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [findByEmail]);
 
   const resetPassword = useCallback(
-    async (token: string, next: string): Promise<string | null> => {
+    async (token: string, next: string): Promise<PasswordSetResult> => {
       if (API_ENABLED) {
         try {
-          await authApi.resetPassword(token.trim(), next);
+          // The server signed every session out, then this browser back in.
+          const { account, firstTime } = await authApi.resetPassword(token.trim(), next);
+          setState((prev) => signedInAs(prev, account, true));
+          await pullServerWorkspaces();
+          return { firstTime };
         } catch (err) {
-          return apiMessage(err);
+          return { error: apiMessage(err) };
         }
-        // The server has also signed this account out everywhere.
-        setState((prev) => ({ ...prev, session: null }));
-        return null;
       }
       const clean = token.trim().toUpperCase();
       const reset = stateRef.current.resets.find((r) => r.token === clean);
-      if (!reset) return "That reset code isn't recognised.";
+      if (!reset) return { error: "That reset code isn't recognised." };
       if (Date.now() - reset.requestedAt > RESET_TTL_MS) {
-        return "That reset code has expired. Request a new one.";
+        return { error: "That reset code has expired. Request a new one." };
       }
-      if (next.length < 8) return "Use at least 8 characters.";
+      if (next.length < 8) return { error: "Use at least 8 characters." };
       const account = stateRef.current.accounts.find((a) => a.id === reset.accountId);
-      if (!account) return "That reset code isn't recognised.";
+      if (!account) return { error: "That reset code isn't recognised." };
 
       const hashed = await hashPassword(next);
       setState((prev) => ({
@@ -1220,9 +1227,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // proves it by using it.
         session: null,
       }));
-      return null;
+      return {};
     },
-    []
+    [pullServerWorkspaces]
   );
 
   /**

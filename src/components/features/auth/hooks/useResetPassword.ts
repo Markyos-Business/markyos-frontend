@@ -32,6 +32,8 @@ export function useResetPassword() {
 
   // A token in the URL is the emailed link: skip straight to the new password.
   const linkToken = API_ENABLED ? search.get("token") : null;
+  // A new account's "set your password" link, rather than a reset.
+  const setup = linkToken !== null && search.get("setup") === "1";
   const [step, setStep] = useState<ResetStep>(linkToken ? "confirm" : "request");
   const [email, setEmail] = useState(search.get("email") ?? "");
   const [issued, setIssued] = useState<string | null>(null);
@@ -97,8 +99,9 @@ export function useResetPassword() {
     if (Object.keys(field).length > 0) return;
 
     setBusy(true);
-    const failed = await resetPassword(token, password);
+    const out = await resetPassword(token, password);
     setBusy(false);
+    const failed = out.error;
 
     if (failed) {
       if (/code|link/i.test(failed)) setErrors(API_ENABLED ? { form: failed } : { token: failed });
@@ -106,6 +109,13 @@ export function useResetPassword() {
       return;
     }
 
+    // With the backend the link has signed them in: a new account goes on to
+    // make its first brand, anyone else back to their brands.
+    if (API_ENABLED) {
+      showToast(out.firstTime ? "Password set. Welcome to Markyos." : "Password changed. Other devices are signed out.", "success");
+      router.push(out.firstTime ? "/brands/new" : "/brands");
+      return;
+    }
     showToast("Password changed. Sign in with the new one.", "success");
     router.push("/login");
   }
@@ -116,6 +126,7 @@ export function useResetPassword() {
   }
 
   return {
+    setup,
     step,
     setStep,
     startOver,

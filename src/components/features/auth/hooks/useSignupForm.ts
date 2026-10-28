@@ -6,7 +6,8 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { AccountType } from "@/types";
 import { EMAIL_RE } from "../constants";
-import type { PendingVerification } from "../types";
+import { API_ENABLED } from "@/lib/api/client";
+import type { PasswordSetup } from "../types";
 import { normaliseEmail } from "../utils/email";
 import { scorePassword } from "../utils/password";
 
@@ -47,8 +48,8 @@ export function useSignupForm() {
    * commit, and a state update wouldn't have landed yet.
    */
   const justRegistered = useRef(false);
-  // The new account, waiting for its emailed code.
-  const [pending, setPending] = useState<PendingVerification | null>(null);
+  // The new account, waiting for its "set your password" email.
+  const [setup, setSetup] = useState<PasswordSetup | null>(null);
 
   useEffect(() => {
     if (justRegistered.current) return;
@@ -102,13 +103,17 @@ export function useSignupForm() {
     if (!accountType) field.accountType = "Choose who the account is for.";
     if (!name.trim()) field.name = "Tell us your name.";
     if (!EMAIL_RE.test(email.trim())) field.email = "Enter a valid email address.";
-    if (password.length < 8) field.password = "At least 8 characters.";
-    else if (scorePassword(password).score === 0) {
-      field.password = "That one is too easy to guess — try something longer.";
+    // With the backend the password is set from the emailed link; only the
+    // browser-only build, which has no inbox, asks for it here.
+    if (!API_ENABLED) {
+      if (password.length < 8) field.password = "At least 8 characters.";
+      else if (scorePassword(password).score === 0) {
+        field.password = "That one is too easy to guess — try something longer.";
+      }
+      // Compared rather than assumed. A typo in a password nobody can see is the
+      // single most common way someone locks themselves out on the first day.
+      if (confirm !== password) field.confirm = "These don't match.";
     }
-    // Compared rather than assumed. A typo in a password nobody can see is the
-    // single most common way someone locks themselves out on the first day.
-    if (confirm !== password) field.confirm = "These don't match.";
     setErrors(field);
     if (Object.keys(field).length > 0) return;
 
@@ -126,16 +131,11 @@ export function useSignupForm() {
       return;
     }
 
-    // With the backend, the account waits for its emailed code.
-    if (out.verify) {
-      setPending(out.verify);
+    // With the backend, the account waits for its "set your password" link.
+    if (out.setup) {
+      setSetup(out.setup);
       return;
     }
-    welcome();
-  }
-
-  /** Where a new account goes first: straight to making its first brand. */
-  function welcome() {
     showToast(
       accountType === "company" ? "Account created. Let's set up your brand." : "Account created. Let's add your first client brand.",
       "success"
@@ -147,13 +147,11 @@ export function useSignupForm() {
     step,
     toDetails,
     toType: () => setStep("type"),
-    pending,
-    clearPending: () => {
+    setup,
+    clearSetup: () => {
       justRegistered.current = false;
-      setPending(null);
+      setSetup(null);
     },
-    /** The code went in: the session is live, so move on like a fresh signup. */
-    onVerified: welcome,
     accountType,
     chooseAccountType,
     name,

@@ -1,4 +1,4 @@
-import { PASSWORD, enterSignupCode, expect, newStudio, signIn, test } from "./fixtures";
+import { expect, newStudio, setPasswordFromEmail, signIn, test } from "./fixtures";
 
 test.describe("accounts", () => {
   test("sign up, stay signed in, sign out", async ({ page }) => {
@@ -8,12 +8,10 @@ test.describe("accounts", () => {
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByLabel("Name").fill("Nour Haddad");
     await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
-    await page.getByLabel("Confirm password").fill(PASSWORD);
     await page.locator('button[type="submit"]').click();
-    // Not in until the email is confirmed.
+    // No password on the form: it's set from the emailed link, which signs in.
     await expect(page).toHaveURL(/\/signup/);
-    await enterSignupCode(page, email);
+    await setPasswordFromEmail(page, email);
     await expect(page).toHaveURL(/\/brands\/new/);
 
     // No token is ever readable by page scripts.
@@ -51,8 +49,6 @@ test.describe("accounts", () => {
       await page.getByRole("button", { name: "Continue", exact: true }).click();
       await page.getByLabel("Name").fill("Someone else");
       await page.getByLabel("Email").fill(studio.email);
-      await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
-      await page.getByLabel("Confirm password").fill(PASSWORD);
       await page.locator('button[type="submit"]').click();
       await expect(page.getByText("already uses that email").first()).toBeVisible();
     });

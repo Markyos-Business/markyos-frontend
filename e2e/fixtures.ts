@@ -27,31 +27,31 @@ const backendDir = path.resolve(
   process.env.E2E_BACKEND_DIR ?? "../markyos-backend"
 );
 
-/**
- * The newest signup code emailed to `email`, read where the inbox would be:
- * the backend's database (dev email only prints to its console).
- */
-export function signupCode(email: string): string {
-  const out = execFileSync(
-    process.env.E2E_PYTHON ?? "python3",
-    [
-      "manage.py",
-      "shell",
-      "-c",
-      `from apps.authentication.models import OTPCode; print(OTPCode.objects.filter(user__email=${JSON.stringify(email)}, purpose="register", is_used=False).latest("created_at").code)`,
-    ],
-    { cwd: backendDir }
-  );
+/** Runs a line of Python in the backend's Django shell and returns what it prints. */
+function djangoShell(code: string): string {
+  const out = execFileSync(process.env.E2E_PYTHON ?? "python3", ["manage.py", "shell", "-c", code], { cwd: backendDir });
   return out.toString().trim().split("\n").pop() ?? "";
 }
 
-/** Types a code into the "Check your email" step and confirms it. */
-export async function enterSignupCode(page: Page, email: string) {
+/**
+ * The "set your password" link emailed to `email`, read where the inbox would
+ * be: the backend's database (dev email only prints to its console).
+ */
+export function setupLink(email: string): string {
+  const token = djangoShell(
+    `from apps.authentication.models import PasswordResetToken; print(PasswordResetToken.objects.filter(user__email=${JSON.stringify(email)}).latest("created_at").token)`
+  );
+  return `/reset?token=${token}&setup=1`;
+}
+
+/** Follows the emailed link and sets the password, as a new account does. */
+export async function setPasswordFromEmail(page: Page, email: string, password = PASSWORD) {
   await expect(page.getByText("Check your email")).toBeVisible();
-  const code = signupCode(email);
-  const boxes = page.locator("fieldset input");
-  for (let i = 0; i < 6; i++) await boxes.nth(i).fill(code[i]);
-  await page.getByRole("button", { name: "Confirm email" }).click();
+  await page.goto(setupLink(email));
+  await expect(page.getByText("Set your password")).toBeVisible();
+  await page.getByLabel("New password", { exact: true }).fill(password);
+  await page.getByLabel("Confirm new password", { exact: true }).fill(password);
+  await page.getByRole("button", { name: "Set password and continue" }).click();
 }
 
 const stamp = () => `${Date.now()}${Math.floor(Math.random() * 1000)}`;
@@ -60,12 +60,10 @@ export type Studio = { email: string; token: string; name: string };
 
 export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
   const email = `e2e-${stamp()}@studio.com`;
-  await call("/auth/signup/", { method: "POST", body: { name, email, password: PASSWORD, accountType: "studio" } });
-  // Usable once the emailed code is in.
-  const { access } = await call("/auth/otp/verify/", {
-    method: "POST",
-    body: { email, code: signupCode(email), purpose: "register" },
-  });
+  await call("/auth/signup/", { method: "POST", body: { name, email, accountType: "studio" } });
+  // Usable once the password is set from the emailed link, which signs in.
+  const token = new URLSearchParams(setupLink(email).split("?")[1]).get("token");
+  const { access } = await call("/auth/password-reset/", { method: "POST", body: { token, password: PASSWORD } });
   return { email, token: access, name };
 }
 

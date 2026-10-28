@@ -53,6 +53,18 @@ export type PendingVerification = { email: string; codeSent: boolean; remember: 
 /** The server asked for the email code instead of signing in. */
 export type VerificationRequired = { requiresVerification: true; email: string; codeSent: boolean };
 
-/** What signup and login resolve to in the store: done, an error, or "check your email". */
-export type AuthOutcome = { error?: string; verify?: PendingVerification };
+/** A new account waiting for its "set your password" email. */
+export type PasswordSetup = { email: string; emailSent: boolean };
+
+/** What `POST /auth/signup/` answers: the account exists, the link is on its way. */
+export type SignupResponse = { requiresPasswordSetup: true } & PasswordSetup;
+
+/**
+ * What signup and login resolve to in the store: done (`{}`), an error, the
+ * emailed code to enter (`verify`), or the emailed link to follow (`setup`).
+ */
+export type AuthOutcome = { error?: string; verify?: PendingVerification; setup?: PasswordSetup };
+
+/** A password set from an emailed link: signed in, and whether it was a new account's first. */
+export type PasswordSetResult = { error?: string; firstTime?: boolean };
 

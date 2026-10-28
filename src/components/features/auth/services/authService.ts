@@ -5,6 +5,7 @@ import type {
   GoogleSignInBody,
   GoogleSignInResponse,
   GoogleSignInResult,
+  SignupResponse,
   VerificationRequired,
 } from "../types";
 
@@ -37,14 +38,12 @@ export function toAccount(a: ApiAccount): Account {
 export async function signup(
   name: string,
   email: string,
-  password: string,
-  accountType: AccountType,
-  remember = true
-): Promise<VerificationRequired> {
-  // No session yet: the account is usable once the emailed code is entered.
-  return api<VerificationRequired>("/auth/signup/", {
+  accountType: AccountType
+): Promise<SignupResponse> {
+  // No password and no session yet: both come from the emailed link.
+  return api<SignupResponse>("/auth/signup/", {
     method: "POST",
-    body: { name, email, password, accountType, remember },
+    body: { name, email, accountType },
   });
 }
 
@@ -123,6 +122,12 @@ export async function requestPasswordReset(email: string): Promise<void> {
   await api<void>("/auth/password-forgot/", { method: "POST", body: { email } });
 }
 
-export async function resetPassword(token: string, password: string): Promise<void> {
-  await api<void>("/auth/password-reset/", { method: "POST", body: { token, password } });
+/** Sets the password from an emailed link; the server signs this browser in. */
+export async function resetPassword(token: string, password: string): Promise<{ account: Account; firstTime: boolean }> {
+  const res = await api<{ access: string; firstTime: boolean }>("/auth/password-reset/", {
+    method: "POST",
+    body: { token, password },
+  });
+  setAccessToken(res.access);
+  return { account: await fetchMe(), firstTime: res.firstTime };
 }
