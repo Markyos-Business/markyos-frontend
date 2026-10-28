@@ -4,13 +4,14 @@ import { AlertBanner, Button } from "@/components/ui";
 import { InputField, RadioCardGroup } from "@/components/form";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import { API_ENABLED } from "@/lib/api/client";
-import type { SignupFormState } from "../hooks/useSignupForm";
-import { AuthShell } from "./AuthShell";
-import { PasswordField } from "./PasswordField";
-import { SocialSignIn } from "./SocialSignIn";
+import type { SignupFormState } from "../../hooks/useSignupForm";
+import { AuthShell } from "../shared/AuthShell";
+import { PasswordField } from "../shared/PasswordField";
+import { SocialSignIn } from "../shared/SocialSignIn";
 
 /** Who the account is for, then name, email and a password, twice. */
 export function SignupForm({ form }: { form: SignupFormState }) {
+
   return (
     <AuthShell
       title="Create an account"

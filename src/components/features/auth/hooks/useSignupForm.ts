@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { AccountType } from "@/types";
-import { EMAIL_RE, normaliseEmail, scorePassword } from "../model/auth";
+import { EMAIL_RE } from "../constants";
+import { normaliseEmail } from "../utils/email";
+import { scorePassword } from "../utils/password";
 
 type SignupErrors = {
   accountType?: string;

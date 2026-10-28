@@ -4,9 +4,9 @@ import Link from "next/link";
 import { AlertBanner, Button, Icon } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { API_ENABLED } from "@/lib/api/client";
-import type { ResetState } from "../hooks/useResetPassword";
-import { AuthShell } from "./AuthShell";
-import { PasswordField } from "./PasswordField";
+import type { ResetState } from "../../hooks/useResetPassword";
+import { AuthShell } from "../shared/AuthShell";
+import { PasswordField } from "../shared/PasswordField";
 
 /** Step two: the code (browser-only build) and the new password. */
 export function ResetConfirmStep({ reset }: { reset: ResetState }) {

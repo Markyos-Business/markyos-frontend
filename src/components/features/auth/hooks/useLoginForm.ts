@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { EMAIL_RE } from "../model/auth";
+import { EMAIL_RE } from "../constants";
 
 type LoginErrors = { email?: string; password?: string; form?: string };
 

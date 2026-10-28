@@ -3,7 +3,7 @@
 import { InputHTMLAttributes, ReactNode, useId, useState } from "react";
 import { FieldNote, inputClasses, labelClasses } from "@/components/form";
 import { IconButton } from "@/components/ui";
-import { scorePassword } from "@/components/features/auth/model/auth";
+import { scorePassword } from "../../utils/password";
 
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> {
   label: string;

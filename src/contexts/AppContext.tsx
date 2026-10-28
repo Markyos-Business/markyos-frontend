@@ -72,14 +72,12 @@ import {
 } from "@/lib/data/mockData";
 import { roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
-import {
-  EMAIL_RE,
-  RESET_TTL_MS,
-  hashPassword,
-  newResetToken,
-  normaliseEmail,
-  verifyPassword,
-} from "@/components/features/auth/model/auth";
+// Deep imports, not the feature's index: its components import this file,
+// so going through index.ts would make a cycle.
+import { EMAIL_RE, RESET_TTL_MS } from "@/components/features/auth/constants";
+import { normaliseEmail } from "@/components/features/auth/utils/email";
+import { hashPassword, verifyPassword } from "@/components/features/auth/utils/password";
+import { newResetToken } from "@/components/features/auth/utils/resetToken";
 import { validateSubdomain } from "@/components/features/sharing/model/subdomain";
 import { BrandRepository } from "@/lib/data/repository";
 // The entity operations, as pure state transitions. The store calls these
@@ -90,7 +88,7 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // Accounts and sessions go to the backend when one is configured; see the
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
-import * as authApi from "@/components/features/auth/services/auth.api";
+import * as authApi from "@/components/features/auth/services/authService";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a

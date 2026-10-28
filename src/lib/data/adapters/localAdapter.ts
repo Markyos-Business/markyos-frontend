@@ -34,7 +34,7 @@ import {
   emptySlot,
 } from "../mockData";
 import { uid } from "@/lib/utils";
-import { RESET_TTL_MS } from "@/components/features/auth/model/auth";
+import { RESET_TTL_MS } from "@/components/features/auth/constants";
 import { readAllBlobs, writeBlobs } from "../blobStore";
 
 /**

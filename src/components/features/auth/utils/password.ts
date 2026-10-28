@@ -28,6 +28,9 @@
  *     HTTP to something other than localhost
  */
 
+import type { Strength } from "../types";
+import { fromB64, toB64 } from "./base64";
+
 const ITERATIONS = 210_000;
 const KEY_BITS = 256;
 
@@ -36,19 +39,6 @@ const subtle = (): SubtleCrypto | null => {
   // Present but unusable outside a secure context, so feature-detect the method
   // rather than the object.
   return typeof globalThis.crypto.subtle?.importKey === "function" ? globalThis.crypto.subtle : null;
-};
-
-const toB64 = (bytes: Uint8Array) => {
-  let s = "";
-  for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s);
-};
-
-const fromB64 = (b64: string) => {
-  const s = atob(b64);
-  const out = new Uint8Array(s.length);
-  for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
-  return out;
 };
 
 async function derive(password: string, salt: Uint8Array, iterations: number): Promise<string> {
@@ -118,18 +108,6 @@ export function isPlaintext(stored: string): boolean {
   return !!stored && !stored.startsWith("pbkdf2$");
 }
 
-export const normaliseEmail = (email: string) => email.trim().toLowerCase();
-
-export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export interface Strength {
-  /** 0–4. */
-  score: number;
-  label: string;
-  /** The single most useful thing to do next, or null when it's strong. */
-  advice: string | null;
-}
-
 const COMMON = new Set([
   "password", "12345678", "123456789", "qwerty123", "password1", "password123",
   "letmein", "welcome1", "admin123", "iloveyou", "1234567890", "qwertyuiop",
@@ -182,20 +160,3 @@ export function scorePassword(password: string): Strength {
 
   return { score, label, advice };
 }
-
-/**
- * A one-time reset token.
- *
- * There is no mail server in this build, so this is handed to the person on
- * screen instead of being emailed. That is a genuine difference from how a
- * reset works in production and the UI says so rather than staging a fake
- * "check your inbox" screen.
- */
-export function newResetToken(): string {
-  const bytes = globalThis.crypto?.getRandomValues?.(new Uint8Array(9));
-  if (!bytes) return Math.random().toString(36).slice(2, 14).toUpperCase();
-  return toB64(bytes).replace(/[+/=]/g, "").slice(0, 12).toUpperCase();
-}
-
-/** Resets expire, because a token that works forever is not a reset. */
-export const RESET_TTL_MS = 30 * 60 * 1000;

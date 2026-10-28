@@ -1,14 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  EMAIL_RE,
-  RESET_TTL_MS,
-  hashPassword,
-  isPlaintext,
-  newResetToken,
-  normaliseEmail,
-  scorePassword,
-  verifyPassword,
-} from "./auth";
+import { EMAIL_RE, RESET_TTL_MS } from "../constants";
+import { normaliseEmail } from "./email";
+import { hashPassword, isPlaintext, scorePassword, verifyPassword } from "./password";
+import { newResetToken } from "./resetToken";
 
 /**
  * Build a stored record at an arbitrary iteration count, mirroring what an

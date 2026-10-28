@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
-import { EMAIL_RE, scorePassword } from "../model/auth";
-
-export type ResetStep = "request" | "sent" | "confirm";
+import { EMAIL_RE } from "../constants";
+import type { ResetStep } from "../types";
+import { scorePassword } from "../utils/password";
 
 type ResetErrors = { email?: string; token?: string; password?: string; confirm?: string; form?: string };
 

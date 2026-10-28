@@ -3,8 +3,8 @@
 import { AlertBanner, Button } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { API_ENABLED } from "@/lib/api/client";
-import type { ResetState } from "../hooks/useResetPassword";
-import { AuthShell } from "./AuthShell";
+import type { ResetState } from "../../hooks/useResetPassword";
+import { AuthShell } from "../shared/AuthShell";
 
 /** Step one: the email to reset. */
 export function ResetRequestStep({ reset }: { reset: ResetState }) {

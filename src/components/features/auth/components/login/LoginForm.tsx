@@ -2,10 +2,10 @@
 
 import { AlertBanner, Button } from "@/components/ui";
 import { CheckboxField, InputField } from "@/components/form";
-import { useLoginForm } from "../hooks/useLoginForm";
-import { AuthShell } from "./AuthShell";
-import { PasswordField } from "./PasswordField";
-import { SocialSignIn } from "./SocialSignIn";
+import { useLoginForm } from "../../hooks/useLoginForm";
+import { AuthShell } from "../shared/AuthShell";
+import { PasswordField } from "../shared/PasswordField";
+import { SocialSignIn } from "../shared/SocialSignIn";
 
 /** Email, password, stay signed in, and the way to sign up or reset. */
 export function LoginForm() {
