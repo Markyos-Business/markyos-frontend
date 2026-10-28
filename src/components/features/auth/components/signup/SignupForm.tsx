@@ -4,13 +4,19 @@ import { AlertBanner, Button } from "@/components/ui";
 import { InputField, RadioCardGroup } from "@/components/form";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import { API_ENABLED } from "@/lib/api/client";
+import { useGoogleSignIn } from "../../hooks/useGoogleSignIn";
 import type { SignupFormState } from "../../hooks/useSignupForm";
 import { AuthShell } from "../shared/AuthShell";
+import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";
 import { SocialSignIn } from "../shared/SocialSignIn";
 
 /** Who the account is for, then name, email and a password, twice. */
 export function SignupForm({ form }: { form: SignupFormState }) {
+  // The type already picked above goes along, so a new Google account is
+  // created at once; with none picked yet, Google asks for it next.
+  const google = useGoogleSignIn({ accountType: form.accountType });
+  if (google.pending) return <GoogleSignupStep google={google} />;
 
   return (
     <AuthShell
@@ -104,7 +110,7 @@ export function SignupForm({ form }: { form: SignupFormState }) {
           </p>
         )}
 
-        <SocialSignIn />
+        <SocialSignIn google={google} />
       </form>
     </AuthShell>
   );

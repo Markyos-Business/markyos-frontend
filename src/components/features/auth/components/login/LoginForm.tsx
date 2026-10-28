@@ -2,14 +2,20 @@
 
 import { AlertBanner, Button } from "@/components/ui";
 import { CheckboxField, InputField } from "@/components/form";
+import { useGoogleSignIn } from "../../hooks/useGoogleSignIn";
 import { useLoginForm } from "../../hooks/useLoginForm";
 import { AuthShell } from "../shared/AuthShell";
+import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";
 import { SocialSignIn } from "../shared/SocialSignIn";
 
 /** Email, password, stay signed in, and the way to sign up or reset. */
 export function LoginForm() {
   const form = useLoginForm();
+  const google = useGoogleSignIn({ remember: form.remember });
+
+  // Someone new came through Google: finish their account instead.
+  if (google.pending) return <GoogleSignupStep google={google} />;
 
   return (
     <AuthShell
@@ -62,7 +68,7 @@ export function LoginForm() {
           {form.busy ? "Checking…" : "Log in"}
         </Button>
 
-        <SocialSignIn />
+        <SocialSignIn google={google} />
       </form>
     </AuthShell>
   );

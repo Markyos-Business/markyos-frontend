@@ -1,4 +1,4 @@
-import type { AccountRole, AccountType, Lang } from "@/types";
+import type { Account, AccountRole, AccountType, Lang } from "@/types";
 
 /** The account as the backend sends it (`AccountSerializer`). */
 export interface ApiAccount {
@@ -26,3 +26,24 @@ export interface Strength {
 
 /** Where the reset flow is. */
 export type ResetStep = "request" | "sent" | "confirm";
+
+/** What `POST /auth/google/` takes. */
+export type GoogleSignInBody = {
+  code?: string;
+  signupToken?: string;
+  accountType?: AccountType;
+  remember?: boolean;
+};
+
+/** What it answers: signed in, or a new person who still has to pick a type. */
+export type GoogleSignInResponse =
+  | { needsAccountType?: false; access: string }
+  | { needsAccountType: true; signupToken: string; name: string; email: string };
+
+/** A Google identity with no account yet, waiting for its account type. */
+export type GooglePendingSignup = { signupToken: string; name: string; email: string };
+
+export type GoogleSignInResult =
+  | { kind: "signedIn"; account: Account }
+  | ({ kind: "needsAccountType" } & GooglePendingSignup);
+

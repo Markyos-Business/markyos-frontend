@@ -1,6 +1,6 @@
 import { ApiError, api, setAccessToken } from "@/lib/api/client";
 import type { Account, AccountType, Lang } from "@/types";
-import type { ApiAccount } from "../types";
+import type { ApiAccount, GoogleSignInBody, GoogleSignInResponse, GoogleSignInResult } from "../types";
 
 const ms = (iso: string | null) => (iso ? Date.parse(iso) : null);
 
@@ -54,6 +54,19 @@ export async function login(email: string, password: string, remember = true): P
   }
   setAccessToken(res.access);
   return fetchMe();
+}
+
+/**
+ * Continue with Google. Send the popup's `code`, or — for someone new — the
+ * `signupToken` the first call returned plus the account type they picked.
+ */
+export async function googleSignIn(body: GoogleSignInBody): Promise<GoogleSignInResult> {
+  const res = await api<GoogleSignInResponse>("/auth/google/", { method: "POST", body });
+  if (res.needsAccountType) {
+    return { kind: "needsAccountType", signupToken: res.signupToken, name: res.name, email: res.email };
+  }
+  setAccessToken(res.access);
+  return { kind: "signedIn", account: await fetchMe() };
 }
 
 export async function logout(): Promise<void> {

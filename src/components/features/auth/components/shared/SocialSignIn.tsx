@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, Icon, useToast } from "@/components/ui";
+import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
+import type { GoogleSignInState } from "../../hooks/useGoogleSignIn";
 
 /** The "OR" rule and the Google button under the login and signup forms. */
-export function SocialSignIn() {
+export function SocialSignIn({ google }: { google: GoogleSignInState }) {
   const { showToast } = useToast();
   return (
     <>
@@ -12,14 +13,16 @@ export function SocialSignIn() {
         OR
         <span className="h-px flex-1 bg-hairline" />
       </div>
+      <AlertBanner message={google.error} />
       <Button
         type="button"
         variant="outline"
         className="w-full"
-        onClick={() => showToast("Social login isn't wired up in this build.")}
+        disabled={google.busy}
+        onClick={google.enabled ? google.start : () => showToast("Google sign-in isn't set up in this build.")}
         icon={<Icon name="google" size={17} />}
       >
-        Continue with Google
+        {google.busy ? "Waiting for Google…" : "Continue with Google"}
       </Button>
     </>
   );

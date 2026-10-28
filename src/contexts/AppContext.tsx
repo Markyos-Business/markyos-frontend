@@ -89,6 +89,7 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
 import * as authApi from "@/components/features/auth/services/authService";
+import type { GoogleSignInBody, GooglePendingSignup } from "@/components/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
@@ -207,6 +208,12 @@ interface AppContextValue {
    * checked, or the change-password form is decoration.
    */
   login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
+  /**
+   * Continue with Google. Signs in and resolves to `{}`; to `{ pending }` for
+   * someone new, who picks an account type and calls again with the token;
+   * or to `{ error }`.
+   */
+  signInWithGoogle: (body: GoogleSignInBody) => Promise<{ error?: string; pending?: GooglePendingSignup }>;
   logout: () => void;
   /** Edits the signed-in person's own details. Returns an error, or null. */
   updateAccount: (patch: Partial<Pick<Account, "name" | "email">>) => Promise<string | null>;
@@ -992,6 +999,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     repo.markSessionAlive(false);
     setState((prev) => ({ ...prev, session: null }));
   }, [repo]);
+
+  const signInWithGoogle = useCallback(
+    async (body: GoogleSignInBody): Promise<{ error?: string; pending?: GooglePendingSignup }> => {
+      // There is no Google in the browser-only build: no server to check the code.
+      if (!API_ENABLED) return { error: "Google sign-in needs the Markyos server." };
+      try {
+        const res = await authApi.googleSignIn(body);
+        if (res.kind === "needsAccountType") {
+          return { pending: { signupToken: res.signupToken, name: res.name, email: res.email } };
+        }
+        setState((prev) => signedInAs(prev, res.account, body.remember ?? true));
+        await pullServerWorkspaces();
+        return {};
+      } catch (err) {
+        return { error: apiMessage(err) };
+      }
+    },
+    [pullServerWorkspaces]
+  );
 
   const updateAccount = useCallback(
     async (patch: Partial<Pick<Account, "name" | "email">>): Promise<string | null> => {
@@ -3207,6 +3233,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       syncNotice,
       signup,
       login,
+      signInWithGoogle,
       logout,
       updateAccount,
       setAccountPassword,
@@ -3347,6 +3374,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       syncNotice,
       signup,
       login,
+      signInWithGoogle,
       logout,
       updateAccount,
       setAccountPassword,
