@@ -1,10 +1,11 @@
 import { Badge } from "@/components/ui";
+import { API_ENABLED } from "@/lib/api/client";
 import type { TeamPageView } from "../hooks/useTeamPage";
 import { PAGE_SECTION, ROLE_TONE } from "../constants";
-import { ApprovalSection } from "./ApprovalSection";
-import { SignOffSection } from "./SignOffSection";
-import { TeamSection } from "./TeamSection";
-import { VersionHistorySection } from "./VersionHistorySection";
+import { ApprovalSection } from "./approvals/ApprovalSection";
+import { VersionHistorySection } from "./history/VersionHistorySection";
+import { TeamSection } from "./members/TeamSection";
+import { SignOffSection } from "./sign-off/SignOffSection";
 
 /** A brand's people, its client sign-off, its approval queue and its saved versions. */
 export function TeamView(view: TeamPageView) {
@@ -19,13 +20,15 @@ export function TeamView(view: TeamPageView) {
         </p>
         {/*
           Architecture principle 7: no UI promise without server enforcement.
-          These roles decide what this interface offers, and nothing more —
-          every check runs in the browser against state the browser owns, so
-          anyone with devtools can hand themselves any role.
+          In the browser-only build these roles decide what this interface
+          offers, and nothing more — every check runs against state the browser
+          owns. With a backend the server checks every save against the role.
         */}
-        <p className="mt-2 text-[12.5px] text-text-faint">
-          Roles shape this interface but are not a security boundary yet — every check still runs in the browser. Real enforcement arrives with the server.
-        </p>
+        {!API_ENABLED && (
+          <p className="mt-2 text-[12.5px] text-text-faint">
+            Roles shape this interface but are not a security boundary yet — every check still runs in the browser. Real enforcement arrives with the server.
+          </p>
+        )}
       </div>
       <TeamSection {...view} />
       <SignOffSection ws={ws} canGovern={canGovern} />

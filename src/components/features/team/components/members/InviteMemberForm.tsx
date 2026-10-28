@@ -5,7 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { Button, useToast } from "@/components/ui";
 import { ChipPicker, TextInput } from "@/components/form";
 import type { TeamRole, Workspace } from "@/types";
-import { ROLES } from "../constants";
+import { ROLES } from "../../constants";
 
 type InviteMemberFormProps = {
   ws: Workspace;

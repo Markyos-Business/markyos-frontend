@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, EmptyHint, Row, Section } from "@/components/ui";
-import type { TeamPageView } from "../hooks/useTeamPage";
+import type { TeamPageView } from "../../hooks/useTeamPage";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { MemberControls } from "./MemberControls";
 

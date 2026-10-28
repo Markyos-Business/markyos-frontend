@@ -3,7 +3,7 @@
 import { useApp } from "@/contexts/AppContext";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
-import { ROLES, ROLE_TONE } from "../constants";
+import { ROLES, ROLE_TONE } from "../../constants";
 
 type MemberControlsProps = {
   ws: Workspace;
