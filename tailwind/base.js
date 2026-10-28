@@ -1176,9 +1176,7 @@ export const baseStyles = [
       "display": "block",
       "border": "0",
       "border-bottom": "1px solid var(--line-strong)",
-      // Tailwind's lg (8px): the controls' step on the radius scale
-      // (tailwind.config.js), the same as buttons and tags.
-      "border-radius": "var(--radius-lg)",
+      "border-radius": "0",
       "background": "transparent",
       "padding-block": "8px",
       // --space-4. Keeps the value off the field's edges, which matters when
@@ -1224,6 +1222,7 @@ export const baseStyles = [
   {
     ":is(input, textarea, select, div, label).mk-underline:focus-visible, .mk-underline :focus-visible": {
       "outline": "none !important",
+      "border-radius": "0 !important",
     },
   },
   /*
