@@ -1176,9 +1176,15 @@ export const baseStyles = [
       "display": "block",
       "border": "0",
       "border-bottom": "1px solid var(--line-strong)",
-      "border-radius": "0",
+      // Tailwind's lg (8px): the controls' step on the radius scale
+      // (tailwind.config.js), the same as buttons and tags.
+      "border-radius": "var(--radius-lg)",
       "background": "transparent",
       "padding-block": "8px",
+      // --space-4. Keeps the value off the field's edges, which matters when
+      // something does fill it (browser autofill paints a box behind it).
+      // Labels and notes take the same inset so they line up with the value.
+      "padding-inline": "10px",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
@@ -1218,7 +1224,6 @@ export const baseStyles = [
   {
     ":is(input, textarea, select, div, label).mk-underline:focus-visible, .mk-underline :focus-visible": {
       "outline": "none !important",
-      "border-radius": "0 !important",
     },
   },
   /*

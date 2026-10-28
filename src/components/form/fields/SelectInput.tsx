@@ -31,7 +31,7 @@ const SelectInput = ({ value, options, placeholder, error, className = "", ...re
         {...rest}
         value={value}
         aria-invalid={error ? true : undefined}
-        className={`${inputClasses} cursor-pointer appearance-none pe-space-9`}
+        className={`${inputClasses} cursor-pointer appearance-none pe-space-11`}
       >
         {placeholder && (
           <option value="" disabled>
@@ -49,7 +49,7 @@ const SelectInput = ({ value, options, placeholder, error, className = "", ...re
           </option>
         ))}
       </select>
-      <Icon name="angle-down" size={16} className="pointer-events-none absolute end-0 text-text-muted" />
+      <Icon name="angle-down" size={16} className="pointer-events-none absolute end-space-4 text-text-muted" />
     </span>
   );
 };

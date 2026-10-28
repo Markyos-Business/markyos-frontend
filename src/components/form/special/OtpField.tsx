@@ -84,7 +84,7 @@ const OtpField = ({ label, value, onChange, length = 6, required = true, error }
             onFocus={(e) => e.target.select()}
             // One underline per digit, the field's only shape (spec §6.5).
             aria-invalid={error ? true : undefined}
-            className="mk-underline w-full text-center font-mono text-h3 font-medium"
+            className="mk-underline w-full px-0 text-center font-mono text-h3 font-medium"
           />
         ))}
       </div>

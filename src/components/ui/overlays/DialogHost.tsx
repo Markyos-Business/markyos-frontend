@@ -200,10 +200,10 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
                   spellCheck={false}
                   aria-invalid={!armed}
                   data-state={armed ? "success" : undefined}
-                  className="mk-underline w-full pe-8"
+                  className="mk-underline w-full pe-space-11"
                 />
                 {armed && (
-                  <Icon name="check" size={16} className="pointer-events-none absolute end-1 text-success" />
+                  <Icon name="check" size={16} className="pointer-events-none absolute end-space-4 text-success" />
                 )}
               </div>
             </label>

@@ -51,7 +51,7 @@ export function PasswordField({
 
   return (
     <div className="flex min-h-field w-full flex-col gap-space-2">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pe-space-4">
         <label htmlFor={id} className={labelClasses}>
           {label}
         </label>
@@ -75,7 +75,7 @@ export function PasswordField({
           // status, and a button should read as the former.
           label={shown ? "Hide password" : "Show password"}
           icon={shown ? "eye-slash" : "eye"}
-          className="absolute inset-e-0 top-1/2 -translate-y-1/2 text-text-muted"
+          className="absolute inset-e-1 top-1/2 -translate-y-1/2 text-text-muted"
         />
       </div>
 

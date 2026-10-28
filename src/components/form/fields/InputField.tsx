@@ -13,7 +13,7 @@ import { Icon } from "../../ui/primitives/Icon";
 const inputClasses = "mk-underline w-full";
 
 /** A field's title: 12px, muted, weight 400. */
-const labelClasses = "cursor-pointer text-caption text-text-muted";
+const labelClasses = "cursor-pointer px-space-4 text-caption text-text-muted";
 
 type FieldLabelProps = { htmlFor?: string; required?: boolean; children: ReactNode };
 
@@ -44,7 +44,7 @@ const FieldNote = ({ id, error, hint }: FieldNoteProps) => {
       // Errors are announced the moment they appear. A hint is not: it is
       // there before you start and repeating it would talk over the field.
       role={error ? "alert" : undefined}
-      className={`text-caption ${error ? "text-danger" : "text-text-faint"}`}
+      className={`px-space-4 text-caption ${error ? "text-danger" : "text-text-faint"}`}
     >
       {note}
     </span>
@@ -79,7 +79,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
   return (
     <div className="flex min-h-field w-full flex-col gap-space-2">
       {(label || labelRight) && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pe-space-4">
           {label && (
             <FieldLabel htmlFor={id} required={inputProps.required}>
               {label}
@@ -93,7 +93,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
           <Icon
             name={icon}
             size={18}
-            className={`pointer-events-none absolute text-text-muted ${iconSide === "start" ? "start-0" : "end-0"}`}
+            className={`pointer-events-none absolute text-text-muted ${iconSide === "start" ? "start-space-4" : "end-space-4"}`}
           />
         )}
         <input
@@ -101,7 +101,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ?? hint ? noteId : undefined}
-          className={`${inputClasses} ${icon ? (iconSide === "start" ? "ps-space-9" : "pe-space-9") : ""}`}
+          className={`${inputClasses} ${icon ? (iconSide === "start" ? "ps-space-11" : "pe-space-11") : ""}`}
         />
       </span>
       <FieldNote id={noteId} error={error} hint={hint} />
