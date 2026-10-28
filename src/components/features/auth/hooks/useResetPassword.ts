@@ -34,6 +34,11 @@ export function useResetPassword() {
   const linkToken = API_ENABLED ? search.get("token") : null;
   // A new account's "set your password" link, rather than a reset.
   const setup = linkToken !== null && search.get("setup") === "1";
+  // Where the link means to land, e.g. the brand an invite was for. Only a
+  // path inside this app: never another site, never a protocol-relative URL.
+  const requested = search.get("next");
+  const next = requested && requested.startsWith("/") && !requested.startsWith("//") ? requested : null;
+  const invited = setup && next?.startsWith("/w/") === true;
   const [step, setStep] = useState<ResetStep>(linkToken ? "confirm" : "request");
   const [email, setEmail] = useState(search.get("email") ?? "");
   const [issued, setIssued] = useState<string | null>(null);
@@ -113,7 +118,7 @@ export function useResetPassword() {
     // make its first brand, anyone else back to their brands.
     if (API_ENABLED) {
       showToast(out.firstTime ? "Password set. Welcome to Markyos." : "Password changed. Other devices are signed out.", "success");
-      router.push(out.firstTime ? "/brands/new" : "/brands");
+      router.push(next ?? (out.firstTime ? "/brands/new" : "/brands"));
       return;
     }
     showToast("Password changed. Sign in with the new one.", "success");
@@ -127,6 +132,7 @@ export function useResetPassword() {
 
   return {
     setup,
+    invited,
     step,
     setStep,
     startOver,

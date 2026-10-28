@@ -14,7 +14,9 @@ export function ResetConfirmStep({ reset }: { reset: ResetState }) {
     <AuthShell
       title={reset.setup ? "Set your password" : "Choose a new password"}
       subtitle={
-        reset.setup
+        reset.invited
+          ? "You've been added to a brand on Markyos. Choose a password to open it."
+          : reset.setup
           ? "The last step: choose the password you'll sign in with."
           : API_ENABLED
           ? "Choose the password you'll sign in with from now on."
@@ -86,7 +88,7 @@ export function ResetConfirmStep({ reset }: { reset: ResetState }) {
         />
 
         <Button type="submit" variant="primary" className="mt-1 w-full" disabled={reset.busy}>
-          {reset.busy ? "Saving…" : reset.setup ? "Set password and continue" : "Set new password"}
+          {reset.busy ? "Saving…" : reset.invited ? "Set password and open the brand" : reset.setup ? "Set password and continue" : "Set new password"}
         </Button>
         <p className="text-[11.5px] leading-[1.5] text-text-faint">
           You&apos;ll be asked to sign in with the new password — changing it doesn&apos;t sign you

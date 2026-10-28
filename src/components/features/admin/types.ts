@@ -3,7 +3,10 @@ import type { AccountRole, AccountType } from "@/types";
 /** `GET /admin/stats/`. */
 export interface AdminStats {
   users: {
+    /** Accounts people have taken up: a password set, or Google. */
     total: number;
+    /** Invited, or signed up, and not through the emailed link yet. */
+    pending: number;
     active: number;
     admins: number;
     new7d: number;

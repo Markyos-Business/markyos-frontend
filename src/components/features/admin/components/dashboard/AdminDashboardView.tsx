@@ -25,8 +25,9 @@ export function AdminDashboardView() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
             <StatTile value={data.users.total} label="Accounts" />
+            <StatTile value={data.users.pending} label="Waiting to join" />
             <StatTile value={data.users.activeLast30d} label="Active in 30 days" />
             <StatTile value={data.users.new7d} label="New this week" />
             <StatTile value={data.brands.total} label="Brands" />
