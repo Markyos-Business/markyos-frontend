@@ -1,7 +1,7 @@
 "use client";
 
 import { Section, StatTile } from "@/components/ui";
-import type { AccountPageState } from "../hooks/useAccountPage";
+import type { AccountPageState } from "../../hooks/useAccountPage";
 
 /** What the account's brands hold, in numbers, and how full each brand is. */
 export function UsageSection({ stats, richness }: AccountPageState["usage"]) {

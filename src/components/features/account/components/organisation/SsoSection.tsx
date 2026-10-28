@@ -2,8 +2,8 @@
 
 import { Button, Row, Section, Switch } from "@/components/ui";
 import { InputField } from "@/components/form";
-import { SSO_PROVIDERS } from "../constants";
-import type { AccountPageState } from "../hooks/useAccountPage";
+import { SSO_PROVIDERS } from "../../constants";
+import type { AccountPageState } from "../../hooks/useAccountPage";
 
 /** Requiring single sign-on, and which provider and domain. */
 export function SsoSection({ enabled, provider, domain, onToggle, onProvider, onDomain }: AccountPageState["sso"]) {

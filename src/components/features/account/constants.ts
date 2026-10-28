@@ -1,4 +1,4 @@
-export type AccountTab = "profile" | "billing" | "organisation";
+import type { AccountTab } from "./types";
 
 export const ACCOUNT_TABS: { key: AccountTab; label: string; icon: string }[] = [
   { key: "profile", label: "Profile", icon: "user" },

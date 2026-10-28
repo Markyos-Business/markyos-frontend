@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { Workspace } from "@/types";
-import { isAccountTab, type AccountTab } from "../constants";
+import { isAccountTab } from "../constants";
+import type { AccountTab } from "../types";
 
 const richnessOf = (w: Workspace) =>
   w.colors.length +

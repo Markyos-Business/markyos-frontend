@@ -2,7 +2,7 @@
 
 import { Button, EmptyHint, Section } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
-import type { AccountPageState } from "../hooks/useAccountPage";
+import type { AccountPageState } from "../../hooks/useAccountPage";
 
 /** The last 30 things that happened on the account, and the full log as JSON. */
 export function AuditLogSection({ entries, hasEntries, onExport }: AccountPageState["audit"]) {

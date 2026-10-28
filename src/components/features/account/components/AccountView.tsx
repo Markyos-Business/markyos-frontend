@@ -4,11 +4,11 @@ import { PageHeader, Tabs } from "@/components/ui";
 import { StudioHeader } from "@/components/layout";
 import { ACCOUNT_TABS } from "../constants";
 import { useAccountPage } from "../hooks/useAccountPage";
-import { AuditLogSection } from "./AuditLogSection";
-import { BillingPanel } from "./BillingPanel";
-import { ProfilePanel } from "./ProfilePanel";
-import { SsoSection } from "./SsoSection";
-import { UsageSection } from "./UsageSection";
+import { BillingPanel } from "./billing/BillingPanel";
+import { AuditLogSection } from "./organisation/AuditLogSection";
+import { SsoSection } from "./organisation/SsoSection";
+import { UsageSection } from "./organisation/UsageSection";
+import { ProfilePanel } from "./profile/ProfilePanel";
 
 /** The account: profile, subscription and the organisation-wide controls. */
 export function AccountView() {

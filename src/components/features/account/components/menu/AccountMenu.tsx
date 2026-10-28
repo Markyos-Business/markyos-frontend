@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, Icon, Popover } from "@/components/ui";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { API_ENABLED } from "@/lib/api/client";
+import type { MenuLink } from "../../types";
 
 /**
  * The way to your own account, from wherever you are.
@@ -17,8 +18,6 @@ import { API_ENABLED } from "@/lib/api/client";
  * what it looks like it does, and names who is signed in while it's open,
  * which is the other half of what people open an avatar for.
  */
-type MenuLink = { href: string; label: string; arLabel: string; icon: string };
-
 export function AccountMenu({
   isAr = false,
   controls,
