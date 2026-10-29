@@ -89,17 +89,30 @@ function toApiError(status: number, data: unknown, retryAfter?: string | null): 
  * One refresh at a time. Several requests can find the access token expired
  * at once; without this each would rotate the refresh cookie, and every
  * rotation after the first presents a token the server has just blacklisted.
+ * Other tabs share the cookie, so the lock makes them wait their turn too:
+ * the second tab then sends the cookie the first one was just given.
  */
 let refreshing: Promise<boolean> | null = null;
+
+function inRefreshLock(run: () => Promise<Response>): Promise<Response> {
+  if (typeof navigator === "undefined" || !navigator.locks) return run();
+  const locks = navigator.locks;
+  // The lock is held until `run` settles, because the callback returns its promise.
+  return new Promise((resolve, reject) => {
+    void locks.request("markyos-refresh", () => run().then(resolve, reject));
+  });
+}
 
 /** Swap the refresh cookie for a new access token. False when not signed in. */
 export function refreshSession(): Promise<boolean> {
   refreshing ??= (async () => {
     try {
-      const res = await fetch(`${API_URL}/auth/token/refresh/`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await inRefreshLock(() =>
+        fetch(`${API_URL}/auth/token/refresh/`, {
+          method: "POST",
+          credentials: "include",
+        })
+      );
       if (!res.ok) {
         accessToken = null;
         return false;
