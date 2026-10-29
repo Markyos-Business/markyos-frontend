@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Section } from "@/components/ui";
+import { Avatar, Button, Section } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { initialsFor } from "@/lib/utils";
 import type { Account } from "@/types";
@@ -44,9 +44,33 @@ export function ProfileSection({ account, details }: { account: Account; details
             if (e.key === "Escape") details.resetEmail();
           }}
           placeholder="you@studio.com"
-          hint="This is the address you sign in with."
+          hint={
+            details.pendingEmail
+              ? undefined
+              : "This is the address you sign in with. A new one is confirmed from its inbox first."
+          }
         />
       </div>
+
+      {details.pendingEmail && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-widget bg-surface-sunken px-space-6 py-space-4 shadow-edge-soft">
+          <p className="text-caption text-text-muted">
+            Waiting for confirmation:{" "}
+            <span dir="ltr" className="font-medium text-text">
+              {details.pendingEmail}
+            </span>
+            . Until then you sign in with {account.email}.
+          </p>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={details.resendPending}>
+              Resend
+            </Button>
+            <Button type="button" variant="link" onClick={details.cancelPending}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </Section>
   );
 }

@@ -14,6 +14,7 @@ export interface ApiAccount {
   isAdmin: boolean;
   avatarUrl: string | null;
   twoFactorEnabled: boolean;
+  pendingEmail: string | null;
 }
 
 export interface Strength {

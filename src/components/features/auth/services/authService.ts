@@ -32,6 +32,7 @@ export function toAccount(a: ApiAccount): Account {
     isAdmin: a.isAdmin,
     avatarUrl: a.avatarUrl,
     twoFactorEnabled: a.twoFactorEnabled,
+    pendingEmail: a.pendingEmail,
   };
 }
 
@@ -100,6 +101,22 @@ export async function logout(): Promise<void> {
 
 export async function fetchMe(): Promise<Account> {
   return toAccount(await api<ApiAccount>("/auth/me/"));
+}
+
+/** Sends the confirmation for a pending email change again. */
+export async function resendEmailChange(): Promise<Account> {
+  return toAccount(await api<ApiAccount>("/auth/email-change/", { method: "POST" }));
+}
+
+/** Drops a pending email change; the current email stays. */
+export async function cancelEmailChange(): Promise<Account> {
+  return toAccount(await api<ApiAccount>("/auth/email-change/", { method: "DELETE" }));
+}
+
+/** The link from the new inbox. Works signed out; resolves to the email now on the account. */
+export async function confirmEmailChange(token: string): Promise<string> {
+  const res = await api<{ email: string }>("/auth/email-change/confirm/", { method: "POST", body: { token } });
+  return res.email;
 }
 
 export async function updateMe(

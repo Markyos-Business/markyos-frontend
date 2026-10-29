@@ -228,8 +228,16 @@ interface AppContextValue {
    */
   signInWithGoogle: (body: GoogleSignInBody) => Promise<{ error?: string; pending?: GooglePendingSignup }>;
   logout: () => void;
-  /** Edits the signed-in person's own details. Returns an error, or null. */
+  /**
+   * Edits the signed-in person's own details. Returns an error, or null.
+   * With the backend a new email isn't switched here: it waits as the
+   * account's `pendingEmail` until the new inbox confirms it.
+   */
   updateAccount: (patch: Partial<Pick<Account, "name" | "email">>) => Promise<string | null>;
+  /** Sends the pending email change's confirmation again, or drops it. Resolves to an error, or null. */
+  pendingEmailAction: (action: "resend" | "cancel") => Promise<string | null>;
+  /** The link from the new inbox; works signed out. */
+  confirmEmailChange: (token: string) => Promise<{ error?: string; email?: string }>;
   /** Changes the password. `current` is always required. */
   setAccountPassword: (next: string, current?: string) => Promise<string | null>;
   /**
@@ -1060,6 +1068,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [pullServerWorkspaces]
   );
+
+  /** Resend or cancel a pending email change; both answer with the account. */
+  const pendingEmailAction = useCallback(async (action: "resend" | "cancel"): Promise<string | null> => {
+    try {
+      const account = await (action === "resend" ? authApi.resendEmailChange() : authApi.cancelEmailChange());
+      setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
+      return null;
+    } catch (err) {
+      return apiMessage(err);
+    }
+  }, []);
+
+  const confirmEmailChange = useCallback(async (token: string): Promise<{ error?: string; email?: string }> => {
+    try {
+      const email = await authApi.confirmEmailChange(token);
+      // Signed in here too: show the new email straight away.
+      if (stateRef.current.session) {
+        const account = await authApi.fetchMe().catch(() => null);
+        if (account) setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
+      }
+      return { email };
+    } catch (err) {
+      return { error: apiMessage(err) };
+    }
+  }, []);
 
   const updateAccount = useCallback(
     async (patch: Partial<Pick<Account, "name" | "email">>): Promise<string | null> => {
@@ -3281,6 +3314,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       resendVerification,
       logout,
       updateAccount,
+      pendingEmailAction,
+      confirmEmailChange,
       setAccountPassword,
       requestPasswordReset,
       resetPassword,
@@ -3424,6 +3459,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       resendVerification,
       logout,
       updateAccount,
+      pendingEmailAction,
+      confirmEmailChange,
       setAccountPassword,
       requestPasswordReset,
       resetPassword,

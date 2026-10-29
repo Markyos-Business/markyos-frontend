@@ -1105,6 +1105,8 @@ export interface Account {
   isAdmin?: boolean;
   avatarUrl?: string | null;
   twoFactorEnabled?: boolean;
+  /** A new email asked for and not yet confirmed from its inbox (server only). */
+  pendingEmail?: string | null;
 }
 
 export type AccountRole = "admin" | "member";

@@ -2,6 +2,7 @@
 // imports from "@/features/auth", never from a file inside it.
 
 // Screens: what the (auth) pages render.
+export { ConfirmEmailView } from "./components/confirm-email/ConfirmEmailView";
 export { LoginView } from "./components/login/LoginView";
 export { ResetView } from "./components/reset/ResetView";
 export { SignupView } from "./components/signup/SignupView";

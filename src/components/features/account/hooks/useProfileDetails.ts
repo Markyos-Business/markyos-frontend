@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { EMAIL_RE } from "@/components/features/auth";
+import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
 
 /**
@@ -14,7 +15,7 @@ import type { Account } from "@/types";
  * values.
  */
 export function useProfileDetails(account: Account) {
-  const { updateAccount } = useApp();
+  const { updateAccount, pendingEmailAction } = useApp();
   const { showToast } = useToast();
   const [name, setName] = useState(account.name);
   const [email, setEmail] = useState(account.email);
@@ -53,7 +54,24 @@ export function useProfileDetails(account: Account) {
       return;
     }
     setEmailError(undefined);
+    if (API_ENABLED) {
+      // Not switched yet: the new inbox confirms it first, and the field
+      // goes back to the email that still signs in.
+      setEmail(account.email);
+      showToast(`Check ${value} for a link to confirm the change.`, "success");
+      return;
+    }
     showToast("Email updated — you'll sign in with this from now on.", "success");
+  }
+
+  async function resendPending() {
+    const failed = await pendingEmailAction("resend");
+    showToast(failed ?? `Sent again to ${account.pendingEmail}.`, failed ? "danger" : "success");
+  }
+
+  async function cancelPending() {
+    const failed = await pendingEmailAction("cancel");
+    showToast(failed ?? "Email change cancelled.", failed ? "danger" : "success");
   }
 
   return {
@@ -64,6 +82,9 @@ export function useProfileDetails(account: Account) {
     email,
     setEmail,
     emailError,
+    pendingEmail: account.pendingEmail ?? null,
+    resendPending,
+    cancelPending,
     commitEmail,
     resetEmail: () => {
       setEmail(account.email);
