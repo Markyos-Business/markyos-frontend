@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Popover } from "../../ui/overlays/Popover";
 import { Icon } from "../../ui/primitives/Icon";
 import { Button } from "../../ui/buttons/Button";
+import { formatDayMonth } from "../../ui/date/dateFormat";
 import { useUiStrings } from "../../ui/i18n/uiStrings";
 
 type DateRange = { from?: string; to?: string };
@@ -25,7 +26,7 @@ const parse = (s: string) => new Date(`${s}T00:00:00`);
 const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButtonProps) => {
   const { t, lang } = useUiStrings();
   // "12 Sep", never US order (spec §7); Western digits in Arabic too.
-  const fmt = new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-nu-latn-ca-gregory" : "en-GB", { day: "numeric", month: "short" });
+  const fmt = { format: (d: Date) => formatDayMonth(d, lang) };
   const [draft, setDraft] = useState<DateRange>(value);
   const [month, setMonth] = useState(() => (value.from ? parse(value.from) : new Date()));
   const text = value.from ? `${fmt.format(parse(value.from))} – ${value.to ? fmt.format(parse(value.to)) : "…"}` : placeholder ?? t.anyTime;

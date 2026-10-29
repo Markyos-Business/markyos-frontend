@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Tooltip } from "../tooltip/Tooltip";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "success-soft" | "danger-soft" | "danger" | "light" | "solid" | "link";
@@ -64,7 +65,15 @@ type CommonProps = {
 };
 
 type ButtonElementProps = CommonProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & { href?: undefined };
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
+    href?: undefined;
+    /**
+     * Off, and why: the button stays focusable (`aria-disabled`, clicks
+     * ignored) so a keyboard reaches it and hears the reason, shown as its
+     * tooltip. A plain `disabled` button can't be focused, so it can't explain.
+     */
+    disabledReason?: string;
+  };
 
 type ButtonLinkProps = CommonProps & { href: string };
 
@@ -95,9 +104,26 @@ const Button = (props: ButtonProps) => {
     active: _a,
     block: _b,
     className: _c,
+    disabledReason,
     ...buttonProps
   } = props as ButtonElementProps;
   void [_href, _v, _s, _i, _a, _b, _c];
+  if (disabledReason) {
+    return (
+      <Tooltip content={disabledReason}>
+        <button
+          {...buttonProps}
+          type={buttonProps.type ?? "button"}
+          aria-disabled="true"
+          onClick={(e) => e.preventDefault()}
+          className={`${cls} cursor-not-allowed`}
+        >
+          {icon}
+          {children}
+        </button>
+      </Tooltip>
+    );
+  }
   return (
     <button {...buttonProps} className={cls}>
       {icon}

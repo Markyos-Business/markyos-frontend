@@ -1,17 +1,6 @@
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
-import type { AccountRole } from "@/types";
-
-type Tone = "neutral" | "accent" | "success" | "warning" | "danger";
-
-export const ROLE_LABELS: Record<AccountRole, string> = {
-  admin: "Admin",
-  member: "Member",
-};
-
-export const ROLE_TONES: Record<AccountRole, Tone> = {
-  admin: "accent",
-  member: "neutral",
-};
+import type { BadgeTone } from "@/components/ui";
+import type { AdminUserStatus } from "./types";
 
 /** Account types, as the dashboard breakdown names them; admins have none. */
 export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
@@ -19,11 +8,11 @@ export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   none: "No type (admins)",
 };
 
-export const STATUS_LABELS = { active: "Active", inactive: "Deactivated" } as const;
-
-export const STATUS_TONES: Record<keyof typeof STATUS_LABELS, Tone> = {
+/** A user's status dot; the word beside it says the same. */
+export const STATUS_TONE: Record<AdminUserStatus, BadgeTone> = {
   active: "success",
-  inactive: "danger",
+  waiting: "warning",
+  deactivated: "danger",
 };
 
 export const STAGE_LABELS: Record<string, string> = {
@@ -42,47 +31,38 @@ export const PLAN_LABELS: Record<string, string> = {
   pass: "One-time pass",
 };
 
-export const BRAND_ROLE_LABELS: Record<string, string> = {
-  owner: "Owner",
-  editor: "Editor",
-  viewer: "Viewer",
-  client: "Client",
-};
-
-export const ORDERINGS = [
-  { value: "-created_at", label: "Newest" },
-  { value: "created_at", label: "Oldest" },
-  { value: "-last_login", label: "Last active" },
-  { value: "email", label: "Email A–Z" },
-] as const;
-
-/** The admin sidebar. Each new admin page adds its link here. */
+/** The admin sidebar, in both languages. Each new admin page adds its link here. */
 export const ADMIN_NAV = [
   {
     key: "overview",
-    label: "Overview",
-    items: [{ key: "dashboard", label: "Dashboard", icon: "chart-line", href: "/admin" }],
+    label: { en: "Overview", ar: "نظرة عامة" },
+    items: [{ key: "dashboard", label: { en: "Dashboard", ar: "لوحة المعلومات" }, icon: "chart-line", href: "/admin" }],
   },
   {
     key: "manage",
-    label: "Manage",
-    items: [{ key: "users", label: "Users", icon: "users", href: "/admin/users" }],
+    label: { en: "Manage", ar: "الإدارة" },
+    items: [{ key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" }],
   },
 ];
+
+/** The admin shell's own words. */
+export const SHELL_COPY = {
+  en: { area: "Admin", back: "Back to studio", language: "Interface language" },
+  ar: { area: "الإدارة", back: "العودة إلى الاستوديو", language: "لغة الواجهة" },
+} as const;
 
 /** Brand stages in the order a brand moves through them. */
 export const STAGE_ORDER = ["discovery", "strategy", "design", "review", "delivered", "live"];
 
-/** Accounts per page on the users list. */
-export const PAGE_SIZE = 25;
+/** What each role may do, for the read-only Permissions tab. Keys are the copy's `permissions.items`. */
+export const ROLE_PERMISSIONS = {
+  ownBrands: { admin: true, member: true },
+  adminArea: { admin: true, member: false },
+  seeAccounts: { admin: true, member: false },
+  invite: { admin: true, member: false },
+  changeRoles: { admin: true, member: false },
+  removeAccounts: { admin: true, member: false },
+} as const;
 
-/** The users table; narrower screens drop the less useful columns. */
-export const USER_COLUMNS = [
-  { key: "person", label: "Person" },
-  { key: "type", label: "Type" },
-  { key: "role", label: "Role", className: "hidden sm:table-cell" },
-  { key: "status", label: "Status" },
-  { key: "brands", label: "Brands", className: "hidden md:table-cell" },
-  { key: "joined", label: "Joined", className: "hidden lg:table-cell" },
-  { key: "last", label: "Last signed in", className: "hidden lg:table-cell" },
-];
+/** The account page's tabs, in order. */
+export const USER_TABS = ["overview", "activity", "permissions", "sessions"] as const;

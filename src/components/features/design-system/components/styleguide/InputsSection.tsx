@@ -57,10 +57,7 @@ const InputsSection = ({ c }: { c: StyleGuideCopy }) => {
           />
           <DateRangeButton
             value={{ from: values.from || undefined, to: values.to || undefined }}
-            onChange={(range) => {
-              filters.set("from", range.from ?? "");
-              filters.set("to", range.to ?? "");
-            }}
+            onChange={(range) => filters.setMany({ from: range.from ?? "", to: range.to ?? "" })}
           />
         </FilterBar>
         <p dir="ltr" className="text-caption text-text-muted">

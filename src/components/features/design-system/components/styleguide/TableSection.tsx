@@ -54,6 +54,7 @@ const TableSection = ({ c }: { c: StyleGuideCopy }) => {
           columns={columns}
           rows={state === "loading" ? undefined : state === "empty" ? [] : DEMO_USERS}
           getRowId={(u) => u.id}
+          getRowLabel={(u) => u.name}
           loading={state === "loading"}
           error={state === "error" ? c.tableError : null}
           onRetry={() => setState("ready")}

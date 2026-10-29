@@ -68,6 +68,15 @@ const FeedbackSection = ({ c, isAr }: { c: StyleGuideCopy; isAr: boolean }) => {
         </Button>
       </Demo>
 
+      <Demo name="Button · disabledReason" className="flex flex-wrap gap-space-4">
+        <Button variant="danger" icon={<Icon name="trash" size={18} />} disabledReason={c.table.lastAdmin}>
+          {c.confirm}
+        </Button>
+        <Button variant="outline" disabledReason={c.table.lastAdmin}>
+          {c.table.deactivate}
+        </Button>
+      </Demo>
+
       <div className="grid gap-5 lg:grid-cols-2">
         <Demo name="EmptyState">
           <EmptyState icon="search" title={c.emptyTitle} description={c.emptyBody} />

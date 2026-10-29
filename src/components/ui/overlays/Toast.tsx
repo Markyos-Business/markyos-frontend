@@ -76,7 +76,9 @@ const ToastProvider = ({ children }: ToastProviderProps) => {
           root, outside the workspace shell's own `dir`, which is why that shell
           also stamps the direction onto `<html>` — without it a logical
           property here resolves against an LTR document and does nothing. */}
-      <div className="pointer-events-none fixed bottom-6 end-6 z-toast flex flex-col items-end gap-2">
+      {/* A polite live region: each toast is read out when it appears,
+          without cutting off what the person is doing. */}
+      <div role="status" aria-live="polite" className="pointer-events-none fixed bottom-6 end-6 z-toast flex flex-col items-end gap-2">
         {items.map((item) => (
           <div
             key={item.id}

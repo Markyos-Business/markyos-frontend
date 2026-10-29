@@ -6,7 +6,9 @@ file inside it. The one exception is media (`@/components/ui/media`), which
 stays out of the main barrel because it imports from it.
 
 Before writing a component, look here: if one of these fits or can be
-extended, use it.
+extended, use it. The dashboard pieces (StatCard, ChartCard, DataTable,
+FilterBar, FormDialog and the rest) are documented in `docs/components.md`,
+and shown live at `/dev/components`.
 
 ## Buttons — `ui/buttons`
 

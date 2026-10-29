@@ -25,13 +25,24 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
   const initial = typeof rest.defaultValue === "string" ? rest.defaultValue : "";
   const [text, setText] = useState(initial);
   const debounced = onDebouncedChange !== undefined;
+  // What the caller already has. The text it starts with isn't news, and
+  // reporting it would reset whatever the caller resets on a new search.
+  const sent = useRef(initial);
+  // The callback as of the latest render. The wait outlives the render that
+  // started it, and an old callback can hold old state: a filter chosen
+  // during the pause would be written over by the search it closed over.
+  const latest = useRef(onDebouncedChange);
+  useEffect(() => {
+    latest.current = onDebouncedChange;
+  });
 
   useEffect(() => {
-    if (!debounced) return;
-    const id = window.setTimeout(() => onDebouncedChange?.(text), debounceMs);
+    if (!debounced || text === sent.current) return;
+    const id = window.setTimeout(() => {
+      sent.current = text;
+      latest.current?.(text);
+    }, debounceMs);
     return () => window.clearTimeout(id);
-    // Only the text restarts the wait; a new callback each render shouldn't.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, debounceMs, debounced]);
 
   useEffect(() => {

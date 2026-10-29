@@ -10,6 +10,8 @@ import { TableLoadingRow, cellClasses, rowClasses } from "./Table";
 type DataColumn<T> = {
   key: string;
   header: string;
+  /** Keep the header for screen readers only, e.g. over a column of buttons. Default false. */
+  hideHeader?: boolean;
   cell: (row: T) => ReactNode;
   /** Makes the column sortable on the page's own rows (client-side). */
   sortValue?: (row: T) => string | number | null | undefined;
@@ -27,6 +29,8 @@ type DataTableProps<T> = {
   /** `undefined` while the first load is in flight. */
   rows: T[] | undefined;
   getRowId: (row: T) => string;
+  /** Names a row for its checkbox and menu, e.g. the person's name. Default: none. */
+  getRowLabel?: (row: T) => string;
   /** What a row is, plural: "users". */
   itemLabel: string;
   loading?: boolean;
@@ -58,7 +62,7 @@ type DataTableProps<T> = {
  * Scrolls sideways on a phone. Pages and sorts itself unless the server does.
  */
 const DataTable = <T,>(props: DataTableProps<T>) => {
-  const { label, columns, rows, getRowId, itemLabel, loading = false, error, onRetry, empty, onRowClick, rowActions } = props;
+  const { label, columns, rows, getRowId, getRowLabel, itemLabel, loading = false, error, onRetry, empty, onRowClick, rowActions } = props;
   const { selectable = false, bulkActions, paging, pageSizes = [10, 20, 50], stickyHeader = true, className = "" } = props;
   const { t } = useUiStrings();
   const [ownSort, setOwnSort] = useState<SortState>(null);
@@ -120,7 +124,7 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
               )}
               {columns.map((c) => (
                 <th key={c.key} scope="col" aria-sort={sort?.key === c.key ? (sort.dir === "asc" ? "ascending" : "descending") : undefined} className={`whitespace-nowrap bg-surface-2 px-space-6 py-space-4 text-start text-caption font-normal text-text-muted ${c.className ?? ""}`}>
-                  {c.sortValue || c.sortable ? <SortHeader label={c.header} sortKey={c.key} sort={sort} onSort={onSort} /> : c.header}
+                  {c.sortValue || c.sortable ? <SortHeader label={c.header} sortKey={c.key} sort={sort} onSort={onSort} /> : c.hideHeader ? <span className="sr-only">{c.header}</span> : c.header}
                 </th>
               ))}
               {rowActions && <th scope="col" className="w-12 bg-surface-2"><span className="sr-only">{t.rowActions}</span></th>}
@@ -137,6 +141,8 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
               visible.map((row) => {
                 const id = getRowId(row);
                 const isSelected = selected.includes(id);
+                const rowName = getRowLabel?.(row);
+                const named = (base: string) => (rowName ? `${base}: ${rowName}` : base);
                 return (
                   <tr
                     key={id}
@@ -148,7 +154,7 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
                   >
                     {selectable && (
                       <td className={`${cellClasses} w-12`} onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" aria-label={t.selectRow} checked={isSelected} onChange={() => toggle(id)} className={checkboxClasses} />
+                        <input type="checkbox" aria-label={named(t.selectRow)} checked={isSelected} onChange={() => toggle(id)} className={checkboxClasses} />
                       </td>
                     )}
                     {columns.map((c) => (
@@ -156,7 +162,7 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
                     ))}
                     {rowActions && (
                       <td className={`${cellClasses} w-12`} onClick={(e) => e.stopPropagation()}>
-                        <ActionsDropdown iconOnly label={t.rowActions} items={rowActions(row)} />
+                        <ActionsDropdown iconOnly label={named(t.rowActions)} items={rowActions(row)} />
                       </td>
                     )}
                   </tr>

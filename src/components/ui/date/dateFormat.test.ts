@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, parseDate } from "./dateFormat";
+import { formatDate, formatDayMonth, parseDate } from "./dateFormat";
 
 const d = new Date("2026-06-23T14:30:00Z");
 
@@ -27,4 +27,11 @@ describe("formatDate", () => {
     expect(formatDate(new Date(d.getTime() - 5 * 60_000), "relative", "en", d.getTime())).toBe("5 minutes ago");
     expect(formatDate(new Date(d.getTime() - 86_400_000), "relative", "en", d.getTime())).toBe("yesterday");
   });
+});
+
+describe("formatDayMonth", () => {
+  const sep = new Date("2026-09-12T10:00:00Z");
+  it("writes Sep, not Sept", () => expect(formatDayMonth(sep, "en")).toBe("12 Sep"));
+  it("adds the year when asked", () => expect(formatDayMonth(sep, "en", true)).toBe("12 Sep 2026"));
+  it("keeps Western digits in Arabic", () => expect(formatDayMonth(sep, "ar")).toMatch(/^12 \S+$/));
 });

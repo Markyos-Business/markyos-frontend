@@ -42,5 +42,17 @@ const formatDate = (date: Date, format: DateFormat, locale: string, now?: number
   return FORMAT_OPTIONS[format].hour12 ? formatted.replace(/\b(am|pm)\b/i, (m) => m.toUpperCase()) : formatted;
 };
 
-export { formatDate, formatRelative, parseDate };
+/**
+ * "12 Sep", or "31 Dec 2026" with the year: day first, a three-letter month
+ * (spec §7). Built from parts because en-GB writes "Sept"; Arabic keeps
+ * Western digits and the Gregorian calendar.
+ */
+const formatDayMonth = (date: Date, lang: "en" | "ar", withYear = false): string => {
+  const locale = lang === "ar" ? "ar-SA-u-nu-latn-ca-gregory" : "en-US";
+  const parts = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).formatToParts(date);
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return [part("day"), part("month"), withYear ? part("year") : ""].filter(Boolean).join(" ");
+};
+
+export { formatDate, formatDayMonth, formatRelative, parseDate };
 export type { DateFormat };

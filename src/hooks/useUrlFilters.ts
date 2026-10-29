@@ -48,6 +48,9 @@ export function useUrlFilters<K extends string>(defaults: Record<K, string>) {
     active,
     clear,
     set: (key: K, value: string) => write({ [key]: value }),
+    /** Several at once, e.g. a date range's two ends: two `set`s in a row
+     *  would each start from the same URL, and the second would undo the first. */
+    setMany: (patch: Partial<Record<K, string>>) => write(patch),
     setPage: (p: number) => write({ page: String(p) }),
   };
 }

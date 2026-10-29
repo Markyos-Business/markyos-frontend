@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UiStringsProvider } from "@/components/ui";
 import { SegmentedToggle } from "@/components/form";
 import { useTheme } from "@/contexts/ThemeProvider";
@@ -24,6 +24,14 @@ const StyleGuide = () => {
   const [lang, setLang] = useState<"en" | "ar">("en");
   const isAr = lang === "ar";
   const c = STYLE_GUIDE_COPY[lang];
+
+  // Toasts and dialogs sit at the document root; they take the direction
+  // from <html>.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute("dir", isAr ? "rtl" : "ltr");
+    return () => root.removeAttribute("dir");
+  }, [isAr]);
 
   return (
     <UiStringsProvider lang={lang}>

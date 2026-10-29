@@ -4,6 +4,7 @@
 // Screens: what the (admin) pages render.
 export { AdminDashboardView } from "./components/dashboard/AdminDashboardView";
 export { AdminUsersView } from "./components/users/AdminUsersView";
+export { AdminUserView } from "./components/user-detail/AdminUserView";
 
 // The admin area's layout: sidebar, top bar, and the members-out guard.
 export { AdminShell } from "./components/shared/AdminShell";
