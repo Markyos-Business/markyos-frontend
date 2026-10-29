@@ -46,6 +46,7 @@ export function AppSidebar({
   titleBadge,
   sections,
   footer = [],
+  footerSlot,
   storageKey,
   isAr = false,
   collapseLabels = { collapse: "Collapse sidebar", expand: "Expand sidebar" },
@@ -60,6 +61,8 @@ export function AppSidebar({
   sections: SidebarSection[];
   /** Pinned to the bottom, e.g. Settings. */
   footer?: SidebarItem[];
+  /** Under the footer links, e.g. the signed-in person's card. Hidden on the collapsed rail. */
+  footerSlot?: ReactNode;
   /** Where the collapsed preference is remembered, per sidebar. */
   storageKey: string;
   isAr?: boolean;
@@ -204,6 +207,7 @@ export function AppSidebar({
       ))}
 
       {footer.map((item, i) => renderItem(item, `shrink-0 ${i === 0 ? "mt-auto" : ""}`))}
+      {footerSlot && !collapsed && <div className={`shrink-0 pt-space-4 ${footer.length ? "" : "mt-auto"}`}>{footerSlot}</div>}
     </nav>
   );
 }

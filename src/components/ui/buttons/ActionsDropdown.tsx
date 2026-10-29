@@ -13,6 +13,9 @@ type ActionItem = {
   onSelect: () => void;
   /** Colours the item's icon tile; `danger` for anything destructive. */
   tone?: ActionTone;
+  /** Shown but not choosable; `reason` says why, as its tooltip. */
+  disabled?: boolean;
+  reason?: string;
 };
 
 type ActionsDropdownProps = {
@@ -20,6 +23,8 @@ type ActionsDropdownProps = {
   /** The trigger's text and accessible name. */
   label?: string;
   align?: "start" | "end";
+  /** Just the ⋯ glyph, square, with `label` as its accessible name: a table row's menu. Default false. */
+  iconOnly?: boolean;
 };
 
 /**
@@ -27,17 +32,23 @@ type ActionsDropdownProps = {
  * so it closes on a choice, an outside click and Escape, returns focus to the
  * trigger, and hangs off the same edge of it on either side of the page.
  */
-const ActionsDropdown = ({ items, label = "Actions", align = "end" }: ActionsDropdownProps) => (
+const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = false }: ActionsDropdownProps) => (
   <Popover
     label={label}
     align={align}
     width={208}
     button={
-      // The outline button's look, at the compact control height.
-      <span className="flex h-control-sm items-center gap-space-3 rounded-lg bg-ink-soft px-space-5 text-body font-medium text-text shadow-edge">
-        {label}
-        <Icon name="ellipsis-h" size={18} />
-      </span>
+      iconOnly ? (
+        <span className="flex size-control-sm items-center justify-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+          <Icon name="ellipsis-h" size={18} />
+        </span>
+      ) : (
+        // The outline button's look, at the compact control height.
+        <span className="flex h-control-sm items-center gap-space-3 rounded-lg bg-ink-soft px-space-5 text-body font-medium text-text shadow-edge">
+          {label}
+          <Icon name="ellipsis-h" size={18} />
+        </span>
+      )
     }
   >
     {(close) => (
@@ -48,11 +59,14 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end" }: ActionsDro
               key={item.label}
               type="button"
               role="menuitem"
+              disabled={item.disabled}
+              aria-disabled={item.disabled}
+              title={item.disabled ? item.reason : undefined}
               onClick={() => {
                 close();
                 item.onSelect();
               }}
-              className="flex w-full items-center gap-space-4 rounded-lg px-space-3 py-space-2 text-start text-body"
+              className="flex w-full items-center gap-space-4 rounded-lg px-space-3 py-space-2 text-start text-body disabled:cursor-not-allowed disabled:opacity-50"
             >
               <span className={`flex size-9.5 shrink-0 items-center justify-center rounded-lg ${SOFT_VARIANT_CLASSES[item.tone ?? "accent"]}`}>
                 <Icon name={item.icon} size={18} />

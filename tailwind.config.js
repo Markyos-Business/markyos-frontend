@@ -103,6 +103,10 @@ const config = {
         "warning-soft": "var(--warning-soft, light-dark(#fbf3e6, rgba(255, 187, 0, 0.14)))",
         "danger-soft": "var(--danger-soft, light-dark(#fdecec, rgba(255, 0, 102, 0.14)))",
         "info-soft": "var(--info-soft, light-dark(rgba(0, 74, 95, 0.08), rgba(0, 204, 255, 0.14)))",
+        // Indigo as a tag tone (Tag `indigo`): the ink and its 14% tint. The
+        // fixed secondary indigo below stays for charts.
+        indigo: "var(--indigo, light-dark(#4c28c0, #c5b3ff))",
+        "indigo-soft": "var(--indigo-soft, light-dark(#f0ebff, rgba(138, 88, 255, 0.16)))",
         "attention-soft": "var(--attention-soft, light-dark(rgba(122, 52, 0, 0.07), rgba(255, 179, 122, 0.12)))",
         // A neutral soft fill (the outline button, a progress track) and a
         // switch's off track.

@@ -139,6 +139,7 @@ const TINTED = [
   ["attention", "attention-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
   ["danger", "danger-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
   ["info", "info-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
+  ["indigo", "indigo-soft", SMALL_TEXT_FLOOR, BADGE_GROUNDS],
 ];
 
 /**

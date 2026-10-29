@@ -56,6 +56,8 @@ export const darkTokens = {
   /* Pressed, and where the glow falls off to. */
   "--accent-deep": "#0055ff",
   "--accent-soft": "rgba(0, 153, 255, 0.14)",
+  "--indigo": "#c5b3ff",
+  "--indigo-soft": "rgba(138, 88, 255, 0.16)",
   "--accent-ring": "rgba(0, 153, 255, 0.18)",
   /*
    * The accent, as *text on its own tint*.
@@ -361,6 +363,8 @@ export const lightTokens = {
   "--accent": "#0055ff",
   "--accent-deep": "#0044cc",
   "--accent-soft": "#e6eeff",
+  "--indigo": "#4c28c0",
+  "--indigo-soft": "#f0ebff",
   "--accent-ring": "rgba(0, 85, 255, 0.22)",
   /* Same job as the dark theme's, solved the other way: on light the tint
    * darkens its ground, so the ink has to go deeper rather than brighter. */

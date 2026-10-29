@@ -5,6 +5,87 @@
  * Tailwind only emits when it finds the class name written out.
  */
 export const iconStyles = [
+  /* Dashboard kit: trends, sorting, dates, filters and the people screens. */
+  {
+    ".la-arrow-circle-up": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 16.5v-9M8.5 11 12 7.5l3.5 3.5\"/></svg>')",
+    },
+  },
+  {
+    ".la-arrow-circle-down": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.5v9M8.5 13 12 16.5l3.5-3.5\"/></svg>')",
+    },
+  },
+  {
+    ".la-minus-circle": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M8 12h8\"/></svg>')",
+    },
+  },
+  {
+    ".la-sort": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9.5 12 5.5l4 4M8 14.5l4 4 4-4\"/></svg>')",
+    },
+  },
+  {
+    ".la-sort-up": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 10 12 6l4 4\"/><path d=\"M8 14.5l4 4 4-4\" stroke-opacity=\".35\"/></svg>')",
+    },
+  },
+  {
+    ".la-sort-down": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9.5 12 5.5l4 4\" stroke-opacity=\".35\"/><path d=\"M8 14l4 4 4-4\"/></svg>')",
+    },
+  },
+  {
+    ".la-calendar": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2\"/><path d=\"M3.5 9.5h17M8 3v4M16 3v4\"/></svg>')",
+    },
+  },
+  {
+    ".la-ellipsis-v": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5.5h.01M12 12h.01M12 18.5h.01\" stroke-width=\"2.6\"/></svg>')",
+    },
+  },
+  {
+    ".la-file-export": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5z\"/><path d=\"M13.5 3.5v5h5M12 17.5v-6M9.5 14 12 11.5l2.5 2.5\"/></svg>')",
+    },
+  },
+  {
+    ".la-filter": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5.5h16l-6.2 7.3v5.4l-3.6 1.8v-7.2z\"/></svg>')",
+    },
+  },
+  {
+    ".la-user-plus": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9.5\" cy=\"8\" r=\"3.5\"/><path d=\"M3.5 19.5a6 6 0 0 1 12 0M18.5 8v6M15.5 11h6\"/></svg>')",
+    },
+  },
+  {
+    ".la-user-slash": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"8\" r=\"3.5\"/><path d=\"M6 19.5a6 6 0 0 1 11.2-3M4 4l16 16\"/></svg>')",
+    },
+  },
+  {
+    ".la-user-check": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9.5\" cy=\"8\" r=\"3.5\"/><path d=\"M3.5 19.5a6 6 0 0 1 12 0M15.5 11.5l2 2 4-4\"/></svg>')",
+    },
+  },
+  {
+    ".la-user-shield": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9.5\" cy=\"8\" r=\"3.5\"/><path d=\"M3.5 19.5a6 6 0 0 1 9-5.2M18 12.5l3 1.2v2.6c0 1.9-1.3 3.4-3 4.2-1.7-.8-3-2.3-3-4.2v-2.6z\"/></svg>')",
+    },
+  },
+  {
+    ".la-laptop": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"10\" rx=\"1.5\"/><path d=\"M3 18.5h18\"/></svg>')",
+    },
+  },
+  {
+    ".la-chart-bar": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 20h16\"/><path d=\"M7 20v-6M12 20V7M17 20v-9\"/></svg>')",
+    },
+  },
   /* Offline stand-in for Line Awesome: same .las/.lab class vocabulary, drawn as
   currentColor masks so glyphs render with no network. Swap back to the real
   webfont when the binaries are vendored. */

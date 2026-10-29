@@ -1,3 +1,4 @@
+import { useUiStrings } from "../i18n";
 import { Icon } from "../primitives/Icon";
 
 type TablePaginationProps = {
@@ -44,19 +45,27 @@ const TablePagination = ({
   const pages = Math.max(Math.ceil(total / itemsPerPage), 1);
   const first = (currentPage - 1) * itemsPerPage + 1;
   const last = (currentPage - 1) * itemsPerPage + itemCount;
+  const { t } = useUiStrings();
 
   return (
     <nav
-      aria-label={`${itemLabel} pages`}
+      aria-label={t.pagesOf(itemLabel)}
       className="flex flex-col items-center justify-between gap-space-4 px-space-8 py-space-6 text-caption text-text-muted shadow-rule-t sm:flex-row"
     >
       {itemCount === 0 && !loading ? (
         <span />
       ) : (
         <span>
-          Showing <span className="font-medium text-text-secondary">{first}</span> to{" "}
-          <span className="font-medium text-text-secondary">{last}</span> of{" "}
-          <span className="font-medium text-text-secondary">{total}</span> {itemLabel}
+          {/* Words and numbers alternate; the numbers stand out. */}
+          {t.showing(first, last, total, itemLabel).map((part, i) =>
+            typeof part === "number" ? (
+              <span key={i} className="font-medium text-text-secondary">
+                {part}
+              </span>
+            ) : (
+              part
+            )
+          )}
         </span>
       )}
       <div className="flex items-center gap-space-1">
@@ -67,7 +76,7 @@ const TablePagination = ({
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         >
           <Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />
-          Prev
+          {t.prev}
         </button>
         {pageWindow(currentPage, pages).map((page, i) =>
           page === null ? (
@@ -78,7 +87,7 @@ const TablePagination = ({
             <button
               key={page}
               type="button"
-              aria-label={`Page ${page}`}
+              aria-label={t.page(page)}
               aria-current={page === currentPage ? "page" : undefined}
               disabled={loading}
               onClick={() => onPageChange(page)}
@@ -96,7 +105,7 @@ const TablePagination = ({
           disabled={currentPage >= pages || loading}
           onClick={() => onPageChange(currentPage + 1)}
         >
-          Next
+          {t.next}
           <Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />
         </button>
       </div>
