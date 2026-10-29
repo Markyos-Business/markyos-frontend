@@ -97,16 +97,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 const OPTIONS: { key: ThemeChoice; icon: string; label: string; arLabel: string }[] = [
   { key: "light", icon: "sun", label: "Light", arLabel: "فاتح" },
   { key: "dark", icon: "moon", label: "Dark", arLabel: "داكن" },
-  { key: "system", icon: "desktop", label: "System", arLabel: "النظام" },
 ];
 
-/** A three-way light / dark / system switch for the app chrome. */
+/**
+ * A light / dark switch for the app chrome. Until someone picks, the theme
+ * follows the device ("system"), and the switch shows whichever that is.
+ */
 export function ThemeToggle({ isAr = false }: { isAr?: boolean }) {
-  const { choice, setChoice } = useTheme();
+  const { resolved, setChoice } = useTheme();
   return (
     <div className="flex rounded-full p-0.5 shrink-0" style={{ background: "var(--surface-2)" }} role="group" aria-label={isAr ? "سمة الواجهة" : "Interface theme"}>
       {OPTIONS.map((o) => {
-        const active = choice === o.key;
+        const active = resolved === o.key;
         return (
           <button
             key={o.key}
