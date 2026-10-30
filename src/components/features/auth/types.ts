@@ -48,11 +48,25 @@ export type GoogleSignInResult =
   | { kind: "signedIn"; account: Account }
   | ({ kind: "needsAccountType" } & GooglePendingSignup);
 
-/** An account waiting for its email code: what the verify step needs. */
-export type PendingVerification = { email: string; codeSent: boolean; remember: boolean };
+/**
+ * An emailed 6-digit code being waited for: what the code step needs.
+ * `register` confirms a new account's email; `login` is the second step of
+ * two-step sign-in.
+ */
+export type PendingVerification = {
+  email: string;
+  codeSent: boolean;
+  remember: boolean;
+  purpose: CodePurpose;
+};
+
+export type CodePurpose = "register" | "login";
 
 /** The server asked for the email code instead of signing in. */
 export type VerificationRequired = { requiresVerification: true; email: string; codeSent: boolean };
+
+/** Two-step sign-in: the password was right, and a code is on its way. */
+export type SignInCodeRequired = { requiresSignInCode: true; email: string };
 
 /** A new account waiting for its "set your password" email. */
 export type PasswordSetup = { email: string; emailSent: boolean };

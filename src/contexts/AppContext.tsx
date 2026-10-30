@@ -91,6 +91,7 @@ import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from 
 import * as authApi from "@/components/features/auth/services/authService";
 import type {
   AuthOutcome,
+  CodePurpose,
   GoogleSignInBody,
   GooglePendingSignup,
   PasswordSetResult,
@@ -220,7 +221,7 @@ interface AppContextValue {
   /** Enters the emailed signup code; signs in. Resolves to an error, or null. */
   verifyEmail: (pending: PendingVerification, code: string) => Promise<string | null>;
   /** Emails a fresh signup code. Resolves to an error, or null. */
-  resendVerification: (email: string) => Promise<string | null>;
+  resendVerification: (email: string, purpose?: CodePurpose) => Promise<string | null>;
   /**
    * Continue with Google. Signs in and resolves to `{}`; to `{ pending }` for
    * someone new, who picks an account type and calls again with the token;
@@ -969,7 +970,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (API_ENABLED) {
         try {
           const res = await authApi.login(normaliseEmail(email), password, remember);
-          if ("requiresVerification" in res) return { verify: { email: res.email, codeSent: res.codeSent, remember } };
+          if ("requiresVerification" in res)
+            return { verify: { email: res.email, codeSent: res.codeSent, remember, purpose: "register" } };
+          // Two-step sign-in: the code is the second step, already emailed.
+          if ("requiresSignInCode" in res)
+            return { verify: { email: res.email, codeSent: true, remember, purpose: "login" } };
           const account = res;
           setState((prev) => signedInAs(prev, account, remember));
           // Awaited so the gallery the login page goes to already has them.
@@ -1030,7 +1035,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const verifyEmail = useCallback(
     async (pending: PendingVerification, code: string): Promise<string | null> => {
       try {
-        const account = await authApi.verifyEmail(pending.email, code, pending.remember);
+        const account = await authApi.verifyEmail(pending.email, code, pending.remember, pending.purpose);
         setState((prev) => signedInAs(prev, account, pending.remember));
         await pullServerWorkspaces();
         return null;
@@ -1041,9 +1046,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [pullServerWorkspaces]
   );
 
-  const resendVerification = useCallback(async (email: string): Promise<string | null> => {
+  const resendVerification = useCallback(async (email: string, purpose: CodePurpose = "register"): Promise<string | null> => {
     try {
-      await authApi.resendVerification(email);
+      await authApi.resendVerification(email, purpose);
       return null;
     } catch (err) {
       return apiMessage(err);

@@ -51,7 +51,7 @@ export function useVerifyEmail(pending: PendingVerification, onVerified?: () => 
   async function resend() {
     if (wait > 0 || busy) return;
     setError(null);
-    const failed = await resendVerification(pending.email);
+    const failed = await resendVerification(pending.email, pending.purpose);
     if (failed) {
       setError(failed);
       return;

@@ -2,9 +2,11 @@ import { ApiError, api, setAccessToken } from "@/lib/api/client";
 import type { Account, AccountType, Lang } from "@/types";
 import type {
   ApiAccount,
+  CodePurpose,
   GoogleSignInBody,
   GoogleSignInResponse,
   GoogleSignInResult,
+  SignInCodeRequired,
   SignupResponse,
   VerificationRequired,
 } from "../types";
@@ -48,32 +50,35 @@ export async function signup(
   });
 }
 
-/** Confirms the signup code and signs in. */
-export async function verifyEmail(email: string, code: string, remember = true): Promise<Account> {
+/** Checks an emailed code (a signup's, or a two-step sign-in's) and signs in. */
+export async function verifyEmail(email: string, code: string, remember = true, purpose: CodePurpose = "register"): Promise<Account> {
   const res = await api<{ access: string }>("/auth/otp/verify/", {
     method: "POST",
-    body: { email, code, purpose: "register", remember },
+    body: { email, code, purpose, remember },
   });
   setAccessToken(res.access);
   return fetchMe();
 }
 
-/** Emails a fresh signup code. */
-export async function resendVerification(email: string): Promise<void> {
-  await api<void>("/auth/otp/resend/", { method: "POST", body: { email, purpose: "register" } });
+/** Emails a fresh code for the same purpose. */
+export async function resendVerification(email: string, purpose: CodePurpose = "register"): Promise<void> {
+  await api<void>("/auth/otp/resend/", { method: "POST", body: { email, purpose } });
 }
 
-export async function login(email: string, password: string, remember = true): Promise<Account | VerificationRequired> {
+export async function login(
+  email: string,
+  password: string,
+  remember = true
+): Promise<Account | VerificationRequired | SignInCodeRequired> {
   const res = await api<{ access?: string; requires_otp?: boolean } | VerificationRequired>("/auth/login/", {
     method: "POST",
     body: { email, password, remember },
   });
   // Signed up but never confirmed: the server has emailed a fresh code.
   if ("requiresVerification" in res) return res;
-  if (res.requires_otp || !res.access) {
-    // Two-factor accounts are an NGO-era flow the Markyos UI has no screen for.
-    throw new ApiError("This account needs a verification code, which this app can't take yet.", 403);
-  }
+  // Two-step sign-in: the server has emailed a code; no session yet.
+  if (res.requires_otp) return { requiresSignInCode: true, email };
+  if (!res.access) throw new ApiError("Sign-in didn't go through. Try again.", 500);
   setAccessToken(res.access);
   return fetchMe();
 }

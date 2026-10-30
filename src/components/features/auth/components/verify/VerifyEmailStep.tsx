@@ -14,18 +14,42 @@ type VerifyEmailStepProps = {
   onBack: () => void;
 };
 
-/** "Check your email": the 6-digit code that confirms a new account. */
+// The same step, worded for why the code was sent.
+const COPY = {
+  register: {
+    title: "Check your email",
+    subtitle: "Enter the 6-digit code we sent to confirm it's yours. It works for 5 minutes.",
+    label: "Verification code",
+    submit: "Confirm email",
+    back: "Wrong address?",
+    backLink: "Go back",
+  },
+  login: {
+    title: "Enter your sign-in code",
+    subtitle: "Two-step sign-in is on for this account. Enter the 6-digit code we emailed you. It works for 5 minutes.",
+    label: "Sign-in code",
+    submit: "Sign in",
+    back: "Not your account?",
+    backLink: "Use another account",
+  },
+} as const;
+
+/**
+ * "Check your email": the emailed 6-digit code, confirming a new account or,
+ * with two-step sign-in, finishing a sign-in.
+ */
 export function VerifyEmailStep({ pending, onVerified, onBack }: VerifyEmailStepProps) {
   const verify = useVerifyEmail(pending, onVerified);
+  const copy = COPY[pending.purpose];
   return (
     <AuthShell
-      title="Check your email"
-      subtitle="Enter the 6-digit code we sent to confirm it's yours. It works for 5 minutes."
+      title={copy.title}
+      subtitle={copy.subtitle}
       footer={
         <>
-          Wrong address?
+          {copy.back}
           <Button variant="link" onClick={onBack}>
-            Go back
+            {copy.backLink}
           </Button>
         </>
       }
@@ -35,9 +59,9 @@ export function VerifyEmailStep({ pending, onVerified, onBack }: VerifyEmailStep
           Sent to <span dir="ltr" className="font-medium text-text">{verify.email}</span>
         </p>
         <AlertBanner message={verify.error} />
-        <OtpField label="Verification code" value={verify.code} onChange={verify.setCode} />
+        <OtpField label={copy.label} value={verify.code} onChange={verify.setCode} />
         <Button type="submit" variant="primary" className="w-full" disabled={verify.busy}>
-          {verify.busy ? "Checking…" : "Confirm email"}
+          {verify.busy ? "Checking…" : copy.submit}
         </Button>
         <p className="text-center text-caption text-text-faint">
           Didn&apos;t get it?{" "}
