@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEmails } from "./invite";
+import { parseEmails } from "./emailList";
 
 describe("parseEmails", () => {
   it("splits on commas, spaces and lines, once each", () =>

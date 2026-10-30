@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui";
 import type { AccountRole, AccountType } from "@/types";
 import { inviteUser } from "../services/adminService";
-import { parseEmails } from "../utils/invite";
+import { parseEmails } from "@/lib/emailList";
 import { useAdminLang } from "./useAdminLang";
 
 const MAX_INVITES = 20;

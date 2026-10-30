@@ -113,7 +113,10 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
           {bulkActions(selected, () => setSelected([]))}
         </BulkBar>
       )}
-      <div className={`overflow-x-auto ${stickyHeader ? "max-h-[70vh] overflow-y-auto" : ""}`}>
+      {/* `relative`: the header's screen-reader-only labels are absolutely
+          positioned, and without a positioned box here they'd sit against the
+          page and widen it on a phone, past this box's own scroll. */}
+      <div className={`relative overflow-x-auto ${stickyHeader ? "max-h-[70vh] overflow-y-auto" : ""}`}>
         <table aria-label={label} className="w-full border-collapse text-start text-body">
           <thead className={stickyHeader ? "sticky top-0 z-10" : ""}>
             <tr>
