@@ -4,6 +4,7 @@ import {
   AppState,
   Asset,
   Competitor,
+  PositioningOption,
   Moodboard,
   PublishedSnapshot,
   ShareLink,
@@ -340,6 +341,11 @@ function migrate(parsed: AppState): AppState {
       positioningStatement: typeof ws.strategy?.positioningStatement === "string" ? ws.strategy.positioningStatement : "",
       uvp: typeof ws.strategy?.uvp === "string" ? ws.strategy.uvp : "",
       voiceTraits: Array.isArray(ws.strategy?.voiceTraits) ? ws.strategy.voiceTraits : [],
+      // Added with the brief analysis; older brands start with none.
+      objectives: Array.isArray(ws.strategy?.objectives) ? ws.strategy.objectives : [],
+      positioningOptions: (Array.isArray(ws.strategy?.positioningOptions) ? ws.strategy.positioningOptions : []).map(
+        (o: PositioningOption) => ({ ...o, notes: Array.isArray(o.notes) ? o.notes : [] })
+      ),
     },
     // Everything already in a brand's files was put there deliberately, so it
     // is approved. Only content created as exploration — moodboard imagery,

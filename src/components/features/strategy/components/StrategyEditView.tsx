@@ -5,6 +5,8 @@ import type { StrategyPageState } from "../hooks/useStrategyPage";
 import { AudienceTab } from "./AudienceTab";
 import { CompetitiveTab } from "./CompetitiveTab";
 import { CoreValuesTab } from "./CoreValuesTab";
+import { ObjectivesTab } from "./ObjectivesTab";
+import { PositioningOptionsTab } from "./PositioningOptionsTab";
 import { SingleTextTab } from "./SingleTextTab";
 import { TabSequence } from "./TabSequence";
 import { ToneTab } from "./ToneTab";
@@ -30,7 +32,9 @@ export function StrategyEditView({ ws, isAr, lang, tab, onTab, emptyTabs }: Stra
       <div key={`${tab}-${lang}`} className="flex flex-col gap-5">
         {single && <SingleTextTab ws={ws} lang={lang} {...single} />}
         {tab === "vision-mission" && <VisionMissionTab ws={ws} lang={lang} />}
+        {tab === "objectives" && <ObjectivesTab ws={ws} lang={lang} />}
         {tab === "core-values" && <CoreValuesTab ws={ws} lang={lang} />}
+        {tab === "positioning-options" && <PositioningOptionsTab ws={ws} lang={lang} />}
         {tab === "audience" && <AudienceTab ws={ws} lang={lang} />}
         {tab === "competitive" && <CompetitiveTab ws={ws} lang={lang} />}
         {tab === "tone" && <ToneTab ws={ws} lang={lang} />}

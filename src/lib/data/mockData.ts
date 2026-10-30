@@ -187,6 +187,8 @@ export function buildInitialWorkspaces(): Workspace[] {
     ],
     // v3.0 — strategy hub
     strategy: {
+      objectives: [],
+      positioningOptions: [],
       purpose: "Make bilingual identity systems that never feel translated.",
       mission:
         "Every studio deliverable ships in Arabic and Latin at the same time, built by native speakers of each script, so no client ever has to explain their brand twice.",
@@ -514,6 +516,8 @@ export function buildInitialWorkspaces(): Workspace[] {
     logoColorIds: [],
     signOffPins: [],
     strategy: {
+      objectives: [],
+      positioningOptions: [],
       purpose: "",
       mission: "",
       vision: "",

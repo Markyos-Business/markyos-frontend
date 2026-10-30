@@ -3,6 +3,7 @@
 import { Button, Icon } from "@/components/ui";
 import { StrategyContents, StrategyDocument, StrategyProgress } from "@/components/features/guideline-site";
 import type { Lang, Workspace } from "@/types";
+import { WorkingMaterial } from "./WorkingMaterial";
 
 /** Read mode: the strategy as one document, with its contents and progress beside it. */
 export function StrategyReadView({ ws, isAr, lang }: { ws: Workspace; isAr: boolean; lang: Lang }) {
@@ -40,6 +41,7 @@ export function StrategyReadView({ ws, isAr, lang }: { ws: Workspace; isAr: bool
           </header>
 
           <StrategyDocument ws={ws} isAr={isAr} lang={lang} showMissing />
+          <WorkingMaterial ws={ws} lang={lang} />
         </article>
       </div>
     </div>

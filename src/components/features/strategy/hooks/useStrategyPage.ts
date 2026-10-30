@@ -34,9 +34,11 @@ export function useStrategyPage(slug: string) {
   const emptyTabs: Record<StrategyTab, boolean> = {
     purpose: !text(s.purpose, s.purposeAr),
     "vision-mission": !text(s.vision, s.visionAr) && !text(s.mission, s.missionAr),
+    objectives: s.objectives.length === 0,
     "core-values": s.coreValues.length === 0,
     audience: !text(s.targetAudienceSummary, s.targetAudienceSummaryAr) && s.personas.length === 0,
     competitive: s.competitors.length === 0,
+    "positioning-options": s.positioningOptions.length === 0,
     positioning: !text(s.positioningStatement, s.positioningStatementAr),
     uvp: !text(s.uvp, s.uvpAr),
     tone: s.voiceTraits.length === 0,

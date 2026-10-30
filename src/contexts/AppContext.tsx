@@ -19,6 +19,7 @@ import {
   AssetType,
   BlockKind,
   BlockStyle,
+  BrandStrategy,
   ColorSwatch,
   ComplianceCheck,
   CoreValue,
@@ -38,10 +39,12 @@ import {
   MoodboardView,
   MoodboardZone,
   MoodItemKind,
+  Objective,
   PageBlock,
   PinSection,
   PlanKind,
   Persona,
+  PositioningOption,
   ShareLink,
   ShareScope,
   SlotKind,
@@ -435,6 +438,14 @@ interface AppContextValue {
   addCoreValue: (workspaceId: string, value: Omit<CoreValue, "id">) => void;
   updateCoreValue: (workspaceId: string, valueId: string, patch: Partial<Omit<CoreValue, "id">>) => void;
   removeCoreValue: (workspaceId: string, valueId: string) => void;
+  addObjective: (workspaceId: string, objective: Omit<Objective, "id">) => void;
+  updateObjective: (workspaceId: string, objectiveId: string, patch: Partial<Omit<Objective, "id">>) => void;
+  removeObjective: (workspaceId: string, objectiveId: string) => void;
+  addPositioningOption: (workspaceId: string, option: Omit<PositioningOption, "id">) => void;
+  updatePositioningOption: (workspaceId: string, optionId: string, patch: Partial<Omit<PositioningOption, "id">>) => void;
+  removePositioningOption: (workspaceId: string, optionId: string) => void;
+  /** Make a route the brand's positioning statement, in the language being edited. */
+  choosePositioningOption: (workspaceId: string, optionId: string, lang: Lang) => void;
   /** Records that the Arabic copy came from a machine, and what still needs review. */
   setStrategyTranslation: (workspaceId: string, patch: Partial<StrategyTranslation>) => void;
   /** Clears one field's "needs review" flag — a human has now read it. */
@@ -1349,6 +1360,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         uvp: "",
         voiceTraits: [],
         competitorColumns: defaultCompetitorColumns(),
+        objectives: [],
+        positioningOptions: [],
       },
       assets: [],
       departmentViews: [],
@@ -2356,6 +2369,64 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       );
     },
     [mutateWorkspace, touchWorkspace]
+  );
+
+  /** One strategy list, changed by `change`: the shape every list mutation below shares. */
+  const changeStrategyList = useCallback(
+    <K extends "objectives" | "positioningOptions">(
+      workspaceId: string,
+      key: K,
+      change: (list: BrandStrategy[K]) => BrandStrategy[K]
+    ) => {
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { strategy: { ...ws.strategy, [key]: change(ws.strategy[key]) } }));
+    },
+    [mutateWorkspace, touchWorkspace]
+  );
+
+  const addObjective = useCallback(
+    (workspaceId: string, objective: Omit<Objective, "id">) =>
+      changeStrategyList(workspaceId, "objectives", (list) => [...list, { ...objective, id: uid() }]),
+    [changeStrategyList]
+  );
+  const updateObjective = useCallback(
+    (workspaceId: string, objectiveId: string, patch: Partial<Omit<Objective, "id">>) =>
+      changeStrategyList(workspaceId, "objectives", (list) => list.map((o) => (o.id === objectiveId ? { ...o, ...patch } : o))),
+    [changeStrategyList]
+  );
+  const removeObjective = useCallback(
+    (workspaceId: string, objectiveId: string) =>
+      changeStrategyList(workspaceId, "objectives", (list) => list.filter((o) => o.id !== objectiveId)),
+    [changeStrategyList]
+  );
+  const addPositioningOption = useCallback(
+    (workspaceId: string, option: Omit<PositioningOption, "id">) =>
+      changeStrategyList(workspaceId, "positioningOptions", (list) => [...list, { ...option, id: uid() }]),
+    [changeStrategyList]
+  );
+  const updatePositioningOption = useCallback(
+    (workspaceId: string, optionId: string, patch: Partial<Omit<PositioningOption, "id">>) =>
+      changeStrategyList(workspaceId, "positioningOptions", (list) => list.map((o) => (o.id === optionId ? { ...o, ...patch } : o))),
+    [changeStrategyList]
+  );
+  const removePositioningOption = useCallback(
+    (workspaceId: string, optionId: string) =>
+      changeStrategyList(workspaceId, "positioningOptions", (list) => list.filter((o) => o.id !== optionId)),
+    [changeStrategyList]
+  );
+  const choosePositioningOption = useCallback(
+    (workspaceId: string, optionId: string, lang: Lang) => {
+      mutateWorkspace(workspaceId, (ws) => {
+        const option = ws.strategy.positioningOptions.find((o) => o.id === optionId);
+        if (!option) return ws;
+        const statement = (lang === "ar" ? option.positioningAr : option.positioning)?.trim();
+        if (!statement) return ws;
+        return touchWorkspace(ws, {
+          strategy: { ...ws.strategy, ...(lang === "ar" ? { positioningStatementAr: statement } : { positioningStatement: statement }) },
+        });
+      });
+      logAudit("Chose a positioning route", workspaceId);
+    },
+    [mutateWorkspace, touchWorkspace, logAudit]
   );
 
   const removePersona = useCallback(
@@ -3397,6 +3468,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addCoreValue,
       updateCoreValue,
       removeCoreValue,
+      addObjective,
+      updateObjective,
+      removeObjective,
+      addPositioningOption,
+      updatePositioningOption,
+      removePositioningOption,
+      choosePositioningOption,
       addCompetitor,
       updateCompetitor,
       setCompetitorColumns,
@@ -3543,6 +3621,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addCoreValue,
       updateCoreValue,
       removeCoreValue,
+      addObjective,
+      updateObjective,
+      removeObjective,
+      addPositioningOption,
+      updatePositioningOption,
+      removePositioningOption,
+      choosePositioningOption,
       addCompetitor,
       updateCompetitor,
       setCompetitorColumns,

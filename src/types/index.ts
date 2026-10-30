@@ -113,6 +113,17 @@ export interface SignOffPin {
  * An empty `…Ar` field means "not written yet", and the reader falls back to
  * the other language rather than rendering a blank.
  */
+/**
+ * Where a strategy entry came from, when a brief analysis put it there: which
+ * analysis, which section, and which item in it. Lets "Add to Strategy" show
+ * an item as already added instead of adding it twice.
+ */
+export interface AnalysisSource {
+  analysisId: string;
+  sectionKey: string;
+  itemKey: string;
+}
+
 export interface Persona {
   id: string;
   name: string;
@@ -121,6 +132,7 @@ export interface Persona {
   nameAr?: string;
   roleAr?: string;
   descriptionAr?: string;
+  source?: AnalysisSource;
 }
 
 export interface VoiceTrait {
@@ -131,6 +143,7 @@ export interface VoiceTrait {
   traitAr?: string;
   doExampleAr?: string;
   dontExampleAr?: string;
+  source?: AnalysisSource;
 }
 
 export interface CoreValue {
@@ -165,6 +178,38 @@ export interface Competitor {
   nameAr?: string;
   notesAr?: string;
   cellsAr?: Record<string, string>;
+  source?: AnalysisSource;
+}
+
+export type ObjectiveKind = "business" | "brand";
+export type Priority = "high" | "medium" | "low";
+
+/** A goal the brand work is for, business or brand, with how much it matters. */
+export interface Objective {
+  id: string;
+  text: string;
+  textAr?: string;
+  kind: ObjectiveKind;
+  priority: Priority;
+  source?: AnalysisSource;
+}
+
+/**
+ * A positioning route still being weighed: its name, the idea behind it and
+ * the position it takes, with notes (tensions, gaps, white space) gathered
+ * against it. One becomes the positioning statement when it's chosen.
+ */
+export interface PositioningOption {
+  id: string;
+  name: string;
+  idea: string;
+  positioning: string;
+  notes: string[];
+  nameAr?: string;
+  ideaAr?: string;
+  positioningAr?: string;
+  notesAr?: string[];
+  source?: AnalysisSource;
 }
 
 /**
@@ -183,6 +228,10 @@ export interface BrandStrategy {
   competitors: Competitor[];
   /** Columns of the competitive-analysis table, beyond the competitor's name. */
   competitorColumns: CompetitorColumn[];
+  /** What the brand work is for. Working material: not on the published site. */
+  objectives: Objective[];
+  /** Routes still being weighed before one becomes the positioning statement. */
+  positioningOptions: PositioningOption[];
   positioningStatement: string;
   uvp: string;
   /** "Personality & tone" — kept as voiceTraits, the existing do/don't matrix. */

@@ -1,4 +1,14 @@
-export type StrategyTab = "purpose" | "vision-mission" | "core-values" | "audience" | "competitive" | "positioning" | "uvp" | "tone";
+export type StrategyTab =
+  | "purpose"
+  | "vision-mission"
+  | "objectives"
+  | "core-values"
+  | "audience"
+  | "competitive"
+  | "positioning-options"
+  | "positioning"
+  | "uvp"
+  | "tone";
 export type StrategyMode = "edit" | "read";
 
 export const PAGE_SECTION = { en: "Strategy", ar: "الاستراتيجية" } as const;
@@ -6,9 +16,11 @@ export const PAGE_SECTION = { en: "Strategy", ar: "الاستراتيجية" } a
 export const STRATEGY_TABS: { key: StrategyTab; label: string; arLabel: string }[] = [
   { key: "purpose", label: "Purpose", arLabel: "الغاية" },
   { key: "vision-mission", label: "Vision & mission", arLabel: "الرؤية والرسالة" },
+  { key: "objectives", label: "Objectives", arLabel: "الأهداف" },
   { key: "core-values", label: "Core values", arLabel: "القيم الجوهرية" },
   { key: "audience", label: "Target audience & personas", arLabel: "الجمهور المستهدف" },
   { key: "competitive", label: "Competitive analysis", arLabel: "تحليل المنافسين" },
+  { key: "positioning-options", label: "Positioning options", arLabel: "خيارات التموضع" },
   { key: "positioning", label: "Brand positioning", arLabel: "تموضع العلامة" },
   { key: "uvp", label: "Unique value proposition", arLabel: "عرض القيمة الفريد" },
   { key: "tone", label: "Personality & tone", arLabel: "الشخصية والنبرة" },
@@ -48,3 +60,15 @@ export const SINGLE_TEXT_TABS = {
     arPlaceholder: "ما الذي يجعل هذه العلامة الخيار الحقيقي الوحيد؟",
   },
 } as const;
+
+/** Objectives' priority, highest first, with a word in each language. */
+export const PRIORITIES = [
+  { value: "high", label: "High priority", arLabel: "أولوية عالية", tone: "danger" },
+  { value: "medium", label: "Medium priority", arLabel: "أولوية متوسطة", tone: "warning" },
+  { value: "low", label: "Low priority", arLabel: "أولوية منخفضة", tone: "neutral" },
+] as const;
+
+export const OBJECTIVE_KINDS = [
+  { value: "business", label: "Business goals", arLabel: "أهداف العمل" },
+  { value: "brand", label: "Brand goals", arLabel: "أهداف العلامة" },
+] as const;
