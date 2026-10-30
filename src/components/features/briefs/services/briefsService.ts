@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { BriefAnalysis, Comparison, Overview, Section, SectionKey } from "../types";
+import type { BriefAnalysis, Comparison, Overview, PublicReport, Section, SectionKey, ShareLinkInfo } from "../types";
 
 const analysis = (id: string, path = "") => `/briefs/${id}/${path}`;
 
@@ -35,3 +35,13 @@ export const getFormAnswer = async (formId: string, questionId: string) => {
   }
   return null;
 };
+
+export const listShares = (id: string) => api<ShareLinkInfo[]>(analysis(id, "share/"));
+
+export const createShare = (id: string, sections: SectionKey[], expiresAt: string | null) =>
+  api<ShareLinkInfo>(analysis(id, "share/"), { method: "POST", body: { sections, expiresAt } });
+
+export const revokeShare = (id: string, linkId: string) => api<ShareLinkInfo>(analysis(id, `share/${linkId}/`), { method: "DELETE" });
+
+/** The client's view of a share link. No sign-in. */
+export const getPublicReport = (token: string) => api<PublicReport>(`/public/briefs/${encodeURIComponent(token)}/`);

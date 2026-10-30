@@ -10,6 +10,7 @@ import { startAnalysis } from "../services/briefsService";
 import { costLine, withCostConfirm } from "../utils/cost";
 import type { Workspace } from "@/types";
 import { StudioReport } from "./report/StudioReport";
+import { ShareWithClient } from "./share/ShareWithClient";
 import { RunningView } from "./run/RunningView";
 import { RunPanel } from "./run/RunPanel";
 
@@ -83,11 +84,14 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
         <Badge>{analysis.language === "ar" ? "العربية" : "English"}</Badge>
         {analysis.isFreeRun && <Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge>}
       </div>
-      {data.canEdit && data.configured && (
-        <Button variant="outline" onClick={() => void run(analysis.language)} disabled={starting || running} icon={<Icon name="history" size={18} />}>
-          {t("Run again", "تشغيل مجددًا")}
-        </Button>
-      )}
+      <div className="flex flex-wrap items-center gap-space-4">
+        {data.canEdit && analysis.status === "ready" && <ShareWithClient analysis={analysis} isAr={isAr} />}
+        {data.canEdit && data.configured && (
+          <Button variant="outline" onClick={() => void run(analysis.language)} disabled={starting || running} icon={<Icon name="history" size={18} />}>
+            {t("Run again", "تشغيل مجددًا")}
+          </Button>
+        )}
+      </div>
     </div>
   );
 

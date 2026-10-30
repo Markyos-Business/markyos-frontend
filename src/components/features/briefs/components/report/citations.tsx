@@ -51,6 +51,15 @@ export function CitationChips({ citations }: { citations: Citation[] }) {
 export function EvidenceLine({ evidence }: { evidence: Evidence }) {
   const { isAr } = useContext(CitationsContext);
   const confidence = { high: isAr ? "ثقة عالية" : "high confidence", medium: isAr ? "ثقة متوسطة" : "medium confidence", low: isAr ? "ثقة منخفضة" : "low confidence" }[evidence.confidence];
+  // Cited, but every citation was a call note left out of a client's link:
+  // say where it came from rather than calling it a guess.
+  if (evidence.basis === "cited" && !evidence.citations?.length) {
+    return (
+      <span className="text-caption text-text-muted">
+        {isAr ? "من محادثاتنا" : "From our conversations"} · {confidence}
+      </span>
+    );
+  }
   if (evidence.basis === "inferred" || !evidence.citations?.length) {
     return (
       <span className="text-caption text-text-muted">

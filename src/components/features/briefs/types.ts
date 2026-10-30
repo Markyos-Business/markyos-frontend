@@ -151,3 +151,26 @@ export type Comparison = {
   to: number;
   sections: { key: SectionKey; status: "same" | "changed"; changes: Record<string, unknown> }[];
 };
+
+/** A read-only link to some sections of an analysis, sent to the client. */
+export type ShareLinkInfo = {
+  id: string;
+  token: string;
+  sections: SectionKey[];
+  expiresAt: string | null;
+  revokedAt: string | null;
+  viewCount: number;
+  lastViewedAt: string | null;
+  createdBy: string;
+  createdAt: string;
+};
+
+/** What the client sees at a share link: the shared sections, citing only their own form answers. */
+export type PublicReport = {
+  brand: { name: string; slug: string };
+  language: "en" | "ar";
+  version: number;
+  finishedAt: string | null;
+  sections: { key: SectionKey; order: number; status: SectionStatus; current: unknown; editedByUser: boolean }[];
+  sourceIndex: Record<string, SourceRef>;
+};
