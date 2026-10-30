@@ -18,7 +18,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # The staging branch too: it's where the work lands before main.
+    branches: [main, release/staging-v1]
   pull_request:
   workflow_dispatch:
 
