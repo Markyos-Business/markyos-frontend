@@ -45,3 +45,6 @@ export const revokeShare = (id: string, linkId: string) => api<ShareLinkInfo>(an
 
 /** The client's view of a share link. No sign-in. */
 export const getPublicReport = (token: string) => api<PublicReport>(`/public/briefs/${encodeURIComponent(token)}/`);
+
+/** Records that the report was printed to PDF (the browser makes the file). */
+export const markExported = (id: string) => api<void>(analysis(id, "exported/"), { method: "POST" });

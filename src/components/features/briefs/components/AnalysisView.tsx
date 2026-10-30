@@ -85,6 +85,15 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
         {analysis.isFreeRun && <Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge>}
       </div>
       <div className="flex flex-wrap items-center gap-space-4">
+        {analysis.status === "ready" && (
+          <Button
+            variant="outline"
+            icon={<Icon name="file-export" size={18} />}
+            onClick={() => window.open(`/print/analysis/${analysis.id}`, "_blank", "noopener")}
+          >
+            {t("Export PDF", "تصدير PDF")}
+          </Button>
+        )}
         {data.canEdit && analysis.status === "ready" && <ShareWithClient analysis={analysis} isAr={isAr} />}
         {data.canEdit && data.configured && (
           <Button variant="outline" onClick={() => void run(analysis.language)} disabled={starting || running} icon={<Icon name="history" size={18} />}>

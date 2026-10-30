@@ -1,11 +1,8 @@
 "use client";
 
-import { Drawer, EmptyState, ErrorState, Skeleton } from "@/components/ui";
-import { formatDay } from "@/components/features/discovery";
-import { SECTION_META } from "../../constants";
+import { Button, Drawer, EmptyState, ErrorState, Icon, Skeleton } from "@/components/ui";
 import { usePublicReport } from "../../hooks/public/usePublicReport";
-import { CitationsProvider } from "../report/citations";
-import { SectionBody } from "../report/sections/SectionBody";
+import { ReportDocument } from "../shared/ReportDocument";
 
 /**
  * The client's read-only report at /a/<token>: the shared sections in the
@@ -16,7 +13,6 @@ export function PublicReportView({ token }: { token: string }) {
   const shared = report.data?.data;
   const isAr = shared?.language === "ar";
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const lang = isAr ? "ar" : "en";
 
   if (report.error) {
     return (
@@ -42,25 +38,20 @@ export function PublicReportView({ token }: { token: string }) {
   }
 
   return (
-    <div dir={isAr ? "rtl" : "ltr"} lang={lang}>
-      <Shell>
-        <header className="flex flex-col gap-space-2">
-          <span className="text-overline uppercase text-text-faint">{t("Brief analysis", "تحليل الموجز")}</span>
-          <h1 dir="auto" className="text-h1 font-medium">
-            {shared.brand.name}
-          </h1>
-          {shared.finishedAt && <p className="text-caption text-text-muted">{formatDay(shared.finishedAt, isAr)}</p>}
-        </header>
-        <CitationsProvider value={{ index: shared.sourceIndex, open, isAr }}>
-          {shared.sections.map((section) => (
-            <section key={section.key} id={`section-${section.key}`} className="mk-surface flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 print:break-inside-avoid-page">
-              <h2 className="text-h3 font-medium">{SECTION_META[section.key][lang]}</h2>
-              <SectionBody sectionKey={section.key} content={section.current} isAr={isAr} />
-            </section>
-          ))}
-        </CitationsProvider>
-        <footer className="pt-space-6 text-caption text-text-faint">{t("Shared from Markyos", "مُشارك من ماركيوس")}</footer>
-      </Shell>
+    <>
+      <ReportDocument
+        brandName={shared.brand.name}
+        language={shared.language}
+        finishedAt={shared.finishedAt}
+        sections={shared.sections}
+        sourceIndex={shared.sourceIndex}
+        onCitation={open}
+        toolbar={
+          <Button variant="outline" size="sm" icon={<Icon name="file-export" size={16} />} onClick={() => window.print()}>
+            {t("Print / PDF", "طباعة / PDF")}
+          </Button>
+        }
+      />
       <Drawer open={!!citation} title={t("From your form", "من نموذجك")} closeLabel={t("Close", "إغلاق")} onClose={close}>
         <blockquote dir="auto" className="text-body text-text">
           “{citation?.quote}”
@@ -69,7 +60,7 @@ export function PublicReportView({ token }: { token: string }) {
           <p className="text-caption text-text-muted">{shared.sourceIndex[citation.sourceId].label}</p>
         )}
       </Drawer>
-    </div>
+    </>
   );
 }
 
