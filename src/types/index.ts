@@ -245,6 +245,21 @@ export interface BrandStrategy {
   uvpAr?: string;
 }
 
+/**
+ * What one "Add to Strategy" puts into a brand's strategy: new list entries,
+ * text appended to the audience summary, or notes added to a positioning
+ * option, each in the analysis's language.
+ */
+export interface StrategyAdditions {
+  objectives?: Omit<Objective, "id">[];
+  personas?: Omit<Persona, "id">[];
+  competitors?: Omit<Competitor, "id">[];
+  voiceTraits?: Omit<VoiceTrait, "id">[];
+  positioningOptions?: Omit<PositioningOption, "id">[];
+  audienceSummary?: { text: string; lang: Lang };
+  notes?: { optionId: string; notes: string[]; lang: Lang };
+}
+
 /** The narrative fields that exist in both languages. */
 export type StrategyTextField =
   | "purpose"

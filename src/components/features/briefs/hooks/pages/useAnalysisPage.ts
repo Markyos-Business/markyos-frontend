@@ -11,6 +11,6 @@ export function useAnalysisPage(slug: string) {
   return {
     isAr,
     shell: { workspace, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "wide" as const },
-    view: { brandId: workspace.id, brandSlug: workspace.slug, isAr },
+    view: { brandId: workspace.id, brandSlug: workspace.slug, isAr, workspace },
   };
 }

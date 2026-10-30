@@ -13,6 +13,7 @@ import {
   ApprovalStatus,
   Account,
   AccountType,
+  AnalysisSource,
   AppState,
   Asset,
   AssetStatus,
@@ -49,6 +50,7 @@ import {
   ShareScope,
   SlotKind,
   SsoConfig,
+  StrategyAdditions,
   StrategyTextField,
   StrategyTranslation,
   StudioStyle,
@@ -446,6 +448,14 @@ interface AppContextValue {
   removePositioningOption: (workspaceId: string, optionId: string) => void;
   /** Make a route the brand's positioning statement, in the language being edited. */
   choosePositioningOption: (workspaceId: string, optionId: string, lang: Lang) => void;
+  /** Several strategy entries at once, from a brief analysis: one save, one undo step. */
+  addToStrategy: (workspaceId: string, additions: StrategyAdditions) => void;
+  /**
+   * Undo one `addToStrategy`: take out exactly what it put in (entries by their
+   * source, the appended summary text, the added notes), leaving anything
+   * added since alone.
+   */
+  removeFromStrategy: (workspaceId: string, additions: StrategyAdditions) => void;
   /** Records that the Arabic copy came from a machine, and what still needs review. */
   setStrategyTranslation: (workspaceId: string, patch: Partial<StrategyTranslation>) => void;
   /** Clears one field's "needs review" flag — a human has now read it. */
@@ -2429,6 +2439,73 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace, logAudit]
   );
 
+  const addToStrategy = useCallback(
+    (workspaceId: string, add: StrategyAdditions) => {
+      mutateWorkspace(workspaceId, (ws) => {
+        const s = ws.strategy;
+        const withIds = <T,>(list: T[] | undefined) => (list ?? []).map((x) => ({ ...x, id: uid() }));
+        const summaryKey = add.audienceSummary?.lang === "ar" ? "targetAudienceSummaryAr" : "targetAudienceSummary";
+        const summary = add.audienceSummary
+          ? [(s[summaryKey] ?? "").trim(), add.audienceSummary.text.trim()].filter(Boolean).join("\n\n")
+          : undefined;
+        const noteKey = add.notes?.lang === "ar" ? "notesAr" : "notes";
+        return touchWorkspace(ws, {
+          strategy: {
+            ...s,
+            objectives: [...s.objectives, ...withIds(add.objectives)],
+            personas: [...s.personas, ...withIds(add.personas)],
+            competitors: [...s.competitors, ...withIds(add.competitors)],
+            voiceTraits: [...s.voiceTraits, ...withIds(add.voiceTraits)],
+            positioningOptions: [
+              ...s.positioningOptions.map((o) =>
+                add.notes && o.id === add.notes.optionId ? { ...o, [noteKey]: [...(o[noteKey] ?? []), ...add.notes.notes] } : o
+              ),
+              ...withIds(add.positioningOptions),
+            ],
+            ...(summary !== undefined ? { [summaryKey]: summary } : {}),
+          },
+        });
+      });
+      logAudit("Added to Strategy from the brief analysis", workspaceId);
+    },
+    [mutateWorkspace, touchWorkspace, logAudit]
+  );
+
+  const removeFromStrategy = useCallback(
+    (workspaceId: string, add: StrategyAdditions) => {
+      mutateWorkspace(workspaceId, (ws) => {
+        const s = ws.strategy;
+        const key = (src?: AnalysisSource) => (src ? `${src.analysisId}|${src.itemKey}` : "");
+        const gone = (list?: { source?: AnalysisSource }[]) => new Set((list ?? []).map((e) => key(e.source)).filter(Boolean));
+        const keep = <T extends { source?: AnalysisSource }>(list: T[], added?: { source?: AnalysisSource }[]) => {
+          const drop = gone(added);
+          return list.filter((e) => !drop.has(key(e.source)));
+        };
+        const summaryKey = add.audienceSummary?.lang === "ar" ? "targetAudienceSummaryAr" : "targetAudienceSummary";
+        const summary = add.audienceSummary
+          ? (s[summaryKey] ?? "").replace(`\n\n${add.audienceSummary.text.trim()}`, "").replace(add.audienceSummary.text.trim(), "").trim()
+          : undefined;
+        const noteKey = add.notes?.lang === "ar" ? "notesAr" : "notes";
+        return touchWorkspace(ws, {
+          strategy: {
+            ...s,
+            objectives: keep(s.objectives, add.objectives),
+            personas: keep(s.personas, add.personas),
+            competitors: keep(s.competitors, add.competitors),
+            voiceTraits: keep(s.voiceTraits, add.voiceTraits),
+            positioningOptions: keep(s.positioningOptions, add.positioningOptions).map((o) =>
+              add.notes && o.id === add.notes.optionId
+                ? { ...o, [noteKey]: (o[noteKey] ?? []).filter((n) => !add.notes!.notes.includes(n)) }
+                : o
+            ),
+            ...(summary !== undefined ? { [summaryKey]: summary } : {}),
+          },
+        });
+      });
+    },
+    [mutateWorkspace, touchWorkspace]
+  );
+
   const removePersona = useCallback(
     (workspaceId: string, personaId: string) => {
       mutateWorkspace(workspaceId, (ws) =>
@@ -3475,6 +3552,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatePositioningOption,
       removePositioningOption,
       choosePositioningOption,
+      addToStrategy,
+      removeFromStrategy,
       addCompetitor,
       updateCompetitor,
       setCompetitorColumns,
@@ -3628,6 +3707,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatePositioningOption,
       removePositioningOption,
       choosePositioningOption,
+      addToStrategy,
+      removeFromStrategy,
       addCompetitor,
       updateCompetitor,
       setCompetitorColumns,

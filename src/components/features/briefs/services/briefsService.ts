@@ -15,6 +15,10 @@ export const compareVersions = (id: string, otherId: string) => api<Comparison>(
 export const editSection = (id: string, key: SectionKey, content: unknown) =>
   api<Section>(analysis(id, `sections/${key}/`), { method: "PATCH", body: { content } });
 
+/** Records that items of a section (their keys; none for all of it) went to Strategy. */
+export const markAddedToStrategy = (id: string, key: SectionKey, items: string[]) =>
+  api<Section>(analysis(id, `sections/${key}/added/`), { method: "POST", body: { items } });
+
 export const resetSection = (id: string, key: SectionKey) => api<Section>(analysis(id, `sections/${key}/reset/`), { method: "POST" });
 
 export const regenerateSection = (id: string, key: SectionKey, instruction: string, confirmCost: boolean) =>

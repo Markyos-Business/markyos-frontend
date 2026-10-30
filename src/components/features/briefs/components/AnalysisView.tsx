@@ -8,17 +8,18 @@ import { useBriefAnalysis } from "../hooks/useBriefAnalysis";
 import { useBriefOverview } from "../hooks/useBriefOverview";
 import { startAnalysis } from "../services/briefsService";
 import { costLine, withCostConfirm } from "../utils/cost";
-import { ReportView } from "./ReportView";
+import type { Workspace } from "@/types";
+import { StrategyReport } from "./to-strategy/StrategyReport";
 import { RunningView } from "./RunningView";
 import { RunPanel } from "./RunPanel";
 
-type AnalysisViewProps = { brandId: string; brandSlug: string; isAr: boolean };
+type AnalysisViewProps = { brandId: string; brandSlug: string; isAr: boolean; workspace: Workspace };
 
 /**
  * A brand's Analysis tab: run the first analysis, watch it run, and read the
  * report, version by version.
  */
-export function AnalysisView({ brandId, brandSlug, isAr }: AnalysisViewProps) {
+export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisViewProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const overview = useBriefOverview(brandId);
   const { confirm } = useDialog();
@@ -113,7 +114,8 @@ export function AnalysisView({ brandId, brandSlug, isAr }: AnalysisViewProps) {
       ) : running ? (
         <RunningView analysis={analysis} isAr={isAr} />
       ) : (
-        <ReportView
+        <StrategyReport
+          workspace={workspace}
           analysis={analysis}
           slug={brandSlug}
           canEdit={data.canEdit}

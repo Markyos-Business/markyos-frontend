@@ -212,7 +212,10 @@ function Market({ content, isAr, itemAction }: BodyProps<"market">) {
           <Label>{t(isAr, "White space", "المساحة الفارغة")}</Label>
           {content.whiteSpace.map((w, i) => (
             <div key={w.id ?? i} className="flex flex-col gap-space-2">
-              <Text>{w.text}</Text>
+              <div className="flex items-start justify-between gap-space-4">
+                <Text>{w.text}</Text>
+                {itemAction?.("whiteSpace", w)}
+              </div>
               <EvidenceLine evidence={w} />
             </div>
           ))}
