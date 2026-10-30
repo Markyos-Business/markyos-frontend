@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button, Icon } from "@/components/ui";
 import { SelectField } from "@/components/form";
-import { WARNING_META } from "../constants";
-import type { Overview } from "../types";
+import { WARNING_META } from "../../constants";
+import type { Overview } from "../../types";
 
 type RunPanelProps = {
   overview: Overview;

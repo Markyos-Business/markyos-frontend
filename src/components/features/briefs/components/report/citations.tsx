@@ -4,9 +4,9 @@ import { createContext, useContext, useEffect, useRef, type ReactNode } from "re
 import { Button, Drawer, Icon, Skeleton } from "@/components/ui";
 import { useCallNote } from "@/components/features/callnotes";
 import { useRequest } from "@/hooks/useRequest";
-import { getFormAnswer } from "../services/briefsService";
-import type { Citation, Evidence, SourceRef } from "../types";
-import { answerText } from "../utils/answers";
+import { getFormAnswer } from "../../services/briefsService";
+import type { Citation, Evidence, SourceRef } from "../../types";
+import { answerText } from "../../utils/answers";
 
 type CitationsContextValue = {
   index: Record<string, SourceRef>;

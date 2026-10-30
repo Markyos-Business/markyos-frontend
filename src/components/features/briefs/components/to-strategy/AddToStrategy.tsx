@@ -1,10 +1,10 @@
 "use client";
 
 import { ActionsDropdown, Button, Icon, Tag } from "@/components/ui";
-import type { AddToStrategy } from "../../hooks/useAddToStrategy";
+import type { AddToStrategy } from "../../hooks/to-strategy/useAddToStrategy";
 import type { Section } from "../../types";
 import { fieldOf, strategyFields } from "../../utils/toStrategy";
-import type { ItemAction } from "../sections/SectionBody";
+import type { ItemAction } from "../report/sections/SectionBody";
 
 /** The per-item action: Add, Added, or (for a note) which positioning option it goes on. */
 export function itemActionFor(strategy: AddToStrategy, section: Section): ItemAction {

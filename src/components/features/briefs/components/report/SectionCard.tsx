@@ -3,10 +3,10 @@
 import type { ReactNode } from "react";
 import { Badge, Button, Icon, Skeleton, useDialog, useToast } from "@/components/ui";
 import { formatDay } from "@/components/features/discovery";
-import { SECTION_META } from "../constants";
-import { regenerateSection } from "../services/briefsService";
-import type { Section } from "../types";
-import { costLine, withCostConfirm } from "../utils/cost";
+import { SECTION_META } from "../../constants";
+import { regenerateSection } from "../../services/briefsService";
+import type { Section } from "../../types";
+import { costLine, withCostConfirm } from "../../utils/cost";
 import { SectionBody, type ItemAction } from "./sections/SectionBody";
 
 type SectionCardProps = {

@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 import { Badge, Table, cellClasses, rowClasses } from "@/components/ui";
-import { CHANNEL_META, CONSTRAINT_META, LEVEL_META, PRIORITY_META, SECTION_META } from "../../constants";
-import type { SectionContent, SectionKey, Statement } from "../../types";
+import { CHANNEL_META, CONSTRAINT_META, LEVEL_META, PRIORITY_META, SECTION_META } from "../../../constants";
+import type { SectionContent, SectionKey, Statement } from "../../../types";
 import { CitationChips, EvidenceLine } from "../citations";
 
 /** A slot beside an item for its own actions (Add to Strategy). */

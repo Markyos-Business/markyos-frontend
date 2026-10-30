@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui";
-import { STAGE_META } from "../constants";
-import type { BriefAnalysis } from "../types";
+import { STAGE_META } from "../../constants";
+import type { BriefAnalysis } from "../../types";
 
 const elapsed = (from: string | null, now: number) => {
   if (!from) return "0:00";

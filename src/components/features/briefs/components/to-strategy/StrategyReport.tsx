@@ -2,8 +2,8 @@
 
 import type { ComponentProps } from "react";
 import type { Workspace } from "@/types";
-import { useAddToStrategy } from "../../hooks/useAddToStrategy";
-import { ReportView } from "../ReportView";
+import { useAddToStrategy } from "../../hooks/to-strategy/useAddToStrategy";
+import { ReportView } from "../report/ReportView";
 import { AddAllButton, itemActionFor } from "./AddToStrategy";
 
 type StrategyReportProps = Omit<ComponentProps<typeof ReportView>, "sectionActions" | "itemAction"> & { workspace: Workspace };

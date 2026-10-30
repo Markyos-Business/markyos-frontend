@@ -3,10 +3,10 @@
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { StrategyAdditions, Workspace } from "@/types";
-import { markAddedToStrategy } from "../services/briefsService";
-import type { BriefAnalysis, Section } from "../types";
-import { NOTE_FIELDS, additionFor, isAdded, itemKey, mergeAdditions, noteFor, sectionItems } from "../utils/toStrategy";
-import type { StrategyField } from "../utils/toStrategy";
+import { markAddedToStrategy } from "../../services/briefsService";
+import type { BriefAnalysis, Section } from "../../types";
+import { NOTE_FIELDS, additionFor, isAdded, itemKey, mergeAdditions, noteFor, sectionItems } from "../../utils/toStrategy";
+import type { StrategyField } from "../../utils/toStrategy";
 
 type Item = Parameters<typeof itemKey>[1];
 

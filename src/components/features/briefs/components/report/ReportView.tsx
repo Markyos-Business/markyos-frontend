@@ -2,8 +2,8 @@
 
 import { useCallback, useState, type ReactNode } from "react";
 import { Badge } from "@/components/ui";
-import { SECTION_META } from "../constants";
-import type { BriefAnalysis, Citation, Section } from "../types";
+import { SECTION_META } from "../../constants";
+import type { BriefAnalysis, Citation, Section } from "../../types";
 import { CitationPanel, CitationsProvider } from "./citations";
 import { SectionCard, sectionTag } from "./SectionCard";
 import type { ItemAction } from "./sections/SectionBody";

@@ -10,8 +10,8 @@ import { startAnalysis } from "../services/briefsService";
 import { costLine, withCostConfirm } from "../utils/cost";
 import type { Workspace } from "@/types";
 import { StrategyReport } from "./to-strategy/StrategyReport";
-import { RunningView } from "./RunningView";
-import { RunPanel } from "./RunPanel";
+import { RunningView } from "./run/RunningView";
+import { RunPanel } from "./run/RunPanel";
 
 type AnalysisViewProps = { brandId: string; brandSlug: string; isAr: boolean; workspace: Workspace };
 
