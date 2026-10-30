@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
-import type { GoogleSignInState } from "../../hooks/useGoogleSignIn";
+import type { GoogleSignInState } from "../../hooks/shared/useGoogleSignIn";
 
 /** The "OR" rule between the Google button and the form. */
 const OrRule = () => (

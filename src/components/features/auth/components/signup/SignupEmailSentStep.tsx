@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertBanner, Button } from "@/components/ui";
-import { useSetupEmail } from "../../hooks/useSetupEmail";
+import { useSetupEmail } from "../../hooks/signup/useSetupEmail";
 import type { PasswordSetup } from "../../types";
 import { AuthShell } from "../shared/AuthShell";
 

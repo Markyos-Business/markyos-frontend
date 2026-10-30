@@ -2,7 +2,7 @@
 
 import { Icon } from "@/components/ui";
 import type { Lang } from "@/types";
-import { usePublicForm, type PublicFormProblem } from "../../hooks/usePublicForm";
+import { usePublicForm, type PublicFormProblem } from "../../hooks/client/usePublicForm";
 import { formPalette, paletteVars } from "../../model/theme";
 import type { FormTheme } from "../../types";
 import { ClientForm } from "./ClientForm";

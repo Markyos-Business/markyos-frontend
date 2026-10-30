@@ -2,7 +2,7 @@
 
 import { AlertBanner, Button } from "@/components/ui";
 import { OtpField } from "@/components/form";
-import { useVerifyEmail } from "../../hooks/useVerifyEmail";
+import { useVerifyEmail } from "../../hooks/verify/useVerifyEmail";
 import type { PendingVerification } from "../../types";
 import { AuthShell } from "../shared/AuthShell";
 

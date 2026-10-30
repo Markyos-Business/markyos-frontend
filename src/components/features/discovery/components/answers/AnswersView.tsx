@@ -5,7 +5,7 @@ import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDi
 import { translateText } from "@/components/features/strategy";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { STATUS_META } from "../../constants";
-import { useResponses } from "../../hooks/useResponses";
+import { useResponses } from "../../hooks/answers/useResponses";
 import { textIn } from "../../model/questionTypes";
 import { reopenForm } from "../../services/discoveryService";
 import type { FormEventType, ResponsesView, UploadedFile } from "../../types";

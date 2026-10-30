@@ -3,7 +3,7 @@
 import { AlertBanner, Button } from "@/components/ui";
 import { RadioCardGroup, labelClasses } from "@/components/form";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
-import type { GoogleSignInState } from "../../hooks/useGoogleSignIn";
+import type { GoogleSignInState } from "../../hooks/shared/useGoogleSignIn";
 import { AuthShell } from "./AuthShell";
 
 /**

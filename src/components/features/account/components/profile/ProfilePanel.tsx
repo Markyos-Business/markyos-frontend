@@ -3,12 +3,12 @@
 import { useApp } from "@/contexts/AppContext";
 import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
-import { useAvatar } from "../../hooks/useAvatar";
-import { useChangePassword } from "../../hooks/useChangePassword";
-import { useDeleteAccount } from "../../hooks/useDeleteAccount";
-import { useMySessions } from "../../hooks/useMySessions";
-import { useProfileDetails } from "../../hooks/useProfileDetails";
-import { useTwoFactor } from "../../hooks/useTwoFactor";
+import { useAvatar } from "../../hooks/profile/useAvatar";
+import { useChangePassword } from "../../hooks/profile/useChangePassword";
+import { useDeleteAccount } from "../../hooks/profile/useDeleteAccount";
+import { useMySessions } from "../../hooks/profile/useMySessions";
+import { useProfileDetails } from "../../hooks/profile/useProfileDetails";
+import { useTwoFactor } from "../../hooks/profile/useTwoFactor";
 import { DeleteAccountSection } from "./DeleteAccountSection";
 import { PasswordSection } from "./PasswordSection";
 import { ProfileSection } from "./ProfileSection";

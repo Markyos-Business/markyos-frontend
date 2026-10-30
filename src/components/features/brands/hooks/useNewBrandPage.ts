@@ -6,7 +6,7 @@ import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useStudioPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import type { StartMode } from "../constants";
-import { useBrandImport } from "./useBrandImport";
+import { useBrandImport } from "./import/useBrandImport";
 
 /** The new-brand page: start from a name or from a guideline file, unless the account is at its brand limit. */
 export function useNewBrandPage() {

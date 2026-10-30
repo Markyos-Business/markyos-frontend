@@ -4,7 +4,7 @@ import { Button, FormDialog, Icon, Row, Section } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { PasswordField } from "@/components/features/auth";
 import type { Account } from "@/types";
-import type { DeleteAccountState } from "../../hooks/useDeleteAccount";
+import type { DeleteAccountState } from "../../hooks/profile/useDeleteAccount";
 
 type DeleteAccountSectionProps = { account: Account; deletion: DeleteAccountState };
 

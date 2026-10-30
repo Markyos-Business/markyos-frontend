@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FormDialog } from "@/components/ui";
 import { RadioField } from "@/components/form";
 import type { AccountRole } from "@/types";
-import { useAdminLang } from "../../hooks/useAdminLang";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
 
 type ChangeRoleDialogProps = {
   open: boolean;

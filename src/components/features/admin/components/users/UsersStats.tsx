@@ -1,7 +1,7 @@
 "use client";
 
 import { StatCard, StatGrid } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
 import type { AdminStats } from "../../types";
 import { trendOf } from "../../utils/trend";
 

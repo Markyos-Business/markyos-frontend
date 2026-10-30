@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui";
-import type { ResetState } from "../../hooks/useResetPassword";
+import type { ResetState } from "../../hooks/reset/useResetPassword";
 import { AuthShell } from "../shared/AuthShell";
 
 /** With a server: the link is on its way. */

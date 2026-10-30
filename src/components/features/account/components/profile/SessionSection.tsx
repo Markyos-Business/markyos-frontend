@@ -6,7 +6,7 @@ import type { DataColumn } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import { formatRelative } from "@/lib/utils";
 import type { Account } from "@/types";
-import type { MySessionsState } from "../../hooks/useMySessions";
+import type { MySessionsState } from "../../hooks/profile/useMySessions";
 import type { MySession } from "../../types";
 
 type SessionSectionProps = { account: Account; sessions: MySessionsState };

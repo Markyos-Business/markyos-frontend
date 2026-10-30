@@ -1,8 +1,8 @@
 "use client";
 
 import { ActivityFeed, ContentCard, EmptyState, ErrorState, Skeleton } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import type { UserPage } from "../../hooks/useUserPage";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import type { UserPage } from "../../hooks/user-detail/useUserPage";
 import { describeActivity } from "../../utils/activity";
 
 /** What happened on the account, newest first. */

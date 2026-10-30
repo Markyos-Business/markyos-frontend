@@ -2,8 +2,8 @@
 
 import { DateRangeButton, FilterBar, FilterSelectField, SearchField } from "@/components/form";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import type { useUsersPage } from "../../hooks/useUsersPage";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import type { useUsersPage } from "../../hooks/users/useUsersPage";
 
 type UsersFiltersProps = Pick<ReturnType<typeof useUsersPage>, "filters" | "values" | "filtered" | "clearFilters" | "searchKey" | "searchSeed">;
 

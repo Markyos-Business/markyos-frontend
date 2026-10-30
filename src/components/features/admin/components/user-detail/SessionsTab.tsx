@@ -2,9 +2,9 @@
 
 import { Button, ContentCard, DataTable, EmptyState, Icon, Tag } from "@/components/ui";
 import type { DataColumn } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import type { UserActions } from "../../hooks/useUserActions";
-import type { UserPage } from "../../hooks/useUserPage";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import type { UserActions } from "../../hooks/shared/useUserActions";
+import type { UserPage } from "../../hooks/user-detail/useUserPage";
 import type { AdminSession, AdminUser } from "../../types";
 import { relativeTime, shortDate } from "../../utils/format";
 

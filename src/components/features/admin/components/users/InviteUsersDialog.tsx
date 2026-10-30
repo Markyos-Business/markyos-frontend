@@ -4,8 +4,8 @@ import { FormDialog } from "@/components/ui";
 import { SelectField, TextareaField } from "@/components/form";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { AccountRole, AccountType } from "@/types";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import type { useInviteUsers } from "../../hooks/useInviteUsers";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import type { useInviteUsers } from "../../hooks/users/useInviteUsers";
 
 type InviteUsersDialogProps = { invite: ReturnType<typeof useInviteUsers> };
 

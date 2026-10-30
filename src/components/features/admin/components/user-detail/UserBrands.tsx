@@ -2,8 +2,8 @@
 
 import { ContentCard, DataTable, EmptyState, Tag } from "@/components/ui";
 import type { DataColumn } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import { useAdminUserBrands } from "../../hooks/useAdminUserBrands";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import { useAdminUserBrands } from "../../hooks/user-detail/useAdminUserBrands";
 import type { AdminUserBrand } from "../../types";
 import { relativeTime } from "../../utils/format";
 

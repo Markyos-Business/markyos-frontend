@@ -5,7 +5,7 @@ import { CheckboxField, InputField, RadioField, TextareaField } from "@/componen
 import type { Workspace } from "@/types";
 import { MEMBER_ROLES } from "../../constants";
 import { usePeopleLang } from "../../hooks/usePeopleLang";
-import type { InvitePeopleState } from "../../hooks/useInvitePeople";
+import type { InvitePeopleState } from "../../hooks/invite/useInvitePeople";
 import type { MemberRole } from "../../types";
 
 type InvitePeopleDialogProps = { invite: InvitePeopleState; owned: Workspace[] };

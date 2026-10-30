@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AlertBanner, Button, Icon, Skeleton } from "@/components/ui";
 import { SearchField } from "@/components/form";
 import { CATEGORY_LABELS, CATEGORY_ORDER, TYPE_META } from "../../constants";
-import { useLibrary } from "../../hooks/useLibrary";
+import { useLibrary } from "../../hooks/builder/useLibrary";
 import { textIn } from "../../model/questionTypes";
 import type { QuestionCategory } from "../../types";
 

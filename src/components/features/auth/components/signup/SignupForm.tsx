@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui";
-import { useGoogleSignIn } from "../../hooks/useGoogleSignIn";
-import type { SignupFormState } from "../../hooks/useSignupForm";
+import { useGoogleSignIn } from "../../hooks/shared/useGoogleSignIn";
+import type { SignupFormState } from "../../hooks/signup/useSignupForm";
 import { AuthShell } from "../shared/AuthShell";
 import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { API_ENABLED } from "@/lib/api/client";

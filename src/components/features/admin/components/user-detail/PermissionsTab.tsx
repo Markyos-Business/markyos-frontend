@@ -2,7 +2,7 @@
 
 import { ContentCard, KeyValueList, StatusDot } from "@/components/ui";
 import { ROLE_PERMISSIONS } from "../../constants";
-import { useAdminLang } from "../../hooks/useAdminLang";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
 import type { AdminUser } from "../../types";
 
 /** What the account's role may do. Read-only: Change role is where it changes. */

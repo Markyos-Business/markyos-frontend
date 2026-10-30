@@ -3,7 +3,7 @@
 import { useMemo, useState, type DragEvent } from "react";
 import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, Tabs, useDialog } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
-import { useFormEditor } from "../../hooks/useFormEditor";
+import { useFormEditor } from "../../hooks/builder/useFormEditor";
 import { defaultConfig } from "../../model/defaults";
 import { editRefusal } from "../../model/status";
 import {

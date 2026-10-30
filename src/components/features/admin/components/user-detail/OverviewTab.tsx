@@ -1,7 +1,7 @@
 "use client";
 
 import { ContentCard, KeyValueList, StatCard, StatGrid } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
 import type { AdminUser } from "../../types";
 import { formatDate, relativeTime } from "../../utils/format";
 import { UserBrands } from "./UserBrands";

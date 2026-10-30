@@ -1,12 +1,12 @@
 "use client";
 
 import { Button, Icon, PageHeader } from "@/components/ui";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import { useAdminViewer } from "../../hooks/useAdminViewer";
-import { useBulkUserActions } from "../../hooks/useBulkUserActions";
-import { useInviteUsers } from "../../hooks/useInviteUsers";
-import { useUserActions } from "../../hooks/useUserActions";
-import { useUsersPage } from "../../hooks/useUsersPage";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import { useAdminViewer } from "../../hooks/shared/useAdminViewer";
+import { useBulkUserActions } from "../../hooks/users/useBulkUserActions";
+import { useInviteUsers } from "../../hooks/users/useInviteUsers";
+import { useUserActions } from "../../hooks/shared/useUserActions";
+import { useUsersPage } from "../../hooks/users/useUsersPage";
 import { ChangeRoleDialog } from "../shared/ChangeRoleDialog";
 import { InviteUsersDialog } from "./InviteUsersDialog";
 import { UsersFilters } from "./UsersFilters";

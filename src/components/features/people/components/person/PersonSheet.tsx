@@ -4,8 +4,8 @@ import { FormSheet, Tag } from "@/components/ui";
 import { SelectField } from "@/components/form";
 import { MEMBER_ROLES } from "../../constants";
 import { usePeopleLang } from "../../hooks/usePeopleLang";
-import { usePersonAccess } from "../../hooks/usePersonAccess";
-import type { AccessChoice } from "../../hooks/usePersonAccess";
+import { usePersonAccess } from "../../hooks/person/usePersonAccess";
+import type { AccessChoice } from "../../hooks/person/usePersonAccess";
 import type { Person } from "../../types";
 
 type PersonSheetProps = { person: Person; onClose: () => void };

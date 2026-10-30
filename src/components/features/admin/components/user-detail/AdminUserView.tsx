@@ -2,8 +2,8 @@
 
 import { Button, EmptyState, ErrorState, Icon, Skeleton, Tabs } from "@/components/ui";
 import { USER_TABS } from "../../constants";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import { useUserPage } from "../../hooks/useUserPage";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import { useUserPage } from "../../hooks/user-detail/useUserPage";
 import { ChangeRoleDialog } from "../shared/ChangeRoleDialog";
 import { ActivityTab } from "./ActivityTab";
 import { OverviewTab } from "./OverviewTab";

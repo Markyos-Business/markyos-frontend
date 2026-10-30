@@ -2,8 +2,8 @@
 
 import { ActionsDropdown, Avatar, Button, ContentCard, Icon, StatusDot, Tag } from "@/components/ui";
 import { STATUS_TONE } from "../../constants";
-import { useAdminLang } from "../../hooks/useAdminLang";
-import type { UserActions } from "../../hooks/useUserActions";
+import { useAdminLang } from "../../hooks/shared/useAdminLang";
+import type { UserActions } from "../../hooks/shared/useUserActions";
 import type { AdminUser } from "../../types";
 import { initialsOf } from "../../utils/format";
 import type { Rule, UserRules } from "../../utils/rules";

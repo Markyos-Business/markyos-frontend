@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AlertBanner, Button, Icon } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { API_ENABLED } from "@/lib/api/client";
-import type { ResetState } from "../../hooks/useResetPassword";
+import type { ResetState } from "../../hooks/reset/useResetPassword";
 import { AuthShell } from "../shared/AuthShell";
 import { PasswordField } from "../shared/PasswordField";
 

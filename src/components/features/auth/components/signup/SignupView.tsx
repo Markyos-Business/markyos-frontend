@@ -1,6 +1,6 @@
 "use client";
 
-import { useSignupForm } from "../../hooks/useSignupForm";
+import { useSignupForm } from "../../hooks/signup/useSignupForm";
 import { SignupForm } from "./SignupForm";
 
 /** Creating an account. */

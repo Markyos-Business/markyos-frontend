@@ -5,7 +5,7 @@ import { PasswordField } from "@/components/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
 import { formatRelative } from "@/lib/utils";
 import type { Account } from "@/types";
-import type { ChangePasswordState } from "../../hooks/useChangePassword";
+import type { ChangePasswordState } from "../../hooks/profile/useChangePassword";
 
 /** When the password last changed, and the form to change it. */
 export function PasswordSection({ account, password }: { account: Account; password: ChangePasswordState }) {

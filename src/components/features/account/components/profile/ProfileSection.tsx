@@ -7,8 +7,8 @@ import { InputField } from "@/components/form";
 import { initialsFor } from "@/lib/utils";
 import type { Account } from "@/types";
 import { API_ENABLED } from "@/lib/api/client";
-import type { AvatarState } from "../../hooks/useAvatar";
-import type { ProfileDetailsState } from "../../hooks/useProfileDetails";
+import type { AvatarState } from "../../hooks/profile/useAvatar";
+import type { ProfileDetailsState } from "../../hooks/profile/useProfileDetails";
 
 type ProfileSectionProps = { account: Account; details: ProfileDetailsState; avatar: AvatarState };
 

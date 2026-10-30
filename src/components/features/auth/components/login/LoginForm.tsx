@@ -2,8 +2,8 @@
 
 import { AlertBanner, Button } from "@/components/ui";
 import { CheckboxField, InputField } from "@/components/form";
-import { useGoogleSignIn } from "../../hooks/useGoogleSignIn";
-import { useLoginForm } from "../../hooks/useLoginForm";
+import { useGoogleSignIn } from "../../hooks/shared/useGoogleSignIn";
+import { useLoginForm } from "../../hooks/login/useLoginForm";
 import { AuthShell } from "../shared/AuthShell";
 import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";

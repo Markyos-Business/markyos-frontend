@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertBanner, Button } from "@/components/ui";
-import { useConfirmEmail } from "../../hooks/useConfirmEmail";
+import { useConfirmEmail } from "../../hooks/confirm-email/useConfirmEmail";
 import { AuthShell } from "../shared/AuthShell";
 
 /** Where the "confirm your new email" link lands. */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useResetPassword } from "../../hooks/useResetPassword";
+import { useResetPassword } from "../../hooks/reset/useResetPassword";
 import { ResetConfirmStep } from "./ResetConfirmStep";
 import { ResetRequestStep } from "./ResetRequestStep";
 import { ResetSentStep } from "./ResetSentStep";

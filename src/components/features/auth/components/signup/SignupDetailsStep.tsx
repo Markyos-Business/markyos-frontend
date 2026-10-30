@@ -4,7 +4,7 @@ import { AlertBanner, Button } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { ACCOUNT_TYPES } from "@/constants/accountTypes";
 import { API_ENABLED } from "@/lib/api/client";
-import type { SignupFormState } from "../../hooks/useSignupForm";
+import type { SignupFormState } from "../../hooks/signup/useSignupForm";
 import { PasswordField } from "../shared/PasswordField";
 
 /** Step two: name, email and a password, twice. */

@@ -5,7 +5,7 @@ import { AlertBanner, Badge, Button, EmptyState, Icon, Row, Section, Skeleton, S
 import { InputField, SegmentedToggle, SelectInput } from "@/components/form";
 import type { Lang } from "@/types";
 import { STATUS_META } from "../constants";
-import { useFormEditor } from "../hooks/useFormEditor";
+import { useFormEditor } from "../hooks/builder/useFormEditor";
 import { formPalette } from "../model/theme";
 import { changeLink, sendForm, updateForm } from "../services/discoveryService";
 import type { AnswerValue, DiscoveryForm, FormPatch, PublicForm } from "../types";

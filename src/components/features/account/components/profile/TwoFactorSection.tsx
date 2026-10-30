@@ -2,7 +2,7 @@
 
 import { FormDialog, Row, Section, Switch } from "@/components/ui";
 import { PasswordField } from "@/components/features/auth";
-import type { TwoFactorState } from "../../hooks/useTwoFactor";
+import type { TwoFactorState } from "../../hooks/profile/useTwoFactor";
 
 /** Two-step sign-in: after the password, a 6-digit code emailed to you. */
 export function TwoFactorSection({ twoFactor }: { twoFactor: TwoFactorState }) {

@@ -2,7 +2,7 @@
 
 import { AlertBanner, Button, PageHeader, StatTile } from "@/components/ui";
 import { ACCOUNT_TYPE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
-import { useAdminStats } from "../../hooks/useAdminStats";
+import { useAdminStats } from "../../hooks/shared/useAdminStats";
 import { Breakdown } from "./Breakdown";
 import { SignupsChart } from "./SignupsChart";
 

@@ -3,10 +3,10 @@
 import { Button, Icon, PageHeader } from "@/components/ui";
 import { FilterBar, FilterSelectField, SearchField } from "@/components/form";
 import { MEMBER_ROLES } from "../constants";
-import { useInvitePeople } from "../hooks/useInvitePeople";
+import { useInvitePeople } from "../hooks/invite/useInvitePeople";
 import { usePeopleLang } from "../hooks/usePeopleLang";
 import type { PeoplePage } from "../hooks/usePeoplePage";
-import { useRemoveEverywhere } from "../hooks/usePersonAccess";
+import { useRemoveEverywhere } from "../hooks/person/usePersonAccess";
 import type { MemberRole } from "../types";
 import { InvitePeopleDialog } from "./invite/InvitePeopleDialog";
 import { PeopleTable } from "./list/PeopleTable";
