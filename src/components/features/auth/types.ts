@@ -15,6 +15,8 @@ export interface ApiAccount {
   avatarUrl: string | null;
   twoFactorEnabled: boolean;
   pendingEmail: string | null;
+  /** False for a Google-only account: no password to check or to protect. */
+  hasPassword: boolean;
 }
 
 export interface Strength {

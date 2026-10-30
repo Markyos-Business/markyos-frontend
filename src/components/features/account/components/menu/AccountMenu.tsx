@@ -50,7 +50,7 @@ export function AccountMenu({
   }
 
   return (
-    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} size={40} />} width={250}>
+    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250}>
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">

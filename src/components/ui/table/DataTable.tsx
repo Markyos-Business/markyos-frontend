@@ -172,7 +172,9 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
           </tbody>
         </table>
       </div>
-      {!error && total > 0 && (
+      {/* A short list the table pages itself fits on one page: no footer.
+          Server-paged lists keep it, since the total is the server's. */}
+      {!error && total > 0 && (paging || total > Math.min(...pageSizes)) && (
         <DataTableFooter
           page={page}
           pageSize={pageSize}

@@ -35,6 +35,7 @@ export function toAccount(a: ApiAccount): Account {
     avatarUrl: a.avatarUrl,
     twoFactorEnabled: a.twoFactorEnabled,
     pendingEmail: a.pendingEmail,
+    hasPassword: a.hasPassword,
   };
 }
 

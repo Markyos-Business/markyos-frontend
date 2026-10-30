@@ -1107,6 +1107,8 @@ export interface Account {
   twoFactorEnabled?: boolean;
   /** A new email asked for and not yet confirmed from its inbox (server only). */
   pendingEmail?: string | null;
+  /** False for a Google-only account (server only); absent means it has one. */
+  hasPassword?: boolean;
 }
 
 export type AccountRole = "admin" | "member";

@@ -237,6 +237,8 @@ interface AppContextValue {
   updateAccount: (patch: Partial<Pick<Account, "name" | "email">>) => Promise<string | null>;
   /** Sends the pending email change's confirmation again, or drops it. Resolves to an error, or null. */
   pendingEmailAction: (action: "resend" | "cancel") => Promise<string | null>;
+  /** Take the server's copy of the signed-in account, after a change made elsewhere (photo, two-step sign-in). */
+  setServerAccount: (account: Account) => void;
   /** The link from the new inbox; works signed out. */
   confirmEmailChange: (token: string) => Promise<{ error?: string; email?: string }>;
   /** Changes the password. `current` is always required. */
@@ -1083,6 +1085,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       return apiMessage(err);
     }
+  }, []);
+
+  const setServerAccount = useCallback((account: Account) => {
+    setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
   }, []);
 
   const confirmEmailChange = useCallback(async (token: string): Promise<{ error?: string; email?: string }> => {
@@ -3320,6 +3326,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       logout,
       updateAccount,
       pendingEmailAction,
+      setServerAccount,
       confirmEmailChange,
       setAccountPassword,
       requestPasswordReset,
@@ -3465,6 +3472,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       logout,
       updateAccount,
       pendingEmailAction,
+      setServerAccount,
       confirmEmailChange,
       setAccountPassword,
       requestPasswordReset,
