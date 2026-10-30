@@ -62,3 +62,79 @@ export const CHANNEL_META: Record<"form" | "call", Bilingual> = {
 
 /** The top bar's name for the Analysis tab. */
 export const PAGE_SECTION = { en: "Analysis", ar: "التحليل" } as const;
+
+/** The section editor's label for each field it shows. */
+export const FIELD_LABELS: Record<string, Bilingual> = {
+  client: { en: "Client", ar: "العميل" },
+  offer: { en: "Offer", ar: "العرض" },
+  market: { en: "Market", ar: "السوق" },
+  projectType: { en: "Project type", ar: "نوع المشروع" },
+  scope: { en: "Scope", ar: "النطاق" },
+  facts: { en: "Facts", ar: "الحقائق" },
+  label: { en: "Label", ar: "العنوان" },
+  value: { en: "Value", ar: "القيمة" },
+  business: { en: "Business goals", ar: "أهداف العمل" },
+  brand: { en: "Brand goals", ar: "أهداف العلامة" },
+  text: { en: "Text", ar: "النص" },
+  priority: { en: "Priority", ar: "الأولوية" },
+  segments: { en: "Segments", ar: "الشرائح" },
+  personas: { en: "Personas", ar: "الشخصيات" },
+  name: { en: "Name", ar: "الاسم" },
+  description: { en: "Description", ar: "الوصف" },
+  ageRange: { en: "Age range", ar: "الفئة العمرية" },
+  city: { en: "City", ar: "المدينة" },
+  job: { en: "Job", ar: "الوظيفة" },
+  needs: { en: "Needs", ar: "الاحتياجات" },
+  frustrations: { en: "Frustrations", ar: "مصادر الإحباط" },
+  quote: { en: "Quote", ar: "اقتباس" },
+  howTheyChoose: { en: "How they choose", ar: "كيف يختارون" },
+  context: { en: "Context", ar: "السياق" },
+  competitors: { en: "Competitors", ar: "المنافسون" },
+  positioning: { en: "Positioning", ar: "التموضع" },
+  strengths: { en: "Strengths", ar: "نقاط القوة" },
+  gaps: { en: "Gaps", ar: "الثغرات" },
+  mentionedBy: { en: "Mentioned by", ar: "ذُكر من قِبل" },
+  whiteSpace: { en: "White space", ar: "المساحة الفارغة" },
+  traits: { en: "Traits", ar: "السمات" },
+  trait: { en: "Trait", ar: "السمة" },
+  evidence: { en: "Evidence", ar: "الدليل" },
+  sliders: { en: "Tone sliders", ar: "مؤشرات النبرة" },
+  left: { en: "Left", ar: "الطرف الأيسر" },
+  right: { en: "Right", ar: "الطرف الأيمن" },
+  wordsToUse: { en: "Words to use", ar: "كلمات تُستخدم" },
+  wordsToAvoid: { en: "Words to avoid", ar: "كلمات تُتجنب" },
+  items: { en: "Items", ar: "العناصر" },
+  statementA: { en: "One thing they said", ar: "ما قالوه أولًا" },
+  statementB: { en: "And another", ar: "وما قالوه أيضًا" },
+  whyItMatters: { en: "Why it matters", ar: "لماذا يهم" },
+  question: { en: "Question", ar: "السؤال" },
+  severity: { en: "Severity", ar: "الخطورة" },
+  blocks: { en: "Holds up", ar: "يعيق" },
+  channel: { en: "Ask in", ar: "يُسأل في" },
+  idea: { en: "Idea", ar: "الفكرة" },
+  pros: { en: "Pros", ar: "المزايا" },
+  risks: { en: "Risks", ar: "المخاطر" },
+  fit: { en: "Fit (1–5)", ar: "الملاءمة (1–5)" },
+  routes: { en: "Routes", ar: "المسارات" },
+  routeName: { en: "Route", ar: "المسار" },
+  themes: { en: "Themes", ar: "المحاور" },
+  visualCues: { en: "Visual cues", ar: "إشارات بصرية" },
+  verbalCues: { en: "Verbal cues", ar: "إشارات لفظية" },
+  references: { en: "References", ar: "مراجع" },
+  category: { en: "Category", ar: "الفئة" },
+  mitigation: { en: "Mitigation", ar: "المعالجة" },
+};
+
+/** Fields with a fixed set of values, edited with a select. */
+export const FIELD_CHOICES: Record<string, Record<string, Bilingual>> = {
+  priority: LEVEL_META,
+  severity: LEVEL_META,
+  category: CONSTRAINT_META,
+  channel: CHANNEL_META,
+  mentionedBy: { client: { en: "The client", ar: "العميل" }, asked: { en: "When asked", ar: "عند السؤال" } },
+  blocks: Object.fromEntries(
+    Object.entries(SECTION_META)
+      .filter(([k]) => k !== "tensions" && k !== "gaps")
+      .map(([k, v]) => [k, { en: v.en, ar: v.ar }])
+  ),
+};
