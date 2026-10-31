@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button, EmptyHint, Icon, IconButton, Section, Tag, useDialog, useToast } from "@/components/ui";
 import type { Lang, PositioningOption, Workspace } from "@/types";
-import { InlineText, MiniInput } from "./shared";
+import { InlineText, MiniInput } from "../../shared/inputs";
 
 /**
  * Positioning routes still being weighed. Each has a name, the idea behind it

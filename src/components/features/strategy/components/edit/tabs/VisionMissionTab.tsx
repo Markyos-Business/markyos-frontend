@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { EditableField, Section, richIsEmpty } from "@/components/ui";
-import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/BilingualUI";
+import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/shared/BilingualUI";
 import { strategyText, textKey } from "@/components/features/guideline-site";
 import { Lang, Workspace } from "@/types";
 

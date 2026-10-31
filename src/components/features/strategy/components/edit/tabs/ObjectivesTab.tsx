@@ -5,8 +5,8 @@ import { useApp } from "@/contexts/AppContext";
 import { Button, EmptyHint, IconButton, Section, Tag, useToast } from "@/components/ui";
 import { SelectInput } from "@/components/form";
 import type { Lang, ObjectiveKind, Priority, Workspace } from "@/types";
-import { OBJECTIVE_KINDS, PRIORITIES } from "../constants";
-import { InlineText, MiniInput } from "./shared";
+import { OBJECTIVE_KINDS, PRIORITIES } from "../../../constants";
+import { InlineText, MiniInput } from "../../shared/inputs";
 
 /**
  * What the brand work is for: business and brand goals, each with a priority.

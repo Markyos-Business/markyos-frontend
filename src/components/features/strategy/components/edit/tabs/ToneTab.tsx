@@ -3,10 +3,10 @@
 import { FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
-import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/BilingualUI";
+import { MachineDraftFlag, OtherCopyHint } from "@/components/features/strategy/components/shared/BilingualUI";
 import { traitIn } from "@/components/features/guideline-site";
 import { Lang, Workspace } from "@/types";
-import { InlineText, MiniInput } from "./shared";
+import { InlineText, MiniInput } from "../../shared/inputs";
 
 export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useApp();

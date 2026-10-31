@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Icon } from "@/components/ui";
-import { STRATEGY_TABS, type StrategyTab } from "../constants";
+import { STRATEGY_TABS, type StrategyTab } from "../../constants";
 
 type TabSequenceProps = { current: StrategyTab; onSelect: (t: StrategyTab) => void; isAr: boolean; empty: Record<StrategyTab, boolean> };
 

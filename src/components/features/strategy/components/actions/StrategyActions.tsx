@@ -3,8 +3,8 @@
 import { Button, Icon, Popover } from "@/components/ui";
 import { SegmentedToggle } from "@/components/form";
 import { ShareLinksPanel } from "@/components/features/sharing";
-import type { StrategyPageState } from "../hooks/useStrategyPage";
-import { TranslateStrategy } from "./TranslateStrategy";
+import type { StrategyPageState } from "../../hooks/useStrategyPage";
+import { TranslateStrategy } from "../translate/TranslateStrategy";
 
 /** The top bar's strategy actions: share, translate, edit or read, import. */
 export function StrategyActions({ ws, isAr, mode, onMode, onImport }: StrategyPageState["actions"]) {

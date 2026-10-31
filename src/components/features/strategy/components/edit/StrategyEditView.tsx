@@ -1,17 +1,17 @@
 "use client";
 
-import { SINGLE_TEXT_TABS } from "../constants";
-import type { StrategyPageState } from "../hooks/useStrategyPage";
-import { AudienceTab } from "./AudienceTab";
-import { CompetitiveTab } from "./CompetitiveTab";
-import { CoreValuesTab } from "./CoreValuesTab";
-import { ObjectivesTab } from "./ObjectivesTab";
-import { PositioningOptionsTab } from "./PositioningOptionsTab";
-import { SingleTextTab } from "./SingleTextTab";
+import { SINGLE_TEXT_TABS } from "../../constants";
+import type { StrategyPageState } from "../../hooks/useStrategyPage";
+import { AudienceTab } from "./tabs/AudienceTab";
+import { CompetitiveTab } from "./tabs/CompetitiveTab";
+import { CoreValuesTab } from "./tabs/CoreValuesTab";
+import { ObjectivesTab } from "./tabs/ObjectivesTab";
+import { PositioningOptionsTab } from "./tabs/PositioningOptionsTab";
+import { SingleTextTab } from "./tabs/SingleTextTab";
 import { TabSequence } from "./TabSequence";
-import { ToneTab } from "./ToneTab";
-import { TranslationNotice } from "./TranslateStrategy";
-import { VisionMissionTab } from "./VisionMissionTab";
+import { ToneTab } from "./tabs/ToneTab";
+import { TranslationNotice } from "../translate/TranslateStrategy";
+import { VisionMissionTab } from "./tabs/VisionMissionTab";
 
 /** Edit mode: the page's heading, the open section, and the way to the next. */
 export function StrategyEditView({ ws, isAr, lang, tab, onTab, emptyTabs }: StrategyPageState["edit"]) {

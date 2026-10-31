@@ -2,7 +2,7 @@
 
 import { Tag } from "@/components/ui";
 import type { Lang, Workspace } from "@/types";
-import { OBJECTIVE_KINDS, PRIORITIES } from "../constants";
+import { OBJECTIVE_KINDS, PRIORITIES } from "../../constants";
 
 /**
  * Objectives and positioning options in read mode: the working material behind
