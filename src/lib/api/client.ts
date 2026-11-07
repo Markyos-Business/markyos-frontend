@@ -52,7 +52,8 @@ export class ApiError extends Error {
     readonly fields: Record<string, string> = {},
     /** The parsed response body, for callers that need more than a message
      *  (a 409 carries the server's current copy). */
-    readonly data: unknown = null
+    readonly data: unknown = null,
+    readonly requestId: string | null = null
   ) {
     super(message);
     this.name = "ApiError";
@@ -170,6 +171,10 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
 
   if (res.status === 204) return undefined as T;
   const data: unknown = await res.json().catch(() => null);
-  if (!res.ok) throw toApiError(res.status, data, res.headers.get("Retry-After"));
+  if (!res.ok) {
+    const error = toApiError(res.status, data, res.headers.get("Retry-After"));
+    throw new ApiError(error.message, error.status, error.fields, error.data,
+      res.headers.get("X-Request-ID"));
+  }
   return data as T;
 }
