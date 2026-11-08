@@ -72,6 +72,8 @@ export function createApiAdapter(options: {
   onRefused: (workspace: Workspace, message: string) => void;
   /** A brand this account can no longer open: taken off its team. */
   onLost: (workspace: Workspace) => void;
+  /** Entitlements may change through Stripe without changing brand content. */
+  onBilling: (workspaceId: string, billing: Workspace["billing"]) => void;
 }): ApiAdapter {
   const local = createLocalAdapter();
   const synced = new Map<string, Synced>();
@@ -80,7 +82,12 @@ export function createApiAdapter(options: {
   let running = false;
   let again = false;
 
-  const portableJson = (ws: Workspace) => JSON.stringify(local.toPortable(ws));
+  // Feedback has its own API. A refreshed client note must not trigger a
+  // whole-brand save or conflict with someone editing the guideline.
+  const portableJson = (ws: Workspace) => JSON.stringify(local.toPortable({
+    ...ws, signOffPins: [], approvals: [],
+    published: ws.published ? { ...ws.published, signOffPins: [], approvals: [] } : ws.published,
+  }));
 
   /** `ws` with every inline file uploaded and swapped for its URL. */
   const uploadFiles = (ws: Workspace) =>
@@ -157,6 +164,7 @@ export function createApiAdapter(options: {
           if (role !== "owner") continue;
           const created = await api<ServerBrand>("/brands/", { method: "POST", body: { data } });
           synced.set(ws.id, { json, version: created.version });
+          options.onBilling(ws.id, created.data.billing);
           // The server may have moved it to a free slug (`acme-2`).
           if (created.slug !== ws.slug) await adopt(created, ws.slug);
         } else {
@@ -165,6 +173,7 @@ export function createApiAdapter(options: {
             body: { data, version: known.version },
           });
           synced.set(ws.id, { json, version: saved.version });
+          options.onBilling(ws.id, saved.data.billing);
           // Ownership moved (this save handed the brand over): take the
           // server's copy, which has the new owner and this account as editor.
           if (saved.data.ownerAccountId !== ws.ownerAccountId) await adopt(saved, ws.slug);

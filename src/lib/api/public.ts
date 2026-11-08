@@ -1,7 +1,7 @@
 import { ApiError, api } from "@/lib/api/client";
 import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 import { inlineFiles } from "@/lib/data/adapters/serverFiles";
-import type { AppState, ShareLink, Workspace } from "@/types";
+import type { AppState, PinSection, ShareLink, SignOffPin, Workspace } from "@/types";
 
 /**
  * What a studio's clients open without an account: the published guideline
@@ -56,6 +56,14 @@ export async function fetchPublicSite(slug: string): Promise<PublicSite> {
     if (err.status === 404) return { status: body?.code === "not_published" ? "not_published" : "missing" };
     throw err;
   }
+}
+
+export function submitPublicSignOff(slug: string, body: {
+  submissionId: string; section: PinSection; authorName: string; note: string;
+}): Promise<SignOffPin> {
+  return api<SignOffPin>(`/public/sites/${encodeURIComponent(slug)}/sign-offs/`, {
+    method: "POST", body, headers: { "X-Brand-Unlock": readUnlock(slug) },
+  });
 }
 
 /**

@@ -31,8 +31,8 @@ export function TeamView(view: TeamPageView) {
         )}
       </div>
       <TeamSection {...view} />
-      <SignOffSection ws={ws} canGovern={canGovern} />
-      <ApprovalSection ws={ws} canGovern={canGovern} actorName={actorName} />
+      <SignOffSection ws={ws} canGovern={canGovern} isAr={isAr} />
+      <ApprovalSection ws={ws} canGovern={canGovern} canPropose={myRole === "owner" || myRole === "editor"} isAr={isAr} />
       <VersionHistorySection ws={ws} isAr={isAr} actorName={actorName} />
     </div>
   );

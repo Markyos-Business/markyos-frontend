@@ -11,6 +11,7 @@ import {
 } from "react";
 import {
   ApprovalStatus,
+  ApprovalRequest,
   Account,
   AccountType,
   AnalysisSource,
@@ -20,6 +21,7 @@ import {
   AssetType,
   BlockKind,
   BlockStyle,
+  Billing,
   BrandStrategy,
   ColorSwatch,
   ComplianceCheck,
@@ -43,7 +45,7 @@ import {
   Objective,
   PageBlock,
   PinSection,
-  PlanKind,
+  SignOffPin,
   Persona,
   PositioningOption,
   ShareLink,
@@ -92,7 +94,7 @@ import { publishWorkspace, removeAssetFrom, unpublishWorkspace } from "@/lib/dat
 import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // Accounts and sessions go to the backend when one is configured; see the
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
-import { API_ENABLED, ApiError, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
+import { API_ENABLED, ApiError, api, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
 import * as authApi from "@/components/features/auth/services/authService";
 import type {
   AuthOutcome,
@@ -295,7 +297,7 @@ interface AppContextValue {
   setDomainStatus: (workspaceId: string, status: DomainStatus) => void;
   /** Claims a subdomain. Returns an error message, or null when it was taken. */
   setSubdomain: (workspaceId: string, subdomain: string) => string | null;
-  markPurchased: (workspaceId: string, plan: PlanKind, stripeSessionId?: string) => void;
+  confirmPurchase: (workspaceId: string, sessionId: string) => Promise<{ status: string; billing: Billing }>;
   // v3.0 developer / Figma
   setApiKey: (workspaceId: string, key: string) => void;
   setWebhookUrl: (workspaceId: string, url: string) => void;
@@ -426,8 +428,9 @@ interface AppContextValue {
   /** Write a pending draft into the brand and mark it accepted. */
   acceptDraft: (workspaceId: string, draftId: string) => void;
   rejectDraft: (workspaceId: string, draftId: string) => void;
-  addSignOffPin: (workspaceId: string, section: PinSection, authorName: string, note: string) => void;
-  resolveSignOffPin: (workspaceId: string, pinId: string) => void;
+  addSignOffPin: (workspaceId: string, section: PinSection, authorName: string, note: string) => SignOffPin;
+  refreshSignOffPins: (workspaceId: string) => Promise<SignOffPin[]>;
+  resolveSignOffPin: (workspaceId: string, pinId: string) => Promise<SignOffPin>;
   // v3.0 strategy hub
   /** Writes one narrative field. `lang` picks which of the two copies. */
   setStrategyText: (workspaceId: string, field: StrategyTextField, value: string, lang?: Lang) => void;
@@ -521,8 +524,9 @@ interface AppContextValue {
   /** Finds a link across every workspace — what the public /s/<token> route resolves with. */
   resolveShareLink: (token: string) => { ws: Workspace; link: ShareLink } | undefined;
   // v4.0 approvals
-  proposeApproval: (workspaceId: string, summary: string, proposedBy: string) => void;
-  resolveApproval: (workspaceId: string, approvalId: string, status: ApprovalStatus, reviewNote?: string) => void;
+  refreshApprovals: (workspaceId: string) => Promise<ApprovalRequest[]>;
+  proposeApproval: (workspaceId: string, summary: string, submissionId: string) => Promise<ApprovalRequest>;
+  resolveApproval: (workspaceId: string, approvalId: string, status: Exclude<ApprovalStatus, "pending">, reviewNote?: string) => Promise<ApprovalRequest>;
   // v4.0 version history
   saveVersionSnapshot: (workspaceId: string, label: string, createdBy: string) => void;
   restoreVersion: (workspaceId: string, versionId: string) => void;
@@ -681,6 +685,22 @@ function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
   };
 }
 
+/** Refresh a payment entitlement without replacing unsaved document edits. */
+function withServerBilling(state: AppState, workspaceId: string, billing: Billing): AppState {
+  const workspace = state.workspaces.find((ws) => ws.id === workspaceId);
+  if (!workspace || (JSON.stringify(workspace.billing) === JSON.stringify(billing) &&
+    (!workspace.published || JSON.stringify(workspace.published.billing) === JSON.stringify(billing)))) return state;
+  return {
+    ...state,
+    workspaces: state.workspaces.map((ws) => ws.id === workspaceId ? {
+      ...ws,
+      billing,
+      sharedStatus: billing.plan === "free" ? "draft" : "shared",
+      published: ws.published ? { ...ws.published, billing } : ws.published,
+    } : ws),
+  };
+}
+
 const apiMessage = (err: unknown) =>
   err instanceof ApiError ? err.message : "Something went wrong. Try again.";
 
@@ -713,6 +733,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [repo] = useState<BrandRepository>(() =>
     API_ENABLED
       ? createApiAdapter({
+          onBilling: (workspaceId, billing) => setState((prev) => withServerBilling(prev, workspaceId, billing)),
           // A newer copy from the server (saved in another tab or device, or
           // moved to a free slug) replaces this one.
           onServerCopy: (ws, previousSlug) => {
@@ -1637,14 +1658,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace, logAudit]
   );
 
-  const markPurchased = useCallback(
-    (workspaceId: string, plan: PlanKind, stripeSessionId?: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, { billing: { plan, purchasedAt: Date.now(), stripeSessionId }, sharedStatus: "shared" })
-      );
-      logAudit(`Purchased ${plan === "pass" ? "Project Pass" : "a subscription"}`, workspaceId);
+  const confirmPurchase = useCallback(
+    async (workspaceId: string, sessionId: string) => {
+      if (!API_ENABLED) throw new Error("Payment verification needs the Markyos server.");
+      const result = await api<{ status: string; billing: Billing }>("/billing/confirm/", {
+        method: "POST", body: { brandId: workspaceId, sessionId },
+      });
+      // Apply only the server's entitlement, keeping any unsaved brand edits.
+      setState((prev) => withServerBilling(prev, workspaceId, result.billing));
+      return result;
     },
-    [mutateWorkspace, touchWorkspace, logAudit]
+    []
   );
 
   const setApiKey = useCallback(
@@ -2253,28 +2277,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const addSignOffPin = useCallback(
     (workspaceId: string, section: PinSection, authorName: string, note: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          signOffPins: [
-            { id: uid(), section, authorName, note, createdAt: Date.now(), resolved: false },
-            ...ws.signOffPins,
-          ],
-        })
-      );
+      if (API_ENABLED) throw new Error("Submit notes through the published guideline.");
+      const pin: SignOffPin = { id: uid(), section, authorName, note, createdAt: Date.now(), resolved: false };
+      setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, signOffPins: [pin, ...ws.signOffPins] } : ws) }));
       logAudit(`${authorName} left a sign-off note on ${section}`, workspaceId);
+      return pin;
     },
-    [mutateWorkspace, touchWorkspace, logAudit]
+    [logAudit]
   );
 
+  const refreshSignOffPins = useCallback(async (workspaceId: string) => {
+    if (!API_ENABLED) return stateRef.current.workspaces.find((ws) => ws.id === workspaceId)?.signOffPins ?? [];
+    const pins = await api<SignOffPin[]>(`/brands/${encodeURIComponent(workspaceId)}/sign-offs/`);
+    setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, signOffPins: pins } : ws) }));
+    return pins;
+  }, []);
+
   const resolveSignOffPin = useCallback(
-    (workspaceId: string, pinId: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          signOffPins: ws.signOffPins.map((p) => (p.id === pinId ? { ...p, resolved: true } : p)),
-        })
-      );
+    async (workspaceId: string, pinId: string) => {
+      let pin: SignOffPin;
+      if (API_ENABLED) {
+        pin = await api<SignOffPin>(`/brands/${encodeURIComponent(workspaceId)}/sign-offs/${encodeURIComponent(pinId)}/resolve/`, { method: "POST" });
+      } else {
+        const workspace = stateRef.current.workspaces.find((ws) => ws.id === workspaceId);
+        const existing = workspace?.signOffPins.find((p) => p.id === pinId);
+        if (!workspace || !existing || roleOn(workspace, stateRef.current.session) !== "owner") throw new Error("Only the brand owner can handle a note.");
+        pin = { ...existing, resolved: true };
+      }
+      setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, signOffPins: ws.signOffPins.map((p) => p.id === pinId ? pin : p) } : ws) }));
+      return pin;
     },
-    [mutateWorkspace, touchWorkspace]
+    []
   );
 
   const setStrategyText = useCallback(
@@ -2984,32 +3017,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [state.workspaces]
   );
 
-  const proposeApproval = useCallback(
-    (workspaceId: string, summary: string, proposedBy: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          approvals: [
-            { id: uid(), summary, proposedBy, status: "pending", createdAt: Date.now() },
-            ...ws.approvals,
-          ],
-        })
-      );
-    },
-    [mutateWorkspace, touchWorkspace]
-  );
+  const refreshApprovals = useCallback(async (workspaceId: string) => {
+    if (!API_ENABLED) return stateRef.current.workspaces.find((ws) => ws.id === workspaceId)?.approvals ?? [];
+    const approvals = await api<ApprovalRequest[]>(`/brands/${encodeURIComponent(workspaceId)}/approvals/`);
+    setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, approvals } : ws) }));
+    return approvals;
+  }, []);
+
+  const proposeApproval = useCallback(async (workspaceId: string, summary: string, submissionId: string) => {
+    let approval: ApprovalRequest;
+    if (API_ENABLED) {
+      approval = await api<ApprovalRequest>(`/brands/${encodeURIComponent(workspaceId)}/approvals/`, { method: "POST", body: { summary, submissionId } });
+    } else {
+      const current = stateRef.current;
+      const workspace = current.workspaces.find((ws) => ws.id === workspaceId);
+      const role = workspace ? roleOn(workspace, current.session) : null;
+      if (role !== "owner" && role !== "editor") throw new Error("Only owners and editors can propose changes.");
+      approval = workspace!.approvals.find((a) => a.id === submissionId) ?? {
+        id: submissionId, summary, proposedBy: current.session?.name || current.session?.email || "", status: "pending", createdAt: Date.now(),
+      };
+    }
+    setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, approvals: [approval, ...ws.approvals.filter((a) => a.id !== approval.id)] } : ws) }));
+    return approval;
+  }, []);
 
   const resolveApproval = useCallback(
-    (workspaceId: string, approvalId: string, status: ApprovalStatus, reviewNote?: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          approvals: ws.approvals.map((a) =>
-            a.id === approvalId ? { ...a, status, resolvedAt: Date.now(), reviewNote } : a
-          ),
-        })
-      );
-      logAudit(`${status === "approved" ? "Approved" : "Rejected"} a change proposal`, workspaceId);
+    async (workspaceId: string, approvalId: string, status: Exclude<ApprovalStatus, "pending">, reviewNote = "") => {
+      let approval: ApprovalRequest;
+      if (API_ENABLED) {
+        try {
+          approval = await api<ApprovalRequest>(`/brands/${encodeURIComponent(workspaceId)}/approvals/${encodeURIComponent(approvalId)}/decide/`, { method: "POST", body: { status, reviewNote } });
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 409) await refreshApprovals(workspaceId).catch(() => undefined);
+          throw error;
+        }
+      } else {
+        const current = stateRef.current;
+        const workspace = current.workspaces.find((ws) => ws.id === workspaceId);
+        const existing = workspace?.approvals.find((a) => a.id === approvalId);
+        if (!workspace || !existing || roleOn(workspace, current.session) !== "owner") throw new Error("Only the brand owner can decide proposals.");
+        if (existing.status !== "pending" && (existing.status !== status || (existing.reviewNote ?? "") !== reviewNote)) throw new Error("This proposal has already been decided.");
+        approval = existing.status === "pending" ? { ...existing, status, reviewNote, resolvedAt: Date.now(), resolvedBy: current.session?.name || current.session?.email || "" } : existing;
+      }
+      setState((previous) => ({ ...previous, workspaces: previous.workspaces.map((ws) => ws.id === workspaceId ? { ...ws, approvals: ws.approvals.map((a) => a.id === approvalId ? approval : a) } : ws) }));
+      return approval;
     },
-    [mutateWorkspace, touchWorkspace, logAudit]
+    [refreshApprovals]
   );
 
   const saveVersionSnapshot = useCallback(
@@ -3501,7 +3554,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCustomDomain,
       setDomainStatus,
       setSubdomain,
-      markPurchased,
+      confirmPurchase,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,
@@ -3532,6 +3585,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       acceptDraft,
       rejectDraft,
       addSignOffPin,
+      refreshSignOffPins,
       resolveSignOffPin,
       setStrategyText,
       setStrategyTranslation,
@@ -3584,6 +3638,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       restoreShareLink,
       resolveShareLink,
       proposeApproval,
+      refreshApprovals,
       resolveApproval,
       saveVersionSnapshot,
       restoreVersion,
@@ -3656,7 +3711,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCustomDomain,
       setDomainStatus,
       setSubdomain,
-      markPurchased,
+      confirmPurchase,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,
@@ -3687,6 +3742,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       acceptDraft,
       rejectDraft,
       addSignOffPin,
+      refreshSignOffPins,
       resolveSignOffPin,
       setStrategyText,
       setStrategyTranslation,
@@ -3739,6 +3795,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       restoreShareLink,
       resolveShareLink,
       proposeApproval,
+      refreshApprovals,
       resolveApproval,
       saveVersionSnapshot,
       restoreVersion,

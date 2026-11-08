@@ -6,12 +6,11 @@ import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { useToast } from "@/components/ui";
-import type { PlanKind } from "@/types";
 import { PAGE_SECTION } from "../constants";
 
 /** The settings page: the client link, and finishing a return from checkout. */
 export function useSettingsPage(slug: string) {
-  const { markPurchased } = useApp();
+  const { confirmPurchase } = useApp();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
   const router = useRouter();
@@ -34,11 +33,28 @@ export function useSettingsPage(slug: string) {
     if (!ws) return;
     const checkout = searchParams.get("checkout");
     if (checkout === "success") {
-      const plan = (searchParams.get("plan") as PlanKind) || "pass";
-      const sessionId = searchParams.get("session_id") ?? undefined;
-      markPurchased(ws.id, plan, sessionId);
-      showToast(plan === "pass" ? "Project Pass activated — this guideline is now shared." : `${typeLabel} plan active.`, "success");
-      router.replace(`/w/${ws.slug}/settings`);
+      const sessionId = searchParams.get("session_id");
+      if (!sessionId) {
+        showToast("Payment could not be verified: the checkout reference is missing.", "danger");
+        return;
+      }
+      let canceled = false;
+      void confirmPurchase(ws.id, sessionId).then(({ status, billing }) => {
+        if (canceled) return;
+        if (status === "paid" || status === "active") {
+          showToast(billing.plan === "pass" ? "Payment verified — Project Pass active." : "Payment verified — monthly plan active.", "success");
+        } else if (status === "refunded") {
+          showToast("This payment was refunded. No plan was activated.");
+        } else if (billing.subscriptionStatus) {
+          showToast("The subscription is not active. Use Manage subscription to review billing.");
+        } else {
+          showToast("Your payment has not activated a plan yet. Check this page again shortly.");
+        }
+        router.replace(`/w/${ws.slug}/settings`);
+      }).catch((error: unknown) => {
+        if (!canceled) showToast(error instanceof Error ? error.message : "Payment could not be verified. Refresh to try again.", "danger");
+      });
+      return () => { canceled = true; };
     } else if (checkout === "cancelled") {
       showToast("Checkout cancelled — nothing was charged.");
       router.replace(`/w/${ws.slug}/settings`);

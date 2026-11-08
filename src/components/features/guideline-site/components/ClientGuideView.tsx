@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { BlockScopeProvider } from "./BlockRenderer";
 import { BrandFonts } from "./BrandFonts";
 import { GuidelineMotion } from "./GuidelineMotion";
+import { SignOffSurface } from "./SignOffPanel";
 import { CenteredMessage, PasswordGate } from "./ViewerChrome";
 import { DeckTemplate } from "./templates/DeckTemplate";
 import { DocsTemplate } from "./templates/DocsTemplate";
@@ -137,6 +138,7 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   };
 
   return (
+    <SignOffSurface enabled={!isPreview}>
     <BlockScopeProvider blocks={v.allBlocks}>
       <BrandFonts fonts={v.fonts} isAr={isAr}>
         <GuidelineMotion sectionIds={v.sections.map((s) => s.id)} />
@@ -155,5 +157,6 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
         )}
       </BrandFonts>
     </BlockScopeProvider>
+    </SignOffSurface>
   );
 }

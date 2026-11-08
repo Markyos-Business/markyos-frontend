@@ -6,6 +6,10 @@ Arabic with upload, resume and submit, dead links), call notes (paste, speaker
 mapping, timeline, include switch, delete and undo, citation highlight) and the
 brand analysis (citations that open the exact answer or call turn, drafts,
 stale after an edit).
+Client sign-off also covers password-gated submission, handling a note from a
+second browser, and retrying a saved note whose success response was lost.
+Approval tests cover an editor's proposal, the owner's decision in another
+browser, retrying a lost success response, and refusing a stale decision.
 
 ## Run
 

@@ -28,7 +28,7 @@ const backendDir = path.resolve(
 );
 
 /** Runs a line of Python in the backend's Django shell and returns what it prints. */
-function djangoShell(code: string): string {
+export function djangoShell(code: string): string {
   const out = execFileSync(process.env.E2E_PYTHON ?? "python3", ["manage.py", "shell", "-c", code], { cwd: backendDir });
   return out.toString().trim().split("\n").pop() ?? "";
 }

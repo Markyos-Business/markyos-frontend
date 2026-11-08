@@ -12,10 +12,9 @@ import { lookup, planTable } from "../../utils/billing";
  * Everything this account is actually paying for.
  *
  * Billing is per brand in this product — a Project Pass unlocks one guideline,
- * a Studio subscription unlocks the account — so the honest view is the list of
+ * a subscription belongs to one brand — so the view is the list of
  * brands with what each one is on, not an invented invoice history. Nothing
- * here is fabricated: every row is a real `billing` record written by a real
- * checkout, and a brand that has never been paid for says so.
+ * plans confirmed by the backend, and a brand without a plan says so.
  */
 export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
   const type = ACCOUNT_TYPES[accountTypeOf(useCurrentAccount())];
@@ -23,25 +22,25 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
   const priceOf = (plan: string) => lookup(table, plan);
   const labelOf = (plan: string) => lookup(table, plan).label;
   const paid = workspaces.filter((w) => w.billing.plan !== "free");
-  const subscription = workspaces.find((w) => w.billing.plan === "subscription");
+  const subscriptions = workspaces.filter((w) => w.billing.plan === "subscription");
   const passes = workspaces.filter((w) => w.billing.plan === "pass");
 
-  const monthly = subscription ? table.subscription.amount : 0;
+  const monthly = subscriptions.length * table.subscription.amount;
   const oneTimeTotal = passes.length * table.pass.amount;
 
   return (
     <>
       <Section title="Subscription" icon="credit-card">
-        {subscription ? (
+        {subscriptions.length ? (
           <Row
-            label={`${table.subscription.label} — active`}
-            hint={`$${table.subscription.amount} per month · started ${formatRelative(subscription.billing.purchasedAt ?? subscription.updatedAt)} · unlocks every brand in this account.`}
+            label={`${subscriptions.length} active monthly brand plan${subscriptions.length === 1 ? "" : "s"}`}
+            hint={`$${monthly} per month across these brands.`}
             right={<Badge tone="success">Active</Badge>}
           />
         ) : (
           <Row
             label="No subscription"
-            hint={`Brands are unlocked one at a time with a Project Pass. A ${table.subscription.label} unlocks all of them and is bought from any brand's Settings.`}
+            hint="Choose a Project Pass or a monthly plan from each brand's Settings."
             right={<Badge tone="neutral">None</Badge>}
           />
         )}
@@ -91,7 +90,7 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
             what Stripe actually charged. */}
         <p className="text-caption flex items-start gap-space-3 text-text-faint">
           <Icon name="info-circle" size={16} className="shrink-0" />
-          Checkout runs through Stripe in test mode. Receipts and invoices are issued by Stripe and
+          Receipts and invoices are issued by Stripe and
           sent to your email — this page shows what each brand is on, not a copy of those documents.
         </p>
       </Section>

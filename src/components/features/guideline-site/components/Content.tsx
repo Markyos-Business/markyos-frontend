@@ -1,16 +1,15 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { ReactNode, useState } from "react";
 import { useToast, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
-import { Asset, DepartmentView, LogoSlot, Persona, PinSection, SlotKind, VoiceTrait, Workspace } from "@/types";
+import { Asset, DepartmentView, LogoSlot, Persona, SlotKind, VoiceTrait, Workspace } from "@/types";
 import { navMarkSlot } from "@/components/features/guideline-site/model/brandLogo";
 import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from "@/components/features/guideline-site/model/guidelineAssets";
 import { SectionHeading, SectionNote, useLiveEdit } from "@/components/features/guideline-site/components/LiveEdit";
 import { StrategyDocument } from "@/components/features/guideline-site/components/documents/StrategyDocument";
 import { DepartmentDocument } from "@/components/features/guideline-site/components/documents/DepartmentDocument";
-import { colorFormats, formatRelative } from "@/lib/utils";
+import { colorFormats } from "@/lib/utils";
 import { gCard, gInset, gPlate, gPlateSm } from "@/components/features/guideline-site/components/surface";
 import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, photoTile, sampleAt, swatchEdge } from "@/components/features/guideline-site/components/sectionShared";
 import {
@@ -37,6 +36,7 @@ import {
   type SectionOptions,
 } from "@/components/features/guideline-site/model/sectionOptions";
 import { getBrandTheme, isLightHex } from "@/components/features/guideline-site/model/theme";
+import { SignOffPanel } from "./SignOffPanel";
 
 /**
  * Content-only renderers shared by every guideline-site template — each
@@ -1146,104 +1146,4 @@ export function FixedSectionBody({
   }
 }
 
-/**
- * What each sign-off panel is signing off.
- *
- * A guideline page carries one of these per section, and every control in all
- * of them was called the same thing — four "Your name" fields, four "Sign off"
- * buttons. The client is the person on this page with the least context in the
- * whole product, and "which one of these four am I in" is not a question to
- * leave them answering by scroll position.
- */
-const SIGN_OFF_SECTION: Record<PinSection, [string, string]> = {
-  overview: ["Overview", "نظرة عامة"],
-  logo: ["Logo", "الشعار"],
-  color: ["Colour", "الألوان"],
-  typography: ["Typography", "الخطوط"],
-};
-
-export function SignOffPanel({ ws, section, isAr }: { ws: Workspace; section: PinSection; isAr: boolean }) {
-  const { addSignOffPin } = useApp();
-  const { showToast } = useToast();
-  const [name, setName] = useState("");
-  const [note, setNote] = useState("");
-  const pins = ws.signOffPins.filter((p) => p.section === section);
-  const sectionName = SIGN_OFF_SECTION[section][isAr ? 1 : 0];
-
-  function submit(e: FormEvent) {
-    e.preventDefault();
-    if (!name.trim() || !note.trim()) return;
-    addSignOffPin(ws.id, section, name.trim(), note.trim());
-    setNote("");
-    showToast(isAr ? "تم تسجيل الاعتماد — سيراه الاستوديو أيضًا." : "Sign-off recorded — the studio will see it too.", "success");
-  }
-
-  return (
-    <div
-      className="p-4 flex flex-col gap-3"
-      role="group"
-      aria-label={isAr ? `اعتماد ${sectionName}` : `Sign off ${sectionName}`}
-      style={gCard}
-    >
-      <div className="flex items-center gap-2">
-        <Icon name="map-marker" size={14} style={{ color: "var(--g-accent)" }} />
-        <span className="text-[12px] font-semibold" style={{ color: "var(--g-text-muted)" }}>
-          {isAr ? `اعتماد ${sectionName}` : `Sign off ${sectionName}`}
-        </span>
-        {pins.length > 0 && (
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>
-            {isAr ? `${pins.length} ملاحظة` : `${pins.length} note${pins.length === 1 ? "" : "s"}`}
-          </span>
-        )}
-      </div>
-
-      {pins.length > 0 && (
-        <div className="flex flex-col gap-2.5">
-          {pins.map((p) => (
-            <div key={p.id} className="flex items-start gap-2.5 text-[12px]">
-              <Icon
-                name={p.resolved ? "check-circle" : "map-marker"}
-                size={13}
-                style={{ color: p.resolved ? "var(--success)" : "var(--warning)", marginTop: 3, flexShrink: 0 }}
-              />
-              <div className="flex-1 min-w-0">
-                <span className="font-medium">{p.authorName}</span>{" "}
-                <span style={{ color: "var(--g-text-faint)" }}>· {formatRelative(p.createdAt)}</span>
-                <div style={{ color: "var(--g-text-muted)" }}>{p.note}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          aria-label={isAr ? `اسمك — اعتماد ${sectionName}` : `Your name — signing off ${sectionName}`}
-          placeholder={isAr ? "اسمك" : "Your name"}
-          className="h-9 px-3 outline-none text-[12px] w-[150px] shrink-0"
-          style={{ ...gInset, color: "var(--g-text)" }}
-        />
-        <input
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          aria-label={isAr ? `ملاحظة اعتماد ${sectionName}` : `Note on ${sectionName}`}
-          placeholder={isAr ? "يبدو جيدًا — معتمد" : "Looks good — approved"}
-          className="h-9 px-3 outline-none text-[12px] flex-1 min-w-0"
-          style={{ ...gInset, color: "var(--g-text)" }}
-        />
-        <button
-          type="submit"
-          aria-label={isAr ? `اعتماد ${sectionName}` : `Sign off ${sectionName}`}
-          className="h-9 px-4 text-[12px] font-semibold cursor-pointer shrink-0"
-          // Not white: white on a pale brand accent is unreadable, and a pale
-          // accent is a palette a studio will genuinely hand over.
-          style={{ ...gInset, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
-        >
-          {isAr ? "اعتماد" : "Sign off"}
-        </button>
-      </form>
-    </div>
-  );
-}
+export { SignOffPanel } from "./SignOffPanel";

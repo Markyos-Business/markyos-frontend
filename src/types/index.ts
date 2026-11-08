@@ -81,6 +81,7 @@ export type PlanKind = "free" | "pass" | "subscription";
 
 export interface Billing {
   plan: PlanKind;
+  subscriptionStatus?: string;
   purchasedAt?: number;
   stripeSessionId?: string;
 }
@@ -454,6 +455,8 @@ export interface ApprovalRequest {
   createdAt: number;
   resolvedAt?: number;
   reviewNote?: string;
+  resolvedBy?: string;
+  legacy?: boolean;
 }
 
 export interface VersionSnapshot {
