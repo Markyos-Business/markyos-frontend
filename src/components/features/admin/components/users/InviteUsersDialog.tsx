@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/ui";
-import { SelectField, TextareaField } from "@/components/form";
+import { EmailChipsField, SelectField } from "@/components/form";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { AccountRole, AccountType } from "@/types";
 import { useAdminLang } from "../../hooks/shared/useAdminLang";
@@ -23,15 +23,13 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
       onClose={invite.close}
       onSubmit={invite.submit}
     >
-      <TextareaField
+      <EmailChipsField
         label={d.emails}
-        dir="ltr"
-        rows={3}
         placeholder="omar@wadirum.coffee, layla@najd.sa"
         value={form.emails}
         error={invite.emailError}
         hint={d.emailsHint}
-        onChange={(e) => set("emails", e.target.value)}
+        onChange={(emails) => set("emails", emails)}
         autoFocus
       />
       <div className="grid gap-space-5 sm:grid-cols-2">

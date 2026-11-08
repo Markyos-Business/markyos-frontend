@@ -24,7 +24,7 @@ export function useInvitePeople(owned: Workspace[]) {
   const { c } = usePeopleLang();
   const d = c.inviteDialog;
   const [open, setOpen] = useState(false);
-  const [emails, setEmails] = useState("");
+  const [emails, setEmails] = useState<string[]>([]);
   const [name, setName] = useState("");
   const [role, setRole] = useState<MemberRole>("viewer");
   const [brands, setBrands] = useState<string[]>([]);
@@ -34,7 +34,7 @@ export function useInvitePeople(owned: Workspace[]) {
   const editorsOn = (w: Workspace) => w.team.filter((m) => m.role === "editor").length;
 
   function reset() {
-    setEmails("");
+    setEmails([]);
     setName("");
     setRole("viewer");
     setBrands([]);
@@ -48,7 +48,7 @@ export function useInvitePeople(owned: Workspace[]) {
   }
 
   async function submit(): Promise<string | false | void> {
-    const { emails: list, invalid } = parseEmails(emails);
+    const { emails: list, invalid } = parseEmails(emails.join(" "));
     const next: InviteErrors = {};
     if (invalid.length) next.emails = d.emailInvalid(invalid[0]);
     else if (list.length === 0) next.emails = d.emailsRequired;
@@ -98,7 +98,7 @@ export function useInvitePeople(owned: Workspace[]) {
       reset();
     },
     emails,
-    setEmails: (v: string) => {
+    setEmails: (v: string[]) => {
       setEmails(v);
       setErrors((e) => ({ ...e, emails: undefined }));
     },

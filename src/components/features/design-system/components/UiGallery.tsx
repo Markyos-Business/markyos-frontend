@@ -2,24 +2,7 @@
 
 import { useState } from "react";
 import { ActionsDropdown, AppDate, AsyncStateView, Badge, Button, Faq, FilterChip, Icon, IconBadge, IconButton, ModalHeader, Skeleton, SolidBadge, Table, TableEmptyRow, TableErrorRow, TableLoadingRow, TablePagination, Tabs, Tooltip, cellClasses, rowClasses, useToast, type BadgeTone } from "@/components/ui";
-import {
-  Combobox,
-  FileField,
-  FilterSelectField,
-  OtpField,
-  PhoneField,
-  RadioCardGroup,
-  RadioField,
-  RepeaterField,
-  SearchableChecklist,
-  SegmentedToggle,
-  SelectField,
-  SortControl,
-  TextareaField,
-  ToggleCardGroup,
-  ToggleField,
-  type RepeaterRow,
-} from "@/components/form";
+import { Combobox, EmailChipsField, FileField, FilterSelectField, OtpField, PhoneField, RadioCardGroup, RadioField, RepeaterField, SearchableChecklist, SegmentedToggle, SelectField, SortControl, TextareaField, ToggleCardGroup, ToggleField, type RepeaterRow } from "@/components/form";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 
 const TONES: BadgeTone[] = ["neutral", "info", "success", "warning", "attention", "danger"];
@@ -47,6 +30,7 @@ const UiGallery = () => {
   const [view, setView] = useState("list");
   const [city, setCity] = useState("");
   const [status, setStatus] = useState("");
+  const [invitees, setInvitees] = useState<string[]>(["omar@wadirum.coffee"]);
   const [cities, setCities] = useState<string[]>([]);
   const [radio, setRadio] = useState("a");
   const [card, setCard] = useState<"transfer" | "share">("transfer");
@@ -228,6 +212,7 @@ const UiGallery = () => {
             <Combobox label="City (search)" options={OPTIONS} value={city} onChange={setCity} emptyActions={[{ label: "Add city", onSelect: () => showToast("Added") }]} />
             <Combobox label="Cities" multiple options={OPTIONS} value={cities} onChange={setCities} />
             <TextareaField label="Notes" placeholder="Anything we should know" />
+            <EmailChipsField label="Invite by email" placeholder="name@company.com" hint="Press Enter or comma after each email." value={invitees} onChange={setInvitees} />
             <PhoneField dialCode={dial} number={phone} onDialCodeChange={setDial} onNumberChange={setPhone} required />
             <OtpField label="Code" value={otp} onChange={setOtp} />
             <RadioField label="Plan" options={[{ value: "a", label: "Monthly" }, { value: "b", label: "Yearly" }]} value={radio} onChange={setRadio} />

@@ -9,9 +9,9 @@ import { useAdminLang } from "../shared/useAdminLang";
 
 const MAX_INVITES = 20;
 
-type InviteForm = { emails: string; role: AccountRole; accountType: AccountType | ""; language: "en" | "ar" | "" };
+type InviteForm = { emails: string[]; role: AccountRole; accountType: AccountType | ""; language: "en" | "ar" | "" };
 
-const EMPTY: InviteForm = { emails: "", role: "member", accountType: "studio", language: "" };
+const EMPTY: InviteForm = { emails: [], role: "member", accountType: "studio", language: "" };
 
 /** The invite dialog: one account per email, each waiting for its emailed link. */
 export function useInviteUsers(onInvited: () => void) {
@@ -34,7 +34,7 @@ export function useInviteUsers(onInvited: () => void) {
 
   /** Resolves to a message to keep the dialog open, `false` for a field error. */
   async function submit(): Promise<string | false | void> {
-    const { emails, invalid } = parseEmails(form.emails);
+    const { emails, invalid } = parseEmails(form.emails.join(" "));
     const fieldError = invalid.length
       ? c.inviteDialog.emailInvalid(invalid[0])
       : emails.length === 0
@@ -67,7 +67,7 @@ export function useInviteUsers(onInvited: () => void) {
     }
     if (failed.length) {
       // Keep only the ones that failed, so trying again doesn't invite twice.
-      setForm((f) => ({ ...f, emails: emails.filter((e) => !sent.includes(e)).join(", ") }));
+      setForm((f) => ({ ...f, emails: emails.filter((e) => !sent.includes(e)) }));
       return c.inviteDialog.failed(failed.join("; "));
     }
     setForm(EMPTY);

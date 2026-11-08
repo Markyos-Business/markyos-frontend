@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/ui";
-import { CheckboxField, InputField, RadioField, TextareaField } from "@/components/form";
+import { CheckboxField, EmailChipsField, InputField, RadioField } from "@/components/form";
 import type { Workspace } from "@/types";
 import { MEMBER_ROLES } from "../../constants";
 import { usePeopleLang } from "../../hooks/usePeopleLang";
@@ -16,15 +16,13 @@ export function InvitePeopleDialog({ invite, owned }: InvitePeopleDialogProps) {
   const d = c.inviteDialog;
   return (
     <FormDialog open={invite.open} title={d.title} description={d.description} submitLabel={d.submit} onClose={invite.close} onSubmit={invite.submit}>
-      <TextareaField
+      <EmailChipsField
         label={d.emails}
-        dir="ltr"
-        rows={2}
         placeholder="omar@wadirum.coffee, layla@najd.sa"
         value={invite.emails}
         error={invite.errors.emails}
         hint={d.emailsHint}
-        onChange={(e) => invite.setEmails(e.target.value)}
+        onChange={(emails) => invite.setEmails(emails)}
         autoFocus
       />
       <InputField label={d.name} hint={d.nameHint} dir="auto" value={invite.name} onChange={(e) => invite.setName(e.target.value)} />
