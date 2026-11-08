@@ -46,6 +46,7 @@ const UiGallery = () => {
   const [tab, setTab] = useState("one");
   const [view, setView] = useState("list");
   const [city, setCity] = useState("");
+  const [status, setStatus] = useState("");
   const [cities, setCities] = useState<string[]>([]);
   const [radio, setRadio] = useState("a");
   const [card, setCard] = useState<"transfer" | "share">("transfer");
@@ -223,7 +224,7 @@ const UiGallery = () => {
 
         <Section title="Form fields">
           <div className="grid gap-4 md:grid-cols-2">
-            <SelectField label="City" required value={city} onChange={(e) => setCity(e.target.value)} options={OPTIONS} />
+            <SelectField label="City" required value={city} onChange={(value) => setCity(value)} options={OPTIONS} />
             <Combobox label="City (search)" options={OPTIONS} value={city} onChange={setCity} emptyActions={[{ label: "Add city", onSelect: () => showToast("Added") }]} />
             <Combobox label="Cities" multiple options={OPTIONS} value={cities} onChange={setCities} />
             <TextareaField label="Notes" placeholder="Anything we should know" />
@@ -231,7 +232,7 @@ const UiGallery = () => {
             <OtpField label="Code" value={otp} onChange={setOtp} />
             <RadioField label="Plan" options={[{ value: "a", label: "Monthly" }, { value: "b", label: "Yearly" }]} value={radio} onChange={setRadio} />
             <div className="flex flex-wrap items-end gap-3">
-              <FilterSelectField label="Status" hideLabel icon="sliders" options={[{ value: "", label: "Any status" }, { value: "a", label: "Active" }]} />
+              <FilterSelectField label="Status" hideLabel icon="sliders" value={status} onChange={setStatus} options={[{ value: "", label: "Any status" }, { value: "a", label: "Active" }]} />
               <SortControl options={[{ value: "name", label: "Name A–Z" }]} value={sort} onChange={setSort} />
               <SegmentedToggle label="Mode" off={{ label: "From list", icon: "list-ul" }} on={{ label: "Type it", icon: "pen" }} value={mode} onChange={setMode} />
             </div>

@@ -119,7 +119,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
               <SelectInput
                 aria-label={t("Logo", "الشعار")}
                 value={form.theme.logoAssetId ?? ""}
-                onChange={(e) => save({ theme: { logoAssetId: e.target.value || null } })}
+                onChange={(value) => save({ theme: { logoAssetId: value || null } })}
                 options={[{ value: "", label: t("No logo, show the studio name", "بلا شعار، اعرض اسم الاستوديو") }, ...logos.map((l) => ({ value: l.id, label: l.label }))]}
               />
             </div>
@@ -149,7 +149,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                     if (/^#[0-9a-f]{6}$/.test(clean) && clean !== form.theme.accent) save({ theme: { accent: clean } });
                     else if (!clean && form.theme.accent) save({ theme: { accent: null } });
                   }}
-                  className="mk-underline w-28 font-mono"
+                  className="mk-field w-28 font-mono"
                 />
               </div>
               {warnings.length > 0 && (
@@ -262,7 +262,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                   value={closes}
                   min={new Date().toISOString().slice(0, 10)}
                   onChange={(e) => save({ settings: { closesAt: e.target.value ? `${e.target.value}T23:59:00Z` : null } })}
-                  className="mk-underline w-full"
+                  className="mk-field w-full"
                 />
                 <span className="text-caption text-text-faint">{closes ? formatDay(form.settings.closesAt, isAr) : t("Stays open", "يبقى مفتوحًا")}</span>
               </label>
@@ -271,7 +271,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                 <SelectInput
                   aria-label={t("Remind after", "تذكير بعد")}
                   value={form.settings.remindAfterDays ? String(form.settings.remindAfterDays) : ""}
-                  onChange={(e) => save({ settings: { remindAfterDays: e.target.value ? Number(e.target.value) : null } })}
+                  onChange={(value) => save({ settings: { remindAfterDays: value ? Number(value) : null } })}
                   options={[
                     { value: "", label: t("No reminder", "بلا تذكير") },
                     ...[2, 3, 5, 7].map((n) => ({ value: String(n), label: t(`${n} days without answers`, `${n} أيام دون إجابات`) })),

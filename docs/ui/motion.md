@@ -27,7 +27,7 @@ parallax.
    screens never get a stuck hover.
 5. **Every hover has a focus-visible twin.** A keyboard user sees what a
    mouse user sees, plus the focus outline (2px accent, 2px offset). Text
-   fields are the exception: their focus is the underline turning accent.
+   fields are the exception: their focus is the accent ring and halo.
 6. **Disabled things don't respond.** Use `not-disabled:hover:`.
 7. **Reduced motion** drops every transition and animation to instant. The
    hover scrim and veil stay: they are feedback, not movement.
@@ -41,7 +41,7 @@ parallax.
 | Other controls | The hover veil, a tint of the label's colour | `tailwind/base.js` |
 | `Button variant="link"` | Underline on hover and focus, no animation | `ui/buttons/Button.tsx` |
 | Cards (`.mk-card`) | The edge turns accent on hover and focus; no lift, no shadow | `tailwind/base.js` |
-| Text fields (`.mk-underline`) | The underline turns accent on focus, danger when invalid | `tailwind/base.js` |
+| Fields (`.mk-field`) | The ring turns accent (with a halo) on focus, danger when invalid | `tailwind/base.js` |
 | Switches | The knob slides 18px on `base` | `ui/primitives/SwitchMark.tsx` |
 | Progress | The fill grows by `scaleX` on `base` | `form/upload/FileField.tsx` |
 | Popover, menus, combobox | `fade-in` / `fade-out` | `ui/overlays/Popover.tsx`, `form/search/Combobox.tsx` |

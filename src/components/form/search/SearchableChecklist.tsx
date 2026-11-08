@@ -73,7 +73,7 @@ const SearchableChecklist = ({
   return (
     <div className={`overflow-hidden rounded-card bg-surface-1 shadow-edge ${className}`}>
       <div className="flex flex-col gap-space-3 px-space-6 py-space-5 shadow-rule-b sm:flex-row sm:items-center sm:justify-between">
-        <label className="mk-underline flex min-w-0 flex-1 items-center gap-space-3">
+        <label className="mk-field flex min-w-0 flex-1 items-center gap-space-3">
           <Icon name="search" size={18} className="pointer-events-none text-text-muted" />
           <span className="sr-only">{`Search ${groupLabel}`}</span>
           <input

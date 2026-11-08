@@ -1,40 +1,46 @@
 "use client";
 
-import type { SelectHTMLAttributes } from "react";
+import { useId } from "react";
 import { Icon } from "../../ui/primitives/Icon";
+import { Listbox, type ListboxOption } from "./Listbox";
 
-type FilterSelectFieldProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className"> & {
+type FilterSelectFieldProps = {
   /** Always required: it is the control's accessible name even when hidden. */
   label: string;
   /** Hide the label visually, for a filter bar where the options speak for it. */
   hideLabel?: boolean;
   /** An icon name shown inside the pill, before the value. */
   icon?: string;
-  options: readonly { value: string; label: string }[];
+  value: string;
+  options: readonly ListboxOption[];
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  /** `sm` is the 32px pill for a row's inline control (a member's role). */
+  size?: "sm" | "md";
 };
 
-/** A native select for a toolbar or filter bar, in the outline button's look. */
-const FilterSelectField = ({ label, hideLabel = false, icon, options, ...rest }: FilterSelectFieldProps) => (
-  <label className="flex items-center gap-space-3 text-caption text-text-muted">
-    <span className={hideLabel ? "sr-only" : "font-medium"}>{label}</span>
-    <span className="relative inline-flex items-center">
-      {icon && <Icon name={icon} size={16} className="pointer-events-none absolute start-space-4 text-text-muted" />}
-      <select
+/**
+ * A select for a toolbar or filter bar: the pill look, the kit's dropdown.
+ * Same fill as the form fields, so filters and fields read as one family.
+ */
+const FilterSelectField = ({ label, hideLabel = false, icon, size = "md", ...rest }: FilterSelectFieldProps) => {
+  const labelId = `fs-${useId()}`;
+  return (
+    <span className="flex items-center gap-space-3 text-caption text-text-muted">
+      <span id={labelId} className={hideLabel ? "sr-only" : "font-medium"}>
+        {label}
+      </span>
+      <Listbox
         {...rest}
-        className={`h-control-sm cursor-pointer appearance-none rounded-lg bg-ink-soft pe-space-11 text-body font-medium text-text shadow-edge ${
-          icon ? "ps-space-11" : "ps-space-5"
-        }`}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-      <Icon name="angle-down" size={16} className="pointer-events-none absolute end-space-4 text-text-muted" />
+        aria-labelledby={labelId}
+        panelWidth={240}
+        leading={icon ? <Icon name={icon} size={16} className="shrink-0 text-text-muted" /> : undefined}
+        valueClassName={`font-medium text-text ${size === "sm" ? "text-caption" : ""}`}
+        triggerClassName={`mk-btn max-w-72 rounded-lg bg-ink-soft text-text shadow-edge ${size === "sm" ? "h-8 px-space-4 text-caption" : "h-control-sm px-space-5 text-body"}`}
+      />
     </span>
-  </label>
-);
+  );
+};
 
 export { FilterSelectField };
 export type { FilterSelectFieldProps };

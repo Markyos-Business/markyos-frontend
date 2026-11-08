@@ -46,7 +46,7 @@ export function PreviewPanel({ preview, error, kind, language, participants, onK
             <SelectField
               label={t("Kind", "النوع")}
               value={kind ?? preview.kind}
-              onChange={(e) => onKind(e.target.value as NoteKind)}
+              onChange={(value) => onKind(value as NoteKind)}
               options={(Object.keys(KIND_META) as NoteKind[]).map((k) => ({
                 value: k,
                 label: `${KIND_META[k][lang]}${k === preview.detectedKind ? t(" (detected)", " (مكتشف)") : ""}`,
@@ -55,7 +55,7 @@ export function PreviewPanel({ preview, error, kind, language, participants, onK
             <SelectField
               label={t("Language", "اللغة")}
               value={language ?? preview.language}
-              onChange={(e) => onLanguage(e.target.value as NoteLanguage)}
+              onChange={(value) => onLanguage(value as NoteLanguage)}
               options={(Object.keys(LANGUAGE_META) as NoteLanguage[]).map((l) => ({ value: l, label: LANGUAGE_META[l][lang] }))}
             />
           </div>
@@ -92,7 +92,7 @@ export function PreviewPanel({ preview, error, kind, language, participants, onK
                           <SelectField
                             label={t("Role", "الدور")}
                             value={mapped?.role ?? "client"}
-                            onChange={(e) => onMap(s.label, { role: e.target.value as ParticipantRole })}
+                            onChange={(value) => onMap(s.label, { role: value as ParticipantRole })}
                             options={(Object.keys(ROLE_META) as ParticipantRole[]).map((r) => ({ value: r, label: ROLE_META[r][lang] }))}
                           />
                         </div>

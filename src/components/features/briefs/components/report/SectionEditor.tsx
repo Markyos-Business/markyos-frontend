@@ -24,7 +24,7 @@ function Field({ name, value, path, isAr, set }: FieldProps) {
       <SelectField
         label={label}
         value={value}
-        onChange={(e) => set(path, e.target.value)}
+        onChange={(value) => set(path, value)}
         options={Object.entries(FIELD_CHOICES[name]).map(([v, l]) => ({ value: v, label: isAr ? l.ar : l.en }))}
       />
     );
@@ -34,7 +34,7 @@ function Field({ name, value, path, isAr, set }: FieldProps) {
       <SelectField
         label={label}
         value={String(value)}
-        onChange={(e) => set(path, Number(e.target.value))}
+        onChange={(value) => set(path, Number(value))}
         options={[1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: String(n) }))}
       />
     );

@@ -276,6 +276,8 @@ const config = {
         modal: "50",
         toast: "100",
         dialog: "120",
+        // A dropdown list opened from a field, which may itself sit in a dialog.
+        popover: "130",
       },
       // Motion (spec §1.8): `duration-fast` (120ms) for colour, opacity and
       // shadow, `duration-base` (180ms) for switch knobs and progress fills,

@@ -51,7 +51,7 @@ export function RunPanel({ overview, isAr, running, onRun }: RunPanelProps) {
               <SelectField
                 label={t("Write it in", "اكتبه بـ")}
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as "en" | "ar")}
+                onChange={(value) => setLanguage(value as "en" | "ar")}
                 options={[
                   { value: "en", label: "English" },
                   { value: "ar", label: "العربية" },

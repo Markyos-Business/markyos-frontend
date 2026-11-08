@@ -38,7 +38,7 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
         <SelectField
           label={d.role}
           value={form.role}
-          onChange={(e) => set("role", e.target.value as AccountRole)}
+          onChange={(value) => set("role", value as AccountRole)}
           options={[
             { value: "member", label: c.roles.member },
             { value: "admin", label: c.roles.admin },
@@ -49,14 +49,14 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
           <SelectField
             label={d.type}
             value={form.accountType}
-            onChange={(e) => set("accountType", e.target.value as AccountType)}
+            onChange={(value) => set("accountType", value as AccountType)}
             options={ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: c.types[key] }))}
           />
         )}
         <SelectField
           label={d.language}
           value={form.language}
-          onChange={(e) => set("language", e.target.value as "en" | "ar" | "")}
+          onChange={(value) => set("language", value as "en" | "ar" | "")}
           options={[
             { value: "", label: c.filters.followsBrand },
             { value: "en", label: c.locales.en },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { FilterSelectField } from "@/components/form";
 import { useApp } from "@/contexts/AppContext";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
@@ -356,19 +357,14 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
             style={{ color: "var(--text)" }}
           />
         </label>
-        <select
+        <FilterSelectField
+          label={isAr ? "ترتيب الملفات" : "Sort files"}
+          hideLabel
+          icon="sort"
           value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
-          aria-label={isAr ? "ترتيب الملفات" : "Sort files"}
-          className="h-9 px-3 rounded-full text-[12px] font-medium outline-none cursor-pointer shrink-0"
-          style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
-        >
-          {(Object.keys(SORT_META) as SortKey[]).map((k) => (
-            <option key={k} value={k}>
-              {isAr ? SORT_META[k].arLabel : SORT_META[k].label}
-            </option>
-          ))}
-        </select>
+          onChange={(value) => setSort(value as SortKey)}
+          options={(Object.keys(SORT_META) as SortKey[]).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
+        />
         <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
         {/* Only the types this workspace actually has — plus whichever one is
             selected, so pressing a chip can never make it vanish under the

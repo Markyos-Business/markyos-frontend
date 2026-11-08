@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { Listbox } from "../fields/Listbox";
 import { DIAL_CODES } from "@/constants/dialCodes";
 import { FieldLabel, FieldNote } from "../fields/InputField";
 
@@ -41,22 +42,20 @@ const PhoneField = ({
       </FieldLabel>
       <div
         dir="ltr"
-        // The underline field around both parts, so the code and the number
+        // The field box around both parts, so the code and the number
         // read as one field and share its focus and error state.
-        className="mk-underline flex gap-space-4"
+        className="mk-field flex gap-space-4"
       >
-        <select
-          aria-label="Country code"
-          value={dialCode}
-          onChange={(e) => onDialCodeChange(e.target.value)}
-          className="shrink-0 cursor-pointer bg-transparent text-body font-medium text-text outline-none"
-        >
-          {DIAL_CODES.map((d) => (
-            <option key={d.code} value={d.code}>
-              {d.label}
-            </option>
-          ))}
-        </select>
+        <span className="shrink-0">
+          <Listbox
+            aria-label="Country code"
+            value={dialCode}
+            onChange={onDialCodeChange}
+            options={DIAL_CODES.map((d) => ({ value: d.code, label: d.label }))}
+            panelWidth={220}
+            triggerClassName="h-full bg-transparent text-body font-medium text-text outline-none"
+          />
+        </span>
         <input
           id={id}
           type="tel"

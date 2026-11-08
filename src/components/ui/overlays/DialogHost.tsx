@@ -165,7 +165,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={request.options.placeholder}
-                className="mk-underline"
+                className="mk-field"
               />
               {request.options.hint && (
                 <span className="text-caption text-text-faint">
@@ -200,7 +200,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
                   spellCheck={false}
                   aria-invalid={!armed}
                   data-state={armed ? "success" : undefined}
-                  className="mk-underline w-full pe-space-11"
+                  className="mk-field w-full pe-space-11"
                 />
                 {armed && (
                   <Icon name="check" size={16} className="pointer-events-none absolute end-space-4 text-success" />

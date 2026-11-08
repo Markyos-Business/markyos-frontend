@@ -410,14 +410,14 @@ Changing a filter returns to page 1.
 const filters = useUrlFilters({ q: "", role: "", from: "", to: "" });
 <FilterBar active={filters.active} onClear={filters.clear}
   search={<SearchField label="Search users" shortcut onDebouncedChange={(q) => filters.set("q", q)} />}>
-  <FilterSelectField label="Role" hideLabel value={filters.values.role} onChange={(e) => filters.set("role", e.target.value)} options={roles} />
+  <FilterSelectField label="Role" hideLabel value={filters.values.role} onChange={(value) => filters.set("role", value)} options={roles} />
   <DateRangeButton value={{ from: filters.values.from, to: filters.values.to }} onChange={(r) => filters.setMany({ from: r.from ?? "", to: r.to ?? "" })} />
 </FilterBar>
 ```
 
 ### 18. `SearchField`
 
-The underlined search field with a leading glyph.
+The filled search field with a leading glyph.
 
 | Prop | Type | Default |
 | --- | --- | --- |

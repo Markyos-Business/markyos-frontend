@@ -30,7 +30,7 @@ Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never u
 1. **Use tokens, never raw hexes.** Every colour, size, radius and duration comes from a CSS variable in §2.
 2. **One accent:** `--primary` `#0099FF`. Status colours are for status only; secondaries are for charts only.
 3. **Flat surfaces.** Black canvas `#000`, panels `#111`, raised fills `#1A1A1A`. Use no gradients in chrome, no textures, no photography in chrome.
-4. **Draw borders as inset box-shadows** (`box-shadow: inset 0 0 0 1px …`), not `border`. The only real border is the input underline.
+4. **Draw borders as inset box-shadows** (`box-shadow: inset 0 0 0 1px …`), not `border`. No element has a real border; fields draw their state ring as an inset shadow too.
 5. **Depth comes from light, not shadow.** Glow (`--glow-*`) is used for active, focus and highlight only, on about 2% of a layout. `--shadow-raised` is for menus and overlays only.
 6. **Hover and press use one treatment for everything:** a `--ink-35` scrim over the resting fill (`.mk-btn::after`). There is no lift, no scale and no darker hex.
 7. **Focus** is `outline: 2px solid var(--primary); outline-offset: 2px`.
@@ -179,7 +179,7 @@ Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never u
   /* ── Component metrics ── */
   --control-h:46px;      /* plain & icon buttons */
   --control-h-sm:40px;   /* tabs, pagination cells */
-  --field-h:72px;        /* input block incl. title + underline */
+  --field-h:72px;        /* field block incl. title, box and note */
   --tag-h:36px;
   --status-tag-h:28px;
   --badge-h:24px;
@@ -385,28 +385,31 @@ Props: `variant?: 'primary'|'outline'`, `icon?` (default `arrow-right`), `disabl
 A text-only action at 12px, weight 500 and uppercase, in `--text-muted` (or `--primary` for `tone="primary"`), with an optional 18px icon. Use it for `PREV`, `NEXT` and `VIEW ALL`.
 Props: `icon?`, `tone?: 'muted'|'primary'`
 
-### 6.5 Input (the only text-field shape)
-There is **no box and no fill outside the dark field**. The block is 72px: a 12px muted title, a value at 14px weight 500, and a **1px underline**.
-State is expressed **only by the underline colour**: default `--border-strong`, focus `--primary` (plus `--glow-soft`), error `--status-danger`, success `--status-success`.
-An optional 18px icon sits on the left or right, and the hint text is 12px in the state colour.
+### 6.5 Input (the only field shape)
+Every field (text, textarea, select, combobox, phone, email chips, search) is a **filled box**: the translucent `--ink-soft` fill (the same as the filter-bar pills, so fields and filters read as one family), an 8px radius and **no border at rest**. The block is 72px: a 12px muted title, a value at 14px weight 500 in a 40px box, and a 12px note under it.
+State is an **inset ring** (spec rule 4, never a `border`): hover `--line-strong`, focus `--accent` plus a 3px `--accent-ring` halo, error `--danger`, success `--success`. Disabled dims the value.
+An optional 18px icon sits at the start or end, and the hint text is 12px in the state colour.
 ```html
-<label class="mk-field">
-  <span class="mk-field__title">Project name</span>
-  <input class="mk-field__input" placeholder="Start typing…">
+<label class="mk-field-block">
+  <span class="mk-field-block__title">Project name</span>
+  <input class="mk-field" placeholder="Start typing…">
 </label>
 <style>
-.mk-field{display:flex;flex-direction:column;gap:var(--space-2);min-height:var(--field-h)}
-.mk-field__title{font:var(--type-secondary);color:var(--text-muted)}
-.mk-field__input{all:unset;font:var(--type-body-bold);color:var(--text-heading);
-  padding-block:var(--space-3);border-bottom:1px solid var(--border-strong);transition:var(--transition-state)}
-.mk-field__input::placeholder{color:var(--text-40);font-weight:400}
-.mk-field__input:focus{border-bottom-color:var(--primary)}
-.mk-field[data-state=error] .mk-field__input{border-bottom-color:var(--status-danger)}
-.mk-field[data-state=success] .mk-field__input{border-bottom-color:var(--status-success)}
+.mk-field{display:block;border:0;border-radius:8px;background:var(--ink-soft);min-height:40px;
+  padding:9px 10px;font:var(--type-body-bold);color:var(--text);box-shadow:inset 0 0 0 1px transparent;transition:var(--transition-state)}
+.mk-field::placeholder{color:var(--text-disabled);font-weight:400}
+.mk-field:hover{box-shadow:inset 0 0 0 1px var(--line-strong)}
+.mk-field:focus{box-shadow:inset 0 0 0 1px var(--accent),0 0 0 3px var(--accent-ring)}
+.mk-field[aria-invalid=true],.mk-field[data-state=error]{box-shadow:inset 0 0 0 1px var(--danger)}
+.mk-field[data-state=success]{box-shadow:inset 0 0 0 1px var(--success)}
 </style>
 ```
-Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSide?: 'left'|'right'`, `hint?`, `disabled?`
+Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSide?: 'start'|'end'`, `hint?`, `disabled?`
 Placeholders use the real ellipsis character: `Start typing…`
+
+**Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
+
+**Several emails** are entered in `EmailChipsField`: each address becomes a removable chip as you type a comma, space or Enter, or paste a list; a bad address is a danger chip.
 
 ### 6.6 Checkbox / Radio / Switch
 - **Checkbox:** 20×20 with a 4px radius. The label goes from muted to heading when checked. States are default, error and success.

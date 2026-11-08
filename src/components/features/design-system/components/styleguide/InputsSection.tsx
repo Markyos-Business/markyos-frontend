@@ -36,7 +36,7 @@ const InputsSection = ({ c }: { c: StyleGuideCopy }) => {
             hideLabel
             icon="user-shield"
             value={values.role}
-            onChange={(e) => filters.set("role", e.target.value)}
+            onChange={(value) => filters.set("role", value)}
             options={[
               { value: "", label: c.allRoles },
               { value: "admin", label: c.table.roles.admin },
@@ -48,7 +48,7 @@ const InputsSection = ({ c }: { c: StyleGuideCopy }) => {
             hideLabel
             icon="filter"
             value={values.status}
-            onChange={(e) => filters.set("status", e.target.value)}
+            onChange={(value) => filters.set("status", value)}
             options={[
               { value: "", label: c.allStatuses },
               { value: "active", label: c.table.active },

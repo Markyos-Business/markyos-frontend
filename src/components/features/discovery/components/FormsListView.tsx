@@ -111,7 +111,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
             hideLabel
             icon="arrows-v"
             value={query.ordering ?? "updated"}
-            onChange={(e) => setQuery((q) => ({ ...q, ordering: e.target.value as FormListQuery["ordering"], page: 1 }))}
+            onChange={(value) => setQuery((q) => ({ ...q, ordering: value as FormListQuery["ordering"], page: 1 }))}
             options={[
               { value: "updated", label: isAr ? "آخر تعديل" : "Last edited" },
               { value: "created", label: isAr ? "الأحدث إنشاءً" : "Newest" },

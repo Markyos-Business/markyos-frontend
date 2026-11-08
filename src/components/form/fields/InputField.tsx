@@ -7,10 +7,10 @@ import { Icon } from "../../ui/primitives/Icon";
 /**
  * The text field's own look (spec §6.5), shared with the other fields so they
  * all look alike: no box and no fill, a 14px value at weight 500 over a 1px
- * underline whose colour is the field's state (`.mk-underline` in
+ * underline whose colour is the field's state (`.mk-field` in
  * tailwind/base.js), read from `aria-invalid`.
  */
-const inputClasses = "mk-underline w-full";
+const inputClasses = "mk-field w-full";
 
 /** A field's title: 12px, muted, weight 400. */
 const labelClasses = "cursor-pointer px-space-4 text-caption text-text-muted";

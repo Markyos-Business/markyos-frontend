@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { FilterSelectField } from "../../form/fields/FilterSelectField";
 import { Icon } from "../primitives/Icon";
 import { useUiStrings } from "../i18n/uiStrings";
 import { TablePagination } from "./TablePagination";
@@ -60,20 +61,15 @@ const DataTableFooter = ({ page, pageSize, pageSizes, total, itemCount, itemLabe
   return (
     <div className="flex flex-wrap items-center justify-between gap-space-4 shadow-rule-t">
       {onPageSize && (
-        <label className="flex items-center gap-space-3 ps-space-6 text-caption text-text-muted">
-          {t.rowsPerPage}
-          <select
-            value={pageSize}
-            onChange={(e) => onPageSize(Number(e.target.value))}
-            className="h-8 cursor-pointer rounded-lg bg-ink-soft px-space-3 text-body font-medium text-text shadow-edge"
-          >
-            {pageSizes.map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+        <span className="ps-space-6">
+          <FilterSelectField
+            label={t.rowsPerPage}
+            size="sm"
+            value={String(pageSize)}
+            onChange={(value) => onPageSize(Number(value))}
+            options={pageSizes.map((n) => ({ value: String(n), label: String(n) }))}
+          />
+        </span>
       )}
       <div className="min-w-0 flex-1">
         <TablePagination currentPage={page} onPageChange={onPage} itemsPerPage={pageSize} itemCount={itemCount} totalCount={total} itemLabel={itemLabel} loading={loading} />

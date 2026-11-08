@@ -59,7 +59,7 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
 
   const { defaultValue: _defaultValue, ...inputProps } = rest;
   return (
-    <label className="mk-underline flex w-full items-center gap-space-3 sm:w-65">
+    <label className="mk-field flex w-full items-center gap-space-3 sm:w-65">
       <Icon name="search" size={18} className="text-text-muted" />
       <span className="sr-only">{label}</span>
       <input

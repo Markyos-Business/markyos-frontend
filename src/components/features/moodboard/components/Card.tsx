@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FilterSelectField } from "@/components/form";
 import { Icon } from "@/components/ui";
 import { contrastRatio } from "@/lib/contrast";
 import type { Asset, MoodboardItem } from "@/types";
@@ -419,17 +420,18 @@ function Footer({
       </button>
 
       <span className="ms-auto flex items-center shrink-0">
-        <select
+        <FilterSelectField
+          label={isAr ? `حجم ${label}` : `Size of ${label}`}
+          hideLabel
+          size="sm"
           value={item.size}
-          onChange={(e) => onEdit({ size: e.target.value as MoodboardItem["size"] })}
-          aria-label={isAr ? `حجم ${label}` : `Size of ${label}`}
-          className="h-6 bg-transparent outline-none text-[10.5px] cursor-pointer"
-          style={{ color: "var(--text-faint)" }}
-        >
-          <option value="s">S</option>
-          <option value="m">M</option>
-          <option value="l">L</option>
-        </select>
+          onChange={(value) => onEdit({ size: value as MoodboardItem["size"] })}
+          options={[
+            { value: "s", label: "S" },
+            { value: "m", label: "M" },
+            { value: "l", label: "L" },
+          ]}
+        />
         {asset?.credit?.sourceUrl && (
           <a
             href={asset.credit.sourceUrl}

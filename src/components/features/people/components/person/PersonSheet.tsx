@@ -37,7 +37,7 @@ export function PersonSheet({ person, onClose }: PersonSheetProps) {
               <SelectField
                 label={b.brandName}
                 value={choice}
-                onChange={(e) => access.choose(b.workspaceId, e.target.value as AccessChoice)}
+                onChange={(value) => access.choose(b.workspaceId, value as AccessChoice)}
                 options={[
                   ...MEMBER_ROLES.map((r) => ({ value: r, label: c.roleHelp[r] })),
                   { value: "remove", label: c.sheet.remove },
