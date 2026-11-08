@@ -4,16 +4,14 @@ import { useState } from "react";
 import { useToast } from "@/components/ui";
 import type { AccountRole, AccountType } from "@/types";
 import { inviteUser } from "../../services/adminService";
-import { parseEmails } from "@/lib/emailList";
+import { EMAIL_RE } from "@/lib/emailList";
 import { useAdminLang } from "../shared/useAdminLang";
 
-const MAX_INVITES = 20;
+type InviteForm = { email: string; role: AccountRole; accountType: AccountType | ""; language: "en" | "ar" | "" };
 
-type InviteForm = { emails: string[]; role: AccountRole; accountType: AccountType | ""; language: "en" | "ar" | "" };
+const EMPTY: InviteForm = { email: "", role: "member", accountType: "studio", language: "" };
 
-const EMPTY: InviteForm = { emails: [], role: "member", accountType: "studio", language: "" };
-
-/** The invite dialog: one account per email, each waiting for its emailed link. */
+/** The invite dialog: one email, one account waiting for its emailed link. */
 export function useInviteUsers(onInvited: () => void) {
   const { showToast } = useToast();
   const { c } = useAdminLang();
@@ -23,7 +21,7 @@ export function useInviteUsers(onInvited: () => void) {
 
   const set = <K extends keyof InviteForm>(key: K, value: InviteForm[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
-    if (key === "emails") setEmailError(undefined);
+    if (key === "email") setEmailError(undefined);
   };
 
   function close() {
@@ -34,42 +32,24 @@ export function useInviteUsers(onInvited: () => void) {
 
   /** Resolves to a message to keep the dialog open, `false` for a field error. */
   async function submit(): Promise<string | false | void> {
-    const { emails, invalid } = parseEmails(form.emails.join(" "));
-    const fieldError = invalid.length
-      ? c.inviteDialog.emailInvalid(invalid[0])
-      : emails.length === 0
-        ? c.inviteDialog.emailsRequired
-        : emails.length > MAX_INVITES
-          ? c.inviteDialog.tooMany
-          : undefined;
+    const email = form.email.trim().toLowerCase();
+    const fieldError = !email ? c.inviteDialog.emailsRequired : !EMAIL_RE.test(email) ? c.inviteDialog.emailInvalid(email) : undefined;
     if (fieldError) {
       setEmailError(fieldError);
       return false;
     }
-
-    const results = await Promise.allSettled(
-      emails.map((email) =>
-        inviteUser({
-          email,
-          role: form.role,
-          accountType: form.role === "admin" ? null : form.accountType || null,
-          language: form.language || null,
-        })
-      )
-    );
-    const sent = emails.filter((_, i) => results[i].status === "fulfilled");
-    const failed = results.flatMap((r, i) =>
-      r.status === "rejected" ? [`${emails[i]} (${r.reason instanceof Error ? r.reason.message : r.reason})`] : []
-    );
-    if (sent.length) {
-      showToast(c.inviteDialog.sent(sent.length, sent[0]), "success");
-      onInvited();
+    try {
+      await inviteUser({
+        email,
+        role: form.role,
+        accountType: form.role === "admin" ? null : form.accountType || null,
+        language: form.language || null,
+      });
+    } catch (e) {
+      return e instanceof Error ? e.message : String(e);
     }
-    if (failed.length) {
-      // Keep only the ones that failed, so trying again doesn't invite twice.
-      setForm((f) => ({ ...f, emails: emails.filter((e) => !sent.includes(e)) }));
-      return c.inviteDialog.failed(failed.join("; "));
-    }
+    showToast(c.inviteDialog.sent(email), "success");
+    onInvited();
     setForm(EMPTY);
   }
 

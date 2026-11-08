@@ -5,12 +5,22 @@ import type { InputHTMLAttributes, ReactNode } from "react";
 import { Icon } from "../../ui/primitives/Icon";
 
 /**
- * The text field's own look (spec §6.5), shared with the other fields so they
- * all look alike: no box and no fill, a 14px value at weight 500 over a 1px
- * underline whose colour is the field's state (`.mk-field` in
- * tailwind/base.js), read from `aria-invalid`.
+ * The field's own look (spec §6.5), shared with every other field so they all
+ * look alike: a filled box with a 14px value at weight 500 and an inset ring
+ * whose colour is the field's state (`.mk-field` in tailwind/base.js), read
+ * from `aria-invalid`.
  */
 const inputClasses = "mk-field w-full";
+
+/** `md` is the form field; `sm` is the compact one for inspectors, dense panels and rows. */
+type FieldSize = "sm" | "md";
+
+/** The box classes for a size. */
+const fieldClasses = (size: FieldSize = "md") => (size === "sm" ? `${inputClasses} mk-field-sm` : inputClasses);
+
+/** The block around a field: the 72px form block, or just a stack when compact. */
+const fieldBlockClasses = (size: FieldSize = "md", labelled = true) =>
+  size === "sm" ? "flex w-full flex-col gap-space-1" : `flex w-full flex-col gap-space-2 ${labelled ? "min-h-field" : ""}`;
 
 /** A field's title: 12px, muted, weight 400. */
 const labelClasses = "cursor-pointer px-space-4 text-caption text-text-muted";
@@ -60,6 +70,9 @@ type InputFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" |
   /** An 18px icon name, inside the field on the side `iconSide` names. */
   icon?: string;
   iconSide?: "start" | "end";
+  size?: FieldSize;
+  /** Layout only (a width, `flex-1`), on the field's outer block. */
+  className?: string;
 };
 
 /**
@@ -71,13 +84,13 @@ type InputFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" |
  * `aria-describedby`, so a field announced as invalid can say why. `useId`
  * rather than a counter so the id matches between server and client render.
  */
-const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", ...inputProps }: InputFieldProps) => {
+const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", size = "md", className = "", ...inputProps }: InputFieldProps) => {
   const reactId = useId();
   const id = inputProps.id ?? `tf-${reactId}`;
   const noteId = `${id}-note`;
 
   return (
-    <div className="flex min-h-field w-full flex-col gap-space-2">
+    <div className={`${fieldBlockClasses(size, Boolean(label || hint || error))} ${className}`}>
       {(label || labelRight) && (
         <div className="flex items-center justify-between pe-space-4">
           {label && (
@@ -92,7 +105,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
         {icon && (
           <Icon
             name={icon}
-            size={18}
+            size={size === "sm" ? 15 : 18}
             className={`pointer-events-none absolute text-text-muted ${iconSide === "start" ? "start-space-4" : "end-space-4"}`}
           />
         )}
@@ -101,7 +114,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ?? hint ? noteId : undefined}
-          className={`${inputClasses} ${icon ? (iconSide === "start" ? "ps-space-11" : "pe-space-11") : ""}`}
+          className={`${fieldClasses(size)} ${icon ? (iconSide === "start" ? "ps-space-11" : "pe-space-11") : ""}`}
         />
       </span>
       <FieldNote id={noteId} error={error} hint={hint} />
@@ -109,5 +122,5 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
   );
 };
 
-export { FieldLabel, FieldNote, InputField, inputClasses, labelClasses };
-export type { FieldLabelProps, FieldNoteProps, InputFieldProps };
+export { FieldLabel, FieldNote, InputField, fieldBlockClasses, fieldClasses, inputClasses, labelClasses };
+export type { FieldLabelProps, FieldNoteProps, FieldSize, InputFieldProps };

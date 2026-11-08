@@ -90,19 +90,16 @@ const en = {
   },
 
   inviteDialog: {
-    title: "Invite users",
-    description: "Each person gets an email with a link to set their password. It works for 7 days.",
-    emails: "Emails",
-    emailsHint: "Press Enter or comma after each email, or paste a list.",
+    title: "Invite user",
+    description: "They get an email with a link to set their password. It works for 7 days.",
+    emails: "Email",
     role: "Role",
     type: "Account type",
     language: "Language",
     submit: "Send invite",
-    emailsRequired: "Enter at least one email.",
+    emailsRequired: "Enter an email.",
     emailInvalid: (email: string) => `“${email}” isn't a valid email.`,
-    tooMany: "Invite up to 20 people at a time.",
-    sent: (n: number, email: string) => (n === 1 ? `Invite sent to ${email}.` : `${n} invites sent.`),
-    failed: (emails: string) => `Not sent: ${emails}`,
+    sent: (email: string) => `Invite sent to ${email}.`,
   },
 
   roleDialog: {
@@ -319,19 +316,16 @@ const ar: UsersCopy = {
   },
 
   inviteDialog: {
-    title: "دعوة مستخدمين",
-    description: "يصل كل شخص بريد فيه رابط لتعيين كلمة المرور، صالح لمدة 7 أيام.",
+    title: "دعوة مستخدم",
+    description: "يصله بريد فيه رابط لتعيين كلمة المرور، صالح لمدة 7 أيام.",
     emails: "البريد الإلكتروني",
-    emailsHint: "اضغط Enter أو فاصلة بعد كل بريد، أو الصق قائمة.",
     role: "الدور",
     type: "نوع الحساب",
     language: "اللغة",
     submit: "إرسال الدعوة",
-    emailsRequired: "أدخل بريدًا إلكترونيًا واحدًا على الأقل.",
+    emailsRequired: "أدخل البريد الإلكتروني.",
     emailInvalid: (email) => `«${email}» ليس بريدًا إلكترونيًا صحيحًا.`,
-    tooMany: "ادعُ حتى 20 شخصًا في المرة الواحدة.",
-    sent: (n, email) => (n === 1 ? `تم إرسال الدعوة إلى ${email}.` : `تم إرسال ${n} دعوات.`),
-    failed: (emails) => `لم تُرسل: ${emails}`,
+    sent: (email) => `تم إرسال الدعوة إلى ${email}.`,
   },
 
   roleDialog: {

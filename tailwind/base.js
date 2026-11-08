@@ -1193,6 +1193,18 @@ export const baseStyles = [
     },
   },
   {
+    // The compact field (size="sm"): inspectors, dense panels and table rows.
+    // Same fill and rings, a 32px box and a 12.5px value.
+    ".mk-field.mk-field-sm": {
+      "min-height": "32px",
+      "padding-block": "6px",
+      "padding-inline": "8px",
+      "border-radius": "6px",
+      "font-size": "0.78125rem",
+      "line-height": "1.25rem",
+    },
+  },
+  {
     ".mk-field::placeholder": {
       "font-weight": "400",
       "color": "var(--text-disabled)",

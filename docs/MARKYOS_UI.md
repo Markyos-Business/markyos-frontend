@@ -386,7 +386,7 @@ A text-only action at 12px, weight 500 and uppercase, in `--text-muted` (or `--p
 Props: `icon?`, `tone?: 'muted'|'primary'`
 
 ### 6.5 Input (the only field shape)
-Every field (text, textarea, select, combobox, phone, email chips, search) is a **filled box**: the translucent `--ink-soft` fill (the same as the filter-bar pills, so fields and filters read as one family), an 8px radius and **no border at rest**. The block is 72px: a 12px muted title, a value at 14px weight 500 in a 40px box, and a 12px note under it.
+Every field (text, textarea, select, combobox, phone, search) is a **filled box**: the translucent `--ink-soft` fill (the same as the filter-bar pills, so fields and filters read as one family), an 8px radius and **no border at rest**. The block is 72px: a 12px muted title, a value at 14px weight 500 in a 40px box, and a 12px note under it.
 State is an **inset ring** (spec rule 4, never a `border`): hover `--line-strong`, focus `--accent` plus a 3px `--accent-ring` halo, error `--danger`, success `--success`. Disabled dims the value.
 An optional 18px icon sits at the start or end, and the hint text is 12px in the state colour.
 ```html
@@ -408,8 +408,6 @@ Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSi
 Placeholders use the real ellipsis character: `Start typing…`
 
 **Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
-
-**Several emails** are entered in `EmailChipsField`: each address becomes a removable chip as you type a comma, space or Enter, or paste a list; a bad address is a danger chip.
 
 ### 6.6 Checkbox / Radio / Switch
 - **Checkbox:** 20×20 with a 4px radius. The label goes from muted to heading when checked. States are default, error and success.

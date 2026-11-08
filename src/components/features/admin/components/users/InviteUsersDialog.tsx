@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/ui";
-import { EmailChipsField, SelectField } from "@/components/form";
+import { InputField, SelectField } from "@/components/form";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { AccountRole, AccountType } from "@/types";
 import { useAdminLang } from "../../hooks/shared/useAdminLang";
@@ -9,7 +9,7 @@ import type { useInviteUsers } from "../../hooks/users/useInviteUsers";
 
 type InviteUsersDialogProps = { invite: ReturnType<typeof useInviteUsers> };
 
-/** Emails, a role, an account type and a language; each email becomes a waiting account. */
+/** An email, a role, an account type and a language; the email becomes a waiting account. */
 export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
   const { c } = useAdminLang();
   const d = c.inviteDialog;
@@ -23,13 +23,17 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
       onClose={invite.close}
       onSubmit={invite.submit}
     >
-      <EmailChipsField
+      <InputField
         label={d.emails}
-        placeholder="omar@wadirum.coffee, layla@najd.sa"
-        value={form.emails}
+        type="email"
+        inputMode="email"
+        autoComplete="off"
+        dir="ltr"
+        required
+        placeholder="omar@wadirum.coffee"
+        value={form.email}
         error={invite.emailError}
-        hint={d.emailsHint}
-        onChange={(emails) => set("emails", emails)}
+        onChange={(e) => set("email", e.target.value)}
         autoFocus
       />
       <div className="grid gap-space-5 sm:grid-cols-2">

@@ -1,8 +1,8 @@
 "use client";
 
+import { SliderField, TextareaField } from "@/components/form";
 import { Icon } from "@/components/ui";
 import type { LangPanelState } from "../hooks/useTypeLabPage";
-import { SliderRow } from "./SliderRow";
 import { WeightPicker } from "./WeightPicker";
 
 /** One script's specimen and its controls. */
@@ -25,13 +25,13 @@ export function LangPanel(p: LangPanelState) {
         </span>
       </div>
 
-      <textarea
+      <TextareaField
         dir={p.dir}
         aria-label={`${p.label} specimen text`}
         value={p.text}
         onChange={(e) => p.onText(e.target.value)}
         rows={3}
-        className="w-full resize-none rounded-[12px] bg-surface-2 p-4 text-text outline-none"
+        resizable={false}
         // The specimen's own settings: live values, so inline.
         style={{
           fontFamily: p.fontVar,
@@ -42,10 +42,10 @@ export function LangPanel(p: LangPanelState) {
         }}
       />
 
-      <SliderRow label="Size" value={p.size} min={16} max={96} step={1} suffix="px" onChange={p.onSize} />
-      <SliderRow label="Line-height" value={p.leading} min={0.9} max={2} step={0.05} suffix="" onChange={p.onLeading} />
+      <SliderField label="Size" value={p.size} min={16} max={96} step={1} valueText={`${p.size}px`} onChange={p.onSize} />
+      <SliderField label="Line-height" value={p.leading} min={0.9} max={2} step={0.05} onChange={p.onLeading} />
       {"onTracking" in p ? (
-        <SliderRow label="Tracking" value={p.tracking} min={-0.05} max={0.05} step={0.005} suffix="em" onChange={p.onTracking} />
+        <SliderField label="Tracking" value={p.tracking} min={-0.05} max={0.05} step={0.005} valueText={`${p.tracking.toFixed(3)}em`} onChange={p.onTracking} />
       ) : (
         <div className="flex items-center gap-2 text-[11px] text-text-faint">
           <Icon name="info-circle" size={13} />

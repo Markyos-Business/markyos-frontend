@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/ui";
-import { CheckboxField, EmailChipsField, InputField, RadioField } from "@/components/form";
+import { CheckboxField, InputField, RadioField } from "@/components/form";
 import type { Workspace } from "@/types";
 import { MEMBER_ROLES } from "../../constants";
 import { usePeopleLang } from "../../hooks/usePeopleLang";
@@ -10,19 +10,23 @@ import type { MemberRole } from "../../types";
 
 type InvitePeopleDialogProps = { invite: InvitePeopleState; owned: Workspace[] };
 
-/** Emails, a role, and which of your brands they join. */
+/** An email, a role, and which of your brands they join. */
 export function InvitePeopleDialog({ invite, owned }: InvitePeopleDialogProps) {
   const { c } = usePeopleLang();
   const d = c.inviteDialog;
   return (
     <FormDialog open={invite.open} title={d.title} description={d.description} submitLabel={d.submit} onClose={invite.close} onSubmit={invite.submit}>
-      <EmailChipsField
+      <InputField
         label={d.emails}
-        placeholder="omar@wadirum.coffee, layla@najd.sa"
-        value={invite.emails}
+        type="email"
+        inputMode="email"
+        autoComplete="off"
+        dir="ltr"
+        required
+        placeholder="omar@wadirum.coffee"
+        value={invite.email}
         error={invite.errors.emails}
-        hint={d.emailsHint}
-        onChange={(emails) => invite.setEmails(emails)}
+        onChange={(e) => invite.setEmail(e.target.value)}
         autoFocus
       />
       <InputField label={d.name} hint={d.nameHint} dir="auto" value={invite.name} onChange={(e) => invite.setName(e.target.value)} />
