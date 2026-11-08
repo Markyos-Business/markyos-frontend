@@ -1,6 +1,7 @@
 "use client";
 
 import { useApp } from "@/contexts/AppContext";
+import { FilterSelectField } from "@/components/form";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
 import { ROLES, ROLE_TONE } from "../../constants";
@@ -82,18 +83,14 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
       >
         Make owner
       </Button>
-      <select
-        aria-label={`Role for ${who}`}
+      <FilterSelectField
+        label={`Role for ${who}`}
+        hideLabel
+        size="sm"
         value={m.role}
-        onChange={(e) => setTeamRole(ws.id, m.id, e.target.value as TeamRole)}
-        className="cursor-pointer rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-semibold text-text-secondary capitalize outline-none"
-      >
-        {ROLES.map((r) => (
-          <option key={r} value={r} disabled={r === "editor" && editorsFull && m.role !== "editor"}>
-            {r}
-          </option>
-        ))}
-      </select>
+        onChange={(value) => setTeamRole(ws.id, m.id, value as TeamRole)}
+        options={ROLES.map((r) => ({ value: r, label: r.charAt(0).toUpperCase() + r.slice(1), disabled: r === "editor" && editorsFull && m.role !== "editor" }))}
+      />
       <IconButton
         icon="times"
         label={`Remove ${m.name}`}

@@ -49,8 +49,8 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
           label={t("Type", "النوع")}
           value={question.type}
           disabled={locked}
-          onChange={(e) => {
-            const type = e.target.value as QuestionType;
+          onChange={(value) => {
+            const type = value as QuestionType;
             // A new type starts from its own defaults; the old options don't fit.
             onPatch({ type, config: defaultConfig(type) });
           }}
@@ -95,7 +95,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
               value={config.maxPicks ? String(config.maxPicks) : ""}
               placeholder={t("No limit", "بلا حد")}
               disabled={locked}
-              onChange={(e) => setConfig({ maxPicks: e.target.value ? Number(e.target.value) : undefined })}
+              onChange={(value) => setConfig({ maxPicks: value ? Number(value) : undefined })}
               options={[{ value: "", label: t("No limit", "بلا حد") }, ...range(1, Math.max(options, 1)).map((n) => ({ value: String(n), label: String(n) }))]}
             />
           )}
@@ -111,7 +111,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
                 label={key === "minPicks" ? t("At least", "على الأقل") : t("At most", "بحد أقصى")}
                 value={String(config[key] ?? 1)}
                 disabled={locked}
-                onChange={(e) => setConfig({ [key]: Number(e.target.value) })}
+                onChange={(value) => setConfig({ [key]: Number(value) })}
                 options={range(1, Math.max(options, 1)).map((n) => ({ value: String(n), label: String(n) }))}
               />
             ))}
@@ -125,7 +125,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
             label={t("Points", "عدد النقاط")}
             value={String(config.max ?? 5)}
             disabled={locked}
-            onChange={(e) => setConfig({ min: 1, max: Number(e.target.value) })}
+            onChange={(value) => setConfig({ min: 1, max: Number(value) })}
             options={[
               { value: "5", label: "1–5" },
               { value: "10", label: "1–10" },
@@ -141,14 +141,14 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
               label={t("Files", "عدد الملفات")}
               value={String(config.maxFiles ?? 10)}
               disabled={locked}
-              onChange={(e) => setConfig({ maxFiles: Number(e.target.value) })}
+              onChange={(value) => setConfig({ maxFiles: Number(value) })}
               options={[1, 3, 5, 10, 20].map((n) => ({ value: String(n), label: String(n) }))}
             />
             <SelectField
               label={t("Size each", "حجم كل ملف")}
               value={String(config.maxSizeMb ?? 20)}
               disabled={locked}
-              onChange={(e) => setConfig({ maxSizeMb: Number(e.target.value) })}
+              onChange={(value) => setConfig({ maxSizeMb: Number(value) })}
               options={[5, 10, 20, 50].map((n) => ({ value: String(n), label: `${n} MB` }))}
             />
           </div>
@@ -181,7 +181,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
             label={t("At most", "بحد أقصى")}
             value={String(config.maxCount ?? 5)}
             disabled={locked}
-            onChange={(e) => setConfig({ maxCount: Number(e.target.value) })}
+            onChange={(value) => setConfig({ maxCount: Number(value) })}
             options={range(1, 10).map((n) => ({ value: String(n), label: String(n) }))}
           />
         </Group>
@@ -196,7 +196,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
           aria-label={t("Which analysis it feeds", "ما يغذّيه من التحليل")}
           value={question.analysisTarget}
           disabled={locked}
-          onChange={(e) => onPatch({ analysisTarget: e.target.value as AnalysisTarget | "" })}
+          onChange={(value) => onPatch({ analysisTarget: value as AnalysisTarget | "" })}
           options={[
             { value: "", label: t("Nothing, it's practical", "لا شيء، سؤال عملي") },
             ...(Object.keys(ANALYSIS_TARGETS) as AnalysisTarget[]).map((key) => ({ value: key, label: ANALYSIS_TARGETS[key][isAr ? "ar" : "en"] })),

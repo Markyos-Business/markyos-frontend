@@ -32,7 +32,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         hideLabel
         icon="user-shield"
         value={values.role}
-        onChange={(e) => filters.set("role", e.target.value)}
+        onChange={(value) => filters.set("role", value)}
         options={[
           { value: "", label: f.allRoles },
           { value: "admin", label: c.roles.admin },
@@ -44,7 +44,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         hideLabel
         icon="filter"
         value={values.status}
-        onChange={(e) => filters.set("status", e.target.value)}
+        onChange={(value) => filters.set("status", value)}
         options={[
           { value: "", label: f.allStatuses },
           { value: "active", label: c.statuses.active },
@@ -57,7 +57,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         hideLabel
         icon="users"
         value={values.type}
-        onChange={(e) => filters.set("type", e.target.value)}
+        onChange={(value) => filters.set("type", value)}
         options={[{ value: "", label: f.allTypes }, ...ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: c.types[key] }))]}
       />
       <FilterSelectField
@@ -65,7 +65,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         hideLabel
         icon="language"
         value={values.lang}
-        onChange={(e) => filters.set("lang", e.target.value)}
+        onChange={(value) => filters.set("lang", value)}
         options={[
           { value: "", label: f.allLanguages },
           { value: "en", label: c.locales.en },

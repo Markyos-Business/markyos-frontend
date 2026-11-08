@@ -71,7 +71,7 @@ export function ShareWithClient({ analysis, isAr }: { analysis: BriefAnalysis; i
         <SelectField
           label={t("Link works for", "صلاحية الرابط")}
           value={share.expiry}
-          onChange={(e) => share.setExpiry(e.target.value as Expiry)}
+          onChange={(value) => share.setExpiry(value as Expiry)}
           options={[
             { value: "7", label: t("7 days", "7 أيام") },
             { value: "30", label: t("30 days", "30 يومًا") },

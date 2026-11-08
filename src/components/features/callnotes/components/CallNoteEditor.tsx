@@ -194,7 +194,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
               <SelectField
                 label={t("Related form", "النموذج المرتبط")}
                 value={draft.discoveryFormId ?? ""}
-                onChange={(e) => change({ discoveryFormId: e.target.value || null })}
+                onChange={(value) => change({ discoveryFormId: value || null })}
                 options={[{ value: "", label: t("None", "لا شيء") }, ...(forms.data ?? []).map((f) => ({ value: f.id, label: f.name }))]}
               />
             </div>

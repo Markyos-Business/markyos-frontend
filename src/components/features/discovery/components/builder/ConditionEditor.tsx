@@ -59,7 +59,7 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
               aria-label={isAr ? "تطابق الشروط" : "Match"}
               value={visibility?.match ?? "all"}
               disabled={disabled}
-              onChange={(e) => set(conditions, e.target.value as "all" | "any")}
+              onChange={(value) => set(conditions, value as "all" | "any")}
               options={[
                 { value: "all", label: isAr ? "عندما تتحقق كل الشروط" : "When all of these are true" },
                 { value: "any", label: isAr ? "عندما يتحقق أي شرط" : "When any of these is true" },
@@ -77,8 +77,8 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
                     aria-label={isAr ? "السؤال" : "Question"}
                     value={condition.questionId}
                     disabled={disabled}
-                    onChange={(e) => {
-                      const next = targets.find((t) => t.question.id === e.target.value)!.question;
+                    onChange={(value) => {
+                      const next = targets.find((t) => t.question.id === value)!.question;
                       replace({ questionId: next.id, operator: OPERATORS_FOR[next.type][0], value: defaultValue(next) });
                     }}
                     options={targets.map(({ question, number }) => ({
@@ -100,7 +100,7 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
                       aria-label={isAr ? "المقارنة" : "Comparison"}
                       value={condition.operator}
                       disabled={disabled}
-                      onChange={(e) => replace({ operator: e.target.value as Condition["operator"] })}
+                      onChange={(value) => replace({ operator: value as Condition["operator"] })}
                       options={OPERATORS_FOR[target.type].map((op) => ({ value: op, label: OPERATOR_LABELS[op][lang(isAr)] }))}
                     />
                     <ValueInput question={target} value={condition.value} onChange={(value) => replace({ value })} disabled={disabled} isAr={isAr} />
@@ -145,7 +145,7 @@ function ValueInput({ question, value, onChange, disabled, isAr }: ValueInputPro
         aria-label={isAr ? "القيمة" : "Value"}
         value={String(value)}
         disabled={disabled}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(value) => onChange(Number(value))}
         options={Array.from({ length: high - low + 1 }, (_, i) => ({ value: String(low + i), label: String(low + i) }))}
       />
     );
@@ -156,7 +156,7 @@ function ValueInput({ question, value, onChange, disabled, isAr }: ValueInputPro
         aria-label={isAr ? "القيمة" : "Value"}
         value={String(value)}
         disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(value) => onChange(value)}
         options={(question.config.options ?? []).map((o) => ({ value: o.value, label: textIn(o.label, isAr ? "ar" : "en") || o.value }))}
       />
     );
@@ -168,7 +168,7 @@ function ValueInput({ question, value, onChange, disabled, isAr }: ValueInputPro
       defaultValue={String(value)}
       disabled={disabled}
       onBlur={(e) => e.target.value !== String(value) && onChange(e.target.value)}
-      className="mk-underline w-full"
+      className="mk-field w-full"
     />
   );
 }

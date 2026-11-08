@@ -99,7 +99,7 @@ const RepeaterField = ({
                     {c.label}
                   </label>
                   {c.type === "select" ? (
-                    <SelectInput id={id} value={row[c.key] ?? ""} options={c.options ?? []} error={error} onChange={(e) => set(i, c.key, e.target.value)} />
+                    <SelectInput id={id} value={row[c.key] ?? ""} options={c.options ?? []} error={error} onChange={(value) => set(i, c.key, value)} />
                   ) : (
                     <input
                       id={id}

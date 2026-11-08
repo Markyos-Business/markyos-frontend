@@ -9,5 +9,3 @@ export const ROLE_TONE: Record<MemberRole, TagTone> = {
   client: "warning",
 };
 
-/** At most this many emails in one invite. */
-export const MAX_INVITES = 20;

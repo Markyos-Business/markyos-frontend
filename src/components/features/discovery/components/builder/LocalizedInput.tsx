@@ -74,7 +74,7 @@ export function LocalizedInput({ label, value, onCommit, mode, languages, multil
               rows={multiline ? 2 : undefined}
               onChange={(e) => change(lang, e.target.value)}
               onBlur={() => commit(draft)}
-              className={`mk-underline w-full ${multiline ? "resize-y" : ""} ${lang === "ar" ? "leading-[1.7]" : ""}`}
+              className={`mk-field w-full ${multiline ? "resize-y" : ""} ${lang === "ar" ? "leading-[1.7]" : ""}`}
             />
           </label>
         );

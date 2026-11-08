@@ -74,7 +74,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
           <SelectField
             label={t("Version", "الإصدار")}
             value={analysis.id}
-            onChange={(e) => setChosen(e.target.value)}
+            onChange={(value) => setChosen(value)}
             options={versions.map((v) => ({
               value: v.id,
               label: `${t("Version", "الإصدار")} ${v.version} · ${formatDay(v.createdAt, isAr)}`,

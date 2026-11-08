@@ -84,7 +84,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
           <SelectField
             label={isAr ? "العلامة" : "Brand"}
             value={brandId}
-            onChange={(e) => setBrandId(e.target.value)}
+            onChange={(value) => setBrandId(value)}
             options={brands.map((b) => ({ value: b.id, label: b.name }))}
           />
         </div>

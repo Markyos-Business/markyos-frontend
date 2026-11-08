@@ -37,7 +37,7 @@ export function ParticipantsEditor({ participants, onChange, team, isAr }: Parti
       {manual.map(({ p, index }) => (
         <div key={index} className="grid grid-cols-[minmax(0,1fr)_140px_auto] items-end gap-space-4">
           <InputField label={t("Name", "الاسم")} value={p.name} dir="auto" onChange={(e) => set(index, { name: e.target.value })} />
-          <SelectField label={t("Role", "الدور")} value={p.role} onChange={(e) => set(index, { role: e.target.value as ParticipantRole })} options={roleOptions(isAr)} />
+          <SelectField label={t("Role", "الدور")} value={p.role} onChange={(value) => set(index, { role: value as ParticipantRole })} options={roleOptions(isAr)} />
           <IconButton icon="times" label={t(`Remove ${p.name || "person"}`, `إزالة ${p.name || "الشخص"}`)} onClick={() => remove(index)} />
         </div>
       ))}

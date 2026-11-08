@@ -52,7 +52,7 @@ export function PeopleView({ page }: { page: PeoplePage }) {
             hideLabel
             icon="user-shield"
             value={page.role}
-            onChange={(e) => page.setRole(e.target.value as MemberRole | "")}
+            onChange={(value) => page.setRole(value as MemberRole | "")}
             options={[{ value: "", label: c.allRoles }, ...MEMBER_ROLES.map((r) => ({ value: r, label: c.roles[r] }))]}
           />
         </FilterBar>

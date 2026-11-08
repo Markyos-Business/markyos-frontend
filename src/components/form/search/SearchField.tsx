@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 import { Icon } from "../../ui/primitives/Icon";
 import { Kbd } from "../../ui/primitives/Kbd";
+import { fieldClasses, type FieldSize } from "../fields/InputField";
 
-type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> & {
+type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type" | "size"> & {
   /** The field's accessible name; the field shows only a placeholder. */
   label: string;
   /**
@@ -17,10 +18,14 @@ type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" 
   debounceMs?: number;
   /** ⌘K / Ctrl+K focuses the field, with the hint shown in it. Default false. */
   shortcut?: boolean;
+  /** `sm` for a panel or picker toolbar. */
+  size?: FieldSize;
+  /** Fill the row instead of the list-header width. */
+  fullWidth?: boolean;
 };
 
-/** The search field of list headers: the underline field with a search glyph. */
-const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, ...rest }: SearchFieldProps) => {
+/** The search field of list headers and pickers: the underline field with a search glyph. */
+const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, ...rest }: SearchFieldProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const initial = typeof rest.defaultValue === "string" ? rest.defaultValue : "";
   const [text, setText] = useState(initial);
@@ -59,15 +64,15 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
 
   const { defaultValue: _defaultValue, ...inputProps } = rest;
   return (
-    <label className="mk-underline flex w-full items-center gap-space-3 sm:w-65">
-      <Icon name="search" size={18} className="text-text-muted" />
+    <label className={`${fieldClasses(size)} flex items-center gap-space-3 ${fullWidth ? "" : "sm:w-65"}`}>
+      <Icon name="search" size={size === "sm" ? 15 : 18} className="shrink-0 text-text-muted" />
       <span className="sr-only">{label}</span>
       <input
         ref={ref}
         {...inputProps}
         {...(debounced ? { value: text, onChange: (e) => setText(e.target.value) } : { defaultValue: rest.value === undefined ? _defaultValue : undefined })}
         type="search"
-        className="min-w-0 flex-1 bg-transparent text-body font-medium text-text outline-none placeholder:font-normal placeholder:text-text-disabled"
+        className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-[12.5px]" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled`}
       />
       {shortcut && (
         <span aria-hidden className="hidden shrink-0 sm:inline">

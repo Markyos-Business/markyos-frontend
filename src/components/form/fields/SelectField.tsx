@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { FieldLabel, FieldNote } from "./InputField";
+import { FieldLabel, FieldNote, fieldBlockClasses } from "./InputField";
 import { SelectInput, type SelectInputProps } from "./SelectInput";
 
 type SelectFieldProps = Omit<SelectInputProps, "id"> & {
@@ -9,12 +9,12 @@ type SelectFieldProps = Omit<SelectInputProps, "id"> & {
   hint?: string;
 };
 
-/** A labelled select for forms: the same label, note and error as InputField. */
-const SelectField = ({ label, hint, error, required, placeholder = "Select …", ...rest }: SelectFieldProps) => {
+/** A labelled select for forms: the same label, underline, note and error as InputField. */
+const SelectField = ({ label, hint, error, required, placeholder = "Select…", size = "md", ...rest }: SelectFieldProps) => {
   const id = `sf-${useId()}`;
   const noteId = `${id}-note`;
   return (
-    <div className="flex min-h-field w-full flex-col gap-space-2">
+    <div className={fieldBlockClasses(size)}>
       <FieldLabel htmlFor={id} required={required}>
         {label}
       </FieldLabel>
@@ -24,6 +24,7 @@ const SelectField = ({ label, hint, error, required, placeholder = "Select …",
         required={required}
         error={error}
         placeholder={placeholder}
+        size={size}
         aria-describedby={error ?? hint ? noteId : undefined}
       />
       <FieldNote id={noteId} error={error} hint={hint} />

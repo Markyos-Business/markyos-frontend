@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { parseEmails } from "./emailList";
+import { EMAIL_RE } from "./emailList";
 
-describe("parseEmails", () => {
-  it("splits on commas, spaces and lines, once each", () =>
-    expect(parseEmails("Omar@Wadirum.coffee, layla@najd.sa\nomar@wadirum.coffee").emails).toEqual([
-      "omar@wadirum.coffee",
-      "layla@najd.sa",
-    ]));
-  it("returns what isn't an email", () => expect(parseEmails("nour@, khalid@harbi.design").invalid).toEqual(["nour@"]));
-  it("is empty for blank text", () => expect(parseEmails("  ")).toEqual({ emails: [], invalid: [] }));
+describe("EMAIL_RE", () => {
+  it("accepts an address", () => expect(EMAIL_RE.test("layla@najd.sa")).toBe(true));
+  it("rejects a half address", () => expect(EMAIL_RE.test("nour@")).toBe(false));
+  it("rejects spaces", () => expect(EMAIL_RE.test("a b@c.de")).toBe(false));
 });

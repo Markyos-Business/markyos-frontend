@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { limitsOf } from "@/constants/accountTypes";
-import { parseEmails } from "@/lib/emailList";
+import { EMAIL_RE } from "@/lib/emailList";
 import type { Workspace } from "@/types";
-import { MAX_INVITES } from "../../constants";
 import type { MemberRole } from "../../types";
 import { usePeopleLang } from "../usePeopleLang";
 
@@ -24,7 +23,7 @@ export function useInvitePeople(owned: Workspace[]) {
   const { c } = usePeopleLang();
   const d = c.inviteDialog;
   const [open, setOpen] = useState(false);
-  const [emails, setEmails] = useState("");
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<MemberRole>("viewer");
   const [brands, setBrands] = useState<string[]>([]);
@@ -34,7 +33,7 @@ export function useInvitePeople(owned: Workspace[]) {
   const editorsOn = (w: Workspace) => w.team.filter((m) => m.role === "editor").length;
 
   function reset() {
-    setEmails("");
+    setEmail("");
     setName("");
     setRole("viewer");
     setBrands([]);
@@ -48,11 +47,11 @@ export function useInvitePeople(owned: Workspace[]) {
   }
 
   async function submit(): Promise<string | false | void> {
-    const { emails: list, invalid } = parseEmails(emails);
+    const address = email.trim().toLowerCase();
+    const list = address && EMAIL_RE.test(address) ? [address] : [];
     const next: InviteErrors = {};
-    if (invalid.length) next.emails = d.emailInvalid(invalid[0]);
-    else if (list.length === 0) next.emails = d.emailsRequired;
-    else if (list.length > MAX_INVITES) next.emails = d.tooMany;
+    if (!address) next.emails = d.emailsRequired;
+    else if (!list.length) next.emails = d.emailInvalid(address);
     if (brands.length === 0) next.brands = d.brandsRequired;
 
     const chosen = owned.filter((w) => brands.includes(w.id));
@@ -75,7 +74,7 @@ export function useInvitePeople(owned: Workspace[]) {
           skipped.push(d.alreadyOn(email, w.name));
           continue;
         }
-        const display = (list.length === 1 && name.trim()) || email.split("@")[0];
+        const display = name.trim() || email.split("@")[0];
         addTeamMember(w.id, display, email, role);
         added++;
       }
@@ -97,9 +96,9 @@ export function useInvitePeople(owned: Workspace[]) {
       setOpen(false);
       reset();
     },
-    emails,
-    setEmails: (v: string) => {
-      setEmails(v);
+    email,
+    setEmail: (v: string) => {
+      setEmail(v);
       setErrors((e) => ({ ...e, emails: undefined }));
     },
     name,

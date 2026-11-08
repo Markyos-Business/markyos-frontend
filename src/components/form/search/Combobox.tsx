@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { usePresence } from "@/hooks/usePresence";
 import { Icon } from "../../ui/primitives/Icon";
+import { DropdownPanel } from "../fields/DropdownPanel";
 import { FieldLabel, FieldNote, inputClasses } from "../fields/InputField";
+import { OptionRow } from "../fields/Listbox";
 
 type ComboboxOption = { value: string; label: string; disabled?: boolean };
 
@@ -63,16 +65,6 @@ const Combobox = (props: ComboboxProps) => {
     if (refocus) triggerRef.current?.focus();
   };
 
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) close();
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-    // `close` is stable enough for an outside click; re-subscribing on every render isn't needed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
 
   const choose = (opt: ComboboxOption) => {
     if (opt.disabled) return;
@@ -123,8 +115,9 @@ const Combobox = (props: ComboboxProps) => {
         // The error is announced through the note it points at (a button
         // can't carry aria-invalid), and shown on the underline.
         aria-describedby={error ?? hint ? noteId : undefined}
+        data-state={error ? "error" : undefined}
         onClick={() => (open ? close() : (setActive(0), setOpen(true)))}
-        className={`${inputClasses} flex cursor-pointer items-center justify-between gap-space-3 text-start ${error ? "border-danger" : ""} ${
+        className={`${inputClasses} flex cursor-pointer items-center justify-between gap-space-3 text-start ${
           compact ? "text-caption" : ""
         }`}
       >
@@ -133,11 +126,7 @@ const Combobox = (props: ComboboxProps) => {
       </button>
 
       {mounted && (
-        <div
-          className={`absolute top-full z-dropdown mt-space-1 w-full rounded-card bg-surface-1 p-space-3 shadow-edge-pop ${
-            closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
-          }`}
-        >
+        <DropdownPanel anchor={triggerRef} closing={closing} onOutside={() => close()}>
           <input
             type="search"
             autoFocus
@@ -153,37 +142,23 @@ const Combobox = (props: ComboboxProps) => {
             aria-controls={listId}
             aria-activedescendant={shown[active] ? `${baseId}-opt-${shown[active].value}` : undefined}
             aria-label={`Search ${label}`}
-            className="mk-underline mb-space-3 w-full"
+            className="mk-field mb-space-3 w-full"
           />
-          <ul id={listId} role="listbox" aria-label={label} aria-multiselectable={props.multiple || undefined} className="max-h-60 overflow-y-auto">
+          <ul id={listId} role="listbox" aria-label={label} aria-multiselectable={props.multiple || undefined} className="min-h-0 flex-1 overflow-y-auto">
             {shown.map((opt, i) => {
               const isSelected = selected.includes(opt.value);
               return (
-                <li
+                <OptionRow
                   key={opt.value}
                   id={`${baseId}-opt-${opt.value}`}
-                  role="option"
-                  aria-selected={isSelected}
-                  aria-disabled={opt.disabled || undefined}
-                  onMouseEnter={() => setActive(i)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => choose(opt)}
-                  className={`flex h-control-sm items-center gap-space-3 rounded-md px-space-4 text-body ${
-                    opt.disabled ? "cursor-not-allowed text-text-disabled" : "cursor-pointer text-text"
-                  } ${i === active && !opt.disabled ? "bg-surface-2" : ""}`}
-                >
-                  {props.multiple ? (
-                    <span
-                      aria-hidden
-                      className={`flex size-5 shrink-0 items-center justify-center rounded-sm ${isSelected ? "bg-accent text-accent-ink" : "bg-surface-2 shadow-edge"}`}
-                    >
-                      {isSelected && <Icon name="check" size={16} />}
-                    </span>
-                  ) : (
-                    <Icon name="check" size={16} className={`shrink-0 text-accent-text ${isSelected ? "" : "invisible"}`} />
-                  )}
-                  <span className="truncate">{opt.label}</span>
-                </li>
+                  label={opt.label}
+                  selected={isSelected}
+                  active={i === active}
+                  disabled={opt.disabled}
+                  multiple={props.multiple}
+                  onHover={() => setActive(i)}
+                  onPick={() => choose(opt)}
+                />
               );
             })}
             {shown.length === 0 && (
@@ -210,7 +185,7 @@ const Combobox = (props: ComboboxProps) => {
               ))}
             </div>
           )}
-        </div>
+        </DropdownPanel>
       )}
       <FieldNote id={noteId} error={error} hint={hint} />
     </div>

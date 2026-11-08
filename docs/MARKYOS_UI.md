@@ -408,6 +408,10 @@ An optional 18px icon sits on the left or right, and the hint text is 12px in th
 Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSide?: 'left'|'right'`, `hint?`, `disabled?`
 Placeholders use the real ellipsis character: `Start typing…`
 
+The compact size (`size="sm"`) keeps the underline with a 12.5px value, for inspectors and dense rows.
+
+**Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
+
 ### 6.6 Checkbox / Radio / Switch
 - **Checkbox:** 20×20 with a 4px radius. The label goes from muted to heading when checked. States are default, error and success.
 - **Radio:** a 20×20 pill with the same states.

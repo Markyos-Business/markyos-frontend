@@ -41,7 +41,7 @@ parallax.
 | Other controls | The hover veil, a tint of the label's colour | `tailwind/base.js` |
 | `Button variant="link"` | Underline on hover and focus, no animation | `ui/buttons/Button.tsx` |
 | Cards (`.mk-card`) | The edge turns accent on hover and focus; no lift, no shadow | `tailwind/base.js` |
-| Text fields (`.mk-underline`) | The underline turns accent on focus, danger when invalid | `tailwind/base.js` |
+| Fields (`.mk-field`) | The underline turns accent on focus, danger when invalid | `tailwind/base.js` |
 | Switches | The knob slides 18px on `base` | `ui/primitives/SwitchMark.tsx` |
 | Progress | The fill grows by `scaleX` on `base` | `form/upload/FileField.tsx` |
 | Popover, menus, combobox | `fade-in` / `fade-out` | `ui/overlays/Popover.tsx`, `form/search/Combobox.tsx` |

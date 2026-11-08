@@ -53,11 +53,11 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             placeholder={isAr ? "الهدف — مثلًا: ضاعف المبيعات عبر الإنترنت في الرياض" : "Objective — e.g. Double online sales in Riyadh"}
           />
           <div className="flex flex-wrap gap-space-4">
-            <SelectInput aria-label={isAr ? "النوع" : "Kind"} value={kind} onChange={(e) => setKind(e.target.value as ObjectiveKind)} options={kindOptions} />
+            <SelectInput aria-label={isAr ? "النوع" : "Kind"} value={kind} onChange={(value) => setKind(value as ObjectiveKind)} options={kindOptions} />
             <SelectInput
               aria-label={isAr ? "الأولوية" : "Priority"}
               value={priority}
-              onChange={(e) => setPriority(e.target.value as Priority)}
+              onChange={(value) => setPriority(value as Priority)}
               options={priorityOptions}
             />
           </div>
@@ -105,7 +105,7 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                       <SelectInput
                         aria-label={isAr ? "تغيير الأولوية" : "Change priority"}
                         value={o.priority}
-                        onChange={(e) => updateObjective(ws.id, o.id, { priority: e.target.value as Priority })}
+                        onChange={(value) => updateObjective(ws.id, o.id, { priority: value as Priority })}
                         options={priorityOptions}
                       />
                       <IconButton icon="times" iconSize={16} label={isAr ? "حذف الهدف" : "Remove objective"} onClick={() => removeObjective(ws.id, o.id)} />

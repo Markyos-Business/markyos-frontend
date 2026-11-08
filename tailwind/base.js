@@ -993,7 +993,7 @@ export const baseStyles = [
     // A real pointer only: a touch screen has no hover, and a hover state left
     // behind after a tap reads as a stuck button.
     "@media (hover: hover) and (pointer: fine)": {
-      "button:not(:disabled):not(.mk-btn):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):hover, summary:hover, a[href]:not(.mk-btn):hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
+      "button:not(:disabled):not(.mk-btn):not(.mk-field):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):hover, summary:hover, a[href]:not(.mk-btn):hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
         "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
       },
     },
@@ -1001,12 +1001,12 @@ export const baseStyles = [
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
-    "button:not(:disabled):not(.mk-btn):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
       "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
-    "button:not(:disabled):not(.mk-btn):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
       "background-image": "linear-gradient(var(--press-veil), var(--press-veil)) !important",
     },
   },
@@ -1172,7 +1172,7 @@ export const baseStyles = [
    * field (`w-full`, `pe-8`) still adds to or overrides any of this.
    */
   {
-    ".mk-underline": {
+    ".mk-field": {
       "display": "block",
       "border": "0",
       "border-bottom": "1px solid var(--line-strong)",
@@ -1192,37 +1192,47 @@ export const baseStyles = [
     },
   },
   {
-    ".mk-underline::placeholder": {
+    ".mk-field::placeholder": {
       "font-weight": "400",
       "color": "var(--text-disabled)",
     },
   },
   {
-    ".mk-underline:focus, .mk-underline:focus-within": {
+    ".mk-field:focus, .mk-field:focus-within, .mk-field[aria-expanded=\"true\"]": {
       "border-bottom-color": "var(--accent)",
       "box-shadow": "0 6px 10px -8px var(--accent)",
     },
   },
   {
-    ".mk-underline[aria-invalid=\"true\"], .mk-underline:has([aria-invalid=\"true\"])": {
+    ".mk-field[aria-invalid=\"true\"], .mk-field:has([aria-invalid=\"true\"]), .mk-field[data-state=\"error\"]": {
       "border-bottom-color": "var(--danger)",
     },
   },
   {
-    ".mk-underline[data-state=\"success\"]": {
+    ".mk-field[data-state=\"success\"]": {
       "border-bottom-color": "var(--success)",
     },
   },
   {
-    ".mk-underline:disabled, .mk-underline:has(:disabled)": {
+    ".mk-field:disabled, .mk-field:has(:disabled)": {
       "color": "var(--text-disabled)",
       "cursor": "not-allowed",
     },
   },
   {
-    ":is(input, textarea, select, div, label).mk-underline:focus-visible, .mk-underline :focus-visible": {
+    ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible": {
       "outline": "none !important",
       "border-radius": "0 !important",
+    },
+  },
+  {
+    // The compact field (size="sm"): inspectors, dense panels and rows. The
+    // same underline, a shorter block and a 12.5px value.
+    ".mk-field.mk-field-sm": {
+      "padding-block": "5px",
+      "padding-inline": "6px",
+      "font-size": "0.78125rem",
+      "line-height": "1.25rem",
     },
   },
   /*

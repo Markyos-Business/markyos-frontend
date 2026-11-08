@@ -18,7 +18,7 @@ const SortControl = ({ options, value, onChange, defaultLabel = "Default order",
   <FilterSelectField
     label={label}
     value={value}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={(value) => onChange(value)}
     options={[{ value: "", label: defaultLabel }, ...options]}
   />
 );

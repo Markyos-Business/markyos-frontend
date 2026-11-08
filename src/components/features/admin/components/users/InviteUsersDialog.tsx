@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/ui";
-import { SelectField, TextareaField } from "@/components/form";
+import { InputField, SelectField } from "@/components/form";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { AccountRole, AccountType } from "@/types";
 import { useAdminLang } from "../../hooks/shared/useAdminLang";
@@ -9,7 +9,7 @@ import type { useInviteUsers } from "../../hooks/users/useInviteUsers";
 
 type InviteUsersDialogProps = { invite: ReturnType<typeof useInviteUsers> };
 
-/** Emails, a role, an account type and a language; each email becomes a waiting account. */
+/** An email, a role, an account type and a language; the email becomes a waiting account. */
 export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
   const { c } = useAdminLang();
   const d = c.inviteDialog;
@@ -23,22 +23,24 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
       onClose={invite.close}
       onSubmit={invite.submit}
     >
-      <TextareaField
+      <InputField
         label={d.emails}
+        type="email"
+        inputMode="email"
+        autoComplete="off"
         dir="ltr"
-        rows={3}
-        placeholder="omar@wadirum.coffee, layla@najd.sa"
-        value={form.emails}
+        required
+        placeholder="omar@wadirum.coffee"
+        value={form.email}
         error={invite.emailError}
-        hint={d.emailsHint}
-        onChange={(e) => set("emails", e.target.value)}
+        onChange={(e) => set("email", e.target.value)}
         autoFocus
       />
       <div className="grid gap-space-5 sm:grid-cols-2">
         <SelectField
           label={d.role}
           value={form.role}
-          onChange={(e) => set("role", e.target.value as AccountRole)}
+          onChange={(value) => set("role", value as AccountRole)}
           options={[
             { value: "member", label: c.roles.member },
             { value: "admin", label: c.roles.admin },
@@ -49,14 +51,14 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
           <SelectField
             label={d.type}
             value={form.accountType}
-            onChange={(e) => set("accountType", e.target.value as AccountType)}
+            onChange={(value) => set("accountType", value as AccountType)}
             options={ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: c.types[key] }))}
           />
         )}
         <SelectField
           label={d.language}
           value={form.language}
-          onChange={(e) => set("language", e.target.value as "en" | "ar" | "")}
+          onChange={(value) => set("language", value as "en" | "ar" | "")}
           options={[
             { value: "", label: c.filters.followsBrand },
             { value: "en", label: c.locales.en },
