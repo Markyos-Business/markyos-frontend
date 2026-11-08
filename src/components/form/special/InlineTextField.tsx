@@ -23,7 +23,7 @@ type InlineTextFieldProps = {
 
 /**
  * A name edited in place: reads as text with a pen until clicked, then is the
- * compact field box in the same type, so the line doesn't jump. Enter or
+ * compact underline field in the same type, so the line doesn't jump. Enter or
  * leaving the field saves; Escape puts the old text back. An empty or
  * unchanged name saves nothing.
  */

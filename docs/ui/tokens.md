@@ -25,7 +25,7 @@ literal is the readable fallback, checked against `tokens.js` by
 | Accent | `accent`, `accent-deep`, `accent-soft` | #0099FF, #0055FF, 14% tint | The one accent; pressed; its tint |
 | | `accent-text`, `accent-on-soft`, `accent-ink` | | Accent as text; text on the tint; text on a solid accent |
 | | `accent-ring`, `accent-edge` | | Focus ring; selected edge |
-| Edges | `hairline`, `hairline-strong`, `line-strong` | white 5 / 10 / 20% | Dividers; card edges (inset, never a border); a field's hover ring |
+| Edges | `hairline`, `hairline-strong`, `line-strong` | white 5 / 10 / 20% | Dividers; card edges (inset, never a border); an input's resting underline |
 | Status | `success`, `warning`, `info`, `danger`, `attention` | #00DE68, #FFBB00, #00CCFF, red lifted to 7:1, orange | Status only, as text |
 | | `danger-fill` | #FF0066 | The spec's red as a fill: dots, bars, solid badges |
 | | `*-soft` | each hue at 14% | Badge and tag tints |
@@ -85,7 +85,7 @@ Fixed component sizes, for `h-`, `w-`, `size-`, `min-h-`:
 | --- | --- | --- |
 | `control` | 46 | Buttons and icon buttons |
 | `control-sm` | 40 | Tabs, pagination cells, compact buttons |
-| `field` | 72 | A field block: title, box, note |
+| `field` | 72 | A text field block: title, value, underline |
 | `tag` / `status-tag` / `badge` | 36 / 28 / 24 | Tag, status tag, badge |
 | `widget-row` | 72 | Rows in widgets and tables |
 | `rail` / `rail-item` / `rail-item-box` / `topbar` | 84 / 64 / 48 / 84 | App shell |

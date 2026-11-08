@@ -9,7 +9,7 @@ type SelectFieldProps = Omit<SelectInputProps, "id"> & {
   hint?: string;
 };
 
-/** A labelled select for forms: the same label, box, note and error as InputField. */
+/** A labelled select for forms: the same label, underline, note and error as InputField. */
 const SelectField = ({ label, hint, error, required, placeholder = "Select…", size = "md", ...rest }: SelectFieldProps) => {
   const id = `sf-${useId()}`;
   const noteId = `${id}-note`;

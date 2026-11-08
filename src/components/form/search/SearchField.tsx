@@ -24,7 +24,7 @@ type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" 
   fullWidth?: boolean;
 };
 
-/** The search field of list headers and pickers: the field box with a search glyph. */
+/** The search field of list headers and pickers: the underline field with a search glyph. */
 const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, ...rest }: SearchFieldProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const initial = typeof rest.defaultValue === "string" ? rest.defaultValue : "";

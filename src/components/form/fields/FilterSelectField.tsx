@@ -21,7 +21,6 @@ type FilterSelectFieldProps = {
 
 /**
  * A select for a toolbar or filter bar: the pill look, the kit's dropdown.
- * Same fill as the form fields, so filters and fields read as one family.
  */
 const FilterSelectField = ({ label, hideLabel = false, icon, size = "md", ...rest }: FilterSelectFieldProps) => {
   const labelId = `fs-${useId()}`;

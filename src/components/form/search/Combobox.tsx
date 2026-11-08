@@ -113,7 +113,7 @@ const Combobox = (props: ComboboxProps) => {
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
         // The error is announced through the note it points at (a button
-        // can't carry aria-invalid), and shown as the field's danger ring.
+        // can't carry aria-invalid), and shown on the underline.
         aria-describedby={error ?? hint ? noteId : undefined}
         data-state={error ? "error" : undefined}
         onClick={() => (open ? close() : (setActive(0), setOpen(true)))}

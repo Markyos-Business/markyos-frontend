@@ -42,7 +42,7 @@ const PhoneField = ({
       </FieldLabel>
       <div
         dir="ltr"
-        // The field box around both parts, so the code and the number
+        // The underline field around both parts, so the code and the number
         // read as one field and share its focus and error state.
         className="mk-field flex gap-space-4"
       >

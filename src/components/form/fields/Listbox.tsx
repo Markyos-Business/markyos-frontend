@@ -55,7 +55,7 @@ type ListboxProps = {
   onChange: (value: string) => void;
   /** Shown while the value matches no option. */
   placeholder?: string;
-  /** The trigger's look: the field box or the filter pill. */
+  /** The trigger's look: the underline field or the filter pill. */
   triggerClassName: string;
   /** Classes for the value text inside the trigger. */
   valueClassName?: string;
@@ -195,7 +195,7 @@ const Listbox = ({
         aria-labelledby={aria["aria-labelledby"]}
         aria-describedby={aria["aria-describedby"]}
         // A button can't carry aria-invalid; the note it points at says why,
-        // and the field draws its danger ring from this.
+        // and the field draws its danger underline from this.
         data-state={error ? "error" : undefined}
         onClick={() => (open ? close() : openList())}
         onKeyDown={onKeyDown}

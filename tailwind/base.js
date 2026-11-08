@@ -993,7 +993,7 @@ export const baseStyles = [
     // A real pointer only: a touch screen has no hover, and a hover state left
     // behind after a tap reads as a stuck button.
     "@media (hover: hover) and (pointer: fine)": {
-      "button:not(:disabled):not(.mk-btn):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):hover, summary:hover, a[href]:not(.mk-btn):hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
+      "button:not(:disabled):not(.mk-btn):not(.mk-field):hover, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):hover, summary:hover, a[href]:not(.mk-btn):hover, label:has(> input[type=\"checkbox\"]):hover, label:has(> input[type=\"radio\"]):hover": {
         "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
       },
     },
@@ -1001,12 +1001,12 @@ export const baseStyles = [
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
-    "button:not(:disabled):not(.mk-btn):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
       "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
-    "button:not(:disabled):not(.mk-btn):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
       "background-image": "linear-gradient(var(--press-veil), var(--press-veil)) !important",
     },
   },
@@ -1163,45 +1163,32 @@ export const baseStyles = [
     },
   },
   /*
-   * The text field (spec §6.5), the only field shape in the product: a filled
-   * box. `--ink-soft` is a translucent fill, so the field reads on any surface
-   * (page, card, dialog) in both themes, and it is the same fill as the
-   * filter-bar pills, so fields and filters look like one family. No border at
-   * rest; state is an inset ring — focused accent with a soft halo, invalid
-   * danger, confirmed success — drawn as a box-shadow (spec rule 4), so these
-   * opt out of the focus box above (the element selector outranks it).
-   * Element defaults sit in the base layer, so a utility on the field
-   * (`w-full`, `pe-8`, `min-h-24`) still adds to or overrides any of this.
+   * The text field (spec §6.5), the only text-field shape in the product: no
+   * box and no fill, a 14px value at weight 500 over a 1px underline. State
+   * is the underline's colour and nothing else — resting `--line-strong`,
+   * focused accent with a little light under it, invalid danger, confirmed
+   * success — so these opt out of the focus box above (the element selector
+   * outranks it). Element defaults sit in the base layer, so a utility on the
+   * field (`w-full`, `pe-8`) still adds to or overrides any of this.
    */
   {
     ".mk-field": {
       "display": "block",
       "border": "0",
-      "border-radius": "8px",
-      "background": "var(--ink-soft)",
-      "min-height": "40px",
-      "padding-block": "9px",
-      // --space-4. Labels and notes take the same inset so they line up with the value.
+      "border-bottom": "1px solid var(--line-strong)",
+      "border-radius": "0",
+      "background": "transparent",
+      "padding-block": "8px",
+      // --space-4. Keeps the value off the field's edges, which matters when
+      // something does fill it (browser autofill paints a box behind it).
+      // Labels and notes take the same inset so they line up with the value.
       "padding-inline": "10px",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
       "color": "var(--text)",
       "outline": "none",
-      "box-shadow": "inset 0 0 0 1px transparent",
-      "transition": "box-shadow var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard)",
-    },
-  },
-  {
-    // The compact field (size="sm"): inspectors, dense panels and table rows.
-    // Same fill and rings, a 32px box and a 12.5px value.
-    ".mk-field.mk-field-sm": {
-      "min-height": "32px",
-      "padding-block": "6px",
-      "padding-inline": "8px",
-      "border-radius": "6px",
-      "font-size": "0.78125rem",
-      "line-height": "1.25rem",
+      "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
     },
   },
   {
@@ -1211,36 +1198,41 @@ export const baseStyles = [
     },
   },
   {
-    ".mk-field:hover:not(:disabled):not(:has(:disabled))": {
-      "box-shadow": "inset 0 0 0 1px var(--line-strong)",
-    },
-  },
-  {
     ".mk-field:focus, .mk-field:focus-within, .mk-field[aria-expanded=\"true\"]": {
-      "box-shadow": "inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-ring)",
+      "border-bottom-color": "var(--accent)",
+      "box-shadow": "0 6px 10px -8px var(--accent)",
     },
   },
   {
     ".mk-field[aria-invalid=\"true\"], .mk-field:has([aria-invalid=\"true\"]), .mk-field[data-state=\"error\"]": {
-      "box-shadow": "inset 0 0 0 1px var(--danger)",
+      "border-bottom-color": "var(--danger)",
     },
   },
   {
     ".mk-field[data-state=\"success\"]": {
-      "box-shadow": "inset 0 0 0 1px var(--success)",
+      "border-bottom-color": "var(--success)",
     },
   },
   {
     ".mk-field:disabled, .mk-field:has(:disabled)": {
       "color": "var(--text-disabled)",
       "cursor": "not-allowed",
-      "opacity": "0.7",
     },
   },
   {
     ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible": {
       "outline": "none !important",
-      "border-radius": "8px !important",
+      "border-radius": "0 !important",
+    },
+  },
+  {
+    // The compact field (size="sm"): inspectors, dense panels and rows. The
+    // same underline, a shorter block and a 12.5px value.
+    ".mk-field.mk-field-sm": {
+      "padding-block": "5px",
+      "padding-inline": "6px",
+      "font-size": "0.78125rem",
+      "line-height": "1.25rem",
     },
   },
   /*

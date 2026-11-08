@@ -6,9 +6,9 @@ import { Icon } from "../../ui/primitives/Icon";
 
 /**
  * The field's own look (spec §6.5), shared with every other field so they all
- * look alike: a filled box with a 14px value at weight 500 and an inset ring
- * whose colour is the field's state (`.mk-field` in tailwind/base.js), read
- * from `aria-invalid`.
+ * look alike: no box and no fill, a 14px value at weight 500 over a 1px
+ * underline whose colour is the field's state (`.mk-field` in
+ * tailwind/base.js), read from `aria-invalid`.
  */
 const inputClasses = "mk-field w-full";
 

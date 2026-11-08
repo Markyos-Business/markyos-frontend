@@ -24,7 +24,7 @@ type SelectInputProps = {
 };
 
 /**
- * Just the select, in the field box like every other field, for an inline
+ * Just the select, on the same underline as every other field, for an inline
  * picker that needs no label of its own (a currency beside an amount). It
  * opens the kit's dropdown, never the browser's.
  *

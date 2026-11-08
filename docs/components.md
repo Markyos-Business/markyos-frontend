@@ -417,7 +417,7 @@ const filters = useUrlFilters({ q: "", role: "", from: "", to: "" });
 
 ### 18. `SearchField`
 
-The filled search field with a leading glyph.
+The underlined search field with a leading glyph.
 
 | Prop | Type | Default |
 | --- | --- | --- |
