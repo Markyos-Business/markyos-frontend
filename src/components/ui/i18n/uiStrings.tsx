@@ -48,6 +48,19 @@ const en = {
   page: (n: number) => `Page ${n}`,
   pagesOf: (items: string) => `${items} pages`,
   showing: (first: number, last: number, total: number, items: string): (string | number)[] => [`Showing `, first, ` to `, last, ` of `, total, ` ${items}`],
+  colorArea: "Saturation and brightness",
+  hue: "Hue",
+  colorFormat: "Colour format",
+  eyedropper: "Pick from screen",
+  channels: { rgb: ["Red", "Green", "Blue"], hsl: ["Hue", "Saturation", "Lightness"], cmyk: ["Cyan", "Magenta", "Yellow", "Black"] },
+  cmykNote: "Approximate, without an ICC profile. Confirm with your printer.",
+  invalidHex: "Enter a hex like #0099FF.",
+  copy: "Copy",
+  copied: "Copied",
+  valueCopied: (v: string) => `${v} copied`,
+  copyFailed: "Couldn't copy. Select the value and copy it.",
+  brandColours: "Brand colours",
+  chooseColour: "Choose a colour",
 };
 
 type UiStrings = typeof en;
@@ -92,6 +105,19 @@ const ar: UiStrings = {
   page: (n) => `الصفحة ${n}`,
   pagesOf: (items) => `صفحات ${items}`,
   showing: (first, last, total, items) => [`عرض `, first, ` إلى `, last, ` من `, total, ` ${items}`],
+  colorArea: "التشبّع والسطوع",
+  hue: "درجة اللون",
+  colorFormat: "صيغة اللون",
+  eyedropper: "التقط من الشاشة",
+  channels: { rgb: ["أحمر", "أخضر", "أزرق"], hsl: ["الدرجة", "التشبّع", "الإضاءة"], cmyk: ["سماوي", "أرجواني", "أصفر", "أسود"] },
+  cmykNote: "قيمة تقريبية بدون ملف ألوان ICC. تأكّد منها مع المطبعة.",
+  invalidHex: "أدخل قيمة سداسية مثل ‎#0099FF.",
+  copy: "نسخ",
+  copied: "تم النسخ",
+  valueCopied: (v) => `تم نسخ ${v}`,
+  copyFailed: "تعذّر النسخ. حدّد القيمة وانسخها.",
+  brandColours: "ألوان الهوية",
+  chooseColour: "اختر لونًا",
 };
 
 type UiLang = "en" | "ar";

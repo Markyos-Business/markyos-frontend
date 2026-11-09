@@ -13,6 +13,8 @@ type DropdownPanelProps = {
   onOutside: () => void;
   /** A fixed width instead of the anchor's. */
   width?: number;
+  /** The tallest it may grow, room permitting. Default 320, a list's height. */
+  maxHeight?: number;
   className?: string;
   children: ReactNode;
 };
@@ -32,7 +34,7 @@ const MARGIN = 8;
  * there, follows the field on scroll and resize, and lines up with the field's
  * start edge in either writing direction.
  */
-const DropdownPanel = ({ anchor, closing = false, onOutside, width, className = "", children }: DropdownPanelProps) => {
+const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: cap = 320, className = "", children }: DropdownPanelProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Place | null>(null);
 
@@ -54,7 +56,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, className = 
         ...(up ? { bottom: window.innerHeight - r.top + GAP } : { top: r.bottom + GAP }),
         left,
         width: w,
-        maxHeight: Math.max(160, Math.min(320, (up ? above : below) - GAP)),
+        maxHeight: Math.max(160, Math.min(cap, (up ? above : below) - GAP)),
         up,
       });
     };
@@ -66,7 +68,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, className = 
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
-  }, [anchor, width]);
+  }, [anchor, width, cap]);
 
   useEffect(() => {
     // `mousedown`, not `click`, so an option that re-renders on press is not

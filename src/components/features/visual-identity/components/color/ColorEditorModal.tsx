@@ -1,13 +1,21 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { Icon, Button } from "@/components/ui";
-import { InputField } from "@/components/form";
-import { isValidHex } from "@/lib/utils";
-import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { useState } from "react";
+import { Button, FormDialog, Icon } from "@/components/ui";
+import { ColorPicker, InputField } from "@/components/form";
+import { normalizeHex } from "@/lib/color";
 
+/** A new swatch starts on a mid grey: a neutral place to move from. */
+const NEW_SWATCH = "#808080";
+
+/**
+ * Adds or edits one brand colour: its name, and the colour itself chosen by
+ * eye or typed in HEX, RGB, HSL or CMYK (the kit's picker). Editing also
+ * offers "Set as primary" and "Delete", with what deleting will change.
+ */
 export function ColorEditorModal({
   mode,
+  isAr,
   initialName,
   initialHex,
   isPrimary,
@@ -18,6 +26,7 @@ export function ColorEditorModal({
   onSetPrimary,
 }: {
   mode: "add" | "edit";
+  isAr: boolean;
   initialName: string;
   initialHex: string;
   /** Whether this swatch currently drives the guideline site's accent. */
@@ -30,118 +39,49 @@ export function ColorEditorModal({
   onSetPrimary?: () => void;
 }) {
   const [name, setName] = useState(initialName);
-  const [hex, setHex] = useState(initialHex);
-  const [error, setError] = useState<string | undefined>();
-
-  const normalizedHex = hex.startsWith("#") ? hex : `#${hex}`;
-  const previewValid = isValidHex(normalizedHex);
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!isValidHex(normalizedHex)) {
-      setError("Enter a valid hex color, like #0099FF.");
-      return;
-    }
-    onSave({ name: name.trim() || "Untitled", hex: normalizedHex });
-  }
-
-  useModalDismiss(onCancel);
+  const [hex, setHex] = useState(normalizeHex(initialHex) ?? NEW_SWATCH);
 
   return (
-    <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base"
-      style={{ background: "var(--scrim)" }}
-      onClick={onCancel}
+    <FormDialog
+      open
+      title={mode === "add" ? (isAr ? "أضف لونًا" : "Add colour") : isAr ? "عدّل اللون" : "Edit colour"}
+      submitLabel={mode === "add" ? (isAr ? "أضف اللون" : "Add colour") : isAr ? "حفظ" : "Save"}
+      onClose={onCancel}
+      onSubmit={() => onSave({ name: name.trim() || (isAr ? "بدون اسم" : "Untitled"), hex })}
     >
-      <form
-        onSubmit={handleSubmit}
-        className="animate-dialog-in w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
-        style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-[18px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-            {mode === "add" ? "Add color" : "Edit color"}
-          </h2>
-          <button type="button" onClick={onCancel} aria-label="Close" className="mk-icon-btn cursor-pointer">
-            <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
-          </button>
-        </div>
+      <InputField
+        label={isAr ? "الاسم" : "Name"}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={isAr ? "مثل: التمييز" : "e.g. Accent"}
+        dir="auto"
+      />
+      <ColorPicker value={hex} onChange={setHex} />
 
-        <div
-          className="h-[88px] rounded-xl"
-          style={{
-            background: previewValid ? normalizedHex : "var(--surface-2)",
-            boxShadow: "inset 0 0 0 1px var(--hairline-strong)",
-          }}
-        />
-
-        <InputField
-          label="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Accent"
-          autoFocus
-        />
-        <InputField
-          label="Hex"
-          value={hex}
-          onChange={(e) => {
-            setHex(e.target.value);
-            setError(undefined);
-          }}
-          placeholder="#0099FF"
-          error={error}
-        />
-
-        {mode === "edit" && (
-          <button
-            type="button"
-            onClick={onSetPrimary}
-            disabled={isPrimary}
-            className="h-10 rounded-full text-[12.5px] font-semibold cursor-pointer flex items-center justify-center gap-2 disabled:cursor-default"
-            style={{
-              background: isPrimary ? "var(--accent-soft)" : "var(--surface-2)",
-              color: isPrimary ? "var(--accent)" : "var(--text)",
-            }}
-          >
-            <Icon name={isPrimary ? "check-circle" : "palette"} size={13} />
-            {isPrimary ? "This is the primary colour" : "Set as primary"}
-          </button>
-        )}
-
-        {/* Says what deleting actually changes, instead of hiding the button
-            and leaving the reason to be guessed at. */}
-        {consequence && (
-          <p className="text-[11.5px] leading-[1.55]" style={{ color: "var(--text-faint)" }}>
-            {consequence}
-          </p>
-        )}
-
-        <div className="flex items-center gap-2.5 mt-1">
-          {onDelete && (
-            <button
+      {mode === "edit" && (
+        <div className="flex flex-col gap-space-3">
+          <div className="flex flex-wrap items-center gap-space-3">
+            <Button
               type="button"
-              onClick={onDelete}
-              className="h-11 px-4 rounded-full text-[13px] font-semibold cursor-pointer me-auto"
-              style={{ color: "var(--danger)" }}
+              variant={isPrimary ? "ghost" : "outline"}
+              size="sm"
+              icon={<Icon name={isPrimary ? "check-circle" : "palette"} size={18} />}
+              onClick={onSetPrimary}
+              disabled={isPrimary}
             >
-              Delete
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={onCancel}
-            className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
-            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-          >
-            Cancel
-          </button>
-          <Button type="submit" variant="primary" size="md">
-            {mode === "add" ? "Add color" : "Save"}
-          </Button>
+              {isPrimary ? (isAr ? "هذا هو اللون الأساسي" : "This is the primary colour") : isAr ? "اجعله أساسيًا" : "Set as primary"}
+            </Button>
+            {onDelete && (
+              <Button type="button" variant="danger-soft" size="sm" icon={<Icon name="trash" size={18} />} onClick={onDelete} className="ms-auto">
+                {isAr ? "احذف" : "Delete"}
+              </Button>
+            )}
+          </div>
+          {/* Says what deleting actually changes, instead of hiding the
+              button and leaving the reason to be guessed at. */}
+          {consequence && <p className="text-caption text-text-faint">{consequence}</p>}
         </div>
-      </form>
-    </div>
+      )}
+    </FormDialog>
   );
 }

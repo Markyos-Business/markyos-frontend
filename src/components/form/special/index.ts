@@ -3,3 +3,5 @@ export * from "./PhoneField";
 export * from "./SortControl";
 export * from "./InlineTextField";
 export * from "./SliderField";
+export * from "./ColorPicker";
+export * from "./ColorField";

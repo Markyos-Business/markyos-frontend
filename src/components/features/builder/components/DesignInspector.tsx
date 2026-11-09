@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/ui";
+import { ColorPopover } from "@/components/form";
 import {
   backgroundInkWarning,
   overriddenIn,
@@ -889,14 +890,16 @@ function PaletteColor({
             }}
           />
         ))}
-        <label
-          title={isAr ? "لون مخصص" : "Custom colour"}
-          className="w-7 h-7 rounded-full cursor-pointer grid place-items-center shrink-0"
-          style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}
+        <ColorPopover
+          value={value || "#000000"}
+          onChange={onChange}
+          swatches={ws.colors}
+          label={isAr ? "لون مخصص" : "Custom colour"}
+          triggerClassName="w-7 h-7 rounded-full grid place-items-center shrink-0"
+          triggerStyle={{ background: "var(--surface-1)", color: "var(--text-faint)" }}
         >
-          <Icon name="fill-drip" size={12} />
-          <input type="color" value={value || "#000000"} onChange={(e) => onChange(e.target.value)} className="sr-only" />
-        </label>
+          <Icon name="fill-drip" size={16} />
+        </ColorPopover>
       </div>
     </div>
   );

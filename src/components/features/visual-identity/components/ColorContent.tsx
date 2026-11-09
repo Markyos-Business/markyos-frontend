@@ -283,6 +283,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
       {editor && (
         <ColorEditorModal
           mode={editor.mode}
+          isAr={isAr}
           initialName={editor.mode === "edit" ? editor.color.name : ""}
           initialHex={editor.mode === "edit" ? editor.color.hex : "#"}
           isPrimary={editor.mode === "edit" && !!editor.color.isPrimary}
@@ -298,10 +299,16 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             editor.mode === "edit"
               ? editor.color.isPrimary
                 ? ws.colors.length > 1
-                  ? "Deleting the primary hands that role to the next swatch in the palette."
-                  : "This is the last colour. Deleting it drops the guideline site back to the neutral fallback theme."
+                  ? isAr
+                    ? "حذف اللون الأساسي ينقل دوره إلى اللون التالي في اللوحة."
+                    : "Deleting the primary hands that role to the next swatch in the palette."
+                  : isAr
+                    ? "هذا آخر لون. حذفه يعيد موقع الدليل إلى السمة المحايدة الاحتياطية."
+                    : "This is the last colour. Deleting it drops the guideline site back to the neutral fallback theme."
                 : editor.color.id === "canvas"
-                  ? "The guideline site reads its background from this swatch. Without it, the site falls back to a neutral ground."
+                  ? isAr
+                    ? "يأخذ موقع الدليل خلفيته من هذا اللون. بدونه يعود الموقع إلى خلفية محايدة."
+                    : "The guideline site reads its background from this swatch. Without it, the site falls back to a neutral ground."
                   : undefined
               : undefined
           }
@@ -309,7 +316,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             editor.mode === "edit"
               ? () => {
                   setPrimaryColor(ws.id, editor.color.id);
-                  showToast(`${editor.color.name} is now the primary colour.`, "success");
+                  showToast(isAr ? `أصبح ${editor.color.name} اللون الأساسي.` : `${editor.color.name} is now the primary colour.`, "success");
                   setEditor(null);
                 }
               : undefined
@@ -318,10 +325,10 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           onSave={(data) => {
             if (editor.mode === "add") {
               addColor(ws.id, data);
-              showToast("Color added.", "success");
+              showToast(isAr ? "تمت إضافة اللون." : "Colour added.", "success");
             } else {
               updateColor(ws.id, editor.color.id, data);
-              showToast("Color updated.", "success");
+              showToast(isAr ? "تم تحديث اللون." : "Colour updated.", "success");
             }
             setEditor(null);
           }}
@@ -333,8 +340,12 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   removeColor(ws.id, editor.color.id);
                   showToast(
                     wasPrimary && successor
-                      ? `${editor.color.name} removed — ${successor.name} is now the primary colour.`
-                      : `${editor.color.name} removed.`
+                      ? isAr
+                        ? `تم حذف ${editor.color.name}، وأصبح ${successor.name} اللون الأساسي.`
+                        : `${editor.color.name} removed. ${successor.name} is now the primary colour.`
+                      : isAr
+                        ? `تم حذف ${editor.color.name}.`
+                        : `${editor.color.name} removed.`
                   );
                   setEditor(null);
                 }

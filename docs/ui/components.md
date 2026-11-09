@@ -254,6 +254,7 @@ label, `*` for `required`, hint and error as `InputField`:
 | `ToggleField`, `ToggleCardGroup` | One setting, or several, as switch cards. The thumb goes to the reading end. |
 | `SegmentedToggle` | Two named modes with a sliding highlight. |
 | `OtpField`, `PhoneField` | A one-time code with paste support, and a dial code plus number. Both stay left-to-right. |
+| `ColorPicker`, `ColorField`, `ColorPopover` | The one colour picker: a saturation/brightness square, a hue track, HEX / RGB / HSL / CMYK fields (CMYK marked approximate), Copy, the screen eyedropper where the browser has one, and optional brand `swatches`. `ColorPicker` sits inline (a dialog), `ColorField` is the underline field that opens it, `ColorPopover` opens it from any trigger (an icon on a card). Never `<input type="color">`. |
 | `RepeaterField` | A list of same-shaped rows, with add and remove. |
 | `FileField` | Drop or browse with type and size checks. Use `variant="compact"` for forms with several uploads. The caller does the upload. |
 

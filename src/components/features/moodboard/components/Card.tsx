@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FilterSelectField } from "@/components/form";
+import { ColorPopover, FilterSelectField } from "@/components/form";
 import { Icon } from "@/components/ui";
 import { contrastRatio } from "@/lib/contrast";
 import type { Asset, MoodboardItem } from "@/types";
@@ -203,21 +203,16 @@ function Swatch({
           which is not how anyone expects to move a square of colour. The ink is
           solved against the swatch, like the hex code beside it.
         */}
-        <label
-          className="mk-icon-btn absolute top-1.5 cursor-pointer"
-          style={{ insetInlineEnd: 6, color: ink }}
+        <ColorPopover
+          value={hex}
+          onChange={(next) => onEdit({ hex: next })}
+          label={isAr ? "لون البطاقة" : "Card colour"}
           title={isAr ? "غيّر اللون" : "Change the colour"}
-          onPointerDown={(e) => e.stopPropagation()}
+          triggerClassName="mk-icon-btn absolute top-1.5"
+          triggerStyle={{ insetInlineEnd: 6, color: ink }}
         >
-          <Icon name="eye-dropper" size={11} />
-          <input
-            type="color"
-            value={hex}
-            onChange={(e) => onEdit({ hex: e.target.value })}
-            className="sr-only"
-            aria-label={isAr ? "لون البطاقة" : "Card colour"}
-          />
-        </label>
+          <Icon name="eye-dropper" size={16} />
+        </ColorPopover>
         <span
           dir="ltr"
           className="absolute bottom-2 text-[11px] font-semibold pointer-events-none bidi-auto"
