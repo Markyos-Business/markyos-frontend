@@ -6,8 +6,8 @@ import { Switch } from "@/components/ui";
 import type { Workspace } from "@/types";
 import { DepartmentHeader } from "./DepartmentHeader";
 import { GuidelineContentCard } from "./GuidelineContentCard";
-import { ImportInstructionsModal } from "./ImportInstructionsModal";
-import { InstructionEditor } from "./InstructionEditor";
+import { ImportInstructionsModal } from "../instructions/ImportInstructionsModal";
+import { InstructionEditor } from "../instructions/InstructionEditor";
 import { RelevantLinksCard } from "./RelevantLinksCard";
 
 /** Editing one department: its name, whether it is published, its instructions, guideline and links. */

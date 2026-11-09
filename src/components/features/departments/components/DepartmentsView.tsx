@@ -2,7 +2,7 @@ import { Button, EmptyHint } from "@/components/ui";
 import { DepartmentDocument } from "@/components/features/guideline-site";
 import type { DepartmentsPageState } from "../hooks/useDepartmentsPage";
 import { PAGE_SECTION } from "../constants";
-import { DepartmentPanel } from "./DepartmentPanel";
+import { DepartmentPanel } from "./panel/DepartmentPanel";
 
 /** The open department, edited or read — or, before there is one, how to add the first. */
 export function DepartmentsView({ ws, isAr, active, mode, onAdd }: DepartmentsPageState["view"]) {

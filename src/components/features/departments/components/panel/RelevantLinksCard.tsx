@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button, EmptyHint, Icon, IconButton } from "@/components/ui";
 import type { DepartmentView, Workspace } from "@/types";
-import { resolveItem, type DeptItem } from "../utils/resolveItem";
+import { resolveItem, type DeptItem } from "../../utils/resolveItem";
 import { AddItemForm } from "./AddItemForm";
 
 type RelevantLinksCardProps = { ws: Workspace; view: DepartmentView; isAr: boolean };

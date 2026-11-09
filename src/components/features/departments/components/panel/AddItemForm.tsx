@@ -5,7 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { Button } from "@/components/ui";
 import { ChipPicker, InputField } from "@/components/form";
 import type { DepartmentView, DeptItemType, SectionKey, Workspace } from "@/types";
-import { ITEM_TYPES, SECTION_META } from "../constants";
+import { ITEM_TYPES, SECTION_META } from "../../constants";
 
 type AddItemFormProps = { ws: Workspace; view: DepartmentView; isAr: boolean; onDone: () => void };
 

@@ -3,7 +3,7 @@
 import { Icon, Popover } from "@/components/ui";
 import { SegmentedToggle } from "@/components/form";
 import { ShareLinksPanel } from "@/components/features/sharing";
-import type { DepartmentsPageState } from "../hooks/useDepartmentsPage";
+import type { DepartmentsPageState } from "../../hooks/useDepartmentsPage";
 
 /** The top bar's department actions: share it, and edit or read it. */
 export function DepartmentActions({ ws, isAr, departmentId, mode, onMode }: NonNullable<DepartmentsPageState["actions"]>) {
