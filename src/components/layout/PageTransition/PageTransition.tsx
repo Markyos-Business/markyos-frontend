@@ -1,6 +1,7 @@
 "use client";
 
-import { ViewTransition, useEffect, type ReactNode } from "react";
+import { ViewTransition, useEffect, useState, type ReactNode } from "react";
+import { markPageArrived } from "@/lib/motion";
 
 /** Set after the first page has drawn, so a full load never moves focus. */
 let navigated = false;
@@ -19,6 +20,9 @@ let navigated = false;
  * starts there.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
+  // Before the children render, so cards mounting with this page know the
+  // page is already animating and don't animate a second time.
+  useState(markPageArrived);
   useEffect(() => {
     if (!navigated) {
       navigated = true;

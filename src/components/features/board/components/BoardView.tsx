@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { BoardState } from "../hooks/useBoardPage";
 import { BoardColumn } from "./BoardColumn";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
+import { Stagger } from "@/components/ui";
 
 /** The intro, and the six stage columns (or the way to make a first brand). */
 export function BoardView({ board }: { board: BoardState }) {
@@ -34,11 +35,11 @@ export function BoardView({ board }: { board: BoardState }) {
         // Horizontal scroll is correct for a board: six columns can't be made
         // legible at 390px by stacking them.
         <div className="min-h-0 flex-1 overflow-x-auto">
-          <div className="flex min-w-max items-start gap-3.5 pb-4">
+          <Stagger className="flex min-w-max items-start gap-3.5 pb-4">
             {columns.map((column) => (
               <BoardColumn key={column.stage.key} {...column} {...handlers} />
             ))}
-          </div>
+          </Stagger>
         </div>
       )}
     </div>

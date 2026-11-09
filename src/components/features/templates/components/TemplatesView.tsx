@@ -3,6 +3,7 @@
 import type { Template } from "../constants";
 import { TemplateCard } from "./TemplateCard";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
+import { Stagger } from "@/components/ui";
 
 /** The marketplace: what it is, and the templates as cards. */
 export function TemplatesView({ templates, onApply }: { templates: Template[]; onApply: (t: Template) => void }) {
@@ -19,11 +20,11 @@ export function TemplatesView({ templates, onApply }: { templates: Template[]; o
           )}
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <Stagger className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {templates.map((t) => (
           <TemplateCard key={t.id} template={t} onApply={onApply} />
         ))}
-      </div>
+      </Stagger>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Icon, StatTile, Section, Row, Badge, EmptyHint } from "@/components/ui";
+import { Icon, StatTile, Section, Row, Badge, EmptyHint, Stagger } from "@/components/ui";
 import { useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { Workspace } from "@/types";
@@ -47,11 +47,11 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
           />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
           <StatTile value={`$${monthly}`} label={t("Recurring, per month", "متكرر شهريًا")} />
           <StatTile value={`$${oneTimeTotal}`} label={isAr ? `لمرة واحدة، ${passes.length} تصريح` : `One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
           <StatTile value={String(paid.length)} label={isAr ? `مدفوعة من ${workspaces.length} علامات` : `Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
-        </div>
+        </Stagger>
       </Section>
 
       <Section title={t("Payments by brand", "المدفوعات حسب العلامة")} icon="receipt">

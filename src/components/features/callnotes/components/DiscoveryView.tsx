@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Tabs, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, Tabs, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay, publicUrl, sendForm } from "@/components/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../constants";
 import { useDiscoveryFeed } from "../hooks/useDiscoveryFeed";
@@ -115,11 +115,11 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
               />
             </div>
           ) : (
-            <ul className="flex flex-col">
+            <Stagger as="ul" className="flex flex-col">
               {forms.map((form) => (
                 <FormRow key={form.id} form={form} slug={brandSlug} isAr={isAr} canEdit={canEdit} onChanged={reload} />
               ))}
-            </ul>
+            </Stagger>
           )
         ) : calls.length === 0 ? (
           <div className="px-space-8 pb-space-8">
@@ -131,11 +131,11 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
             />
           </div>
         ) : (
-          <ul className="flex flex-col">
+          <Stagger as="ul" className="flex flex-col">
             {calls.map((call) => (
               <CallRow key={call.id} call={call} slug={brandSlug} canEdit={canEdit} isAr={isAr} onChanged={reload} />
             ))}
-          </ul>
+          </Stagger>
         )}
       </section>
 

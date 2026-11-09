@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 type AvatarTone = "muted" | "accent";
 type AvatarPresence = "online" | "busy" | "away" | "offline";
 
@@ -28,6 +31,26 @@ type AvatarProps = {
   className?: string;
 };
 
+/**
+ * The photo fades in once it has loaded, over the tinted circle, rather than
+ * popping in line by line. An image already in the cache is shown at once.
+ */
+const AvatarImage = ({ src }: { src: string }) => {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- remote avatars of any size; no layout shift to save
+    <img
+      src={src}
+      alt=""
+      ref={(img) => {
+        if (img?.complete && img.naturalWidth > 0 && !loaded) setLoaded(true);
+      }}
+      onLoad={() => setLoaded(true)}
+      className={`size-full object-cover transition-opacity duration-base ${loaded ? "opacity-100" : "opacity-0"}`}
+    />
+  );
+};
+
 /** A person: their photo, or their initials on a tinted circle, with optional presence. */
 const Avatar = ({ initials, src, size = 30, tone = "muted", presence, presenceLabel, className = "" }: AvatarProps) => (
   <span className={`relative inline-grid shrink-0 ${className}`} style={{ width: size, height: size }}>
@@ -36,8 +59,7 @@ const Avatar = ({ initials, src, size = 30, tone = "muted", presence, presenceLa
       style={{ width: size, height: size, fontSize: Math.max(10, Math.round(size * 0.36)) }}
     >
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- remote avatars of any size; no layout shift to save
-        <img src={src} alt="" className="size-full object-cover" />
+        <AvatarImage src={src} />
       ) : (
         initials
       )}

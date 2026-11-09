@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Button } from "../buttons/Button";
 import { EmptyState } from "../empty/EmptyState";
 import { Icon } from "../primitives/Icon";
+import { FadeIn } from "../motion/FadeIn";
 import type { AsyncStatus } from "./asyncStatus";
 
 type AsyncStateViewProps = {
@@ -41,8 +42,10 @@ const AsyncStateView = ({
   children,
 }: AsyncStateViewProps) => {
   if (status === "loading") return <>{skeleton}</>;
+  // Whatever replaces the skeleton crossfades in rather than popping.
   if (status === "error") {
     return (
+      <FadeIn variant="in">
       <EmptyState
         icon="exclamation-circle"
         title="Something went wrong"
@@ -55,12 +58,17 @@ const AsyncStateView = ({
           )
         }
       />
+      </FadeIn>
     );
   }
   if (status === "empty") {
-    return <EmptyState icon={emptyIcon} title={emptyTitle} description={emptyDescription} action={emptyAction} />;
+    return (
+      <FadeIn variant="in">
+        <EmptyState icon={emptyIcon} title={emptyTitle} description={emptyDescription} action={emptyAction} />
+      </FadeIn>
+    );
   }
-  return <>{children}</>;
+  return <FadeIn variant="in">{children}</FadeIn>;
 };
 
 export { AsyncStateView };

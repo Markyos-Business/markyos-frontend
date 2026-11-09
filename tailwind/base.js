@@ -926,7 +926,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition-property": "color, background-color, border-color, box-shadow, opacity !important",
+        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale !important",
         "transition-duration": "var(--duration-instant) !important",
         "transition-timing-function": "var(--ease-standard) !important",
       },

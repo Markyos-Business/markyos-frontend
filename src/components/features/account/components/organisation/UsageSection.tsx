@@ -1,6 +1,6 @@
 "use client";
 
-import { Section, StatTile } from "@/components/ui";
+import { Section, Stagger, StatTile } from "@/components/ui";
 import type { AccountPageState } from "../../hooks/useAccountPage";
 import { useAccountLang } from "../../hooks/shared/useAccountLang";
 
@@ -9,14 +9,14 @@ export function UsageSection({ stats, richness }: AccountPageState["usage"]) {
   const { t } = useAccountLang();
   return (
     <Section title={t("Usage analytics", "تحليلات الاستخدام")} icon="chart-line">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-4">
+      <Stagger className="grid grid-cols-2 sm:grid-cols-4 gap-space-4">
         <StatTile value={stats.workspaces} label={t("Workspaces", "مساحات العمل")} />
         <StatTile value={stats.shared} label={t("Shared with clients", "مشاركة مع العملاء")} />
         <StatTile value={stats.colors} label={t("Colors defined", "ألوان معرّفة")} />
         <StatTile value={stats.logos} label={t("Logo files", "ملفات الشعار")} />
         <StatTile value={stats.signOffs} label={t("Sign-off notes", "ملاحظات الاعتماد")} />
         <StatTile value={stats.approvals} label={t("Change proposals", "مقترحات التغيير")} />
-      </div>
+      </Stagger>
       <div className="flex flex-col gap-space-3">
         <span className="text-caption text-text-muted">{t("Content richness by brand", "ثراء المحتوى حسب العلامة")}</span>
         {richness.map((w) => (

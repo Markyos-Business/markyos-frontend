@@ -25,3 +25,19 @@ export type Variant = keyof typeof variants;
 
 /** The class for a variant, entering or leaving. */
 export const motionClass = (variant: Variant, closing: boolean) => (closing ? variants[variant].exit : variants[variant].enter);
+
+/** When the current page arrived (performance.now), set by `PageTransition`. */
+let pageArrivedAt = -Infinity;
+
+/** Marks that a page has just mounted: its own transition is playing. */
+export const markPageArrived = () => {
+  if (typeof performance !== "undefined") pageArrivedAt = performance.now();
+};
+
+/**
+ * Whether a page arrived a moment ago. Content mounting with the page rides
+ * the page's own transition rather than animating twice, so `FadeIn` and
+ * `Stagger` stay still then and only animate what appears later (data
+ * arriving, a panel opening).
+ */
+export const pageJustArrived = () => typeof performance !== "undefined" && performance.now() - pageArrivedAt < DURATION.slow;

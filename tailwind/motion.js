@@ -225,6 +225,9 @@ export const motionBase = [
     "::view-transition-new(.page-enter)": { animation: "fade-up var(--duration-base) var(--ease-out) both" },
     "@supports not (view-transition-name: none)": { ".mk-page": { animation: "fade-up var(--duration-base) var(--ease-out) both" } },
   },
+  // A page heading takes focus after a navigation (PageTransition) so screen
+  // readers announce it; that focus is for them, so it draws no ring.
+  { 'h1[tabindex="-1"]:focus, h1[tabindex="-1"]:focus-visible': { outline: "none !important", "box-shadow": "none !important" } },
   // A number that changes crossfades rather than counting.
   { ".mk-value": { transition: "opacity var(--duration-fast) var(--ease-standard)" } },
   // While the theme swaps, nothing transitions, so colours don't flash.

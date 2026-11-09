@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertBanner, Button, PageHeader, StatTile } from "@/components/ui";
+import { AlertBanner, Button, PageHeader, Stagger, StatTile } from "@/components/ui";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/useAdminLang";
 import { useAdminStats } from "../../hooks/shared/useAdminStats";
@@ -28,7 +28,7 @@ export function AdminDashboardView() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
+          <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
             <StatTile value={data.users.total} label={t("Accounts", "الحسابات")} />
             <StatTile value={data.users.pending} label={t("Waiting to join", "بانتظار الانضمام")} />
             <StatTile value={data.users.activeLast30d} label={t("Active in 30 days", "نشطة خلال 30 يومًا")} />
@@ -36,7 +36,7 @@ export function AdminDashboardView() {
             <StatTile value={data.brands.total} label={t("Brands", "العلامات")} />
             <StatTile value={data.brands.shared} label={t("Brands with a team", "علامات لها فريق")} />
             <StatTile value={data.members.people} label={t("People on teams", "أشخاص في الفرق")} />
-          </div>
+          </Stagger>
 
           <SignupsChart signups={data.signups} lang={lang} />
 

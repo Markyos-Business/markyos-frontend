@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Icon, PageHeader } from "@/components/ui";
+import { Button, Icon, PageHeader, Stagger } from "@/components/ui";
 import type { Workspace } from "@/types";
 import type { BrandSort } from "../constants";
 import type { BRANDS_COPY } from "../copy";
@@ -40,7 +40,7 @@ export function BrandsView({ title, description, sort, onToggleSort, onNew, bran
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {brands.map(({ workspace, role }) => (
           // A grid of its own, so the card still fills the cell.
           <div key={workspace.id} className="grid">
@@ -63,7 +63,7 @@ export function BrandsView({ title, description, sort, onToggleSort, onNew, bran
             <span className="text-body font-medium">{c.newWorkspace}</span>
           </Link>
         )}
-      </div>
+      </Stagger>
 
       {/* The one fact on this screen with a consequence outside the studio,
           and the legend for a badge that is otherwise left to be inferred. */}
