@@ -173,7 +173,7 @@ export function BlockInspector({
                 />
                 <IconButton
                   icon="times"
-                  label="Remove link"
+                  label={isAr ? "أزل الرابط" : "Remove link"}
                   onClick={() => onChange({ socialLinks: links.filter((x) => x.id !== l.id) })}
                   className="shrink-0 cursor-pointer text-text-faint"
                 />

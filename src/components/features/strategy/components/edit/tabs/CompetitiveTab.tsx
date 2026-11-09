@@ -150,10 +150,10 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                         {columnLabel(col)}
                       </button>
                       <span className="flex items-center ms-auto shrink-0">
-                        <button type="button" onClick={() => moveColumn(i, -1)} disabled={i === 0} aria-label="Move column left" className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
+                        <button type="button" onClick={() => moveColumn(i, -1)} disabled={i === 0} aria-label={isAr ? "انقل العمود لليسار" : "Move column left"} className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
                           <Icon name="angle-left" size={11} />
                         </button>
-                        <button type="button" onClick={() => moveColumn(i, 1)} disabled={i === columns.length - 1} aria-label="Move column right" className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
+                        <button type="button" onClick={() => moveColumn(i, 1)} disabled={i === columns.length - 1} aria-label={isAr ? "انقل العمود لليمين" : "Move column right"} className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
                           <Icon name="angle-right" size={11} />
                         </button>
                         <button type="button" onClick={() => removeColumn(col)} aria-label={`Remove ${columnLabel(col)} column`} className="mk-icon-btn cursor-pointer" style={{ color: "var(--text-faint)" }}>
@@ -325,7 +325,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
                 : "Copy from Excel or Google Sheets and paste. First row = column names, first column = competitor name."}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="mk-icon-btn cursor-pointer">
+          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer">
             <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
           </button>
         </div>

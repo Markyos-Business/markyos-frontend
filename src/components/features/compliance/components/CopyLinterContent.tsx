@@ -100,7 +100,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
           isAr={isAr}
           value={en}
           onChange={setEn}
-          placeholder="Paste the English draft — a headline, a caption, a product line."
+          placeholder={isAr ? "الصق المسودة الإنجليزية: عنوان أو تعليق أو سطر منتج." : "Paste the English draft: a headline, a caption, a product line."}
           findings={enFindings}
           onFix={(f) => applyFix("en", f)}
         />

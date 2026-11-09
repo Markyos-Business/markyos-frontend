@@ -323,7 +323,7 @@ export function StudioAtlas(props: TemplateProps) {
         )}
       </div>
 
-      {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+      {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
       <style jsx global>{`
         .atlas-overview h2 { margin: 0 0 14px; font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; }

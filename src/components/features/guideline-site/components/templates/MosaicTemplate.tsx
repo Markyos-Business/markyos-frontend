@@ -260,7 +260,7 @@ export function MosaicTemplate(props: TemplateProps) {
         </div>
       )}
 
-      {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+      {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
       <style jsx global>{`
         .mk-chiprow { scrollbar-width: none; }

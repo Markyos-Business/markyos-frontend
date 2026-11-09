@@ -146,10 +146,10 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
       }
     }
     if (count > 0) {
-      showToast(`Imported ${count} item${count === 1 ? "" : "s"} from ${fileName}.`, "success");
+      showToast(isAr ? `تم استيراد ${count} من ${fileName}.` : `Imported ${count} item${count === 1 ? "" : "s"} from ${fileName}.`, "success");
       onClose();
     } else {
-      showToast("Nothing selected to import.", "danger");
+      showToast(isAr ? "لم تحدد شيئًا لاستيراده." : "Nothing selected to import.", "danger");
     }
   }
 
@@ -177,7 +177,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                 : "Fill Strategy fields from a .docx, .pdf, .md or .txt document"}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="mk-icon-btn cursor-pointer">
+          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer">
             <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
           </button>
         </div>

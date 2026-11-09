@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Drawer, EmptyState, ErrorState, Icon, Skeleton } from "@/components/ui";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { usePublicReport } from "../../hooks/public/usePublicReport";
 import { ReportDocument } from "../shared/ReportDocument";
 
@@ -11,7 +12,9 @@ import { ReportDocument } from "../shared/ReportDocument";
 export function PublicReportView({ token }: { token: string }) {
   const { report, citation, open, close } = usePublicReport(token);
   const shared = report.data?.data;
-  const isAr = shared?.language === "ar";
+  // The analysis's language; before it loads (or once the link is gone), the reader's own.
+  const { isAr: readerAr } = useInterfaceLang();
+  const isAr = shared ? shared.language === "ar" : readerAr;
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
   if (report.error) {
@@ -24,7 +27,11 @@ export function PublicReportView({ token }: { token: string }) {
   if (report.data?.gone) {
     return (
       <Shell>
-        <EmptyState icon="unlink" title="This link isn't available any more." description="Ask the studio that sent it for a new one." />
+        <EmptyState
+          icon="unlink"
+          title={t("This link isn't available any more.", "لم يعد هذا الرابط متاحًا.")}
+          description={t("Ask the studio that sent it for a new one.", "اطلب رابطًا جديدًا من الاستوديو الذي أرسله.")}
+        />
       </Shell>
     );
   }

@@ -12,8 +12,8 @@ export function CanvasToolbar(b: BuilderPageState) {
       <span className="text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</span>
       {activePage && (
         <>
-          <IconButton icon="pen" label="Rename page" onClick={b.onRenamePage} className="cursor-pointer text-text-faint" />
-          <IconButton icon="times" label="Delete page" title="Delete this page" onClick={b.onDeletePage} className="mk-danger-hover cursor-pointer text-text-faint" />
+          <IconButton icon="pen" label={isAr ? "أعد تسمية الصفحة" : "Rename page"} onClick={b.onRenamePage} className="cursor-pointer text-text-faint" />
+          <IconButton icon="times" label={isAr ? "احذف الصفحة" : "Delete page"} title={isAr ? "احذف هذه الصفحة" : "Delete this page"} onClick={b.onDeletePage} className="mk-danger-hover cursor-pointer text-text-faint" />
         </>
       )}
       <span className="truncate text-[11.5px] text-text-faint">{activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}</span>
@@ -27,7 +27,7 @@ export function CanvasToolbar(b: BuilderPageState) {
         {selectedId ? (
           <>
             {isAr ? "المحدد:" : "Selected:"}
-            <span className="text-text-muted">{selected ? BLOCK_META[selected.kind].label : selectedId}</span>
+            <span className="text-text-muted">{selected ? (isAr ? BLOCK_META[selected.kind].arLabel : BLOCK_META[selected.kind].label) : selectedId}</span>
             <Kbd>Esc</Kbd>
             {isAr ? "لإلغاء التحديد" : "to deselect"}
             {selected && (

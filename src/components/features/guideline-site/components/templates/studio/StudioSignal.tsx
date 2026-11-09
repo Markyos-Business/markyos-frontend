@@ -220,7 +220,7 @@ export function StudioSignal(props: TemplateProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menu"
+            aria-label={isAr ? "القائمة" : "Menu"}
             aria-expanded={menuOpen}
             className="w-9 h-9 grid place-items-center cursor-pointer"
             style={{ ...gPill, background: "var(--g-surface-1)" }}
@@ -416,7 +416,7 @@ export function StudioSignal(props: TemplateProps) {
         </button>
       )}
 
-      {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+      {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
       <style jsx global>{`
         .signal-overview h2 { margin: 0 0 14px; font-family: var(--font-display); font-size: var(--g-section-size); font-weight: var(--g-hero-weight); }

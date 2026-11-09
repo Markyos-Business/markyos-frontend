@@ -6,6 +6,7 @@ import { EmptyState } from "../empty/EmptyState";
 import { Icon } from "../primitives/Icon";
 import { FadeIn } from "../motion/FadeIn";
 import type { AsyncStatus } from "./asyncStatus";
+import { useUiStrings } from "../i18n/uiStrings";
 
 type AsyncStateViewProps = {
   status: AsyncStatus;
@@ -41,6 +42,7 @@ const AsyncStateView = ({
   emptyAction,
   children,
 }: AsyncStateViewProps) => {
+  const { t } = useUiStrings();
   if (status === "loading") return <>{skeleton}</>;
   // Whatever replaces the skeleton crossfades in rather than popping.
   if (status === "error") {
@@ -48,12 +50,12 @@ const AsyncStateView = ({
       <FadeIn variant="in">
       <EmptyState
         icon="exclamation-circle"
-        title="Something went wrong"
-        description={errorMessage || "Please try again."}
+        title={t.errorTitle}
+        description={errorMessage || t.tryAgain}
         action={
           onRetry && (
             <Button variant="outline" size="sm" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
-              Retry
+              {t.retry}
             </Button>
           )
         }

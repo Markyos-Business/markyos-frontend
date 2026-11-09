@@ -1,7 +1,36 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, ReactNode } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, useUiStrings } from "@/components/ui";
+
+/** The live editor's own words: studio chrome, so in the interface language. */
+const EDIT_COPY = {
+  en: {
+    dragNamed: (l: string) => `Drag ${l} to reorder`,
+    dragTitle: (l: string) => `Drag to reorder — ${l}`,
+    drag: "Drag to reorder",
+    up: "Move up",
+    down: "Move down",
+    duplicate: "Duplicate",
+    del: "Delete",
+    putBack: "Put back on the site",
+    takeOff: "Take off the site",
+    parked: "Off the published site",
+  },
+  ar: {
+    dragNamed: (l: string) => `اسحب ${l} لإعادة الترتيب`,
+    dragTitle: (l: string) => `اسحب لإعادة الترتيب — ${l}`,
+    drag: "اسحب لإعادة الترتيب",
+    up: "انقل للأعلى",
+    down: "انقل للأسفل",
+    duplicate: "تكرار",
+    del: "حذف",
+    putBack: "أعِده إلى الموقع",
+    takeOff: "أزله من الموقع",
+    parked: "خارج الموقع المنشور",
+  },
+};
+const useEditCopy = () => EDIT_COPY[useUiStrings().isAr ? "ar" : "en"];
 import { BLOCK_META, COMMON_BLOCK_KINDS } from "@/components/features/guideline-site/model/blockCatalog";
 import { blockClass, blockStyleCss, blockStyleRules, isEmptyStyle, isHiddenStyle } from "@/components/features/guideline-site/model/blockStyle";
 import { BlockKind, BlockStyle } from "@/types";
@@ -359,6 +388,7 @@ export function FlowShell({
   accent?: string;
   children: ReactNode;
 }) {
+  const c = useEditCopy();
   const {
     enabled,
     selectedId,
@@ -460,8 +490,8 @@ export function FlowShell({
       {!active && (
         <span
           role="button"
-          aria-label={`Drag ${label} to reorder`}
-          title={`Drag to reorder — ${label}`}
+          aria-label={c.dragNamed(label)}
+          title={c.dragTitle(label)}
           onMouseDown={() => setArmed(true)}
           onMouseUp={() => setArmed(false)}
           onClick={(e) => e.stopPropagation()}
@@ -474,8 +504,8 @@ export function FlowShell({
         <div className="live-flow-toolbar" onClick={(e) => e.stopPropagation()}>
           <span
             role="button"
-            aria-label={`Drag ${label} to reorder`}
-            title={`Drag to reorder — ${label}`}
+            aria-label={c.dragNamed(label)}
+            title={c.dragTitle(label)}
             onMouseDown={() => setArmed(true)}
             onMouseUp={() => setArmed(false)}
             className="h-7 w-7 grid place-items-center rounded-full"
@@ -483,20 +513,20 @@ export function FlowShell({
           >
             <Icon name="grip-vertical" size={13} />
           </span>
-          <ToolbarButton icon="angle-up" label="Move up" disabled={index <= 0} onClick={() => moveFlow(flowId, -1)} />
+          <ToolbarButton icon="angle-up" label={c.up} disabled={index <= 0} onClick={() => moveFlow(flowId, -1)} />
           <ToolbarButton
             icon="angle-down"
-            label="Move down"
+            label={c.down}
             disabled={index < 0 || index >= flowIds.length - 1}
             onClick={() => moveFlow(flowId, 1)}
           />
-          {kind === "block" && <ToolbarButton icon="copy" label="Duplicate" onClick={() => duplicateFlow(flowId)} />}
+          {kind === "block" && <ToolbarButton icon="copy" label={c.duplicate} onClick={() => duplicateFlow(flowId)} />}
           <ToolbarButton
             // A derived section has no block to throw away — its content is the
             // brand's own colours or type — so it is parked, not deleted, and
             // the control says so rather than pretending to destroy something.
             icon={kind === "fixed" ? (hidden ? "check" : "times") : "times"}
-            label={kind === "fixed" ? (hidden ? "Put back on the site" : "Take off the site") : "Delete"}
+            label={kind === "fixed" ? (hidden ? c.putBack : c.takeOff) : c.del}
             onClick={() => removeFlow(flowId)}
             danger={kind === "block" || !hidden}
           />
@@ -505,7 +535,7 @@ export function FlowShell({
       {hidden && (
         <div className="live-flow-parked" onClick={(e) => e.stopPropagation()}>
           <Icon name="eye-slash" size={11} />
-          Off the published site
+          {c.parked}
         </div>
       )}
       <Styled id={flowId} style={style} accent={accent}>{children}</Styled>
@@ -681,6 +711,7 @@ export function BlockShell({
   accent?: string;
   children: ReactNode;
 }) {
+  const c = useEditCopy();
   const { enabled, selectedId, select, move, remove, siblingIds, draggingId, beginDrag, dropOn, flowIds, duplicateFlow } =
     useLiveEdit();
   // `draggable` is armed only while the grip is held: a permanently draggable
@@ -766,8 +797,8 @@ export function BlockShell({
         <div className="live-block-toolbar" onClick={(e) => e.stopPropagation()}>
           <span
             role="button"
-            aria-label="Drag to reorder"
-            title="Drag to reorder"
+            aria-label={c.drag}
+            title={c.drag}
             onMouseDown={() => setArmed(true)}
             onMouseUp={() => setArmed(false)}
             className="h-7 w-7 grid place-items-center rounded-full"
@@ -777,18 +808,18 @@ export function BlockShell({
           </span>
           <ToolbarButton
             icon="angle-up"
-            label="Move up"
+            label={c.up}
             disabled={index <= 0}
             onClick={() => move(blockId, -1)}
           />
           <ToolbarButton
             icon="angle-down"
-            label="Move down"
+            label={c.down}
             disabled={index < 0 || index >= siblings.length - 1}
             onClick={() => move(blockId, 1)}
           />
-          <ToolbarButton icon="copy" label="Duplicate" onClick={() => duplicateFlow(flowId)} />
-          <ToolbarButton icon="times" label="Delete" onClick={() => remove(blockId)} danger />
+          <ToolbarButton icon="copy" label={c.duplicate} onClick={() => duplicateFlow(flowId)} />
+          <ToolbarButton icon="times" label={c.del} onClick={() => remove(blockId)} danger />
         </div>
       )}
       {styled}

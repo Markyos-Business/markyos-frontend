@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import { Listbox } from "../fields/Listbox";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { DIAL_CODES } from "@/constants/dialCodes";
 import { FieldLabel, FieldNote } from "../fields/InputField";
 
@@ -33,6 +34,7 @@ const PhoneField = ({
   placeholder = "50 123 4567",
   error,
 }: PhoneFieldProps) => {
+  const { t } = useUiStrings();
   const id = `ph-${useId()}`;
   const noteId = `${id}-note`;
   return (
@@ -48,7 +50,7 @@ const PhoneField = ({
       >
         <span className="shrink-0">
           <Listbox
-            aria-label="Country code"
+            aria-label={t.countryCode}
             value={dialCode}
             onChange={onDialCodeChange}
             options={DIAL_CODES.map((d) => ({ value: d.code, label: d.label }))}

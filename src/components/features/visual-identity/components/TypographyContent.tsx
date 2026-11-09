@@ -223,6 +223,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
+              isAr={isAr}
               value={ws.typography.latinFamily}
               editing={editing === "latin"}
               draft={draft}
@@ -265,6 +266,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
+              isAr={isAr}
               value={ws.typography.arabicFamily}
               editing={editing === "arabic"}
               draft={draft}
@@ -310,9 +312,9 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         </div>
       </div>
       <p className="text-[12px] -mt-2" style={{ color: "var(--text-faint)" }}>
-        Family names are read from the file name and are this workspace&apos;s own setting — click one
-        to correct it. Until a file is applied, a name alone only asks the browser for its closest
-        match.
+        {isAr
+          ? "تُقرأ أسماء العائلات من اسم الملف وهي إعداد خاص بهذه المساحة، اضغط على أحدها لتصحيحه. وإلى أن يُطبَّق ملف، فالاسم وحده يطلب من المتصفح أقرب خط مطابق فقط."
+          : "Family names are read from the file name and are this workspace's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
       </p>
 
       <div className="flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
@@ -621,8 +623,9 @@ function GoogleFontImport({
         ))}
       </div>
       <span className="text-[10.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
-        Any Google Fonts family name works — these are just shortcuts. The files are downloaded and
-        stored with this brand, so the guideline renders them even offline.
+        {isAr
+          ? "يصلح أي اسم عائلة من Google Fonts، وهذه مجرد اختصارات. تُنزَّل الملفات وتُحفظ مع هذه العلامة، فيعرضها الدليل حتى دون اتصال."
+          : "Any Google Fonts family name works. These are just shortcuts. The files are downloaded and stored with this brand, so the guideline renders them even offline."}
       </span>
     </div>
   );
@@ -635,8 +638,10 @@ function FamilyName({
   onDraftChange,
   onStart,
   onCommit,
+  isAr,
 }: {
   value: string;
+  isAr: boolean;
   editing: boolean;
   draft: string;
   onDraftChange: (v: string) => void;
@@ -648,7 +653,7 @@ function FamilyName({
       <input
         autoFocus
         value={draft}
-        aria-label="Font family name"
+        aria-label={isAr ? "اسم عائلة الخط" : "Font family name"}
         onChange={(e) => onDraftChange(e.target.value)}
         onBlur={onCommit}
         onKeyDown={(e) => {

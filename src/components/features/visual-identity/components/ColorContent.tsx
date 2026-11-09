@@ -33,9 +33,9 @@ export function ColorContent({ ws }: { ws: Workspace }) {
   async function copyValue(label: string, value: string) {
     try {
       await navigator.clipboard.writeText(value);
-      showToast(`${label} copied — ${value}`, "success");
+      showToast(isAr ? `تم نسخ ${label}: ${value}` : `${label} copied: ${value}`, "success");
     } catch {
-      showToast("Couldn't copy — copy it manually.", "danger");
+      showToast(isAr ? "تعذّر النسخ. انسخه يدويًا." : "Couldn't copy. Copy it manually.", "danger");
     }
   }
 
@@ -119,7 +119,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                         className="text-[10px] font-medium px-2 py-[5px] rounded-full"
                         style={{ letterSpacing: ".08em", background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
                       >
-                        PRIMARY
+                        {isAr ? "أساسي" : "PRIMARY"}
                       </span>
                     )}
                     <button
@@ -178,7 +178,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)", minHeight: 220 }}
         >
           <Icon name="plus" size={22} />
-          <span className="text-[13px] font-medium">Add color</span>
+          <span className="text-[13px] font-medium">{isAr ? "أضف لونًا" : "Add colour"}</span>
         </button>
       </div>
 

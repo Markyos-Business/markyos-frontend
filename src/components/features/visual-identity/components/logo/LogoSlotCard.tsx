@@ -180,7 +180,7 @@ export function LogoSlotCard({
               type="button"
               onClick={remove}
               className="mk-icon-btn ms-auto cursor-pointer"
-              aria-label="Remove"
+              aria-label={isAr ? "إزالة" : "Remove"}
             >
               <Icon name="ellipsis-h" size={16} style={{ color: "var(--text-muted)" }} />
             </button>
@@ -209,7 +209,7 @@ export function LogoSlotCard({
           <Icon name="exclamation-circle" size={20} style={{ color: "var(--danger)" }} />
           <span className="text-[12px] font-medium leading-tight">{rejectMsg}</span>
           <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-            Try SVG or PNG, under 10 MB
+            {isAr ? "جرّب SVG أو PNG بحجم أقل من 10 ميغابايت" : "Try SVG or PNG, under 10 MB"}
           </span>
         </div>
       ) : slot.phase === "empty" ? (
@@ -240,11 +240,11 @@ export function LogoSlotCard({
             style={{ color: dragOver ? "var(--accent)" : "var(--text-muted)" }}
           />
           <span className="text-[12px] font-medium" style={{ color: dragOver ? "var(--text)" : "var(--text-secondary)" }}>
-            {dragOver ? "Release to upload" : "Drop SVG or PNG"}
+            {dragOver ? (isAr ? "أفلت للرفع" : "Release to upload") : isAr ? "أفلت ملف SVG أو PNG" : "Drop SVG or PNG"}
           </span>
           {!dragOver && (
             <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-              or click to browse · 10 MB max
+              {isAr ? "أو اضغط للاختيار · 10 ميغابايت كحد أقصى" : "or click to browse · 10 MB max"}
             </span>
           )}
         </div>
@@ -267,7 +267,7 @@ export function LogoSlotCard({
               className="flex justify-between text-[11px]"
               style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}
             >
-              <span>Uploading to R2</span>
+              <span>{isAr ? "جارٍ الرفع" : "Uploading"}</span>
               <span>{slot.progress ?? 0}%</span>
             </div>
           </div>
@@ -288,7 +288,7 @@ export function LogoSlotCard({
             className="h-8 px-4 rounded-full text-[12px] font-semibold cursor-pointer"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
-            Retry
+            {isAr ? "إعادة المحاولة" : "Retry"}
           </button>
         </div>
       ) : (
@@ -330,7 +330,7 @@ export function LogoSlotCard({
                 className="h-[34px] px-[15px] rounded-full text-[12px] font-semibold cursor-pointer"
                 style={{ background: "var(--scrim-ink)", color: "#0b0b0d" }}
               >
-                Replace
+                {isAr ? "استبدال" : "Replace"}
               </button>
               <button
                 type="button"
@@ -342,26 +342,26 @@ export function LogoSlotCard({
                   boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--scrim-ink) 45%, transparent)",
                 }}
               >
-                Remove
+                {isAr ? "إزالة" : "Remove"}
               </button>
             </div>
           )}
         </div>
       )}
 
-      <div className="flex flex-col gap-1 text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}>
+      <div className="flex flex-col gap-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
         {slot.phase === "attached" ? (
           <>
-            <span>
+            <span dir="ltr" className="font-mono text-start">
               {slot.fileName} · {slot.fileSizeKB ? formatBytes(slot.fileSizeKB) : ""}
             </span>
-            <span style={{ color: "var(--accent-text)" }}>
-              clearspace {slot.clearspaceMultiplier.toFixed(2).replace(/0$/, "")}× ={" "}
+            <span className="font-mono" style={{ color: "var(--accent-text)" }}>
+              {isAr ? "الهامش الآمن" : "clearspace"} {slot.clearspaceMultiplier.toFixed(2).replace(/0$/, "")}× ={" "}
               {Math.round((slot.height ?? 0) * slot.clearspaceMultiplier)} px
             </span>
           </>
         ) : (
-          <span>Used in the rail, favicon and small sizes.</span>
+          <span>{isAr ? "يُستخدم في الشريط الجانبي وأيقونة الموقع والأحجام الصغيرة." : "Used in the rail, favicon and small sizes."}</span>
         )}
       </div>
 

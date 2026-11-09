@@ -6,6 +6,7 @@ import { Button } from "../buttons/Button";
 import { IconBadge } from "../badges/IconBadge";
 import { Icon } from "../primitives/Icon";
 import { Skeleton } from "../loading/Skeleton";
+import { useUiStrings } from "../i18n/uiStrings";
 
 type TableColumn = {
   key: string;
@@ -161,24 +162,27 @@ type TableErrorRowProps = {
 };
 
 /** A table whose load failed: what happened, and a way to try again. */
-const TableErrorRow = ({ colSpan, message = "Something went wrong while loading this data.", onRetry }: TableErrorRowProps) => (
+const TableErrorRow = ({ colSpan, message, onRetry }: TableErrorRowProps) => {
+  const { t } = useUiStrings();
+  return (
   <tr className={rowClasses}>
     <td colSpan={colSpan} className="px-space-6 py-space-11 text-center">
       <div role="alert" className="flex flex-col items-center gap-space-3">
         <IconBadge icon="exclamation-circle" tone="danger" />
-        <p className="text-body font-medium text-text">Something went wrong</p>
+        <p className="text-body font-medium text-text">{t.errorTitle}</p>
         <p dir="auto" className="bidi-auto text-caption text-text-muted">
-          {message}
+          {message ?? t.loadFailed}
         </p>
         {onRetry && (
           <Button variant="outline" size="sm" className="mt-space-3" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
-            Retry
+            {t.retry}
           </Button>
         )}
       </div>
     </td>
   </tr>
-);
+  );
+};
 
 export { Table, TableEmptyRow, TableErrorRow, TableLoadingRow, cellClasses, rowClasses };
 export type { TableColumn, TableEmptyRowProps, TableErrorRowProps, TableLoadingRowProps, TableProps };

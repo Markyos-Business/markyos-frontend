@@ -17,10 +17,12 @@ export interface PendingUpload {
 
 export function PreviewModal({
   pending,
+  isAr,
   onCancel,
   onAttach,
 }: {
   pending: PendingUpload;
+  isAr: boolean;
   onCancel: () => void;
   onAttach: () => void;
 }) {
@@ -47,11 +49,11 @@ export function PreviewModal({
               className="text-[24px] font-semibold tracking-tight mb-1"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Check it before it lands
+              {isAr ? "راجِعه قبل إرفاقه" : "Check it before it lands"}
             </h2>
             <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>
-              {pending.file.name} · {Math.round(pending.width)} × {Math.round(pending.height)} · shown at true size
-              on both grounds
+              {pending.file.name} · <span dir="ltr">{Math.round(pending.width)} × {Math.round(pending.height)}</span> ·{" "}
+              {isAr ? "معروض بحجمه الحقيقي على الخلفيتين" : "shown at true size on both grounds"}
             </p>
           </div>
           <div className="flex gap-2.5">
@@ -61,7 +63,7 @@ export function PreviewModal({
               className="h-10 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
               style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
-              Choose another file
+              {isAr ? "اختر ملفًا آخر" : "Choose another file"}
             </button>
             <button
               type="button"
@@ -69,7 +71,7 @@ export function PreviewModal({
               className="h-10 px-[22px] rounded-full text-[13px] font-semibold cursor-pointer"
               style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
             >
-              Attach to slot
+              {isAr ? "أرفقه بالخانة" : "Attach to slot"}
             </button>
           </div>
         </div>
@@ -84,7 +86,7 @@ export function PreviewModal({
               className="absolute start-4 top-3.5 text-[10px] font-medium uppercase"
               style={{ letterSpacing: ".12em", color: "var(--text-muted)" }}
             >
-              On canvas #090909
+              {isAr ? "على الخلفية الداكنة" : "On canvas"} <span dir="ltr">#090909</span>
             </span>
           </div>
           <div
@@ -97,17 +99,17 @@ export function PreviewModal({
               className="absolute start-4 top-3.5 text-[10px] font-medium uppercase"
               style={{ letterSpacing: ".12em", color: "#6c6c76" }}
             >
-              On light #F5F5F5
+              {isAr ? "على الخلفية الفاتحة" : "On light"} <span dir="ltr">#F5F5F5</span>
             </span>
           </div>
           <div className="flex flex-col gap-3.5">
             <div className="rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
-              <span className="font-semibold text-[13px]">Read from the file</span>
-              <Row label="Format" value={`${pending.format.toUpperCase()} · ${pending.format === "svg" ? "vector" : "raster"}`} />
-              <Row label="Size" value={formatBytes(pending.sizeKB)} />
-              <Row label="Bounding box" value={`${Math.round(pending.width)} × ${Math.round(pending.height)}`} />
-              <Row label="Clearspace 0.5×" value={`${csPx} px`} accent />
-              <Row label="Min digital size" value={`${minDigital} px`} />
+              <span className="font-semibold text-[13px]">{isAr ? "مقروء من الملف" : "Read from the file"}</span>
+              <Row label={isAr ? "الصيغة" : "Format"} value={`${pending.format.toUpperCase()} · ${pending.format === "svg" ? (isAr ? "متجه" : "vector") : isAr ? "نقطي" : "raster"}`} />
+              <Row label={isAr ? "الحجم" : "Size"} value={formatBytes(pending.sizeKB)} />
+              <Row label={isAr ? "الأبعاد" : "Bounding box"} value={`${Math.round(pending.width)} × ${Math.round(pending.height)}`} />
+              <Row label={isAr ? "الهامش الآمن ‎0.5×" : "Clearspace 0.5×"} value={`${csPx} px`} accent />
+              <Row label={isAr ? "أصغر حجم رقمي" : "Min digital size"} value={`${minDigital} px`} />
             </div>
             {/*
               The evidence for the number above it.
@@ -118,7 +120,7 @@ export function PreviewModal({
               you can see rather than something you have to trust.
             */}
             <div className="rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
-              <span className="font-semibold text-[13px]">Small sizes</span>
+              <span className="font-semibold text-[13px]">{isAr ? "الأحجام الصغيرة" : "Small sizes"}</span>
               <div className="flex items-end gap-4 flex-wrap">
                 {[minDigital, Math.round(minDigital * 0.66), Math.round(minDigital * 0.5)].map(
                   (h, i) => (
@@ -143,8 +145,9 @@ export function PreviewModal({
                 )}
               </div>
               <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--text-muted)" }}>
-                Below {minDigital} px the counters start to close up — that&apos;s where the minimum
-                comes from.
+                {isAr
+                  ? `تحت ${minDigital} px تبدأ الفراغات الداخلية بالانغلاق، ومن هنا جاء الحد الأدنى.`
+                  : `Below ${minDigital} px the counters start to close up. That's where the minimum comes from.`}
               </p>
             </div>
 
@@ -155,13 +158,15 @@ export function PreviewModal({
               >
                 <Icon name="info-circle" size={16} style={{ color: "var(--warning)", flexShrink: 0, marginTop: 1 }} />
                 <span className="text-[11px] leading-[1.5]" style={{ color: "var(--text-secondary)" }}>
-                  PNG works, but clearspace is measured from pixels — upload SVG for exact guides.
+                  {isAr
+                    ? "صيغة PNG تعمل، لكن الهامش الآمن يُقاس بالبكسل. ارفع SVG لأدلة دقيقة."
+                    : "PNG works, but clearspace is measured from pixels. Upload SVG for exact guides."}
                 </span>
               </div>
             )}
             <div className="mt-auto flex items-center gap-2 text-[12px]" style={{ color: "var(--text-muted)" }}>
               <Icon name="lock" size={15} style={{ color: "var(--accent-text)" }} />
-              Nothing is uploaded until you attach.
+              {isAr ? "لا يُرفع شيء قبل أن ترفقه." : "Nothing is uploaded until you attach."}
             </div>
           </div>
         </div>

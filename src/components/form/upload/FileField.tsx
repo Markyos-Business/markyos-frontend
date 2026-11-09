@@ -190,7 +190,7 @@ const FileField = ({
             <span className="truncate text-body text-text-secondary">{file.name}</span>
             {!uploading && (
               <Button variant="outline" size="sm" icon={<Icon name="trash" size={18} />} onClick={onRemove}>
-                Remove
+                {t.removeFile}
               </Button>
             )}
           </div>

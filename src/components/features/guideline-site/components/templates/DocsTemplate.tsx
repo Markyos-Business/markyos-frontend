@@ -281,7 +281,7 @@ export function DocsTemplate(props: TemplateProps) {
         )}
       </div>
 
-      {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+      {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
       <style jsx global>{`
         .docs-overview h2 { margin: 0 0 14px; font-family: var(--font-display); font-size: var(--g-section-size); font-weight: var(--g-hero-weight); line-height: 1.2; }

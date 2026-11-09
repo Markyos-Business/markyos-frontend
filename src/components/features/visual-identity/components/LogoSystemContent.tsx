@@ -102,7 +102,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
             kind={meta.kind}
             label={meta.label}
             arLabel={meta.arLabel}
-            tag={meta.tag}
+            tag={isAr && meta.tag === "shared" ? "مشترك" : meta.tag}
             isAr={isAr}
             slot={ws.logo[meta.kind]}
             onFileReady={handleFileReady}
@@ -129,7 +129,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
           style={{ background: "var(--surface-1)" }}
         >
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-[13px]">Both lockups, side by side</span>
+            <span className="font-semibold text-[13px]">{isAr ? "الشعاران جنبًا إلى جنب" : "Both lockups, side by side"}</span>
             <span
               className="text-[11px]"
               style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}
@@ -310,12 +310,13 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
 
       {pending && (
         <PreviewModal
+          isAr={isAr}
           pending={pending}
           onCancel={() => setPending(null)}
           onAttach={handleAttach}
         />
       )}
-      {showDownload && <DownloadPanel workspace={ws} onClose={() => setShowDownload(false)} />}
+      {showDownload && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setShowDownload(false)} />}
     </div>
   );
 }

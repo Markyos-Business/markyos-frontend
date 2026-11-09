@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { BlockScopeProvider } from "./BlockRenderer";
 import { BrandFonts } from "./BrandFonts";
 import { GuidelineMotion } from "./GuidelineMotion";
@@ -26,6 +27,8 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   // route only ever serves the last published snapshot.
   const isPreview = search.get("preview") === "1";
   const v = useGuidelineViewer(slug, page, isPreview ? "draft" : "published");
+  // Before there is a guideline to take a language from, the reader's own.
+  const { isAr: readerAr } = useInterfaceLang();
 
   if (!v.hydrated || !v.checkedStorage) return null;
 
@@ -37,7 +40,7 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
         arTitle="لم يُنشر بعد"
         body="This brand guideline hasn't been published. Its studio will share it once it's ready."
         arBody="لم يتم نشر دليل الهوية هذا بعد. سيشاركه الاستوديو عندما يصبح جاهزًا."
-        isAr={false}
+        isAr={readerAr}
       />
     );
   }
@@ -50,7 +53,7 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
         arTitle="هذا الرابط غير صالح"
         body="The guideline it pointed to may have been renamed or removed."
         arBody="قد يكون الدليل الذي يشير إليه هذا الرابط قد أُعيدت تسميته أو حُذف."
-        isAr={false}
+        isAr={readerAr}
       />
     );
   }

@@ -3,6 +3,7 @@
 import { useId, useMemo, useState } from "react";
 import { Badge } from "../../ui/badges/Badge";
 import { Icon } from "../../ui/primitives/Icon";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { CheckboxInput } from "../fields/CheckboxField";
 
 type SearchableChecklistItem = {
@@ -50,6 +51,7 @@ const SearchableChecklist = ({
   disabled = false,
   className = "",
 }: SearchableChecklistProps) => {
+  const { t } = useUiStrings();
   const [search, setSearch] = useState("");
   const baseId = useId();
   const query = normalise(search);
@@ -87,13 +89,13 @@ const SearchableChecklist = ({
         </label>
         <div className="flex shrink-0 items-center gap-space-5">
           <span className="text-caption text-text-muted" aria-live="polite">
-            {selected.size} of {items.length} selected
+            {t.ofSelected(selected.size, items.length)}
           </span>
           <button type="button" onClick={selectShown} disabled={disabled || shown.length === 0 || allShownSelected} className={textButton}>
-            Select all shown
+            {t.selectAllShown}
           </button>
           <button type="button" onClick={() => onChange(new Set())} disabled={disabled || selected.size === 0} className={textButton}>
-            Clear
+            {t.clear}
           </button>
         </div>
       </div>

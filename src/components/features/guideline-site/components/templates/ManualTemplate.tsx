@@ -298,7 +298,7 @@ export function ManualTemplate(props: TemplateProps) {
           </div>
         )}
 
-        {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+        {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
         <style jsx global>{`
           .manual-overview h2 { margin: 0 0 12px; font-family: var(--font-display); font-size: var(--g-section-size); font-weight: 700; line-height: 1.2; letter-spacing: var(--g-hero-tracking); }

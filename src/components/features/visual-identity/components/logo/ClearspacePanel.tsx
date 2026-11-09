@@ -36,7 +36,7 @@ export function ClearspacePanel({
         >
           <Icon name="info-circle" size={20} style={{ color: "var(--text-muted)" }} />
           <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
-            Attach a lockup to see its clearspace guide and minimum sizes.
+            {isAr ? "أرفق شعارًا لترى دليل الهامش الآمن والأحجام الدنيا." : "Attach a lockup to see its clearspace guide and minimum sizes."}
           </p>
         </div>
       </div>
@@ -94,12 +94,12 @@ export function ClearspacePanel({
       </div>
 
       <div className="rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
-        <span className="font-semibold text-[13px]">Minimum size</span>
+        <span className="font-semibold text-[13px]">{isAr ? "الحجم الأدنى" : "Minimum size"}</span>
         <div
           className="flex items-center justify-between px-3 py-2.5 rounded-lg"
           style={{ background: "var(--surface-2)" }}
         >
-          <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Digital</span>
+          <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>{isAr ? "رقمي" : "Digital"}</span>
           <span className="text-[13px] font-semibold" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>
             {minDigital} px
           </span>
@@ -108,19 +108,19 @@ export function ClearspacePanel({
           className="flex items-center justify-between px-3 py-2.5 rounded-lg"
           style={{ background: "var(--surface-2)" }}
         >
-          <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Print</span>
+          <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>{isAr ? "طباعة" : "Print"}</span>
           <span className="text-[13px] font-semibold" style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>
             {minPrintMm} mm
           </span>
         </div>
         <div className="flex items-center gap-2 text-[11px]" style={{ color: "var(--text-faint)" }}>
           <Icon name="info-circle" size={15} />
-          Below this the counter in the mark closes up.
+          {isAr ? "تحت هذا الحجم تنغلق الفراغات داخل الرمز." : "Below this the counter in the mark closes up."}
         </div>
       </div>
 
       <div className="rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
-        <span className="font-semibold text-[13px]">Files</span>
+        <span className="font-semibold text-[13px]">{isAr ? "الملفات" : "Files"}</span>
         {attachedSlots.map((k) => {
           const s = workspace.logo[k];
           return (
@@ -134,7 +134,7 @@ export function ClearspacePanel({
           );
         })}
         {attachedSlots.length === 0 && (
-          <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>No files yet.</span>
+          <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>{isAr ? "لا توجد ملفات بعد." : "No files yet."}</span>
         )}
       </div>
 
@@ -146,7 +146,7 @@ export function ClearspacePanel({
           className="h-11 rounded-full font-semibold text-[14px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
-          Download assets
+          {isAr ? "تنزيل الملفات" : "Download assets"}
         </button>
       </div>
     </div>

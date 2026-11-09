@@ -61,6 +61,13 @@ const en = {
   copyFailed: "Couldn't copy. Select the value and copy it.",
   brandColours: "Brand colours",
   chooseColour: "Choose a colour",
+  loadFailed: "Something went wrong while loading this data.",
+  tryAgain: "Please try again.",
+  noResults: "No results found",
+  ofSelected: (n: number, total: number) => `${n} of ${total} selected`,
+  selectAllShown: "Select all shown",
+  removeFile: "Remove",
+  countryCode: "Country code",
 };
 
 type UiStrings = typeof en;
@@ -118,6 +125,13 @@ const ar: UiStrings = {
   copyFailed: "تعذّر النسخ. حدّد القيمة وانسخها.",
   brandColours: "ألوان الهوية",
   chooseColour: "اختر لونًا",
+  loadFailed: "حدث خطأ أثناء تحميل هذه البيانات.",
+  tryAgain: "حاول مرة أخرى.",
+  noResults: "لا توجد نتائج",
+  ofSelected: (n, total) => `${n} من ${total} محدد`,
+  selectAllShown: "حدد كل المعروض",
+  removeFile: "إزالة",
+  countryCode: "رمز الدولة",
 };
 
 type UiLang = "en" | "ar";

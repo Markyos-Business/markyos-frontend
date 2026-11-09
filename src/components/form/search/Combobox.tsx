@@ -4,6 +4,7 @@ import { useId, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { usePresence } from "@/hooks/usePresence";
 import { Icon } from "../../ui/primitives/Icon";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { DropdownPanel } from "../fields/DropdownPanel";
 import { FieldLabel, FieldNote, inputClasses } from "../fields/InputField";
 import { OptionRow } from "../fields/Listbox";
@@ -39,6 +40,7 @@ type ComboboxProps = SingleProps | MultipleProps;
  * outside closes it too. The list grows open from the field.
  */
 const Combobox = (props: ComboboxProps) => {
+  const { t } = useUiStrings();
   const { label, hideLabel = false, options, placeholder = "Select…", searchPlaceholder = "Search…", error, hint, required = false, disabled = false, compact = false, emptyActions = [], onBlur } = props;
   const baseId = useId();
   const triggerId = `${baseId}-trigger`;
@@ -163,7 +165,7 @@ const Combobox = (props: ComboboxProps) => {
             })}
             {shown.length === 0 && (
               <li className="px-space-4 py-space-3 text-body text-text-muted" role="presentation">
-                No results found
+                {t.noResults}
               </li>
             )}
           </ul>

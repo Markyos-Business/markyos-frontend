@@ -9,13 +9,25 @@ import { rasterize, triggerBlobDownload } from "@/lib/rasterize";
 const VARIANTS = ["Reversed", "Positive", "Mark only", "Wordmark"] as const;
 const DENSITIES = ["1×", "2×", "3×"] as const;
 
+/** The variants' names on screen; the keys stay English, they name the files. */
+const VARIANT_AR: Record<(typeof VARIANTS)[number], string> = {
+  Reversed: "معكوس",
+  Positive: "موجب",
+  "Mark only": "الرمز فقط",
+  Wordmark: "الشعار النصي",
+};
+
 export function DownloadPanel({
   workspace,
+  isAr,
   onClose,
 }: {
   workspace: Workspace;
+  /** The site's language: this panel opens on the client's guideline site. */
+  isAr: boolean;
   onClose: () => void;
 }) {
+  const files = (n: number) => (isAr ? (n === 1 ? "ملف واحد" : n === 2 ? "ملفان" : `${n} ملفات`) : `${n} file${n === 1 ? "" : "s"}`);
   const { showToast } = useToast();
   const [formats, setFormats] = useState({ svg: true, png: true, webp: false });
   const [densities, setDensities] = useState<Set<string>>(new Set(["1×", "3×"]));
@@ -99,13 +111,13 @@ export function DownloadPanel({
         }
       }
       if (count === 0) {
-        showToast("Pick at least one format to export.", "danger");
+        showToast(isAr ? "اختر صيغة واحدة على الأقل للتصدير." : "Pick at least one format to export.", "danger");
         return;
       }
-      showToast(`Generated and downloaded ${count} file${count === 1 ? "" : "s"}.`, "success");
+      showToast(isAr ? `تم إنشاء ${files(count)} وتنزيلها.` : `Generated and downloaded ${files(count)}.`, "success");
       onClose();
     } catch {
-      showToast("Couldn't generate one of the files — try again.", "danger");
+      showToast(isAr ? "تعذّر إنشاء أحد الملفات. حاول مرة أخرى." : "Couldn't generate one of the files. Try again.", "danger");
     } finally {
       setGenerating(false);
     }
@@ -137,13 +149,13 @@ export function DownloadPanel({
         >
           <div>
             <h2 className="text-[22px] font-semibold tracking-tight mb-1" style={{ fontFamily: "var(--font-display)" }}>
-              Download assets
+              {isAr ? "تنزيل الملفات" : "Download assets"}
             </h2>
             <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>
-              Logo system · {attachedKinds.length} source file{attachedKinds.length === 1 ? "" : "s"}
+              {isAr ? "نظام الشعار" : "Logo system"} · {isAr ? files(attachedKinds.length) : `${attachedKinds.length} source file${attachedKinds.length === 1 ? "" : "s"}`}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="mk-icon-btn cursor-pointer" aria-label="Close">
+          <button type="button" onClick={onClose} className="mk-icon-btn cursor-pointer" aria-label={isAr ? "إغلاق" : "Close"}>
             <Icon name="times" size={20} style={{ color: "var(--text-muted)" }} />
           </button>
         </div>
@@ -151,11 +163,11 @@ export function DownloadPanel({
         <div className="flex-1 min-h-0 px-7 py-[22px] flex flex-col gap-[22px] overflow-auto">
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".1em", color: "var(--text-faint)" }}>
-              Formats
+              {isAr ? "الصيغ" : "Formats"}
             </span>
             <FormatRow
               label="SVG"
-              meta="vector"
+              meta={isAr ? "متجه" : "vector"}
               checked={formats.svg}
               onToggle={() => setFormats((f) => ({ ...f, svg: !f.svg }))}
             />
@@ -189,7 +201,7 @@ export function DownloadPanel({
             </div>
             <FormatRow
               label="WebP"
-              meta="smallest"
+              meta={isAr ? "الأصغر حجمًا" : "smallest"}
               checked={formats.webp}
               onToggle={() => setFormats((f) => ({ ...f, webp: !f.webp }))}
             />
@@ -197,7 +209,7 @@ export function DownloadPanel({
 
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".1em", color: "var(--text-faint)" }}>
-              Variants
+              {isAr ? "النسخ" : "Variants"}
             </span>
             <div className="flex gap-2 flex-wrap">
               {VARIANTS.map((v) => (
@@ -212,7 +224,7 @@ export function DownloadPanel({
                     boxShadow: variants.has(v) ? "none" : "inset 0 0 0 1px var(--hairline)",
                   }}
                 >
-                  {v}
+                  {isAr ? VARIANT_AR[v] : v}
                 </button>
               ))}
             </div>
@@ -220,7 +232,7 @@ export function DownloadPanel({
 
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".1em", color: "var(--text-faint)" }}>
-              Direct link
+              {isAr ? "رابط مباشر" : "Direct link"}
             </span>
             <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-lg" style={{ background: "var(--surface-2)" }}>
               <Icon name="link" size={17} style={{ color: "var(--accent-text)" }} />
@@ -235,19 +247,21 @@ export function DownloadPanel({
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(`https://${link}`);
-                    showToast("Link copied.", "success");
+                    showToast(isAr ? "تم نسخ الرابط." : "Link copied.", "success");
                   } catch {
-                    showToast("Couldn't copy — copy it manually.", "danger");
+                    showToast(isAr ? "تعذّر النسخ. انسخه يدويًا." : "Couldn't copy. Copy it manually.", "danger");
                   }
                 }}
                 className="mk-tap text-[12px] font-semibold cursor-pointer"
                 style={{ color: "var(--accent-text)" }}
               >
-                Copy
+                {isAr ? "نسخ" : "Copy"}
               </button>
             </div>
             <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-              Link stays valid while the section is published. Regenerating replaces it.
+              {isAr
+                ? "يبقى الرابط صالحًا ما دام القسم منشورًا. إعادة إنشائه تستبدله."
+                : "Link stays valid while the section is published. Regenerating replaces it."}
             </span>
           </div>
         </div>
@@ -258,7 +272,7 @@ export function DownloadPanel({
         >
           <div className="flex-1">
             <div className="font-semibold text-[14px]">
-              {attachedKinds.length} file{attachedKinds.length === 1 ? "" : "s"}
+              {files(attachedKinds.length)}
             </div>
             <div className="text-[12px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}>
               {formatBytes(totalKB)}
@@ -270,7 +284,7 @@ export function DownloadPanel({
             className="h-11 px-[22px] rounded-full text-[14px] font-semibold cursor-pointer"
             style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
           >
-            Cancel
+            {isAr ? "إلغاء" : "Cancel"}
           </button>
           <button
             type="button"
@@ -279,7 +293,7 @@ export function DownloadPanel({
             className="h-11 px-[26px] rounded-full text-[14px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
-            {generating ? "Generating…" : "Download"}
+            {generating ? (isAr ? "جارٍ الإنشاء…" : "Generating…") : isAr ? "تنزيل" : "Download"}
           </button>
         </div>
       </div>

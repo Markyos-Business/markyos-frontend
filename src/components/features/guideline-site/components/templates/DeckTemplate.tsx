@@ -636,7 +636,7 @@ export function DeckTemplate(props: TemplateProps) {
         )}
       </div>
 
-      {downloadOpen && <DownloadPanel workspace={ws} onClose={() => setDownloadOpen(false)} />}
+      {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
     </div>
     </SectionNoteProvider>
   );
