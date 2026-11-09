@@ -8,7 +8,7 @@ import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import type { BlockKind, BlockStyle, GuidelineTemplate, Lang, StudioStyle } from "@/types";
-import { reviewPage } from "../model/pageReview";
+import { reviewPage } from "../utils/pageReview";
 import { PANEL_W, type ToolTab } from "../constants";
 import { STUDIO_STYLE_META, STYLE_META, type Template } from "../templates";
 import { useBuilderPanels } from "./useBuilderPanels";

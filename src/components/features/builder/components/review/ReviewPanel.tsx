@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon, Popover } from "@/components/ui";
-import type { ReviewFinding, ReviewReport } from "@/components/features/builder/model/pageReview";
+import type { ReviewFinding, ReviewReport } from "@/components/features/builder/utils/pageReview";
 
 /**
  * The review of the page being edited, shown beside the button it gates.

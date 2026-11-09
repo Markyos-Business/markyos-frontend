@@ -2,9 +2,9 @@ import { Button, EmptyHint, Icon, IconButton } from "@/components/ui";
 import { ChipPicker, InputField, TextareaField } from "@/components/form";
 import { formatBytes, uid } from "@/lib/utils";
 import type { PageBlock, SocialLink, Workspace } from "@/types";
-import { FILE_ASSET_TYPES } from "../templates";
+import { FILE_ASSET_TYPES } from "../../templates";
 import { ImagePicker } from "./ImagePicker";
-import { Segments } from "./Segments";
+import { Segments } from "../shared/Segments";
 
 /** The content settings of an authored block, by kind. Design settings are the `DesignInspector`'s. */
 export function BlockInspector({

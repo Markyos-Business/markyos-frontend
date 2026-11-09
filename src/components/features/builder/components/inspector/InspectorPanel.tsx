@@ -1,6 +1,6 @@
 import { Icon } from "@/components/ui";
 import { resolveOptions } from "@/components/features/guideline-site";
-import type { BuilderPageState } from "../hooks/useBuilderPage";
+import type { BuilderPageState } from "../../hooks/useBuilderPage";
 import { BlockInspector } from "./BlockInspector";
 import { DesignInspector } from "./DesignInspector";
 

@@ -1,12 +1,12 @@
 import { LiveCanvas } from "@/components/features/guideline-site";
 import type { BuilderPageState } from "../hooks/useBuilderPage";
-import { CanvasFrame } from "./CanvasFrame";
-import { CanvasToolbar } from "./CanvasToolbar";
-import { InspectorPanel } from "./InspectorPanel";
-import { PanelReveal } from "./PanelReveal";
-import { ShipCluster } from "./ShipCluster";
+import { CanvasFrame } from "./canvas/CanvasFrame";
+import { CanvasToolbar } from "./canvas/CanvasToolbar";
+import { InspectorPanel } from "./inspector/InspectorPanel";
+import { PanelReveal } from "./shared/PanelReveal";
+import { ShipCluster } from "./shared/ShipCluster";
 import { ToolsPanel } from "./tools/ToolsPanel";
-import { SecondaryViewBanner } from "./ViewSwitcher";
+import { SecondaryViewBanner } from "./canvas/ViewSwitcher";
 
 /** The guidelines editor: tools, the live canvas with its toolbar and ship cluster, and the design panel. */
 export function BuilderView(b: BuilderPageState) {

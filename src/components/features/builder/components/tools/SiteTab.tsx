@@ -4,7 +4,7 @@ import { useApp } from "@/contexts/AppContext";
 import { ContrastReport } from "@/components/features/guideline-site";
 import type { Workspace } from "@/types";
 import { SITE_MODES } from "../../constants";
-import { Segments } from "../Segments";
+import { Segments } from "../shared/Segments";
 
 /** The ground the client's site is set on, with the contrast it produces right underneath. */
 export function SiteTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) {

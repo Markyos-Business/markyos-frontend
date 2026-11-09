@@ -16,7 +16,7 @@ import {
   searchStock,
   setUnsplashKey,
   stockFileName,
-} from "@/components/features/builder/services/stockImages";
+} from "@/components/features/builder/services/builderService";
 
 const PICKABLE_TYPES: AssetType[] = ["photo", "icon", "mockup", "export", "pattern", "graphic", "illustration"];
 

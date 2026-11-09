@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
-import type { BuilderPageState } from "../hooks/useBuilderPage";
-import { ReviewChip } from "./ReviewPanel";
+import type { BuilderPageState } from "../../hooks/useBuilderPage";
+import { ReviewChip } from "../review/ReviewPanel";
 
 /**
  * Ship, bottom-end corner, floating over the canvas.

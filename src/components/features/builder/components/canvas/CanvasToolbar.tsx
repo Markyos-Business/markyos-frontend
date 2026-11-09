@@ -1,6 +1,6 @@
 import { Button, Icon, IconButton, Kbd } from "@/components/ui";
 import { BLOCK_META } from "@/components/features/guideline-site";
-import type { BuilderPageState } from "../hooks/useBuilderPage";
+import type { BuilderPageState } from "../../hooks/useBuilderPage";
 import { ViewSwitcher } from "./ViewSwitcher";
 
 /** The bar over the canvas: the page and its address, the shortcut hint, undo and redo, the view, and auto-fill. */
