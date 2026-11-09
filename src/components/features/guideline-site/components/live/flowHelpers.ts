@@ -1,4 +1,4 @@
-import type { FlowItem } from "./types";
+import type { FlowItem } from "../../types";
 
 /**
  * Helpers shared by every template that renders its page from the flow.

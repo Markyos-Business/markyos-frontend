@@ -8,15 +8,15 @@ import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
-import { navLogo } from "@/components/features/guideline-site/model/brandLogo";
+import { navLogo } from "@/components/features/guideline-site/utils/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
-import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";
-import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/LiveEdit";
-import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/Content";
-import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/flowHelpers";
-import { themeCssVars } from "@/components/features/guideline-site/model/theme";
-import { gPill } from "@/components/features/guideline-site/components/surface";
-import { TemplateProps } from "../../types";
+import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
+import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/live/LiveEdit";
+import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/content/Content";
+import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/live/flowHelpers";
+import { themeCssVars } from "@/components/features/guideline-site/utils/theme";
+import { gPill } from "@/components/features/guideline-site/components/shared/surface";
+import { TemplateProps } from "../../../types";
 
 const TOP_NAV_IDS = ["logo", "color", "typography", "photography", "icons"];
 

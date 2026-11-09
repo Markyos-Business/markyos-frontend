@@ -1,7 +1,7 @@
 "use client";
 
 import { GuidelineTemplate, StudioStyle, Workspace } from "@/types";
-import { getBrandThemeFor } from "@/components/features/guideline-site/model/theme";
+import { getBrandThemeFor } from "@/components/features/guideline-site/utils/theme";
 
 /**
  * A small live mockup of what each guideline-site template looks like, in this

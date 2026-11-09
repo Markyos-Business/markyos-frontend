@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/ui";
-import { getBrandTheme } from "@/components/features/guideline-site/model/theme";
+import { getBrandTheme } from "@/components/features/guideline-site/utils/theme";
 import { bestInkOn, checkContrast, ContrastResult, formatRatio, LEVEL_COLOR, LEVEL_LABEL, levelOf } from "@/lib/contrast";
 import { SlotKind, Workspace } from "@/types";
 

@@ -7,7 +7,7 @@ import { API_ENABLED } from "@/lib/api/client";
 import { submitPublicSignOff } from "@/lib/api/public";
 import { formatRelative } from "@/lib/utils";
 import type { PinSection, SignOffPin, Workspace } from "@/types";
-import { gCard, gInset } from "./surface";
+import { gCard, gInset } from "../shared/surface";
 
 const SubmissionEnabled = createContext(false);
 

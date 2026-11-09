@@ -1,4 +1,4 @@
-import { BrandTheme } from "@/components/features/guideline-site/model/theme";
+import { BrandTheme } from "@/components/features/guideline-site/utils/theme";
 import { bestInkOn } from "@/lib/contrast";
 import { hexToRgb } from "@/lib/utils";
 import { Workspace } from "@/types";

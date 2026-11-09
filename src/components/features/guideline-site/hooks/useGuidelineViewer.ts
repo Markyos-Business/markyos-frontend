@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { API_ENABLED } from "@/lib/api/client";
 import { useApp } from "@/contexts/AppContext";
-import { getBrandTheme } from "@/components/features/guideline-site/model/theme";
-import { brandFontStacks } from "@/components/features/guideline-site/model/brandFonts";
+import { getBrandTheme } from "@/components/features/guideline-site/utils/theme";
+import { brandFontStacks } from "@/components/features/guideline-site/utils/brandFonts";
 import { BlockStyle, DepartmentView, GuidePage, Lang, PageBlock, SlotKind, Workspace } from "@/types";
-import { brandSocialLinks, graphicAssets, patternAssets } from "@/components/features/guideline-site/model/guidelineAssets";
+import { brandSocialLinks, graphicAssets, patternAssets } from "@/components/features/guideline-site/utils/guidelineAssets";
 import { departmentHasContent } from "@/components/features/guideline-site/components/documents/DepartmentDocument";
 import { strategyNarrativeFilled } from "@/components/features/guideline-site/components/documents/StrategyDocument";
-import type { TocSection } from "@/components/features/guideline-site/components/types";
+import type { TocSection } from "@/components/features/guideline-site/types";
 import { usePublishedSite } from "./usePublishedSite";
 
 function unlockKey(slug: string) {

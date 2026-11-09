@@ -63,7 +63,7 @@ import {
   WorkspaceStage,
   ZoneKind,
 } from "@/types";
-import type { SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
+import type { SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
 import { between, nBetween } from "@/lib/doc/core/order";
 import { zonesFromTemplate } from "@/components/features/moodboard/utils/zones";
 import { withoutPosition } from "@/components/features/moodboard/utils/layout";

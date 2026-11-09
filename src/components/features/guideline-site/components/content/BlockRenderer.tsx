@@ -3,10 +3,10 @@
 import { createContext, FormEvent, useContext, useMemo, useState, ReactNode } from "react";
 import { Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
-import { ColorGrid, IconGrid, LogoGrid, TypeSpecimen } from "@/components/features/guideline-site/components/Content";
-import { BlockShell, EditableText, useLiveEdit } from "@/components/features/guideline-site/components/LiveEdit";
+import { ColorGrid, IconGrid, LogoGrid, TypeSpecimen } from "@/components/features/guideline-site/components/content/Content";
+import { BlockShell, EditableText, useLiveEdit } from "@/components/features/guideline-site/components/live/LiveEdit";
 import { formatBytes } from "@/lib/utils";
-import { getBrandTheme } from "@/components/features/guideline-site/model/theme";
+import { getBrandTheme } from "@/components/features/guideline-site/utils/theme";
 import { Asset, PageBlock, SlotKind, Workspace } from "@/types";
 
 const SPACER_HEIGHT: Record<string, number> = { sm: 24, md: 56, lg: 112 };

@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { Icon, RichText, richIsEmpty } from "@/components/ui";
-import { resolveStrategy } from "@/components/features/guideline-site/model/strategyLang";
+import { resolveStrategy } from "@/components/features/guideline-site/utils/strategyLang";
 import { BrandStrategy, Lang, Workspace } from "@/types";
 
 /**

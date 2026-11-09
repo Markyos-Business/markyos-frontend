@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Icon, Button } from "@/components/ui";
 import { InputField } from "@/components/form";
-import { getBrandTheme, themeCssVars } from "@/components/features/guideline-site/model/theme";
+import { getBrandTheme, themeCssVars } from "@/components/features/guideline-site/utils/theme";
 
 /** Wrong guesses allowed before the form stops answering. */
 const MAX_TRIES = 3;

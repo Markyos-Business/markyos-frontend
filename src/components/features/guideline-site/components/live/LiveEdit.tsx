@@ -31,8 +31,8 @@ const EDIT_COPY = {
   },
 };
 const useEditCopy = () => EDIT_COPY[useUiStrings().isAr ? "ar" : "en"];
-import { BLOCK_META, COMMON_BLOCK_KINDS } from "@/components/features/guideline-site/model/blockCatalog";
-import { blockClass, blockStyleCss, blockStyleRules, isEmptyStyle, isHiddenStyle } from "@/components/features/guideline-site/model/blockStyle";
+import { BLOCK_META, COMMON_BLOCK_KINDS } from "@/components/features/guideline-site/utils/blockCatalog";
+import { blockClass, blockStyleCss, blockStyleRules, isEmptyStyle, isHiddenStyle } from "@/components/features/guideline-site/utils/blockStyle";
 import { BlockKind, BlockStyle } from "@/types";
 
 /**

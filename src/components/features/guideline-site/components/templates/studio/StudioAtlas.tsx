@@ -9,17 +9,17 @@ import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { Icon, LangToggle, useToast } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
-import { navLogo } from "@/components/features/guideline-site/model/brandLogo";
+import { navLogo } from "@/components/features/guideline-site/utils/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
-import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";
-import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/LiveEdit";
-import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/Content";
-import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/flowHelpers";
-import { themeCssVars } from "@/components/features/guideline-site/model/theme";
-import { gCardSm, gLabel, gPill } from "@/components/features/guideline-site/components/surface";
+import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
+import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/live/LiveEdit";
+import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/content/Content";
+import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/live/flowHelpers";
+import { themeCssVars } from "@/components/features/guideline-site/utils/theme";
+import { gCardSm, gLabel, gPill } from "@/components/features/guideline-site/components/shared/surface";
 import { Asset, PageBlock } from "@/types";
 import { formatBytes, formatRelative, hexToRgb, rgbToCmyk } from "@/lib/utils";
-import { TemplateProps } from "../../types";
+import { TemplateProps } from "../../../types";
 
 /** A short, real one-line preview of what a section actually contains —
  *  stands in for Cipherly's expanded accordion sub-anchors, since this

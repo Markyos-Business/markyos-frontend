@@ -1,5 +1,5 @@
 import { Asset, DepartmentView, GuidePage, Lang, PageBlock, SlotKind, Workspace } from "@/types";
-import { BrandTheme } from "@/components/features/guideline-site/model/theme";
+import { BrandTheme } from "@/components/features/guideline-site/utils/theme";
 import type { FlowItem } from "@/components/features/guideline-site/hooks/useGuidelineViewer";
 
 export type { FlowItem };

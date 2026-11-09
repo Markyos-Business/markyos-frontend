@@ -3,9 +3,9 @@
 import { BrandMark } from "@/components/ui/media";
 import { Asset, LogoSlot, SlotKind, Workspace } from "@/types";
 import { bestInkOn } from "@/lib/contrast";
-import { getBrandTheme } from "@/components/features/guideline-site/model/theme";
+import { getBrandTheme } from "@/components/features/guideline-site/utils/theme";
 import { colorFormats } from "@/lib/utils";
-import { gPlate, gPlateSm } from "@/components/features/guideline-site/components/surface";
+import { gPlate, gPlateSm } from "@/components/features/guideline-site/components/shared/surface";
 import {
   SCRIPTS,
   TYPE_SCALE,
@@ -14,8 +14,8 @@ import {
   sampleAt,
   sampleFor,
   swatchEdge,
-} from "@/components/features/guideline-site/components/sectionShared";
-import { COLOR_FORMATS, columnVars, scriptsFor, type ColorFormatKey, type SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
+} from "@/components/features/guideline-site/components/content/sectionShared";
+import { COLOR_FORMATS, columnVars, scriptsFor, type ColorFormatKey, type SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
 
 /**
  * The alternate layouts for the derived sections — see `lib/sectionVariants.ts`

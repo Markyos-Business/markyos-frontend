@@ -16,13 +16,13 @@ import { ReactNode, useCallback, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { LangToggle, Icon } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
-import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";
+import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { BrandMark } from "@/components/ui/media";
-import { markSources, navMark } from "@/components/features/guideline-site/model/brandLogo";
-import { SectionNoteProvider } from "@/components/features/guideline-site/components/LiveEdit";
+import { markSources, navMark } from "@/components/features/guideline-site/utils/brandLogo";
+import { SectionNoteProvider } from "@/components/features/guideline-site/components/live/LiveEdit";
 import { PageBlock, SlotKind } from "@/types";
-import { isLightHex, themeCssVars } from "@/components/features/guideline-site/model/theme";
-import { TemplateProps } from "../types";
+import { isLightHex, themeCssVars } from "@/components/features/guideline-site/utils/theme";
+import { TemplateProps } from "../../types";
 import { deckPalette, DeckPalette } from "./deck/deckTheme";
 import {
   at,

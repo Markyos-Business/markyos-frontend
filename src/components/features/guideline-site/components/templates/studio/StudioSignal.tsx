@@ -14,15 +14,15 @@ import { Fragment, ReactNode, useState } from "react";
 import Link from "next/link";
 import { Icon, LangToggle } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
-import { BlockRenderer } from "@/components/features/guideline-site/components/BlockRenderer";
+import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { BrandMark } from "@/components/ui/media";
-import { navLogo } from "@/components/features/guideline-site/model/brandLogo";
-import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/LiveEdit";
-import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/Content";
-import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/flowHelpers";
-import { themeCssVars } from "@/components/features/guideline-site/model/theme";
-import { gBody, gCard, gCardSm, gLabel, gPill, gSectionTitle } from "@/components/features/guideline-site/components/surface";
-import { FlowItem, TemplateProps } from "../../types";
+import { navLogo } from "@/components/features/guideline-site/utils/brandLogo";
+import { FlowShell, InsertPoint, SectionHeading, SectionNote, SectionNoteProvider } from "@/components/features/guideline-site/components/live/LiveEdit";
+import { FixedSectionBody, SignOffPanel, StatementBand } from "@/components/features/guideline-site/components/content/Content";
+import { flowLabel, SectionTitles } from "@/components/features/guideline-site/components/live/flowHelpers";
+import { themeCssVars } from "@/components/features/guideline-site/utils/theme";
+import { gBody, gCard, gCardSm, gLabel, gPill, gSectionTitle } from "@/components/features/guideline-site/components/shared/surface";
+import { FlowItem, TemplateProps } from "../../../types";
 
 /** Signal's own wording for the derived sections, until a studio renames one. */
 const TITLES: SectionTitles = {

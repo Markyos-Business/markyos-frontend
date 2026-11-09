@@ -1,5 +1,5 @@
 import { bestInkOn, contrastRatio } from "@/lib/contrast";
-import type { SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
+import type { SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
 
 /**
  * The pieces more than one section layout needs.

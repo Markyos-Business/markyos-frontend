@@ -2,18 +2,18 @@
 
 import { useSearchParams } from "next/navigation";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
-import { BlockScopeProvider } from "./BlockRenderer";
-import { BrandFonts } from "./BrandFonts";
+import { BlockScopeProvider } from "../content/BlockRenderer";
+import { BrandFonts } from "../shared/BrandFonts";
 import { GuidelineMotion } from "./GuidelineMotion";
 import { SignOffSurface } from "./SignOffPanel";
 import { CenteredMessage, PasswordGate } from "./ViewerChrome";
-import { DeckTemplate } from "./templates/DeckTemplate";
-import { DocsTemplate } from "./templates/DocsTemplate";
-import { ManualTemplate } from "./templates/ManualTemplate";
-import { MosaicTemplate } from "./templates/MosaicTemplate";
-import { StudioTemplate } from "./templates/StudioTemplate";
-import { VaultTemplate } from "./templates/VaultTemplate";
-import { useGuidelineViewer } from "../hooks/useGuidelineViewer";
+import { DeckTemplate } from "../templates/DeckTemplate";
+import { DocsTemplate } from "../templates/DocsTemplate";
+import { ManualTemplate } from "../templates/ManualTemplate";
+import { MosaicTemplate } from "../templates/MosaicTemplate";
+import { StudioTemplate } from "../templates/StudioTemplate";
+import { VaultTemplate } from "../templates/VaultTemplate";
+import { useGuidelineViewer } from "../../hooks/useGuidelineViewer";
 
 /**
  * The client guideline at /v/<slug>, or one of its custom pages at

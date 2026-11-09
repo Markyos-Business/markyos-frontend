@@ -4,14 +4,14 @@ import { ReactNode, useState } from "react";
 import { useToast, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
 import { Asset, DepartmentView, LogoSlot, Persona, SlotKind, VoiceTrait, Workspace } from "@/types";
-import { navMarkSlot } from "@/components/features/guideline-site/model/brandLogo";
-import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from "@/components/features/guideline-site/model/guidelineAssets";
-import { SectionHeading, SectionNote, useLiveEdit } from "@/components/features/guideline-site/components/LiveEdit";
+import { navMarkSlot } from "@/components/features/guideline-site/utils/brandLogo";
+import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from "@/components/features/guideline-site/utils/guidelineAssets";
+import { SectionHeading, SectionNote, useLiveEdit } from "@/components/features/guideline-site/components/live/LiveEdit";
 import { StrategyDocument } from "@/components/features/guideline-site/components/documents/StrategyDocument";
 import { DepartmentDocument } from "@/components/features/guideline-site/components/documents/DepartmentDocument";
 import { colorFormats } from "@/lib/utils";
-import { gCard, gInset, gPlate, gPlateSm } from "@/components/features/guideline-site/components/surface";
-import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, photoTile, sampleAt, swatchEdge } from "@/components/features/guideline-site/components/sectionShared";
+import { gCard, gInset, gPlate, gPlateSm } from "@/components/features/guideline-site/components/shared/surface";
+import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, photoTile, sampleAt, swatchEdge } from "@/components/features/guideline-site/components/content/sectionShared";
 import {
   ColorBands,
   ColorChips,
@@ -25,8 +25,8 @@ import {
   PhotoStrip,
   TypePoster,
   TypeScaleTable,
-} from "@/components/features/guideline-site/components/SectionLayouts";
-import { resolveVariantKey } from "@/components/features/guideline-site/model/sectionVariants";
+} from "@/components/features/guideline-site/components/content/SectionLayouts";
+import { resolveVariantKey } from "@/components/features/guideline-site/utils/sectionVariants";
 import {
   COLOR_FORMATS,
   columnVars,
@@ -34,9 +34,9 @@ import {
   scriptsFor,
   type ColorFormatKey,
   type SectionOptions,
-} from "@/components/features/guideline-site/model/sectionOptions";
-import { getBrandTheme, isLightHex } from "@/components/features/guideline-site/model/theme";
-import { SignOffPanel } from "./SignOffPanel";
+} from "@/components/features/guideline-site/utils/sectionOptions";
+import { getBrandTheme, isLightHex } from "@/components/features/guideline-site/utils/theme";
+import { SignOffPanel } from "../viewer/SignOffPanel";
 
 /**
  * Content-only renderers shared by every guideline-site template — each
@@ -1146,4 +1146,4 @@ export function FixedSectionBody({
   }
 }
 
-export { SignOffPanel } from "./SignOffPanel";
+export { SignOffPanel } from "../viewer/SignOffPanel";

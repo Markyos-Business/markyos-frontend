@@ -2,16 +2,16 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { BlockScopeProvider } from "@/components/features/guideline-site/components/BlockRenderer";
+import { BlockScopeProvider } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { useGuidelineViewer } from "@/components/features/guideline-site/hooks/useGuidelineViewer";
-import { VaultTemplate } from "./templates/VaultTemplate";
-import { DocsTemplate } from "./templates/DocsTemplate";
-import { StudioTemplate } from "./templates/StudioTemplate";
-import { DeckTemplate } from "./templates/DeckTemplate";
-import { ManualTemplate } from "./templates/ManualTemplate";
-import { MosaicTemplate } from "./templates/MosaicTemplate";
+import { VaultTemplate } from "../templates/VaultTemplate";
+import { DocsTemplate } from "../templates/DocsTemplate";
+import { StudioTemplate } from "../templates/StudioTemplate";
+import { DeckTemplate } from "../templates/DeckTemplate";
+import { ManualTemplate } from "../templates/ManualTemplate";
+import { MosaicTemplate } from "../templates/MosaicTemplate";
 import { LiveEditProvider } from "./LiveEdit";
-import { BrandFonts } from "./BrandFonts";
+import { BrandFonts } from "../shared/BrandFonts";
 import { BlockKind, Lang } from "@/types";
 
 /** The block behind a flow id, or null for a derived section. */

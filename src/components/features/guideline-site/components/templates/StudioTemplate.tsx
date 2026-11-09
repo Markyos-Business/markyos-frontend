@@ -8,7 +8,7 @@
 import { StudioSignal } from "./studio/StudioSignal";
 import { StudioAtlas } from "./studio/StudioAtlas";
 import { StudioPrism } from "./studio/StudioPrism";
-import { TemplateProps } from "../types";
+import { TemplateProps } from "../../types";
 
 export function StudioTemplate(props: TemplateProps) {
   switch (props.ws.studioStyle) {

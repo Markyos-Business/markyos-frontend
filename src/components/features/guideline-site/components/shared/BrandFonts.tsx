@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { BrandFontStacks, brandFontVars } from "@/components/features/guideline-site/model/brandFonts";
+import { BrandFontStacks, brandFontVars } from "@/components/features/guideline-site/utils/brandFonts";
 
 /**
  * Puts the brand's own fonts on everything inside it.
