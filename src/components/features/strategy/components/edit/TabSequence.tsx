@@ -19,8 +19,8 @@ export function TabSequence({ current, onSelect, isAr, empty }: TabSequenceProps
 
   // The chevrons point the way the reader is going, which in Arabic is the
   // other way — a fixed "→" for "next" would point backwards on an RTL page.
-  const backIcon = isAr ? "angle-right" : "angle-left";
-  const onIcon = isAr ? "angle-left" : "angle-right";
+  const backIcon = "angle-left";
+  const onIcon = "angle-right";
 
   return (
     <nav aria-label={isAr ? "أقسام الاستراتيجية" : "Strategy sections"} className="flex items-center gap-3 pb-2 pt-1">

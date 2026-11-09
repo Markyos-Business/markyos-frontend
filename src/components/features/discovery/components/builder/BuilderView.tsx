@@ -170,7 +170,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
             onChange={setModeChoice}
           />
         )}
-        <Button variant="primary" href={sendHref} icon={<Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />}>
+        <Button variant="primary" href={sendHref} icon={<Icon name="arrow-right" size={18} />}>
           {form.status === "draft" ? t("Theme and send", "التصميم والإرسال") : t("Theme and link", "التصميم والرابط")}
         </Button>
       </div>

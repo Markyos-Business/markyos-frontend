@@ -185,7 +185,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
         <Button variant="outline" onClick={onCancel}>
           {isAr ? "إلغاء" : "Cancel"}
         </Button>
-        <Button variant="primary" onClick={() => void create()} disabled={busy} icon={<Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />}>
+        <Button variant="primary" onClick={() => void create()} disabled={busy} icon={<Icon name="arrow-right" size={18} />}>
           {busy ? (isAr ? "جارٍ الإنشاء…" : "Creating…") : isAr ? "إنشاء الاستبيان" : "Create questionnaire"}
         </Button>
       </div>

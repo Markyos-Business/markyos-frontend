@@ -19,7 +19,7 @@ export function InspectorPanel(b: BuilderPageState) {
           title={hide}
           className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-text-faint"
         >
-          <Icon name={isAr ? "angle-double-left" : "angle-double-right"} size={12} />
+          <Icon name="angle-double-right" size={12} />
         </button>
       </div>
 

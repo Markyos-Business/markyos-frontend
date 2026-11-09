@@ -497,7 +497,7 @@ Chart series order is primary `#0099FF`, then green `#00DE68`, yellow `#FFBB00`,
 ## 8. RTL checklist
 
 - [ ] Put `dir` and `lang` on `<html>` (or on a container) and use only logical properties (`inline-start/end`, `padding-inline`, `inset-inline`).
-- [ ] Mirror directional icons with `[dir=rtl] .flip{transform:scaleX(-1)}` (or `--dir-flip:-1`).
+- [ ] Directional icons (arrows, angles, sign-out, undo) mirror on their own: `tailwind/icons.js` flips them with `:dir(rtl)`. Write each in its English direction, never `rtl:-scale-x-100` or a name swapped by language. `scripts/rtl-audit.mjs` (in `npm run check`) refuses both, and any physical class without an `rtl:`/`ltr:` counterpart.
 - [ ] Keep logos, media controls and charts' time axes unflipped.
 - [ ] Don't use `letter-spacing` on Arabic. Arabic display line height is 1.3.
 - [ ] Use Western numerals unless the customer asks otherwise. CalendarMonth `locale="ar"` uses Arabic-Indic digits.

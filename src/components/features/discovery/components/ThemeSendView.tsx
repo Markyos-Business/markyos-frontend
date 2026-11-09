@@ -99,7 +99,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
         </div>
-        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />}>
+        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
         {form.status !== "draft" && (

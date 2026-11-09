@@ -59,7 +59,7 @@ export function AccountMenu({
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">
             <span className="text-body font-medium truncate">{session?.name || (isAr ? "غير مسجل" : "Signed out")}</span>
-            <span dir="ltr" className="text-caption truncate" style={{ color: "var(--text-muted)", textAlign: isAr ? "right" : "left" }}>
+            <span dir="ltr" className="text-caption truncate text-text-muted" style={{ textAlign: isAr ? "right" : "left" }}>
               {session?.email || "—"}
             </span>
           </div>

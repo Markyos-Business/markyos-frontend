@@ -232,7 +232,7 @@ export function StudioSignal(props: TemplateProps) {
         {menuOpen && (
           <div
             className="absolute top-[72px] w-[260px] p-2 flex flex-col gap-0.5 z-dropdown"
-            style={{ [isAr ? "left" : "right"]: 16, borderRadius: "var(--g-radius-lg)", background: "var(--g-surface-1)", boxShadow: "0 12px 40px rgba(0,0,0,.5)" }}
+            style={{ insetInlineEnd: 16, borderRadius: "var(--g-radius-lg)", background: "var(--g-surface-1)", boxShadow: "0 12px 40px rgba(0,0,0,.5)" }}
           >
             {activePage && (
               <Link
@@ -410,7 +410,7 @@ export function StudioSignal(props: TemplateProps) {
           onClick={() => setDownloadOpen(true)}
           className="fixed bottom-6 h-11 px-5 text-[13px] font-semibold cursor-pointer z-sticky shadow-lg"
           // Was a fixed white pill — Markyos's button, not the brand's.
-          style={{ ...gPill, [isAr ? "left" : "right"]: 24, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
+          style={{ ...gPill, insetInlineEnd: 24, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
         >
           {isAr ? "تحميل حزمة الهوية" : "Download brand kit"}
         </button>

@@ -29,7 +29,7 @@ export function ToolsPanel(b: BuilderPageState) {
           title={back}
           className="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-lg bg-surface-1 text-text-muted"
         >
-          <Icon name={isAr ? "angle-right" : "angle-left"} size={13} />
+          <Icon name="angle-left" size={13} />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-[12.5px] leading-tight font-semibold">{ws.name}</span>
@@ -42,7 +42,7 @@ export function ToolsPanel(b: BuilderPageState) {
           title={hide}
           className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-text-faint"
         >
-          <Icon name={isAr ? "angle-double-right" : "angle-double-left"} size={12} />
+          <Icon name="angle-double-left" size={12} />
         </button>
       </div>
 

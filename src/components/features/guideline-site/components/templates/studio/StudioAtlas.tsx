@@ -378,7 +378,7 @@ function Band({
         <div className="relative max-w-[980px] flex items-center min-h-[52px]">
           <span
             className="absolute -top-8 select-none pointer-events-none font-semibold"
-            style={{ [isAr ? "left" : "right"]: 0, fontFamily: "var(--font-display)", fontSize: 130, color: bandText, opacity: 0.16, lineHeight: 1 }}
+            style={{ insetInlineEnd: 0, fontFamily: "var(--font-display)", fontSize: 130, color: bandText, opacity: 0.16, lineHeight: 1 }}
           >
             {String(index).padStart(2, "0")}
           </span>
@@ -398,14 +398,14 @@ function Band({
         <div className="px-8 md:px-16 pb-10 flex items-center justify-between max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)", paddingTop: 20 }}>
           {prev ? (
             <button type="button" onClick={() => scrollTo(prev.id)} className="text-[12px] font-medium cursor-pointer flex items-center gap-1.5" style={{ color: "var(--g-text-faint)" }}>
-              <Icon name={isAr ? "arrow-right" : "arrow-left"} size={11} />
+              <Icon name="arrow-left" size={11} />
               {isAr ? prev.arLabel : prev.label}
             </button>
           ) : <span />}
           {next && (
             <button type="button" onClick={() => scrollTo(next.id)} className="text-[12px] font-medium cursor-pointer flex items-center gap-1.5" style={{ color: "var(--g-text-faint)" }}>
               {isAr ? next.arLabel : next.label}
-              <Icon name={isAr ? "arrow-left" : "arrow-right"} size={11} />
+              <Icon name="arrow-right" size={11} />
             </button>
           )}
         </div>
