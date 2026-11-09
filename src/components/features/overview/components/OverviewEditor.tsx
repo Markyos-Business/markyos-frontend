@@ -21,7 +21,7 @@ export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: 
           <IconButton
             key={t.label}
             icon={t.icon}
-            label={t.label}
+            label={isAr ? t.arLabel : t.label}
             iconSize={18}
             // The editor loses its selection the moment a toolbar button
             // takes focus, so the press must not move focus at all.

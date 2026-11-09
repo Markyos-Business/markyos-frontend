@@ -33,7 +33,10 @@ export function useOverviewPage(slug: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  const savedLabel = useMemo(() => (ws ? `Saved ${formatRelative(ws.overviewSavedAt)}` : ""), [ws]);
+  const savedLabel = useMemo(
+    () => (ws ? (page?.isAr ? `حُفظ ${formatRelative(ws.overviewSavedAt)}` : `Saved ${formatRelative(ws.overviewSavedAt)}`) : ""),
+    [ws, page?.isAr]
+  );
 
   if (!page || !ws) return null;
   const { isAr } = page;

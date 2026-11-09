@@ -13,8 +13,9 @@ export function DepartmentsView({ ws, isAr, active, mode, onAdd }: DepartmentsPa
           <div>
             <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
             <p className="max-w-[62ch] text-[14px] text-text-muted">
-              A department&apos;s own onboarding page — its guideline content, plus a filtered view into the sections and strategy content that actually apply to
-              it.
+              {isAr
+                ? "صفحة تعريفية خاصة بكل قسم: محتوى دليله، مع عرض مصفّى للأقسام ومحتوى الاستراتيجية الذي يخصّه فعلًا."
+                : "A department's own onboarding page — its guideline content, plus a filtered view into the sections and strategy content that actually apply to it."}
             </p>
           </div>
           <EmptyHint>
@@ -23,7 +24,7 @@ export function DepartmentsView({ ws, isAr, active, mode, onAdd }: DepartmentsPa
               : "No departments yet. Department names are free text — HR, Sales, Partnerships, Executives, whatever your org actually calls them."}
           </EmptyHint>
           <Button variant="solid" size="sm" onClick={onAdd} className="self-start">
-            Add department
+            {isAr ? "إضافة قسم" : "Add department"}
           </Button>
         </>
       ) : mode === "read" ? (

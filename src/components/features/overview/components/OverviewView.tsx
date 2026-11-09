@@ -23,7 +23,7 @@ export function OverviewView({ ws, isAr, onToggleLocale, editor }: OverviewViewP
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
         <Button variant="soft" size="xs" onClick={onToggleLocale} className="shadow-edge">
-          {isAr ? "Add English version" : "Add Arabic version"}
+          {isAr ? "إضافة النسخة الإنجليزية" : "Add Arabic version"}
         </Button>
       </div>
 

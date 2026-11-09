@@ -5,6 +5,7 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { canEdit, roleOn } from "@/lib/data/access";
 import { AppLayout, Sidebar } from "@/components/layout";
+import { UiStringsProvider } from "@/components/ui";
 
 export default function WorkspaceLayout({
   children,
@@ -112,6 +113,8 @@ export default function WorkspaceLayout({
   if (!hydrated || !state.session || !ws) return null;
 
   return (
+    // The kit's own words follow this brand's language, like the rest of its pages.
+    <UiStringsProvider lang={isAr ? "ar" : "en"}>
     <AppLayout
       dir={isAr ? "rtl" : "ltr"}
       style={{ fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
@@ -133,5 +136,6 @@ export default function WorkspaceLayout({
       )}
       {children}
     </AppLayout>
+    </UiStringsProvider>
   );
 }

@@ -5,6 +5,7 @@ import { ToastProvider, DialogProvider } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/contexts/ThemeProvider";
 import { InterfaceLangSync } from "@/contexts/InterfaceLangSync";
+import { InterfaceUiStrings } from "@/contexts/InterfaceUiStrings";
 import { LANG_INIT_SCRIPT } from "@/lib/i18n/interfaceLang";
 import "./tailwind.css";
 
@@ -41,11 +42,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full bg-canvas text-text">
         <ThemeProvider>
           <AppProvider>
-            <ToastProvider>
-              <SyncNotices />
-              <InterfaceLangSync />
-              <DialogProvider>{children}</DialogProvider>
-            </ToastProvider>
+            <InterfaceUiStrings>
+              <ToastProvider>
+                <SyncNotices />
+                <InterfaceLangSync />
+                <DialogProvider>{children}</DialogProvider>
+              </ToastProvider>
+            </InterfaceUiStrings>
           </AppProvider>
         </ThemeProvider>
       </body>
