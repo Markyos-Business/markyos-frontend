@@ -3,7 +3,7 @@
 import { Badge, Button, Icon } from "@/components/ui";
 import type { Draft } from "@/types";
 import { formatRelative } from "@/lib/utils";
-import { SOURCE_META, STATUS_TONE } from "../constants";
+import { SOURCE_META, STATUS_LABEL, STATUS_TONE } from "../constants";
 import { targetLabel } from "../hooks/useDraftsPage";
 
 type DraftCardProps = {
@@ -15,6 +15,8 @@ type DraftCardProps = {
 
 /** One proposal: where it came from, what it says verbatim, and the decision. */
 export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps) {
+  const t = (en: string, ar: string) => (isAr ? ar : en);
+  const status = STATUS_LABEL[d.status][isAr ? "ar" : "en"];
   return (
     <article className="mk-surface flex flex-col gap-3 rounded-2xl bg-surface-1 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -23,8 +25,8 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
             <Icon name={SOURCE_META[d.source].icon} size={10} />
             {isAr ? SOURCE_META[d.source].arLabel : SOURCE_META[d.source].label}
           </span>
-          <span className="text-[13px] font-semibold">{targetLabel(d)}</span>
-          {d.status !== "pending" && <Badge tone={STATUS_TONE[d.status]}>{d.status}</Badge>}
+          <span className="text-[13px] font-semibold">{targetLabel(d, isAr)}</span>
+          {d.status !== "pending" && <Badge tone={STATUS_TONE[d.status]}>{status}</Badge>}
         </div>
         <span className="shrink-0 text-[11px] text-text-faint">{formatRelative(d.createdAt)}</span>
       </div>
@@ -40,13 +42,13 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
           {d.provenance.summary}
         </span>
         <span>
-          From {d.provenance.requestedBy}
+          {t("From", "من")} {d.provenance.requestedBy}
           {d.provenance.inputs.length > 0 && ` · ${d.provenance.inputs.join(", ")}`}
           {d.provenance.model && ` · ${d.provenance.model}`}
         </span>
         {d.decidedAt && (
           <span>
-            {d.status} by {d.decidedBy ?? "someone"} {formatRelative(d.decidedAt)}
+            {status} {t("by", "بواسطة")} {d.decidedBy ?? t("someone", "شخص ما")} {formatRelative(d.decidedAt)}
           </span>
         )}
       </div>
@@ -54,10 +56,10 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
       {d.status === "pending" && (
         <div className="flex items-center gap-2 pt-1">
           <Button size="sm" onClick={() => void onAccept(d)}>
-            Accept
+            {t("Accept", "قبول")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => onReject(d)}>
-            Reject
+            {t("Reject", "رفض")}
           </Button>
         </div>
       )}

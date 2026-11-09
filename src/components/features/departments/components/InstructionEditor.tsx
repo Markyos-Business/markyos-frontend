@@ -111,11 +111,11 @@ export function InstructionEditor({
                   type="button"
                   onClick={() => move(i, -1)}
                   disabled={i === 0}
-                  aria-label="Move up"
+                  aria-label={isAr ? "تحريك للأعلى" : "Move up"}
                   // Obvious on screen from where the row sits; not obvious at
                   // all to someone tabbing through with a screen reader, who
                   // meets a dead control and no explanation of it.
-                  title={i === 0 ? "Already first" : "Move up"}
+                  title={i === 0 ? (isAr ? "في الأعلى بالفعل" : "Already first") : isAr ? "تحريك للأعلى" : "Move up"}
                   className="w-7 h-7 grid place-items-center rounded-full cursor-pointer disabled:opacity-25 disabled:cursor-default"
                   style={{ color: "var(--text-faint)" }}
                 >
@@ -125,8 +125,8 @@ export function InstructionEditor({
                   type="button"
                   onClick={() => move(i, 1)}
                   disabled={i === sections.length - 1}
-                  aria-label="Move down"
-                  title={i === sections.length - 1 ? "Already last" : "Move down"}
+                  aria-label={isAr ? "تحريك للأسفل" : "Move down"}
+                  title={i === sections.length - 1 ? (isAr ? "في الأسفل بالفعل" : "Already last") : isAr ? "تحريك للأسفل" : "Move down"}
                   className="w-7 h-7 grid place-items-center rounded-full cursor-pointer disabled:opacity-25 disabled:cursor-default"
                   style={{ color: "var(--text-faint)" }}
                 >
@@ -135,8 +135,8 @@ export function InstructionEditor({
                 <button
                   type="button"
                   onClick={() => write(sections.filter((x) => x.id !== s.id))}
-                  aria-label={`Remove ${s.heading || "section"}`}
-                  title={`Remove ${s.heading || "this section"}`}
+                  aria-label={isAr ? `إزالة ${s.heading || "القسم"}` : `Remove ${s.heading || "section"}`}
+                  title={isAr ? `إزالة ${s.heading || "هذا القسم"}` : `Remove ${s.heading || "this section"}`}
                   className="w-7 h-7 grid place-items-center rounded-full cursor-pointer mk-danger-hover"
                   style={{ color: "var(--text-faint)" }}
                 >

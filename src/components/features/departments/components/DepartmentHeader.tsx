@@ -37,7 +37,7 @@ export function DepartmentHeader({ ws, view, isAr }: DepartmentHeaderProps) {
     });
     if (!ok) return;
     removeDepartmentView(ws.id, view.id);
-    showToast("Department removed.");
+    showToast(isAr ? "حُذف القسم." : "Department removed.");
   }
 
   return (

@@ -66,7 +66,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
               key={t.id}
               className="px-2.5 py-1 rounded-full font-medium"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
-              title={`Do: ${t.doExample}\nDon't: ${t.dontExample}`}
+              title={isAr ? `افعل: ${t.doExample}\nلا تفعل: ${t.dontExample}` : `Do: ${t.doExample}\nDon't: ${t.dontExample}`}
             >
               {t.trait}
             </span>

@@ -33,7 +33,8 @@ export function useTypeLabPage(slug: string) {
       anyUploaded: fonts.latinIsUploaded || fonts.arabicIsUploaded,
       latin: {
         dir: "ltr" as const,
-        label: "Latin",
+        isAr: page.isAr,
+        label: page.isAr ? "اللاتينية" : "Latin",
         familyLabel: ws.typography.latinFamily,
         live: fonts.latinIsUploaded,
         fontVar: fonts.latin,
@@ -50,7 +51,8 @@ export function useTypeLabPage(slug: string) {
       },
       arabic: {
         dir: "rtl" as const,
-        label: "Arabic",
+        isAr: page.isAr,
+        label: page.isAr ? "العربية" : "Arabic",
         familyLabel: ws.typography.arabicFamily,
         live: fonts.arabicIsUploaded,
         fontVar: fonts.arabic,

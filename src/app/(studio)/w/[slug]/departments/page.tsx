@@ -11,7 +11,7 @@ export default function DepartmentsPage() {
   return (
     <PageShell
       {...page.shell}
-      tabsRight={<AddDepartmentButton onAdd={page.onAdd} />}
+      tabsRight={<AddDepartmentButton onAdd={page.onAdd} isAr={page.view.isAr} />}
       right={page.actions ? <DepartmentActions {...page.actions} /> : undefined}
     >
       <DepartmentsView {...page.view} />

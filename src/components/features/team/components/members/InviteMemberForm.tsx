@@ -3,19 +3,21 @@
 import { type FormEvent, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button, useToast } from "@/components/ui";
-import { ChipPicker, TextInput } from "@/components/form";
+import { ChipPicker, InputField } from "@/components/form";
 import type { TeamRole, Workspace } from "@/types";
-import { ROLES } from "../../constants";
+import { ROLES, ROLE_LABELS } from "../../constants";
 
 type InviteMemberFormProps = {
   ws: Workspace;
+  isAr: boolean;
   editorsFull: boolean;
   editorsFullNote: string;
   onDone: () => void;
 };
 
 /** Adds someone to the brand's team with a role. */
-export function InviteMemberForm({ ws, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
+export function InviteMemberForm({ ws, isAr, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
+  const t = (en: string, ar: string) => (isAr ? ar : en);
   const { addTeamMember } = useApp();
   const { showToast } = useToast();
   const [name, setName] = useState("");
@@ -31,28 +33,26 @@ export function InviteMemberForm({ ws, editorsFull, editorsFullNote, onDone }: I
     setName("");
     setEmail("");
     onDone();
-    showToast("Team member added.", "success");
+    showToast(t("Team member added.", "أُضيف عضو إلى الفريق."), "success");
   }
 
   return (
     <form onSubmit={submit} className="mk-surface flex flex-col gap-2.5 rounded-xl bg-surface-2 p-4">
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        <TextInput fill="surface-1" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-        <TextInput fill="surface-1" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+        <InputField size="sm" aria-label={t("Name", "الاسم")} dir="auto" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Name", "الاسم")} />
+        <InputField size="sm" aria-label={t("Email", "البريد الإلكتروني")} type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" />
       </div>
       <ChipPicker
-        // Roles are stored lower-case and shown capitalised.
-        className="capitalize"
         value={inviteRole}
         onChange={setRole}
         options={ROLES.map((r) => {
           const full = r === "editor" && editorsFull;
-          return { value: r, label: r, disabled: full, title: full ? editorsFullNote : undefined };
+          return { value: r, label: ROLE_LABELS[r][isAr ? "ar" : "en"], disabled: full, title: full ? editorsFullNote : undefined };
         })}
       />
       {editorsFull && <p className="text-caption text-text-muted">{editorsFullNote}</p>}
       <Button type="submit" variant="solid" size="sm" className="self-start">
-        Add to team
+        {t("Add to team", "إضافة إلى الفريق")}
       </Button>
     </form>
   );

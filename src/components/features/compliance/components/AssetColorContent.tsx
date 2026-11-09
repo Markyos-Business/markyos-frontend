@@ -20,6 +20,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
   const [result, setResult] = useState<DominantColor[] | null>(null);
 
   const isAr = uiLang(ws) === "ar";
+  const t = (en: string, ar: string) => (isAr ? ar : en);
 
   function nearestSwatch(hex: string) {
     let best: ColorSwatch | null = null;
@@ -52,7 +53,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
       }
       addComplianceCheck(ws.id, { fileName: file.name, matchedSwatchIds: [...matchedIds], flaggedColors: flagged });
     } catch {
-      showToast("Couldn't read that image — try a PNG or JPG.", "danger");
+      showToast(t("Couldn't read that image — try a PNG or JPG.", "تعذّرت قراءة الصورة، جرّب PNG أو JPG."), "danger");
     } finally {
       setAnalyzing(false);
     }
@@ -65,8 +66,10 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
           {isAr ? "ألوان الأصول" : "Asset colors"}
         </h1>
         <p className="text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-          Upload a finished asset and check its dominant colors against this workspace&apos;s approved
-          palette — catches drift before it ships, not after.
+          {t(
+            "Upload a finished asset and check its dominant colors against this workspace's approved palette — catches drift before it ships, not after.",
+            "ارفع أصلًا جاهزًا وافحص ألوانه الغالبة مقابل الألوان المعتمدة لهذه المساحة، لتكتشف الانحراف قبل النشر لا بعده."
+          )}
         </p>
       </div>
 
@@ -105,9 +108,9 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
           </div>
         )}
         <div>
-          <div className="font-semibold text-[14px] mb-1">{fileName || "Drop an image, or click to browse"}</div>
+          <div className="font-semibold text-[14px] mb-1">{fileName || t("Drop an image, or click to browse", "أفلت صورة، أو انقر للاختيار")}</div>
           <div className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-            Runs entirely in your browser — colors are sampled from the pixels, nothing is uploaded anywhere.
+            {t("Runs entirely in your browser — colors are sampled from the pixels, nothing is uploaded anywhere.", "يعمل بالكامل في متصفحك؛ تؤخذ الألوان من البكسلات ولا يُرفع شيء إلى أي مكان.")}
           </div>
         </div>
       </div>
@@ -115,13 +118,13 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
       {analyzing && (
         <div className="flex items-center gap-2.5 text-[13px]" style={{ color: "var(--text-muted)" }}>
           <Icon name="circle-notch" size={16} className="animate-spin" style={{ color: "var(--accent-text)" }} />
-          Sampling pixels…
+          {t("Sampling pixels…", "جارٍ أخذ عينات البكسلات…")}
         </div>
       )}
 
       {result && !analyzing && (
         <div className="rounded-2xl p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
-          <span className="font-semibold text-[13px]">Dominant colors found</span>
+          <span className="font-semibold text-[13px]">{t("Dominant colors found", "الألوان الغالبة")}</span>
           <div className="flex flex-col gap-2">
             {result.map((c) => {
               const { swatch, distance } = nearestSwatch(c.hex);
@@ -133,6 +136,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                     style={{ background: c.hex, boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
                   />
                   <span
+                    dir="ltr"
                     className="text-[12px] w-[70px] shrink-0"
                     style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}
                   >
@@ -146,14 +150,14 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                       className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
                       style={{ background: "var(--success-soft)", color: "var(--success)" }}
                     >
-                      Matches {swatch!.name}
+                      {isAr ? `يطابق ${swatch!.name}` : `Matches ${swatch!.name}`}
                     </span>
                   ) : (
                     <span
                       className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
                       style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
                     >
-                      Off-palette
+                      {t("Off-palette", "خارج الألوان المعتمدة")}
                     </span>
                   )}
                 </div>
@@ -165,10 +169,10 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
 
       <div className="flex flex-col gap-2.5">
         <h2 className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-          Past checks
+          {t("Past checks", "الفحوص السابقة")}
         </h2>
         {ws.complianceChecks.length === 0 ? (
-          <EmptyHint>No checks run yet.</EmptyHint>
+          <EmptyHint>{t("No checks run yet.", "لم يُجرَ أي فحص بعد.")}</EmptyHint>
         ) : (
           <div className="flex flex-col gap-1.5">
             {ws.complianceChecks.map((c) => (
@@ -190,7 +194,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                     {c.flaggedColors.slice(0, 6).map((hex) => (
                       <span
                         key={hex}
-                        title={`Off-palette: ${hex.toUpperCase()}`}
+                        title={`${t("Off-palette", "خارج الألوان المعتمدة")}: ${hex.toUpperCase()}`}
                         className="w-4 h-4 rounded-[4px]"
                         style={{ background: hex, boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
                       />
@@ -198,7 +202,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                   </span>
                 )}
                 <span className="shrink-0 ms-auto" style={{ color: "var(--text-faint)" }}>
-                  {formatRelative(c.createdAt)} · {c.matchedSwatchIds.length} matched · {c.flaggedColors.length} flagged
+                  {formatRelative(c.createdAt)} · {c.matchedSwatchIds.length} {t("matched", "مطابق")} · {c.flaggedColors.length} {t("flagged", "مُعلَّم")}
                 </span>
               </div>
             ))}

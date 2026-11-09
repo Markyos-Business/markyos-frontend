@@ -22,7 +22,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
     // The asset was just prepended, so it's the freshest one tagged for this department.
     const freshest = [...ws.assets].sort((a, b) => b.uploadedAt - a.uploadedAt)[0];
     setDeptGuideline(ws.id, view.id, { guidelineFileAssetId: freshest?.id });
-    showToast("Guideline file uploaded.", "success");
+    showToast(isAr ? "رُفع ملف الدليل." : "Guideline file uploaded.", "success");
   }
 
   return (
@@ -50,7 +50,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
           <span className="font-mono text-[11px] text-text-faint">{formatBytes(guidelineFile.sizeKB)}</span>
           <IconButton
             icon="times"
-            label="Remove file"
+            label={isAr ? "إزالة الملف" : "Remove file"}
             onClick={() => setDeptGuideline(ws.id, view.id, { guidelineFileAssetId: undefined })}
             className="cursor-pointer text-text-faint"
           />

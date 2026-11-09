@@ -26,8 +26,12 @@ export function useTeamPage(slug: string) {
   const editorsFull = canGovern && editorLimit !== null && ws.team.filter((m) => m.role === "editor").length >= editorLimit;
   const editorsFullNote =
     editorLimit === 0
-      ? `${ACCOUNT_TYPES[accountTypeOf(account)].label} accounts work solo, so they can't add editors. Add people as a viewer or client.`
-      : `This brand has its ${editorLimit} editor seats filled. Add people as a viewer or client.`;
+      ? page.isAr
+        ? `حسابات ${ACCOUNT_TYPES[accountTypeOf(account)].arLabel} تعمل منفردة، فلا يمكنها إضافة محرّرين. أضف الأشخاص كمشاهدين أو عملاء.`
+        : `${ACCOUNT_TYPES[accountTypeOf(account)].label} accounts work solo, so they can't add editors. Add people as a viewer or client.`
+      : page.isAr
+        ? `امتلأت مقاعد المحرّرين (${editorLimit}) في هذه العلامة. أضف الأشخاص كمشاهدين أو عملاء.`
+        : `This brand has its ${editorLimit} editor seats filled. Add people as a viewer or client.`;
 
   return {
     shell: {

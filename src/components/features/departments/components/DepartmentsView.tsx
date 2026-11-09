@@ -17,7 +17,11 @@ export function DepartmentsView({ ws, isAr, active, mode, onAdd }: DepartmentsPa
               it.
             </p>
           </div>
-          <EmptyHint>No departments yet. Department names are free text — HR, Sales, Partnerships, Executives, whatever your org actually calls them.</EmptyHint>
+          <EmptyHint>
+            {isAr
+              ? "لا أقسام بعد. أسماء الأقسام نص حر: الموارد البشرية، المبيعات، الشراكات، الإدارة التنفيذية، أو أي اسم تستخدمه مؤسستك."
+              : "No departments yet. Department names are free text — HR, Sales, Partnerships, Executives, whatever your org actually calls them."}
+          </EmptyHint>
           <Button variant="solid" size="sm" onClick={onAdd} className="self-start">
             Add department
           </Button>

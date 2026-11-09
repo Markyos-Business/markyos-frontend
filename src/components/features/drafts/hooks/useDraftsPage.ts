@@ -5,12 +5,12 @@ import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import type { Draft } from "@/types";
-import { FIELD_LABEL, PAGE_SECTION } from "../constants";
+import { AR_FIELD_LABEL, FIELD_LABEL, PAGE_SECTION } from "../constants";
 
 export type DraftsTab = "pending" | "decided";
 
-export function targetLabel(d: Draft) {
-  if (d.targetType === "strategyField") return FIELD_LABEL[d.targetRef] ?? d.targetRef;
+export function targetLabel(d: Draft, isAr = false) {
+  if (d.targetType === "strategyField") return (isAr ? AR_FIELD_LABEL : FIELD_LABEL)[d.targetRef] ?? d.targetRef;
   return d.targetRef;
 }
 
@@ -54,20 +54,23 @@ export function useDraftsPage(slug: string) {
 
     if (current.trim()) {
       const ok = await confirm({
-        title: `Replace ${targetLabel(d)}?`,
-        body: `There is already something written here. Accepting replaces it.\n\nCurrent:\n${current.slice(0, 220)}`,
-        confirmLabel: "Replace it",
+        title: page!.isAr ? `استبدال ${targetLabel(d, true)}؟` : `Replace ${targetLabel(d)}?`,
+        body: page!.isAr
+          ? `يوجد نص مكتوب هنا بالفعل، والقبول يستبدله.\n\nالحالي:\n${current.slice(0, 220)}`
+          : `There is already something written here. Accepting replaces it.\n\nCurrent:\n${current.slice(0, 220)}`,
+        confirmLabel: page!.isAr ? "استبدله" : "Replace it",
         tone: "danger",
+        isAr: page!.isAr,
       });
       if (!ok) return;
     }
     acceptDraft(ws!.id, d.id);
-    showToast(`Accepted into ${targetLabel(d)}.`, "success");
+    showToast(page!.isAr ? `قُبلت في ${targetLabel(d, true)}.` : `Accepted into ${targetLabel(d)}.`, "success");
   }
 
   function reject(d: Draft) {
     rejectDraft(ws!.id, d.id);
-    showToast("Rejected — kept with its reasoning.");
+    showToast(page!.isAr ? "رُفضت، وحُفظت مع مبرراتها." : "Rejected — kept with its reasoning.");
   }
 
   return {

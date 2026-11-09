@@ -3,7 +3,7 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
-import { TextInput } from "@/components/form";
+import { InputField } from "@/components/form";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
 import { formatRelative } from "@/lib/utils";
 import type { ApprovalStatus, Workspace } from "@/types";
@@ -77,7 +77,7 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
     <Section title={isAr ? "طلبات الاعتماد" : "Approval queue"} icon="check-circle"
       right={API_ENABLED ? <Button variant="link" size="sm" disabled={loading || busy !== null} onClick={() => { setLoading(true); setReads((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الطلبات" : "Refresh approvals")}</Button> : undefined}>
       {canPropose ? <form onSubmit={(event) => void propose(event)} className="flex items-end gap-2.5" aria-busy={busy === "proposal"}>
-        <TextInput value={text} onChange={(event) => setText(event.target.value)} required maxLength={2000} disabled={loading || busy !== null}
+        <InputField size="sm" dir="auto" value={text} onChange={(event) => setText(event.target.value)} required maxLength={2000} disabled={loading || busy !== null}
           aria-label={isAr ? "صف التغيير الذي تقترحه" : "Describe the change you're proposing"}
           placeholder={isAr ? "اقترح تغييرًا — مثل إضافة لون ثانوي جديد" : "Propose a change — e.g. add a new secondary color"} className="flex-1" />
         <Button type="submit" variant="soft" size="sm" disabled={loading || busy !== null} className="shrink-0 shadow-edge">{busy === "proposal" ? (isAr ? "جارٍ الإرسال…" : "Sending…") : (isAr ? "اقتراح" : "Propose")}</Button>
@@ -96,7 +96,7 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
             {approval.reviewNote && <p dir="auto" className="bidi-auto text-[13px] text-text-muted">{approval.reviewNote}</p>}
             {approval.resolvedBy && <p dir="auto" className="bidi-auto text-[12px] text-text-faint">{isAr ? "القرار بواسطة: " : "Decided by: "}{approval.resolvedBy}{approval.resolvedAt ? ` · ${formatRelative(approval.resolvedAt)}` : ""}</p>}
             {approval.status === "pending" && canGovern && <div className="flex flex-col gap-2">
-              <TextInput value={notes[approval.id] ?? ""} onChange={(event) => setNotes((previous) => ({ ...previous, [approval.id]: event.target.value }))} maxLength={2000} disabled={loading || busy !== null}
+              <InputField size="sm" dir="auto" value={notes[approval.id] ?? ""} onChange={(event) => setNotes((previous) => ({ ...previous, [approval.id]: event.target.value }))} maxLength={2000} disabled={loading || busy !== null}
                 aria-label={`${isAr ? "ملاحظة المراجعة: " : "Review note for "}${approval.summary}`}
                 placeholder={isAr ? "ملاحظة مراجعة اختيارية" : "Optional review note"} />
               <div className="flex gap-2">
