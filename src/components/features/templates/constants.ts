@@ -2,7 +2,9 @@
 export interface Template {
   id: string;
   name: string;
+  arName: string;
   tagline: string;
+  arTagline: string;
   colors: { name: string; hex: string }[];
   latinFamily: string;
   arabicFamily: string;
@@ -13,7 +15,9 @@ export const TEMPLATES: Template[] = [
   {
     id: "heritage-fb",
     name: "Heritage F&B",
+    arName: "مطاعم ومقاهٍ تراثية",
     tagline: "Warm, tactile, rooted in place — for restaurants, cafés and food brands.",
+    arTagline: "دافئة وملموسة ومتجذّرة في المكان، للمطاعم والمقاهي وعلامات الطعام.",
     colors: [
       { name: "Roast", hex: "#4A2E1F" },
       { name: "Cream", hex: "#F4E9D8" },
@@ -27,7 +31,9 @@ export const TEMPLATES: Template[] = [
   {
     id: "modern-tech",
     name: "Modern Tech",
+    arName: "تقنية حديثة",
     tagline: "Confident, minimal, dark-canvas — for SaaS and startups.",
+    arTagline: "واثقة وبسيطة بخلفية داكنة، للبرمجيات السحابية والشركات الناشئة.",
     colors: [
       { name: "Ink", hex: "#0B0B0F" },
       { name: "Cloud", hex: "#F5F5FA" },
@@ -41,7 +47,9 @@ export const TEMPLATES: Template[] = [
   {
     id: "boutique-retail",
     name: "Boutique Retail",
+    arName: "متاجر بوتيك",
     tagline: "Editorial, high-contrast, a little precious — for fashion and lifestyle.",
+    arTagline: "تحريرية عالية التباين وفاخرة قليلًا، للأزياء ونمط الحياة.",
     colors: [
       { name: "Blanc", hex: "#FAFAF8" },
       { name: "Noir", hex: "#1A1A1A" },
@@ -55,7 +63,9 @@ export const TEMPLATES: Template[] = [
   {
     id: "public-sector",
     name: "Public Sector / NGO",
+    arName: "قطاع حكومي وغير ربحي",
     tagline: "Accessible, trustworthy, WCAG-first — for government and nonprofit work.",
+    arTagline: "سهلة الوصول وموثوقة ومتوافقة مع WCAG أولًا، للجهات الحكومية وغير الربحية.",
     colors: [
       { name: "Navy", hex: "#1B3A5C" },
       { name: "Paper", hex: "#FFFFFF" },

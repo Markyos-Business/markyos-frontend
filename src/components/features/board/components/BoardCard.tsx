@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Avatar, IconButton } from "@/components/ui";
 import type { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type BoardCardProps = {
   ws: Workspace;
@@ -16,6 +17,7 @@ type BoardCardProps = {
 /** One brand on the board: its name, what's waiting, and the arrows that move it. */
 export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: BoardCardProps) {
   const pendingDrafts = ws.drafts.filter((d) => d.status === "pending").length;
+  const { isAr } = useInterfaceLang();
 
   return (
     <article
@@ -37,7 +39,7 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
       {pendingDrafts > 0 && (
         <div className="flex flex-wrap items-center gap-1.5">
           <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
-            {pendingDrafts} waiting
+            {isAr ? `${pendingDrafts} بانتظار القرار` : `${pendingDrafts} waiting`}
           </Link>
         </div>
       )}
@@ -47,8 +49,8 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
         {/* Buttons as well as dragging: drag-and-drop is unusable with a
             keyboard and awkward on a touch screen. */}
         <span className="ms-auto flex items-center gap-0.5">
-          <IconButton icon="angle-left" label={`Move ${ws.name} back a stage`} onClick={() => onMove(-1)} disabled={stageIndex <= 0} className="text-text-muted" />
-          <IconButton icon="angle-right" label={`Move ${ws.name} on a stage`} onClick={() => onMove(1)} disabled={stageIndex >= 5} className="text-text-muted" />
+          <IconButton icon="angle-left" label={isAr ? `إرجاع ${ws.name} مرحلة` : `Move ${ws.name} back a stage`} onClick={() => onMove(-1)} disabled={stageIndex <= 0} className="text-text-muted" />
+          <IconButton icon="angle-right" label={isAr ? `تقديم ${ws.name} مرحلة` : `Move ${ws.name} on a stage`} onClick={() => onMove(1)} disabled={stageIndex >= 5} className="text-text-muted" />
         </span>
       </div>
     </article>

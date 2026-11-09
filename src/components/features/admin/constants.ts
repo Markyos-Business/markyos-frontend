@@ -7,6 +7,10 @@ export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].label])),
   none: "No type (admins)",
 };
+export const AR_ACCOUNT_TYPE_LABELS: Record<string, string> = {
+  ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].arLabel])),
+  none: "بلا نوع (المسؤولون)",
+};
 
 /** A user's status dot; the word beside it says the same. */
 export const STATUS_TONE: Record<AdminUserStatus, BadgeTone> = {
@@ -24,11 +28,25 @@ export const STAGE_LABELS: Record<string, string> = {
   live: "Live",
   none: "No stage",
 };
+export const AR_STAGE_LABELS: Record<string, string> = {
+  discovery: "الاستكشاف",
+  strategy: "الاستراتيجية",
+  design: "التصميم",
+  review: "المراجعة",
+  delivered: "مسلَّمة",
+  live: "منشورة",
+  none: "بلا مرحلة",
+};
 
 export const PLAN_LABELS: Record<string, string> = {
   free: "Free",
   subscription: "Subscription",
   pass: "One-time pass",
+};
+export const AR_PLAN_LABELS: Record<string, string> = {
+  free: "مجانية",
+  subscription: "اشتراك",
+  pass: "تصريح لمرة واحدة",
 };
 
 /** The admin sidebar, in both languages. Each new admin page adds its link here. */

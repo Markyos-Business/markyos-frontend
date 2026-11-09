@@ -76,7 +76,7 @@ export function SignOffPanel({ ws, section, isAr }: { ws: Workspace; section: Pi
           <Icon name={pin.resolved ? "check-circle" : "map-marker"} size={13} style={{ color: pin.resolved ? "var(--success)" : "var(--warning)", marginTop: 3, flexShrink: 0 }} />
           <div className="flex-1 min-w-0">
             <span dir="auto" className="font-medium bidi-auto">{pin.authorName}</span>{" "}
-            <span style={{ color: "var(--g-text-faint)" }}>· {formatRelative(pin.createdAt)}</span>
+            <span style={{ color: "var(--g-text-faint)" }}>· {formatRelative(pin.createdAt, undefined, isAr ? "ar" : "en")}</span>
             <div dir="auto" className="bidi-auto" style={{ color: "var(--g-text-muted)" }}>{pin.note}</div>
           </div>
         </div>

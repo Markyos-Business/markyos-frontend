@@ -137,7 +137,7 @@ export function DocsTemplate(props: TemplateProps) {
         )}
         <div className="flex flex-col gap-0.5" style={{ ...gLabel, color: "var(--g-text-faint)" }}>
           <span>{isAr ? "دليل الهوية البصرية" : "Visual identity guidelines"}</span>
-          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt)}` : `Updated: ${formatRelative(ws.updatedAt)}`}</span>
+          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}` : `Updated: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}`}</span>
         </div>
 
         <nav className="flex flex-col gap-0.5">

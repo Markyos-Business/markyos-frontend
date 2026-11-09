@@ -15,7 +15,8 @@ import type { Workspace } from "@/types";
  * picking a name is not knowing which ones are gone. The check is against the
  * brands in this account, and the hint says exactly that.
  */
-export function SubdomainSection({ ws }: { ws: Workspace }) {
+export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+  const t = (en: string, ar: string) => (isAr ? ar : en);
   const { state, setSubdomain } = useApp();
   const { showToast } = useToast();
   const [draft, setDraft] = useState(ws.clientAccess.subdomain);
@@ -27,7 +28,7 @@ export function SubdomainSection({ ws }: { ws: Workspace }) {
   // in it is the wrong complaint.
   const formatError = value ? validateSubdomain(value) : null;
   const taken = !formatError && !!value && state.workspaces.some((w) => w.id !== ws.id && w.clientAccess.subdomain.toLowerCase() === value);
-  const error = formatError ?? (taken ? "Already used by another brand in your account." : null);
+  const error = formatError ?? (taken ? t("Already used by another brand in your account.", "مستخدم لعلامة أخرى في حسابك.") : null);
   const available = !!value && !error && !unchanged;
   const invalid = !!error && !unchanged;
 
@@ -36,7 +37,7 @@ export function SubdomainSection({ ws }: { ws: Workspace }) {
       const failed = setSubdomain(ws.id, "");
       if (!failed) {
         setSaved("");
-        showToast("Subdomain cleared — the client link falls back to the default.", "success");
+        showToast(t("Subdomain cleared — the client link falls back to the default.", "مُسح النطاق الفرعي، ويعود رابط العميل إلى الافتراضي."), "success");
       }
       return;
     }
@@ -47,15 +48,15 @@ export function SubdomainSection({ ws }: { ws: Workspace }) {
     }
     setSaved(value);
     setDraft(value);
-    showToast(`Claimed ${value}.markyos.app.`, "success");
+    showToast(isAr ? `تم حجز ${value}.markyos.app.` : `Claimed ${value}.markyos.app.`, "success");
   }
 
   return (
-    <Section title="Subdomain" icon="link">
+    <Section title={t("Subdomain", "النطاق الفرعي")} icon="link">
       <div className="flex flex-col gap-2.5">
         <div className="flex items-end gap-2.5">
           <InputField
-            label="Subdomain"
+            label={t("Subdomain", "النطاق الفرعي")}
             value={draft}
             dir="ltr"
             onChange={(e) => setDraft(e.target.value)}
@@ -75,17 +76,17 @@ export function SubdomainSection({ ws }: { ws: Workspace }) {
             title={
               unchanged
                 ? saved
-                  ? `${saved}.markyos.app is already claimed.`
-                  : "Type a subdomain to claim."
+                  ? isAr ? `${saved}.markyos.app محجوز بالفعل.` : `${saved}.markyos.app is already claimed.`
+                  : t("Type a subdomain to claim.", "اكتب نطاقًا فرعيًا لحجزه.")
                 : error
                   ? error
                   : value
-                    ? `Claim ${value}.markyos.app`
-                    : "Clear the subdomain"
+                    ? isAr ? `حجز ${value}.markyos.app` : `Claim ${value}.markyos.app`
+                    : t("Clear the subdomain", "مسح النطاق الفرعي")
             }
             className="shrink-0"
           >
-            {value ? "Claim" : "Clear"}
+            {value ? t("Claim", "حجز") : t("Clear", "مسح")}
           </Button>
         </div>
 
@@ -98,13 +99,17 @@ export function SubdomainSection({ ws }: { ws: Workspace }) {
           <span dir="ltr" className="font-mono text-text-secondary">
             {value || suggestSubdomain(ws.name)}.markyos.app
           </span>
-          {available && <span className="text-success">available</span>}
-          {saved && unchanged && <span className="text-text-faint">claimed</span>}
+          {available && <span className="text-success">{t("available", "متاح")}</span>}
+          {saved && unchanged && <span className="text-text-faint">{t("claimed", "محجوز")}</span>}
         </div>
 
         <span className="text-[12px] text-text-faint">
-          Checked against every brand in your account. Leave it empty and the client link stays <span className="font-mono">/v/{ws.slug}</span>. Pointing a real
-          subdomain at this build needs DNS and hosting that aren&apos;t part of it yet, so this reserves the name rather than serving from it.
+          {t("Checked against every brand in your account. Leave it empty and the client link stays", "يُتحقق منه مقابل كل علامات حسابك. اتركه فارغًا ويبقى رابط العميل")}{" "}
+          <span dir="ltr" className="font-mono">/v/{ws.slug}</span>.{" "}
+          {t(
+            "Pointing a real subdomain at this build needs DNS and hosting that aren't part of it yet, so this reserves the name rather than serving from it.",
+            "توجيه نطاق فرعي حقيقي يحتاج إلى إعداد DNS واستضافة غير متوفرين بعد، لذلك يحجز هذا الاسم ولا يخدم منه."
+          )}
         </span>
       </div>
     </Section>

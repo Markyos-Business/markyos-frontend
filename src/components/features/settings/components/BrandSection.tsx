@@ -15,8 +15,8 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const { setPrimaryLocale } = useApp();
   const { showToast } = useToast();
   return (
-    <Section title="Brand" icon="shapes">
-      <BrandNameRow ws={ws} />
+    <Section title={isAr ? "العلامة" : "Brand"} icon="shapes">
+      <BrandNameRow ws={ws} isAr={isAr} />
       {/* The brand's own language, which is a different thing from the one the
           studio reads the app in — that is a personal setting and lives in the
           top bar. It is an Owner-level decision about the deliverable: it
@@ -65,7 +65,8 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  * already be in a proposal, so a typo fix must not silently break a link
  * someone has already shared — the hint says so.
  */
-function BrandNameRow({ ws }: { ws: Workspace }) {
+function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+  const t = (en: string, ar: string) => (isAr ? ar : en);
   const { renameWorkspace } = useApp();
   const { showToast } = useToast();
   const [draft, setDraft] = useState(ws.name);
@@ -78,13 +79,13 @@ function BrandNameRow({ ws }: { ws: Workspace }) {
     }
     if (next === ws.name) return;
     renameWorkspace(ws.id, next);
-    showToast(`Renamed to ${next}. The client link is unchanged.`, "success");
+    showToast(isAr ? `أُعيدت التسمية إلى ${next}. رابط العميل لم يتغير.` : `Renamed to ${next}. The client link is unchanged.`, "success");
   }
 
   return (
     <div className="flex flex-col gap-2">
       <InputField
-        label="Brand name"
+        label={t("Brand name", "اسم العلامة")}
         value={draft}
         dir="auto"
         onChange={(e) => setDraft(e.target.value)}
@@ -93,11 +94,12 @@ function BrandNameRow({ ws }: { ws: Workspace }) {
           if (e.key === "Enter") e.currentTarget.blur();
           if (e.key === "Escape") setDraft(ws.name);
         }}
-        placeholder="e.g. Nadeen Studio"
+        placeholder={t("e.g. Nadeen Studio", "مثل: استوديو نادين")}
       />
       <span className="text-[12px] text-text-faint">
-        Shown across the app and on the client&apos;s guideline site. The client link stays <span className="font-mono">/v/{ws.slug}</span> — renaming never
-        breaks a link you&apos;ve already shared.
+        {t("Shown across the app and on the client's guideline site. The client link stays", "يظهر في التطبيق وفي موقع الدليل لدى العميل. يبقى رابط العميل")}{" "}
+        <span dir="ltr" className="font-mono">/v/{ws.slug}</span>{" "}
+        {t("— renaming never breaks a link you've already shared.", "، فإعادة التسمية لا تكسر أي رابط شاركته من قبل.")}
       </span>
     </div>
   );

@@ -7,6 +7,7 @@ import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import { lookup, planTable } from "../../utils/billing";
+import { useAccountLang } from "../../hooks/shared/useAccountLang";
 
 /**
  * Everything this account is actually paying for.
@@ -18,9 +19,10 @@ import { lookup, planTable } from "../../utils/billing";
  */
 export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
   const type = ACCOUNT_TYPES[accountTypeOf(useCurrentAccount())];
+  const { t, isAr } = useAccountLang();
   const table = planTable(type);
   const priceOf = (plan: string) => lookup(table, plan);
-  const labelOf = (plan: string) => lookup(table, plan).label;
+  const labelOf = (plan: string) => (isAr ? lookup(table, plan).arLabel : lookup(table, plan).label);
   const paid = workspaces.filter((w) => w.billing.plan !== "free");
   const subscriptions = workspaces.filter((w) => w.billing.plan === "subscription");
   const passes = workspaces.filter((w) => w.billing.plan === "pass");
@@ -30,31 +32,31 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
 
   return (
     <>
-      <Section title="Subscription" icon="credit-card">
+      <Section title={t("Subscription", "الاشتراك")} icon="credit-card">
         {subscriptions.length ? (
           <Row
-            label={`${subscriptions.length} active monthly brand plan${subscriptions.length === 1 ? "" : "s"}`}
-            hint={`$${monthly} per month across these brands.`}
-            right={<Badge tone="success">Active</Badge>}
+            label={isAr ? `${subscriptions.length} خطة شهرية مفعّلة` : `${subscriptions.length} active monthly brand plan${subscriptions.length === 1 ? "" : "s"}`}
+            hint={isAr ? `$${monthly} شهريًا لهذه العلامات.` : `$${monthly} per month across these brands.`}
+            right={<Badge tone="success">{t("Active", "مفعّلة")}</Badge>}
           />
         ) : (
           <Row
-            label="No subscription"
-            hint="Choose a Project Pass or a monthly plan from each brand's Settings."
-            right={<Badge tone="neutral">None</Badge>}
+            label={t("No subscription", "لا يوجد اشتراك")}
+            hint={t("Choose a Project Pass or a monthly plan from each brand's Settings.", "اختر تصريح مشروع أو خطة شهرية من إعدادات كل علامة.")}
+            right={<Badge tone="neutral">{t("None", "لا شيء")}</Badge>}
           />
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
-          <StatTile value={`$${monthly}`} label="Recurring, per month" />
-          <StatTile value={`$${oneTimeTotal}`} label={`One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
-          <StatTile value={String(paid.length)} label={`Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
+          <StatTile value={`$${monthly}`} label={t("Recurring, per month", "متكرر شهريًا")} />
+          <StatTile value={`$${oneTimeTotal}`} label={isAr ? `لمرة واحدة، ${passes.length} تصريح` : `One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
+          <StatTile value={String(paid.length)} label={isAr ? `مدفوعة من ${workspaces.length} علامات` : `Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
         </div>
       </Section>
 
-      <Section title="Payments by brand" icon="receipt">
+      <Section title={t("Payments by brand", "المدفوعات حسب العلامة")} icon="receipt">
         {workspaces.length === 0 ? (
-          <EmptyHint>No brands yet.</EmptyHint>
+          <EmptyHint>{t("No brands yet.", "لا توجد علامات بعد.")}</EmptyHint>
         ) : (
           <div className="flex flex-col">
             {workspaces.map((w, i) => {
@@ -90,8 +92,10 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
             what Stripe actually charged. */}
         <p className="text-caption flex items-start gap-space-3 text-text-faint">
           <Icon name="info-circle" size={16} className="shrink-0" />
-          Receipts and invoices are issued by Stripe and
-          sent to your email — this page shows what each brand is on, not a copy of those documents.
+          {t(
+            "Receipts and invoices are issued by Stripe and sent to your email — this page shows what each brand is on, not a copy of those documents.",
+            "تصدر Stripe الإيصالات والفواتير وترسلها إلى بريدك. هذه الصفحة تعرض خطة كل علامة، لا نسخة من تلك المستندات."
+          )}
         </p>
       </Section>
     </>

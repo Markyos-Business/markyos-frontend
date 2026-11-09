@@ -3,26 +3,29 @@
 import { Button, EmptyHint, Section } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { AccountPageState } from "../../hooks/useAccountPage";
+import { useAccountLang } from "../../hooks/shared/useAccountLang";
 
 /** The last 30 things that happened on the account, and the full log as JSON. */
 export function AuditLogSection({ entries, hasEntries, onExport }: AccountPageState["audit"]) {
+  const { t } = useAccountLang();
   return (
     <Section
-      title="Audit log"
+      title={t("Audit log", "سجل التدقيق")}
       icon="shield-alt"
       right={
         hasEntries && (
           <Button variant="link" onClick={onExport} className="text-overline uppercase">
-            Export JSON
+            {t("Export JSON", "تصدير JSON")}
           </Button>
         )
       }
     >
       {!hasEntries ? (
         <EmptyHint>
-          Nothing recorded yet. This fills in as you purchase plans, verify domains, resolve
-          approvals, restore versions, and change roles — a defensible record for regulated or
-          public-sector brand work.
+          {t(
+            "Nothing recorded yet. This fills in as you purchase plans, verify domains, resolve approvals, restore versions, and change roles — a defensible record for regulated or public-sector brand work.",
+            "لا يوجد شيء مسجّل بعد. يمتلئ مع شراء الخطط والتحقق من النطاقات وحسم الموافقات واستعادة الإصدارات وتغيير الأدوار، ليكون سجلًا موثوقًا لأعمال العلامات في القطاعات المنظَّمة والحكومية."
+          )}
         </EmptyHint>
       ) : (
         <div className="flex flex-col">

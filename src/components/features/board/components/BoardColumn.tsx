@@ -3,6 +3,7 @@
 import type { Workspace, WorkspaceStage } from "@/types";
 import { STAGES } from "../constants";
 import { BoardCard } from "./BoardCard";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type BoardColumnProps = {
   stage: (typeof STAGES)[number];
@@ -18,9 +19,12 @@ type BoardColumnProps = {
 
 /** One stage: its name, count and hint, and the brands in it. */
 export function BoardColumn({ stage, items, isOver, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onStep }: BoardColumnProps) {
+  const { isAr } = useInterfaceLang();
+  const t = (en: string, ar: string) => (isAr ? ar : en);
+  const label = isAr ? stage.arLabel : stage.label;
   return (
     <section
-      aria-label={`${stage.label} — ${items.length} brand${items.length === 1 ? "" : "s"}`}
+      aria-label={isAr ? `${label} — ${items.length} علامات` : `${label} — ${items.length} brand${items.length === 1 ? "" : "s"}`}
       onDragOver={(e) => {
         e.preventDefault();
         onDragOver(stage.key);
@@ -39,14 +43,14 @@ export function BoardColumn({ stage, items, isOver, onDragStart, onDragEnd, onDr
     >
       <header className="px-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[12.5px] font-semibold">{stage.label}</span>
+          <span className="text-[12.5px] font-semibold">{label}</span>
           <span className="rounded bg-surface-3 px-1.5 py-[2px] text-[11px] font-semibold text-text-muted">{items.length}</span>
         </div>
-        <div className="mt-0.5 text-[11px] text-text-faint">{stage.hint}</div>
+        <div className="mt-0.5 text-[11px] text-text-faint">{isAr ? stage.arHint : stage.hint}</div>
       </header>
 
       {items.length === 0 ? (
-        <p className="px-1 py-3 text-[11.5px] text-text-faint">Nothing here.</p>
+        <p className="px-1 py-3 text-[11.5px] text-text-faint">{t("Nothing here.", "لا شيء هنا.")}</p>
       ) : (
         items.map((ws) => (
           <BoardCard

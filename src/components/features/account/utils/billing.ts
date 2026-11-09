@@ -4,10 +4,10 @@ import type { Workspace } from "@/types";
 type Plan = Workspace["billing"]["plan"];
 
 /** What each plan is called and costs for this account type, in the units checkout charges. */
-export const planTable = (type: AccountTypeInfo): Record<Plan, { label: string; amount: number; note: string }> => ({
-  free: { label: "Free", amount: 0, note: "" },
-  pass: { label: "Project Pass", amount: type.prices.pass, note: "one-time" },
-  subscription: { label: `${type.label} plan`, amount: type.prices.subscription, note: "per month" },
+export const planTable = (type: AccountTypeInfo): Record<Plan, { label: string; arLabel: string; amount: number; note: string }> => ({
+  free: { label: "Free", arLabel: "مجانية", amount: 0, note: "" },
+  pass: { label: "Project Pass", arLabel: "تصريح المشروع", amount: type.prices.pass, note: "one-time" },
+  subscription: { label: `${type.label} plan`, arLabel: `خطة ${type.arLabel}`, amount: type.prices.subscription, note: "per month" },
 });
 
 /*
@@ -25,4 +25,4 @@ export const planTable = (type: AccountTypeInfo): Record<Plan, { label: string; 
  * about, rather than a page that doesn't load.
  */
 export const lookup = (table: ReturnType<typeof planTable>, plan: string) =>
-  table[plan as Plan] ?? { label: plan, amount: 0, note: "" };
+  table[plan as Plan] ?? { label: plan, arLabel: plan, amount: 0, note: "" };

@@ -38,7 +38,12 @@ export function initialsFor(name: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-export function formatRelative(ts: number, now: number = Date.now(), lang: "en" | "ar" = "en"): string {
+/** The page's own language, from <html lang>; English before there is a page. */
+const documentLang = (): "en" | "ar" =>
+  typeof document !== "undefined" && document.documentElement.lang === "ar" ? "ar" : "en";
+
+/** "5m ago" / "قبل 5 د", in the page's language unless one is given. */
+export function formatRelative(ts: number, now: number = Date.now(), lang: "en" | "ar" = documentLang()): string {
   const ar = lang === "ar";
   const diffMs = now - ts;
   const sec = Math.round(diffMs / 1000);

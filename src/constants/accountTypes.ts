@@ -29,6 +29,7 @@ type AccountTypeInfo = {
   arHome: { title: string; noun: string; nounPlural: string };
   /** The first screen after signup, and every new brand after it. */
   newBrand: { title: string; description: string };
+  arNewBrand: { title: string; description: string };
 };
 
 /**
@@ -52,6 +53,7 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One workspace per client brand. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، ويمكنك إعادة تسميتها لاحقًا." },
   },
   freelancer: {
     label: "Freelancer",
@@ -64,6 +66,7 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One workspace per client brand, up to 3. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، حتى 3 علامات، ويمكنك إعادة تسميتها لاحقًا." },
   },
   company: {
     label: "Company",
@@ -78,6 +81,10 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     newBrand: {
       title: "Name your brand",
       description: "Its guideline, departments and governance live in one workspace. You can rename it later.",
+    },
+    arNewBrand: {
+      title: "سمِّ علامتك",
+      description: "دليلها وأقسامها وحوكمتها في مساحة عمل واحدة، ويمكنك إعادة تسميتها لاحقًا.",
     },
   },
 };

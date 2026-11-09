@@ -99,10 +99,13 @@ export default function WorkspaceLayout({
     if (!ws) return;
     const root = document.documentElement;
     const before = root.getAttribute("dir");
+    const beforeLang = root.getAttribute("lang");
     root.setAttribute("dir", isAr ? "rtl" : "ltr");
+    root.setAttribute("lang", isAr ? "ar" : "en");
     return () => {
       if (before) root.setAttribute("dir", before);
       else root.removeAttribute("dir");
+      if (beforeLang) root.setAttribute("lang", beforeLang);
     };
   }, [ws, isAr]);
 

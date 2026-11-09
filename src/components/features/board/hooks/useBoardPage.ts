@@ -6,6 +6,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { Workspace, WorkspaceStage } from "@/types";
 import { STAGES } from "../constants";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /**
  * Every brand the studio is working on, by where it has got to.
@@ -23,6 +24,7 @@ export function useBoardPage() {
   const { state, hydrated, myWorkspaces, setWorkspaceStage } = useApp();
   const router = useRouter();
   const { showToast } = useToast();
+  const { isAr } = useInterfaceLang();
   const [dragging, setDragging] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<WorkspaceStage | null>(null);
 
@@ -43,7 +45,8 @@ export function useBoardPage() {
   function move(ws: Workspace, stage: WorkspaceStage) {
     if (ws.stage === stage) return;
     setWorkspaceStage(ws.id, stage);
-    showToast(`${ws.name} → ${STAGES.find((s) => s.key === stage)!.label}`, "success");
+    const next = STAGES.find((s) => s.key === stage)!;
+    showToast(`${ws.name} → ${isAr ? next.arLabel : next.label}`, "success");
   }
 
   function step(ws: Workspace, dir: 1 | -1) {

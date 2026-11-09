@@ -159,7 +159,7 @@ export function StudioAtlas(props: TemplateProps) {
         )}
         <div className="flex flex-col gap-0.5 text-[10px] font-semibold uppercase" style={{ letterSpacing: ".08em", color: "var(--g-text-faint)" }}>
           <span>{isAr ? "دليل الهوية البصرية" : "Visual identity guidelines"}</span>
-          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt)}` : `Updated: ${formatRelative(ws.updatedAt)}`}</span>
+          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}` : `Updated: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}`}</span>
         </div>
 
         <nav className="flex flex-col gap-0.5">
@@ -554,7 +554,7 @@ function Footer({ ws, isAr }: { ws: TemplateProps["ws"]; isAr: boolean }) {
     <div className="px-8 md:px-16 py-14 flex flex-col gap-6 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <div>
         <div className="font-semibold text-[15px]" style={{ fontFamily: "var(--font-display)" }}>{isAr ? "دليل الهوية البصرية" : "Visual Identity Guidelines"}</div>
-        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "محدَّث" : "Updated"} {formatRelative(ws.updatedAt)}</div>
+        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "محدَّث" : "Updated"} {formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}</div>
       </div>
 
       {contactEmail && (

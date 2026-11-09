@@ -74,7 +74,8 @@ async function loadPdfjs() {
   return pdfjsLib;
 }
 
-async function analyzePdf(file: File, onProgress?: (label: string) => void): Promise<DocumentAnalysis> {
+async function analyzePdf(file: File, onProgress?: (label: string) => void, isAr = false): Promise<DocumentAnalysis> {
+  const t = (en: string, ar: string) => (isAr ? ar : en);
   const pdfjsLib = await loadPdfjs();
   const buffer = await file.arrayBuffer();
   const doc = await pdfjsLib.getDocument({ data: buffer }).promise;
@@ -86,7 +87,7 @@ async function analyzePdf(file: File, onProgress?: (label: string) => void): Pro
   /** Internal id → the family name the document declares, resolved as pages load. */
   const fontLabels = new Map<string, string>();
 
-  onProgress?.(`Reading ${doc.numPages} pages…`);
+  onProgress?.(isAr ? `جارٍ قراءة ${doc.numPages} صفحات…` : `Reading ${doc.numPages} pages…`);
 
   for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
     const page = await doc.getPage(pageNum);
@@ -162,7 +163,9 @@ async function analyzePdf(file: File, onProgress?: (label: string) => void): Pro
   }
   if (unresolved > 0) {
     notes.push(
-      `${unresolved} font${unresolved === 1 ? "" : "s"} couldn't be named — the document doesn't declare a family for them.`
+      isAr
+        ? `تعذّرت تسمية ${unresolved} من الخطوط، فالمستند لا يصرّح بعائلتها.`
+        : `${unresolved} font${unresolved === 1 ? "" : "s"} couldn't be named — the document doesn't declare a family for them.`
     );
   }
 
@@ -183,10 +186,10 @@ async function analyzePdf(file: File, onProgress?: (label: string) => void): Pro
     }))
     .sort((a, b) => b.arabicChars + b.latinChars - (a.arabicChars + a.latinChars));
 
-  if (fonts.length === 0) notes.push("No embedded fonts declared — this PDF may be a flattened export.");
+  if (fonts.length === 0) notes.push(t("No embedded fonts declared — this PDF may be a flattened export.", "لا خطوط مضمّنة مصرّح بها، وقد يكون هذا الملف تصديرًا مسطّحًا."));
 
   // Palette — rendered pages, sampled pixels.
-  onProgress?.("Sampling the pages for colour…");
+  onProgress?.(t("Sampling the pages for colour…", "جارٍ أخذ عينات الألوان من الصفحات…"));
   const pagesToRender = Math.min(PALETTE_PAGES, doc.numPages);
   const found = new Map<string, ExtractedColor>();
   let rendered = 0;
@@ -214,15 +217,15 @@ async function analyzePdf(file: File, onProgress?: (label: string) => void): Pro
         if (!prev || c.share > prev.share) found.set(c.hex, c);
       }
     } catch {
-      notes.push(`Page ${pageNum} couldn't be rendered for colour sampling.`);
+      notes.push(isAr ? `تعذّر عرض الصفحة ${pageNum} لأخذ عينات الألوان.` : `Page ${pageNum} couldn't be rendered for colour sampling.`);
     }
   }
 
   const colors = [...found.values()].sort((a, b) => b.share - a.share).slice(0, 10);
-  if (colors.length === 0 && rendered > 0) notes.push("No colour covered enough of a page to read as a brand colour.");
+  if (colors.length === 0 && rendered > 0) notes.push(t("No colour covered enough of a page to read as a brand colour.", "لم يغطِّ أي لون مساحة كافية ليُعدّ لونًا للعلامة."));
 
   const text = lines.join("\n");
-  onProgress?.("Matching strategy headings…");
+  onProgress?.(t("Matching strategy headings…", "جارٍ مطابقة عناوين الاستراتيجية…"));
   const strategy = parseStrategyDocument(text);
 
   return {
@@ -237,7 +240,7 @@ async function analyzePdf(file: File, onProgress?: (label: string) => void): Pro
   };
 }
 
-async function analyzeDocx(file: File): Promise<DocumentAnalysis> {
+async function analyzeDocx(file: File, isAr = false): Promise<DocumentAnalysis> {
   const text = await extractText(file);
   return {
     fileName: file.name,
@@ -247,23 +250,28 @@ async function analyzeDocx(file: File): Promise<DocumentAnalysis> {
     fonts: [],
     pagesRendered: 0,
     pageCount: 0,
-    notes: [".docx carries no page render and no embedded fonts — colour and type were skipped."],
+    notes: [
+      isAr
+        ? "ملفات ‎.docx لا تحمل صفحات معروضة ولا خطوطًا مضمّنة، لذلك تُخطّيت الألوان والخطوط."
+        : ".docx carries no page render and no embedded fonts — colour and type were skipped.",
+    ],
   };
 }
 
 export async function analyzeBrandDocument(
   file: File,
-  onProgress?: (label: string) => void
+  onProgress?: (label: string) => void,
+  isAr = false
 ): Promise<DocumentAnalysis> {
   const name = file.name.toLowerCase();
-  if (name.endsWith(".pdf") || file.type === "application/pdf") return analyzePdf(file, onProgress);
+  if (name.endsWith(".pdf") || file.type === "application/pdf") return analyzePdf(file, onProgress, isAr);
   if (
     name.endsWith(".docx") ||
     file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ) {
-    return analyzeDocx(file);
+    return analyzeDocx(file, isAr);
   }
-  throw new Error("Unsupported file — upload a .pdf or .docx.");
+  throw new Error(isAr ? "نوع ملف غير مدعوم، ارفع ملف ‎.pdf أو ‎.docx." : "Unsupported file — upload a .pdf or .docx.");
 }
 
 /**

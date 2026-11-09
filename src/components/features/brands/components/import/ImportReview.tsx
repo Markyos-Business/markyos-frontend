@@ -5,6 +5,7 @@ import type { ImportReviewProps } from "../../hooks/import/useBrandImport";
 import { strategyFieldCount } from "../../services/brandImport";
 import { FontRow } from "./FontRow";
 import { ImportBlank, ImportGroup } from "./ImportGroup";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /** Everything read from the file, to keep or drop before the brand is created. */
 export function ImportReview({
@@ -21,14 +22,20 @@ export function ImportReview({
   onConfirm,
 }: ImportReviewProps) {
   const found = strategyFieldCount(analysis.strategy);
+  const { isAr } = useInterfaceLang();
+  const t = (en: string, ar: string) => (isAr ? ar : en);
 
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="mb-space-2 text-h2 font-medium">Here&apos;s what&apos;s actually in the file</h1>
+        <h1 className="mb-space-2 text-h2 font-medium">{t("Here's what's actually in the file", "هذا ما في الملف فعلًا")}</h1>
         <p className="text-body text-text-muted">
           {analysis.fileName}
-          {analysis.pageCount > 0 && ` · ${analysis.pageCount} pages, ${analysis.pagesRendered} sampled for colour`}. Nothing is saved until you confirm.
+          {analysis.pageCount > 0 &&
+            (isAr
+              ? ` · ${analysis.pageCount} صفحات، أُخذت عينات الألوان من ${analysis.pagesRendered}`
+              : ` · ${analysis.pageCount} pages, ${analysis.pagesRendered} sampled for colour`)}
+          . {t("Nothing is saved until you confirm.", "لا يُحفظ شيء حتى تؤكد.")}
         </p>
       </div>
 
@@ -43,14 +50,14 @@ export function ImportReview({
         </div>
       )}
 
-      <InputField label="Brand name" value={importName} onChange={(e) => onName(e.target.value)} />
+      <InputField label={t("Brand name", "اسم العلامة")} dir="auto" value={importName} onChange={(e) => onName(e.target.value)} />
 
       <ImportGroup
-        title={`Colours measured from the pages (${analysis.colors.length})`}
-        hint="Sampled from the rendered pixels, with the share of the page each covers. Tap to include or drop."
+        title={isAr ? `ألوان مقيسة من الصفحات (${analysis.colors.length})` : `Colours measured from the pages (${analysis.colors.length})`}
+        hint={t("Sampled from the rendered pixels, with the share of the page each covers. Tap to include or drop.", "مأخوذة من بكسلات الصفحات مع نسبة ما يغطيه كل لون. انقر للإضافة أو الاستبعاد.")}
       >
         {analysis.colors.length === 0 ? (
-          <ImportBlank>No colour covered enough of a page to read as a brand colour.</ImportBlank>
+          <ImportBlank>{t("No colour covered enough of a page to read as a brand colour.", "لم يغطِّ أي لون مساحة كافية ليُعدّ لونًا للعلامة.")}</ImportBlank>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
             {analysis.colors.map((c) => {
@@ -68,7 +75,7 @@ export function ImportReview({
                   <div className="h-10" style={{ background: c.hex }} />
                   <div className="px-2 py-1.5">
                     <div className="truncate text-caption font-medium">{c.name}</div>
-                    <div className="font-mono text-caption text-text-faint">
+                    <div dir="ltr" className="font-mono text-caption text-text-faint">
                       {c.hex.toUpperCase()} · {(c.share * 100).toFixed(0)}%
                     </div>
                   </div>
@@ -80,25 +87,25 @@ export function ImportReview({
       </ImportGroup>
 
       <ImportGroup
-        title={`Fonts the file embeds (${analysis.fonts.length})`}
-        hint="Which script each one sets is counted from the characters it was actually used for, not guessed from its name."
+        title={isAr ? `الخطوط المضمّنة في الملف (${analysis.fonts.length})` : `Fonts the file embeds (${analysis.fonts.length})`}
+        hint={t("Which script each one sets is counted from the characters it was actually used for, not guessed from its name.", "تُحدَّد كتابة كل خط من الحروف التي استُخدم لها فعلًا، لا من اسمه.")}
       >
         {analysis.fonts.length === 0 ? (
-          <ImportBlank>This file declares no embedded fonts.</ImportBlank>
+          <ImportBlank>{t("This file declares no embedded fonts.", "لا يصرّح هذا الملف بأي خطوط مضمّنة.")}</ImportBlank>
         ) : (
           <div className="flex flex-col gap-3">
-            <FontRow label="Latin" fonts={analysis.fonts} value={latinFont} onChange={onLatinFont} />
-            <FontRow label="Arabic" fonts={analysis.fonts} value={arabicFont} onChange={onArabicFont} />
+            <FontRow script="latin" label={t("Latin", "اللاتينية")} fonts={analysis.fonts} value={latinFont} onChange={onLatinFont} />
+            <FontRow script="arabic" label={t("Arabic", "العربية")} fonts={analysis.fonts} value={arabicFont} onChange={onArabicFont} />
           </div>
         )}
       </ImportGroup>
 
       <ImportGroup
-        title={`Strategy headings matched (${found} of ${STRATEGY_LABELS.length})`}
-        hint="Only headings that literally appear in the document. A field nothing was found for stays empty rather than being filled with a guess."
+        title={isAr ? `عناوين استراتيجية مطابقة (${found} من ${STRATEGY_LABELS.length})` : `Strategy headings matched (${found} of ${STRATEGY_LABELS.length})`}
+        hint={t("Only headings that literally appear in the document. A field nothing was found for stays empty rather than being filled with a guess.", "العناوين الموجودة حرفيًا في المستند فقط. الحقل الذي لم يُعثر له على شيء يبقى فارغًا بدل ملئه بتخمين.")}
       >
         <div className="flex flex-wrap gap-1.5">
-          {STRATEGY_LABELS.map(({ key, label }) => {
+          {STRATEGY_LABELS.map(({ key, label, arLabel }) => {
             const value = analysis.strategy[key];
             const has = Array.isArray(value) ? value.length > 0 : !!value;
             return (
@@ -108,7 +115,7 @@ export function ImportReview({
                 title={typeof value === "string" ? value.slice(0, 200) : undefined}
               >
                 <Icon name={has ? "check" : "times"} size={11} />
-                {label}
+                {isAr ? arLabel : label}
                 {Array.isArray(value) && value.length > 0 && ` · ${value.length}`}
               </span>
             );
@@ -118,10 +125,10 @@ export function ImportReview({
 
       <div className="mt-1 flex gap-2.5">
         <Button variant="outline" onClick={onReset}>
-          Start over
+          {t("Start over", "البدء من جديد")}
         </Button>
         <Button variant="primary" onClick={onConfirm}>
-          Create workspace from this
+          {t("Create workspace from this", "إنشاء مساحة عمل من هذا")}
         </Button>
       </div>
     </div>
