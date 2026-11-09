@@ -55,14 +55,8 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
     if (key === "departments") return workspace.departmentViews.length || undefined;
     // A queue nobody can see the depth of is a queue that stops being worked.
     if (key === "drafts") return workspace.drafts.filter((d) => d.status === "pending").length || undefined;
-    if (key === "moodboard") {
-      return (
-        workspace.moodboards.reduce(
-          (n, b) => n + b.zones.reduce((z, zone) => z + zone.items.length, 0),
-          0,
-        ) || undefined
-      );
-    }
+    // Boards are projects, so the count is how many there are.
+    if (key === "moodboard") return workspace.moodboards.length || undefined;
     if (key === "team") {
       const pending = workspace.approvals.filter((a) => a.status === "pending").length;
       return pending || undefined;

@@ -701,6 +701,8 @@ export interface Moodboard {
   id: string;
   title: string;
   createdAt: number;
+  /** The last change to anything on it. Absent until a board is first edited. */
+  updatedAt?: number;
   /** The template it was made from, so zone copy is looked up rather than copied. */
   templateKey?: string;
   zones: MoodboardZone[];

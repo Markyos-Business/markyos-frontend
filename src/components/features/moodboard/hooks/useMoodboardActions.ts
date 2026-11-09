@@ -7,14 +7,17 @@ import type { Moodboard, MoodboardItem, MoodboardZone, Workspace } from "@/types
 import type { ZoneAction } from "../components/Zone";
 import { fileToDownscaledDataUrl } from "../model/imageDownscale";
 import { sampleImage } from "../model/sampleImage";
+import { holdUploads } from "../model/pendingUploads";
 import { zoneForKind } from "../model/zones";
 
 type MoodboardActionsArgs = {
   ws: Workspace;
   board: Moodboard | null;
   isAr: boolean;
-  onActive: (id: string | null) => void;
-  onPicking: (picking: boolean) => void;
+  /** A board was made from here (an upload with none open): go to it. */
+  onBoardMade: (id: string) => void;
+  /** The open board was deleted: back to the projects page. */
+  onBoardGone: () => void;
   /** The hidden file input uploads go through; owned by the view that renders it. */
   fileRef: RefObject<HTMLInputElement | null>;
 };
@@ -24,7 +27,7 @@ type MoodboardActionsArgs = {
  * restore cards, upload, read colours out of an image, propose a zone to
  * Drafts, and rename or remove zones and boards.
  */
-export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, fileRef }: MoodboardActionsArgs) {
+export function useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone, fileRef }: MoodboardActionsArgs) {
   const {
     addAsset,
     createMoodboard,
@@ -52,9 +55,7 @@ export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, file
 
   function makeBoard(templateKey: string, title: string) {
     const id = createMoodboard(ws.id, title, templateKey);
-    onActive(id);
-    onPicking(false);
-    showToast(isAr ? "تم إنشاء اللوح." : "Board created — start filling the zones.", "success");
+    onBoardMade(id);
   }
 
   // ------------------------------------------------------------- adding ----
@@ -179,7 +180,7 @@ export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, file
     );
   }
 
-  async function handleUpload(files: FileList, intoZoneId?: string | null) {
+  async function handleUpload(files: FileList | File[], intoZoneId?: string | null) {
     if (intoZoneId !== undefined) uploadZoneRef.current = intoZoneId;
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
     if (list.length === 0) {
@@ -189,15 +190,11 @@ export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, file
 
     const target = board;
     if (!target) {
+      // No board open: make one and take the files to it, where the board page
+      // picks them up (model/pendingUploads.ts).
       const id = createMoodboard(ws.id, isAr ? "استكشاف" : "Exploration", "brand-identity");
-      onActive(id);
-      // The board is created in the same tick; the next render has it. Bail
-      // rather than guess at its zone ids, and say so — silently dropping the
-      // files the person just chose would be worse than one more click.
-      showToast(
-        isAr ? "تم إنشاء لوح — أعد رفع الصور فيه." : "Created a board — drop the images in again.",
-        "success",
-      );
+      holdUploads(id, list);
+      onBoardMade(id);
       return;
     }
 
@@ -491,7 +488,7 @@ export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, file
     });
     if (okToDelete) {
       deleteMoodboard(ws.id, board.id);
-      onActive(null);
+      onBoardGone();
       showToast(isAr ? "حُذف اللوح — الصور محفوظة." : "Board deleted — images kept.");
     }
   }
@@ -515,7 +512,7 @@ export function useMoodboardActions({ ws, board, isAr, onActive, onPicking, file
     makeBoard,
     addCard: (zoneId: string, kind: MoodboardItem["kind"], at?: { x: number; y: number }) => void addCard(zoneId, kind, at),
     removeItems: handleRemoveItem,
-    upload: (files: FileList, intoZoneId?: string | null) => void handleUpload(files, intoZoneId),
+    upload: (files: FileList | File[], intoZoneId?: string | null) => void handleUpload(files, intoZoneId),
     sampleOne: (url: string) => void sampleOne(url),
     renameZone: (zone: MoodboardZone) => void renameZone(zone),
     removeZone: (zone: MoodboardZone) => void removeZone(zone),

@@ -1,33 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useBrandPage } from "@/contexts/pageGuards";
-import type { Moodboard } from "@/types";
 import { PAGE_SECTION } from "../constants";
+import { boardHref } from "./projects/useMoodboardProjectsPage";
 import { useMoodboardFullscreen } from "./useMoodboardFullscreen";
 
 /**
- * The moodboard page: which board is open, whether a new one is being picked,
- * and how much of the window the board has.
+ * One board, opened as its own project at /w/<slug>/moodboard/<boardId>: the
+ * board, how much of the window it has, and the way back to all boards.
  */
-export function useMoodboardPage(slug: string) {
+export function useMoodboardPage(slug: string, boardId: string) {
   const page = useBrandPage(slug);
-  const ws = page?.workspace;
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [picking, setPicking] = useState(false);
+  const router = useRouter();
   const { fullscreen, applyFullscreen } = useMoodboardFullscreen();
-
-  const board: Moodboard | null = useMemo(() => {
-    if (!ws) return null;
-    return ws.moodboards.find((b) => b.id === activeId) ?? ws.moodboards[0] ?? null;
-  }, [ws, activeId]);
+  const ws = page?.workspace;
 
   if (!page || !ws) return null;
+  const board = ws.moodboards.find((b) => b.id === boardId) ?? null;
+  const allBoards = `/w/${ws.slug}/moodboard`;
   // A board made before the canvas existed has no `view`. The canvas is what a
   // moodboard is, so that is the default rather than the fallback.
   const view = board?.view ?? "canvas";
   /** The canvas is showing, so the page chrome gets out of its way. */
-  const compact = !!board && !picking && view === "canvas";
+  const compact = !!board && view === "canvas";
   /** Full screen only means anything while the canvas is the thing on screen. */
   const immersive = compact && fullscreen;
 
@@ -42,9 +38,9 @@ export function useMoodboardPage(slug: string) {
       view,
       compact,
       immersive,
-      picking,
-      onPicking: setPicking,
-      onActive: setActiveId,
+      allBoards,
+      onBoardMade: (id: string) => router.push(boardHref(ws.slug, id)),
+      onBoardGone: () => router.push(allBoards),
       fullscreen,
       onFullscreen: applyFullscreen,
     },

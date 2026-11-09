@@ -1,17 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { EmptyState, Icon } from "@/components/ui";
 import { useApp } from "@/contexts/AppContext";
 import type { MoodboardZone } from "@/types";
 import type { MoodboardPageView } from "../hooks/useMoodboardPage";
 import { useMoodboardActions } from "../hooks/useMoodboardActions";
+import { takeUploads } from "../model/pendingUploads";
 import { zoneForKind } from "../model/zones";
-import { BoardSwitcher } from "./BoardSwitcher";
 import { BoardToolbar } from "./BoardToolbar";
 import { Canvas } from "./Canvas";
 import { MoodboardFootnote } from "./MoodboardFootnote";
-import { MoodboardIntro } from "./MoodboardIntro";
-import { TemplatePicker } from "./TemplatePicker";
 import { Zone } from "./Zone";
 
 /**
@@ -27,7 +27,7 @@ import { Zone } from "./Zone";
  * is typed it can turn its cards into a proposal. A palette zone knows its
  * cards are colours, so it can offer them to Visual Identity as a Draft.
  */
-export function MoodboardView({ ws, isAr, board, view, compact, immersive, picking, onPicking, onActive, fullscreen, onFullscreen }: MoodboardPageView) {
+export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBoards, onBoardMade, onBoardGone, fullscreen, onFullscreen }: MoodboardPageView) {
   const {
     patchMoodboardZone,
     updateMoodboardItem,
@@ -40,8 +40,16 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, picki
     setMoodboardView,
   } = useApp();
   const fileRef = useRef<HTMLInputElement>(null);
-  const actions = useMoodboardActions({ ws, board, isAr, onActive, onPicking, fileRef });
+  const actions = useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone, fileRef });
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  // Images chosen on the projects page before this board existed land here.
+  const boardId = board?.id;
+  const upload = actions.upload;
+  useEffect(() => {
+    if (!boardId) return;
+    const held = takeUploads(boardId);
+    if (held?.length) upload(held);
+  }, [boardId, upload]);
   const [shortlistOnly, setShortlistOnly] = useState(false);
   /** The cards the canvas has selected, for nudging, deleting and connecting. */
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -58,16 +66,13 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, picki
         immersive ? "gap-0 overflow-hidden p-0" : compact ? "gap-3 overflow-hidden px-7 py-4" : "gap-5 overflow-auto px-7 py-6.5"
       }`}
     >
-      <MoodboardIntro isAr={isAr} compact={compact} hidden={immersive} />
-      <BoardSwitcher
-        boards={ws.moodboards}
-        activeId={board?.id}
-        isAr={isAr}
-        picking={picking}
-        hidden={immersive}
-        onActive={onActive}
-        onTogglePicking={() => onPicking(!picking)}
-      />
+      {/* The way back to all boards, and which board this is. */}
+      <div className={`shrink-0 items-center gap-space-3 ${immersive ? "hidden" : "flex"}`}>
+        <Link href={allBoards} className="mk-linkbtn flex items-center gap-space-2 text-caption font-medium text-text-muted">
+          <Icon name="angle-left" size={16} />
+          {isAr ? "كل الألواح" : "All boards"}
+        </Link>
+      </div>
 
       {/* Outside the board on purpose: uploading with no board yet creates
           one, so the input has to exist before the first board does. */}
@@ -83,9 +88,15 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, picki
         }}
       />
 
-      {(picking || !board) && <TemplatePicker isAr={isAr} onPick={actions.makeBoard} onUpload={() => fileRef.current?.click()} hasBoard={!!board} />}
+      {!board && (
+        <EmptyState
+          icon="unlink"
+          title={isAr ? "هذا اللوح غير موجود" : "This board doesn't exist"}
+          description={isAr ? "ربما حُذف. ارجع إلى كل الألواح." : "It may have been deleted. Go back to all boards."}
+        />
+      )}
 
-      {board && !picking && (
+      {board && (
         <>
           <BoardToolbar
             board={board}

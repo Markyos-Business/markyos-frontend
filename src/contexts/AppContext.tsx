@@ -321,6 +321,8 @@ interface AppContextValue {
   createMoodboard: (workspaceId: string, title: string, templateKey?: string) => string;
   renameMoodboard: (workspaceId: string, boardId: string, title: string) => void;
   deleteMoodboard: (workspaceId: string, boardId: string) => void;
+  /** A copy of a board with fresh ids, placed first; returns its id. */
+  duplicateMoodboard: (workspaceId: string, boardId: string, title: string) => string | null;
   addMoodboardZone: (workspaceId: string, boardId: string, title: string, kind?: ZoneKind) => void;
   patchMoodboardZone: (
     workspaceId: string,
@@ -1758,7 +1760,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const patchMoodboard = useCallback(
     (workspaceId: string, boardId: string, fn: (b: Moodboard) => Moodboard) => {
       mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, { moodboards: ws.moodboards.map((b) => (b.id === boardId ? fn(b) : b)) })
+        // Stamped here, the one door every change to a board goes through, so
+        // the projects page can say when each board was last worked on.
+        touchWorkspace(ws, { moodboards: ws.moodboards.map((b) => (b.id === boardId ? { ...fn(b), updatedAt: Date.now() } : b)) })
       );
     },
     [mutateWorkspace, touchWorkspace]
@@ -1769,6 +1773,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       patchMoodboard(workspaceId, boardId, (b) => ({ ...b, title }));
     },
     [patchMoodboard]
+  );
+
+  const duplicateMoodboard = useCallback(
+    (workspaceId: string, boardId: string, title: string): string | null => {
+      const ws = stateRef.current.workspaces.find((w) => w.id === workspaceId);
+      const source = ws?.moodboards.find((b) => b.id === boardId);
+      if (!source) return null;
+      const id = uid();
+      // Every card gets a new id, and connections follow their cards, so the
+      // copy can be edited without touching the original.
+      const itemIds = new Map<string, string>();
+      const zones = source.zones.map((z) => ({
+        ...z,
+        id: uid(),
+        items: z.items.map((i) => {
+          const next = uid();
+          itemIds.set(i.id, next);
+          return { ...i, id: next, votes: [] };
+        }),
+      }));
+      const edges = (source.edges ?? [])
+        .filter((e) => itemIds.has(e.from) && itemIds.has(e.to))
+        .map((e) => ({ ...e, id: uid(), from: itemIds.get(e.from)!, to: itemIds.get(e.to)! }));
+      const now = Date.now();
+      mutateWorkspace(workspaceId, (w) =>
+        touchWorkspace(w, { moodboards: [{ ...source, id, title, createdAt: now, updatedAt: now, zones, edges }, ...w.moodboards] })
+      );
+      return id;
+    },
+    [mutateWorkspace, touchWorkspace]
   );
 
   const deleteMoodboard = useCallback(
@@ -3568,6 +3602,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createMoodboard,
       renameMoodboard,
       deleteMoodboard,
+      duplicateMoodboard,
       addMoodboardZone,
       patchMoodboardZone,
       removeMoodboardZone,
@@ -3725,6 +3760,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createMoodboard,
       renameMoodboard,
       deleteMoodboard,
+      duplicateMoodboard,
       addMoodboardZone,
       patchMoodboardZone,
       removeMoodboardZone,

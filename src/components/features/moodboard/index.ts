@@ -5,6 +5,8 @@ export { MoodboardView } from "./components/MoodboardView";
 export { Zone } from "./components/Zone";
 export type { ZoneAction } from "./components/Zone";
 export { useMoodboardPage } from "./hooks/useMoodboardPage";
+export { MoodboardProjectsView } from "./components/projects/MoodboardProjectsView";
+export { useMoodboardProjectsPage } from "./hooks/projects/useMoodboardProjectsPage";
 export { fileToDownscaledDataUrl } from "./model/imageDownscale";
 export { sampleImage } from "./model/sampleImage";
 export { MOODBOARD_TEMPLATES } from "./model/templates";
