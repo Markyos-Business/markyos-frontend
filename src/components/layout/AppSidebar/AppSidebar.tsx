@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
@@ -86,6 +86,15 @@ export function AppSidebar({
   // On screen and settled: from the frame after mount, collapsing animates.
   // Before that, the remembered state just applies, so a page load never plays it.
   const [ready, setReady] = useState(false);
+  // Labels slide in only when the person opens the rail, never on a load.
+  const [opened, setOpened] = useState(false);
+  const toggle = useCallback(
+    (next: boolean) => {
+      if (!next) setOpened(true);
+      setCollapsed(next);
+    },
+    [setCollapsed]
+  );
   useEffect(() => {
     const frame = requestAnimationFrame(() => setReady(true));
     return () => cancelAnimationFrame(frame);
@@ -104,11 +113,11 @@ export function AppSidebar({
       const el = document.activeElement as HTMLElement | null;
       if (el && (el.isContentEditable || el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
       e.preventDefault();
-      setCollapsed(!collapsed);
+      toggle(!collapsed);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [collapsed, setCollapsed, inDrawer]);
+  }, [collapsed, toggle, inDrawer]);
 
   function renderItem(item: SidebarItem, extra = "") {
     const { active, badge, label: name } = item;
@@ -135,9 +144,9 @@ export function AppSidebar({
           {!collapsed && (
             <>
               {/* Slide in as the rail opens; on collapse they're gone at once, before the width finishes. */}
-              <span className={`flex-1 truncate text-body font-medium ${ready ? "animate-label-in" : ""}`}>{name}</span>
+              <span className={`flex-1 truncate text-body font-medium ${opened ? "animate-label-in" : ""}`}>{name}</span>
               {badge !== undefined && (
-                <span className={ready ? "animate-label-in" : undefined}>
+                <span className={opened ? "animate-label-in" : undefined}>
                   <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>
                 </span>
               )}
@@ -194,7 +203,7 @@ export function AppSidebar({
           {!collapsed && titleBadge}
         </Link>
         {!collapsed && !inDrawer && (
-          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => setCollapsed(true)} />
+          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(true)} />
         )}
       </div>
 
@@ -202,7 +211,7 @@ export function AppSidebar({
           a button that does nothing is worse than no button. */}
       {collapsed && !narrow && (
         <div className="-mt-space-5 flex shrink-0 justify-center">
-          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => setCollapsed(false)} />
+          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(false)} />
         </div>
       )}
 
