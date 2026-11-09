@@ -6,6 +6,7 @@ import { AccountMenu } from "@/components/features/account";
 import { STUDIO_LINKS } from "../constants";
 import type { BRANDS_COPY } from "../copy";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
+import { MarkyosLogo } from "@/components/ui";
 
 type BrandsHeaderProps = { query: string; onQuery: (query: string) => void; c: (typeof BRANDS_COPY)["en"] };
 
@@ -17,8 +18,7 @@ export function BrandsHeader({ query, onQuery, c }: BrandsHeaderProps) {
   const { isAr } = useInterfaceLang();
   return (
     <header className="min-h-topbar shrink-0 flex flex-wrap items-center justify-between gap-space-5 px-space-6 sm:px-space-10 py-space-4">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/markyos-wordmark.svg" alt="Markyos" className="h-3.5 [filter:var(--chrome-mark-invert)]" />
+      <MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} />
       <div className="flex items-center gap-space-6">
         <div className="w-36 sm:w-56">
           <SearchField label={c.search} placeholder={c.searchPlaceholder} value={query} onChange={(e) => onQuery(e.target.value)} />

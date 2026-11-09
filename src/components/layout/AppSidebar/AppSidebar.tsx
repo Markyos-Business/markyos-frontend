@@ -6,6 +6,7 @@ import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import { useNarrowViewport } from "@/hooks/useNarrowViewport";
 import { useSidebarPlacement } from "../SidebarDrawer";
+import { BetaTag, MARKYOS_BETA, MarkyosLogo } from "../../ui/primitives/MarkyosLogo";
 
 export interface SidebarItem {
   key: string;
@@ -168,11 +169,12 @@ export function AppSidebar({
           className={`mk-tap min-w-0 gap-space-4 ${collapsed ? "min-h-8 min-w-8 justify-center" : ""}`}
           title={collapsed ? title : undefined}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/markyos-mark.svg" alt="Markyos" className="h-[22px] w-auto shrink-0 [filter:var(--chrome-mark-invert)]" />
+          <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />
           {!collapsed && (
             <span className="flex-1 truncate text-h5 font-medium">{title}</span>
           )}
+          {/* The tag rides with the title, not the mark: a collapsed rail has room for the mark alone. */}
+          {!collapsed && MARKYOS_BETA && <BetaTag isAr={isAr} />}
           {!collapsed && titleBadge}
         </Link>
         {!collapsed && !inDrawer && (

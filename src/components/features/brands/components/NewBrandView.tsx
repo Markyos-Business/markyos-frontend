@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs } from "@/components/ui";
+import { MarkyosLogo, Tabs } from "@/components/ui";
 import { START_TABS } from "../constants";
 import type { NewBrandView as NewBrandViewProps } from "../hooks/useNewBrandPage";
 import { ImportDropZone } from "./import/ImportDropZone";
@@ -16,8 +16,7 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/markyos-mark.svg" alt="Markyos" className="h-5 [filter:var(--chrome-mark-invert)]" />
+        <MarkyosLogo variant="mark" className="h-5" isAr={isAr} />
         <button type="button" onClick={onLogout} className="mk-tap cursor-pointer text-caption text-text-faint">
           {t("Log out", "تسجيل الخروج")}
         </button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
-import { LangToggle } from "@/components/ui";
+import { LangToggle, MarkyosLogo } from "@/components/ui";
 import { useDocumentLang } from "@/contexts/useInterfaceLang";
 import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
@@ -40,13 +40,7 @@ export function AuthShell({
         <LangToggle value={lang} onChange={setLang} label={c.langSwitch} scope="chrome" />
       </div>
       <Link href="/" aria-label={c.home}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/markyos-lockup.svg"
-          alt="Markyos"
-          // The lockup is drawn dark; the theme token inverts it on dark grounds.
-          className="w-[190px] max-w-full [filter:var(--chrome-mark-invert)]"
-        />
+        <MarkyosLogo variant="lockup" className="w-[190px] max-w-full" isAr={lang === "ar"} />
       </Link>
 
       <div className="flex w-full max-w-[440px] flex-col gap-4 rounded-[18px] bg-surface-1 p-6 sm:p-[30px]">
