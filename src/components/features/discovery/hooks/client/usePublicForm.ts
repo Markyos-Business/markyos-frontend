@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
 import type { Lang } from "@/types";
-import { validateAnswer } from "../../model/questionTypes";
-import { evaluateVisibility } from "../../model/visibility";
+import { validateAnswer } from "../../utils/questionTypes";
+import { evaluateVisibility } from "../../utils/visibility";
 import { getPublicForm, savePublicAnswers, submitPublicForm, uploadPublicFile } from "../../services/publicFormService";
 import type { AnswerValue, PublicForm, UploadedFile } from "../../types";
 import type { SaveState } from "../../components/client/ClientForm";

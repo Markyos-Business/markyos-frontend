@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { Icon } from "@/components/ui";
 import type { Lang } from "@/types";
-import { AnswerError, isEmptyAnswer, textIn, validateAnswer } from "../../model/questionTypes";
-import { formPalette, paletteVars } from "../../model/theme";
-import { evaluateVisibility } from "../../model/visibility";
+import { AnswerError, isEmptyAnswer, textIn, validateAnswer } from "../../utils/questionTypes";
+import { formPalette, paletteVars } from "../../utils/theme";
+import { evaluateVisibility } from "../../utils/visibility";
 import type { AnswerValue, PublicForm, PublicQuestion, UploadedFile } from "../../types";
 import { CLIENT_INPUTS } from "./typeInputs";
 

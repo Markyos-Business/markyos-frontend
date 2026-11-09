@@ -3,7 +3,7 @@
 import { Icon } from "@/components/ui";
 import type { Lang } from "@/types";
 import { usePublicForm, type PublicFormProblem } from "../../hooks/client/usePublicForm";
-import { formPalette, paletteVars } from "../../model/theme";
+import { formPalette, paletteVars } from "../../utils/theme";
 import type { FormTheme } from "../../types";
 import { ClientForm } from "./ClientForm";
 

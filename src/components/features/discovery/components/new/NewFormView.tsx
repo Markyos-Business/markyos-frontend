@@ -4,10 +4,10 @@ import { useState } from "react";
 import { AlertBanner, Button, Icon, PageHeader, Skeleton } from "@/components/ui";
 import { InputField, RadioCardGroup, RadioField, SegmentedToggle, SelectField } from "@/components/form";
 import type { Lang } from "@/types";
-import { useTemplates } from "../hooks/useTemplates";
-import { createForm } from "../services/discoveryService";
-import { textIn } from "../model/questionTypes";
-import type { DiscoveryForm } from "../types";
+import { useTemplates } from "../../hooks/useTemplates";
+import { createForm } from "../../services/discoveryService";
+import { textIn } from "../../utils/questionTypes";
+import type { DiscoveryForm } from "../../types";
 
 type Brand = { id: string; name: string };
 

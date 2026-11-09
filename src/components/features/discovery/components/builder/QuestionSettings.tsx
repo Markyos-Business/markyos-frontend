@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Row, Switch } from "@/components/ui";
 import { SelectField, SelectInput } from "@/components/form";
 import { ANALYSIS_TARGETS, TYPE_META, TYPE_ORDER } from "../../constants";
-import { defaultConfig } from "../../model/defaults";
+import { defaultConfig } from "../../utils/defaults";
 import type { AnalysisTarget, FormQuestion, QuestionConfig, QuestionDraft, QuestionType } from "../../types";
 import { ConditionEditor } from "./ConditionEditor";
 

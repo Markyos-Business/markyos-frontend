@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
 import { InputField, SegmentedToggle, SelectInput } from "@/components/form";
 import type { Lang } from "@/types";
-import { STATUS_META } from "../constants";
-import { useFormEditor } from "../hooks/builder/useFormEditor";
-import { formPalette } from "../model/theme";
-import { changeLink, sendForm, updateForm } from "../services/discoveryService";
-import type { AnswerValue, DiscoveryForm, FormPatch, PublicForm } from "../types";
-import { ClientForm } from "./client/ClientForm";
-import { SaveStatus } from "./SaveStatus";
-import { LocalizedInput } from "./builder/LocalizedInput";
-import { formatDay } from "../utils/format";
+import { STATUS_META } from "../../constants";
+import { useFormEditor } from "../../hooks/builder/useFormEditor";
+import { formPalette } from "../../utils/theme";
+import { changeLink, sendForm, updateForm } from "../../services/discoveryService";
+import type { AnswerValue, DiscoveryForm, FormPatch, PublicForm } from "../../types";
+import { ClientForm } from "../client/ClientForm";
+import { SaveStatus } from "../shared/SaveStatus";
+import { LocalizedInput } from "../builder/LocalizedInput";
+import { formatDay } from "../../utils/format";
 
 /** A logo the form can carry: one of the brand's logo files. */
 export type LogoChoice = { id: string; label: string; url: string };

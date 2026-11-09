@@ -4,8 +4,8 @@ import { useMemo, useState, type DragEvent } from "react";
 import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, Tabs, useDialog } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/useFormEditor";
-import { defaultConfig } from "../../model/defaults";
-import { editRefusal } from "../../model/status";
+import { defaultConfig } from "../../utils/defaults";
+import { editRefusal } from "../../utils/status";
 import {
   addQuestion,
   addSection,
@@ -17,7 +17,7 @@ import {
   updateQuestion,
 } from "../../services/discoveryService";
 import type { DiscoveryForm, FormQuestion, QuestionDraft, QuestionType } from "../../types";
-import { SaveStatus } from "../SaveStatus";
+import { SaveStatus } from "../shared/SaveStatus";
 import { LibraryPanel } from "./LibraryPanel";
 import { LocalizedInput, type EditMode } from "./LocalizedInput";
 import { QuestionCard } from "./QuestionCard";

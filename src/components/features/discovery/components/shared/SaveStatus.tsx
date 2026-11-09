@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatAgo } from "../utils/format";
+import { formatAgo } from "../../utils/format";
 
 type SaveStatusProps = { saving: boolean; savedAt: number | null; error: string | null; isAr: boolean };
 

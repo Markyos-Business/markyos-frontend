@@ -3,7 +3,7 @@ import type { AnswerValue, ChoiceAnswer, LocalizedText, Option, QuestionConfig, 
 /*
  * The question type registry: one entry per type, the client-side twin of the
  * backend's apps/discovery/question_types.py. Both run the same cases
- * (model/fixtures/question_type_cases.json), so the builder, the client form
+ * (utils/fixtures/question_type_cases.json), so the builder, the client form
  * and the server agree on what a valid answer is.
  *
  * Each entry validates and cleans an answer, says when it counts as empty

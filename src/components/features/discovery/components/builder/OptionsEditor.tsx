@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Icon, IconButton } from "@/components/ui";
-import { newOptionValue } from "../../model/defaults";
+import { newOptionValue } from "../../utils/defaults";
 import type { Option } from "../../types";
 import { LocalizedInput, type EditMode } from "./LocalizedInput";
 

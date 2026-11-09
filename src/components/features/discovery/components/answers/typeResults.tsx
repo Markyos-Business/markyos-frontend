@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Badge, Icon } from "@/components/ui";
-import { textIn } from "../../model/questionTypes";
+import { textIn } from "../../utils/questionTypes";
 import type { AnswerValue, ChoiceAnswer, FormQuestion, QuestionType, UploadedFile } from "../../types";
 
 export type ResultProps = {

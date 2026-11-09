@@ -5,7 +5,7 @@ import { AlertBanner, Button, Icon, Skeleton } from "@/components/ui";
 import { SearchField } from "@/components/form";
 import { CATEGORY_LABELS, CATEGORY_ORDER, TYPE_META } from "../../constants";
 import { useLibrary } from "../../hooks/builder/useLibrary";
-import { textIn } from "../../model/questionTypes";
+import { textIn } from "../../utils/questionTypes";
 import type { QuestionCategory } from "../../types";
 
 type LibraryPanelProps = {

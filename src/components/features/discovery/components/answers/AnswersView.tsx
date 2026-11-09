@@ -6,7 +6,7 @@ import { translateText } from "@/components/features/strategy";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { STATUS_META } from "../../constants";
 import { useResponses } from "../../hooks/answers/useResponses";
-import { textIn } from "../../model/questionTypes";
+import { textIn } from "../../utils/questionTypes";
 import { reopenForm } from "../../services/discoveryService";
 import type { FormEventType, ResponsesView, UploadedFile } from "../../types";
 import { formatDayTime, formatDuration } from "../../utils/format";

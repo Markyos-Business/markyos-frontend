@@ -2,7 +2,7 @@ import type { AnswerValue, Condition, ConditionOperator, Visibility } from "../t
 
 /*
  * Show/hide logic, the client-side twin of the backend's
- * apps/discovery/visibility.py. Both run model/fixtures/visibility_cases.json.
+ * apps/discovery/visibility.py. Both run utils/fixtures/visibility_cases.json.
  *
  * - A question hidden by its conditions hides its answer too, so anything
  *   depending on it sees it as unanswered.

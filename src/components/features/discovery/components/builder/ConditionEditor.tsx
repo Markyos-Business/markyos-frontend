@@ -3,7 +3,7 @@
 import { Button, Icon, IconButton } from "@/components/ui";
 import { SegmentedToggle, SelectInput } from "@/components/form";
 import { OPERATORS_FOR, OPERATOR_LABELS } from "../../constants";
-import { textIn } from "../../model/questionTypes";
+import { textIn } from "../../utils/questionTypes";
 import type { Condition, FormQuestion, Visibility } from "../../types";
 
 type ConditionEditorProps = {

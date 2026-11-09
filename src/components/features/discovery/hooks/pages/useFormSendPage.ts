@@ -3,7 +3,7 @@
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { LOGO_LABELS, PAGE_SECTIONS } from "../../constants";
-import type { LogoChoice } from "../../components/ThemeSendView";
+import type { LogoChoice } from "../../components/send/ThemeSendView";
 
 /** /w/[slug]/forms/[formId]/send: the form's theme and link. */
 export function useFormSendPage(slug: string, formId: string) {
