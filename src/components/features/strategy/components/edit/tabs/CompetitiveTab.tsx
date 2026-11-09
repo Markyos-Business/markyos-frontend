@@ -2,10 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint } from "@/components/ui";
+import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint, Modal } from "@/components/ui";
 import { CompetitorColumn, Lang, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
-import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 /**
  * Competitive analysis as an actual comparison table.
@@ -305,98 +304,76 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
     onClose();
   }
 
-  useModalDismiss(onClose);
-
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base" style={{ background: "var(--scrim)" }} onClick={onClose}>
-      <div
-        className="animate-dialog-in w-full max-w-[600px] max-h-[86vh] rounded-card p-6 flex flex-col gap-4"
-        style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-[18px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-              {isAr ? "لصق جدول" : "Paste a table"}
-            </h2>
-            <p className="text-[12.5px] mt-0.5" style={{ color: "var(--text-faint)" }}>
-              {isAr
+    <Modal size="md" onClose={onClose} title={isAr ? "لصق جدول" : "Paste a table"} description={isAr
                 ? "انسخ من Excel أو Google Sheets والصق هنا. الصف الأول هو العناوين، والعمود الأول هو اسم المنافس."
-                : "Copy from Excel or Google Sheets and paste. First row = column names, first column = competitor name."}
-            </p>
+                : "Copy from Excel or Google Sheets and paste. First row = column names, first column = competitor name."}>
+      <textarea
+        autoFocus
+        dir="auto"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={7}
+        placeholder={"Competitor\tPrice\tArabic support\nDual Studio\t$$\tNone"}
+        className="rounded-lg p-3 outline-none text-[12.5px] resize-y bidi-auto"
+        style={{ background: "var(--surface-2)", color: "var(--text)", fontFamily: "ui-monospace, Menlo, monospace" }}
+      />
+
+      {grid.length > 0 && (
+        <div className="rounded-card p-3 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
+          <table className="border-collapse text-[11.5px]">
+            <tbody>
+              {grid.slice(0, 6).map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td
+                      key={ci}
+                      className="px-2.5 py-1.5 whitespace-nowrap"
+                      style={{
+                        boxShadow: "inset 0 0 0 1px var(--hairline)",
+                        fontWeight: ri === 0 || ci === 0 ? 600 : 400,
+                        color: ri === 0 ? "var(--text)" : "var(--text-secondary)",
+                      }}
+                    >
+                      {cell || "—"}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="text-[11px] mt-2" style={{ color: "var(--text-faint)" }}>
+            {isAr
+              ? `${body.length} صفًا × ${Math.max(0, header.length - 1)} عمودًا`
+              : `${body.length} competitor${body.length === 1 ? "" : "s"} × ${Math.max(0, header.length - 1)} column${header.length - 1 === 1 ? "" : "s"}`}
           </div>
-          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer">
-            <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
-          </button>
         </div>
+      )}
 
-        <textarea
-          autoFocus
-          dir="auto"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={7}
-          placeholder={"Competitor\tPrice\tArabic support\nDual Studio\t$$\tNone"}
-          className="rounded-lg p-3 outline-none text-[12.5px] resize-y bidi-auto"
-          style={{ background: "var(--surface-2)", color: "var(--text)", fontFamily: "ui-monospace, Menlo, monospace" }}
-        />
+      <label className="flex items-center gap-2.5 text-[12.5px] cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+        <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />
+        {isAr ? "استبدل المنافسين الحاليين" : "Replace the competitors already in the table"}
+      </label>
 
-        {grid.length > 0 && (
-          <div className="rounded-card p-3 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
-            <table className="border-collapse text-[11.5px]">
-              <tbody>
-                {grid.slice(0, 6).map((row, ri) => (
-                  <tr key={ri}>
-                    {row.map((cell, ci) => (
-                      <td
-                        key={ci}
-                        className="px-2.5 py-1.5 whitespace-nowrap"
-                        style={{
-                          boxShadow: "inset 0 0 0 1px var(--hairline)",
-                          fontWeight: ri === 0 || ci === 0 ? 600 : 400,
-                          color: ri === 0 ? "var(--text)" : "var(--text-secondary)",
-                        }}
-                      >
-                        {cell || "—"}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="text-[11px] mt-2" style={{ color: "var(--text-faint)" }}>
-              {isAr
-                ? `${body.length} صفًا × ${Math.max(0, header.length - 1)} عمودًا`
-                : `${body.length} competitor${body.length === 1 ? "" : "s"} × ${Math.max(0, header.length - 1)} column${header.length - 1 === 1 ? "" : "s"}`}
-            </div>
-          </div>
-        )}
-
-        <label className="flex items-center gap-2.5 text-[12.5px] cursor-pointer" style={{ color: "var(--text-secondary)" }}>
-          <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />
-          {isAr ? "استبدل المنافسين الحاليين" : "Replace the competitors already in the table"}
-        </label>
-
-        <div className="flex items-center justify-end gap-2.5">
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
-            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-          >
-            {isAr ? "إلغاء" : "Cancel"}
-          </button>
-          <button
-            type="button"
-            onClick={apply}
-            disabled={body.length === 0}
-            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-          >
-            {isAr ? "بناء الجدول" : "Build the table"}
-          </button>
-        </div>
+      <div className="flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          onClick={onClose}
+          className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
+          style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
+        >
+          {isAr ? "إلغاء" : "Cancel"}
+        </button>
+        <button
+          type="button"
+          onClick={apply}
+          disabled={body.length === 0}
+          className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
+        >
+          {isAr ? "بناء الجدول" : "Build the table"}
+        </button>
       </div>
-    </div>
+    </Modal>
   );
 }

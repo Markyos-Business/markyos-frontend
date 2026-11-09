@@ -2,9 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, Button } from "@/components/ui";
+import { useToast, Icon, Button, Modal } from "@/components/ui";
 import { Workspace } from "@/types";
-import { useModalDismiss } from "@/hooks/useModalDismiss";
 import {
   extractText,
   parseStrategyDocument,
@@ -153,274 +152,248 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
     }
   }
 
-  useModalDismiss(onClose);
-
   return (
-    <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base"
-      style={{ background: "var(--scrim)" }}
-      onClick={onClose}
-    >
-      <div
-        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-card p-6 flex flex-col gap-4"
-        style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="text-[18px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-              {isAr ? "استيراد من ملف" : "Import from file"}
-            </h2>
-            <p className="text-[12.5px] mt-0.5" style={{ color: "var(--text-faint)" }}>
-              {isAr
+    <Modal size="md" onClose={onClose} title={isAr ? "استيراد من ملف" : "Import from file"} description={isAr
                 ? "املأ حقول الاستراتيجية من ملف .docx أو .pdf أو .md"
-                : "Fill Strategy fields from a .docx, .pdf, .md or .txt document"}
-            </p>
-          </div>
-          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer">
-            <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
+                : "Fill Strategy fields from a .docx, .pdf, .md or .txt document"}>
+      {step === "pick" && (
+        <div className="flex flex-col gap-3">
+          <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+            {isAr
+              ? "يبحث ماركيوس عن عناوين مثل الغاية، الرؤية، الرسالة، القيم، الجمهور المستهدف، الشخصيات، تحليل المنافسين، التموضع، عرض القيمة، والنبرة — بالعربية أو الإنجليزية — ويعرض كل تطابق قبل إضافة أي شيء."
+              : "Markyos scans for headings like Purpose, Vision, Mission, Core values, Target audience, Personas, Competitive analysis, Positioning, Unique value proposition and Tone of voice — in Arabic or English — and lets you review every match before anything is added."}
+          </p>
+          {error && (
+            <div
+              className="rounded-lg px-3.5 py-2.5 text-[12.5px]"
+              style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
+            >
+              {error}
+            </div>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".docx,.pdf,.md,.txt,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) handleFile(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
+            style={{ borderColor: "var(--hairline-strong)" }}
+          >
+            <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
+            <span className="text-[13px] font-medium">
+              {isAr ? "اختر ملفًا" : "Choose a .docx, .pdf, .md or .txt file"}
+            </span>
           </button>
         </div>
+      )}
 
-        {step === "pick" && (
-          <div className="flex flex-col gap-3">
-            <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-              {isAr
-                ? "يبحث ماركيوس عن عناوين مثل الغاية، الرؤية، الرسالة، القيم، الجمهور المستهدف، الشخصيات، تحليل المنافسين، التموضع، عرض القيمة، والنبرة — بالعربية أو الإنجليزية — ويعرض كل تطابق قبل إضافة أي شيء."
-                : "Markyos scans for headings like Purpose, Vision, Mission, Core values, Target audience, Personas, Competitive analysis, Positioning, Unique value proposition and Tone of voice — in Arabic or English — and lets you review every match before anything is added."}
-            </p>
-            {error && (
+      {step === "parsing" && (
+        <div className="flex flex-col items-center justify-center gap-3 py-12">
+          <Icon name="circle-notch" size={22} className="animate-spin" style={{ color: "var(--accent-text)" }} />
+          <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>
+            {isAr ? `جارٍ قراءة ${fileName}…` : `Reading ${fileName}…`}
+          </span>
+        </div>
+      )}
+
+      {step === "review" && (
+        <>
+          {nothingDetected ? (
+            <div className="flex flex-col gap-3 py-2">
               <div
-                className="rounded-lg px-3.5 py-2.5 text-[12.5px]"
-                style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
+                className="rounded-lg px-3.5 py-3 text-[12.5px] leading-[1.6]"
+                style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
               >
-                {error}
+                {isAr
+                  ? `لم يُعثر على أقسام استراتيجية معروفة في ${fileName}.`
+                  : `No recognizable strategy sections in ${fileName}.`}
               </div>
-            )}
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".docx,.pdf,.md,.txt,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (file) handleFile(file);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
-              style={{ borderColor: "var(--hairline-strong)" }}
-            >
-              <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
-              <span className="text-[13px] font-medium">
-                {isAr ? "اختر ملفًا" : "Choose a .docx, .pdf, .md or .txt file"}
-              </span>
-            </button>
-          </div>
-        )}
-
-        {step === "parsing" && (
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <Icon name="circle-notch" size={22} className="animate-spin" style={{ color: "var(--accent-text)" }} />
-            <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>
-              {isAr ? `جارٍ قراءة ${fileName}…` : `Reading ${fileName}…`}
-            </span>
-          </div>
-        )}
-
-        {step === "review" && (
-          <>
-            {nothingDetected ? (
-              <div className="flex flex-col gap-3 py-2">
-                <div
-                  className="rounded-lg px-3.5 py-3 text-[12.5px] leading-[1.6]"
-                  style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
-                >
-                  {isAr
-                    ? `لم يُعثر على أقسام استراتيجية معروفة في ${fileName}.`
-                    : `No recognizable strategy sections in ${fileName}.`}
-                </div>
-                {unmatched.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[11.5px]" style={{ color: "var(--text-faint)" }}>
-                      {isAr
-                        ? "العناوين التي وُجدت ولم تُعرف — أعد تسمية أحدها ليطابق حقلًا معروفًا:"
-                        : "Headings it found but didn't recognise — rename one of these to match a known field:"}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {unmatched.map((h) => (
-                        <span
-                          key={h}
-                          dir="auto"
-                          className="text-[11px] px-2.5 py-1.5 rounded-md"
-                          style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}
-                        >
-                          {h}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <Button variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
-                  {isAr ? "جرّب ملفًا آخر" : "Try another file"}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3 overflow-y-auto pe-1 -me-1">
-                {singles.map((s, i) => (
-                  <label
-                    key={s.key}
-                    className="rounded-card p-3.5 flex flex-col gap-2 cursor-pointer"
-                    style={{ background: "var(--surface-2)" }}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <input
-                        type="checkbox"
-                        checked={s.include}
-                        onChange={(e) =>
-                          setSingles((prev) => prev.map((r, ri) => (ri === i ? { ...r, include: e.target.checked } : r)))
-                        }
-                      />
+              {unmatched.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[11.5px]" style={{ color: "var(--text-faint)" }}>
+                    {isAr
+                      ? "العناوين التي وُجدت ولم تُعرف — أعد تسمية أحدها ليطابق حقلًا معروفًا:"
+                      : "Headings it found but didn't recognise — rename one of these to match a known field:"}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unmatched.map((h) => (
                       <span
-                        className="text-[12px] font-semibold uppercase"
-                        style={{ letterSpacing: ".06em", color: "var(--text-faint)" }}
+                        key={h}
+                        dir="auto"
+                        className="text-[11px] px-2.5 py-1.5 rounded-md"
+                        style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}
                       >
-                        {s.label}
+                        {h}
                       </span>
-                      {s.heading && (
-                        <span
-                          dir="auto"
-                          className="text-[10.5px] truncate"
-                          style={{ color: "var(--text-faint)" }}
-                          title={s.heading}
-                        >
-                          ← “{s.heading}”
-                        </span>
-                      )}
-                    </div>
-                    <textarea
-                      dir="auto"
-                      value={s.value}
-                      rows={Math.min(5, Math.max(2, Math.ceil(s.value.length / 60)))}
-                      onChange={(e) =>
-                        setSingles((prev) => prev.map((r, ri) => (ri === i ? { ...r, value: e.target.value } : r)))
-                      }
-                      className="rounded-lg p-2.5 outline-none text-[13px] resize-none bidi-auto"
-                      style={{ background: "var(--surface-1)", color: "var(--text)" }}
-                    />
-                  </label>
-                ))}
-
-                {coreValues.length > 0 && (
-                  <Group label={isAr ? "القيم الجوهرية" : "Core values"}>
-                    {coreValues.map((v, i) => (
-                      <ListRowEditor
-                        key={i}
-                        row={v}
-                        titlePlaceholder="Value"
-                        descPlaceholder="What it means in practice"
-                        onChange={(next) => setCoreValues((prev) => prev.map((r, ri) => (ri === i ? next : r)))}
-                      />
                     ))}
-                  </Group>
-                )}
-
-                {competitors.length > 0 && (
-                  <Group label={isAr ? "المنافسون" : "Competitors"}>
-                    {competitors.map((c, i) => (
-                      <ListRowEditor
-                        key={i}
-                        row={c}
-                        titlePlaceholder="Competitor name"
-                        descPlaceholder="Notes"
-                        onChange={(next) => setCompetitors((prev) => prev.map((r, ri) => (ri === i ? next : r)))}
-                      />
-                    ))}
-                  </Group>
-                )}
-
-                {personas.length > 0 && (
-                  <Group label={isAr ? "الشخصيات" : "Personas"}>
-                    {personas.map((p, i) => (
-                      <TripleRowEditor
-                        key={i}
-                        include={p.include}
-                        values={[p.name, p.role, p.description]}
-                        placeholders={["Name", "Role", "Description"]}
-                        onChange={(include, [name, role, description]) =>
-                          setPersonas((prev) =>
-                            prev.map((r, ri) => (ri === i ? { ...r, include, name, role, description } : r))
-                          )
-                        }
-                      />
-                    ))}
-                  </Group>
-                )}
-
-                {voiceTraits.length > 0 && (
-                  <Group label={isAr ? "الشخصية والنبرة" : "Voice & tone"}>
-                    {voiceTraits.map((t, i) => (
-                      <TripleRowEditor
-                        key={i}
-                        include={t.include}
-                        values={[t.trait, t.doExample, t.dontExample]}
-                        placeholders={["Trait", "Do — write it like this", "Don't — not like this"]}
-                        onChange={(include, [trait, doExample, dontExample]) =>
-                          setVoiceTraits((prev) =>
-                            prev.map((r, ri) => (ri === i ? { ...r, include, trait, doExample, dontExample } : r))
-                          )
-                        }
-                      />
-                    ))}
-                  </Group>
-                )}
-
-                {unmatched.length > 0 && (
-                  <div className="flex flex-col gap-1.5 pt-1">
-                    <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
-                      {isAr
-                        ? `${unmatched.length} عنوانًا آخر في الملف لم يُطابق أي حقل:`
-                        : `${unmatched.length} other heading${unmatched.length === 1 ? "" : "s"} in the file matched no field:`}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {unmatched.map((h) => (
-                        <span
-                          key={h}
-                          dir="auto"
-                          className="text-[10.5px] px-2 py-1 rounded-md"
-                          style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}
-                        >
-                          {h}
-                        </span>
-                      ))}
-                    </div>
                   </div>
-                )}
-              </div>
-            )}
-          </>
-        )}
+                </div>
+              )}
+              <Button variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
+                {isAr ? "جرّب ملفًا آخر" : "Try another file"}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 overflow-y-auto pe-1 -me-1">
+              {singles.map((s, i) => (
+                <label
+                  key={s.key}
+                  className="rounded-card p-3.5 flex flex-col gap-2 cursor-pointer"
+                  style={{ background: "var(--surface-2)" }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      checked={s.include}
+                      onChange={(e) =>
+                        setSingles((prev) => prev.map((r, ri) => (ri === i ? { ...r, include: e.target.checked } : r)))
+                      }
+                    />
+                    <span
+                      className="text-[12px] font-semibold uppercase"
+                      style={{ letterSpacing: ".06em", color: "var(--text-faint)" }}
+                    >
+                      {s.label}
+                    </span>
+                    {s.heading && (
+                      <span
+                        dir="auto"
+                        className="text-[10.5px] truncate"
+                        style={{ color: "var(--text-faint)" }}
+                        title={s.heading}
+                      >
+                        ← “{s.heading}”
+                      </span>
+                    )}
+                  </div>
+                  <textarea
+                    dir="auto"
+                    value={s.value}
+                    rows={Math.min(5, Math.max(2, Math.ceil(s.value.length / 60)))}
+                    onChange={(e) =>
+                      setSingles((prev) => prev.map((r, ri) => (ri === i ? { ...r, value: e.target.value } : r)))
+                    }
+                    className="rounded-lg p-2.5 outline-none text-[13px] resize-none bidi-auto"
+                    style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                  />
+                </label>
+              ))}
 
-        {step === "review" && !nothingDetected && (
-          <div className="flex items-center justify-end gap-2.5 shrink-0 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
-              style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-            >
-              {isAr ? "إلغاء" : "Cancel"}
-            </button>
-            <Button variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>
-              {isAr ? `استيراد ${selectedCount || ""}` : `Import ${selectedCount || ""} ${selectedCount === 1 ? "item" : "items"}`}
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+              {coreValues.length > 0 && (
+                <Group label={isAr ? "القيم الجوهرية" : "Core values"}>
+                  {coreValues.map((v, i) => (
+                    <ListRowEditor
+                      key={i}
+                      row={v}
+                      titlePlaceholder="Value"
+                      descPlaceholder="What it means in practice"
+                      onChange={(next) => setCoreValues((prev) => prev.map((r, ri) => (ri === i ? next : r)))}
+                    />
+                  ))}
+                </Group>
+              )}
+
+              {competitors.length > 0 && (
+                <Group label={isAr ? "المنافسون" : "Competitors"}>
+                  {competitors.map((c, i) => (
+                    <ListRowEditor
+                      key={i}
+                      row={c}
+                      titlePlaceholder="Competitor name"
+                      descPlaceholder="Notes"
+                      onChange={(next) => setCompetitors((prev) => prev.map((r, ri) => (ri === i ? next : r)))}
+                    />
+                  ))}
+                </Group>
+              )}
+
+              {personas.length > 0 && (
+                <Group label={isAr ? "الشخصيات" : "Personas"}>
+                  {personas.map((p, i) => (
+                    <TripleRowEditor
+                      key={i}
+                      include={p.include}
+                      values={[p.name, p.role, p.description]}
+                      placeholders={["Name", "Role", "Description"]}
+                      onChange={(include, [name, role, description]) =>
+                        setPersonas((prev) =>
+                          prev.map((r, ri) => (ri === i ? { ...r, include, name, role, description } : r))
+                        )
+                      }
+                    />
+                  ))}
+                </Group>
+              )}
+
+              {voiceTraits.length > 0 && (
+                <Group label={isAr ? "الشخصية والنبرة" : "Voice & tone"}>
+                  {voiceTraits.map((t, i) => (
+                    <TripleRowEditor
+                      key={i}
+                      include={t.include}
+                      values={[t.trait, t.doExample, t.dontExample]}
+                      placeholders={["Trait", "Do — write it like this", "Don't — not like this"]}
+                      onChange={(include, [trait, doExample, dontExample]) =>
+                        setVoiceTraits((prev) =>
+                          prev.map((r, ri) => (ri === i ? { ...r, include, trait, doExample, dontExample } : r))
+                        )
+                      }
+                    />
+                  ))}
+                </Group>
+              )}
+
+              {unmatched.length > 0 && (
+                <div className="flex flex-col gap-1.5 pt-1">
+                  <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
+                    {isAr
+                      ? `${unmatched.length} عنوانًا آخر في الملف لم يُطابق أي حقل:`
+                      : `${unmatched.length} other heading${unmatched.length === 1 ? "" : "s"} in the file matched no field:`}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unmatched.map((h) => (
+                      <span
+                        key={h}
+                        dir="auto"
+                        className="text-[10.5px] px-2 py-1 rounded-md"
+                        style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {step === "review" && !nothingDetected && (
+        <div className="flex items-center justify-end gap-2.5 shrink-0 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
+            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
+          >
+            {isAr ? "إلغاء" : "Cancel"}
+          </button>
+          <Button variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>
+            {isAr ? `استيراد ${selectedCount || ""}` : `Import ${selectedCount || ""} ${selectedCount === 1 ? "item" : "items"}`}
+          </Button>
+        </div>
+      )}
+    </Modal>
   );
 }
 

@@ -51,6 +51,7 @@ English/Arabic toggles. Run with `NEXT_PUBLIC_UI_GALLERY=1` to see it.
 | 22 | `ErrorState` | `ui/empty/ErrorState.tsx` |
 | 23 | Confirm dialog: `useDialog().confirm` | `ui/overlays/Dialog.tsx` |
 | 24 | `FormDialog`, `FormSheet` + `useZodForm` | `ui/overlays/` |
+| 24a | `Modal` | `ui/overlays/Modal.tsx` |
 | 25 | Toasts: `useToast` | `ui/overlays/Toast.tsx` |
 | + | `Button` `disabledReason`, `UiStringsProvider`, `formatDayMonth` | `ui/buttons`, `ui/i18n`, `ui/date` |
 
@@ -533,6 +534,33 @@ const form = useZodForm(z.object({ email: z.email("Enter a valid email address."
   onSubmit={async () => { const v = form.submit(); if (!v) return false; await invite(v.email); }}>
   <InputField label="Email" value={form.values.email} error={form.errors.email} onChange={(e) => form.set("email", e.target.value)} />
 </FormDialog>
+```
+
+### 24a. `Modal`
+
+A centred panel (or a sheet from the end edge) for work with its own layout:
+an importer with steps, a preview, a picker. Use `FormDialog` for a plain form
+and `useDialog().confirm` for a yes/no; never hand-build a scrim and panel.
+
+It closes on Escape, the scrim and its × button. Tab stays inside it, focus
+starts on the first field and returns to the opener, and it animates with the
+dialog (or sheet) motion.
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `title`, `description` | `ReactNode` | |
+| `label` | accessible name when `title` is not plain text (an editable name) | |
+| `onClose` | | required |
+| `size` | `"sm" \| "md" \| "lg" \| "xl"` (440 / 580 / 720 / 1100) | `"md"` |
+| `variant` | `"center" \| "sheet"` | `"center"` |
+| `footer` | pinned under the scrolling content | |
+| `open` | for a modal kept mounted; omit when the parent mounts it only while open | `true` |
+| `closeLabel` | the × button's name outside the app's language | kit's "Close" |
+
+```tsx
+<Modal size="lg" title="Pick colours from your logo" description="Every colour here is in the file." onClose={close}>
+  …
+</Modal>
 ```
 
 ### 25. Toasts: `useToast`

@@ -3,8 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { FilterSelectField } from "@/components/form";
 import { useApp } from "@/contexts/AppContext";
-import { useModalDismiss } from "@/hooks/useModalDismiss";
-import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui/media";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
@@ -649,8 +648,6 @@ function AssetDetailModal({
   const [tagInput, setTagInput] = useState("");
   const [name, setName] = useState(asset.fileName);
   const versionInputRef = useRef<HTMLInputElement>(null);
-  useModalDismiss(onClose);
-
   function addTag() {
     const tag = tagInput.trim();
     if (!tag || asset.tags.includes(tag)) return;
@@ -669,209 +666,200 @@ function AssetDetailModal({
   }
 
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base" style={{ background: "var(--scrim)" }} onClick={onClose}>
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
-        className="w-full max-w-[440px] rounded-card p-6 flex flex-col gap-4 animate-dialog-in max-h-[86vh] overflow-y-auto"
-        style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between gap-2">
+    <Modal
+      size="sm"
+      onClose={onClose}
+      label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
+      title={
+        <input
+          value={name}
+          dir="auto"
+          aria-label={isAr ? "اسم الملف" : "File name"}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={commitName}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+            if (e.key === "Escape") setName(asset.fileName);
+          }}
+          className="bidi-auto flex-1 min-w-0 text-[16px] font-semibold outline-none rounded-md px-2 py-1 -mx-2"
+          style={{ background: "transparent", color: "var(--text)" }}
+        />
+      }
+    >
+      {/* Status decides whether this file can leave the studio at all.
+          Publishing copies only approved assets into the snapshot that
+          `/v/<slug>` serves, so moving something to Exploration removes it
+          from the client's guideline at the next publish — which is the
+          point, and worth saying plainly rather than leaving to be
+          discovered. */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
+          {isAr ? "الحالة" : "Status"}
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {(Object.keys(STATUS_META) as AssetStatus[]).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                if (s === asset.status) return;
+                setAssetStatus(workspaceId, asset.id, s);
+                onStatusChange(s);
+                showToast(
+                  s === "approved"
+                    ? isAr
+                      ? "معتمد — يمكن نشر هذا الملف."
+                      : "Approved — this file can be published."
+                    : isAr
+                      ? `نُقل إلى ${STATUS_META[s].arLabel} — لن يُنشر.`
+                      : `Moved to ${STATUS_META[s].label.toLowerCase()} — it won't be published.`,
+                  s === "approved" ? "success" : undefined,
+                );
+              }}
+              aria-pressed={asset.status === s}
+              className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer"
+              style={{
+                background: asset.status === s ? "var(--accent-soft)" : "var(--surface-2)",
+                color: asset.status === s ? "var(--accent-on-soft)" : "var(--text-muted)",
+              }}
+            >
+              {isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
+            </button>
+          ))}
+        </div>
+        <span dir="auto" className="bidi-auto text-[11px]" style={{ color: "var(--text-faint)" }}>
+          {asset.status === "approved"
+            ? isAr
+              ? "يُدرَج عند نشر هذا الدليل."
+              : "Included when this guideline is published."
+            : isAr
+              ? "يُستثنى من الدليل المنشور ومن ملفات التصدير وروابط المشاركة."
+              : "Left out of the published guideline, exports and share links."}
+        </span>
+      </div>
+
+      {/* The type decides which Visual identity tab and which guideline
+          section this file appears in, so a wrong guess from the uploader
+          has to be correctable — otherwise a pattern filed as "export" is
+          invisible everywhere it matters. */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
+          {isAr ? "النوع" : "Type"}
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {EDITABLE_TYPES.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => {
+                if (t === asset.type) return;
+                setAssetType(workspaceId, asset.id, t);
+                onTypeChange(t);
+                showToast(
+                  isAr ? `صُنّف كـ${TYPE_META[t].arLabel}.` : `Filed as ${TYPE_META[t].label}.`,
+                  "success",
+                );
+              }}
+              className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer flex items-center gap-1.5"
+              style={{
+                background: asset.type === t ? "var(--accent-soft)" : "var(--surface-2)",
+                // `--accent-on-soft`, not `--accent`: the accent is a fill,
+                // and as 11px text on its own tint it measured 5.72:1 dark
+                // and 4.58:1 light, under the 7:1 bar this size carries.
+                color: asset.type === t ? "var(--accent-on-soft)" : "var(--text-muted)",
+              }}
+            >
+              <Icon name={TYPE_META[t].icon} size={11} />
+              {isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "الوسوم" : "Tags"}</span>
+        <div className="flex flex-wrap gap-1.5">
+          {asset.tags.map((t) => (
+            <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
+              {/* `dir="auto"` keeps the hash on the tag. It is a neutral
+                  character, so inside an Arabic page it takes the paragraph's
+                  direction and lands on the wrong end — "#export" painting as
+                  "export#". Resolved against the tag's own first strong
+                  character instead, a Latin tag stays a Latin token and an
+                  Arabic one reads right-to-left as it should. */}
+              <span dir="auto" className="bidi-auto">#{t}</span>
+              <button type="button" onClick={() => onTagsChange(asset.tags.filter((x) => x !== t))} className="mk-icon-btn mk-danger-hover cursor-pointer" aria-label={isAr ? `أزل ${t}` : `Remove ${t}`}>
+                <Icon name="times" size={9} />
+              </button>
+            </span>
+          ))}
           <input
-            value={name}
-            dir="auto"
-            aria-label={isAr ? "اسم الملف" : "File name"}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={commitName}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-              if (e.key === "Escape") setName(asset.fileName);
-            }}
-            className="bidi-auto flex-1 min-w-0 text-[16px] font-semibold outline-none rounded-md px-2 py-1 -mx-2"
-            style={{ background: "transparent", color: "var(--text)" }}
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+            placeholder={isAr ? "أضف وسمًا…" : "add a tag…"}
+            aria-label={isAr ? "أضف وسمًا" : "Add a tag"}
+            className="text-[11px] px-2 py-1 rounded-md outline-none w-[100px]"
+            style={{ background: "var(--surface-2)", color: "var(--text)" }}
           />
-          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer shrink-0">
-            <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "سجل الإصدارات" : "Version history"}</span>
+          <input
+            ref={versionInputRef}
+            type="file"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const url = await fileToDataUrl(file);
+                addAssetVersion(workspaceId, asset.id, { url, fileName: file.name, sizeKB: file.size / 1024 });
+                showToast(isAr ? "رُفع إصدار جديد." : "New version uploaded.", "success");
+                onClose();
+              }
+              e.target.value = "";
+            }}
+          />
+          <button type="button" onClick={() => versionInputRef.current?.click()} className="mk-tap text-[11px] font-semibold cursor-pointer" style={{ color: "var(--accent-text)" }}>
+            {isAr ? "رفع إصدار جديد" : "Upload new version"}
           </button>
         </div>
-
-        {/* Status decides whether this file can leave the studio at all.
-            Publishing copies only approved assets into the snapshot that
-            `/v/<slug>` serves, so moving something to Exploration removes it
-            from the client's guideline at the next publish — which is the
-            point, and worth saying plainly rather than leaving to be
-            discovered. */}
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-            {isAr ? "الحالة" : "Status"}
+        {asset.versions.length === 0 ? (
+          <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
+            {isAr ? "الإصدار الحالي فقط — لا سجل بعد." : "Current version only — no history yet."}
           </span>
-          <div className="flex flex-wrap gap-1.5">
-            {(Object.keys(STATUS_META) as AssetStatus[]).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  if (s === asset.status) return;
-                  setAssetStatus(workspaceId, asset.id, s);
-                  onStatusChange(s);
-                  showToast(
-                    s === "approved"
-                      ? isAr
-                        ? "معتمد — يمكن نشر هذا الملف."
-                        : "Approved — this file can be published."
-                      : isAr
-                        ? `نُقل إلى ${STATUS_META[s].arLabel} — لن يُنشر.`
-                        : `Moved to ${STATUS_META[s].label.toLowerCase()} — it won't be published.`,
-                    s === "approved" ? "success" : undefined,
-                  );
-                }}
-                aria-pressed={asset.status === s}
-                className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer"
-                style={{
-                  background: asset.status === s ? "var(--accent-soft)" : "var(--surface-2)",
-                  color: asset.status === s ? "var(--accent-on-soft)" : "var(--text-muted)",
-                }}
-              >
-                {isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
-              </button>
-            ))}
-          </div>
-          <span dir="auto" className="bidi-auto text-[11px]" style={{ color: "var(--text-faint)" }}>
-            {asset.status === "approved"
-              ? isAr
-                ? "يُدرَج عند نشر هذا الدليل."
-                : "Included when this guideline is published."
-              : isAr
-                ? "يُستثنى من الدليل المنشور ومن ملفات التصدير وروابط المشاركة."
-                : "Left out of the published guideline, exports and share links."}
-          </span>
-        </div>
-
-        {/* The type decides which Visual identity tab and which guideline
-            section this file appears in, so a wrong guess from the uploader
-            has to be correctable — otherwise a pattern filed as "export" is
-            invisible everywhere it matters. */}
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-            {isAr ? "النوع" : "Type"}
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {EDITABLE_TYPES.map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => {
-                  if (t === asset.type) return;
-                  setAssetType(workspaceId, asset.id, t);
-                  onTypeChange(t);
-                  showToast(
-                    isAr ? `صُنّف كـ${TYPE_META[t].arLabel}.` : `Filed as ${TYPE_META[t].label}.`,
-                    "success",
-                  );
-                }}
-                className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer flex items-center gap-1.5"
-                style={{
-                  background: asset.type === t ? "var(--accent-soft)" : "var(--surface-2)",
-                  // `--accent-on-soft`, not `--accent`: the accent is a fill,
-                  // and as 11px text on its own tint it measured 5.72:1 dark
-                  // and 4.58:1 light, under the 7:1 bar this size carries.
-                  color: asset.type === t ? "var(--accent-on-soft)" : "var(--text-muted)",
-                }}
-              >
-                <Icon name={TYPE_META[t].icon} size={11} />
-                {isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "الوسوم" : "Tags"}</span>
-          <div className="flex flex-wrap gap-1.5">
-            {asset.tags.map((t) => (
-              <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
-                {/* `dir="auto"` keeps the hash on the tag. It is a neutral
-                    character, so inside an Arabic page it takes the paragraph's
-                    direction and lands on the wrong end — "#export" painting as
-                    "export#". Resolved against the tag's own first strong
-                    character instead, a Latin tag stays a Latin token and an
-                    Arabic one reads right-to-left as it should. */}
-                <span dir="auto" className="bidi-auto">#{t}</span>
-                <button type="button" onClick={() => onTagsChange(asset.tags.filter((x) => x !== t))} className="mk-icon-btn mk-danger-hover cursor-pointer" aria-label={isAr ? `أزل ${t}` : `Remove ${t}`}>
-                  <Icon name="times" size={9} />
-                </button>
-              </span>
-            ))}
-            <input
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-              placeholder={isAr ? "أضف وسمًا…" : "add a tag…"}
-              aria-label={isAr ? "أضف وسمًا" : "Add a tag"}
-              className="text-[11px] px-2 py-1 rounded-md outline-none w-[100px]"
-              style={{ background: "var(--surface-2)", color: "var(--text)" }}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "سجل الإصدارات" : "Version history"}</span>
-            <input
-              ref={versionInputRef}
-              type="file"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const url = await fileToDataUrl(file);
-                  addAssetVersion(workspaceId, asset.id, { url, fileName: file.name, sizeKB: file.size / 1024 });
-                  showToast(isAr ? "رُفع إصدار جديد." : "New version uploaded.", "success");
-                  onClose();
-                }
-                e.target.value = "";
-              }}
-            />
-            <button type="button" onClick={() => versionInputRef.current?.click()} className="mk-tap text-[11px] font-semibold cursor-pointer" style={{ color: "var(--accent-text)" }}>
-              {isAr ? "رفع إصدار جديد" : "Upload new version"}
-            </button>
-          </div>
-          {asset.versions.length === 0 ? (
-            <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-              {isAr ? "الإصدار الحالي فقط — لا سجل بعد." : "Current version only — no history yet."}
-            </span>
-          ) : (
-            <div className="flex flex-col gap-1.5">
-              {asset.versions.map((v) => (
-                <div key={v.id} className="flex items-center justify-between text-[12px] rounded-lg px-2.5 py-2" style={{ background: "var(--surface-2)" }}>
-                  <span className="truncate" style={{ color: "var(--text-secondary)" }}>{v.fileName}</span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span style={{ color: "var(--text-faint)" }}>{formatRelative(v.createdAt)}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        restoreAssetVersion(workspaceId, asset.id, v.id);
-                        showToast(isAr ? "استُعيد الإصدار." : "Version restored.", "success");
-                        onClose();
-                      }}
-                      className="font-semibold cursor-pointer"
-                      style={{ color: "var(--accent-text)" }}
-                    >
-                      {isAr ? "استعادة" : "Restore"}
-                    </button>
-                  </div>
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            {asset.versions.map((v) => (
+              <div key={v.id} className="flex items-center justify-between text-[12px] rounded-lg px-2.5 py-2" style={{ background: "var(--surface-2)" }}>
+                <span className="truncate" style={{ color: "var(--text-secondary)" }}>{v.fileName}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span style={{ color: "var(--text-faint)" }}>{formatRelative(v.createdAt)}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      restoreAssetVersion(workspaceId, asset.id, v.id);
+                      showToast(isAr ? "استُعيد الإصدار." : "Version restored.", "success");
+                      onClose();
+                    }}
+                    className="font-semibold cursor-pointer"
+                    style={{ color: "var(--accent-text)" }}
+                  >
+                    {isAr ? "استعادة" : "Restore"}
+                  </button>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <button type="button" onClick={onDelete} className="h-10 rounded-full text-[13px] font-semibold cursor-pointer mt-1" style={{ color: "var(--danger)" }}>
-          {isAr ? "حذف الملف" : "Delete asset"}
-        </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      <button type="button" onClick={onDelete} className="h-10 rounded-full text-[13px] font-semibold cursor-pointer mt-1" style={{ color: "var(--danger)" }}>
+        {isAr ? "حذف الملف" : "Delete asset"}
+      </button>
+    </Modal>
   );
 }
