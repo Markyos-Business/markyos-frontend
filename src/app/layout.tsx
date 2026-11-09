@@ -7,6 +7,7 @@ import { ThemeProvider, THEME_INIT_SCRIPT } from "@/contexts/ThemeProvider";
 import { InterfaceLangSync } from "@/contexts/InterfaceLangSync";
 import { InterfaceUiStrings } from "@/contexts/InterfaceUiStrings";
 import { LANG_INIT_SCRIPT } from "@/lib/i18n/interfaceLang";
+import { SIDEBAR_INIT_SCRIPT } from "@/lib/sidebarRails";
 import "./tailwind.css";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             for anyone who chose light. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SIDEBAR_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full bg-canvas text-text">
         <ThemeProvider>

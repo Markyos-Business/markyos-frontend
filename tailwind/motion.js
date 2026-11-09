@@ -117,6 +117,11 @@ export const keyframes = {
   },
   /** A chart's bar growing from its baseline, once. */
   "grow-y": { from: { transform: "scaleY(0)" }, to: { transform: "none" } },
+  /** A label sliding in from the reading start as a rail expands. */
+  "label-in": {
+    from: { opacity: "0", transform: "translate3d(calc(-1 * var(--dir-sign) * var(--distance-sm)), 0, 0)" },
+    to: { opacity: "1", transform: "none" },
+  },
   /** A chart's line drawing itself, once (needs `pathLength="1"`). */
   draw: { from: { strokeDashoffset: "1" }, to: { strokeDashoffset: "0" } },
   /** The light crossing a loading skeleton. */
@@ -139,6 +144,7 @@ export const animation = {
   "toast-in": "toast-in var(--duration-base) var(--ease-out) both",
   "grow-y": "grow-y var(--duration-chart) var(--ease-out) both",
   draw: "draw var(--duration-chart) var(--ease-out) both",
+  "label-in": "label-in var(--duration-fast) var(--ease-out) both",
   // Ambient loading feedback, not an interaction, so it loops.
   shimmer: "shimmer 1.4s var(--ease-standard) infinite",
   // Work is in progress and hasn't stalled: quicker than `animate-spin`.
@@ -186,6 +192,17 @@ export const motionBase = [
     ".mk-stagger > :nth-child(3)": { "animation-delay": "calc(2 * var(--stagger-step))" },
     ".mk-stagger > :nth-child(4)": { "animation-delay": "calc(3 * var(--stagger-step))" },
     ".mk-stagger > :nth-child(5)": { "animation-delay": "calc(4 * var(--stagger-step))" },
+  },
+  /*
+   * The desktop sidebar: its width animates between open and rail, but only
+   * once it is on screen (`data-ready`), so loading a page never plays it.
+   * Before React runs, a rail remembered as collapsed (SIDEBAR_INIT_SCRIPT)
+   * is already drawn at rail width.
+   */
+  {
+    "nav[data-rail][data-ready]": { transition: "width var(--duration-slow) var(--ease-standard)" },
+    'html[data-rails-collapsed~="studio"] nav[data-rail="studio"]:not([data-ready]), html[data-rails-collapsed~="admin"] nav[data-rail="admin"]:not([data-ready])':
+      { width: "84px", "padding-inline": "0" },
   },
   // A number that changes crossfades rather than counting.
   { ".mk-value": { transition: "opacity var(--duration-fast) var(--ease-standard)" } },

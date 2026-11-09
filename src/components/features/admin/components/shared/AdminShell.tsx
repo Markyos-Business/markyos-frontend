@@ -10,6 +10,7 @@ import { AccountMenu } from "@/components/features/account";
 import { AppLayout, AppSidebar, AppTopBar, PageContainer } from "@/components/layout";
 import { LangToggle, UiStringsProvider } from "@/components/ui";
 import { ADMIN_NAV, SHELL_COPY } from "../../constants";
+import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 
 /**
  * The platform admin area's frame, and its gate.
@@ -56,7 +57,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           title={copy.area}
           titleHref="/admin"
           isAr={isAr}
-          storageKey="markyos:ui:admin-sidebar-collapsed"
+          storageKey={SIDEBAR_RAILS.admin}
           sections={ADMIN_NAV.map((s) => ({
             key: s.key,
             label: s.label[lang],
