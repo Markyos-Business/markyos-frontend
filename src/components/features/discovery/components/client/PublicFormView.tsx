@@ -10,8 +10,8 @@ import { ClientForm } from "./ClientForm";
 const NOTICES: Record<PublicFormProblem, { icon: string; en: [string, string]; ar: [string, string] }> = {
   missing: {
     icon: "unlink",
-    en: ["This link doesn't work", "It may have been mistyped, or the form hasn't been sent yet. Ask whoever sent it for the link again."],
-    ar: ["هذا الرابط لا يعمل", "ربما كُتب بشكل خاطئ، أو لم يُرسَل النموذج بعد. اطلب الرابط مجددًا ممن أرسله."],
+    en: ["This link doesn't work", "It may have been mistyped, or the questionnaire hasn't been sent yet. Ask whoever sent it for the link again."],
+    ar: ["هذا الرابط لا يعمل", "ربما كُتب بشكل خاطئ، أو لم يُرسَل الاستبيان بعد. اطلب الرابط مجددًا ممن أرسله."],
   },
   revoked: {
     icon: "lock",
@@ -20,13 +20,13 @@ const NOTICES: Record<PublicFormProblem, { icon: string; en: [string, string]; a
   },
   closed: {
     icon: "clock",
-    en: ["This form has closed", "It stopped taking answers on its closing date. Ask the studio if you'd like it reopened."],
-    ar: ["أُغلق هذا النموذج", "توقّف عن استقبال الإجابات في موعد إغلاقه. تواصل مع الاستوديو إن رغبت في إعادة فتحه."],
+    en: ["This questionnaire has closed", "It stopped taking answers on its closing date. Ask the studio if you'd like it reopened."],
+    ar: ["أُغلق هذا الاستبيان", "توقّف عن استقبال الإجابات في موعد إغلاقه. تواصل مع الاستوديو إن رغبت في إعادة فتحه."],
   },
   offline: {
     icon: "sync",
-    en: ["Can't reach the form", "Check your connection, then reload this page."],
-    ar: ["تعذّر الوصول إلى النموذج", "تحقّق من الاتصال، ثم أعد تحميل الصفحة."],
+    en: ["Can't reach the questionnaire", "Check your connection, then reload this page."],
+    ar: ["تعذّر الوصول إلى الاستبيان", "تحقّق من الاتصال، ثم أعد تحميل الصفحة."],
   },
   error: {
     icon: "exclamation-circle",

@@ -77,8 +77,8 @@ export const LANGUAGE_LABELS = { en: { en: "English", ar: "الإنجليزية"
 
 /** The top bar's name for each discovery page. */
 export const PAGE_SECTIONS = {
-  forms: { en: "Discovery forms", ar: "نماذج الاستكشاف" },
-  newForm: { en: "New form", ar: "نموذج جديد" },
+  forms: { en: "Discovery questionnaires", ar: "استبيانات الاستكشاف" },
+  newForm: { en: "New questionnaire", ar: "استبيان جديد" },
 } as const;
 
 /** The brand's logo slots, as the form's theme offers them. */

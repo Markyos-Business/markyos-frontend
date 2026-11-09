@@ -260,7 +260,7 @@ function UploadInput({ question, value, onChange, lang, onUpload, files, describ
           className="flex min-h-11 items-center justify-center gap-space-3 rounded-lg border border-dashed border-[var(--f-line)] px-space-5 py-space-5 text-body font-medium text-[var(--f-accent-text)] disabled:opacity-60"
         >
           <Icon name="upload" size={18} />
-          {busy ? t(lang, "Uploading…", "جارٍ الرفع…") : onUpload ? t(lang, "Choose files", "اختر ملفات") : t(lang, "Uploads work on the live form", "الرفع متاح في النموذج الفعلي")}
+          {busy ? t(lang, "Uploading…", "جارٍ الرفع…") : onUpload ? t(lang, "Choose files", "اختر ملفات") : t(lang, "Uploads work on the live questionnaire", "الرفع متاح في الاستبيان الفعلي")}
         </button>
       )}
       <input ref={input} type="file" multiple={max > 1} accept={(question.config.accept ?? []).join(",")} className="sr-only" onChange={(e) => void pick(e.target.files)} />

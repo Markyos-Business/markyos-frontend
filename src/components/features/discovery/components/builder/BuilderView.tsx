@@ -57,7 +57,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
 
   const placed = useMemo(() => (form ? flatten(form) : []), [form]);
 
-  if (editor.loadError) return <EmptyState icon="exclamation-circle" title={t("Couldn't open this form", "تعذّر فتح النموذج")} description={editor.loadError} />;
+  if (editor.loadError) return <EmptyState icon="exclamation-circle" title={t("Couldn't open this questionnaire", "تعذّر فتح الاستبيان")} description={editor.loadError} />;
   if (!form) return <Skeleton className="h-96 w-full rounded-card" />;
 
   const languages = form.languages;
@@ -96,7 +96,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
   const remove = async (question: FormQuestion) => {
     const ok = await confirm({
       title: t("Delete this question?", "حذف هذا السؤال؟"),
-      body: t("It's removed from the form. The library keeps its own copy.", "سيُحذف من النموذج، وتبقى نسخته في المكتبة."),
+      body: t("It's removed from the questionnaire. The library keeps its own copy.", "سيُحذف من الاستبيان، وتبقى نسخته في المكتبة."),
       confirmLabel: t("Delete", "حذف"),
       tone: "danger",
       isAr,
@@ -177,13 +177,13 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
 
       <AlertBanner message={editor.error} />
       {readOnly ? (
-        <AlertBanner message={t("This form was submitted. Reopen it from its answers to change questions.", "سُلِّم هذا النموذج. أعد فتحه من صفحة الإجابات لتعديل الأسئلة.")} />
+        <AlertBanner message={t("This questionnaire was submitted. Reopen it from its answers to change questions.", "سُلِّم هذا الاستبيان. أعد فتحه من صفحة الإجابات لتعديل الأسئلة.")} />
       ) : (
         locked && (
           <p className="rounded-lg bg-warning-soft px-space-6 py-space-5 text-body text-warning shadow-edge">
             {t(
-              "This form has been sent. Wording, help text and new optional questions can still change; anything that could break an answer is locked.",
-              "أُرسل هذا النموذج. ما زال بالإمكان تعديل الصياغة والنص التوضيحي وإضافة أسئلة اختيارية؛ وكل ما قد يُفسد إجابة مقفل."
+              "This questionnaire has been sent. Wording, help text and new optional questions can still change; anything that could break an answer is locked.",
+              "أُرسل هذا الاستبيان. ما زال بالإمكان تعديل الصياغة والنص التوضيحي وإضافة أسئلة اختيارية؛ وكل ما قد يُفسد إجابة مقفل."
             )}
           </p>
         )

@@ -67,7 +67,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
   };
 
   const columns = [
-    { key: "form", label: isAr ? "النموذج" : "Form" },
+    { key: "form", label: isAr ? "الاستبيان" : "Questionnaire" },
     { key: "client", label: isAr ? "العميل · العلامة" : "Client · brand", className: "hidden md:table-cell" },
     { key: "template", label: isAr ? "القالب" : "Template", className: "hidden lg:table-cell" },
     { key: "languages", label: isAr ? "اللغات" : "Languages", className: "hidden lg:table-cell" },
@@ -79,7 +79,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
-        title={isAr ? "نماذج الاستكشاف" : "Discovery forms"}
+        title={isAr ? "استبيانات الاستكشاف" : "Discovery questionnaires"}
         description={
           isAr
             ? "استبيانات ثنائية اللغة يجيب عنها العميل بلا حساب، وتصل إجاباتها إلى العلامة."
@@ -87,7 +87,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
         }
         actions={
           <Button variant="primary" href={newFormHref} icon={<Icon name="plus" size={18} />}>
-            {isAr ? "نموذج جديد" : "New form"}
+            {isAr ? "استبيان جديد" : "New questionnaire"}
           </Button>
         }
       />
@@ -101,7 +101,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
         />
         <div className="flex flex-wrap items-center gap-space-5">
           <SearchField
-            label={isAr ? "ابحث في النماذج" : "Search forms"}
+            label={isAr ? "ابحث في الاستبيانات" : "Search questionnaires"}
             placeholder={isAr ? "ابحث بالاسم أو العميل…" : "Search by name or client…"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -127,7 +127,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
       {data && data.counts.all === 0 && !query.search ? (
         <EmptyState
           icon="clipboard-list"
-          title={isAr ? "لا توجد نماذج بعد" : "No forms yet"}
+          title={isAr ? "لا توجد استبيانات بعد" : "No questionnaires yet"}
           description={
             isAr
               ? "ابدأ من قالب، أو اختر أسئلة من المكتبة، وأرسل الرابط لعميلك."
@@ -135,13 +135,13 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
           }
           action={
             <Button variant="primary" href={newFormHref} icon={<Icon name="plus" size={18} />}>
-              {isAr ? "نموذج جديد" : "New form"}
+              {isAr ? "استبيان جديد" : "New questionnaire"}
             </Button>
           }
         />
       ) : (
         <Table
-          label={isAr ? "نماذج الاستكشاف" : "Discovery forms"}
+          label={isAr ? "استبيانات الاستكشاف" : "Discovery questionnaires"}
           columns={columns}
           footer={
             data && data.count > PAGE_SIZE ? (
@@ -151,7 +151,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
                 itemsPerPage={PAGE_SIZE}
                 itemCount={data.results.length}
                 totalCount={data.count}
-                itemLabel={isAr ? "نماذج" : "forms"}
+                itemLabel={isAr ? "استبيانات" : "questionnaires"}
                 loading={loading}
               />
             ) : null
@@ -162,7 +162,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
           ) : !data?.results.length ? (
             <TableEmptyRow
               colSpan={columns.length}
-              title={isAr ? "لا نماذج تطابق البحث" : "No forms match"}
+              title={isAr ? "لا استبيانات تطابق البحث" : "No questionnaires match"}
               description={isAr ? "جرّب بحثًا آخر أو حالة أخرى." : "Try another search or status."}
             />
           ) : (

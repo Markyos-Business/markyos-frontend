@@ -24,7 +24,7 @@ export function useFormEditor(formId: string) {
     let live = true;
     getForm(formId).then(
       (f) => live && setForm(f),
-      (err: unknown) => live && setLoadError(err instanceof Error ? err.message : "Couldn't open this form.")
+      (err: unknown) => live && setLoadError(err instanceof Error ? err.message : "Couldn't open this questionnaire.")
     );
     return () => {
       live = false;

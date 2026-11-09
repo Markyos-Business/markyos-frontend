@@ -11,7 +11,7 @@ export function NeedsServer({ isAr }: { isAr: boolean }) {
   return (
     <EmptyState
       icon="clipboard-list"
-      title={isAr ? "نماذج الاستكشاف تحتاج إلى خادم ماركيوس" : "Discovery forms need the Markyos server"}
+      title={isAr ? "استبيانات الاستكشاف تحتاج إلى خادم ماركيوس" : "Discovery questionnaires need the Markyos server"}
       description={
         isAr
           ? "هذه النسخة تحفظ كل شيء في المتصفح، والعميل يجيب عبر رابط يخدمه الخادم."
