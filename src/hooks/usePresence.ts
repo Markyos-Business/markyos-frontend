@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { EXIT } from "@/lib/motion";
+import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
-/** How long an exit animation runs: `--duration-fast`. */
-const EXIT_MS = 120;
+/** How long a small exit runs (a menu, a popover): one step under its entrance. */
+const EXIT_MS = EXIT.fast;
 
 type Presence = {
   /** Render the element at all. */
@@ -38,8 +40,8 @@ const usePresence = (open: boolean, exitMs = EXIT_MS): Presence => {
 
   useEffect(() => {
     if (!exiting) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = window.setTimeout(() => setExiting(false), reduce ? 0 : exitMs);
+    // Under reduced motion the exit is a 100ms fade at most, never longer.
+    const t = window.setTimeout(() => setExiting(false), prefersReducedMotion() ? Math.min(exitMs, EXIT.fast) : exitMs);
     return () => window.clearTimeout(t);
   }, [exiting, exitMs]);
 

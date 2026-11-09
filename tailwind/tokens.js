@@ -269,15 +269,7 @@ export const darkTokens = {
   "--glow-primary": "0 0 6px #0099ff, 0 0 24px rgba(0, 153, 255, 0.6), 0 0 64px rgba(0, 85, 255, 0.4)",
   "--glow-soft": "0 0 18px rgba(0, 153, 255, 0.35)",
   "--glow-line": "drop-shadow(0 0 6px rgba(0, 153, 255, 0.8)) drop-shadow(0 0 18px rgba(0, 85, 255, 0.5))",
-  /*
-   * Motion (spec §1.8), the same in both themes, and minimal: 120ms
-   * crossfades for colour, opacity and shadow, 180ms for switch knobs and
-   * progress fills, all on one curve. No bounce, spring, entrance animation
-   * or parallax.
-   */
-  "--duration-fast": "120ms",
-  "--duration-base": "180ms",
-  "--ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+  // Motion tokens live in tailwind/motion.js (the same in both themes).
   /*
    * Hover and press (spec §1.6): one scrim over the resting fill, the same
    * for every button. No lift, no scale, no darker hex. Black at 35% on
@@ -337,7 +329,7 @@ export const specAliases = {
   "--red-10": "var(--danger-soft)",
   "--cyan-10": "var(--info-soft)",
   "--transition-state":
-    "background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard)",
+    "background-color var(--duration-instant) var(--ease-standard), color var(--duration-instant) var(--ease-standard), box-shadow var(--duration-instant) var(--ease-standard), opacity var(--duration-instant) var(--ease-standard)",
 };
 
 /*
