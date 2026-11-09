@@ -6,7 +6,7 @@ import { AssetThumb } from "@/components/ui/media";
 import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import type { Lang } from "@/types/lang";
-import { BRANDS_COPY } from "../copy";
+import { BRANDS_COPY } from "../../copy";
 
 /**
  * `role` is the viewer's own role on the brand. Anything but owner means it

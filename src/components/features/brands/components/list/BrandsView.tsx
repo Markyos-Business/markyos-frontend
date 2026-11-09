@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { Button, Icon, PageHeader, Stagger } from "@/components/ui";
 import type { Workspace } from "@/types";
-import type { BrandSort } from "../constants";
-import type { BRANDS_COPY } from "../copy";
+import type { BrandSort } from "../../constants";
+import type { BRANDS_COPY } from "../../copy";
 import type { Lang } from "@/types/lang";
 import { WorkspaceCard } from "./WorkspaceCard";
 

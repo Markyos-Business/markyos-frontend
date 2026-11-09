@@ -2,7 +2,7 @@ import { Button, Icon } from "@/components/ui";
 import { InputField } from "@/components/form";
 import { STRATEGY_LABELS } from "../../constants";
 import type { ImportReviewProps } from "../../hooks/import/useBrandImport";
-import { strategyFieldCount } from "../../services/brandImport";
+import { strategyFieldCount } from "../../services/brandsService";
 import { FontRow } from "./FontRow";
 import { ImportBlank, ImportGroup } from "./ImportGroup";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";

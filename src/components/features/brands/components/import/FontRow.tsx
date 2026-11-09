@@ -1,4 +1,4 @@
-import type { DetectedFont } from "../../services/brandImport";
+import type { DetectedFont } from "../../services/brandsService";
 
 type FontRowProps = { script: "latin" | "arabic"; label: string; fonts: DetectedFont[]; value: string; onChange: (name: string) => void };
 

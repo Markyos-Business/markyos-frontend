@@ -6,8 +6,8 @@ import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { roleOn } from "@/lib/data/access";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
-import type { BrandSort } from "../constants";
-import { BRANDS_COPY } from "../copy";
+import type { BrandSort } from "../../constants";
+import { BRANDS_COPY } from "../../copy";
 
 /** The brands gallery: the signed-in account's brands, searched and sorted, and its brand limit. */
 export function useBrandsPage() {

@@ -1,11 +1,11 @@
 "use client";
 
 import { MarkyosLogo, Tabs } from "@/components/ui";
-import { START_TABS } from "../constants";
-import type { NewBrandView as NewBrandViewProps } from "../hooks/useNewBrandPage";
-import { ImportDropZone } from "./import/ImportDropZone";
-import { ImportProgress } from "./import/ImportProgress";
-import { ImportReview } from "./import/ImportReview";
+import { START_TABS } from "../../constants";
+import type { NewBrandView as NewBrandViewProps } from "../../hooks/new/useNewBrandPage";
+import { ImportDropZone } from "../import/ImportDropZone";
+import { ImportProgress } from "../import/ImportProgress";
+import { ImportReview } from "../import/ImportReview";
 import { ScratchForm } from "./ScratchForm";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 

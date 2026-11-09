@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { SearchField } from "@/components/form";
 import { AccountMenu } from "@/components/features/account";
-import { STUDIO_LINKS } from "../constants";
-import type { BRANDS_COPY } from "../copy";
+import { STUDIO_LINKS } from "../../constants";
+import type { BRANDS_COPY } from "../../copy";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { MarkyosLogo } from "@/components/ui";
 

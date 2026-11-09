@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
-import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../services/brandImport";
+import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../services/brandsService";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type ImportStage = "idle" | "extracting" | "review";

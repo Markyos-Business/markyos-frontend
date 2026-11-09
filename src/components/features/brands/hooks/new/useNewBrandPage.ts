@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useStudioPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
-import type { StartMode } from "../constants";
-import { useBrandImport } from "./import/useBrandImport";
+import type { StartMode } from "../../constants";
+import { useBrandImport } from "../import/useBrandImport";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /** The new-brand page: start from a name or from a guideline file, unless the account is at its brand limit. */
