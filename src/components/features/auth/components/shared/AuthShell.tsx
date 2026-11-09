@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
+import { LangToggle } from "@/components/ui";
+import { useDocumentLang } from "@/contexts/useInterfaceLang";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /**
  * The frame around every signed-out screen.
@@ -27,9 +30,16 @@ export function AuthShell({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const { lang, setLang, c, settled } = useAuthLang();
+  useDocumentLang(lang, settled);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-10 sm:px-8">
-      <Link href="/" aria-label="Markyos home">
+    <main className="relative flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-10 sm:px-8">
+      {/* Arabic first; the switch is here because these are the screens
+          someone sees before they have an account to keep a choice on. */}
+      <div className="absolute inset-e-5 top-5 sm:inset-e-8">
+        <LangToggle value={lang} onChange={setLang} label={c.langSwitch} scope="chrome" />
+      </div>
+      <Link href="/" aria-label={c.home}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/markyos-lockup.svg"

@@ -105,6 +105,7 @@ import type {
   PendingVerification,
 } from "@/components/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
+import { DEFAULT_LANG } from "@/lib/i18n/interfaceLang";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
  *  deep history is an array per step, not a copy of every brand. */
@@ -1358,7 +1359,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       slug,
       name,
       initials: initialsFor(name),
-      primaryLocale: "en",
+      // A new brand starts in its maker's language, Arabic unless they chose otherwise.
+      primaryLocale:
+        stateRef.current.accounts.find((a) => a.id === stateRef.current.session?.accountId)?.adminLang ?? DEFAULT_LANG,
       sharedStatus: "draft",
       createdAt: now,
       updatedAt: now,
@@ -1475,7 +1478,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const uiLang = useCallback(
     (ws?: Pick<Workspace, "primaryLocale"> | null): Lang =>
-      adminLangPref ?? ws?.primaryLocale ?? "en",
+      adminLangPref ?? ws?.primaryLocale ?? DEFAULT_LANG,
     [adminLangPref]
   );
 

@@ -9,10 +9,12 @@ import { GoogleSignupStep } from "../shared/GoogleSignupStep";
 import { PasswordField } from "../shared/PasswordField";
 import { SocialSignIn } from "../shared/SocialSignIn";
 import { VerifyEmailStep } from "../verify/VerifyEmailStep";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /** Email, password, stay signed in, and the way to sign up or reset. */
 export function LoginForm() {
   const form = useLoginForm();
+  const { c } = useAuthLang();
   const google = useGoogleSignIn({ remember: form.remember });
 
   // Someone new came through Google: finish their account instead.
@@ -23,13 +25,13 @@ export function LoginForm() {
 
   return (
     <AuthShell
-      title="Log in"
-      subtitle="Your brands, your guidelines, and anything shared with you."
+      title={c.login.title}
+      subtitle={c.login.subtitle}
       footer={
         <>
-          New here?
+          {c.login.newHere}
           <Button variant="link" href="/signup">
-            Create an account
+            {c.login.create}
           </Button>
         </>
       }
@@ -40,10 +42,11 @@ export function LoginForm() {
           <AlertBanner message={form.errors.form} />
 
           <InputField
-            label="Email"
+            label={c.fields.email}
             type="email"
             inputMode="email"
-            placeholder="you@studio.com"
+            placeholder={c.fields.emailPlaceholder}
+            dir="ltr"
             value={form.email}
             onChange={(e) => form.setEmail(e.target.value)}
             error={form.errors.email}
@@ -52,7 +55,7 @@ export function LoginForm() {
           />
 
           <PasswordField
-            label="Password"
+            label={c.fields.password}
             placeholder="••••••••••"
             value={form.password}
             onChange={(e) => form.setPassword(e.target.value)}
@@ -60,18 +63,18 @@ export function LoginForm() {
             autoComplete="current-password"
             labelRight={
               <Button variant="link" href={form.resetHref} className="text-[12px] font-medium">
-                Forgot?
+                {c.login.forgot}
               </Button>
             }
           />
 
-          <CheckboxField label="Stay signed in" checked={form.remember} onChange={(e) => form.setRemember(e.target.checked)} />
+          <CheckboxField label={c.login.stay} checked={form.remember} onChange={(e) => form.setRemember(e.target.checked)} />
           <p className="-mt-2 text-[11.5px] leading-normal text-text-faint">
-            {form.remember ? "You'll stay signed in on this browser until you log out." : "You'll be signed out when you close this browser."}
+            {form.remember ? c.login.stayOn : c.login.stayOff}
           </p>
 
           <Button type="submit" variant="primary" className="mt-1 w-full" disabled={form.busy}>
-            {form.busy ? "Checking…" : "Log in"}
+            {form.busy ? c.login.checking : c.login.submit}
           </Button>
 
         </form>

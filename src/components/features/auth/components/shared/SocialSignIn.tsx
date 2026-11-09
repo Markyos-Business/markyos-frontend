@@ -2,12 +2,13 @@
 
 import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
 import type { GoogleSignInState } from "../../hooks/shared/useGoogleSignIn";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /** The "OR" rule between the Google button and the form. */
-const OrRule = () => (
+const OrRule = ({ label }: { label: string }) => (
   <div className="flex items-center gap-3 text-[11px] text-text-faint">
     <span className="h-px flex-1 bg-hairline" />
-    OR
+    {label}
     <span className="h-px flex-1 bg-hairline" />
   </div>
 );
@@ -19,6 +20,7 @@ const OrRule = () => (
  */
 export function SocialSignIn({ google }: { google: GoogleSignInState }) {
   const { showToast } = useToast();
+  const { c } = useAuthLang();
   return (
     <>
       <AlertBanner message={google.error} />
@@ -27,12 +29,12 @@ export function SocialSignIn({ google }: { google: GoogleSignInState }) {
         variant="outline"
         className="w-full"
         disabled={google.busy}
-        onClick={google.enabled ? google.start : () => showToast("Google sign-in isn't set up in this build.")}
+        onClick={google.enabled ? google.start : () => showToast(c.google.notSetUp)}
         icon={<Icon name="google" size={17} />}
       >
-        {google.busy ? "Waiting for Google…" : "Continue with Google"}
+        {google.busy ? c.google.waiting : c.google.start}
       </Button>
-      <OrRule />
+      <OrRule label={c.or} />
     </>
   );
 }

@@ -5,13 +5,25 @@ import { Badge } from "@/components/ui";
 import { AssetThumb } from "@/components/ui/media";
 import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
+import type { Lang } from "@/types/lang";
+import { BRANDS_COPY } from "../copy";
 
 /**
  * `role` is the viewer's own role on the brand. Anything but owner means it
  * came to them through someone else's team, and the card says so — otherwise
  * a brand they can only look at sits in the gallery like one they run.
  */
-export function WorkspaceCard({ workspace, role = "owner" }: { workspace: Workspace; role?: TeamRole | null }) {
+export function WorkspaceCard({
+  workspace,
+  role = "owner",
+  lang = "en",
+  c = BRANDS_COPY[lang],
+}: {
+  workspace: Workspace;
+  role?: TeamRole | null;
+  lang?: Lang;
+  c?: (typeof BRANDS_COPY)["en"];
+}) {
   const symbol = workspace.logo.symbol;
   const hasSymbol = symbol.phase === "attached" && symbol.url;
 
@@ -33,12 +45,12 @@ export function WorkspaceCard({ workspace, role = "owner" }: { workspace: Worksp
         <div className="flex-1 min-w-0">
           <div className="text-h5 font-medium truncate">{workspace.name}</div>
           <div className="text-caption text-text-muted">
-            Edited {formatRelative(workspace.updatedAt)} · {workspace.colors.length > 0 ? "active" : "empty"}
+            {c.edited(formatRelative(workspace.updatedAt, undefined, lang))} · {workspace.colors.length > 0 ? c.active : c.empty}
           </div>
-          {role && role !== "owner" && <div className="text-caption text-text-muted">Shared with you as {role}</div>}
+          {role && role !== "owner" && <div className="text-caption text-text-muted">{c.sharedWithYou(c.roles[role] ?? role)}</div>}
         </div>
         <Badge tone={workspace.sharedStatus === "shared" ? "success" : "neutral"}>
-          {workspace.sharedStatus === "shared" ? "Shared" : "Draft"}
+          {workspace.sharedStatus === "shared" ? c.shared : c.draft}
         </Badge>
       </div>
     </Link>

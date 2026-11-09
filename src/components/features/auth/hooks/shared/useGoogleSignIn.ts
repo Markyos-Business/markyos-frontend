@@ -7,6 +7,7 @@ import type { AccountType } from "@/types";
 import { GOOGLE_CLIENT_ID } from "../../constants";
 import type { GooglePendingSignup } from "../../types";
 import { loadGoogleIdentity, type CodeClient } from "../../utils/googleIdentity";
+import { useAuthLang } from "./useAuthLang";
 
 /** Google sign-in works only with a server to check the code, and a client id. */
 export const GOOGLE_ENABLED = API_ENABLED && GOOGLE_CLIENT_ID !== "";
@@ -27,6 +28,12 @@ type Options = {
  * move on as soon as the session lands.
  */
 export function useGoogleSignIn({ accountType = null, remember = true }: Options = {}) {
+  const { c } = useAuthLang();
+  // The messages as of now, for effects that run once and must not re-run when the language changes.
+  const copy = useRef(c);
+  useEffect(() => {
+    copy.current = c;
+  });
   const { signInWithGoogle } = useApp();
   const client = useRef<CodeClient | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,7 +60,7 @@ export function useGoogleSignIn({ accountType = null, remember = true }: Options
           callback: async (response) => {
             if (!response.code) {
               setBusy(false);
-              if (response.error && response.error !== "access_denied") setError("Google sign-in didn't go through. Try again.");
+              if (response.error && response.error !== "access_denied") setError(copy.current.google.failed);
               return;
             }
             const { accountType: type, remember: keep } = latest.current;
@@ -67,7 +74,7 @@ export function useGoogleSignIn({ accountType = null, remember = true }: Options
         });
       })
       .catch(() => {
-        if (!cancelled) setError("Google sign-in couldn't load. Check your connection and try again.");
+        if (!cancelled) setError(copy.current.google.noLoad);
       });
     return () => {
       cancelled = true;
@@ -77,7 +84,7 @@ export function useGoogleSignIn({ accountType = null, remember = true }: Options
   function start() {
     setError(null);
     if (!client.current) {
-      setError("Google sign-in is still loading. Try again in a moment.");
+      setError(c.google.loading);
       return;
     }
     setBusy(true);

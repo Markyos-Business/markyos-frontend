@@ -38,22 +38,23 @@ export function initialsFor(name: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-export function formatRelative(ts: number, now: number = Date.now()): string {
+export function formatRelative(ts: number, now: number = Date.now(), lang: "en" | "ar" = "en"): string {
+  const ar = lang === "ar";
   const diffMs = now - ts;
   const sec = Math.round(diffMs / 1000);
-  if (sec < 60) return ltr("just now");
+  if (sec < 60) return ar ? "الآن" : ltr("just now");
   const min = Math.round(sec / 60);
-  if (min < 60) return ltr(`${min}m ago`);
+  if (min < 60) return ar ? `قبل ${min} د` : ltr(`${min}m ago`);
   const hr = Math.round(min / 60);
-  if (hr < 24) return ltr(`${hr}h ago`);
+  if (hr < 24) return ar ? `قبل ${hr} س` : ltr(`${hr}h ago`);
   const day = Math.round(hr / 24);
-  if (day < 7) return ltr(`${day}d ago`);
+  if (day < 7) return ar ? `قبل ${day} ي` : ltr(`${day}d ago`);
   const week = Math.round(day / 7);
-  if (week < 5) return ltr(`${week}w ago`);
+  if (week < 5) return ar ? `قبل ${week} أسبوع` : ltr(`${week}w ago`);
   const month = Math.round(day / 30);
-  if (month < 12) return ltr(`${month}mo ago`);
+  if (month < 12) return ar ? `قبل ${month} شهر` : ltr(`${month}mo ago`);
   const year = Math.round(day / 365);
-  return ltr(`${year}y ago`);
+  return ar ? `قبل ${year} سنة` : ltr(`${year}y ago`);
 }
 
 /**

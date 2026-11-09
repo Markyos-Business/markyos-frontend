@@ -3,8 +3,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, Icon, Popover } from "@/components/ui";
+import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { API_ENABLED } from "@/lib/api/client";
 import type { MenuLink } from "../../types";
 
@@ -19,10 +20,11 @@ import type { MenuLink } from "../../types";
  * which is the other half of what people open an avatar for.
  */
 export function AccountMenu({
-  isAr = false,
+  isAr: isArProp,
   controls,
   phoneLinks = [],
 }: {
+  /** The page's language; the person's own interface language when not given. */
   isAr?: boolean;
   /**
    * Controls the top bar shows inline but has no room for on a phone (theme,
@@ -34,6 +36,8 @@ export function AccountMenu({
   phoneLinks?: MenuLink[];
 }) {
   const { state, logout } = useApp();
+  const interfaceLang = useInterfaceLang();
+  const isAr = isArProp ?? interfaceLang.isAr;
   const account = useCurrentAccount();
   const router = useRouter();
   const session = state.session;
@@ -60,8 +64,15 @@ export function AccountMenu({
             </span>
           </div>
 
-          {controls && (
+          {controls ? (
             <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b sm:hidden">{controls}</div>
+          ) : (
+            // Pages with no language switch of their own (the brands gallery,
+            // People, Forms, Account) change it here.
+            <div className="flex items-center justify-between gap-space-4 px-space-6 py-space-4 shadow-rule-b">
+              <span className="text-caption text-text-muted">{isAr ? "اللغة" : "Language"}</span>
+              <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" size="sm" />
+            </div>
           )}
 
           {phoneLinks.map((item) => (

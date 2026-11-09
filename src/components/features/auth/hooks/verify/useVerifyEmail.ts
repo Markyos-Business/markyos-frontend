@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { PendingVerification } from "../../types";
+import { useAuthLang } from "../shared/useAuthLang";
 
 /** Seconds before another code can be asked for: one email has to get a chance to arrive. */
 const RESEND_AFTER = 30;
@@ -14,11 +15,12 @@ const RESEND_AFTER = 30;
  * views move on by themselves once the session lands).
  */
 export function useVerifyEmail(pending: PendingVerification, onVerified?: () => void) {
+  const { c } = useAuthLang();
   const { verifyEmail, resendVerification } = useApp();
   const { showToast } = useToast();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(
-    pending.codeSent ? null : "We couldn't send the code. Ask for a new one below."
+    pending.codeSent ? null : c.errors.codeSendFailed
   );
   const [busy, setBusy] = useState(false);
   const [wait, setWait] = useState(pending.codeSent ? RESEND_AFTER : 0);
@@ -33,7 +35,7 @@ export function useVerifyEmail(pending: PendingVerification, onVerified?: () => 
     e?.preventDefault();
     if (busy) return;
     if (code.length !== 6) {
-      setError("Enter the 6-digit code from the email.");
+      setError(c.errors.code);
       return;
     }
     setBusy(true);
@@ -58,7 +60,7 @@ export function useVerifyEmail(pending: PendingVerification, onVerified?: () => 
     }
     setCode("");
     setWait(RESEND_AFTER);
-    showToast("A new code is on its way.", "success");
+    showToast(c.verify.resent, "success");
   }
 
   return { email: pending.email, code, setCode, error, busy, wait, submit, resend };

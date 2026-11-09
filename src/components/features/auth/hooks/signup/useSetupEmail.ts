@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { PasswordSetup } from "../../types";
+import { useAuthLang } from "../shared/useAuthLang";
 
 /** Seconds before another link can be asked for: one email has to get a chance to arrive. */
 const RESEND_AFTER = 30;
@@ -14,10 +15,11 @@ const RESEND_AFTER = 30;
  * never had a password, the server words that email as setting one.
  */
 export function useSetupEmail(setup: PasswordSetup) {
+  const { c } = useAuthLang();
   const { requestPasswordReset } = useApp();
   const { showToast } = useToast();
   const [error, setError] = useState<string | null>(
-    setup.emailSent ? null : "We couldn't send the email. Send it again below."
+    setup.emailSent ? null : c.errors.sendFailedBelow
   );
   const [busy, setBusy] = useState(false);
   const [wait, setWait] = useState(setup.emailSent ? RESEND_AFTER : 0);
@@ -35,9 +37,9 @@ export function useSetupEmail(setup: PasswordSetup) {
     try {
       await requestPasswordReset(setup.email);
       setWait(RESEND_AFTER);
-      showToast("A new link is on its way.", "success");
+      showToast(c.sent.resent, "success");
     } catch {
-      setError("We couldn't send the email. Try again shortly.");
+      setError(c.errors.sendFailed);
     } finally {
       setBusy(false);
     }

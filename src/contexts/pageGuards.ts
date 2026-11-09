@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { useDocumentLang, useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { useRouter } from "next/navigation";
-import { useApp, useCurrentAccount } from "./AppContext";
+import { useApp } from "./AppContext";
 
 /** The brand a /w/[slug] page is about, and the language its chrome is in. Null until it's known. */
 export function useBrandPage(slug: string) {
@@ -19,12 +20,13 @@ export function useBrandPage(slug: string) {
  */
 export function useStudioPage(next?: string) {
   const { state, hydrated } = useApp();
-  const account = useCurrentAccount();
   const router = useRouter();
   useEffect(() => {
     if (hydrated && !state.session) router.replace(next ? `/login?next=${next}` : "/login");
   }, [hydrated, state.session, router, next]);
-  return { ready: hydrated && !!state.session, isAr: account?.adminLang === "ar" };
+  const { isAr, lang, settled } = useInterfaceLang();
+  useDocumentLang(lang, settled);
+  return { ready: hydrated && !!state.session, isAr };
 }
 
 /** A route with nothing of its own, which sends you on to `path`. */

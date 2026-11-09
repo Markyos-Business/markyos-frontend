@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { roleOn } from "@/lib/data/access";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../constants";
+import { BRANDS_COPY } from "../copy";
 
 /** The brands gallery: the signed-in account's brands, searched and sorted, and its brand limit. */
 export function useBrandsPage() {
@@ -13,6 +15,8 @@ export function useBrandsPage() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<BrandSort>("updated");
+  const { lang } = useInterfaceLang();
+  const c = BRANDS_COPY[lang];
 
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");
@@ -34,18 +38,19 @@ export function useBrandsPage() {
   const brandLimit = limitsOf(account).brands;
   const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
   const atLimit = brandLimit !== null && owned >= brandLimit;
-  const limitNote = `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`;
+  const home = lang === "ar" ? type.arHome : type.home;
+  const limitNote = c.limitNote(lang === "ar" ? type.arLabel : type.label, brandLimit, brandLimit === 1 ? home.noun : home.nounPlural);
 
   if (!hydrated || !state.session) return null;
 
   return {
-    header: { query, onQuery: setQuery },
+    header: { query, onQuery: setQuery, c },
     view: {
-      title: account?.isAdmin ? "Your brands" : type.home.title,
-      description: `${myWorkspaces.length} workspace${myWorkspaces.length === 1 ? "" : "s"} · ${sharedCount} shared with clients${
-        brandLimit !== null ? ` · ${owned} of ${brandLimit} used` : ""
-      }`,
+      title: account?.isAdmin ? c.yourBrands : home.title,
+      description: c.summary(myWorkspaces.length, sharedCount, owned, brandLimit),
       sort,
+      c,
+      lang,
       onToggleSort: () => setSort((s) => (s === "updated" ? "name" : "updated")),
       onNew: () => router.push("/brands/new"),
       brands: workspaces.map((ws) => ({ workspace: ws, role: roleOn(ws, state.session) })),

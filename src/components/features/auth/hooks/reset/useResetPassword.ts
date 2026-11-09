@@ -8,6 +8,7 @@ import { API_ENABLED } from "@/lib/api/client";
 import { EMAIL_RE } from "../../constants";
 import type { ResetStep } from "../../types";
 import { scorePassword } from "../../utils/password";
+import { useAuthLang } from "../shared/useAuthLang";
 
 type ResetErrors = { email?: string; token?: string; password?: string; confirm?: string; form?: string };
 
@@ -25,6 +26,7 @@ type ResetErrors = { email?: string; token?: string; password?: string; confirm?
  * straight on the step that sets the new password.
  */
 export function useResetPassword() {
+  const { c } = useAuthLang();
   const { requestPasswordReset, resetPassword } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -52,7 +54,7 @@ export function useResetPassword() {
     e.preventDefault();
     if (busy) return;
     if (!EMAIL_RE.test(email.trim())) {
-      setErrors({ email: "Enter a valid email address." });
+      setErrors({ email: c.errors.email });
       return;
     }
     setErrors({});
@@ -62,7 +64,7 @@ export function useResetPassword() {
       code = await requestPasswordReset(email);
     } catch {
       setBusy(false);
-      setErrors({ form: "We couldn't send the email. Try again shortly." });
+      setErrors({ form: c.errors.sendFailed });
       return;
     }
     setBusy(false);
@@ -93,13 +95,13 @@ export function useResetPassword() {
 
     const field: ResetErrors = {};
     if (!token.trim()) {
-      field.token = API_ENABLED ? "This page needs the link from your email." : "Enter the code.";
+      field.token = API_ENABLED ? c.errors.needsLink : c.errors.enterCode;
     }
-    if (password.length < 8) field.password = "At least 8 characters.";
+    if (password.length < 8) field.password = c.errors.short;
     else if (scorePassword(password).score === 0) {
-      field.password = "That one is too easy to guess — try something longer.";
+      field.password = c.errors.guessable;
     }
-    if (confirm !== password) field.confirm = "These don't match.";
+    if (confirm !== password) field.confirm = c.errors.mismatch;
     setErrors(field);
     if (Object.keys(field).length > 0) return;
 
@@ -117,11 +119,11 @@ export function useResetPassword() {
     // With the backend the link has signed them in: a new account goes on to
     // make its first brand, anyone else back to their brands.
     if (API_ENABLED) {
-      showToast(out.firstTime ? "Password set. Welcome to Markyos." : "Password changed. Other devices are signed out.", "success");
+      showToast(out.firstTime ? c.reset.welcome : c.reset.changedElsewhere, "success");
       router.push(next ?? (out.firstTime ? "/brands/new" : "/brands"));
       return;
     }
-    showToast("Password changed. Sign in with the new one.", "success");
+    showToast(c.reset.changed, "success");
     router.push("/login");
   }
 

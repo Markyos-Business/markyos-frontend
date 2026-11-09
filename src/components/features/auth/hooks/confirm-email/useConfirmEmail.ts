@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
+import { useAuthLang } from "../shared/useAuthLang";
 
 type ConfirmState = { status: "working" } | { status: "done"; email: string } | { status: "failed"; error: string };
 
@@ -12,6 +13,12 @@ type ConfirmState = { status: "working" } | { status: "done"; email: string } | 
  * runs effects twice in development.
  */
 export function useConfirmEmail() {
+  const { c } = useAuthLang();
+  // The messages as of now, for effects that run once and must not re-run when the language changes.
+  const copy = useRef(c);
+  useEffect(() => {
+    copy.current = c;
+  });
   const { confirmEmailChange, state } = useApp();
   const token = useSearchParams().get("token");
   const [result, setResult] = useState<ConfirmState>({ status: "working" });
@@ -21,12 +28,11 @@ export function useConfirmEmail() {
     if (started.current) return;
     started.current = true;
     if (!token) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setResult({ status: "failed", error: "That link is missing its code. Open it from the email again." });
+      setResult({ status: "failed", error: copy.current.errors.linkMissing });
       return;
     }
     void confirmEmailChange(token).then((out) =>
-      setResult(out.email ? { status: "done", email: out.email } : { status: "failed", error: out.error ?? "That link didn't work." })
+      setResult(out.email ? { status: "done", email: out.email } : { status: "failed", error: out.error ?? copy.current.errors.linkFailed })
     );
   }, [token, confirmEmailChange]);
 

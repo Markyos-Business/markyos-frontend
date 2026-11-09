@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect } from "react";
+import { useDocumentLang, useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ENABLED } from "@/lib/api/client";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
@@ -31,23 +32,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [hydrated, state.session, allowed, router, pathname]);
 
   // The admin's own interface language, the same one the studio uses.
-  const lang = account?.adminLang === "ar" ? "ar" : "en";
+  const { lang, settled } = useInterfaceLang();
   const isAr = lang === "ar";
   const copy = SHELL_COPY[lang];
 
   // Toasts and dialogs render at the document root, outside this shell's
-  // `dir`; they read the direction from <html>, as in the workspace layout.
-  // Reset on the way out: the studio sets its own.
-  useEffect(() => {
-    if (!allowed) return;
-    const root = document.documentElement;
-    const before = root.getAttribute("dir");
-    root.setAttribute("dir", isAr ? "rtl" : "ltr");
-    return () => {
-      if (before) root.setAttribute("dir", before);
-      else root.removeAttribute("dir");
-    };
-  }, [allowed, isAr]);
+  // `dir`; they read the direction from <html>.
+  useDocumentLang(lang, settled);
 
   if (!hydrated || !state.session || !allowed) return null;
 

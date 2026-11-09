@@ -5,22 +5,24 @@ import { InputField } from "@/components/form";
 import { API_ENABLED } from "@/lib/api/client";
 import type { ResetState } from "../../hooks/reset/useResetPassword";
 import { AuthShell } from "../shared/AuthShell";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /** Step one: the email to reset. */
 export function ResetRequestStep({ reset }: { reset: ResetState }) {
+  const { c } = useAuthLang();
   return (
     <AuthShell
-      title="Reset your password"
+      title={c.reset.requestTitle}
       subtitle={
         API_ENABLED
-          ? "We'll email a link to reset the password for the account on this email."
-          : "We'll generate a one-time code for the account on this email."
+          ? c.reset.requestSubtitleServer
+          : c.reset.requestSubtitleLocal
       }
       footer={
         <>
-          Remembered it?
+          {c.reset.remembered}
           <Button variant="link" href="/login">
-            Back to log in
+            {c.reset.backToLogin}
           </Button>
         </>
       }
@@ -28,11 +30,11 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
       <form onSubmit={reset.request} className="flex flex-col gap-4" noValidate>
         <AlertBanner message={reset.errors.form} />
         <InputField
-          label="Email"
+          label={c.fields.email}
           type="email"
           inputMode="email"
           dir="ltr"
-          placeholder="you@studio.com"
+          placeholder={c.fields.emailPlaceholder}
           value={reset.email}
           onChange={(e) => reset.setEmail(e.target.value)}
           error={reset.errors.email}
@@ -40,12 +42,11 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
           autoFocus
         />
         <Button type="submit" variant="primary" className="mt-1 w-full" disabled={reset.busy}>
-          {API_ENABLED ? (reset.busy ? "Sending…" : "Email me a reset link") : "Get a reset code"}
+          {API_ENABLED ? (reset.busy ? c.reset.sending : c.reset.emailLink) : c.reset.getCode}
         </Button>
         {!API_ENABLED && (
           <p className="text-[11.5px] leading-[1.5] text-text-faint">
-            There is no mail server in this build, so the code appears on the next screen instead
-            of arriving by email. It is good for 30 minutes and works once.
+            {c.reset.localNote}
           </p>
         )}
       </form>
