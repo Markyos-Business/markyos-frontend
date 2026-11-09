@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button, FadeIn, Stagger, StatTile } from "@/components/ui";
 import { SegmentedToggle } from "@/components/form";
 import { useTheme } from "@/contexts/ThemeProvider";
-import { DURATION, variants } from "@/lib/motion";
+import { DURATION, STAGGER, variants } from "@/lib/motion";
 
 /** One transition, with a button that plays it again. */
 function Demo({ name, spec, children }: { name: string; spec: string; children: (key: number) => ReactNode }) {
@@ -88,7 +88,7 @@ export function MotionGallery() {
           )}
         </Demo>
 
-        <Demo name="Stagger (grids, stat rows)" spec="fade-up · 40ms apart · first 6 only">
+        <Demo name="Stagger (grids, stat rows)" spec={`fade-up · ${STAGGER.step}ms apart · first ${STAGGER.max} only`}>
           {(key) => (
             <Stagger key={key} className="grid w-full grid-cols-4 gap-space-3">
               {Array.from({ length: 8 }, (_, i) => (

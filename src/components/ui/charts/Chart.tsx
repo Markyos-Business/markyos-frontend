@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { pageJustArrived } from "@/lib/motion";
 import { SERIES_FILL, SERIES_STROKE } from "./series";
 
 type ChartPoint = { label: string; values: number[] };
@@ -30,6 +31,13 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
+  // The data as drawn first. Bars grow and lines draw once, on that first
+  // view; any later change (a filter, a refresh) crossfades instead.
+  const signature = data.map((p) => `${p.label}:${p.values.join(",")}`).join("|");
+  const [firstSignature] = useState(signature);
+  const [drawOnMount] = useState(() => !pageJustArrived());
+  const first = signature === firstSignature;
+  const grow = first && drawOnMount;
 
   useEffect(() => {
     const el = ref.current;
@@ -72,6 +80,7 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
               {p.label}
             </text>
           ))}
+          <g key={signature} className={first ? undefined : "animate-fade-in-base"}>
           {kind === "bar"
             ? data.map((p, i) => {
                 const w = Math.min(28, (band * 0.7) / series.length);
@@ -83,7 +92,9 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
                     width={Math.max(1, w - 2)}
                     height={Math.max(0, PAD.top + plotH - y(v))}
                     rx={3}
-                    className={SERIES_FILL[s % SERIES_FILL.length]}
+                    // Grows up from its baseline, once.
+                    style={grow ? { transformBox: "fill-box", transformOrigin: "bottom" } : undefined}
+                    className={`${SERIES_FILL[s % SERIES_FILL.length]} ${grow ? "animate-grow-y" : ""}`}
                     opacity={hover === null || hover === i ? 1 : 0.45}
                   />
                 ));
@@ -93,11 +104,22 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
                 const base = `${x(data.length - 1)},${y(0)} ${x(0)},${y(0)}`;
                 return (
                   <g key={s}>
-                    {kind === "area" && <polygon points={`${pts} ${base}`} className={SERIES_FILL[s % SERIES_FILL.length]} opacity={0.14} />}
-                    <polyline points={pts} fill="none" strokeWidth={2} className={SERIES_STROKE[s % SERIES_STROKE.length]} />
+                    {kind === "area" && (
+                      <polygon points={`${pts} ${base}`} className={`${SERIES_FILL[s % SERIES_FILL.length]} ${grow ? "animate-fade-in-base" : ""}`} opacity={0.14} />
+                    )}
+                    {/* Draws itself left to right, once (a unit path length makes the dash maths trivial). */}
+                    <polyline
+                      points={pts}
+                      fill="none"
+                      strokeWidth={2}
+                      pathLength={1}
+                      strokeDasharray={grow ? 1 : undefined}
+                      className={`${SERIES_STROKE[s % SERIES_STROKE.length]} ${grow ? "animate-draw" : ""}`}
+                    />
                   </g>
                 );
               })}
+          </g>
           {data.map((p, i) => (
             <rect
               key={`hit-${p.label}`}

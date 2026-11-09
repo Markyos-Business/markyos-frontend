@@ -165,7 +165,7 @@ export function CanvasFrame({
           style={{
             width: width * scale,
             height: FRAME_HEIGHT[breakpoint] * scale,
-            transition: "width 260ms cubic-bezier(0.2, 0.7, 0.3, 1), height 260ms cubic-bezier(0.2, 0.7, 0.3, 1)",
+            transition: "width var(--duration-slow) var(--ease-standard), height var(--duration-slow) var(--ease-standard)",
           }}
         >
           <div
@@ -199,7 +199,7 @@ export function CanvasFrame({
               transform: scale < 1 ? `scale(${scale})` : undefined,
               transformOrigin: "top left",
               transition:
-                "width 260ms cubic-bezier(0.2, 0.7, 0.3, 1), height 260ms cubic-bezier(0.2, 0.7, 0.3, 1), transform 260ms cubic-bezier(0.2, 0.7, 0.3, 1)",
+                "width var(--duration-slow) var(--ease-standard), height var(--duration-slow) var(--ease-standard), transform var(--duration-slow) var(--ease-standard)",
               boxShadow: "0 0 0 1px var(--hairline-strong), var(--shadow-modal)",
             }}
           >

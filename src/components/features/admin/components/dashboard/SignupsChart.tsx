@@ -31,7 +31,8 @@ export function SignupsChart({ signups, lang }: { signups: AdminStats["signups"]
             title={`${label(d.date)}: ${d.count}`}
             // Charts emit light (spec §6.15): a bar fades from the accent down
             // to the deep blue; an empty day is a stub of the neutral tint.
-            className={`flex-1 rounded-t-sm ${d.count ? "bg-linear-to-t from-accent-deep to-accent" : "bg-ink-soft"}`}
+            // Each bar grows from the baseline once, when the chart first appears.
+            className={`flex-1 origin-bottom animate-grow-y rounded-t-sm ${d.count ? "bg-linear-to-t from-accent-deep to-accent" : "bg-ink-soft"}`}
             style={{ height: `${Math.max(3, (d.count / max) * 100)}%` }}
           />
         ))}

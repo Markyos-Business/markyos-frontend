@@ -21,7 +21,12 @@ const SortHeader = ({ label, sortKey, sort, onSort }: SortHeaderProps) => {
   return (
     <button type="button" onClick={() => onSort(sortKey)} className="inline-flex items-center gap-space-1 hover:text-text">
       {label}
-      <Icon name={dir === "asc" ? "sort-up" : dir === "desc" ? "sort-down" : "sort"} size={16} />
+      {/* One arrow that turns over when the order flips, rather than swapping glyphs. */}
+      <Icon
+        name={dir ? "sort-up" : "sort"}
+        size={16}
+        className={`transition-[rotate] duration-fast ease-standard ${dir === "desc" ? "rotate-180" : ""}`}
+      />
       {dir && <span className="sr-only">, {dir === "asc" ? t.sortedAscending : t.sortedDescending}</span>}
     </button>
   );
@@ -33,7 +38,8 @@ type BulkBarProps = { count: number; onClear: () => void; children: ReactNode };
 const BulkBar = ({ count, onClear, children }: BulkBarProps) => {
   const { t } = useUiStrings();
   return (
-    <div role="region" aria-label={t.selected(count)} className="flex flex-wrap items-center gap-space-4 bg-accent-soft px-space-6 py-space-3">
+    // Rises 8px into place as it fades in, the first time something is selected.
+    <div role="region" aria-label={t.selected(count)} className="flex animate-fade-up flex-wrap items-center gap-space-4 bg-accent-soft px-space-6 py-space-3">
       <span className="text-body font-medium text-accent-on-soft">{t.selected(count)}</span>
       <div className="flex flex-wrap items-center gap-space-3">{children}</div>
       <button type="button" onClick={onClear} className="ms-auto text-caption font-medium text-accent-on-soft hover:underline">
