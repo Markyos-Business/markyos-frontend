@@ -2,11 +2,10 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { Button, Row, Section, useToast } from "@/components/ui";
+import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import { triggerBlobDownload } from "@/lib/rasterize";
 import type { Workspace } from "@/types";
-import { useCopy } from "../hooks/useCopy";
 import { diffTokens, parseDesignTokens, serializeTokens } from "../model/designTokens";
 
 /** The palette and type as W3C design tokens: out to Figma and back. */
@@ -14,14 +13,8 @@ export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { addColor, updateColor, setTypography, toggleFigmaSync } = useApp();
   const { showToast } = useToast();
-  const copy = useCopy();
   const [syncing, setSyncing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  function copyTokens() {
-    void copy(serializeTokens(ws), t("Design tokens", "رموز التصميم"), isAr);
-    toggleFigmaSync(ws.id, true);
-  }
 
   function downloadTokens() {
     triggerBlobDownload(new Blob([serializeTokens(ws)], { type: "application/json" }), `${ws.slug}-tokens.json`);
@@ -83,9 +76,15 @@ export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean
         }
         right={
           <div className="flex shrink-0 gap-2">
-            <Button variant="outline" size="sm" onClick={copyTokens}>
-              {t("Copy JSON", "نسخ JSON")}
-            </Button>
+            <CopyButton
+              size="sm"
+              text={serializeTokens(ws)}
+              label={t("Copy JSON", "نسخ JSON")}
+              copiedLabel={t("Copied", "تم النسخ")}
+              copiedMessage={t("Design tokens copied.", "تم نسخ رموز التصميم.")}
+              onCopied={() => toggleFigmaSync(ws.id, true)}
+              failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
+            />
             <Button variant="outline" size="sm" onClick={downloadTokens}>
               {t("Download", "تنزيل")}
             </Button>

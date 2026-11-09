@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon, useToast } from "@/components/ui";
+import { CopyButton, Icon, useToast } from "@/components/ui";
 import { SlotKind, Workspace } from "@/types";
 import { formatBytes } from "@/lib/utils";
 import { rasterize, triggerBlobDownload } from "@/lib/rasterize";
@@ -242,21 +242,14 @@ export function DownloadPanel({
               >
                 {link}
               </span>
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(`https://${link}`);
-                    showToast(isAr ? "تم نسخ الرابط." : "Link copied.", "success");
-                  } catch {
-                    showToast(isAr ? "تعذّر النسخ. انسخه يدويًا." : "Couldn't copy. Copy it manually.", "danger");
-                  }
-                }}
-                className="mk-tap text-[12px] font-semibold cursor-pointer"
-                style={{ color: "var(--accent-text)" }}
-              >
-                {isAr ? "نسخ" : "Copy"}
-              </button>
+              <CopyButton
+                variant="link"
+                text={`https://${link}`}
+                label={isAr ? "نسخ" : "Copy"}
+                copiedLabel={isAr ? "تم النسخ" : "Copied"}
+                copiedMessage={isAr ? "تم نسخ الرابط." : "Link copied."}
+                failedMessage={isAr ? "تعذّر النسخ. انسخه يدويًا." : "Couldn't copy. Copy it manually."}
+              />
             </div>
             <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
               {isAr

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertBanner, Badge, Button, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
 import { InputField, SegmentedToggle, SelectInput } from "@/components/form";
 import type { Lang } from "@/types";
 import { STATUS_META } from "../constants";
@@ -220,14 +220,13 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                   <code dir="ltr" className="min-w-0 flex-1 truncate rounded-md bg-surface-2 px-space-4 py-space-3 text-caption text-text-secondary">
                     {link}
                   </code>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    icon={<Icon name="copy" size={16} />}
-                    onClick={() => navigator.clipboard.writeText(link).then(() => showToast(t("Link copied", "نُسخ الرابط"), "success"))}
-                  >
-                    {t("Copy", "نسخ")}
-                  </Button>
+                  <CopyButton
+                    text={link}
+                    label={t("Copy", "نسخ")}
+                    copiedLabel={t("Copied", "تم النسخ")}
+                    copiedMessage={t("Link copied", "نُسخ الرابط")}
+                    failedMessage={t("Couldn't copy. Select the link and copy it.", "تعذّر النسخ. حدّد الرابط وانسخه.")}
+                  />
                 </div>
                 <div className="flex flex-wrap gap-space-4">
                   <Button variant="link" onClick={() => run(() => changeLink(form.id, "regenerate"))}>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, Button } from "@/components/ui";
+import { useToast, Icon, Button, CopyButton } from "@/components/ui";
 import { ShareScope, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 
@@ -137,14 +137,15 @@ export function ShareLinksPanel({
                         : formatRelative(l.createdAt)}
                     </span>
                     {!revoked && (
-                      <button
-                        type="button"
-                        onClick={() => copy(l.id)}
-                        className="text-[11.5px] font-semibold cursor-pointer shrink-0"
-                        style={{ color: "var(--accent-text)" }}
-                      >
-                        {isAr ? "نسخ" : "Copy"}
-                      </button>
+                      <CopyButton
+                        variant="link"
+                        text={urlFor(l.id)}
+                        label={isAr ? "نسخ" : "Copy"}
+                        copiedLabel={isAr ? "تم النسخ" : "Copied"}
+                        copiedMessage={isAr ? "تم نسخ الرابط." : "Link copied."}
+                        failedMessage={isAr ? "المتصفح منع النسخ، الرابط ظاهر للتحديد." : "The browser blocked copying. The link is on screen to select."}
+                        className="shrink-0"
+                      />
                     )}
                     <button
                       type="button"

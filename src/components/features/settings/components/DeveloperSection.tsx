@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { Button, Row, Section, useToast } from "@/components/ui";
+import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/form";
 import type { Workspace } from "@/types";
-import { useCopy } from "../hooks/useCopy";
 import { randomApiKey } from "../utils/random";
 
 /** The workspace's API key, an example call, and the webhook address. */
@@ -13,7 +12,6 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { setApiKey, setWebhookUrl } = useApp();
   const { showToast } = useToast();
-  const copy = useCopy();
   const [webhook, setWebhook] = useState(ws.developer.webhookUrl);
   const { apiKey } = ws.developer;
   return (
@@ -24,9 +22,14 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
         right={
           <div className="flex items-center gap-2">
             <code dir="ltr" className="rounded-md bg-surface-2 px-2.5 py-1.5 font-mono text-[12px]">{apiKey}</code>
-            <Button variant="link" onClick={() => void copy(apiKey, t("API key", "مفتاح API"), isAr)} className="text-[12px] font-semibold">
-              {t("Copy", "نسخ")}
-            </Button>
+            <CopyButton
+              variant="link"
+              text={apiKey}
+              label={t("Copy", "نسخ")}
+              copiedLabel={t("Copied", "تم النسخ")}
+              copiedMessage={t("API key copied.", "تم نسخ مفتاح API.")}
+              failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
+            />
             <button
               type="button"
               onClick={() => {

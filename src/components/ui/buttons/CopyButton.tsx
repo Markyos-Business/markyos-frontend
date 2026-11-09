@@ -16,6 +16,8 @@ type CopyButtonProps = {
   failedMessage: string;
   /** Shown on the button for a moment after copying, e.g. "Copied". */
   copiedLabel?: string;
+  /** After a successful copy, e.g. to record that the value was handed out. */
+  onCopied?: () => void;
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
@@ -33,6 +35,7 @@ const CopyButton = ({
   copiedMessage,
   failedMessage,
   copiedLabel,
+  onCopied,
   variant = "outline",
   size = "sm",
   disabled,
@@ -46,6 +49,7 @@ const CopyButton = ({
       await navigator.clipboard.writeText(text);
       setCopied(true);
       showToast(copiedMessage, "success");
+      onCopied?.();
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       showToast(failedMessage, "danger");
