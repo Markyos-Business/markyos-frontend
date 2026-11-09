@@ -198,7 +198,7 @@ export function TranslateStrategy({
         type="button"
         onClick={run}
         disabled={busy}
-        className="h-8 px-3.5 rounded-full text-[12.5px] font-medium cursor-pointer whitespace-nowrap flex items-center gap-1.5 disabled:cursor-wait transition-colors"
+        className="h-8 px-3.5 rounded-lg text-[12.5px] font-medium cursor-pointer whitespace-nowrap flex items-center gap-1.5 disabled:cursor-wait transition-colors"
         style={{ background: "var(--surface-2)", color: "var(--text)" }}
       >
         <Icon name={busy ? "circle-notch" : "language"} size={13} className={busy ? "animate-spin-quick origin-center" : undefined} />

@@ -580,7 +580,7 @@ function OptionsPanel({
                           const next = COLOR_FORMATS.filter((k) => (k === f ? !picked : on.includes(k)));
                           onChange({ formats: next });
                         }}
-                        className="h-7 px-2.5 rounded-full text-[10.5px] font-semibold cursor-pointer"
+                        className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
                         style={{
                           background: picked ? "var(--accent-soft)" : "var(--surface-1)",
                           color: picked ? "var(--accent-on-soft)" : "var(--text-faint)",
@@ -764,7 +764,7 @@ function OverrideDot({
       }}
       title={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
       aria-label={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
-      className="mk-tap text-[10px] font-semibold px-1.5 rounded-full cursor-pointer shrink-0"
+      className="mk-tap text-[10px] font-semibold px-1.5 rounded-md cursor-pointer shrink-0"
       style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
     >
       {isAr ? "إعادة" : "Reset"}
@@ -809,7 +809,7 @@ function Choice<T extends string | number>({
           type="button"
           onClick={() => onChange(undefined)}
           title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-8 px-2.5 rounded-full text-[11px] font-semibold cursor-pointer shrink-0"
+          className="h-8 px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0"
           style={{
             background: value === undefined ? "var(--surface-2)" : "transparent",
             color: value === undefined ? "var(--text)" : "var(--text-faint)",
@@ -865,7 +865,7 @@ function PaletteColor({
           type="button"
           onClick={() => onChange(undefined)}
           title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-7 px-2.5 rounded-full text-[10.5px] font-semibold cursor-pointer"
+          className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
           style={{
             background: value === undefined ? "var(--surface-2)" : "var(--surface-1)",
             color: value === undefined ? "var(--text)" : "var(--text-faint)",

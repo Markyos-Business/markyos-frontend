@@ -41,7 +41,7 @@ type PopoverProps = {
  */
 const triggers = {
   plain: "flex cursor-pointer items-center",
-  pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
+  pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
 };
 
 const Popover = ({ button, label, align = "end", width = 260, className, trigger = "plain", children }: PopoverProps) => {

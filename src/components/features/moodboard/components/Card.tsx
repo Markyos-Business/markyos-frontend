@@ -404,7 +404,7 @@ function Footer({
             : isAr ? `اختر ${label}` : `Pick ${label}`
         }
         title={count > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-        className="mk-tap h-6 px-2 rounded-full text-[11px] font-semibold cursor-pointer flex items-center gap-1 shrink-0"
+        className="mk-tap h-6 px-2 rounded-md text-[11px] font-semibold cursor-pointer flex items-center gap-1 shrink-0"
         style={{
           background: mine ? "var(--accent-soft)" : "transparent",
           color: mine ? "var(--accent-on-soft)" : "var(--text-faint)",

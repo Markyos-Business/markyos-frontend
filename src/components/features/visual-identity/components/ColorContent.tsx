@@ -70,7 +70,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   : "Upload a logo first"
             }
             disabled={!hasArtwork}
-            className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
           >
             <Icon name="palette" size={14} style={{ color: "var(--accent-text)" }} />
@@ -79,7 +79,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           <button
             type="button"
             onClick={() => setEditor({ mode: "add" })}
-            className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer"
+            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
             {isAr ? "أضف لونًا" : "Add color"}
@@ -116,7 +116,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   <div className="flex items-center gap-2.5 shrink-0">
                     {c.isPrimary && (
                       <span
-                        className="text-[10px] font-medium px-2 py-[5px] rounded-full"
+                        className="text-[10px] font-medium px-2 py-[5px] rounded-md"
                         style={{ letterSpacing: ".08em", background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
                       >
                         {isAr ? "أساسي" : "PRIMARY"}

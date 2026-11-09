@@ -156,7 +156,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                       key={s.key}
                       type="button"
                       onClick={() => setSourceKey(s.key)}
-                      className="h-9 px-3.5 rounded-full text-[12.5px] font-medium cursor-pointer max-w-[220px] truncate"
+                      className="h-9 px-3.5 rounded-lg text-[12.5px] font-medium cursor-pointer max-w-[220px] truncate"
                       style={{
                         background: active ? "var(--accent-soft)" : "var(--surface-2)",
                         color: active ? "var(--accent)" : "var(--text-muted)",
@@ -264,7 +264,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
               <button
                 type="button"
                 onClick={onClose}
-                className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer"
+                className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
                 style={{ background: "var(--surface-2)", color: "var(--text)" }}
               >
                 {isAr ? "إلغاء" : "Cancel"}
@@ -273,7 +273,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                 type="button"
                 onClick={commit}
                 disabled={chosen.length === 0}
-                className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
               >
                 {chosen.length === 0

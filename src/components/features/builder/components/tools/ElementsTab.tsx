@@ -30,7 +30,7 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
 
   return (
     <>
-      <label className="flex h-9 items-center gap-2 rounded-full bg-surface-1 px-3">
+      <label className="flex h-9 items-center gap-2 rounded-lg bg-surface-1 px-3">
         <Icon name="search" size={13} className="text-text-faint" />
         <input
           value={query}

@@ -159,7 +159,7 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
     polarity: "light",
     tint: 0.1,
     step: 3,
-    // A printed manual has no rounded-sm corners — its structure comes from rules
+    // A printed manual has no rounded corners — its structure comes from rules
     // and margins. The one exception is the pill nav, which is a screen
     // affordance and has no print equivalent to be faithful to.
     radius: { sm: 0, md: 0, lg: 0, pill: 0 },

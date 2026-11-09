@@ -76,7 +76,7 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
               {t.featured && (
                 // Solid rather than accent: at 9px, accent-ink on accent (6.6:1)
                 // is under the bar; `--solid` is the opposite of the ground.
-                <span className="shrink-0 rounded-full bg-solid px-1.5 py-[2px] text-[9px] font-semibold text-solid-ink">{isAr ? "صفحة كاملة" : "FULL PAGE"}</span>
+                <span className="shrink-0 rounded-lg bg-solid px-1.5 py-[2px] text-[9px] font-semibold text-solid-ink">{isAr ? "صفحة كاملة" : "FULL PAGE"}</span>
               )}
             </div>
             {/* A step up from faint on the featured card: the accent tint lifts

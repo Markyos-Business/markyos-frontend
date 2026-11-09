@@ -445,7 +445,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
         </div>
       ) : (
         <>
-          <label className="flex items-center gap-2 h-9 px-3 rounded-full" style={{ background: "var(--surface-1)" }}>
+          <label className="flex items-center gap-2 h-9 px-3 rounded-lg" style={{ background: "var(--surface-1)" }}>
             <Icon name="search" size={13} style={{ color: "var(--text-faint)" }} />
             <input
               value={query}

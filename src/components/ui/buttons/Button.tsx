@@ -19,7 +19,7 @@ const sizes: Record<ButtonSize, string> = {
   // A pill for top bars, toolbars and row actions: 32px, fully round, a 12px
   // label. Smaller than the spec's controls, kept for the dense chrome built
   // before it.
-  xs: "h-8 rounded-full px-3.5 gap-1.5 text-[12px]",
+  xs: "h-8 rounded-lg px-3.5 gap-1.5 text-[12px]",
   // The compact step, for dense toolbars: the spec's 40px control height.
   sm: "h-control-sm rounded-lg text-body px-space-6 gap-space-3",
   md: "h-control rounded-lg text-body px-space-8 gap-space-4",

@@ -19,7 +19,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
       {/* `--surface-2` and an *inset* ring: in the light theme surface-0 and
           surface-1 are both white, so the cluster needs its own fill, and an
           inset edge is the convention the surfaces sweep measures. */}
-      <div className="pointer-events-auto flex items-center gap-2 rounded-full bg-surface-2 p-1.5 ps-3.5 shadow-[inset_0_0_0_1px_var(--hairline-strong),var(--shadow-pop)]">
+      <div className="pointer-events-auto flex items-center gap-2 rounded-lg bg-surface-2 p-1.5 ps-3.5 shadow-[inset_0_0_0_1px_var(--hairline-strong),var(--shadow-pop)]">
         <span className={`text-[11px] whitespace-nowrap ${hasUnpublished ? "text-warning" : "text-text-faint"}`}>
           {!ws.publishedAt
             ? isAr
@@ -40,7 +40,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
           href={`${previewHref}?preview=1`}
           target="_blank"
           title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
-          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-full bg-surface-2 px-3.5 text-[12px] font-semibold text-text"
+          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-surface-2 px-3.5 text-[12px] font-semibold text-text"
         >
           <Icon name="eye" size={13} />
           {isAr ? "معاينة" : "Preview"}
@@ -60,7 +60,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
                 ? "انشر التغييرات ليراها العميل."
                 : "Push these changes to the client's site."
           }
-          className="h-9 cursor-pointer rounded-full bg-solid px-4 text-[12px] font-semibold text-solid-ink disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 cursor-pointer rounded-lg bg-solid px-4 text-[12px] font-semibold text-solid-ink disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isAr ? "نشر" : "Publish"}
         </button>

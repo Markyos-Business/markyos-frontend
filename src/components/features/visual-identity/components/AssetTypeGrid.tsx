@@ -115,7 +115,7 @@ export function AssetTypeGrid({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer shrink-0"
+          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
           {isAr ? "رفع ملف" : "Upload"}

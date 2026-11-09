@@ -680,7 +680,7 @@ function FamilyName({
 function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="text-[10px] font-medium px-2 py-[5px] rounded-full"
+      className="text-[10px] font-medium px-2 py-[5px] rounded-md"
       style={{ letterSpacing: ".08em", background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
     >
       {children}

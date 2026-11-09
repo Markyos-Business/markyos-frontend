@@ -87,7 +87,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setShowDownload(true)}
-          className="h-9 px-[18px] rounded-full text-[13px] font-semibold cursor-pointer"
+          className="h-9 px-[18px] rounded-lg text-[13px] font-semibold cursor-pointer"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
           {isAr ? "تنزيل الملفات" : "Download assets"}
@@ -295,7 +295,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
                     key={c.id}
                     type="button"
                     onClick={() => toggleLogoColor(c.id)}
-                    className="h-8 ps-2 pe-3 rounded-full text-[11px] font-semibold cursor-pointer flex items-center gap-2"
+                    className="h-8 ps-2 pe-3 rounded-lg text-[11px] font-semibold cursor-pointer flex items-center gap-2"
                     style={{ background: active ? "var(--accent-soft)" : "var(--surface-2)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
                   >
                     <span className="w-4 h-4 rounded-full shrink-0" style={{ background: c.hex, boxShadow: "inset 0 0 0 1px var(--chip-edge)" }} />

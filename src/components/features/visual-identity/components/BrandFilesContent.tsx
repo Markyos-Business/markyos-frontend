@@ -339,7 +339,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-full text-[13px] font-semibold cursor-pointer shrink-0"
+          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
           {isAr ? "رفع ملف" : "Upload asset"}
@@ -347,7 +347,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
       </div>
 
       <div className="flex items-center gap-2.5 flex-wrap">
-        <label className="flex items-center gap-2 h-9 px-3.5 rounded-full min-w-[200px]" style={{ background: "var(--surface-1)" }}>
+        <label className="flex items-center gap-2 h-9 px-3.5 rounded-lg min-w-[200px]" style={{ background: "var(--surface-1)" }}>
           <Icon name="search" size={14} style={{ color: "var(--text-muted)" }} />
           <input
             value={query}
@@ -443,7 +443,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
               setStatusFilter("all");
               setTagFilter(null);
             }}
-            className="mk-tap shrink-0 rounded-full px-3.5 h-8 text-[12px] font-semibold cursor-pointer"
+            className="mk-tap shrink-0 rounded-lg px-3.5 h-8 text-[12px] font-semibold cursor-pointer"
             style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             {isAr ? "امسح المرشحات" : "Clear filters"}
@@ -606,7 +606,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="h-8 px-3 rounded-full text-[11px] font-semibold cursor-pointer shrink-0 flex items-center gap-1.5"
+      className="h-8 px-3 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 flex items-center gap-1.5"
       style={{ background: active ? "var(--accent-soft)" : "var(--surface-1)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
     >
       {/* Resolved against its own first strong character, so a tag chip's
@@ -791,7 +791,7 @@ function AssetDetailModal({
           <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "الوسوم" : "Tags"}</span>
           <div className="flex flex-wrap gap-1.5">
             {asset.tags.map((t) => (
-              <span key={t} className="text-[11px] px-2 py-1 rounded-full flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
+              <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
                 {/* `dir="auto"` keeps the hash on the tag. It is a neutral
                     character, so inside an Arabic page it takes the paragraph's
                     direction and lands on the wrong end — "#export" painting as
@@ -810,7 +810,7 @@ function AssetDetailModal({
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
               placeholder={isAr ? "أضف وسمًا…" : "add a tag…"}
               aria-label={isAr ? "أضف وسمًا" : "Add a tag"}
-              className="text-[11px] px-2 py-1 rounded-full outline-none w-[100px]"
+              className="text-[11px] px-2 py-1 rounded-md outline-none w-[100px]"
               style={{ background: "var(--surface-2)", color: "var(--text)" }}
             />
           </div>

@@ -285,7 +285,7 @@ export function LogoSlotCard({
               e.stopPropagation();
               updateLogoSlot(workspaceId, kind, { phase: "uploading", progress: 0, errorMessage: undefined });
             }}
-            className="h-8 px-4 rounded-full text-[12px] font-semibold cursor-pointer"
+            className="h-8 px-4 rounded-lg text-[12px] font-semibold cursor-pointer"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
             {isAr ? "إعادة المحاولة" : "Retry"}
@@ -327,7 +327,7 @@ export function LogoSlotCard({
                   e.stopPropagation();
                   openPicker();
                 }}
-                className="h-[34px] px-[15px] rounded-full text-[12px] font-semibold cursor-pointer"
+                className="h-[34px] px-[15px] rounded-lg text-[12px] font-semibold cursor-pointer"
                 style={{ background: "var(--scrim-ink)", color: "#0b0b0d" }}
               >
                 {isAr ? "استبدال" : "Replace"}
@@ -335,7 +335,7 @@ export function LogoSlotCard({
               <button
                 type="button"
                 onClick={remove}
-                className="h-[34px] px-[15px] rounded-full text-[12px] font-semibold cursor-pointer"
+                className="h-[34px] px-[15px] rounded-lg text-[12px] font-semibold cursor-pointer"
                 style={{
                   background: "transparent",
                   color: "var(--scrim-ink)",
@@ -459,7 +459,7 @@ function LightVersionStrip({
           e.stopPropagation();
           onPick();
         }}
-        className="text-[11px] font-semibold px-2.5 py-1.5 rounded-full cursor-pointer shrink-0"
+        className="text-[11px] font-semibold px-2.5 py-1.5 rounded-md cursor-pointer shrink-0"
         style={{ background: "var(--surface-3)", color: "var(--text-secondary)" }}
       >
         {isAr ? "استبدال" : "Replace"}

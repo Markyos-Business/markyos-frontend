@@ -60,7 +60,7 @@ export function PreviewModal({
             <button
               type="button"
               onClick={onCancel}
-              className="h-10 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
+              className="h-10 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
               style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
               {isAr ? "اختر ملفًا آخر" : "Choose another file"}
@@ -68,7 +68,7 @@ export function PreviewModal({
             <button
               type="button"
               onClick={onAttach}
-              className="h-10 px-[22px] rounded-full text-[13px] font-semibold cursor-pointer"
+              className="h-10 px-[22px] rounded-lg text-[13px] font-semibold cursor-pointer"
               style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
             >
               {isAr ? "أرفقه بالخانة" : "Attach to slot"}

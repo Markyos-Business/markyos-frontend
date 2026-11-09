@@ -56,7 +56,7 @@ export function InstructionEditor({
           <button
             type="button"
             onClick={onImport}
-            className="h-8 px-3 rounded-full text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
+            className="h-8 px-3 rounded-lg text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
             style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             <Icon name="upload" size={12} />
@@ -65,7 +65,7 @@ export function InstructionEditor({
           <button
             type="button"
             onClick={() => write([...sections, { id: uid(), heading: "", body: "" }])}
-            className="h-8 px-3 rounded-full text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
+            className="h-8 px-3 rounded-lg text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
             style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             <Icon name="plus" size={12} />

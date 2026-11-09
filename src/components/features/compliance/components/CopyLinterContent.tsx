@@ -64,7 +64,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
           {ws.strategy.voiceTraits.map((t) => (
             <span
               key={t.id}
-              className="px-2.5 py-1 rounded-full font-medium"
+              className="px-2.5 py-1 rounded-lg font-medium"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
               title={isAr ? `افعل: ${t.doExample}\nلا تفعل: ${t.dontExample}` : `Do: ${t.doExample}\nDon't: ${t.dontExample}`}
             >
@@ -171,7 +171,7 @@ function DraftPanel({
             counts[s] ? (
               <span
                 key={s}
-                className="text-[10.5px] font-semibold px-2 py-1 rounded-full"
+                className="text-[10.5px] font-semibold px-2 py-1 rounded-md"
                 style={{ background: SEVERITY_TONE[s].bg, color: SEVERITY_TONE[s].fg }}
               >
                 {counts[s]} {isAr ? SEVERITY_TONE[s].arLabel : SEVERITY_TONE[s].label}
@@ -211,7 +211,7 @@ function DraftPanel({
             <div key={f.id} className="rounded-card p-3 flex flex-col gap-1.5" style={{ background: "var(--surface-2)" }}>
               <div className="flex items-center gap-2">
                 <span
-                  className="text-[10px] font-semibold px-2 py-[3px] rounded-full shrink-0"
+                  className="text-[10px] font-semibold px-2 py-[3px] rounded-md shrink-0"
                   style={{ background: tone.bg, color: tone.fg, letterSpacing: ".04em" }}
                 >
                   {isAr ? f.arRule : f.rule}
@@ -227,7 +227,7 @@ function DraftPanel({
                   <button
                     type="button"
                     onClick={() => onFix(f)}
-                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full cursor-pointer"
+                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer"
                     style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
                   >
                     {isAr ? "أصلحها" : "Fix"}

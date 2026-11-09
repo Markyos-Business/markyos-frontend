@@ -147,14 +147,14 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                   </div>
                   {matched ? (
                     <span
-                      className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
+                      className="text-[11px] font-semibold px-2.5 py-1 rounded-md shrink-0"
                       style={{ background: "var(--success-soft)", color: "var(--success)" }}
                     >
                       {isAr ? `يطابق ${swatch!.name}` : `Matches ${swatch!.name}`}
                     </span>
                   ) : (
                     <span
-                      className="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0"
+                      className="text-[11px] font-semibold px-2.5 py-1 rounded-md shrink-0"
                       style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
                     >
                       {t("Off-palette", "خارج الألوان المعتمدة")}

@@ -63,7 +63,7 @@ export function ViewSwitcher({
               // numbers across the top bar is noise the rest of the time.
               title={`${label} — ${VIEWPORT_WIDTH[w.key]}px`}
               aria-label={label}
-              className="h-7 px-2.5 rounded-full grid place-items-center cursor-pointer"
+              className="h-7 px-2.5 rounded-lg grid place-items-center cursor-pointer"
               style={{
                 background: active ? "var(--surface-2)" : "transparent",
                 color: active ? "var(--text)" : "var(--text-faint)",
@@ -102,7 +102,7 @@ export function ViewSwitcher({
               // hear the radiogroup's name.
               aria-label={name}
               title={name}
-              className="h-7 px-3 rounded-full text-[11px] font-semibold cursor-pointer"
+              className="h-7 px-3 rounded-md text-[11px] font-semibold cursor-pointer"
               style={{
                 background: active ? "var(--surface-2)" : "transparent",
                 color: active ? "var(--text)" : "var(--text-faint)",

@@ -17,11 +17,24 @@ const walk = (dir) =>
     return statSync(p).isDirectory() ? walk(p) : /\.(tsx?|jsx?)$/.test(p) ? [p] : [];
   });
 
+// A text control (a button, tab or chip with side padding) is never a pill:
+// pills beside 8px buttons were the inconsistency clients noticed. Circles
+// (avatars, dots, round icon buttons, switches) stay round. The guideline
+// site is the client's brand design, and the count bubble is a circle that
+// grows with its number.
+const PILL_OK = ["src/components/features/guideline-site", "src/components/ui/badges/CountBadge.tsx"];
+const CLASSES = /(["`])([^"`]*\brounded-full\b[^"`]*)\1/g;
+
 const hits = [];
 for (const file of walk("src")) {
-  readFileSync(file, "utf8").split("\n").forEach((line, i) => {
+  const text = readFileSync(file, "utf8");
+  text.split("\n").forEach((line, i) => {
     for (const m of line.matchAll(BAD)) hits.push(`${file}:${i + 1}  ${m[0]}`);
   });
+  if (PILL_OK.some((s) => file.startsWith(s))) continue;
+  for (const m of text.matchAll(CLASSES)) {
+    if (/(^|\s)(px|ps|pe)-/.test(m[2])) hits.push(`${file}:${text.slice(0, m.index).split("\n").length}  pill text control: rounded-full with side padding (use rounded-lg)`);
+  }
 }
 
 console.log(`Corners — ${hits.length ? "off the scale" : "every radius is on the scale"}`);

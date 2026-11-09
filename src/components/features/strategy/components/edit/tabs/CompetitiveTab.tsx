@@ -381,7 +381,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
           <button
             type="button"
             onClick={onClose}
-            className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
+            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
             style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
           >
             {isAr ? "إلغاء" : "Cancel"}
@@ -390,7 +390,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
             type="button"
             onClick={apply}
             disabled={body.length === 0}
-            className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
             {isAr ? "بناء الجدول" : "Build the table"}

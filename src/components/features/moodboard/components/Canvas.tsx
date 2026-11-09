@@ -1013,7 +1013,7 @@ export function Canvas(props: CanvasProps) {
         role="application"
         aria-label={isAr ? `لوح ${board.title}` : `${board.title} board`}
         className={`relative flex-1 min-h-0 overflow-hidden ${
-          // Full screen means edge to edge: a rounded-sm card with a border inside
+          // Full screen means edge to edge: a rounded card with a border inside
           // a window that has nothing else in it is a frame around nothing.
           fullscreen ? "" : "rounded-card mk-surface"
         }`}
@@ -1398,7 +1398,7 @@ const BoardToolbar = memo(function BoardToolbar({
       // The board's own pointer handlers must not see these clicks, or pressing
       // "Note" would also place a note under the toolbar.
       onPointerDown={(e) => e.stopPropagation()}
-      className="absolute bottom-4 flex items-center gap-0.5 rounded-full px-1.5 py-1 max-w-[calc(100%-32px)] overflow-x-auto"
+      className="absolute bottom-4 flex items-center gap-0.5 rounded-lg px-1.5 py-1 max-w-[calc(100%-32px)] overflow-x-auto"
       style={{
         // Centred logically, so it stays centred in Arabic without a second
         // rule and without a physical `left`.
@@ -1596,7 +1596,7 @@ function FrameBase({
                     : "Nothing in this zone to propose yet."
                   : undefined
               }
-              className="mk-tap h-6 px-2.5 rounded-full text-[10.5px] font-semibold cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mk-tap h-6 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-40"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
             >
               <Icon name={action.icon} size={10} />
@@ -1987,7 +1987,7 @@ function CardOnCanvasBase({
               : isAr ? `اختر ${label}` : `Pick ${label}`
           }
           title={item.votes.length > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-          className="mk-tap h-6 px-2 rounded-full text-[10.5px] font-semibold cursor-pointer flex items-center gap-1"
+          className="mk-tap h-6 px-2 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1"
           style={{
             background: mine ? "var(--accent)" : "var(--scrim)",
             color: mine ? "var(--accent-ink)" : "var(--scrim-ink)",

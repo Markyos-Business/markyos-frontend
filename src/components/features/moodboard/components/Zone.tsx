@@ -120,7 +120,7 @@ export function Zone({
               type="button"
               onClick={action.run}
               disabled={action.busy || items.length === 0}
-              className="mk-tap h-7 px-3 rounded-full text-[11px] font-semibold cursor-pointer flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mk-tap h-7 px-3 rounded-md text-[11px] font-semibold cursor-pointer flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-40"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
             >
               <Icon name={action.icon} size={11} />

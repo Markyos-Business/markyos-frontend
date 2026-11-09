@@ -255,7 +255,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                         <span
                           key={h}
                           dir="auto"
-                          className="text-[11px] px-2.5 py-1.5 rounded-full"
+                          className="text-[11px] px-2.5 py-1.5 rounded-md"
                           style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}
                         >
                           {h}
@@ -390,7 +390,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                         <span
                           key={h}
                           dir="auto"
-                          className="text-[10.5px] px-2 py-1 rounded-full"
+                          className="text-[10.5px] px-2 py-1 rounded-md"
                           style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}
                         >
                           {h}
@@ -409,7 +409,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
             <button
               type="button"
               onClick={onClose}
-              className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
+              className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
               style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
             >
               {isAr ? "إلغاء" : "Cancel"}

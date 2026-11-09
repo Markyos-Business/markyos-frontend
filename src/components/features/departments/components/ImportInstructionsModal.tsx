@@ -183,7 +183,7 @@ export function ImportInstructionsModal({
                     key={m}
                     type="button"
                     onClick={() => setMode(m)}
-                    className="h-8 px-3.5 rounded-full text-[12px] font-semibold cursor-pointer"
+                    className="h-8 px-3.5 rounded-lg text-[12px] font-semibold cursor-pointer"
                     style={{
                       background: mode === m ? "var(--solid)" : "var(--surface-2)",
                       color: mode === m ? "var(--solid-ink)" : "var(--text-muted)",
@@ -247,7 +247,7 @@ export function ImportInstructionsModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="h-11 px-5 rounded-full text-[13px] font-semibold cursor-pointer"
+                  className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
                   style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
                 >
                   {isAr ? "إلغاء" : "Cancel"}
