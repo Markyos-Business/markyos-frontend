@@ -32,12 +32,12 @@ export function PreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base"
       style={{ background: "var(--scrim)" }}
       onClick={onCancel}
     >
       <div
-        className="animate-fade-in w-full max-w-[1100px] rounded-2xl p-8 flex flex-col gap-5"
+        className="animate-dialog-in w-full max-w-[1100px] rounded-2xl p-8 flex flex-col gap-5"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

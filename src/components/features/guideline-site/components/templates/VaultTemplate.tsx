@@ -265,7 +265,7 @@ export function VaultTemplate(props: TemplateProps) {
           className="fixed bottom-6 h-11 px-5 text-[13px] font-semibold cursor-pointer z-sticky shadow-lg"
           // Was a fixed white pill with near-black type — Markyos's own button,
           // not the brand's, on every client site regardless of palette.
-          style={{ ...gPill, [isAr ? "left" : "right"]: 24, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
+          style={{ ...gPill, insetInlineEnd: 24, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
         >
           {isAr ? "تحميل الأصول" : "Download assets"}
         </button>

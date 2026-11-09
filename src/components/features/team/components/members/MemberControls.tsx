@@ -4,7 +4,7 @@ import { useApp } from "@/contexts/AppContext";
 import { FilterSelectField } from "@/components/form";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
-import { ROLES, ROLE_TONE } from "../../constants";
+import { ROLES, ROLE_LABELS, ROLE_TONE } from "../../constants";
 
 type MemberControlsProps = {
   ws: Workspace;
@@ -20,6 +20,8 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const who = m.name || m.email;
+  const t = (en: string, ar: string) => (isAr ? ar : en);
+  const roleName = (r: TeamRole) => ROLE_LABELS[r][isAr ? "ar" : "en"];
 
   /**
    * Hands the brand over.
@@ -32,41 +34,45 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
    */
   async function transfer() {
     const ok = await confirm({
-      title: `Transfer ${ws.name}?`,
-      body: (
+      title: isAr ? `نقل ملكية ${ws.name}؟` : `Transfer ${ws.name}?`,
+      body: isAr ? (
+        <>
+          تنتقل الملكية إلى <strong className="text-text">{who}</strong>. تبقى في العلامة كمحرّر، ولا يمكنك التراجع عن ذلك.
+        </>
+      ) : (
         <>
           Ownership moves to <strong className="text-text">{who}</strong>. You stay on the brand as an editor, and this cannot be undone from your side.
         </>
       ),
       consequences: [
-        "Only the new owner can change roles or approve proposals",
-        "Only the new owner can transfer ownership again — including back to you",
-        "Sharing, the client link and the subdomain move with it",
+        t("Only the new owner can change roles or approve proposals", "المالك الجديد وحده يغيّر الأدوار ويعتمد المقترحات"),
+        t("Only the new owner can transfer ownership again — including back to you", "المالك الجديد وحده ينقل الملكية مجددًا، بما في ذلك إعادتها إليك"),
+        t("Sharing, the client link and the subdomain move with it", "تنتقل معها المشاركة ورابط العميل والنطاق الفرعي"),
       ],
       confirmPhrase: ws.name,
-      confirmLabel: "Transfer",
+      confirmLabel: t("Transfer", "نقل الملكية"),
       tone: "danger",
       isAr,
     });
     if (!ok) return;
     transferOwnership(ws.id, m.id);
-    showToast(`${who} is now the owner. You're an editor on this brand.`, "success");
+    showToast(isAr ? `أصبح ${who} المالك، وأنت الآن محرّر في هذه العلامة.` : `${who} is now the owner. You're an editor on this brand.`, "success");
   }
 
   async function remove() {
     const ok = await confirm({
-      title: `Remove ${who}?`,
-      body: "They lose access to this brand immediately. Anything they already edited stays.",
-      confirmLabel: "Remove",
+      title: isAr ? `إزالة ${who}؟` : `Remove ${who}?`,
+      body: t("They lose access to this brand immediately. Anything they already edited stays.", "يفقد الوصول إلى هذه العلامة فورًا، ويبقى ما عدّله سابقًا."),
+      confirmLabel: t("Remove", "إزالة"),
       tone: "danger",
       isAr,
     });
     if (!ok) return;
     removeTeamMember(ws.id, m.id);
-    showToast(`${who} removed from the team.`);
+    showToast(isAr ? `أُزيل ${who} من الفريق.` : `${who} removed from the team.`);
   }
 
-  if (!canGovern) return <Badge tone={ROLE_TONE[m.role]}>{m.role}</Badge>;
+  if (!canGovern) return <Badge tone={ROLE_TONE[m.role]}>{roleName(m.role)}</Badge>;
 
   return (
     <div className="flex items-center gap-2">
@@ -77,24 +83,28 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
         size="xs"
         disabled={m.role === "owner"}
         onClick={() => void transfer()}
-        title={m.role === "owner" ? `${who} already owns ${ws.name}` : `Transfer ownership of ${ws.name} to ${who}`}
+        title={
+          m.role === "owner"
+            ? isAr ? `${who} يملك ${ws.name} بالفعل` : `${who} already owns ${ws.name}`
+            : isAr ? `نقل ملكية ${ws.name} إلى ${who}` : `Transfer ownership of ${ws.name} to ${who}`
+        }
         icon={<Icon name="key" size={16} />}
         className="shrink-0"
       >
-        Make owner
+        {t("Make owner", "تعيين مالكًا")}
       </Button>
       <FilterSelectField
-        label={`Role for ${who}`}
+        label={isAr ? `دور ${who}` : `Role for ${who}`}
         hideLabel
         size="sm"
         value={m.role}
         onChange={(value) => setTeamRole(ws.id, m.id, value as TeamRole)}
-        options={ROLES.map((r) => ({ value: r, label: r.charAt(0).toUpperCase() + r.slice(1), disabled: r === "editor" && editorsFull && m.role !== "editor" }))}
+        options={ROLES.map((r) => ({ value: r, label: roleName(r), disabled: r === "editor" && editorsFull && m.role !== "editor" }))}
       />
       <IconButton
         icon="times"
-        label={`Remove ${m.name}`}
-        title={`Remove ${who} from this brand`}
+        label={isAr ? `إزالة ${m.name}` : `Remove ${m.name}`}
+        title={isAr ? `إزالة ${who} من هذه العلامة` : `Remove ${who} from this brand`}
         onClick={() => void remove()}
         className="mk-danger-hover cursor-pointer text-text-faint"
       />

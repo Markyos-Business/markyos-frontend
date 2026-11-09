@@ -354,7 +354,7 @@ export const baseStyles = [
       "outline": "none",
       "border-radius": "4px",
       "cursor": "text",
-      "transition": "box-shadow var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard)",
+      "transition": "box-shadow var(--duration-instant) var(--ease-standard), background var(--duration-instant) var(--ease-standard)",
     },
   },
   {
@@ -528,7 +528,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".live-flow-grip:not([style*=\"transition\"])": {
-        "transition": "opacity 120ms ease !important",
+        "transition": "opacity var(--duration-instant) var(--ease-standard) !important",
       },
     },
   },
@@ -907,7 +907,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".mk-card:not([style*=\"transition\"])": {
-        "transition": "box-shadow var(--duration-fast) var(--ease-standard) !important",
+        "transition": "box-shadow var(--duration-instant) var(--ease-standard) !important",
       },
     },
   },
@@ -926,8 +926,8 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition-property": "color, background-color, border-color, box-shadow, opacity !important",
-        "transition-duration": "var(--duration-fast) !important",
+        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale !important",
+        "transition-duration": "var(--duration-instant) !important",
         "transition-timing-function": "var(--ease-standard) !important",
       },
     },
@@ -1037,7 +1037,7 @@ export const baseStyles = [
       "background": "var(--hover-scrim)",
       "opacity": "0",
       "pointer-events": "none",
-      "transition": "opacity var(--duration-fast) var(--ease-standard)",
+      "transition": "opacity var(--duration-instant) var(--ease-standard)",
     },
   },
   {
@@ -1362,13 +1362,19 @@ export const baseStyles = [
   },
   {
     "@media (prefers-reduced-motion: reduce)": {
+      /*
+       * Nothing moves. Animations stay but read the reduced tokens
+       * (tailwind/motion.js): no distance, no zoom, no stagger, 100ms or less —
+       * so an overlay or a card still fades in, briefly, and that is all.
+       * Transitions (a sliding tab pill, the sidebar's width) and loops (the
+       * skeleton shimmer) stop outright.
+       */
       "*, *::before, *::after": {
-        "animation-duration": "0.01ms !important",
         "animation-delay": "0ms !important",
-        "animation-iteration-count": "1 !important",
         "transition-duration": "0.01ms !important",
         "scroll-behavior": "auto !important",
       },
+      ".animate-shimmer": { animation: "none !important" },
       /*
        * Guideline sections stay put and stay visible.
        *

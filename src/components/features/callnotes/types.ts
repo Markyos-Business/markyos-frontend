@@ -86,6 +86,10 @@ export type FeedForm = {
   recipientName: string;
   answered: number;
   total: number;
+  /** How many questions it asks; a draft with none can't be shared yet. */
+  questions: number;
+  /** The client link's token while the link is live; null for a draft or a switched-off link. */
+  publicToken: string | null;
   date: string | null;
   at: string | null;
 };

@@ -108,10 +108,18 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
 
   return (
     <div className={`mk-surface overflow-hidden rounded-card bg-surface-1 ${className}`}>
-      {selectable && bulkActions && selected.length > 0 && (
-        <BulkBar count={selected.length} onClear={() => setSelected([])}>
-          {bulkActions(selected, () => setSelected([]))}
-        </BulkBar>
+      {/* Opens to its own height as a selection starts, and closes the same
+          way, so the table below slides rather than jumps. */}
+      {selectable && bulkActions && (
+        <div className="mk-collapse" data-open={selected.length > 0} inert={selected.length === 0}>
+          <div>
+            {selected.length > 0 && (
+              <BulkBar count={selected.length} onClear={() => setSelected([])}>
+                {bulkActions(selected, () => setSelected([]))}
+              </BulkBar>
+            )}
+          </div>
+        </div>
       )}
       {/* `relative`: the header's screen-reader-only labels are absolutely
           positioned, and without a positioned box here they'd sit against the
@@ -133,7 +141,10 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
               {rowActions && <th scope="col" className="w-12 bg-surface-2"><span className="sr-only">{t.rowActions}</span></th>}
             </tr>
           </thead>
-          <tbody>
+          {/* Keyed by the view (order, page, page size): changing it crossfades
+              the rows as a whole, not cell by cell. A data refresh with the
+              same view keeps the body, so nothing replays. */}
+          <tbody key={`${sort?.key ?? ""}:${sort?.dir ?? ""}:${page}:${pageSize}`} className="animate-fade-in">
             {error ? (
               <tr><td colSpan={colSpan}><ErrorState message={error} onRetry={onRetry} /></td></tr>
             ) : loading && !rows?.length ? (
@@ -153,7 +164,9 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
                     aria-selected={selectable ? isSelected : undefined}
                     onClick={onRowClick ? () => onRowClick(row) : undefined}
                     onKeyDown={onRowClick ? (e) => rowKey(e, row) : undefined}
-                    className={`${rowClasses} ${onRowClick ? "cursor-pointer outline-none hover:bg-surface-highlight focus-visible:bg-surface-highlight" : ""} ${isSelected ? "bg-accent-soft" : ""}`}
+                    // A row that arrives later (added, filtered in) fades in on its own;
+                    // selecting one crossfades its background.
+                    className={`${rowClasses} animate-fade-in transition-colors ${onRowClick ? "cursor-pointer outline-none hover:bg-surface-highlight focus-visible:bg-surface-highlight" : ""} ${isSelected ? "bg-accent-soft" : ""}`}
                   >
                     {selectable && (
                       <td className={`${cellClasses} w-12`} onClick={(e) => e.stopPropagation()}>

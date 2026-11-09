@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../primitives/Icon";
 
 type TabItem<T extends string = string> = { key: T; label: string; icon?: string };
@@ -22,11 +23,17 @@ type TabsProps<T extends string> = {
   className?: string;
 };
 
-const looks: Record<TabsVariant, { base: string; on: string; off: string }> = {
+/**
+ * `indicator` is the pill that slides under the active tab (text and pill
+ * styles); `on` is what the active tab itself keeps. The icon style keeps
+ * its solid buttons and has no indicator.
+ */
+const looks: Record<TabsVariant, { base: string; on: string; off: string; indicator?: string }> = {
   text: {
     base: "h-control-sm rounded-lg px-space-5 text-body font-medium",
-    on: "bg-surface-2 text-text shadow-edge",
+    on: "text-text",
     off: "text-text-muted hover:text-text",
+    indicator: "rounded-lg bg-surface-2 shadow-edge",
   },
   icon: {
     base: "h-control-sm mk-btn rounded-lg px-space-5 text-overline uppercase",
@@ -35,19 +42,44 @@ const looks: Record<TabsVariant, { base: string; on: string; off: string }> = {
   },
   pill: {
     base: "h-8 cursor-pointer rounded-full px-3.5 text-[12px] font-semibold",
-    on: "bg-accent-soft text-accent-on-soft",
+    on: "text-accent-on-soft",
     off: "bg-surface-1 text-text-muted",
+    indicator: "rounded-full bg-accent-soft",
   },
 };
 
 /**
- * A row of tabs. Render the panel keyed by `active`; it swaps at once. The row
- * scrolls sideways when it outgrows its container.
+ * A row of tabs. The active pill slides to the tab chosen (transform, the
+ * base duration) rather than jumping; it is placed without animation the
+ * first time, so a page never opens with it gliding. The row scrolls sideways
+ * when it outgrows its container.
  */
 const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text", className = "" }: TabsProps<T>) => {
   const look = looks[variant];
+  const row = useRef<HTMLDivElement>(null);
+  const [pill, setPill] = useState<{ x: number; width: number; moved: boolean } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!look.indicator) return;
+    const el = row.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!el) return;
+    const place = () => setPill((prev) => ({ x: el.offsetLeft, width: el.offsetWidth, moved: prev !== null }));
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [active, look.indicator, tabs.length]);
+
   return (
-    <div role="tablist" aria-label={label} className={`flex items-center gap-space-3 overflow-x-auto ${className}`}>
+    <div ref={row} role="tablist" aria-label={label} className={`relative flex items-center gap-space-3 overflow-x-auto ${className}`}>
+      {look.indicator && pill && (
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute start-0 top-0 h-full ${look.indicator} ${pill.moved ? "transition-[translate,width] duration-base ease-standard" : ""}`}
+          // Measured from the row's left edge, so a physical offset is right in both directions.
+          style={{ left: 0, insetInlineStart: "auto", translate: `${pill.x}px 0`, width: pill.width }}
+        />
+      )}
       {tabs.map(({ key, label: name, icon }) => (
         <button
           key={key}
@@ -55,9 +87,9 @@ const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text
           role="tab"
           aria-selected={active === key}
           onClick={() => onChange(key)}
-          className={`flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] ${look.base} ${
+          className={`relative flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] ${look.base} ${
             active === key ? look.on : look.off
-          }`}
+          } ${active === key && look.indicator && !pill ? look.indicator /* before the first measure */ : ""}`}
         >
           {icon && <Icon name={icon} size={16} />}
           {name}

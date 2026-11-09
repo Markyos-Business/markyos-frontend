@@ -93,8 +93,9 @@ const Popover = ({ button, label, align = "end", width = 260, className, trigger
         <div
           // A raised surface (spec §1.5): the card fill, its hairline and the
           // one shadow the system allows, for menus and overlays.
-          className={`absolute top-full z-dropdown mt-2 overflow-hidden rounded-card bg-surface-1 shadow-edge-pop ${aligns[align]} ${
-            closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
+          data-side="bottom"
+          className={`absolute top-full z-dropdown mt-2 origin-top overflow-hidden rounded-card bg-surface-1 shadow-edge-pop ${aligns[align]} ${
+            closing ? "pointer-events-none animate-scale-out" : "animate-scale-in"
           }`}
           style={{ width, maxWidth: "min(92vw, 520px)" }}
         >

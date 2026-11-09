@@ -4,6 +4,10 @@ import { AppProvider } from "@/contexts/AppContext";
 import { ToastProvider, DialogProvider } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/contexts/ThemeProvider";
+import { InterfaceLangSync } from "@/contexts/InterfaceLangSync";
+import { InterfaceUiStrings } from "@/contexts/InterfaceUiStrings";
+import { LANG_INIT_SCRIPT } from "@/lib/i18n/interfaceLang";
+import { SIDEBAR_INIT_SCRIPT } from "@/lib/sidebarRails";
 import "./tailwind.css";
 
 export const metadata: Metadata = {
@@ -14,7 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      // Arabic first: the pre-paint script below switches to English before
+      // anything draws when this browser or the website link chose it.
+      lang="ar"
+      dir="rtl"
       // The theme script below stamps data-theme before React hydrates, so the
       // server markup and the live document deliberately differ on this one
       // element. Suppressing here is the sanctioned way to say so; without it
@@ -31,14 +38,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             in the default dark palette and visibly flips to light on hydration
             for anyone who chose light. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SIDEBAR_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full bg-canvas text-text">
         <ThemeProvider>
           <AppProvider>
-            <ToastProvider>
-              <SyncNotices />
-              <DialogProvider>{children}</DialogProvider>
-            </ToastProvider>
+            <InterfaceUiStrings>
+              <ToastProvider>
+                <SyncNotices />
+                <InterfaceLangSync />
+                <DialogProvider>{children}</DialogProvider>
+              </ToastProvider>
+            </InterfaceUiStrings>
           </AppProvider>
         </ThemeProvider>
       </body>

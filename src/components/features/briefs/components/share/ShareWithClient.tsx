@@ -28,8 +28,8 @@ export function ShareWithClient({ analysis, isAr }: { analysis: BriefAnalysis; i
         open={share.open}
         title={t("Share with your client", "المشاركة مع عميلك")}
         description={t(
-          "A read-only link to the sections you choose. It cites only what the client wrote in their forms, never your call notes.",
-          "رابط للقراءة فقط للأقسام التي تختارها. يستشهد فقط بما كتبه العميل في نماذجه، وليس بملاحظات مكالماتك أبدًا."
+          "A read-only link to the sections you choose. It cites only what the client wrote in their questionnaires, never your call notes.",
+          "رابط للقراءة فقط للأقسام التي تختارها. يستشهد فقط بما كتبه العميل في استبياناته، وليس بملاحظات مكالماتك أبدًا."
         )}
         submitLabel={t("Create link", "إنشاء رابط")}
         onClose={share.close}

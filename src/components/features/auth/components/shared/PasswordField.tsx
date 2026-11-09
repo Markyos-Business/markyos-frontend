@@ -4,6 +4,7 @@ import { InputHTMLAttributes, ReactNode, useId, useState } from "react";
 import { FieldNote, inputClasses, labelClasses } from "@/components/form";
 import { IconButton } from "@/components/ui";
 import { scorePassword } from "../../utils/password";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> {
   label: string;
@@ -40,6 +41,7 @@ export function PasswordField({
   const noteId = `${id}-note`;
   const meterId = `${id}-meter`;
   const [shown, setShown] = useState(false);
+  const { c } = useAuthLang();
 
   const text = typeof value === "string" ? value : "";
   const rating = strength && text ? scorePassword(text) : null;
@@ -73,7 +75,7 @@ export function PasswordField({
           // The label says what the button does next, not what state the field
           // is in: "Show password" is an instruction, "Password hidden" is a
           // status, and a button should read as the former.
-          label={shown ? "Hide password" : "Show password"}
+          label={shown ? c.fields.hidePassword : c.fields.showPassword}
           icon={shown ? "eye-slash" : "eye"}
           className="absolute inset-e-1 top-1/2 -translate-y-1/2 text-text-muted"
         />
@@ -92,9 +94,9 @@ export function PasswordField({
                 />
               ))}
             </div>
-            <span className={`shrink-0 text-caption font-medium ${INK[rating.score]}`}>{rating.label}</span>
+            <span className={`shrink-0 text-caption font-medium ${INK[rating.score]}`}>{rating.label === "tooCommon" ? c.strength.tooCommon : rating.label === "tooSimple" ? c.strength.tooSimple : c.strength.levels[rating.score]}</span>
           </div>
-          {rating.advice && <span className="text-caption text-text-faint">{rating.advice}</span>}
+          {rating.advice && <span className="text-caption text-text-faint">{c.strength[rating.advice]}</span>}
         </div>
       )}
 

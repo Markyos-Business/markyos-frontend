@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Icon, PageHeader } from "@/components/ui";
+import { Button, Icon, PageHeader, Stagger } from "@/components/ui";
 import type { Workspace } from "@/types";
 import type { BrandSort } from "../constants";
+import type { BRANDS_COPY } from "../copy";
+import type { Lang } from "@/types/lang";
 import { WorkspaceCard } from "./WorkspaceCard";
 
 type BrandsViewProps = {
@@ -15,10 +17,12 @@ type BrandsViewProps = {
   brands: { workspace: Workspace; role: Parameters<typeof WorkspaceCard>[0]["role"] }[];
   atLimit: boolean;
   limitNote: string;
+  c: (typeof BRANDS_COPY)["en"];
+  lang: Lang;
 };
 
 /** The brands as cards, the way to make a new one (or the limit that stops it), and the Shared legend. */
-export function BrandsView({ title, description, sort, onToggleSort, onNew, brands, atLimit, limitNote }: BrandsViewProps) {
+export function BrandsView({ title, description, sort, onToggleSort, onNew, brands, atLimit, limitNote, c, lang }: BrandsViewProps) {
   return (
     <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
       <PageHeader
@@ -27,20 +31,20 @@ export function BrandsView({ title, description, sort, onToggleSort, onNew, bran
         actions={
           <>
             <Button variant="outline" size="sm" onClick={onToggleSort} icon={<Icon name="arrows-v" size={16} />}>
-              {sort === "updated" ? "Last edited" : "Name A–Z"}
+              {sort === "updated" ? c.lastEdited : c.nameAz}
             </Button>
             <Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} disabled={atLimit} title={atLimit ? limitNote : undefined} onClick={onNew}>
-              New workspace
+              {c.newWorkspace}
             </Button>
           </>
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {brands.map(({ workspace, role }) => (
           // A grid of its own, so the card still fills the cell.
           <div key={workspace.id} className="grid">
-            <WorkspaceCard workspace={workspace} role={role} />
+            <WorkspaceCard workspace={workspace} role={role} c={c} lang={lang} />
           </div>
         ))}
         {atLimit ? (
@@ -56,16 +60,15 @@ export function BrandsView({ title, description, sort, onToggleSort, onNew, bran
             className="mk-card rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong text-text-muted"
           >
             <Icon name="plus" size={22} />
-            <span className="text-body font-medium">New workspace</span>
+            <span className="text-body font-medium">{c.newWorkspace}</span>
           </Link>
         )}
-      </div>
+      </Stagger>
 
       {/* The one fact on this screen with a consequence outside the studio,
           and the legend for a badge that is otherwise left to be inferred. */}
       <div className="mt-auto text-caption text-text-faint">
-        A brand marked <span className="text-success">Shared</span> has a live client link — anyone holding it can open
-        the guideline. Switch it off in that brand&apos;s Settings.
+        {c.sharedLegendBefore} <span className="text-success">{c.shared}</span> {c.sharedLegendAfter}
       </div>
     </div>
   );

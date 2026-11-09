@@ -61,7 +61,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
     if (form) setHex(form.theme.accent ?? "");
   }, [form]);
 
-  if (editor.loadError) return <EmptyState icon="exclamation-circle" title={t("Couldn't open this form", "تعذّر فتح النموذج")} description={editor.loadError} />;
+  if (editor.loadError) return <EmptyState icon="exclamation-circle" title={t("Couldn't open this questionnaire", "تعذّر فتح الاستبيان")} description={editor.loadError} />;
   if (!form) return <Skeleton className="h-96 w-full rounded-card" />;
 
   const save = (patch: FormPatch) => run(() => updateForm(form.id, patch));
@@ -75,7 +75,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
     if (form.status === "draft" && !form.recipientEmail) {
       const ok = await confirm({
         title: t("Send without an email?", "الإرسال دون بريد إلكتروني؟"),
-        body: t("The form is marked as sent and you'll copy the link to your client yourself.", "سيُعلَّم النموذج كمُرسل، وتنسخ الرابط لعميلك بنفسك."),
+        body: t("The questionnaire is marked as sent and you'll copy the link to your client yourself.", "سيُعلَّم الاستبيان كمُرسل، وتنسخ الرابط لعميلك بنفسك."),
         confirmLabel: t("Mark as sent", "تعليمه كمُرسل"),
         isAr,
       });
@@ -99,7 +99,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
         </div>
-        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />}>
+        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
         {form.status !== "draft" && (
@@ -282,7 +282,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
 
             <Row
               label={t("Save and resume", "الحفظ والمتابعة لاحقًا")}
-              hint={t("The client can leave and come back to finish.", "يمكن للعميل المغادرة والعودة لإكمال النموذج.")}
+              hint={t("The client can leave and come back to finish.", "يمكن للعميل المغادرة والعودة لإكمال الاستبيان.")}
               right={
                 <Switch label={t("Save and resume", "الحفظ والمتابعة")} checked={form.settings.allowSaveAndResume} onToggle={() => save({ settings: { allowSaveAndResume: !form.settings.allowSaveAndResume } })} />
               }

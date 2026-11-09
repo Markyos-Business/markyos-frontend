@@ -7,6 +7,7 @@ import { Button } from "../../ui/buttons/Button";
 import { IconButton } from "../../ui/buttons/IconButton";
 import { Icon } from "../../ui/primitives/Icon";
 import { useToast } from "../../ui/overlays/Toast";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { FieldLabel } from "../fields/InputField";
 
 type FileFieldVariant = "dropzone" | "compact";
@@ -89,19 +90,20 @@ const FileField = ({
   disabled = false,
   required = false,
 }: FileFieldProps) => {
+  const { t } = useUiStrings();
   const id = `ff-${useId()}`;
   const inputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
   const limit = `${Math.round(maxBytes / MB)}MB`;
-  const fallback = `${acceptLabel} – max ${limit}`;
+  const fallback = t.fileLimit(acceptLabel, limit);
 
   const refuse = (message: string) => {
     showToast(message, "danger");
     onError?.(message);
   };
   const take = (selected: File) => {
-    if (!accepts(selected, accept)) return refuse(`"${selected.name}" isn't a ${acceptLabel} file.`);
-    if (selected.size > maxBytes) return refuse(`"${selected.name}" is larger than ${limit}.`);
+    if (!accepts(selected, accept)) return refuse(t.wrongFileType(selected.name, acceptLabel));
+    if (selected.size > maxBytes) return refuse(t.fileTooLarge(selected.name, limit));
     onError?.("");
     onFileChange(selected);
   };
@@ -147,10 +149,10 @@ const FileField = ({
             <span className="block truncate text-caption text-text-muted">{file ? file.name : (description ?? fallback)}</span>
           )}
         </span>
-        {file && !uploading && <IconButton icon="times" label={`Remove ${file.name}`} disabled={disabled} onClick={onRemove} className="text-text-muted hover:text-text" />}
+        {file && !uploading && <IconButton icon="times" label={t.remove(file.name)} disabled={disabled} onClick={onRemove} className="text-text-muted hover:text-text" />}
         {!file && (
           <Button variant="outline" size="sm" disabled={disabled} onClick={() => inputRef.current?.click()}>
-            Upload
+            {t.upload}
           </Button>
         )}
         {input}
@@ -177,7 +179,7 @@ const FileField = ({
           <Icon name="upload" size={22} />
         </span>
         <span className="text-body font-medium text-text">
-          Drag and drop, or <span className="text-accent-text underline">browse</span>
+          {t.dragOrBrowse} <span className="text-accent-text underline">{t.browse}</span>
         </span>
         <span className="mt-space-2 text-caption text-text-muted">{fallback}</span>
         {input}

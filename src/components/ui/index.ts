@@ -22,3 +22,4 @@ export * from "./async";
 export * from "./faq";
 export * from "./i18n";
 export * from "./charts";
+export * from "./motion";

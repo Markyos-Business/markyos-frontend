@@ -129,8 +129,8 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
       <PageHeader
         title={note ? t("Edit call notes", "تعديل ملاحظات المكالمة") : t("Add call notes", "إضافة ملاحظات مكالمة")}
         description={t(
-          "Paste your notes or a transcript. They sit next to the form answers, and the analysis reads both.",
-          "الصق ملاحظاتك أو النص المفرّغ. تُحفظ بجانب إجابات النموذج، ويقرأ التحليل كليهما."
+          "Paste your notes or a transcript. They sit next to the questionnaire answers, and the analysis reads both.",
+          "الصق ملاحظاتك أو النص المفرّغ. تُحفظ بجانب إجابات الاستبيان، ويقرأ التحليل كليهما."
         )}
         actions={
           <div className="flex items-center gap-space-4">
@@ -192,7 +192,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
                 onChange={(e) => change({ durationMinutes: e.target.value ? Number(e.target.value) : null })}
               />
               <SelectField
-                label={t("Related form", "النموذج المرتبط")}
+                label={t("Related questionnaire", "الاستبيان المرتبط")}
                 value={draft.discoveryFormId ?? ""}
                 onChange={(value) => change({ discoveryFormId: value || null })}
                 options={[{ value: "", label: t("None", "لا شيء") }, ...(forms.data ?? []).map((f) => ({ value: f.id, label: f.name }))]}

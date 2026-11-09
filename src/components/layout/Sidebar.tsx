@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
 import { AppSidebar, SidebarItem } from "./AppSidebar";
+import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 
 interface NavItem {
   key: string;
@@ -89,7 +90,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       label={isAr ? "تنقل العلامة" : "Brand"}
       title={workspace.name}
       titleHref="/brands"
-      storageKey="markyos:ui:sidebar-collapsed"
+      storageKey={SIDEBAR_RAILS.studio}
       isAr={isAr}
       collapseLabels={
         isAr ? { collapse: "طيّ القائمة", expand: "توسيع القائمة" } : { collapse: "Collapse sidebar", expand: "Expand sidebar" }

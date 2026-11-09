@@ -60,11 +60,11 @@ const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButto
         <div className="flex flex-col gap-space-4 p-space-5">
           <div className="flex items-center justify-between">
             <button type="button" aria-label={t.previousMonth} onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid size-8 place-items-center rounded-lg hover:bg-ink-soft">
-              <Icon name="angle-left" size={16} className="rtl:-scale-x-100" />
+              <Icon name="angle-left" size={16} />
             </button>
             <span className="text-body font-medium text-text">{monthName}</span>
             <button type="button" aria-label={t.nextMonth} onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid size-8 place-items-center rounded-lg hover:bg-ink-soft">
-              <Icon name="angle-right" size={16} className="rtl:-scale-x-100" />
+              <Icon name="angle-right" size={16} />
             </button>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center">

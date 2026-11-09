@@ -16,8 +16,9 @@ type FaqProps = {
 };
 
 /**
- * Questions and answers, one card each. A card opens at once, with no height
- * animation (spec §1.8), and the open card takes the accent edge. The heading
+ * Questions and answers, one card each. A card opens to its own height (grid
+ * rows, no measuring) as its answer fades in, and the open card takes the
+ * accent edge. The heading
  * above it is the caller's.
  */
 const Faq = ({ items, defaultOpenIndex = 0, allowMultiple = false, className = "" }: FaqProps) => {
@@ -56,16 +57,18 @@ const Faq = ({ items, defaultOpenIndex = 0, allowMultiple = false, className = "
                 {item.question}
               </span>
               <Icon
-                name={isOpen ? "angle-up" : "angle-down"}
+                name="angle-down"
                 size={18}
-                className={`shrink-0 ${isOpen ? "text-accent-text" : "text-text-muted"}`}
+                className={`shrink-0 transition-[rotate,color] duration-base ${isOpen ? "rotate-180 text-accent-text" : "text-text-muted"}`}
               />
             </button>
-            {/* `hidden` takes closed content out of reach of Tab and screen
-                readers, not just out of sight. */}
-            <div id={panelId} role="region" aria-label={item.question} hidden={!isOpen}>
-              <div dir="auto" className="bidi-auto px-space-8 pb-space-8 text-body text-text-muted shadow-rule-t pt-space-6">
-                {item.answer}
+            {/* `inert` takes closed content out of reach of Tab and screen
+                readers, not just out of sight, while it can still animate shut. */}
+            <div id={panelId} role="region" aria-label={item.question} inert={!isOpen} className="mk-collapse" data-open={isOpen}>
+              <div>
+                <div dir="auto" className="bidi-auto px-space-8 pb-space-8 text-body text-text-muted shadow-rule-t pt-space-6">
+                  {item.answer}
+                </div>
               </div>
             </div>
           </div>

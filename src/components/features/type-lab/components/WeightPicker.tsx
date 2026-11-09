@@ -3,10 +3,10 @@
 import { MONO, WEIGHTS } from "../constants";
 
 /** The five weights to try, the chosen one in solid ink. */
-export function WeightPicker({ weight, onWeight }: { weight: number; onWeight: (w: number) => void }) {
+export function WeightPicker({ weight, onWeight, label }: { weight: number; onWeight: (w: number) => void; label: string }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-text-muted">Weight</span>
+      <span className="text-[12px] font-medium text-text-muted">{label}</span>
       <div className="flex gap-1.5">
         {WEIGHTS.map((w) => (
           <button

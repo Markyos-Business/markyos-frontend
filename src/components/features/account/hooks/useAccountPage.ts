@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui";
 import type { Workspace } from "@/types";
 import { isAccountTab } from "../constants";
 import type { AccountTab } from "../types";
+import { useAccountLang } from "./shared/useAccountLang";
 
 const richnessOf = (w: Workspace) =>
   w.colors.length +
@@ -21,6 +22,7 @@ const richnessOf = (w: Workspace) =>
  * audit log. Reads the URL, so it renders under a Suspense boundary.
  */
 export function useAccountPage() {
+  const { t } = useAccountLang();
   const { state, hydrated, setSso, myWorkspaces } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -57,7 +59,7 @@ export function useAccountPage() {
     a.click();
     a.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 4000);
-    showToast("Audit log exported.", "success");
+    showToast(t("Audit log exported.", "صُدّر سجل التدقيق."), "success");
   }
 
   return {

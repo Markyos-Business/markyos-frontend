@@ -1,11 +1,13 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import { useNarrowViewport } from "@/hooks/useNarrowViewport";
 import { useSidebarPlacement } from "../SidebarDrawer";
+import { BetaTag, MARKYOS_BETA, MarkyosLogo } from "../../ui/primitives/MarkyosLogo";
+import { SIDEBAR_RAILS, type SidebarRail } from "@/lib/sidebarRails";
 
 export interface SidebarItem {
   key: string;
@@ -79,6 +81,24 @@ export function AppSidebar({
   // compact form, and a rail inside a drawer would be a rail with nowhere to go.
   const inDrawer = useSidebarPlacement() === "drawer";
   const collapsed = !inDrawer && (narrow || preference);
+  // Which rail this is, for the pre-paint script and the width transition.
+  const rail = (Object.keys(SIDEBAR_RAILS) as SidebarRail[]).find((k) => SIDEBAR_RAILS[k] === storageKey);
+  // On screen and settled: from the frame after mount, collapsing animates.
+  // Before that, the remembered state just applies, so a page load never plays it.
+  const [ready, setReady] = useState(false);
+  // Labels slide in only when the person opens the rail, never on a load.
+  const [opened, setOpened] = useState(false);
+  const toggle = useCallback(
+    (next: boolean) => {
+      if (!next) setOpened(true);
+      setCollapsed(next);
+    },
+    [setCollapsed]
+  );
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   /**
    * `[` collapses and expands the rail.
@@ -93,11 +113,11 @@ export function AppSidebar({
       const el = document.activeElement as HTMLElement | null;
       if (el && (el.isContentEditable || el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
       e.preventDefault();
-      setCollapsed(!collapsed);
+      toggle(!collapsed);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [collapsed, setCollapsed, inDrawer]);
+  }, [collapsed, toggle, inDrawer]);
 
   function renderItem(item: SidebarItem, extra = "") {
     const { active, badge, label: name } = item;
@@ -123,8 +143,13 @@ export function AppSidebar({
           <Icon name={item.icon} size={22} className={`shrink-0 ${active ? "text-accent" : ""}`} />
           {!collapsed && (
             <>
-              <span className="flex-1 truncate text-body font-medium">{name}</span>
-              {badge !== undefined && <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>}
+              {/* Slide in as the rail opens; on collapse they're gone at once, before the width finishes. */}
+              <span className={`flex-1 truncate text-body font-medium ${opened ? "animate-label-in" : ""}`}>{name}</span>
+              {badge !== undefined && (
+                <span className={opened ? "animate-label-in" : undefined}>
+                  <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>
+                </span>
+              )}
             </>
           )}
         </span>
@@ -149,9 +174,10 @@ export function AppSidebar({
     <nav
       aria-label={label}
       {...rootProps}
-      // Collapsing snaps rather than animating its width: a width animation
-      // reflows the whole page on every frame (docs/ui/motion.md). In the
-      // phone drawer it fills the drawer, which draws its own edge.
+      // The width animates between open and rail (tailwind/motion.js), once
+      // ready. In the phone drawer it fills the drawer, which draws its own edge.
+      data-rail={inDrawer ? undefined : rail}
+      data-ready={ready && !inDrawer ? "" : undefined}
       // The 1px separator on the inline-end side is the hairline at 10%.
       className={`flex shrink-0 flex-col gap-space-8 overflow-y-auto overflow-x-hidden py-space-8 ${
         inDrawer
@@ -168,15 +194,16 @@ export function AppSidebar({
           className={`mk-tap min-w-0 gap-space-4 ${collapsed ? "min-h-8 min-w-8 justify-center" : ""}`}
           title={collapsed ? title : undefined}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/markyos-mark.svg" alt="Markyos" className="h-[22px] w-auto shrink-0 [filter:var(--chrome-mark-invert)]" />
+          <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />
           {!collapsed && (
             <span className="flex-1 truncate text-h5 font-medium">{title}</span>
           )}
+          {/* The tag rides with the title, not the mark: a collapsed rail has room for the mark alone. */}
+          {!collapsed && MARKYOS_BETA && <BetaTag isAr={isAr} />}
           {!collapsed && titleBadge}
         </Link>
         {!collapsed && !inDrawer && (
-          <CollapseButton collapsed={collapsed} isAr={isAr} labels={collapseLabels} onClick={() => setCollapsed(true)} />
+          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(true)} />
         )}
       </div>
 
@@ -184,7 +211,7 @@ export function AppSidebar({
           a button that does nothing is worse than no button. */}
       {collapsed && !narrow && (
         <div className="-mt-space-5 flex shrink-0 justify-center">
-          <CollapseButton collapsed={collapsed} isAr={isAr} labels={collapseLabels} onClick={() => setCollapsed(false)} />
+          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(false)} />
         </div>
       )}
 
@@ -214,19 +241,17 @@ export function AppSidebar({
 
 function CollapseButton({
   collapsed,
-  isAr,
   labels,
   onClick,
 }: {
   collapsed: boolean;
-  isAr: boolean;
   labels: { collapse: string; expand: string };
   onClick: () => void;
 }) {
   const label = collapsed ? labels.expand : labels.collapse;
-  // The chevron points the way the panel will move, which in Arabic is the
-  // other way — a fixed "«" would point into the page on an RTL layout.
-  const pointsStart = collapsed === isAr;
+  // The chevron points the way the panel will move: toward the reading start
+  // to collapse, and it turns half a circle to point back once collapsed.
+  // The icon set mirrors it in Arabic on its own.
   return (
     <button
       type="button"
@@ -236,7 +261,7 @@ function CollapseButton({
       title={`${label} — [`}
       className="grid size-7 shrink-0 place-items-center rounded-md text-text-muted transition-colors"
     >
-      <Icon name={pointsStart ? "angle-double-left" : "angle-double-right"} size={16} />
+      <Icon name="angle-double-left" size={16} className={`transition-[rotate] duration-base ${collapsed ? "rotate-180" : ""}`} />
     </button>
   );
 }

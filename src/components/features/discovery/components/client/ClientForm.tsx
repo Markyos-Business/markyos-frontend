@@ -209,7 +209,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
               <div>
                 <button type="button" onClick={() => go(1)} className="flex h-11 items-center gap-space-3 rounded-lg bg-[var(--f-accent)] px-space-8 text-body font-medium text-[var(--f-accent-ink)]">
                   {c("start")}
-                  <Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />
+                  <Icon name="arrow-right" size={18} />
                 </button>
               </div>
             </div>
@@ -262,7 +262,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
                     onClick={() => go(step - 1)}
                     className="flex h-11 items-center gap-space-3 rounded-lg px-space-6 text-body font-medium text-[var(--f-text)] shadow-[inset_0_0_0_1px_var(--f-line)]"
                   >
-                    <Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />
+                    <Icon name="arrow-left" size={18} />
                     {c("back")}
                   </button>
                   <button
@@ -272,7 +272,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
                     className="flex h-11 items-center gap-space-3 rounded-lg bg-[var(--f-accent)] px-space-8 text-body font-medium text-[var(--f-accent-ink)] disabled:opacity-70"
                   >
                     {last ? (submitting ? c("submitting") : c("submit")) : c("next")}
-                    {!last && <Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />}
+                    {!last && <Icon name="arrow-right" size={18} />}
                   </button>
                 </div>
               </>

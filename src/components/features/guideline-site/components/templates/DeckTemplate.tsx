@@ -265,7 +265,7 @@ export function DeckTemplate(props: TemplateProps) {
                     display: "flex",
                     gap: 40,
                     alignItems: "baseline",
-                    textAlign: isAr ? "right" : "left",
+                    textAlign: "start",
                     cursor: "pointer",
                     background: "transparent",
                     padding: "14px 0",
@@ -1084,7 +1084,7 @@ function DeckChrome({
       <span style={{ marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8 }}>
         {pill(
           <>
-            <Icon name={isAr ? "angle-right" : "angle-left"} size={12} />
+            <Icon name="angle-left" size={12} />
             {isAr ? "السابق" : "Prev"}
           </>,
           () => onStep(-1),
@@ -1093,7 +1093,7 @@ function DeckChrome({
         {pill(
           <>
             {isAr ? "التالي" : "Next"}
-            <Icon name={isAr ? "angle-left" : "angle-right"} size={12} />
+            <Icon name="angle-right" size={12} />
           </>,
           () => onStep(1),
           "next"

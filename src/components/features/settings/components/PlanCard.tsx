@@ -8,10 +8,11 @@ type PlanCardProps = {
   active: boolean;
   loading: boolean;
   onSelect: () => void;
+  isAr: boolean;
 };
 
 /** One plan: its price, what it unlocks, and choosing it. */
-export function PlanCard({ name, price, period, description, active, loading, onSelect }: PlanCardProps) {
+export function PlanCard({ name, price, period, description, active, loading, onSelect, isAr }: PlanCardProps) {
   return (
     <div className={`flex flex-col gap-3 rounded-xl bg-surface-2 p-4 ${active ? "shadow-[inset_0_0_0_1px_rgba(0,153,255,.5)]" : ""}`}>
       <div>
@@ -23,7 +24,7 @@ export function PlanCard({ name, price, period, description, active, loading, on
       </div>
       <p className="flex-1 text-[12px] text-text-muted">{description}</p>
       <Button variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={active || loading}>
-        {active ? "Active" : loading ? "Redirecting…" : "Choose plan"}
+        {active ? (isAr ? "مفعّلة" : "Active") : loading ? (isAr ? "جارٍ التحويل…" : "Redirecting…") : isAr ? "اختر الخطة" : "Choose plan"}
       </Button>
     </div>
   );

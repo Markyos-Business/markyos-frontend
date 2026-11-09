@@ -7,6 +7,7 @@ import { useStudioPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import type { StartMode } from "../constants";
 import { useBrandImport } from "./import/useBrandImport";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /** The new-brand page: start from a name or from a guideline file, unless the account is at its brand limit. */
 export function useNewBrandPage() {
@@ -17,6 +18,7 @@ export function useNewBrandPage() {
   const importer = useBrandImport();
   const [mode, setMode] = useState<StartMode>("scratch");
   const [name, setName] = useState("");
+  const { isAr } = useInterfaceLang();
   if (!ready) return null;
 
   const type = ACCOUNT_TYPES[accountTypeOf(account)];
@@ -27,8 +29,10 @@ export function useNewBrandPage() {
   if (brandLimit !== null && owned >= brandLimit) {
     return {
       limit: {
-        title: `You're at your ${type.label.toLowerCase()} limit`,
-        description: `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`,
+        title: isAr ? `وصلت إلى حد حساب ${type.arLabel}` : `You're at your ${type.label.toLowerCase()} limit`,
+        description: isAr
+          ? `حسابات ${type.arLabel} تملك حتى ${brandLimit} ${brandLimit === 1 ? type.arHome.noun : type.arHome.nounPlural}. تواصل مع ماركيوس لتغيير خطتك.`
+          : `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`,
       },
       view: null,
     };
@@ -51,7 +55,7 @@ export function useNewBrandPage() {
         logout();
         router.push("/login");
       },
-      scratch: { title: type.newBrand.title, description: type.newBrand.description, name, onName: setName, onSubmit: submit },
+      scratch: { ...(isAr ? type.arNewBrand : type.newBrand), name, onName: setName, onSubmit: submit },
       importer,
     },
   };

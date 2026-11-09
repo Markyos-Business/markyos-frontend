@@ -33,6 +33,19 @@ function applyTheme(choice: ThemeChoice) {
   document.documentElement.setAttribute("data-theme", resolve(choice));
 }
 
+/**
+ * Switches the theme with every transition paused, so the swap is instant:
+ * otherwise each button and card would crossfade its colours on its own clock
+ * and the page would flash. Released two frames later, once the new colours
+ * have painted.
+ */
+function switchTheme(choice: ThemeChoice) {
+  const root = document.documentElement;
+  root.setAttribute("data-theme-switching", "");
+  applyTheme(choice);
+  requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute("data-theme-switching")));
+}
+
 interface ThemeValue {
   choice: ThemeChoice;
   resolved: "light" | "dark";
@@ -74,7 +87,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onChange = () => {
       setResolved(resolve("system"));
-      applyTheme("system");
+      switchTheme("system");
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -83,7 +96,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setChoice = useCallback((next: ThemeChoice) => {
     setChoiceState(next);
     setResolved(resolve(next));
-    applyTheme(next);
+    switchTheme(next);
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
@@ -120,7 +133,12 @@ export function ThemeToggle({ isAr = false }: { isAr?: boolean }) {
             className="h-7 w-7 grid place-items-center rounded-full cursor-pointer"
             style={{ background: active ? "var(--surface-0)" : "transparent", color: active ? "var(--accent)" : "var(--text-faint)" }}
           >
-            <Icon name={o.icon} size={12} />
+            {/* The chosen one turns into place; the other turns away and settles smaller. */}
+            <Icon
+              name={o.icon}
+              size={12}
+              className={`mk-keep-motion transition-[rotate,scale] duration-base ease-out ${active ? "rotate-0 scale-100" : "-rotate-45 scale-90"}`}
+            />
           </button>
         );
       })}

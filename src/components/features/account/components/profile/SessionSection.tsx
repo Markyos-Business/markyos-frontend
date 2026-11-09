@@ -8,6 +8,7 @@ import { formatRelative } from "@/lib/utils";
 import type { Account } from "@/types";
 import type { MySessionsState } from "../../hooks/profile/useMySessions";
 import type { MySession } from "../../types";
+import { useAccountLang } from "../../hooks/shared/useAccountLang";
 
 type SessionSectionProps = { account: Account; sessions: MySessionsState };
 
@@ -15,21 +16,26 @@ type SessionSectionProps = { account: Account; sessions: MySessionsState };
 export function SessionSection({ account, sessions }: SessionSectionProps) {
   const { logout } = useApp();
   const { showToast } = useToast();
+  const { t, isAr } = useAccountLang();
   const signOutHere = () => {
     logout();
-    showToast("Signed out.");
+    showToast(t("Signed out.", "تم تسجيل الخروج."));
   };
 
   // The browser-only build has one session: this tab's.
   if (!API_ENABLED) {
     return (
-      <Section title="Session" icon="lock">
+      <Section title={t("Session", "الجلسة")} icon="lock">
         <Row
-          label="Signed in"
-          hint={`Since this browser last authenticated${account.createdAt ? ` · account created ${formatRelative(account.createdAt)}` : ""}.`}
+          label={t("Signed in", "مسجّل الدخول")}
+          hint={
+            isAr
+              ? `منذ آخر تسجيل دخول في هذا المتصفح${account.createdAt ? ` · أُنشئ الحساب ${formatRelative(account.createdAt)}` : ""}.`
+              : `Since this browser last authenticated${account.createdAt ? ` · account created ${formatRelative(account.createdAt)}` : ""}.`
+          }
           right={
             <Button variant="outline" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={signOutHere}>
-              Sign out
+              {t("Sign out", "تسجيل الخروج")}
             </Button>
           }
         />
@@ -40,32 +46,32 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
   const columns: DataColumn<MySession>[] = [
     {
       key: "device",
-      header: "Device",
+      header: t("Device", "الجهاز"),
       sortable: false,
       cell: (s) => (
         <div className="flex flex-wrap items-center gap-space-4">
           <Icon name={s.mobile ? "mobile" : "laptop"} size={18} className="text-text-muted" />
           <span className="font-medium text-text">{sessions.deviceName(s)}</span>
-          {s.current && <Tag tone="primary">This browser</Tag>}
+          {s.current && <Tag tone="primary">{t("This browser", "هذا المتصفح")}</Tag>}
         </div>
       ),
     },
-    { key: "ip", header: "IP address", sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell" },
+    { key: "ip", header: t("IP address", "عنوان IP"), sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell" },
     {
       key: "lastSeen",
-      header: "Last active",
+      header: t("Last active", "آخر نشاط"),
       sortable: false,
-      cell: (s) => <span className="text-text-muted">{s.current ? "Now" : formatRelative(Date.parse(s.lastSeenAt))}</span>,
+      cell: (s) => <span className="text-text-muted">{s.current ? t("Now", "الآن") : formatRelative(Date.parse(s.lastSeenAt))}</span>,
     },
     {
       key: "action",
-      header: "Sign out",
+      header: t("Sign out", "تسجيل الخروج"),
       hideHeader: true,
       sortable: false,
       className: "text-end",
       cell: (s) => (
         <Button variant="outline" size="xs" onClick={() => (s.current ? signOutHere() : sessions.signOut(s))}>
-          Sign out
+          {t("Sign out", "تسجيل الخروج")}
         </Button>
       ),
     },
@@ -73,19 +79,19 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
 
   return (
     <Section
-      title="Sessions"
+      title={t("Sessions", "الجلسات")}
       icon="lock"
       right={
         sessions.others > 0 ? (
           <Button variant="danger-soft" size="sm" onClick={sessions.signOutOthers}>
-            Sign out of other browsers
+            {t("Sign out of other browsers", "تسجيل الخروج من المتصفحات الأخرى")}
           </Button>
         ) : undefined
       }
     >
       <DataTable
-        label="Signed-in browsers"
-        itemLabel="sessions"
+        label={t("Signed-in browsers", "المتصفحات المسجّلة")}
+        itemLabel={t("sessions", "جلسات")}
         columns={columns}
         rows={sessions.data ?? undefined}
         getRowId={(s) => s.id}
@@ -93,7 +99,7 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
         loading={sessions.loading}
         error={sessions.error}
         onRetry={sessions.reload}
-        empty={<p className="p-space-6 text-caption text-text-muted">Only this browser is signed in.</p>}
+        empty={<p className="p-space-6 text-caption text-text-muted">{t("Only this browser is signed in.", "هذا المتصفح وحده مسجّل الدخول.")}</p>}
         stickyHeader={false}
       />
     </Section>

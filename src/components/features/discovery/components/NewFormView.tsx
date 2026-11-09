@@ -40,7 +40,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
 
   async function create() {
     const field: typeof errors = {};
-    if (!name.trim()) field.name = isAr ? "سمِّ النموذج." : "Name the form.";
+    if (!name.trim()) field.name = isAr ? "سمِّ الاستبيان." : "Name the questionnaire.";
     if (!template) field.template = isAr ? "اختر قالبًا أو ابدأ من الصفر." : "Pick a template, or start blank.";
     setErrors(field);
     if (Object.keys(field).length) return;
@@ -64,7 +64,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
-        title={isAr ? "نموذج جديد" : "New form"}
+        title={isAr ? "استبيان جديد" : "New questionnaire"}
         description={isAr ? "اختر من أين تبدأ؛ يمكنك تعديل كل سؤال لاحقًا." : "Choose a starting point; every question can be edited after."}
       />
 
@@ -73,7 +73,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
       <section className="mk-surface flex flex-col gap-space-8 rounded-card bg-surface-1 p-space-10">
         <div className="grid grid-cols-1 gap-space-8 md:grid-cols-2">
           <InputField
-            label={isAr ? "اسم النموذج" : "Form name"}
+            label={isAr ? "اسم الاستبيان" : "Questionnaire name"}
             placeholder={isAr ? "استكشاف هوية مقهى الرياض" : "Riyadh café discovery"}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -90,7 +90,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
         </div>
         <div className="grid grid-cols-1 gap-space-8 md:grid-cols-2">
           <RadioField
-            label={isAr ? "لغات النموذج" : "Form languages"}
+            label={isAr ? "لغات الاستبيان" : "Questionnaire languages"}
             value={languages}
             onChange={(v) => setLanguages(v as LanguageChoice)}
             options={[
@@ -142,7 +142,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
               {
                 value: BLANK,
                 label: isAr ? "من الصفر" : "Start blank",
-                hint: isAr ? "نموذج فارغ تضيف إليه أسئلة من المكتبة." : "An empty form you fill from the question library.",
+                hint: isAr ? "استبيان فارغ تضيف إليه أسئلة من المكتبة." : "An empty questionnaire you fill from the question library.",
                 icon: "plus",
               },
             ]}
@@ -185,8 +185,8 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
         <Button variant="outline" onClick={onCancel}>
           {isAr ? "إلغاء" : "Cancel"}
         </Button>
-        <Button variant="primary" onClick={() => void create()} disabled={busy} icon={<Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />}>
-          {busy ? (isAr ? "جارٍ الإنشاء…" : "Creating…") : isAr ? "إنشاء النموذج" : "Create form"}
+        <Button variant="primary" onClick={() => void create()} disabled={busy} icon={<Icon name="arrow-right" size={18} />}>
+          {busy ? (isAr ? "جارٍ الإنشاء…" : "Creating…") : isAr ? "إنشاء الاستبيان" : "Create questionnaire"}
         </Button>
       </div>
     </div>

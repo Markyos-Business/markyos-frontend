@@ -26,7 +26,8 @@ const sizes: Record<ButtonSize, string> = {
 };
 
 const variants: Record<Exclude<ButtonVariant, "link">, string> = {
-  primary: "bg-accent text-accent-ink",
+  // The one press with movement: a primary action dips to 98% for a beat.
+  primary: "bg-accent text-accent-ink active:not-disabled:scale-[0.98]",
   outline: "bg-ink-soft text-text shadow-edge",
   ghost: "bg-accent-soft text-accent-on-soft",
   // The raised neutral fill (spec §2.3): a quiet action that still reads as a button.

@@ -75,7 +75,7 @@ const TablePagination = ({
           disabled={currentPage <= 1 || loading}
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         >
-          <Icon name="arrow-left" size={18} className="rtl:-scale-x-100" />
+          <Icon name="arrow-left" size={18} />
           {t.prev}
         </button>
         {pageWindow(currentPage, pages).map((page, i) =>
@@ -106,7 +106,7 @@ const TablePagination = ({
           onClick={() => onPageChange(currentPage + 1)}
         >
           {t.next}
-          <Icon name="arrow-right" size={18} className="rtl:-scale-x-100" />
+          <Icon name="arrow-right" size={18} />
         </button>
       </div>
     </nav>

@@ -58,7 +58,7 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
           <EditableField
             key={f.key}
             label={isAr ? f.ar : f.en}
-            placeholder={f.placeholder}
+            placeholder={isAr ? f.arPlaceholder : f.placeholder}
             value={field === f.key ? draft : ws[f.key]}
             editing={field === f.key}
             onStart={() => start(f.key)}

@@ -1,11 +1,14 @@
 /** A labelled count per category, with a meter against the largest. */
 export function Breakdown({
   title,
+  empty,
   counts,
   labels,
   order,
 }: {
   title: string;
+  /** Said when there is nothing to count. */
+  empty: string;
   counts: Record<string, number>;
   labels: Record<string, string>;
   /** Categories listed first, in this order; the rest follow by size. */
@@ -23,7 +26,7 @@ export function Breakdown({
     <section className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-space-8">
       <h2 className="text-h5 font-medium">{title}</h2>
       {keys.length === 0 ? (
-        <p className="text-caption text-text-faint">Nothing yet.</p>
+        <p className="text-caption text-text-faint">{empty}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {keys.map((k) => (

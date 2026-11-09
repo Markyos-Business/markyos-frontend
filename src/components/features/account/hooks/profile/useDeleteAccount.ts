@@ -6,12 +6,14 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { Account } from "@/types";
 import { deleteMyAccount } from "../../services/accountService";
+import { useAccountLang } from "../shared/useAccountLang";
 
 /**
  * Deleting the account, at once and for good. The dialog names what goes with
  * it: the brands they own, and how many people lose access to them.
  */
 export function useDeleteAccount(account: Account) {
+  const { t } = useAccountLang();
   const { myWorkspaces, logout } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -30,14 +32,14 @@ export function useDeleteAccount(account: Account) {
   }
 
   async function submit(): Promise<string | void> {
-    if (!proof.trim()) return hasPassword ? "Enter your password." : "Type your email to confirm.";
+    if (!proof.trim()) return hasPassword ? t("Enter your password.", "أدخل كلمة المرور.") : t("Type your email to confirm.", "اكتب بريدك للتأكيد.");
     try {
       await deleteMyAccount(hasPassword ? { password: proof } : { email: proof.trim() });
     } catch (err) {
       return err instanceof Error ? err.message : String(err);
     }
     logout();
-    showToast("Your account has been deleted.", "success");
+    showToast(t("Your account has been deleted.", "تم حذف حسابك."), "success");
     router.replace("/login");
   }
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../services/brandImport";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type ImportStage = "idle" | "extracting" | "review";
 
@@ -21,16 +22,18 @@ export function useBrandImport() {
   const [pickedColors, setPickedColors] = useState<Set<string>>(new Set());
   const [latinFont, setLatinFont] = useState<string>("");
   const [arabicFont, setArabicFont] = useState<string>("");
+  const { isAr } = useInterfaceLang();
+  const t = (en: string, ar: string) => (isAr ? ar : en);
 
   async function start(file: File) {
     setFileName(file.name);
-    setProgress("Opening the document…");
+    setProgress(t("Opening the document…", "جارٍ فتح المستند…"));
     setStage("extracting");
     setAnalysis(null);
     try {
-      const result = await analyzeBrandDocument(file, setProgress);
+      const result = await analyzeBrandDocument(file, setProgress, isAr);
       setAnalysis(result);
-      setImportName(nameFromFileName(file.name) || "Imported Brand");
+      setImportName(nameFromFileName(file.name) || t("Imported Brand", "علامة مستوردة"));
       // Pre-select the colours that read as brand colours rather than page
       // furniture — anything the studio disagrees with is one click away.
       setPickedColors(new Set(suggestedColors(result.colors).map((c) => c.hex)));
@@ -38,14 +41,14 @@ export function useBrandImport() {
       setArabicFont(result.fonts.find((f) => f.script === "arabic")?.name ?? "");
       setStage("review");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "Couldn't read that file.", "danger");
+      showToast(err instanceof Error ? err.message : t("Couldn't read that file.", "تعذّرت قراءة الملف."), "danger");
       setStage("idle");
     }
   }
 
   function confirm() {
     if (!analysis) return;
-    const ws = createWorkspace(importName.trim() || "Imported Brand");
+    const ws = createWorkspace(importName.trim() || t("Imported Brand", "علامة مستوردة"));
 
     for (const c of analysis.colors) {
       if (pickedColors.has(c.hex)) addColor(ws.id, { name: c.name, hex: c.hex });
@@ -70,7 +73,12 @@ export function useBrandImport() {
     }
 
     const found = strategyFieldCount(s);
-    showToast(`Imported ${pickedColors.size} colors and ${found} strategy ${found === 1 ? "field" : "fields"} — review each before sharing.`, "success");
+    showToast(
+      isAr
+        ? `استُورد ${pickedColors.size} لونًا و${found} من حقول الاستراتيجية، راجع كلًّا منها قبل المشاركة.`
+        : `Imported ${pickedColors.size} colors and ${found} strategy ${found === 1 ? "field" : "fields"} — review each before sharing.`,
+      "success"
+    );
     router.push(`/w/${ws.slug}/overview`);
   }
 

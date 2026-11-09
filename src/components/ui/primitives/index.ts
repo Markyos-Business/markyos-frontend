@@ -5,3 +5,4 @@ export * from "./LangToggle";
 export * from "./SwitchMark";
 export * from "./Kbd";
 export * from "./AvatarGroup";
+export * from "./MarkyosLogo";

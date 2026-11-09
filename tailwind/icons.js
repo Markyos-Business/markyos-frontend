@@ -633,4 +633,17 @@ export const iconStyles = [
       "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3v18\"/><path d=\"M8 7l4-4 4 4\"/><path d=\"M8 17l4 4 4-4\"/></svg>')",
     },
   },
+  /*
+   * Directional glyphs mirror in right-to-left text (spec §4, §8): "back" is
+   * an arrow to the reading start, so it points left in English and right in
+   * Arabic. Written once here against the element's own direction, so every
+   * use is right without remembering a class, and an LTR island (a chart's
+   * time axis, an English preview) stays as drawn. Write each icon in its
+   * English direction; never swap names by language.
+   */
+  {
+    ":is(.la-angle-left, .la-angle-right, .la-angle-double-left, .la-angle-double-right, .la-arrow-left, .la-arrow-right, .la-sign-out-alt, .la-undo):dir(rtl)": {
+      "transform": "scaleX(-1)",
+    },
+  },
 ];

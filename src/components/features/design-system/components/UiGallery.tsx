@@ -75,7 +75,7 @@ const UiGallery = () => {
             <Button variant="primary" size="sm">
               Compact
             </Button>
-            <IconButton variant="primary" icon="arrow-right" label="Next asset" iconSize={18} className="rtl:-scale-x-100" />
+            <IconButton variant="primary" icon="arrow-right" label="Next asset" iconSize={18} />
             <IconButton variant="outline" icon="plus" label="Add asset" />
             <IconButton icon="times" label="Close" />
             <Button variant="link">View all</Button>

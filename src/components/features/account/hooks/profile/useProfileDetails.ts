@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui";
 import { EMAIL_RE } from "@/components/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
+import { useAccountLang } from "../shared/useAccountLang";
 
 /**
  * Name and email, edited in place.
@@ -15,6 +16,7 @@ import type { Account } from "@/types";
  * values.
  */
 export function useProfileDetails(account: Account) {
+  const { t, isAr } = useAccountLang();
   const { updateAccount, pendingEmailAction } = useApp();
   const { showToast } = useToast();
   const [name, setName] = useState(account.name);
@@ -33,7 +35,7 @@ export function useProfileDetails(account: Account) {
       showToast(failed, "danger");
       return;
     }
-    showToast("Name updated.", "success");
+    showToast(t("Name updated.", "تم تحديث الاسم."), "success");
   }
 
   async function commitEmail() {
@@ -43,7 +45,7 @@ export function useProfileDetails(account: Account) {
       return;
     }
     if (!EMAIL_RE.test(value)) {
-      setEmailError("Enter a valid email address.");
+      setEmailError(t("Enter a valid email address.", "أدخل بريدًا إلكترونيًا صحيحًا."));
       return;
     }
     // The store rejects an email another account already uses — otherwise the
@@ -58,20 +60,20 @@ export function useProfileDetails(account: Account) {
       // Not switched yet: the new inbox confirms it first, and the field
       // goes back to the email that still signs in.
       setEmail(account.email);
-      showToast(`Check ${value} for a link to confirm the change.`, "success");
+      showToast(isAr ? `تحقّق من ${value} لتجد رابط تأكيد التغيير.` : `Check ${value} for a link to confirm the change.`, "success");
       return;
     }
-    showToast("Email updated — you'll sign in with this from now on.", "success");
+    showToast(t("Email updated — you'll sign in with this from now on.", "تم تحديث البريد، وستسجّل الدخول به من الآن."), "success");
   }
 
   async function resendPending() {
     const failed = await pendingEmailAction("resend");
-    showToast(failed ?? `Sent again to ${account.pendingEmail}.`, failed ? "danger" : "success");
+    showToast(failed ?? (isAr ? `أُعيد الإرسال إلى ${account.pendingEmail}.` : `Sent again to ${account.pendingEmail}.`), failed ? "danger" : "success");
   }
 
   async function cancelPending() {
     const failed = await pendingEmailAction("cancel");
-    showToast(failed ?? "Email change cancelled.", failed ? "danger" : "success");
+    showToast(failed ?? t("Email change cancelled.", "أُلغي تغيير البريد."), failed ? "danger" : "success");
   }
 
   return {

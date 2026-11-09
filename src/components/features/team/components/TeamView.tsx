@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import type { TeamPageView } from "../hooks/useTeamPage";
-import { PAGE_SECTION, ROLE_TONE } from "../constants";
+import { PAGE_SECTION, ROLE_LABELS, ROLE_TONE } from "../constants";
 import { ApprovalSection } from "./approvals/ApprovalSection";
 import { VersionHistorySection } from "./history/VersionHistorySection";
 import { TeamSection } from "./members/TeamSection";
@@ -15,8 +15,10 @@ export function TeamView(view: TeamPageView) {
       <div>
         <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
         <p className="text-[14px] text-text-muted">
-          Who can change what, who approved it, and how to undo a mistake. You&apos;re signed in as <Badge tone={ROLE_TONE[myRole]}>{myRole}</Badge> on this
-          brand.
+          {isAr
+            ? "من يستطيع تغيير ماذا، ومن اعتمده، وكيف تتراجع عن خطأ. دورك في هذه العلامة:"
+            : "Who can change what, who approved it, and how to undo a mistake. You're signed in on this brand as"}{" "}
+          <Badge tone={ROLE_TONE[myRole]}>{ROLE_LABELS[myRole][isAr ? "ar" : "en"]}</Badge>
         </p>
         {/*
           Architecture principle 7: no UI promise without server enforcement.
@@ -26,7 +28,9 @@ export function TeamView(view: TeamPageView) {
         */}
         {!API_ENABLED && (
           <p className="mt-2 text-[12.5px] text-text-faint">
-            Roles shape this interface but are not a security boundary yet — every check still runs in the browser. Real enforcement arrives with the server.
+            {isAr
+              ? "الأدوار تشكّل هذه الواجهة لكنها ليست حدًا أمنيًا بعد، فكل تحقق ما زال يجري في المتصفح. التطبيق الفعلي يأتي مع الخادم."
+              : "Roles shape this interface but are not a security boundary yet — every check still runs in the browser. Real enforcement arrives with the server."}
           </p>
         )}
       </div>

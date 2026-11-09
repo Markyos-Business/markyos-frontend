@@ -22,9 +22,10 @@ export interface ApiAccount {
 export interface Strength {
   /** 0–4. */
   score: number;
-  label: string;
-  /** The single most useful thing to do next, or null when it's strong. */
-  advice: string | null;
+  /** A special case, or "" to read the level for `score` (see the copy's `strength`). */
+  label: "" | "tooCommon" | "tooSimple";
+  /** The single most useful thing to do next, as a copy key, or null when it's strong. */
+  advice: "commonAdvice" | "repeatAdvice" | "lengthAdvice" | "moreAdvice" | null;
 }
 
 /** Where the reset flow is. */

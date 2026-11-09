@@ -49,14 +49,14 @@ export const CONSTRAINT_META: Record<ConstraintCategory, Bilingual> = {
 };
 
 export const WARNING_META: Record<SourceWarning, Bilingual> = {
-  no_submitted_form: { en: "No discovery form has been submitted yet.", ar: "لم يُرسَل أي نموذج استكشاف بعد." },
-  form_not_submitted: { en: "A sent form is still waiting for the client.", ar: "نموذج مُرسل ما زال بانتظار العميل." },
+  no_submitted_form: { en: "No discovery questionnaire has been submitted yet.", ar: "لم يُرسَل أي استبيان استكشاف بعد." },
+  form_not_submitted: { en: "A sent questionnaire is still waiting for the client.", ar: "استبيان مُرسل ما زال بانتظار العميل." },
   no_call_notes: { en: "There are no call notes in the analysis.", ar: "لا توجد ملاحظات مكالمات في التحليل." },
   few_answers: { en: "Fewer than 10 answers: the read will be thin.", ar: "أقل من 10 إجابات: ستكون القراءة محدودة." },
 };
 
 export const CHANNEL_META: Record<"form" | "call", Bilingual> = {
-  form: { en: "Ask in a form", ar: "اسأل في نموذج" },
+  form: { en: "Ask in a questionnaire", ar: "اسأل في استبيان" },
   call: { en: "Ask on a call", ar: "اسأل في مكالمة" },
 };
 

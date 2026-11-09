@@ -18,21 +18,23 @@ export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
       <div className="flex items-center justify-between">
         <span className="text-[15px] font-semibold">{isAr ? "روابط ذات صلة" : "Relevant links"}</span>
         <Button variant="link" onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
-          {adding ? "Cancel" : "+ Add"}
+          {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
         </Button>
       </div>
       <p className="-mt-2 text-[12px] text-text-faint">
-        Nothing here is a copy — every item is pulled live, so editing Strategy or a section updates this automatically.
+        {isAr
+          ? "لا شيء هنا نسخة؛ كل عنصر يُسحب مباشرة، فتعديل الاستراتيجية أو أي قسم يحدّث هذا تلقائيًا."
+          : "Nothing here is a copy — every item is pulled live, so editing Strategy or a section updates this automatically."}
       </p>
 
-      {adding && <AddItemForm ws={ws} view={view} onDone={() => setAdding(false)} />}
+      {adding && <AddItemForm ws={ws} view={view} isAr={isAr} onDone={() => setAdding(false)} />}
 
       {view.items.length === 0 ? (
-        <EmptyHint>Nothing selected yet.</EmptyHint>
+        <EmptyHint>{isAr ? "لم يُختر شيء بعد." : "Nothing selected yet."}</EmptyHint>
       ) : (
         <div className="flex flex-col gap-2">
           {view.items.map((item) => (
-            <LinkedItem key={item.id} ws={ws} item={item} onRemove={() => removeDeptItem(ws.id, view.id, item.id)} />
+            <LinkedItem key={item.id} ws={ws} item={item} isAr={isAr} onRemove={() => removeDeptItem(ws.id, view.id, item.id)} />
           ))}
         </div>
       )}
@@ -40,8 +42,8 @@ export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
   );
 }
 
-function LinkedItem({ ws, item, onRemove }: { ws: Workspace; item: DeptItem; onRemove: () => void }) {
-  const { icon, title, body } = resolveItem(ws, item);
+function LinkedItem({ ws, item, isAr, onRemove }: { ws: Workspace; item: DeptItem; isAr: boolean; onRemove: () => void }) {
+  const { icon, title, body } = resolveItem(ws, item, isAr);
   return (
     <div className="mk-surface flex items-start gap-3 rounded-xl bg-surface-2 p-3.5">
       <Icon name={icon} size={15} className="mt-0.5 shrink-0 text-accent-text" />
@@ -50,7 +52,7 @@ function LinkedItem({ ws, item, onRemove }: { ws: Workspace; item: DeptItem; onR
         <div className="mt-0.5 text-[12px] text-text-secondary">{body}</div>
         {item.relevanceNote && <div className="mt-1 text-[11px] text-text-faint">Why: {item.relevanceNote}</div>}
       </div>
-      <IconButton icon="times" label={`Remove ${title}`} onClick={onRemove} className="mk-danger-hover shrink-0 cursor-pointer text-text-faint" />
+      <IconButton icon="times" label={isAr ? `إزالة ${title}` : `Remove ${title}`} onClick={onRemove} className="mk-danger-hover shrink-0 cursor-pointer text-text-faint" />
     </div>
   );
 }

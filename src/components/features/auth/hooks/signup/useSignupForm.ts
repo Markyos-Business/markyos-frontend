@@ -10,6 +10,7 @@ import { API_ENABLED } from "@/lib/api/client";
 import type { PasswordSetup } from "../../types";
 import { normaliseEmail } from "../../utils/email";
 import { scorePassword } from "../../utils/password";
+import { useAuthLang } from "../shared/useAuthLang";
 
 type SignupErrors = {
   accountType?: string;
@@ -22,6 +23,7 @@ type SignupErrors = {
 
 /** The sign-up form: its fields, checks, the account it creates, and where it goes next. */
 export function useSignupForm() {
+  const { c } = useAuthLang();
   const { signup, state, hydrated } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -69,7 +71,7 @@ export function useSignupForm() {
     const taken = state.accounts.some((a) => normaliseEmail(a.email) === clean);
     setErrors((e) => ({
       ...e,
-      email: taken ? "An account already uses that email." : undefined,
+      email: taken ? c.errors.emailTaken : undefined,
     }));
   }
 
@@ -82,7 +84,7 @@ export function useSignupForm() {
   function toDetails(e?: FormEvent) {
     e?.preventDefault();
     if (!accountType) {
-      setErrors((x) => ({ ...x, accountType: "Choose who the account is for." }));
+      setErrors((x) => ({ ...x, accountType: c.errors.accountType }));
       return;
     }
     setStep("details");
@@ -100,19 +102,19 @@ export function useSignupForm() {
     const field: SignupErrors = {};
     // Asked first and never preselected: it decides the plans, limits and
     // wording the account gets, so it has to be a choice, not a default.
-    if (!accountType) field.accountType = "Choose who the account is for.";
-    if (!name.trim()) field.name = "Tell us your name.";
-    if (!EMAIL_RE.test(email.trim())) field.email = "Enter a valid email address.";
+    if (!accountType) field.accountType = c.errors.accountType;
+    if (!name.trim()) field.name = c.errors.name;
+    if (!EMAIL_RE.test(email.trim())) field.email = c.errors.email;
     // With the backend the password is set from the emailed link; only the
     // browser-only build, which has no inbox, asks for it here.
     if (!API_ENABLED) {
-      if (password.length < 8) field.password = "At least 8 characters.";
+      if (password.length < 8) field.password = c.errors.short;
       else if (scorePassword(password).score === 0) {
-        field.password = "That one is too easy to guess — try something longer.";
+        field.password = c.errors.guessable;
       }
       // Compared rather than assumed. A typo in a password nobody can see is the
       // single most common way someone locks themselves out on the first day.
-      if (confirm !== password) field.confirm = "These don't match.";
+      if (confirm !== password) field.confirm = c.errors.mismatch;
     }
     setErrors(field);
     if (Object.keys(field).length > 0) return;
@@ -137,7 +139,7 @@ export function useSignupForm() {
       return;
     }
     showToast(
-      accountType === "company" ? "Account created. Let's set up your brand." : "Account created. Let's add your first client brand.",
+      accountType === "company" ? c.signup.createdCompany : c.signup.created,
       "success"
     );
     router.push("/brands/new");

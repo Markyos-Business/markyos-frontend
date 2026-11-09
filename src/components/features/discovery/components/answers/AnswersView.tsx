@@ -61,7 +61,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
 
   const reopen = async () => {
     const ok = await confirm({
-      title: t("Reopen this form?", "إعادة فتح النموذج؟"),
+      title: t("Reopen this questionnaire?", "إعادة فتح الاستبيان؟"),
       body: t("Your client can change their answers and submit again.", "يمكن لعميلك تعديل إجاباته وإرسالها من جديد."),
       confirmLabel: t("Reopen", "إعادة الفتح"),
       isAr,
@@ -189,7 +189,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               title={t("No answers yet", "لا إجابات بعد")}
               description={
                 form.status === "draft"
-                  ? t("Send the form and answers appear here as your client saves them.", "أرسل النموذج، وستظهر الإجابات هنا فور حفظها.")
+                  ? t("Send the questionnaire and answers appear here as your client saves them.", "أرسل الاستبيان، وستظهر الإجابات هنا فور حفظها.")
                   : t("Answers appear here as your client saves them.", "ستظهر الإجابات هنا فور حفظ عميلك لها.")
               }
             />

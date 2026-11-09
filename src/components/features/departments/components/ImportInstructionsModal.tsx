@@ -72,7 +72,7 @@ export function ImportInstructionsModal({
       );
       setStep("review");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't read that file.");
+      setError(e instanceof Error ? e.message : isAr ? "تعذّرت قراءة الملف." : "Couldn't read that file.");
       setStep("pick");
     }
   }
@@ -102,12 +102,12 @@ export function ImportInstructionsModal({
 
   return (
     <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base"
       style={{ background: "var(--scrim)" }}
       onClick={onClose}
     >
       <div
-        className="animate-fade-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -120,7 +120,7 @@ export function ImportInstructionsModal({
               {isAr ? `من ملف — لقسم ${view.name}` : `From a file — for ${view.name}`}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="mk-icon-btn cursor-pointer">
+          <button type="button" onClick={onClose} aria-label={isAr ? "إغلاق" : "Close"} className="mk-icon-btn cursor-pointer">
             <Icon name="times" size={18} style={{ color: "var(--text-muted)" }} />
           </button>
         </div>

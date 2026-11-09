@@ -128,12 +128,12 @@ export function scorePassword(password: string): Strength {
   if (!pw) return { score: 0, label: "", advice: null };
 
   if (COMMON.has(pw.toLowerCase())) {
-    return { score: 0, label: "Too common", advice: "This one is on every password list there is." };
+    return { score: 0, label: "tooCommon", advice: "commonAdvice" };
   }
 
   // A single repeated or sequential run isn't the length it looks like.
   if (/^(.)\1+$/.test(pw)) {
-    return { score: 0, label: "Too simple", advice: "One character repeated is one character." };
+    return { score: 0, label: "tooSimple", advice: "repeatAdvice" };
   }
 
   let score = 0;
@@ -150,13 +150,7 @@ export function scorePassword(password: string): Strength {
 
   score = Math.max(0, Math.min(4, score));
 
-  const label = ["Very weak", "Weak", "Fair", "Good", "Strong"][score];
-  const advice =
-    pw.length < 12
-      ? "Longer beats more complicated — try a few unrelated words."
-      : score < 3
-        ? "Add another word, or some length."
-        : null;
+  const advice: Strength["advice"] = pw.length < 12 ? "lengthAdvice" : score < 3 ? "moreAdvice" : null;
 
-  return { score, label, advice };
+  return { score, label: "", advice };
 }

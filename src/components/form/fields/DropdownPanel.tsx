@@ -17,7 +17,7 @@ type DropdownPanelProps = {
   children: ReactNode;
 };
 
-type Place = { top: number; left: number; width: number; maxHeight: number; up: boolean };
+type Place = { top?: number; bottom?: number; left: number; width: number; maxHeight: number; up: boolean };
 
 const GAP = 4;
 const MARGIN = 8;
@@ -49,7 +49,9 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, className = 
       const rawLeft = rtl ? r.right - w : r.left;
       const left = Math.max(MARGIN, Math.min(rawLeft, window.innerWidth - w - MARGIN));
       setPlace({
-        top: up ? r.top - GAP : r.bottom + GAP,
+        // Above the field it hangs from its bottom edge, so no transform is
+        // needed to place it and the open animation owns `transform`.
+        ...(up ? { bottom: window.innerHeight - r.top + GAP } : { top: r.bottom + GAP }),
         left,
         width: w,
         maxHeight: Math.max(160, Math.min(320, (up ? above : below) - GAP)),
@@ -85,14 +87,17 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, className = 
       // A raised surface (spec §1.5): the card fill, its hairline and the one
       // shadow the system allows for menus.
       className={`fixed z-popover flex flex-col overflow-hidden rounded-card bg-surface-1 p-space-3 shadow-edge-pop ${
-        closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
+        closing ? "pointer-events-none animate-scale-out" : "animate-scale-in"
       } ${className}`}
+      // Which side of the field it opens on: it arrives from there.
+      data-side={place.up ? "top" : "bottom"}
       style={{
         top: place.top,
+        bottom: place.bottom,
         left: place.left,
         width: place.width,
         maxHeight: place.maxHeight,
-        transform: place.up ? "translateY(-100%)" : undefined,
+        transformOrigin: place.up ? "bottom" : "top",
       }}
     >
       {children}

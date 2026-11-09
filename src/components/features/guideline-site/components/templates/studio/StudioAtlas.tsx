@@ -159,7 +159,7 @@ export function StudioAtlas(props: TemplateProps) {
         )}
         <div className="flex flex-col gap-0.5 text-[10px] font-semibold uppercase" style={{ letterSpacing: ".08em", color: "var(--g-text-faint)" }}>
           <span>{isAr ? "دليل الهوية البصرية" : "Visual identity guidelines"}</span>
-          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt)}` : `Updated: ${formatRelative(ws.updatedAt)}`}</span>
+          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}` : `Updated: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}`}</span>
         </div>
 
         <nav className="flex flex-col gap-0.5">
@@ -378,7 +378,7 @@ function Band({
         <div className="relative max-w-[980px] flex items-center min-h-[52px]">
           <span
             className="absolute -top-8 select-none pointer-events-none font-semibold"
-            style={{ [isAr ? "left" : "right"]: 0, fontFamily: "var(--font-display)", fontSize: 130, color: bandText, opacity: 0.16, lineHeight: 1 }}
+            style={{ insetInlineEnd: 0, fontFamily: "var(--font-display)", fontSize: 130, color: bandText, opacity: 0.16, lineHeight: 1 }}
           >
             {String(index).padStart(2, "0")}
           </span>
@@ -398,14 +398,14 @@ function Band({
         <div className="px-8 md:px-16 pb-10 flex items-center justify-between max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)", paddingTop: 20 }}>
           {prev ? (
             <button type="button" onClick={() => scrollTo(prev.id)} className="text-[12px] font-medium cursor-pointer flex items-center gap-1.5" style={{ color: "var(--g-text-faint)" }}>
-              <Icon name={isAr ? "arrow-right" : "arrow-left"} size={11} />
+              <Icon name="arrow-left" size={11} />
               {isAr ? prev.arLabel : prev.label}
             </button>
           ) : <span />}
           {next && (
             <button type="button" onClick={() => scrollTo(next.id)} className="text-[12px] font-medium cursor-pointer flex items-center gap-1.5" style={{ color: "var(--g-text-faint)" }}>
               {isAr ? next.arLabel : next.label}
-              <Icon name={isAr ? "arrow-left" : "arrow-right"} size={11} />
+              <Icon name="arrow-right" size={11} />
             </button>
           )}
         </div>
@@ -554,7 +554,7 @@ function Footer({ ws, isAr }: { ws: TemplateProps["ws"]; isAr: boolean }) {
     <div className="px-8 md:px-16 py-14 flex flex-col gap-6 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <div>
         <div className="font-semibold text-[15px]" style={{ fontFamily: "var(--font-display)" }}>{isAr ? "دليل الهوية البصرية" : "Visual Identity Guidelines"}</div>
-        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "محدَّث" : "Updated"} {formatRelative(ws.updatedAt)}</div>
+        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "محدَّث" : "Updated"} {formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}</div>
       </div>
 
       {contactEmail && (

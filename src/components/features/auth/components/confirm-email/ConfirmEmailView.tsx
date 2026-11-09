@@ -3,22 +3,24 @@
 import { AlertBanner, Button } from "@/components/ui";
 import { useConfirmEmail } from "../../hooks/confirm-email/useConfirmEmail";
 import { AuthShell } from "../shared/AuthShell";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /** Where the "confirm your new email" link lands. */
 export function ConfirmEmailView() {
   const { result, signedIn } = useConfirmEmail();
-  const next = signedIn ? { href: "/account", label: "Back to your account" } : { href: "/login", label: "Log in" };
+  const { c } = useAuthLang();
+  const next = signedIn ? { href: "/account", label: c.confirm.backToAccount } : { href: "/login", label: c.confirm.login };
 
   if (result.status === "working") {
     return (
-      <AuthShell title="Confirming your email…" subtitle="One moment.">
+      <AuthShell title={c.confirm.working} subtitle={c.confirm.moment}>
         {null}
       </AuthShell>
     );
   }
   if (result.status === "failed") {
     return (
-      <AuthShell title="This link didn't work" subtitle="Ask for a new one from your account page.">
+      <AuthShell title={c.confirm.failedTitle} subtitle={c.confirm.failedSubtitle}>
         <div className="flex flex-col gap-4">
           <AlertBanner message={result.error} />
           <Button variant="primary" className="w-full" href={next.href}>
@@ -29,10 +31,10 @@ export function ConfirmEmailView() {
     );
   }
   return (
-    <AuthShell title="Email confirmed" subtitle="You sign in to Markyos with your new email from now on.">
+    <AuthShell title={c.confirm.doneTitle} subtitle={c.confirm.doneSubtitle}>
       <div className="flex flex-col gap-4">
         <p className="text-caption text-text-muted">
-          Your email is now{" "}
+          {c.confirm.nowIs}{" "}
           <span dir="ltr" className="font-medium text-text">
             {result.email}
           </span>

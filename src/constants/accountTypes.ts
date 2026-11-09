@@ -19,13 +19,17 @@ type AccountTypeInfo = {
   arLabel: string;
   /** One line under the label on the signup form. */
   description: string;
+  arDescription: string;
   icon: string;
   limits: Limits;
   prices: Prices;
   /** The brands home: its title and what a brand is to this account. */
   home: { title: string; noun: string; nounPlural: string };
+  /** The same in Arabic. */
+  arHome: { title: string; noun: string; nounPlural: string };
   /** The first screen after signup, and every new brand after it. */
   newBrand: { title: string; description: string };
+  arNewBrand: { title: string; description: string };
 };
 
 /**
@@ -42,33 +46,45 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     label: "Studio",
     arLabel: "استوديو",
     description: "Run brands for your clients, with a team.",
+    arDescription: "أدِر علامات عملائك مع فريقك.",
     icon: "users",
     limits: { brands: null, editors: null },
     prices: { pass: 19, subscription: 29 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
+    arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One workspace per client brand. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، ويمكنك إعادة تسميتها لاحقًا." },
   },
   freelancer: {
     label: "Freelancer",
     arLabel: "مستقل",
     description: "Work solo on up to 3 client brands.",
+    arDescription: "اعمل منفردًا على 3 علامات لعملائك كحد أقصى.",
     icon: "user",
     limits: { brands: 3, editors: 0 },
     prices: { pass: 15, subscription: 19 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
+    arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One workspace per client brand, up to 3. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، حتى 3 علامات، ويمكنك إعادة تسميتها لاحقًا." },
   },
   company: {
     label: "Company",
     arLabel: "شركة",
     description: "Govern your own brand across departments.",
+    arDescription: "أدِر علامتك الخاصة عبر أقسام شركتك.",
     icon: "sitemap",
     limits: { brands: 1, editors: null },
     prices: { pass: 49, subscription: 99 },
     home: { title: "Your brand", noun: "brand", nounPlural: "brands" },
+    arHome: { title: "علامتك", noun: "علامة", nounPlural: "علامات" },
     newBrand: {
       title: "Name your brand",
       description: "Its guideline, departments and governance live in one workspace. You can rename it later.",
+    },
+    arNewBrand: {
+      title: "سمِّ علامتك",
+      description: "دليلها وأقسامها وحوكمتها في مساحة عمل واحدة، ويمكنك إعادة تسميتها لاحقًا.",
     },
   },
 };

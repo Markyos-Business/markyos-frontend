@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { IconButton } from "@/components/ui";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import { usePresence } from "@/hooks/usePresence";
+import { EXIT, motionClass } from "@/lib/motion";
 
 /** Phones: below Tailwind's `md`, the sidebar lives in a drawer. */
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -51,9 +52,27 @@ const DrawerPanel = ({ onClose, closing, isAr, children }: DrawerPanelProps) => 
   useModalDismiss(onClose);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Focus moves into the drawer so the keyboard starts where the eye does.
+  // Focus moves into the drawer so the keyboard starts where the eye does,
+  // and Tab stays inside it while it's open (Escape gives it back).
   useEffect(() => {
-    panelRef.current?.querySelector<HTMLElement>("a[href], button:not(:disabled)")?.focus();
+    const panel = panelRef.current;
+    panel?.querySelector<HTMLElement>("a[href], button:not(:disabled)")?.focus();
+    function trap(e: KeyboardEvent) {
+      if (e.key !== "Tab" || !panel) return;
+      const items = [...panel.querySelectorAll<HTMLElement>("a[href], button:not(:disabled), input, [tabindex]:not([tabindex='-1'])")];
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", trap);
+    return () => document.removeEventListener("keydown", trap);
   }, []);
 
   return (
@@ -63,16 +82,16 @@ const DrawerPanel = ({ onClose, closing, isAr, children }: DrawerPanelProps) => 
         tabIndex={-1}
         aria-label={isAr ? "إغلاق القائمة" : "Close menu"}
         onClick={onClose}
-        className={`absolute inset-0 cursor-default bg-scrim ${closing ? "animate-fade-out" : "animate-fade-in"}`}
+        className={`absolute inset-0 cursor-default bg-scrim ${closing ? "animate-fade-out" : "animate-fade-in-base"}`}
       />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? "القائمة" : "Menu"}
-        // On the side the reader starts on: the left in English, the right in
-        // Arabic. It crossfades in and out, like every overlay.
-        className={`absolute inset-y-0 start-0 flex bg-surface-1 shadow-edge-modal ${closing ? "animate-fade-out" : "animate-fade-in"}`}
+        // On the side the reader starts on, sliding in from it: the left in
+        // English, the right in Arabic (the slide mirrors with the direction).
+        className={`absolute inset-y-0 start-0 flex bg-surface-1 shadow-edge-modal ${motionClass("slideFromStart", closing)}`}
       >
         <SidebarPlacementContext.Provider value="drawer">{children}</SidebarPlacementContext.Provider>
       </div>
@@ -91,7 +110,8 @@ type MobileSidebarProps = { children: ReactNode };
  */
 const MobileSidebar = ({ children }: MobileSidebarProps) => {
   const { open, setOpen, isAr } = useSidebarDrawer();
-  const { mounted, closing } = usePresence(open);
+  // Held for the sheet's slide out, a step quicker than its slide in.
+  const { mounted, closing } = usePresence(open, EXIT.slow);
   const pathname = usePathname();
 
   useEffect(() => {

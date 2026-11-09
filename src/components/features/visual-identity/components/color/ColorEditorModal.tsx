@@ -49,13 +49,13 @@ export function ColorEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in"
+      className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base"
       style={{ background: "var(--scrim)" }}
       onClick={onCancel}
     >
       <form
         onSubmit={handleSubmit}
-        className="animate-fade-in w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-dialog-in w-full max-w-[380px] rounded-2xl p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

@@ -11,3 +11,4 @@ export { STATUS_META } from "./constants";
 export { formatAgo, formatDay } from "./utils/format";
 export type * from "./types";
 export * from "./hooks/pages";
+export { sendForm } from "./services/discoveryService";

@@ -31,6 +31,7 @@ import plugin from "tailwindcss/plugin";
 import { baseStyles } from "./tailwind/base.js";
 import { iconStyles } from "./tailwind/icons.js";
 import { darkTokens, lightTokens, specAliases } from "./tailwind/tokens.js";
+import { animation, keyframes, motionBase, motionTokens, transitionDelay, transitionDuration, transitionTimingFunction } from "./tailwind/motion.js";
 
 /** Widths as a percentage of the parent: `1p` (1%) up to `99p` (99%). */
 const percentWidths = Object.fromEntries(
@@ -279,19 +280,12 @@ const config = {
         // A dropdown list opened from a field, which may itself sit in a dialog.
         popover: "130",
       },
-      // Motion (spec §1.8): `duration-fast` (120ms) for colour, opacity and
-      // shadow, `duration-base` (180ms) for switch knobs and progress fills,
-      // on the one `ease-standard` curve. A bare `transition` gets both by
-      // default. Never a raw number.
-      transitionDuration: {
-        DEFAULT: "var(--duration-fast)",
-        fast: "var(--duration-fast)",
-        base: "var(--duration-base)",
-      },
-      transitionTimingFunction: {
-        DEFAULT: "var(--ease-standard)",
-        standard: "var(--ease-standard)",
-      },
+      // Motion: every duration, curve and distance comes from tailwind/motion.js
+      // (`duration-instant|fast|base|slow`, `ease-standard|out|in`). A bare
+      // `transition` gets `instant` on the standard curve. Never a raw number.
+      transitionDuration,
+      transitionTimingFunction,
+      transitionDelay,
       width: percentWidths,
       backgroundImage: {
         // A flat tint laid over a fill, for hover and press states that have
@@ -336,32 +330,8 @@ const config = {
         // Chart lines emit light: `drop-shadow-glow` on the line's SVG.
         glow: ["0 0 6px rgba(0, 153, 255, 0.8)", "0 0 18px rgba(0, 85, 255, 0.5)"],
       },
-      keyframes: {
-        // Something that opens or closes (a menu, a dialog and its scrim, a
-        // drawer, a toast) crossfades. Opacity only: no slide, no scale, and
-        // nothing animates in just because it mounted (spec §1.8).
-        "fade-in": {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        "fade-out": {
-          "0%": { opacity: "1" },
-          "100%": { opacity: "0" },
-        },
-        // The light crossing a loading skeleton.
-        shimmer: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(100%)" },
-        },
-      },
-      animation: {
-        "fade-in": "fade-in var(--duration-fast) var(--ease-standard) both",
-        "fade-out": "fade-out var(--duration-fast) var(--ease-standard) both",
-        // Ambient loading feedback, not an interaction, so it loops.
-        shimmer: "shimmer 1.4s var(--ease-standard) infinite",
-        // Work is in progress and hasn't stalled: quicker than `animate-spin`.
-        "spin-quick": "spin 720ms linear infinite",
-      },
+      keyframes,
+      animation,
       screens: {
         // Tailwind's `sm` 640 / `md` 768 / `lg` 1024 / `xl` 1280 / `2xl` 1536
         // stay as they are: every responsive layout is built on them. These
@@ -382,8 +352,9 @@ const config = {
     // shared hover rules in tailwind/base.js add `(pointer: fine)` themselves.
     plugin(({ addBase }) => {
       addBase(iconStyles);
-      addBase({ ":root": { ...darkTokens, ...specAliases }, ':root[data-theme="light"]': lightTokens });
+      addBase({ ":root": { ...darkTokens, ...specAliases, ...motionTokens }, ':root[data-theme="light"]': lightTokens });
       addBase(baseStyles);
+      addBase(motionBase);
     }),
   ],
 };

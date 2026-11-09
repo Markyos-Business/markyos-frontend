@@ -4,6 +4,7 @@ import { AlertBanner, Button } from "@/components/ui";
 import { useSetupEmail } from "../../hooks/signup/useSetupEmail";
 import type { PasswordSetup } from "../../types";
 import { AuthShell } from "../shared/AuthShell";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 type SignupEmailSentStepProps = {
   setup: PasswordSetup;
@@ -14,31 +15,32 @@ type SignupEmailSentStepProps = {
 /** After sign-up: the "set your password" link is in their inbox. */
 export function SignupEmailSentStep({ setup, onBack }: SignupEmailSentStepProps) {
   const mail = useSetupEmail(setup);
+  const { c } = useAuthLang();
   return (
     <AuthShell
-      title="Check your email"
-      subtitle="We sent a link to set your password. Open it to finish creating your account — it works for 60 minutes."
+      title={c.sent.title}
+      subtitle={c.sent.subtitle}
       footer={
         <>
-          Wrong address?
+          {c.sent.wrong}
           <Button variant="link" onClick={onBack}>
-            Go back
+            {c.sent.goBack}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
         <p className="text-caption text-text-muted">
-          Sent to <span dir="ltr" className="font-medium text-text">{mail.email}</span>
+          {c.sent.sentTo} <span dir="ltr" className="font-medium text-text">{mail.email}</span>
         </p>
         <AlertBanner message={mail.error} />
         <p className="text-center text-caption text-text-faint">
-          Didn&apos;t get it? Check your spam folder, or{" "}
+          {c.sent.didntGet}{" "}
           {mail.wait > 0 ? (
-            <span>send it again in {mail.wait}s</span>
+            <span>{c.sent.sendAgainIn(mail.wait)}</span>
           ) : (
             <Button type="button" variant="link" onClick={mail.resend} disabled={mail.busy} className="text-caption">
-              send it again
+              {c.sent.sendAgain}
             </Button>
           )}
         </p>

@@ -6,29 +6,29 @@ import { ACCOUNT_TYPES } from "@/constants/accountTypes";
 import { API_ENABLED } from "@/lib/api/client";
 import type { SignupFormState } from "../../hooks/signup/useSignupForm";
 import { PasswordField } from "../shared/PasswordField";
+import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
 /** Step two: name, email and a password, twice. */
 export function SignupDetailsStep({ form }: { form: SignupFormState }) {
+  const { lang, c } = useAuthLang();
   const type = form.accountType ? ACCOUNT_TYPES[form.accountType] : null;
   return (
     <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
       {type && (
         <p className="flex items-center justify-between gap-3 px-space-4 text-caption text-text-muted">
-          <span>
-            A <span className="font-medium text-text">{type.label.toLowerCase()}</span> account
-          </span>
+          <span className="font-medium text-text">{c.signup.typeLine(lang === "ar" ? type.arLabel : type.label)}</span>
           <Button type="button" variant="link" onClick={form.toType} className="text-caption">
-            Change
+            {c.signup.change}
           </Button>
         </p>
       )}
       <AlertBanner message={form.errors.form} />
 
       <InputField
-        label="Name"
+        label={c.fields.name}
         type="text"
         dir="auto"
-        placeholder="Nadeen Darwish"
+        placeholder={c.fields.namePlaceholder}
         value={form.name}
         onChange={(e) => form.setName(e.target.value)}
         error={form.errors.name}
@@ -37,16 +37,16 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
       />
 
       <InputField
-        label="Email"
+        label={c.fields.email}
         type="email"
         inputMode="email"
         dir="ltr"
-        placeholder="you@studio.com"
+        placeholder={c.fields.emailPlaceholder}
         value={form.email}
         onChange={(e) => form.changeEmail(e.target.value)}
         onBlur={form.checkEmailTaken}
         error={form.errors.email}
-        hint="This is what you'll sign in with."
+        hint={c.fields.emailHint}
         autoComplete="email"
       />
 
@@ -55,8 +55,8 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
       {!API_ENABLED && (
         <>
           <PasswordField
-            label="Password"
-            placeholder="At least 8 characters"
+            label={c.fields.password}
+            placeholder={c.fields.passwordPlaceholder}
             value={form.password}
             strength
             onChange={(e) => form.setPassword(e.target.value)}
@@ -65,8 +65,8 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
           />
 
           <PasswordField
-            label="Confirm password"
-            placeholder="Type it again"
+            label={c.fields.confirmPassword}
+            placeholder={c.fields.confirmPlaceholder}
             value={form.confirm}
             onChange={(e) => form.setConfirm(e.target.value)}
             error={form.errors.confirm}
@@ -76,16 +76,14 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
       )}
 
       <Button type="submit" variant="primary" className="mt-1 w-full" disabled={form.busy}>
-        {form.busy ? "Creating…" : "Create account"}
+        {form.busy ? c.signup.creating : c.signup.submit}
       </Button>
 
       {/* Said before the button is pressed, not discovered afterwards — and
           only in the browser-only build, where it's true. */}
       {!API_ENABLED && (
         <p className="text-caption text-text-faint">
-          This build keeps your account and your brands in this browser. Nothing is sent to a
-          server, which also means clearing site data erases them and there is no inbox to recover
-          a password from — the reset code appears on screen instead.
+          {c.signup.localNote}
         </p>
       )}
     </form>

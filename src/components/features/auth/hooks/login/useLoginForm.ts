@@ -4,11 +4,13 @@ import { useState, type FormEvent } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { EMAIL_RE } from "../../constants";
 import type { PendingVerification } from "../../types";
+import { useAuthLang } from "../shared/useAuthLang";
 
 type LoginErrors = { email?: string; password?: string; form?: string };
 
 /** The login form's fields, its checks, and the sign-in itself. */
 export function useLoginForm() {
+  const { c } = useAuthLang();
   const { login } = useApp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,8 +26,8 @@ export function useLoginForm() {
     if (busy) return;
 
     const field: LoginErrors = {};
-    if (!EMAIL_RE.test(email.trim())) field.email = "Enter a valid email address.";
-    if (!password) field.password = "Enter your password.";
+    if (!EMAIL_RE.test(email.trim())) field.email = c.errors.email;
+    if (!password) field.password = c.errors.password;
     setErrors(field);
     if (Object.keys(field).length > 0) return;
 

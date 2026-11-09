@@ -21,7 +21,7 @@ export function RelatedCalls({ brandId, brandSlug, formId, isAr }: RelatedCallsP
     <section aria-label={t("Related calls", "المكالمات المرتبطة")} className="mk-surface flex flex-col gap-space-5 rounded-card bg-surface-1 p-space-8 print:hidden">
       <h2 className="text-h5 font-medium">{t("Related calls", "المكالمات المرتبطة")}</h2>
       {notes.length === 0 ? (
-        <p className="text-caption text-text-muted">{t("No calls linked to this form.", "لا مكالمات مرتبطة بهذا النموذج.")}</p>
+        <p className="text-caption text-text-muted">{t("No calls linked to this questionnaire.", "لا مكالمات مرتبطة بهذا الاستبيان.")}</p>
       ) : (
         <ul className="flex flex-col gap-space-4">
           {notes.map((n) => (

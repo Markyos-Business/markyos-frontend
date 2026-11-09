@@ -9,14 +9,16 @@ import type { Account } from "@/types";
 import { API_ENABLED } from "@/lib/api/client";
 import type { AvatarState } from "../../hooks/profile/useAvatar";
 import type { ProfileDetailsState } from "../../hooks/profile/useProfileDetails";
+import { useAccountLang } from "../../hooks/shared/useAccountLang";
 
 type ProfileSectionProps = { account: Account; details: ProfileDetailsState; avatar: AvatarState };
 
 /** Who you are: photo, name and the email you sign in with. */
 export function ProfileSection({ account, details, avatar }: ProfileSectionProps) {
   const fileInput = useRef<HTMLInputElement>(null);
+  const { t } = useAccountLang();
   return (
-    <Section title="Profile" icon="user">
+    <Section title={t("Profile", "الملف الشخصي")} icon="user">
       <div className="flex flex-wrap items-center gap-4">
         <Avatar initials={initialsFor(account.name || account.email)} src={account.avatarUrl} size={56} tone="accent" />
         <div className="min-w-0 flex-1">
@@ -40,11 +42,11 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
               }}
             />
             <Button variant="outline" size="sm" icon={<Icon name="upload" size={16} />} onClick={() => fileInput.current?.click()} disabled={avatar.busy}>
-              {account.avatarUrl ? "Change photo" : "Upload photo"}
+              {account.avatarUrl ? t("Change photo", "تغيير الصورة") : t("Upload photo", "رفع صورة")}
             </Button>
             {account.avatarUrl && (
               <Button variant="link" onClick={avatar.remove} disabled={avatar.busy}>
-                Remove
+                {t("Remove", "إزالة")}
               </Button>
             )}
           </div>
@@ -53,7 +55,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
 
       <div className="grid sm:grid-cols-2 gap-3">
         <InputField
-          label="Name"
+          label={t("Name", "الاسم")}
           value={details.name}
           dir="auto"
           onChange={(e) => details.setName(e.target.value)}
@@ -62,10 +64,10 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
             if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") details.resetName();
           }}
-          placeholder="Your name"
+          placeholder={t("Your name", "اسمك")}
         />
         <InputField
-          label="Email"
+          label={t("Email", "البريد الإلكتروني")}
           type="email"
           value={details.email}
           dir="ltr"
@@ -80,7 +82,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
           hint={
             details.pendingEmail
               ? undefined
-              : "This is the address you sign in with. A new one is confirmed from its inbox first."
+              : t("This is the address you sign in with. A new one is confirmed from its inbox first.", "هذا هو البريد الذي تسجّل الدخول به. أي بريد جديد يُؤكَّد من صندوقه أولًا.")
           }
         />
       </div>
@@ -88,18 +90,18 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
       {details.pendingEmail && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-widget bg-surface-sunken px-space-6 py-space-4 shadow-edge-soft">
           <p className="text-caption text-text-muted">
-            Waiting for confirmation:{" "}
+            {t("Waiting for confirmation:", "بانتظار التأكيد:")}{" "}
             <span dir="ltr" className="font-medium text-text">
               {details.pendingEmail}
             </span>
-            . Until then you sign in with {account.email}.
+            . {t("Until then you sign in with", "حتى ذلك الحين تسجّل الدخول بـ")} <span dir="ltr">{account.email}</span>.
           </p>
           <div className="flex shrink-0 items-center gap-2">
             <Button type="button" variant="outline" size="sm" onClick={details.resendPending}>
-              Resend
+              {t("Resend", "إعادة الإرسال")}
             </Button>
             <Button type="button" variant="link" onClick={details.cancelPending}>
-              Cancel
+              {t("Cancel", "إلغاء")}
             </Button>
           </div>
         </div>

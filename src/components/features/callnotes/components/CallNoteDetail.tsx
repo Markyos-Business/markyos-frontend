@@ -97,7 +97,7 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
             </span>
             {current.discoveryFormName && (
               <span className="bidi-plain">
-                · {t("Form", "النموذج")}: {current.discoveryFormName}
+                · {t("Questionnaire", "الاستبيان")}: {current.discoveryFormName}
               </span>
             )}
           </div>

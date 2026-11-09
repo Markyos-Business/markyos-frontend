@@ -34,7 +34,7 @@ Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never u
 5. **Depth comes from light, not shadow.** Glow (`--glow-*`) is used for active, focus and highlight only, on about 2% of a layout. `--shadow-raised` is for menus and overlays only.
 6. **Hover and press use one treatment for everything:** a `--ink-35` scrim over the resting fill (`.mk-btn::after`). There is no lift, no scale and no darker hex.
 7. **Focus** is `outline: 2px solid var(--primary); outline-offset: 2px`.
-8. **Motion is minimal:** 120ms crossfades for colour, opacity and shadow, and 180ms for switch knobs and progress fills, with `cubic-bezier(.4,0,.2,1)`. There is no bounce, spring, entrance animation or parallax.
+8. **Motion is calm and fast** (§13): 100 / 150 / 200 / 280ms on three curves (standard, ease-out entering, ease-in leaving; exits ~30% quicker). Pages, cards, overlays and the sidebar animate, using only `transform` and `opacity` (plus collapsible grid rows and the desktop sidebar width). No bounce, spring overshoot or parallax, and nothing over 300ms except a chart drawing itself once.
 9. **The maximum weight is 500** in product UI (`--weight-bold: 500`). Hierarchy comes from size and white opacity, not from bold.
 10. **Icons come only from Line Awesome 1.3.0.** There are no SVG icons, PNG icons, emoji or Unicode symbols as icons. Sizes are **16 / 18 / 22** only.
 11. **Spacing is not a 4/8 grid.** Use the measured scale in §2.4, and don't round to 8.
@@ -209,10 +209,11 @@ Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never u
   --ring-status:0 0 0 2px #111111;  /* presence-dot halo matches card */
 
   /* ── Motion ── */
-  --ease-standard:cubic-bezier(.4,0,.2,1);
-  --duration-fast:120ms;
-  --duration-base:180ms;
-  --transition-state:background-color var(--duration-fast) var(--ease-standard),
+  /* Motion — the full set lives in tailwind/motion.js (§13) */
+  --duration-instant:100ms; --duration-fast:150ms; --duration-base:200ms; --duration-slow:280ms;
+  --ease-standard:cubic-bezier(.4,0,.2,1); --ease-out:cubic-bezier(.16,1,.3,1); --ease-in:cubic-bezier(.4,0,1,1);
+  --distance-sm:4px; --distance-md:8px; --distance-lg:16px;
+  --transition-state:background-color var(--duration-instant) var(--ease-standard),
                      color var(--duration-fast) var(--ease-standard),
                      box-shadow var(--duration-fast) var(--ease-standard),
                      opacity var(--duration-fast) var(--ease-standard);
@@ -497,7 +498,7 @@ Chart series order is primary `#0099FF`, then green `#00DE68`, yellow `#FFBB00`,
 ## 8. RTL checklist
 
 - [ ] Put `dir` and `lang` on `<html>` (or on a container) and use only logical properties (`inline-start/end`, `padding-inline`, `inset-inline`).
-- [ ] Mirror directional icons with `[dir=rtl] .flip{transform:scaleX(-1)}` (or `--dir-flip:-1`).
+- [ ] Directional icons (arrows, angles, sign-out, undo) mirror on their own: `tailwind/icons.js` flips them with `:dir(rtl)`. Write each in its English direction, never `rtl:-scale-x-100` or a name swapped by language. `scripts/rtl-audit.mjs` (in `npm run check`) refuses both, and any physical class without an `rtl:`/`ltr:` counterpart.
 - [ ] Keep logos, media controls and charts' time axes unflipped.
 - [ ] Don't use `letter-spacing` on Arabic. Arabic display line height is 1.3.
 - [ ] Use Western numerals unless the customer asks otherwise. CalendarMonth `locale="ar"` uses Arabic-Indic digits.
@@ -550,7 +551,7 @@ Chart series order is primary `#0099FF`, then green `#00DE68`, yellow `#FFBB00`,
 ✗ Raw hex in a component · ✗ `font-weight: 600/700` in the product · ✗ `border: 1px solid` (use an inset shadow) ·
 ✗ Drop shadows on cards · ✗ Gradients or blur in product chrome · ✗ Emoji or SVG icons · ✗ Icon sizes other than 16/18/22 ·
 ✗ Rounding spacing to 8 · ✗ Bordered or filled input boxes outside the spec · ✗ Typed ALL-CAPS copy ·
-✗ `margin-left`/`right` (use logical properties) · ✗ Bounce or entrance animations · ✗ Text over images ·
+✗ `margin-left`/`right` (use logical properties) · ✗ Bounce, spring or anything over 300ms · ✗ Text over images ·
 ✗ Lorem ipsum · ✗ US date order · ✗ Bricolage Grotesque in the app UI · ✗ CraftUI or kit-author branding
 
 ---
@@ -570,8 +571,79 @@ Build the <Screen name> screen following @MARKYOS_UI.md.
 
 - [ ] Only tokens from §2 are used; `grep -E '#[0-9a-fA-F]{3,6}'` finds nothing in component files.
 - [ ] Heights, radii and icon sizes match §1.12, §2.5 and §4.
-- [ ] Hover, press and focus use `.mk-btn` and the focus outline; transitions are 120 or 180ms only.
+- [ ] Hover, press and focus use `.mk-btn` and the focus outline; every duration and curve is a motion token (§13), never a raw `ms` or `cubic-bezier`.
 - [ ] Controls are real `<button>`, `<a>` and `<input>` elements with labels, and icon-only buttons have an `aria-label`.
 - [ ] Text contrast is at least 4.5:1 (white 60% on `#111` passes; white 40% is for placeholders and disabled states only).
 - [ ] The screen renders correctly with `dir="rtl" lang="ar"`.
 - [ ] Copy follows §7: sentence case, no emoji, `10m`-style times and `12 Sep` dates.
+
+---
+
+## 13. Motion
+
+Smooth, calm and fast. The one source is `tailwind/motion.js`: the CSS
+tokens, the Tailwind utilities (`duration-instant|fast|base|slow`,
+`ease-standard|out|in`, `animate-*`) and the numbers JS waits on
+(`src/lib/motion.ts`). Components never write a raw `ms` or `cubic-bezier`.
+
+### Tokens
+
+| Token | Value | For |
+|---|---|---|
+| `--duration-instant` | 100ms | hover, press, colour changes; every small exit |
+| `--duration-fast` | 150ms | tooltips, dropdowns, small UI; field focus |
+| `--duration-base` | 200ms | cards, tabs, page content, collapsibles |
+| `--duration-slow` | 280ms | sidebar, sheets, dialogs |
+| `--duration-chart` | 500ms | a chart drawing itself, once |
+| `--ease-standard` | `cubic-bezier(.4,0,.2,1)` | most transitions |
+| `--ease-out` | `cubic-bezier(.16,1,.3,1)` | things entering |
+| `--ease-in` | `cubic-bezier(.4,0,1,1)` | things leaving (one duration step quicker) |
+| `--distance-sm/md/lg` | 4 / 8 / 16px | nudges, fade-ups, toasts |
+| `--stagger-step` | 40ms | between items of a group, first six only |
+| `--delay-tooltip` | 300ms | hover before a tooltip shows (focus shows at once) |
+
+### What animates
+
+| Element | Enter | Exit | Where |
+|---|---|---|---|
+| Sidebar (desktop) | width 240↔84px, `slow`, standard; labels slide in 4px (`fast`) on expand; chevron turns 180° (`base`) | labels go at once, width follows | `AppSidebar`, pre-paint script `lib/sidebarRails.ts` |
+| Sidebar (phone) | slides from the reading start (`slow`, out) over a fading scrim | slides back (`base`, in) | `SidebarDrawer` |
+| Page | old page fades out (`instant`); new one fades up 8px (`base`, out) — content area only | — | `PageTransition` (React `<ViewTransition>`), each area's `template.tsx` |
+| Cards and grids | fade up 8px (`base`, out), stagger 40ms × 6 | — | `FadeIn`, `Stagger`, `StatGrid` |
+| Skeleton → content, empty, error | crossfade (`base`) | — | `AsyncStateView` |
+| Alerts, FAQ, bulk bar | grid rows 0fr→1fr + opacity (`base`) | same, reversed | `.mk-collapse` |
+| Menu, dropdown, popover | zoom 0.96→1 + 4px from the trigger side (`fast`, out) | zoom out (`instant`, in) | `DropdownPanel`, `Popover` |
+| Tooltip | fade (`fast`) after 300ms hover | fade | `Tooltip` |
+| Dialog | scrim fade (`base`); panel zoom 0.96→1 (`slow`, out) | panel `fast`, scrim `instant` | `DialogHost`, `Dialog`, `FormDialog`, feature modals |
+| Sheet / drawer | slide from its edge (`slow`, out), mirrored in Arabic | `base`, in | `FormDialog variant="sheet"`, `Drawer`, `DownloadPanel` |
+| Toast | slide from the bottom-end corner + fade (`base`, out); swipe to dismiss | fade (`instant`) | `Toast` |
+| Tabs | the active pill slides (`base`, standard) | — | `Tabs` |
+| Buttons, rows, nav items | colour/background/shadow `instant`; primary press scale .98 | — | `tailwind/base.js`, `Button` |
+| Fields | underline colour + focus glow `fast` | — | `.mk-field` |
+| Table | rows crossfade on sort/page/page size (`fast`); new rows fade in; sort arrow turns | — | `DataTable` |
+| Chart | bars grow / lines draw once (`chart`, out); later data crossfades | — | `Chart`, `SignupsChart` |
+| Numbers | crossfade on change; never count up | — | `StatTile` |
+| Theme switch | instant swap (transitions paused two frames); the icon turns and scales (`base`) | — | `ThemeProvider` |
+| Avatars | fade in once loaded | — | `Avatar` |
+
+Nothing animates on first load: a remembered collapsed sidebar is drawn
+collapsed before paint, cards that mount with an arriving page ride the page's
+own transition instead of animating twice, and the theme never transitions.
+
+### Reduced motion
+
+`prefers-reduced-motion: reduce` swaps the tokens: every distance and zoom
+collapses (`0px`, scale 1), staggers and chart draws go to 0, durations drop
+to 100ms. The same animations therefore become plain opacity fades of 100ms or
+less, with no extra code; transitions (the sliding tab pill, the sidebar width)
+and loops (skeleton shimmer) stop. Focus is never lost to an animation, and no
+animation delays keyboard or screen-reader use.
+
+### Rules
+
+- Only `transform` and `opacity` move (plus `.mk-collapse` grid rows and the desktop sidebar width).
+- Horizontal slides use `--dir-sign`, so every one mirrors with `dir="rtl"`.
+- No bounce, spring overshoot or parallax; nothing over 300ms except a chart draw.
+- Reuse, don't copy: `variants` / `motionClass` from `lib/motion.ts`, `FadeIn`, `Stagger`, `usePresence(open, EXIT.x)`, `usePrefersReducedMotion`.
+- See every transition live at `/dev/motion` (with a reduced-motion switch).
+
