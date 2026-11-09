@@ -6,7 +6,7 @@ import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import { triggerBlobDownload } from "@/lib/rasterize";
 import type { Workspace } from "@/types";
-import { diffTokens, parseDesignTokens, serializeTokens } from "../model/designTokens";
+import { diffTokens, parseDesignTokens, serializeTokens } from "../../utils/designTokens";
 
 /** The palette and type as W3C design tokens: out to Figma and back. */
 export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {

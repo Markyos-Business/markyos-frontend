@@ -5,7 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/form";
 import type { Workspace } from "@/types";
-import { randomApiKey } from "../utils/random";
+import { randomApiKey } from "../../utils/random";
 
 /** The workspace's API key, an example call, and the webhook address. */
 export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {

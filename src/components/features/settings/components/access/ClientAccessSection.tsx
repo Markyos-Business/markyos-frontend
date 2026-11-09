@@ -4,7 +4,7 @@ import { useApp } from "@/contexts/AppContext";
 import { Button, CopyButton, Icon, Row, Section, Switch } from "@/components/ui";
 import { InputField } from "@/components/form";
 import type { Workspace } from "@/types";
-import { randomPassword } from "../utils/random";
+import { randomPassword } from "../../utils/random";
 
 /** The password in front of the client link, and the link itself. */
 export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; clientLink: string; isAr: boolean }) {

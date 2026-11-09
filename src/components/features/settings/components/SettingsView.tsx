@@ -1,14 +1,14 @@
 import { PAGE_SECTION } from "../constants";
 import type { SettingsView as SettingsViewProps } from "../hooks/useSettingsPage";
-import { BillingSection } from "./BillingSection";
-import { BrandSection } from "./BrandSection";
-import { ClientAccessSection } from "./ClientAccessSection";
-import { CustomDomainSection } from "./CustomDomainSection";
-import { DesignTokensSection } from "./DesignTokensSection";
-import { DeveloperSection } from "./DeveloperSection";
-import { GuidelineDesignSection } from "./GuidelineDesignSection";
-import { SubdomainSection } from "./SubdomainSection";
-import { WhiteLabelSection } from "./WhiteLabelSection";
+import { BillingSection } from "./billing/BillingSection";
+import { BrandSection } from "./brand/BrandSection";
+import { ClientAccessSection } from "./access/ClientAccessSection";
+import { CustomDomainSection } from "./access/CustomDomainSection";
+import { DesignTokensSection } from "./design/DesignTokensSection";
+import { DeveloperSection } from "./developer/DeveloperSection";
+import { GuidelineDesignSection } from "./design/GuidelineDesignSection";
+import { SubdomainSection } from "./access/SubdomainSection";
+import { WhiteLabelSection } from "./billing/WhiteLabelSection";
 
 /** A brand's settings, section by section. Keyed by brand so drafts start over on another brand. */
 export function SettingsView({ ws, isAr, typeLabel, prices, clientLink }: SettingsViewProps) {

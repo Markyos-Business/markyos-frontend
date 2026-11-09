@@ -3,7 +3,7 @@
 import { Badge, Button, Row, Section } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
-import { useCheckout } from "../hooks/useCheckout";
+import { useCheckout } from "../../hooks/useCheckout";
 import { PlanCard } from "./PlanCard";
 
 type BillingSectionProps = { ws: Workspace; typeLabel: string; prices: { pass: number; subscription: number }; isAr: boolean };
