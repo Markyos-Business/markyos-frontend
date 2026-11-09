@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guessRole, mergeParticipants } from "../components/ParticipantsEditor";
+import { guessRole, mergeParticipants } from "../components/editor/ParticipantsEditor";
 import type { TeamMember } from "@/types";
 
 const team: TeamMember[] = [

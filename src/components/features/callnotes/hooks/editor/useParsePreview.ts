@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { previewText } from "../services/callNotesService";
-import type { NoteKind, ParsePreview } from "../types";
+import { previewText } from "../../services/callNotesService";
+import type { NoteKind, ParsePreview } from "../../types";
 
 const DELAY_MS = 500;
 

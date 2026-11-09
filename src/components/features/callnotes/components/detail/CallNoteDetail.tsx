@@ -6,11 +6,11 @@ import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, u
 import { SearchField } from "@/components/form";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { formatDay } from "@/components/features/discovery";
-import { KIND_META, LANGUAGE_META, ROLE_META } from "../constants";
-import { useCallNote } from "../hooks/useCallNote";
-import { deleteNote, restoreNote, setIncluded } from "../services/callNotesService";
-import type { CallNote } from "../types";
-import { callDay, formatMinutes, initials } from "../utils/format";
+import { KIND_META, LANGUAGE_META, ROLE_META } from "../../constants";
+import { useCallNote } from "../../hooks/shared/useCallNote";
+import { deleteNote, restoreNote, setIncluded } from "../../services/callNotesService";
+import type { CallNote } from "../../types";
+import { callDay, formatMinutes, initials } from "../../utils/format";
 import { NoteParagraphs, OriginalText, TurnList } from "./NoteBody";
 
 type CallNoteDetailProps = {

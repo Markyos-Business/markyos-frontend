@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api/client";
-import { updateNote } from "../services/callNotesService";
-import type { CallNote, NoteDraft } from "../types";
-import { today } from "../utils/format";
+import { updateNote } from "../../services/callNotesService";
+import type { CallNote, NoteDraft } from "../../types";
+import { today } from "../../utils/format";
 
 const LOCAL_DELAY_MS = 600;
 const SERVER_DELAY_MS = 1000;

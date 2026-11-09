@@ -2,8 +2,8 @@
 
 import { Badge, EmptyHint } from "@/components/ui";
 import { InputField, SelectField } from "@/components/form";
-import { KIND_META, LANGUAGE_META, ROLE_META } from "../constants";
-import type { NoteKind, NoteLanguage, ParsePreview, Participant, ParticipantRole } from "../types";
+import { KIND_META, LANGUAGE_META, ROLE_META } from "../../constants";
+import type { NoteKind, NoteLanguage, ParsePreview, Participant, ParticipantRole } from "../../types";
 
 type PreviewPanelProps = {
   preview: ParsePreview | null;

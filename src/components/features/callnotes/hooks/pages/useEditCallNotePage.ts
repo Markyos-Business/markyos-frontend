@@ -1,9 +1,9 @@
 "use client";
 
 import { useBrandPage } from "@/contexts/pageGuards";
-import { callHref } from "../../components/DiscoveryView";
+import { callHref } from "../../components/discovery/DiscoveryView";
 import { PAGE_SECTION } from "../../constants";
-import { useCallNote } from "../useCallNote";
+import { useCallNote } from "../shared/useCallNote";
 
 /** /w/[slug]/discovery/calls/[noteId]/edit: edit a call note, once it's loaded. */
 export function useEditCallNotePage(slug: string, noteId: string) {

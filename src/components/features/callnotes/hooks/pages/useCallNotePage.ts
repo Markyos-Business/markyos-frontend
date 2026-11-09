@@ -1,7 +1,7 @@
 "use client";
 
 import { useBrandPage } from "@/contexts/pageGuards";
-import { callHref } from "../../components/DiscoveryView";
+import { callHref } from "../../components/discovery/DiscoveryView";
 import { PAGE_SECTION } from "../../constants";
 
 /** /w/[slug]/discovery/calls/[noteId]: one call note. */

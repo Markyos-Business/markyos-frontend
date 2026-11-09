@@ -1,10 +1,10 @@
 "use client";
 
 import { Fragment, type ReactNode } from "react";
-import { ROLE_META } from "../constants";
-import type { Participant, Turn } from "../types";
-import { participantFor } from "../utils/format";
-import { blocksOf } from "../utils/blocks";
+import { ROLE_META } from "../../constants";
+import type { Participant, Turn } from "../../types";
+import { participantFor } from "../../utils/format";
+import { blocksOf } from "../../utils/blocks";
 
 /** `text` with every match of `query` marked; case-insensitive. */
 function marked(text: string, query: string): ReactNode {

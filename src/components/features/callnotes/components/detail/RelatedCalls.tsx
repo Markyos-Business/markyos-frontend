@@ -4,10 +4,10 @@ import Link from "next/link";
 import { Button, Icon } from "@/components/ui";
 import { formatDay } from "@/components/features/discovery";
 import { useRequest } from "@/hooks/useRequest";
-import { KIND_META } from "../constants";
-import { listNotes } from "../services/callNotesService";
-import { callDay } from "../utils/format";
-import { callHref } from "./DiscoveryView";
+import { KIND_META } from "../../constants";
+import { listNotes } from "../../services/callNotesService";
+import { callDay } from "../../utils/format";
+import { callHref } from "../discovery/DiscoveryView";
 
 type RelatedCallsProps = { brandId: string; brandSlug: string; formId: string; isAr: boolean };
 

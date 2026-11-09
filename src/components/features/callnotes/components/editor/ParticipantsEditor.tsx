@@ -3,8 +3,8 @@
 import { Button, Icon, IconButton } from "@/components/ui";
 import { InputField, SelectField } from "@/components/form";
 import type { TeamMember } from "@/types";
-import { ROLE_META } from "../constants";
-import type { Participant, ParticipantRole } from "../types";
+import { ROLE_META } from "../../constants";
+import type { Participant, ParticipantRole } from "../../types";
 
 type ParticipantsEditorProps = {
   participants: Participant[];

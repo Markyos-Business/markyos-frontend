@@ -6,12 +6,12 @@ import { AlertBanner, Button, Icon, PageHeader, useDialog, useToast } from "@/co
 import { FileField, InputField, SelectField, TextareaField } from "@/components/form";
 import { SaveStatus } from "@/components/features/discovery";
 import type { TeamMember } from "@/types";
-import { MAX_UPLOAD_BYTES, UPLOAD_ACCEPT } from "../constants";
-import { useBrandForms } from "../hooks/useBrandForms";
-import { useNoteDraft } from "../hooks/useNoteDraft";
-import { useParsePreview } from "../hooks/useParsePreview";
-import { createNote, previewFile } from "../services/callNotesService";
-import type { CallNote, Participant } from "../types";
+import { MAX_UPLOAD_BYTES, UPLOAD_ACCEPT } from "../../constants";
+import { useBrandForms } from "../../hooks/editor/useBrandForms";
+import { useNoteDraft } from "../../hooks/editor/useNoteDraft";
+import { useParsePreview } from "../../hooks/editor/useParsePreview";
+import { createNote, previewFile } from "../../services/callNotesService";
+import type { CallNote, Participant } from "../../types";
 import { ParticipantsEditor, guessRole, mergeParticipants } from "./ParticipantsEditor";
 import { PreviewPanel } from "./PreviewPanel";
 

@@ -5,11 +5,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, Tabs, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay, publicUrl, sendForm } from "@/components/features/discovery";
-import { KIND_META, LANGUAGE_META } from "../constants";
-import { useDiscoveryFeed } from "../hooks/useDiscoveryFeed";
-import { deleteNote, setIncluded } from "../services/callNotesService";
-import type { FeedCall, FeedForm } from "../types";
-import { callDay, initials } from "../utils/format";
+import { KIND_META, LANGUAGE_META } from "../../constants";
+import { useDiscoveryFeed } from "../../hooks/discovery/useDiscoveryFeed";
+import { deleteNote, setIncluded } from "../../services/callNotesService";
+import type { FeedCall, FeedForm } from "../../types";
+import { callDay, initials } from "../../utils/format";
 
 type Section = "questionnaires" | "calls";
 
