@@ -53,6 +53,8 @@ export const motionTokens = {
   "--distance-md": "8px",
   "--distance-lg": "16px",
   "--stagger-step": `${STAGGER.step}ms`,
+  /** How long the pointer rests on something before its tooltip shows. */
+  "--delay-tooltip": "300ms",
   /** How far an overlay zooms from. */
   "--scale-from": "0.96",
   /** +1 left to right, -1 right to left: multiplies every horizontal slide. */
@@ -79,6 +81,10 @@ export const transitionDuration = {
   base: "var(--duration-base)",
   slow: "var(--duration-slow)",
   chart: "var(--duration-chart)",
+};
+
+export const transitionDelay = {
+  tooltip: "var(--delay-tooltip)",
 };
 
 export const transitionTimingFunction = {
@@ -222,7 +228,12 @@ export const motionBase = [
   // A number that changes crossfades rather than counting.
   { ".mk-value": { transition: "opacity var(--duration-fast) var(--ease-standard)" } },
   // While the theme swaps, nothing transitions, so colours don't flash.
-  { '[data-theme-switching] *, [data-theme-switching] *::before, [data-theme-switching] *::after': { transition: "none !important" } },
+  // (`.mk-keep-motion` opts out: the toggle's own icon turns while it happens.)
+  {
+    '[data-theme-switching] *:not(.mk-keep-motion), [data-theme-switching] *::before, [data-theme-switching] *::after': {
+      transition: "none !important",
+    },
+  },
   { "@media (prefers-reduced-motion: reduce)": { ":root": reducedMotionTokens } },
   // The /dev/motion page's switch, to see reduced motion without changing the OS.
   { '[data-reduce-motion="true"]': reducedMotionTokens },

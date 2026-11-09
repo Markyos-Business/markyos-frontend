@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useRef, useState } from "react"
 import type { ReactNode } from "react";
 import { usePresence } from "@/hooks/usePresence";
 import { DialogHost } from "./DialogHost";
+import { EXIT } from "@/lib/motion";
 
 /**
  * The app's own confirm and prompt.
@@ -78,7 +79,8 @@ const DialogProvider = ({ children }: DialogProviderProps) => {
   // just been answered stays on screen for its exit while the caller already
   // has its answer.
   const [open, setOpen] = useState(false);
-  const { mounted, closing } = usePresence(open);
+  // Held for the panel's zoom out (a step quicker than its zoom in).
+  const { mounted, closing } = usePresence(open, EXIT.base);
   const resolverRef = useRef<((value: never) => void) | null>(null);
   const counter = useRef(0);
 

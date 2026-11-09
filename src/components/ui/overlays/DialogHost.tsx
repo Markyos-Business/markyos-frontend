@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import { Button } from "../buttons/Button";
 import { Icon } from "../primitives/Icon";
 import type { DialogRequest } from "./Dialog";
+import { motionClass } from "@/lib/motion";
 
 type DialogHostProps = {
   request: DialogRequest;
@@ -97,7 +98,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
     <div
       dir={isAr ? "rtl" : "ltr"}
       className={`fixed inset-0 z-dialog flex items-center justify-center bg-scrim p-6 ${
-        closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
+        closing ? "pointer-events-none animate-fade-out" : "animate-fade-in-base"
       }`}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onSettle(cancelValue);
@@ -112,7 +113,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
         aria-describedby={options.body ? bodyId : undefined}
         className={`flex w-full max-w-110 flex-col gap-space-6 rounded-card bg-surface-1 p-space-10 shadow-edge-modal ${
           isAr ? "font-arabic" : ""
-        } ${closing ? "animate-fade-out" : "animate-fade-in"}`}
+        } ${motionClass("dialog", closing)}`}
         // Inline on purpose: the panel takes focus only so the Tab trap has
         // somewhere to start, and the focus-ring rule yields to an inline
         // outline (tailwind/base.js), where it would not yield to a class.

@@ -31,7 +31,7 @@ import plugin from "tailwindcss/plugin";
 import { baseStyles } from "./tailwind/base.js";
 import { iconStyles } from "./tailwind/icons.js";
 import { darkTokens, lightTokens, specAliases } from "./tailwind/tokens.js";
-import { animation, keyframes, motionBase, motionTokens, transitionDuration, transitionTimingFunction } from "./tailwind/motion.js";
+import { animation, keyframes, motionBase, motionTokens, transitionDelay, transitionDuration, transitionTimingFunction } from "./tailwind/motion.js";
 
 /** Widths as a percentage of the parent: `1p` (1%) up to `99p` (99%). */
 const percentWidths = Object.fromEntries(
@@ -285,6 +285,7 @@ const config = {
       // `transition` gets `instant` on the standard curve. Never a raw number.
       transitionDuration,
       transitionTimingFunction,
+      transitionDelay,
       width: percentWidths,
       backgroundImage: {
         // A flat tint laid over a fill, for hover and press states that have

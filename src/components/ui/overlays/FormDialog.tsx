@@ -5,6 +5,8 @@ import { AlertBanner } from "../AlertBanner";
 import { Button } from "../buttons/Button";
 import { IconButton } from "../buttons/IconButton";
 import { useUiStrings } from "../i18n/uiStrings";
+import { EXIT, motionClass } from "@/lib/motion";
+import { usePresence } from "@/hooks/usePresence";
 
 type FormDialogProps = {
   open: boolean;
@@ -34,6 +36,8 @@ const FOCUSABLE = 'input,select,textarea,button,[href],[tabindex]:not([tabindex=
  * waits while `onSubmit` runs, and a returned message shows above the fields.
  */
 const FormDialog = ({ open, title, description, submitLabel, cancelLabel, onClose, onSubmit, variant = "dialog", children }: FormDialogProps) => {
+  // Kept on screen for its exit: a sheet slides out, a dialog zooms out.
+  const { mounted, closing } = usePresence(open, variant === "sheet" ? EXIT.slow : EXIT.base);
   const { t, isAr } = useUiStrings();
   const panel = useRef<HTMLFormElement>(null);
   const titleId = useId();
@@ -65,7 +69,7 @@ const FormDialog = ({ open, title, description, submitLabel, cancelLabel, onClos
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -82,7 +86,7 @@ const FormDialog = ({ open, title, description, submitLabel, cancelLabel, onClos
   return (
     <div
       dir={isAr ? "rtl" : undefined}
-      className={`fixed inset-0 z-dialog flex bg-scrim animate-fade-in ${sheet ? "justify-end" : "items-center justify-center p-6"}`}
+      className={`fixed inset-0 z-dialog flex bg-scrim ${closing ? "pointer-events-none animate-fade-out" : "animate-fade-in-base"} ${sheet ? "justify-end" : "items-center justify-center p-6"}`}
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <form
@@ -94,7 +98,7 @@ const FormDialog = ({ open, title, description, submitLabel, cancelLabel, onClos
         onSubmit={submit}
         className={`flex flex-col gap-space-6 bg-surface-1 p-space-10 shadow-edge-modal ${
           sheet ? "h-full w-full max-w-110 overflow-y-auto" : "w-full max-w-110 rounded-card"
-        }`}
+        } ${motionClass(sheet ? "slideFromEnd" : "dialog", closing)}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>

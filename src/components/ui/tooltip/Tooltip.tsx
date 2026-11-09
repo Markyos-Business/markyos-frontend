@@ -38,8 +38,9 @@ type TooltipProps = {
 };
 
 /**
- * A short explanation on hover and on keyboard focus. It crossfades in and
- * never takes a click: it is a hint, not a control.
+ * A short explanation on hover and on keyboard focus. On hover it waits a
+ * moment (`delay-tooltip`) so passing the pointer over doesn't flash it; on
+ * focus it shows at once. It never takes a click: a hint, not a control.
  */
 const Tooltip = ({ content, children, side = "top", className = "" }: TooltipProps) => {
   const id = useId();
@@ -52,7 +53,7 @@ const Tooltip = ({ content, children, side = "top", className = "" }: TooltipPro
       <span
         id={id}
         role="tooltip"
-        className={`pointer-events-none absolute z-dropdown w-56 rounded-lg bg-solid px-space-4 py-space-3 text-caption font-normal text-solid-ink opacity-0 shadow-pop transition-opacity group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100 ${sides[side]}`}
+        className={`pointer-events-none absolute z-dropdown w-56 rounded-lg bg-solid px-space-4 py-space-3 text-caption font-normal text-solid-ink opacity-0 shadow-pop transition-opacity duration-fast ease-out group-hover/tooltip:opacity-100 group-hover/tooltip:delay-tooltip group-focus-within/tooltip:opacity-100 group-focus-within/tooltip:delay-0 ${sides[side]}`}
       >
         {content}
         <span aria-hidden className={`absolute border-4 border-transparent ${arrows[side]}`} />
