@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui";
 import { Card } from "./Card";
-import { zoneSpecFor } from "@/components/features/moodboard/model/templates";
+import { zoneSpecFor } from "@/components/features/moodboard/utils/templates";
 import type { Asset, MoodboardItem, MoodboardZone } from "@/types";
 
 /**

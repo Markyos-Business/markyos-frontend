@@ -65,8 +65,8 @@ import {
 } from "@/types";
 import type { SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
 import { between, nBetween } from "@/lib/doc/core/order";
-import { zonesFromTemplate } from "@/components/features/moodboard/model/zones";
-import { withoutPosition } from "@/components/features/moodboard/model/layout";
+import { zonesFromTemplate } from "@/components/features/moodboard/utils/zones";
+import { withoutPosition } from "@/components/features/moodboard/utils/layout";
 import {
   DEMO_ACCOUNT_ID,
   buildDemoAccount,

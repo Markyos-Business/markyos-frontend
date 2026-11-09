@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useBrandPage } from "@/contexts/pageGuards";
-import { PAGE_SECTION } from "../constants";
-import { boardHref } from "./projects/useMoodboardProjectsPage";
+import { PAGE_SECTION } from "../../constants";
+import { boardHref } from "../projects/useMoodboardProjectsPage";
 import { useMoodboardFullscreen } from "./useMoodboardFullscreen";
 
 /**

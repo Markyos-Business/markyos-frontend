@@ -3,9 +3,9 @@
 import { useRef } from "react";
 import { Button, Icon, IconButton, Stagger } from "@/components/ui";
 import type { MoodboardProjectsView as Props } from "../../hooks/projects/useMoodboardProjectsPage";
-import { MoodboardFootnote } from "../MoodboardFootnote";
-import { MoodboardIntro } from "../MoodboardIntro";
-import { TemplatePicker } from "../TemplatePicker";
+import { MoodboardFootnote } from "../shared/MoodboardFootnote";
+import { MoodboardIntro } from "../shared/MoodboardIntro";
+import { TemplatePicker } from "../shared/TemplatePicker";
 import { BoardProjectCard } from "./BoardProjectCard";
 
 /**

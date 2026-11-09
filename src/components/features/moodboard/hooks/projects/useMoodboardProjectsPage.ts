@@ -7,7 +7,7 @@ import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import type { Moodboard } from "@/types";
 import { PAGE_SECTION } from "../../constants";
-import { holdUploads } from "../../model/pendingUploads";
+import { holdUploads } from "../../utils/pendingUploads";
 
 /** A board's address: each board is its own project page. */
 export const boardHref = (slug: string, boardId: string) => `/w/${slug}/moodboard/${boardId}`;

@@ -5,13 +5,13 @@ import Link from "next/link";
 import { EmptyState, Icon } from "@/components/ui";
 import { useApp } from "@/contexts/AppContext";
 import type { MoodboardZone } from "@/types";
-import type { MoodboardPageView } from "../hooks/useMoodboardPage";
-import { useMoodboardActions } from "../hooks/useMoodboardActions";
-import { takeUploads } from "../model/pendingUploads";
-import { zoneForKind } from "../model/zones";
+import type { MoodboardPageView } from "../../hooks/board/useMoodboardPage";
+import { useMoodboardActions } from "../../hooks/board/useMoodboardActions";
+import { takeUploads } from "../../utils/pendingUploads";
+import { zoneForKind } from "../../utils/zones";
 import { BoardToolbar } from "./BoardToolbar";
 import { Canvas } from "./Canvas";
-import { MoodboardFootnote } from "./MoodboardFootnote";
+import { MoodboardFootnote } from "../shared/MoodboardFootnote";
 import { Zone } from "./Zone";
 
 /**

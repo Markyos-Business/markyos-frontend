@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ActionsDropdown, Icon } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Asset, Moodboard } from "@/types";
-import { MOODBOARD_TEMPLATES } from "../../model/templates";
+import { MOODBOARD_TEMPLATES } from "../../utils/templates";
 import { boardHref, cardCount } from "../../hooks/projects/useMoodboardProjectsPage";
 
 type BoardProjectCardProps = {

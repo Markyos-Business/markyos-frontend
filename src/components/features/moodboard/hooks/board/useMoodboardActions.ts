@@ -4,11 +4,11 @@ import { type RefObject, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useDialog, useToast } from "@/components/ui";
 import type { Moodboard, MoodboardItem, MoodboardZone, Workspace } from "@/types";
-import type { ZoneAction } from "../components/Zone";
-import { fileToDownscaledDataUrl } from "../model/imageDownscale";
-import { sampleImage } from "../model/sampleImage";
-import { holdUploads } from "../model/pendingUploads";
-import { zoneForKind } from "../model/zones";
+import type { ZoneAction } from "../../components/board/Zone";
+import { fileToDownscaledDataUrl } from "../../utils/imageDownscale";
+import { sampleImage } from "../../utils/sampleImage";
+import { holdUploads } from "../../utils/pendingUploads";
+import { zoneForKind } from "../../utils/zones";
 
 type MoodboardActionsArgs = {
   ws: Workspace;

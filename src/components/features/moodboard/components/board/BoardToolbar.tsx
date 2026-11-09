@@ -1,6 +1,6 @@
 import { Button, Icon, IconButton } from "@/components/ui";
 import type { Moodboard } from "@/types";
-import { VIEW_TABS } from "../constants";
+import { VIEW_TABS } from "../../constants";
 
 type BoardToolbarProps = {
   board: Moodboard;

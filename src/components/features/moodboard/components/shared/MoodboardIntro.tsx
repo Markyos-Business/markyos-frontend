@@ -1,4 +1,4 @@
-import { PAGE_SECTION } from "../constants";
+import { PAGE_SECTION } from "../../constants";
 
 /**
  * The intro is onboarding, and the canvas needs the height more than a

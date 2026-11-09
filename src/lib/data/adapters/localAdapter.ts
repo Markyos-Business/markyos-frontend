@@ -23,7 +23,7 @@ import {
   unpublishWorkspace,
 } from "./entityOps";
 import { nBetween } from "@/lib/doc/core/order";
-import { DEFAULT_TEMPLATE_KEY, zonesFromTemplate } from "@/components/features/moodboard/model/zones";
+import { DEFAULT_TEMPLATE_KEY, zonesFromTemplate } from "@/components/features/moodboard/utils/zones";
 import {
   DEMO_ACCOUNT_ID,
   DEMO_PASSWORD,

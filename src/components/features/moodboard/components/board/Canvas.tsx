@@ -3,7 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/ui";
 import { CardBody } from "./Card";
-import { zoneSpecFor } from "@/components/features/moodboard/model/templates";
+import { zoneSpecFor } from "@/components/features/moodboard/utils/templates";
 import {
   boardBounds,
   CARD_SIZE,
@@ -15,7 +15,7 @@ import {
   ZONE_HEADER,
   type PlacedItem,
   type PlacedZone,
-} from "@/components/features/moodboard/model/layout";
+} from "@/components/features/moodboard/utils/layout";
 import type { Asset, Moodboard, MoodboardItem, MoodboardZone } from "@/types";
 
 /**

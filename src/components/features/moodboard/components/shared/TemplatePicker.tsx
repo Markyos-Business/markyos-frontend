@@ -1,5 +1,5 @@
 import { Button, EmptyHint, Icon } from "@/components/ui";
-import { MOODBOARD_TEMPLATES } from "../model/templates";
+import { MOODBOARD_TEMPLATES } from "../../utils/templates";
 
 type TemplatePickerProps = {
   isAr: boolean;
