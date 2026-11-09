@@ -12,5 +12,5 @@ export { useStrategyPage } from "./hooks/useStrategyPage";
 export { ToneTab } from "./components/edit/tabs/ToneTab";
 export { TranslateStrategy, TranslationNotice } from "./components/translate/TranslateStrategy";
 export { VisionMissionTab } from "./components/edit/tabs/VisionMissionTab";
-export { translateText, TranslationError } from "./services/translate";
-export type { TranslateDirection } from "./services/translate";
+export { translateText, TranslationError } from "./services/strategyService";
+export type { TranslateDirection } from "./services/strategyService";

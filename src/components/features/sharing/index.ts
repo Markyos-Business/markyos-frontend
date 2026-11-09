@@ -4,4 +4,4 @@ export { useShareLink } from "./hooks/useShareLink";
 export { ShareLinksPanel } from "./components/ShareLinksPanel";
 export { ShareView } from "./components/ShareView";
 export { useSharePage } from "./hooks/useSharePage";
-export { suggestSubdomain, validateSubdomain } from "./model/subdomain";
+export { suggestSubdomain, validateSubdomain } from "./utils/subdomain";

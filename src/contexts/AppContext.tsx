@@ -85,7 +85,7 @@ import { EMAIL_RE, RESET_TTL_MS } from "@/components/features/auth/constants";
 import { normaliseEmail } from "@/components/features/auth/utils/email";
 import { hashPassword, verifyPassword } from "@/components/features/auth/utils/password";
 import { newResetToken } from "@/components/features/auth/utils/resetToken";
-import { validateSubdomain } from "@/components/features/sharing/model/subdomain";
+import { validateSubdomain } from "@/components/features/sharing/utils/subdomain";
 import { BrandRepository } from "@/lib/data/repository";
 // The entity operations, as pure state transitions. The store calls these
 // rather than keeping its own copy — see the file's own note on why there is

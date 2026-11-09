@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, richIsEmpty } from "@/components/ui";
-import { TranslateDirection, translateHtml, translateText } from "@/components/features/strategy/services/translate";
+import { TranslateDirection, translateHtml, translateText } from "@/components/features/strategy/services/strategyService";
 import { StrategyTextField, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 

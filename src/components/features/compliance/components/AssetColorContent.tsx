@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon, EmptyHint } from "@/components/ui";
-import { DominantColor, colorDistance, extractDominantColors } from "@/components/features/compliance/model/colorExtract";
+import { DominantColor, colorDistance, extractDominantColors } from "@/components/features/compliance/utils/colorExtract";
 import { formatRelative } from "@/lib/utils";
 import { ColorSwatch, Workspace } from "@/types";
 
