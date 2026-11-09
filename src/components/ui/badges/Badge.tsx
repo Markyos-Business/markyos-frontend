@@ -6,7 +6,7 @@ type BadgeSize = "sm" | "md";
 const sizes: Record<BadgeSize, string> = {
   // The spec's Badge (§6.9): 24px, an oval 12px radius, beside a title or in
   // a table cell.
-  sm: "h-badge min-w-7.5 gap-space-1 rounded-xl px-2 text-caption",
+  sm: "h-badge min-w-7.5 gap-space-1 rounded-badge px-2 text-caption",
   // The spec's Tag (§6.7): 36px with an 8px radius.
   md: "h-tag gap-space-3 rounded-lg px-space-5 text-body",
 };

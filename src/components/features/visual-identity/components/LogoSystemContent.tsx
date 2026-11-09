@@ -125,7 +125,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
       */}
       <div className="shrink-0 min-h-[280px] flex gap-4">
         <div
-          className="flex-1 rounded-2xl p-5 flex flex-col gap-3.5"
+          className="flex-1 rounded-card p-5 flex flex-col gap-3.5"
           style={{ background: "var(--surface-1)" }}
         >
           <div className="flex items-center justify-between">
@@ -145,7 +145,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               so what's on screen is the file that will actually ship.
             */
             <div className="flex-1 grid grid-cols-2 gap-3">
-              <div className="rounded-[11px] grid place-items-center relative" style={{ background: "#111114" }}>
+              <div className="rounded-card grid place-items-center relative" style={{ background: "#111114" }}>
                 <BrandMark
                   src={showcaseSlot.url}
                   lightSrc={showcaseSlot.lightUrl}
@@ -169,7 +169,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
                     : isAr ? "معكوس تلقائيًا" : "auto-reversed"}
                 </span>
               </div>
-              <div className="rounded-[11px] grid place-items-center relative" style={{ background: "#f5f5f5" }}>
+              <div className="rounded-card grid place-items-center relative" style={{ background: "#f5f5f5" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={showcaseSlot.url} alt="" style={{ width: 170 }} />
                 {/*
@@ -189,7 +189,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
             </div>
           ) : (
             <div
-              className="flex-1 rounded-[11px] grid place-items-center text-[13px]"
+              className="flex-1 rounded-card grid place-items-center text-[13px]"
               style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}
             >
               {isAr ? "أرفق شعارًا لمعاينته هنا." : "Attach a lockup to preview it here."}
@@ -206,7 +206,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
           </span>
         </div>
 
-        <div className="w-[280px] shrink-0 rounded-2xl p-5 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+        <div className="w-[280px] shrink-0 rounded-card p-5 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
           <span className="font-semibold text-[13px]">{isAr ? "قائمة الخانات" : "Slot checklist"}</span>
           {SLOT_ORDER.map(({ kind, label, arLabel }) => {
             const filled = ws.logo[kind].phase === "attached";
@@ -242,7 +242,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         />
       </div>
 
-      <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
+      <div className="rounded-card p-5 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
         <div className="flex flex-col gap-1.5">
           <span className="font-semibold text-[13px]">{isAr ? "إرشادات الاستخدام" : "Usage guidelines"}</span>
           <span dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--text-faint)" }}>

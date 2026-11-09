@@ -50,7 +50,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       }
     >
       {adding && (
-        <form onSubmit={submit} className="rounded-xl p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submit} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={title}
             onChange={setTitle}
@@ -80,7 +80,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             return (
               <div
                 key={v.id}
-                className="rounded-xl p-4 flex flex-col gap-1 mk-card"
+                className="rounded-card p-4 flex flex-col gap-1 mk-card"
                 style={{ background: "var(--surface-2)" }}
               >
                 <div className="flex items-start justify-between gap-2">

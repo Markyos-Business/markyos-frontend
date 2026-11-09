@@ -303,7 +303,7 @@ function Checkbox({ checked, onToggle }: { checked: boolean; onToggle: () => voi
           onToggle();
         }
       }}
-      className="w-[18px] h-[18px] rounded-[4px] grid place-items-center shrink-0 cursor-pointer"
+      className="w-[18px] h-[18px] rounded-sm grid place-items-center shrink-0 cursor-pointer"
       style={{
         background: checked ? "var(--accent)" : "transparent",
         boxShadow: checked ? "none" : "inset 0 0 0 1px var(--hairline-strong)",

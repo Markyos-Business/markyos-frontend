@@ -200,7 +200,7 @@ const UiGallery = () => {
           <AsyncStateView status="loading" skeleton={<Skeleton className="h-10 w-full rounded-lg" />} emptyTitle="" emptyDescription="">
             <span />
           </AsyncStateView>
-          <div className="overflow-hidden rounded-2xl bg-surface-0 shadow-edge">
+          <div className="overflow-hidden rounded-card bg-surface-0 shadow-edge">
             <ModalHeader title="Transfer brand" description="Move it to another studio." icon="share-alt" tone="info" onClose={() => showToast("Closed")} />
           </div>
         </Section>

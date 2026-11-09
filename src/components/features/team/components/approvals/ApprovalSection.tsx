@@ -84,7 +84,7 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
       </form> : <p className="text-[13px] text-text-muted">{isAr ? "يمكنك الاطلاع على المقترحات. يمكن للمالك والمحررين اقتراح تغييرات." : "You can view proposals. Owners and editors can propose changes."}</p>}
       {error && <p role="alert" className="text-[13px] text-danger">{error}</p>}
       {ws.approvals.length === 0 ? <EmptyHint>{loading ? (isAr ? "جارٍ تحميل المقترحات…" : "Loading proposals…") : (isAr ? "لا توجد مقترحات بعد. يقترح المحررون التغييرات ويعتمدها المالك أو يرفضها." : "No proposals yet. Editors propose changes here; owners approve or reject them.")}</EmptyHint> : <div className="flex flex-col gap-2">{ws.approvals.map((approval) => (
-        <div key={approval.id} className="mk-surface flex items-start gap-3 rounded-xl bg-surface-2 p-3.5">
+        <div key={approval.id} className="mk-surface flex items-start gap-3 rounded-card bg-surface-2 p-3.5">
           <Icon name={STATUS_ICON[approval.status]} size={16} className={`mt-0.5 shrink-0 ${STATUS_COLOR[approval.status]}`} />
           <div className="min-w-0 flex-1 flex flex-col gap-2">
             <div dir="auto" className="bidi-auto text-[13px] text-text-secondary">{approval.summary}</div>

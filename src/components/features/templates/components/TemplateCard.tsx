@@ -9,7 +9,7 @@ export function TemplateCard({ template: t, onApply }: { template: Template; onA
   const { isAr } = useInterfaceLang();
   const name = isAr ? t.arName : t.name;
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl bg-surface-1">
+    <div className="flex flex-col overflow-hidden rounded-card bg-surface-1">
       <div className="grid grid-cols-4">
         {t.colors.map((c) => (
           // The template's own palette: content, so the hex is data.

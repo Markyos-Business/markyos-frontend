@@ -42,7 +42,7 @@ export function InstructionEditor({
   }
 
   return (
-    <div className="mk-surface rounded-2xl p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+    <div className="mk-surface rounded-card p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col">
           <span className="font-semibold text-[15px]">{isAr ? "صفحة التعليمات" : "Instruction page"}</span>
@@ -83,7 +83,7 @@ export function InstructionEditor({
       ) : (
         <div className="flex flex-col gap-2.5">
           {sections.map((s, i) => (
-            <div key={s.id} className="mk-surface rounded-xl p-3.5 flex flex-col gap-2" style={{ background: "var(--surface-2)" }}>
+            <div key={s.id} className="mk-surface rounded-card p-3.5 flex flex-col gap-2" style={{ background: "var(--surface-2)" }}>
               <div className="flex items-center gap-2">
                 <span
                   className="text-[10px] font-semibold shrink-0"

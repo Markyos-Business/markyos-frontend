@@ -14,7 +14,7 @@ type SolidBadgeProps = {
  */
 const SolidBadge = ({ tone = "neutral", className = "", children }: SolidBadgeProps) => (
   <span
-    className={`inline-flex h-badge min-w-7.5 shrink-0 items-center justify-center rounded-xl px-2 text-caption font-medium ${SOLID_VARIANT_CLASSES[tone]} ${className}`}
+    className={`inline-flex h-badge min-w-7.5 shrink-0 items-center justify-center rounded-badge px-2 text-caption font-medium ${SOLID_VARIANT_CLASSES[tone]} ${className}`}
   >
     {children}
   </span>

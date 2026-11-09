@@ -220,7 +220,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
       </div>
 
       <div dir={rowDir} className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
-        <div className="rounded-2xl p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               value={ws.typography.latinFamily}
@@ -262,7 +262,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
             onUpload={(files) => handleUploadFont("latin", files)}
           />
         </div>
-        <div className="rounded-2xl p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               value={ws.typography.arabicFamily}
@@ -315,7 +315,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         match.
       </p>
 
-      <div className="flex-1 min-h-0 rounded-2xl flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
+      <div className="flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
         <div
           className="shrink-0 flex items-center justify-between px-5 py-3.5"
           style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
@@ -477,7 +477,7 @@ function FontSources({
 
   return (
     <div
-      className="flex flex-col gap-2.5 rounded-xl transition-colors"
+      className="flex flex-col gap-2.5 rounded-card transition-colors"
       onDragOver={(e) => {
         e.preventDefault();
         if (!dragOver) setDragOver(true);

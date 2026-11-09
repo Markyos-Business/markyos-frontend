@@ -17,7 +17,7 @@ type TabsProps<T extends string> = {
    * The spec's two tab styles (§6.11), both 40px tall: `text` puts the active
    * tab on a raised pill with a hairline; `icon` makes it solid accent with an
    * overline label (LIST / GRID). `pill` is the compact filter row (Waiting /
-   * Decided): 32px rounded pills, the active one on the accent tint.
+   * Decided): 32px rounded-sm pills, the active one on the accent tint.
    */
   variant?: TabsVariant;
   className?: string;

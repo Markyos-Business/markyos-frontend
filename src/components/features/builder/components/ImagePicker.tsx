@@ -226,7 +226,7 @@ function UploadTab({
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="h-[92px] rounded-xl grid place-items-center gap-1.5 cursor-pointer disabled:cursor-wait"
+        className="h-[92px] rounded-card grid place-items-center gap-1.5 cursor-pointer disabled:cursor-wait"
         style={{ border: "1px dashed var(--hairline-strong)", color: "var(--text-muted)" }}
       >
         <Icon name="upload" size={18} style={{ color: "var(--accent-text)" }} />

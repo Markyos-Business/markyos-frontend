@@ -216,7 +216,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
   if (block.kind === "quote") {
     return (
       <blockquote
-        className="rounded-2xl px-6 py-5 flex flex-col gap-2.5"
+        className="rounded-card px-6 py-5 flex flex-col gap-2.5"
         style={{ background: "var(--surface-1)", boxShadow: "inset 2px 0 0 var(--accent)" }}
       >
         {enabled ? (
@@ -248,12 +248,12 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
     return (
       <div className="flex flex-col gap-2.5">
         {asset ? (
-          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface-1)", height: 320 }}>
+          <div className="rounded-card overflow-hidden" style={{ background: "var(--surface-1)", height: 320 }}>
             <AssetThumb asset={asset} alt={title || asset.fileName} onDark={onDark} />
           </div>
         ) : (
           <div
-            className="rounded-2xl h-[160px] grid place-items-center gap-1.5 text-[12px]"
+            className="rounded-card h-[160px] grid place-items-center gap-1.5 text-[12px]"
             style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}
           >
             <Icon name="image" size={20} />
@@ -295,7 +295,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
         )}
         {assets.length === 0 ? (
           <div
-            className="rounded-2xl h-[120px] grid place-items-center gap-1.5 text-[12px]"
+            className="rounded-card h-[120px] grid place-items-center gap-1.5 text-[12px]"
             style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}
           >
             <Icon name="image" size={20} />
@@ -311,7 +311,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
           <>
             <div className="grid grid-cols-3 gap-3">
               {assets.map((a) => (
-                <div key={a.id} className="rounded-xl overflow-hidden h-[130px]" style={{ background: "var(--surface-1)" }}>
+                <div key={a.id} className="rounded-card overflow-hidden h-[130px]" style={{ background: "var(--surface-1)" }}>
                   <AssetThumb asset={a} alt={a.fileName} onDark={onDark} />
                 </div>
               ))}
@@ -333,7 +333,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
     return block.embedHtml ? (
       <div dir="ltr" dangerouslySetInnerHTML={{ __html: block.embedHtml }} />
     ) : (
-      <div className="rounded-2xl h-[100px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
+      <div className="rounded-card h-[100px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
         {isAr ? "لم تتم إضافة كود HTML بعد." : "No HTML added yet."}
       </div>
     );
@@ -358,11 +358,11 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
           />
         )}
         {src ? (
-          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface-1)", aspectRatio: "16/9" }}>
+          <div className="rounded-card overflow-hidden" style={{ background: "var(--surface-1)", aspectRatio: "16/9" }}>
             <iframe src={src} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={{ width: "100%", height: "100%", border: 0 }} />
           </div>
         ) : (
-          <div className="rounded-2xl h-[160px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
+          <div className="rounded-card h-[160px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
             {isAr ? "لم يتم إضافة رابط فيديو (YouTube أو Vimeo)." : "No video link added yet (YouTube or Vimeo)."}
           </div>
         )}
@@ -394,7 +394,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
 
   if (block.kind === "stat") {
     return (
-      <div className="rounded-2xl p-6 flex flex-col gap-1.5" style={{ background: "var(--surface-1)" }}>
+      <div className="rounded-card p-6 flex flex-col gap-1.5" style={{ background: "var(--surface-1)" }}>
         {enabled ? (
           <EditableText
             value={title || ""}
@@ -423,7 +423,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
 
   if (block.kind === "faq") {
     return (
-      <details className="rounded-2xl px-5 py-4 group" style={{ background: "var(--surface-1)" }}>
+      <details className="rounded-card px-5 py-4 group" style={{ background: "var(--surface-1)" }}>
         <summary className="text-[14px] font-medium cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between gap-3">
           {title || (isAr ? "سؤال بلا نص" : "Untitled question")}
           <Icon name="angle-down" size={14} style={{ color: "var(--text-faint)", flexShrink: 0 }} />
@@ -446,7 +446,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
   if (block.kind === "socialLinks") {
     const links = (block.socialLinks || []).filter((l) => l.platform);
     return links.length === 0 ? (
-      <div className="rounded-2xl h-[64px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
+      <div className="rounded-card h-[64px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
         {isAr ? "لم تتم إضافة روابط بعد." : "No links added yet."}
       </div>
     ) : (
@@ -524,7 +524,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
             key={f.id}
             href={f.url}
             download={f.fileName}
-            className="flex items-center gap-3 rounded-xl px-4 py-3"
+            className="flex items-center gap-3 rounded-card px-4 py-3"
             style={{ background: "var(--surface-1)" }}
           >
             <Icon name="file-alt" size={16} style={{ color: "var(--accent-text)", flexShrink: 0 }} />
@@ -573,7 +573,7 @@ function AssetCreditLine({ asset }: { asset: Asset }) {
 
 function EmptyBlockState({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl h-[80px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
+    <div className="rounded-card h-[80px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
       {text}
     </div>
   );
@@ -603,7 +603,7 @@ function ContactFormBlock({
   }
 
   return (
-    <div className="rounded-2xl p-6 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
+    <div className="rounded-card p-6 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
       {(title || body) && (
         <div className="flex flex-col gap-1">
           {title && <h3 className="text-[18px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{title}</h3>}

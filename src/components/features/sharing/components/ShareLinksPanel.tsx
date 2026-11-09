@@ -71,7 +71,7 @@ export function ShareLinksPanel({
   }
 
   return (
-    <div className="rounded-xl p-4 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+    <div className="rounded-card p-4 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
       <div className="flex items-center gap-2.5">
         <Icon name="link" size={15} style={{ color: "var(--accent-text)" }} />
         <div className="flex-1 min-w-0">

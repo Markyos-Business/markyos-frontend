@@ -26,7 +26,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
   }
 
   return (
-    <div className="mk-surface flex flex-col gap-3.5 rounded-2xl bg-surface-1 p-5">
+    <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
       <div className="flex items-center justify-between">
         <span className="text-[15px] font-semibold">{isAr ? "محتوى الدليل" : "Guideline content"}</span>
         <input

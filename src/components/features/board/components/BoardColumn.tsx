@@ -37,14 +37,14 @@ export function BoardColumn({ stage, items, isOver, onDragStart, onDragEnd, onDr
       // `--hairline-strong` for the edge, not `--hairline`: the interior
       // divider used as a card edge put a 1.35:1 line around a column
       // sitting 1.12:1 from the page.
-      className={`flex w-[268px] shrink-0 flex-col gap-2.5 rounded-2xl p-3 ${
+      className={`flex w-[268px] shrink-0 flex-col gap-2.5 rounded-card p-3 ${
         isOver ? "bg-accent-soft shadow-[inset_0_0_0_1px_var(--accent-ring)]" : "bg-surface-1 shadow-[inset_0_0_0_1px_var(--hairline-strong)]"
       }`}
     >
       <header className="px-1">
         <div className="flex items-center justify-between gap-2">
           <span className="text-[12.5px] font-semibold">{label}</span>
-          <span className="rounded bg-surface-3 px-1.5 py-[2px] text-[11px] font-semibold text-text-muted">{items.length}</span>
+          <span className="rounded-sm bg-surface-3 px-1.5 py-[2px] text-[11px] font-semibold text-text-muted">{items.length}</span>
         </div>
         <div className="mt-0.5 text-[11px] text-text-faint">{isAr ? stage.arHint : stage.hint}</div>
       </header>

@@ -24,7 +24,7 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className="mk-surface flex cursor-grab flex-col gap-2 rounded-xl bg-surface-2 p-3 active:cursor-grabbing"
+      className="mk-surface flex cursor-grab flex-col gap-2 rounded-card bg-surface-2 p-3 active:cursor-grabbing"
     >
       {/* The avatar is inside the link, not beside it: the name alone was a
           19px target, and the mark and the name are one identity, so they
@@ -38,7 +38,7 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
 
       {pendingDrafts > 0 && (
         <div className="flex flex-wrap items-center gap-1.5">
-          <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
+          <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
             {isAr ? `${pendingDrafts} بانتظار القرار` : `${pendingDrafts} waiting`}
           </Link>
         </div>

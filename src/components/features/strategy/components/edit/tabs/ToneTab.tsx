@@ -56,7 +56,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       }
     >
       {adding && (
-        <form onSubmit={submitTrait} className="rounded-xl p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submitTrait} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={traitName}
             onChange={setTraitName}
@@ -89,7 +89,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             const shown = traitIn(t, lang, false);
             const flagged = ws.strategyTranslation.unreviewed.includes(`trait:${t.id}`);
             return (
-              <div key={t.id} className="rounded-xl p-4 flex flex-col gap-2 mk-card" style={{ background: "var(--surface-2)" }}>
+              <div key={t.id} className="rounded-card p-4 flex flex-col gap-2 mk-card" style={{ background: "var(--surface-2)" }}>
                 {/* Four fixed columns squeezed the Do and Don't examples to
                     12px wide on a phone. They stack below the breakpoint and
                     keep the side-by-side comparison — which is the whole point

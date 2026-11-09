@@ -170,7 +170,7 @@ export function CanvasFrame({
         >
           <div
             dir={dir}
-            className="rounded-2xl overflow-y-auto"
+            className="rounded-card overflow-y-auto"
             // Named so a sweep can find *this* element rather than guessing
             // from a style attribute. The width it reports is the number the
             // page's media queries resolve against, which is the only thing

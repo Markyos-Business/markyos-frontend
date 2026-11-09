@@ -26,7 +26,7 @@ export function DepartmentPanel({ ws, viewId }: { ws: Workspace; viewId: string 
       {/* Whether this page reaches the client-facing site. A department page is
           often internal, so publishing is a decision rather than a default
           consequence of writing one. */}
-      <div className="mk-surface flex items-center gap-4 rounded-2xl bg-surface-1 px-5 py-4">
+      <div className="mk-surface flex items-center gap-4 rounded-card bg-surface-1 px-5 py-4">
         <div className="min-w-0 flex-1">
           <div className="text-[13px] font-medium">{publishLabel}</div>
           <div className="mt-0.5 text-[12px] text-text-faint">

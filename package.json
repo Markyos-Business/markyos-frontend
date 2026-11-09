@@ -33,7 +33,7 @@
     "sweep": "npm run sweep:bidi && npm run sweep:responsive && npm run sweep:persistence && npm run sweep:assets && npm run sweep:drafts && npm run sweep:moodboard && npm run sweep:board && npm run sweep:builder && npm run sweep:modals && npm run sweep:interaction && npm run sweep:surfaces && npm run sweep:contrast",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && prisma validate && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs",
+    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && prisma validate && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs && node scripts/radius-audit.mjs",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui"
   },

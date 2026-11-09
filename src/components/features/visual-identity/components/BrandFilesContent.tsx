@@ -303,7 +303,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
     >
       {dragDepth > 0 && (
         <div
-          className="absolute inset-4 z-20 rounded-2xl grid place-items-center pointer-events-none animate-fade-in"
+          className="absolute inset-4 z-20 rounded-card grid place-items-center pointer-events-none animate-fade-in"
           style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 2px var(--accent)" }}
         >
           <span className="flex items-center gap-2.5 text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
@@ -454,7 +454,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
           {filtered.map((r) => (
             <div
               key={r.key}
-              className="rounded-2xl overflow-hidden"
+              className="rounded-card overflow-hidden"
               /*
                * Surface step *and* hairline, which is the separation rule this
                * design system states. On the light theme the step alone is
@@ -494,7 +494,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                   className="absolute top-[5px] start-[5px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
                 >
                   <span
-                    className="w-[18px] h-[18px] rounded-[5px] grid place-items-center"
+                    className="w-[18px] h-[18px] rounded-sm grid place-items-center"
                     style={{
                       background: selected.has(r.key) ? "var(--accent)" : "var(--scrim)",
                       boxShadow: selected.has(r.key)
@@ -513,7 +513,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                 {r.asset && r.asset.status !== "approved" && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-[7px] end-[7px] text-[9px] font-semibold px-1.5 py-[3px] rounded"
+                    className="absolute top-[7px] end-[7px] text-[9px] font-semibold px-1.5 py-[3px] rounded-sm"
                     style={{
                       background: r.asset.status === "exploration" ? "var(--warning)" : "var(--surface-3)",
                       color: r.asset.status === "exploration" ? "var(--status-ink)" : "var(--text-muted)",
@@ -542,7 +542,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
+                  <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded-sm" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
                     {TYPE_META[r.type].label.toUpperCase()}
                   </span>
                   <span className="text-[10px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
@@ -674,7 +674,7 @@ function AssetDetailModal({
         role="dialog"
         aria-modal="true"
         aria-label={isAr ? `تفاصيل ${asset.fileName}` : `Details for ${asset.fileName}`}
-        className="w-full max-w-[440px] rounded-2xl p-6 flex flex-col gap-4 animate-dialog-in max-h-[86vh] overflow-y-auto"
+        className="w-full max-w-[440px] rounded-card p-6 flex flex-col gap-4 animate-dialog-in max-h-[86vh] overflow-y-auto"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >

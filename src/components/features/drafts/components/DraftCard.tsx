@@ -18,10 +18,10 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const status = STATUS_LABEL[d.status][isAr ? "ar" : "en"];
   return (
-    <article className="mk-surface flex flex-col gap-3 rounded-2xl bg-surface-1 p-5">
+    <article className="mk-surface flex flex-col gap-3 rounded-card bg-surface-1 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded bg-surface-3 px-2 py-[3px] text-[10px] font-semibold text-text-secondary">
+          <span className="flex items-center gap-1.5 rounded-sm bg-surface-3 px-2 py-[3px] text-[10px] font-semibold text-text-secondary">
             <Icon name={SOURCE_META[d.source].icon} size={10} />
             {isAr ? SOURCE_META[d.source].arLabel : SOURCE_META[d.source].label}
           </span>

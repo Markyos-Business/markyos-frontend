@@ -142,7 +142,7 @@ export function AssetTypeGrid({
             <div
               key={a.id}
               onClick={() => toggle(a.id)}
-              className="rounded-2xl overflow-hidden cursor-pointer"
+              className="rounded-card overflow-hidden cursor-pointer"
               style={{
                 background: "var(--surface-1)",
                 // Surface step plus hairline — the same separation rule the
@@ -193,7 +193,7 @@ export function AssetTypeGrid({
                       it is drawn from the scrim's own ink token rather than a
                       white that happens to work in one theme. */}
                   <span
-                    className="w-[18px] h-[18px] rounded-[5px] grid place-items-center"
+                    className="w-[18px] h-[18px] rounded-sm grid place-items-center"
                     style={{
                       background: "var(--scrim)",
                       boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--scrim-ink) 55%, transparent)",
@@ -213,7 +213,7 @@ export function AssetTypeGrid({
                       screen that shows every file a brand owns. */}
                   {a.status !== "approved" && (
                     <span
-                      className="px-1.5 py-[2px] rounded font-semibold"
+                      className="px-1.5 py-[2px] rounded-sm font-semibold"
                       style={{
                         background: a.status === "exploration" ? "var(--warning)" : "var(--surface-3)",
                         color: a.status === "exploration" ? "var(--status-ink)" : "var(--text-muted)",

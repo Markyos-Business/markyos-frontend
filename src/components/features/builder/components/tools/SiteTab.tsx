@@ -34,7 +34,7 @@ export function SiteTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
 
       {/* Switching the ground is the change most likely to break legibility,
           so the consequences sit right under the control that causes them. */}
-      <div className="mk-surface rounded-xl bg-surface-1 p-3.5">
+      <div className="mk-surface rounded-card bg-surface-1 p-3.5">
         <ContrastReport ws={ws} isAr={isAr} compact />
       </div>
     </div>

@@ -27,7 +27,7 @@ const icons: Record<TrendDirection, string> = {
 const TrendChip = ({ direction = "neutral", value, label, className = "" }: TrendChipProps) => (
   <span
     aria-label={label ?? `${direction} ${value}`}
-    className={`inline-flex h-badge items-center gap-space-1 rounded-xl px-2 text-caption font-medium ${tones[direction]} ${className}`}
+    className={`inline-flex h-badge items-center gap-space-1 rounded-badge px-2 text-caption font-medium ${tones[direction]} ${className}`}
   >
     <Icon name={icons[direction]} size={16} />
     <span aria-hidden>{value}</span>

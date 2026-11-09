@@ -250,11 +250,15 @@ const config = {
         "widget-row": "72px",
       },
       borderRadius: {
-        // Radius encodes size class (spec §2.5). Tailwind's own sm 4px,
-        // md 6px and lg 8px already match the spec's checkbox / status tag /
-        // button steps; these are the ones Tailwind's scale doesn't have.
+        // Radius encodes size class (spec §2.5), so every corner is one of
+        // these names: sm 4px (checkbox, chip, tiny marks), md 6px (status
+        // tag, pagination), lg 8px (buttons, tags, fields, icon tiles), card
+        // 15px (every card, panel, dialog, menu and the rows and tiles inside
+        // them), full (pills, dots). Tailwind's xl / 2xl / 3xl and arbitrary
+        // values are refused by scripts/radius-audit.mjs.
         spark: "10px", // spark counter
         switch: "12px",
+        badge: "12px", // the oval count badge
         card: "15px", // cards, counters
         widget: "15px", // widget rows
         feature: "25px", // marketing feature cards

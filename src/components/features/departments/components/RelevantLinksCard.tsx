@@ -14,7 +14,7 @@ export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
   const { removeDeptItem } = useApp();
   const [adding, setAdding] = useState(false);
   return (
-    <div className="mk-surface flex flex-col gap-3.5 rounded-2xl bg-surface-1 p-5">
+    <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
       <div className="flex items-center justify-between">
         <span className="text-[15px] font-semibold">{isAr ? "روابط ذات صلة" : "Relevant links"}</span>
         <Button variant="link" onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
@@ -45,7 +45,7 @@ export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
 function LinkedItem({ ws, item, isAr, onRemove }: { ws: Workspace; item: DeptItem; isAr: boolean; onRemove: () => void }) {
   const { icon, title, body } = resolveItem(ws, item, isAr);
   return (
-    <div className="mk-surface flex items-start gap-3 rounded-xl bg-surface-2 p-3.5">
+    <div className="mk-surface flex items-start gap-3 rounded-card bg-surface-2 p-3.5">
       <Icon name={icon} size={15} className="mt-0.5 shrink-0 text-accent-text" />
       <div className="min-w-0 flex-1">
         <div className="text-[13px] font-medium">{title}</div>

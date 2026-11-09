@@ -310,7 +310,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
   return (
     <div className="fixed inset-0 z-modal flex items-center justify-center p-8 animate-fade-in-base" style={{ background: "var(--scrim)" }} onClick={onClose}>
       <div
-        className="animate-dialog-in w-full max-w-[600px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-dialog-in w-full max-w-[600px] max-h-[86vh] rounded-card p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -342,7 +342,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
         />
 
         {grid.length > 0 && (
-          <div className="rounded-xl p-3 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
+          <div className="rounded-card p-3 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
             <table className="border-collapse text-[11.5px]">
               <tbody>
                 {grid.slice(0, 6).map((row, ri) => (

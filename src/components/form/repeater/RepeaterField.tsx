@@ -76,7 +76,7 @@ const RepeaterField = ({
         <div key={i} className="flex flex-col gap-space-5 rounded-widget bg-surface-sunken p-space-6 shadow-edge-soft">
           <div className="flex items-center justify-between pb-space-3 shadow-rule-b">
             <span className="flex items-center gap-space-4">
-              <span className="flex h-badge min-w-7.5 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-caption font-medium text-accent-on-soft">
+              <span className="flex h-badge min-w-7.5 shrink-0 items-center justify-center rounded-badge bg-accent-soft text-caption font-medium text-accent-on-soft">
                 {i + 1}
               </span>
               <span className="text-body font-medium text-text-secondary">{rowLabel}</span>

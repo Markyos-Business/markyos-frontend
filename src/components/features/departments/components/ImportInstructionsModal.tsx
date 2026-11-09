@@ -107,7 +107,7 @@ export function ImportInstructionsModal({
       onClick={onClose}
     >
       <div
-        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-card p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -154,7 +154,7 @@ export function ImportInstructionsModal({
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
+              className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
               style={{ borderColor: "var(--hairline-strong)" }}
             >
               <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
@@ -203,7 +203,7 @@ export function ImportInstructionsModal({
 
             <div className="flex flex-col gap-2.5 overflow-y-auto pe-1 -me-1">
               {rows.map((r, i) => (
-                <div key={i} className="mk-surface rounded-xl p-3.5 flex items-start gap-2.5" style={{ background: "var(--surface-2)" }}>
+                <div key={i} className="mk-surface rounded-card p-3.5 flex items-start gap-2.5" style={{ background: "var(--surface-2)" }}>
                   <input
                     type="checkbox"
                     checked={r.include}

@@ -48,7 +48,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
       {ws.strategy.voiceTraits.length === 0 ? (
         <div
-          className="rounded-xl px-4 py-3.5 flex items-start gap-3 text-[13px]"
+          className="rounded-card px-4 py-3.5 flex items-start gap-3 text-[13px]"
           style={{ background: "var(--surface-1)", color: "var(--text-secondary)" }}
         >
           <Icon name="info-circle" size={16} style={{ color: "var(--warning)", flexShrink: 0, marginTop: 1 }} />
@@ -81,7 +81,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
             return (
               <div
                 key={i}
-                className="rounded-xl px-4 py-3 flex items-start gap-3 text-[13px]"
+                className="rounded-card px-4 py-3 flex items-start gap-3 text-[13px]"
                 style={{ background: tone.bg, color: "var(--text-secondary)" }}
               >
                 <Icon name="exclamation-circle" size={16} style={{ color: tone.fg, flexShrink: 0, marginTop: 1 }} />
@@ -119,7 +119,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
       {touched && total === 0 && (
         <div
-          className="rounded-xl px-4 py-3.5 flex items-center gap-3 text-[13px]"
+          className="rounded-card px-4 py-3.5 flex items-center gap-3 text-[13px]"
           style={{ background: "var(--success-soft)", color: "var(--success)" }}
         >
           <Icon name="check-circle" size={16} />
@@ -163,7 +163,7 @@ function DraftPanel({
   }, {});
 
   return (
-    <div className="rounded-2xl p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+    <div className="rounded-card p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold text-[13px]">{isAr ? arLabel : label}</span>
         <div className="flex items-center gap-1.5">
@@ -191,7 +191,7 @@ function DraftPanel({
         onChange={(e) => onChange(e.target.value)}
         rows={7}
         placeholder={placeholder}
-        className="w-full rounded-[12px] p-4 outline-none resize-y text-[14px]"
+        className="w-full rounded-card p-4 outline-none resize-y text-[14px]"
         style={{
           background: "var(--surface-2)",
           color: "var(--text)",
@@ -208,7 +208,7 @@ function DraftPanel({
         {findings.map((f) => {
           const tone = SEVERITY_TONE[f.severity];
           return (
-            <div key={f.id} className="rounded-xl p-3 flex flex-col gap-1.5" style={{ background: "var(--surface-2)" }}>
+            <div key={f.id} className="rounded-card p-3 flex flex-col gap-1.5" style={{ background: "var(--surface-2)" }}>
               <div className="flex items-center gap-2">
                 <span
                   className="text-[10px] font-semibold px-2 py-[3px] rounded-full shrink-0"

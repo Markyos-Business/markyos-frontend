@@ -82,7 +82,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
         }
       >
         {addingPersona && (
-          <form onSubmit={submitPersona} className="rounded-xl p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+          <form onSubmit={submitPersona} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <MiniInput
                 value={personaName}
@@ -117,7 +117,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
               const shown = personaIn(p, lang, false);
               const flagged = ws.strategyTranslation.unreviewed.includes(`persona:${p.id}`);
               return (
-                <div key={p.id} className="rounded-xl p-4 flex flex-col gap-1 mk-card" style={{ background: "var(--surface-2)" }}>
+                <div key={p.id} className="rounded-card p-4 flex flex-col gap-1 mk-card" style={{ background: "var(--surface-2)" }}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <InlineText

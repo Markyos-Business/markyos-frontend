@@ -54,7 +54,7 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
       ) : (
         <div className="flex flex-col gap-2.5">
           {pins.map((p) => (
-            <div key={p.id} className="flex items-start gap-3 rounded-xl bg-surface-2 p-3.5 shadow-edge">
+            <div key={p.id} className="flex items-start gap-3 rounded-card bg-surface-2 p-3.5 shadow-edge">
               <Icon name={p.resolved ? "check-circle" : "map-marker"} size={14} className={`mt-0.5 shrink-0 ${p.resolved ? "text-success" : "text-warning"}`} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">

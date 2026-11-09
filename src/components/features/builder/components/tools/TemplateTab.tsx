@@ -65,7 +65,7 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
           key={t.key}
           type="button"
           onClick={() => onApplyTemplate(t)}
-          className={`mk-card flex cursor-pointer items-start gap-2.5 rounded-xl p-2.5 text-start ${
+          className={`mk-card flex cursor-pointer items-start gap-2.5 rounded-card p-2.5 text-start ${
             t.featured ? "bg-accent-soft shadow-edge-primary" : "bg-surface-1 shadow-[inset_0_0_0_1px_transparent]"
           }`}
         >

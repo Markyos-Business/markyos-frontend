@@ -1013,9 +1013,9 @@ export function Canvas(props: CanvasProps) {
         role="application"
         aria-label={isAr ? `لوح ${board.title}` : `${board.title} board`}
         className={`relative flex-1 min-h-0 overflow-hidden ${
-          // Full screen means edge to edge: a rounded card with a border inside
+          // Full screen means edge to edge: a rounded-sm card with a border inside
           // a window that has nothing else in it is a frame around nothing.
-          fullscreen ? "" : "rounded-2xl mk-surface"
+          fullscreen ? "" : "rounded-card mk-surface"
         }`}
         style={{
           background: "var(--surface-0)",
@@ -1555,7 +1555,7 @@ function FrameBase({
   return (
     <section
       aria-label={title}
-      className="absolute rounded-2xl"
+      className="absolute rounded-card"
       style={{
         left: box.x, // physical-ok: a board coordinate, not a text position
         top: box.y,
@@ -1673,7 +1673,7 @@ function FrameBase({
             /* No `mk-tap` here: it forces `display: inline-flex` to guarantee a
                26px tap target, and these are already 190px tall — all it did was
                beat the centring and leave the label off to one side. */
-            className="absolute rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer p-3"
+            className="absolute rounded-card flex flex-col items-center justify-center gap-1.5 cursor-pointer p-3"
             style={{
               left: g.x - box.x, // physical-ok: a board coordinate, not a text position
               top: g.y - box.y,
@@ -1798,7 +1798,7 @@ function AddMenu({
         <>
           <span className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <span
-            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 animate-fade-in"
+            className="absolute z-20 flex flex-col rounded-card overflow-hidden py-1 animate-fade-in"
             style={{
               insetInlineEnd: 0,
               top: "calc(100% + 4px)",
@@ -1900,7 +1900,7 @@ function CardOnCanvasBase({
       data-selected={selected || undefined}
       aria-selected={selected}
       aria-label={label}
-      className="absolute rounded-xl overflow-hidden group"
+      className="absolute rounded-card overflow-hidden group"
       // Belt and braces after the `<img>` case: anything natively draggable
       // inside a card would otherwise hand the pointer to the browser's own
       // drag and cancel the gesture halfway through.

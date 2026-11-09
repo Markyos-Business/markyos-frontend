@@ -161,7 +161,7 @@ function sample(img: HTMLImageElement): ExtractResult {
   // Coarse 5-bit-per-channel buckets first: exact-colour counting would treat
   // every gradient step as its own colour and return a hundred near-identical
   // blues. The mean of each bucket is kept so the reported hex is a real
-  // average of real pixels, not the bucket's rounded corner.
+  // average of real pixels, not the bucket's rounded-sm corner.
   const buckets = new Map<number, Bucket>();
   let opaque = 0;
   for (let i = 0; i < data.length; i += 4) {

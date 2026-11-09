@@ -76,7 +76,7 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
                     }}
                     onDragEnd={() => onDraggingKind(null)}
                     title={isAr ? "اضغط للإضافة، أو اسحب إلى المكان الذي تريده" : "Click to add below the selection, or drag it onto the page"}
-                    className="mk-card flex cursor-grab items-start gap-2.5 rounded-xl bg-surface-1 p-2.5 text-start active:cursor-grabbing"
+                    className="mk-card flex cursor-grab items-start gap-2.5 rounded-card bg-surface-1 p-2.5 text-start active:cursor-grabbing"
                   >
                     <Icon name={meta.icon} size={16} className="mt-0.5 shrink-0 text-accent-text" />
                     <div className="min-w-0">

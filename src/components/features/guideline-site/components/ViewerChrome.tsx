@@ -132,7 +132,7 @@ export function PasswordGate({
           {isAr ? "دليل الهوية هذا محمي بكلمة مرور." : "This brand guideline is password-protected."}
         </p>
       </div>
-      <form onSubmit={handleSubmit} className="w-full max-w-[360px] rounded-[18px] p-[26px] flex flex-col gap-3.5" style={{ background: "var(--g-surface-1)" }}>
+      <form onSubmit={handleSubmit} className="w-full max-w-[360px] rounded-card p-[26px] flex flex-col gap-3.5" style={{ background: "var(--g-surface-1)" }}>
         <InputField
           label={isAr ? "كلمة المرور" : "Access password"}
           type="password"

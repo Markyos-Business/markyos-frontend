@@ -493,7 +493,7 @@ export function ColorGrid({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolea
                       <div className="flex items-center justify-between gap-1.5">
                         {opts.showNames !== false && <span className="font-semibold text-[13px] truncate">{c.name}</span>}
                         {c.isPrimary && (
-                          <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded shrink-0" style={{ background: "var(--g-accent-soft)", color: "var(--g-accent-on-soft)" }}>
+                          <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded-sm shrink-0" style={{ background: "var(--g-accent-soft)", color: "var(--g-accent-on-soft)" }}>
                             {isAr ? "أساسي" : "PRIMARY"}
                           </span>
                         )}

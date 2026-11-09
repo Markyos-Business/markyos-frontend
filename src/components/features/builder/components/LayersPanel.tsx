@@ -393,7 +393,7 @@ function RowButton({
         e.stopPropagation();
         onClick();
       }}
-      className="h-6 w-6 grid place-items-center rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
+      className="h-6 w-6 grid place-items-center rounded-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
       style={{ color: "inherit" }}
     >
       <Icon name={icon} size={11} />

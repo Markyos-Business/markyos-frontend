@@ -162,7 +162,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
       onClick={onClose}
     >
       <div
-        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-2xl p-6 flex flex-col gap-4"
+        className="animate-dialog-in w-full max-w-[580px] max-h-[86vh] rounded-card p-6 flex flex-col gap-4"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -211,7 +211,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
+              className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
               style={{ borderColor: "var(--hairline-strong)" }}
             >
               <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
@@ -273,7 +273,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                 {singles.map((s, i) => (
                   <label
                     key={s.key}
-                    className="rounded-xl p-3.5 flex flex-col gap-2 cursor-pointer"
+                    className="rounded-card p-3.5 flex flex-col gap-2 cursor-pointer"
                     style={{ background: "var(--surface-2)" }}
                   >
                     <div className="flex items-center gap-2.5">
@@ -450,7 +450,7 @@ function ListRowEditor({
   onChange: (row: ListRow) => void;
 }) {
   return (
-    <label className="rounded-xl p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
+    <label className="rounded-card p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
       <input
         type="checkbox"
         checked={row.include}
@@ -492,7 +492,7 @@ function TripleRowEditor({
   onChange: (include: boolean, values: [string, string, string]) => void;
 }) {
   return (
-    <label className="rounded-xl p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
+    <label className="rounded-card p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
       <input
         type="checkbox"
         checked={include}

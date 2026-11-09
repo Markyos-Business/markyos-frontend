@@ -28,7 +28,7 @@ export function BulkBar({
   const allSelected = count > 0 && count === total;
   return (
     <div
-      className="rounded-xl px-4 h-11 flex items-center gap-4 shrink-0"
+      className="rounded-card px-4 h-11 flex items-center gap-4 shrink-0"
       style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 1px var(--accent-ring)" }}
     >
       <span className="text-[12px] font-semibold" style={{ color: "var(--accent-text)" }}>
@@ -106,7 +106,7 @@ export function SelectBox({ checked, onToggle, label }: { checked: boolean; onTo
       className="w-[28px] h-[28px] -m-[5px] grid place-items-center cursor-pointer"
     >
       <span
-        className="w-[18px] h-[18px] rounded-[5px] grid place-items-center"
+        className="w-[18px] h-[18px] rounded-sm grid place-items-center"
         style={{
           background: checked ? "var(--accent)" : "var(--scrim)",
           boxShadow: checked ? "none" : "inset 0 0 0 1px color-mix(in srgb, var(--scrim-ink) 55%, transparent)",

@@ -34,7 +34,7 @@ export function TemplatePicker({ isAr, onPick, onUpload, hasBoard }: TemplatePic
             key={t.key}
             type="button"
             onClick={() => onPick(t.key, isAr ? t.arTitle : t.title)}
-            className="mk-card flex cursor-pointer items-start gap-2.5 rounded-xl bg-surface-1 p-3 text-start"
+            className="mk-card flex cursor-pointer items-start gap-2.5 rounded-card bg-surface-1 p-3 text-start"
           >
             <Icon name={t.icon} size={16} className="mt-0.5 shrink-0 text-accent-text" />
             <span className="min-w-0">

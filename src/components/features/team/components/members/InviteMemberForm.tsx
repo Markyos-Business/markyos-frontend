@@ -37,7 +37,7 @@ export function InviteMemberForm({ ws, isAr, editorsFull, editorsFullNote, onDon
   }
 
   return (
-    <form onSubmit={submit} className="mk-surface flex flex-col gap-2.5 rounded-xl bg-surface-2 p-4">
+    <form onSubmit={submit} className="mk-surface flex flex-col gap-2.5 rounded-card bg-surface-2 p-4">
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         <InputField size="sm" aria-label={t("Name", "الاسم")} dir="auto" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Name", "الاسم")} />
         <InputField size="sm" aria-label={t("Email", "البريد الإلكتروني")} type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" />

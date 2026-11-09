@@ -50,7 +50,7 @@ export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean
         </Button>
       </div>
       {domainStatus !== "none" && (
-        <div className="flex flex-col gap-3 rounded-xl bg-surface-2 p-4">
+        <div className="flex flex-col gap-3 rounded-card bg-surface-2 p-4">
           <div className="flex items-center justify-between">
             <span className="truncate font-mono text-[12px]">{customDomain}</span>
             <Badge tone={domainStatus === "verified" ? "success" : "warning"}>{domainStatus === "verified" ? t("Verified", "تم التحقق") : t("Pending DNS", "بانتظار DNS")}</Badge>

@@ -39,7 +39,7 @@ export function AddItemForm({ ws, view, isAr, onDone }: AddItemFormProps) {
         : null;
 
   return (
-    <div className="mk-surface flex flex-col gap-2.5 rounded-xl bg-surface-2 p-4">
+    <div className="mk-surface flex flex-col gap-2.5 rounded-card bg-surface-2 p-4">
       <ChipPicker
         options={ITEM_TYPES.map((item) => ({ value: item.value, label: isAr ? item.arLabel : item.label }))}
         value={type}

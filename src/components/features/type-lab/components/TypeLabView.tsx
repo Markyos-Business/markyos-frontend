@@ -24,7 +24,7 @@ export function TypeLabView({ isAr, fontCss, anyUploaded, latin, arabic }: TypeL
       </div>
 
       {!anyUploaded && (
-        <div className="flex items-start gap-3 rounded-xl bg-surface-1 px-4 py-3 text-[12.5px] text-text-secondary">
+        <div className="flex items-start gap-3 rounded-card bg-surface-1 px-4 py-3 text-[12.5px] text-text-secondary">
           <Icon name="info-circle" size={15} className="mt-px shrink-0 text-warning" />
           <span>
             {t(
@@ -40,7 +40,7 @@ export function TypeLabView({ isAr, fontCss, anyUploaded, latin, arabic }: TypeL
         <LangPanel {...arabic} />
       </div>
 
-      <div className="mk-surface flex flex-col gap-3 rounded-2xl bg-surface-1 p-6">
+      <div className="mk-surface flex flex-col gap-3 rounded-card bg-surface-1 p-6">
         <span className="text-[11px] font-medium uppercase tracking-[.08em] text-text-faint">{t("Side by side", "جنبًا إلى جنب")}</span>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div

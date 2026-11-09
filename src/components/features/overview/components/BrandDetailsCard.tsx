@@ -33,7 +33,7 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
   }
 
   return (
-    <div className="mk-surface flex flex-col gap-3.5 rounded-2xl bg-surface-1 p-5">
+    <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
       <div className="flex items-center justify-between gap-3">
         <BrandNameField ws={ws} isAr={isAr} />
         <div className="flex items-center gap-2">

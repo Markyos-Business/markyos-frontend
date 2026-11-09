@@ -90,7 +90,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
       {/* Contrast sits next to the palette because that is where the fix is —
           a failing ratio is a swatch to change, not a report to file. */}
       {ws.colors.length > 0 && (
-        <div className="rounded-2xl p-5" style={{ background: "var(--surface-1)" }}>
+        <div className="rounded-card p-5" style={{ background: "var(--surface-1)" }}>
           <ContrastReport ws={ws} isAr={isAr} />
         </div>
       )}
@@ -100,7 +100,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           const rgb = hexToRgb(c.hex);
           const cmyk = rgb ? rgbToCmyk(rgb) : null;
           return (
-            <div key={c.id} className="rounded-xl overflow-hidden" style={{ background: "var(--surface-1)" }}>
+            <div key={c.id} className="rounded-card overflow-hidden" style={{ background: "var(--surface-1)" }}>
               <div
                 className="h-[104px]"
                 style={{
@@ -174,7 +174,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setEditor({ mode: "add" })}
-          className="rounded-xl flex flex-col items-center justify-center gap-2.5 cursor-pointer"
+          className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer"
           style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)", minHeight: 220 }}
         >
           <Icon name="plus" size={22} />
@@ -187,7 +187,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           <button
             type="button"
             onClick={() => setShowReport((v) => !v)}
-            className="flex items-center gap-3 px-4 py-3.5 rounded-xl cursor-pointer text-start"
+            className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start"
             style={{ background: "var(--surface-1)" }}
           >
             <Icon name="adjust" size={18} style={{ color: "var(--accent-text)" }} />
@@ -204,7 +204,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             </span>
           </button>
           {showReport && ws.colors.length > 1 && (
-            <div className="rounded-xl p-4 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-card p-4 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
               <table className="border-separate" style={{ borderSpacing: 4 }}>
                 <thead>
                   <tr>

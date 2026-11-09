@@ -113,7 +113,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
       onClick={onClose}
     >
       <div
-        className="animate-dialog-in w-full max-w-[720px] max-h-full overflow-y-auto rounded-2xl p-6 flex flex-col gap-5"
+        className="animate-dialog-in w-full max-w-[720px] max-h-full overflow-y-auto rounded-card p-6 flex flex-col gap-5"
         style={{ background: "var(--surface-1)", boxShadow: "var(--shadow-modal)" }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -137,7 +137,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
         </div>
 
         {sources.length === 0 ? (
-          <div className="rounded-xl p-5 text-[13px]" style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}>
+          <div className="rounded-card p-5 text-[13px]" style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}>
             {isAr
               ? "لا يوجد شعار أو صورة في هذا المشروع بعد. ارفع شعارًا من «نظام الشعار» أولًا."
               : "There's no logo or image in this workspace yet. Upload one under Logo system first."}
@@ -171,7 +171,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
 
             {url && (
               <div
-                className="rounded-xl h-[140px] grid place-items-center shrink-0"
+                className="rounded-card h-[140px] grid place-items-center shrink-0"
                 style={{ background: "var(--surface-2)" }}
               >
                 <BrandMark src={url} alt="" onDark={resolved === "dark"} style={{ maxHeight: 92, maxWidth: "70%" }} />
@@ -185,7 +185,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
             )}
 
             {status === "error" && (
-              <div className="rounded-xl p-4 text-[13px] leading-[1.6]" style={{ background: "var(--surface-2)", color: "var(--danger)" }}>
+              <div className="rounded-card p-4 text-[13px] leading-[1.6]" style={{ background: "var(--surface-2)", color: "var(--danger)" }}>
                 {error}
               </div>
             )}
@@ -198,7 +198,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                   return (
                     <div
                       key={c.hex}
-                      className="flex items-center gap-3 rounded-xl p-2.5"
+                      className="flex items-center gap-3 rounded-card p-2.5"
                       style={{ background: "var(--surface-2)", opacity: already ? 0.55 : 1 }}
                     >
                       <button

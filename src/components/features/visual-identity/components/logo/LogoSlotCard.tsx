@@ -153,7 +153,7 @@ export function LogoSlotCard({
 
   return (
     <div
-      className="rounded-2xl p-4 flex flex-col gap-3 cursor-pointer transition-shadow"
+      className="rounded-card p-4 flex flex-col gap-3 cursor-pointer transition-shadow"
       style={{
         background: kind === "symbol" && isEmptyLike ? "transparent" : "var(--surface-1)",
         boxShadow:
@@ -168,7 +168,7 @@ export function LogoSlotCard({
       <div className="flex items-center gap-2">
         <span className="font-semibold text-[13px]">{displayLabel}</span>
         <span
-          className="text-[10px] font-medium px-[7px] py-[5px] rounded-[5px]"
+          className="text-[10px] font-medium px-[7px] py-[5px] rounded-md"
           style={{ background: "var(--surface-3)", color: "var(--text-muted)" }}
         >
           {tag}
@@ -202,7 +202,7 @@ export function LogoSlotCard({
 
       {rejectMsg ? (
         <div
-          className="h-[150px] rounded-[11px] flex flex-col items-center justify-center gap-2 px-4 text-center"
+          className="h-[150px] rounded-card flex flex-col items-center justify-center gap-2 px-4 text-center"
           style={{ background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--danger)" }}
           onClick={openPicker}
         >
@@ -214,7 +214,7 @@ export function LogoSlotCard({
         </div>
       ) : slot.phase === "empty" ? (
         <div
-          className="h-[150px] rounded-[11px] flex flex-col items-center justify-center gap-2 transition-colors"
+          className="h-[150px] rounded-card flex flex-col items-center justify-center gap-2 transition-colors"
           style={{
             background: dragOver ? "var(--accent-soft)" : "var(--surface-2)",
             boxShadow: dragOver
@@ -250,7 +250,7 @@ export function LogoSlotCard({
         </div>
       ) : slot.phase === "uploading" ? (
         <div
-          className="h-[150px] rounded-[11px] flex flex-col items-center justify-center gap-3 p-3"
+          className="h-[150px] rounded-card flex flex-col items-center justify-center gap-3 p-3"
           style={{ background: "var(--surface-2)" }}
         >
           {slot.url && (
@@ -274,7 +274,7 @@ export function LogoSlotCard({
         </div>
       ) : slot.phase === "failed" ? (
         <div
-          className="h-[150px] rounded-[11px] flex flex-col items-center justify-center gap-2 px-4 text-center"
+          className="h-[150px] rounded-card flex flex-col items-center justify-center gap-2 px-4 text-center"
           style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--danger)" }}
         >
           <Icon name="undo" size={19} style={{ color: "var(--danger)" }} />
@@ -293,7 +293,7 @@ export function LogoSlotCard({
         </div>
       ) : (
         <div
-          className="h-[150px] rounded-[11px] relative grid place-items-center overflow-hidden"
+          className="h-[150px] rounded-card relative grid place-items-center overflow-hidden"
           style={{ background: "var(--surface-2)" }}
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
@@ -302,7 +302,7 @@ export function LogoSlotCard({
             <BrandMark src={slot.url} alt="" onDark={resolved === "dark"} style={{ maxWidth: 140, maxHeight: 64, opacity: hovering ? 0.25 : 1 }} />
           )}
           <div
-            className="absolute rounded-[3px] pointer-events-none"
+            className="absolute rounded-sm pointer-events-none"
             style={{
               inset: Math.round(20 + slot.clearspaceMultiplier * 20),
               border: "1px dashed var(--accent-edge)",
@@ -435,7 +435,7 @@ function LightVersionStrip({
   return (
     <div className="flex items-center gap-2.5 rounded-lg p-2" style={{ background: "var(--surface-2)" }}>
       <span
-        className="w-[62px] h-[34px] rounded-[7px] grid place-items-center shrink-0 overflow-hidden"
+        className="w-[62px] h-[34px] rounded-lg grid place-items-center shrink-0 overflow-hidden"
         style={{ background: "#111114" }}
       >
         {/* Drawn raw: this file is already the reversed one, so measuring or

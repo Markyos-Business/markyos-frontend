@@ -14,7 +14,7 @@ type PlanCardProps = {
 /** One plan: its price, what it unlocks, and choosing it. */
 export function PlanCard({ name, price, period, description, active, loading, onSelect, isAr }: PlanCardProps) {
   return (
-    <div className={`flex flex-col gap-3 rounded-xl bg-surface-2 p-4 ${active ? "shadow-[inset_0_0_0_1px_rgba(0,153,255,.5)]" : ""}`}>
+    <div className={`flex flex-col gap-3 rounded-card bg-surface-2 p-4 ${active ? "shadow-[inset_0_0_0_1px_rgba(0,153,255,.5)]" : ""}`}>
       <div>
         <div className="text-[14px] font-semibold">{name}</div>
         <div className="font-display text-[20px] font-semibold">

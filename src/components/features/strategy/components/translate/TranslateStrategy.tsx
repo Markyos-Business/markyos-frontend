@@ -233,7 +233,7 @@ export function TranslationNotice({ ws, isAr }: { ws: Workspace; isAr: boolean }
 
   return (
     <div
-      className="flex items-start gap-2.5 rounded-xl px-3.5 py-3"
+      className="flex items-start gap-2.5 rounded-card px-3.5 py-3"
       style={{ background: "var(--warning-soft)", color: "var(--text)" }}
     >
       <Icon name="exclamation-circle" size={14} style={{ color: "var(--warning)", marginTop: 1, flexShrink: 0 }} />

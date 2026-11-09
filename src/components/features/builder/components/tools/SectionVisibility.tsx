@@ -45,7 +45,7 @@ export function SectionVisibility({ ws, isAr }: { ws: Workspace; isAr: boolean }
           {parkedCount > 0 ? (isAr ? `${parkedCount} مخفي` : `${parkedCount} off`) : `${v.availableFixed.length}`}
         </span>
       </summary>
-      <div className="mt-1.5 flex flex-col overflow-hidden rounded-xl bg-surface-1">
+      <div className="mt-1.5 flex flex-col overflow-hidden rounded-card bg-surface-1">
         {v.availableFixed.map((s) => {
           const hidden = isParked(s.id);
           return (

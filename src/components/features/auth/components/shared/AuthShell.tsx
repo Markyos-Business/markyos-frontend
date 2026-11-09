@@ -43,7 +43,7 @@ export function AuthShell({
         <MarkyosLogo variant="lockup" className="w-[190px] max-w-full" isAr={lang === "ar"} />
       </Link>
 
-      <div className="flex w-full max-w-[440px] flex-col gap-4 rounded-[18px] bg-surface-1 p-6 sm:p-[30px]">
+      <div className="flex w-full max-w-[440px] flex-col gap-4 rounded-card bg-surface-1 p-6 sm:p-[30px]">
         <div className="flex flex-col gap-1.5">
           <h1 className="font-display text-[22px] font-semibold tracking-tight">{title}</h1>
           {subtitle && <p className="text-[13px] leading-[1.5] text-text-muted">{subtitle}</p>}

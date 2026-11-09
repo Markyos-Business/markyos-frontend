@@ -37,7 +37,7 @@ export function PreviewModal({
       onClick={onCancel}
     >
       <div
-        className="animate-dialog-in w-full max-w-[1100px] rounded-2xl p-8 flex flex-col gap-5"
+        className="animate-dialog-in w-full max-w-[1100px] rounded-card p-8 flex flex-col gap-5"
         style={{ background: "var(--canvas)", boxShadow: "0 0 0 1px var(--hairline-strong)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -76,7 +76,7 @@ export function PreviewModal({
 
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-[1fr_1fr_300px]" style={{ minHeight: 280 }}>
           <div
-            className="rounded-2xl relative grid place-items-center"
+            className="rounded-card relative grid place-items-center"
             style={{ background: "var(--surface-1)" }}
           >
             <BrandMark src={pending.url} alt="" onDark={resolved === "dark"} style={{ width: 260 }} />
@@ -88,7 +88,7 @@ export function PreviewModal({
             </span>
           </div>
           <div
-            className="rounded-2xl relative grid place-items-center"
+            className="rounded-card relative grid place-items-center"
             style={{ background: "#f5f5f5" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -101,7 +101,7 @@ export function PreviewModal({
             </span>
           </div>
           <div className="flex flex-col gap-3.5">
-            <div className="rounded-xl p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
               <span className="font-semibold text-[13px]">Read from the file</span>
               <Row label="Format" value={`${pending.format.toUpperCase()} · ${pending.format === "svg" ? "vector" : "raster"}`} />
               <Row label="Size" value={formatBytes(pending.sizeKB)} />
@@ -117,7 +117,7 @@ export function PreviewModal({
               point where the mark stops resolving — so the rule is something
               you can see rather than something you have to trust.
             */}
-            <div className="rounded-xl p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
               <span className="font-semibold text-[13px]">Small sizes</span>
               <div className="flex items-end gap-4 flex-wrap">
                 {[minDigital, Math.round(minDigital * 0.66), Math.round(minDigital * 0.5)].map(

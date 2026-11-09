@@ -67,7 +67,7 @@ export function Card(props: CardProps) {
       // The card spans columns by size. `l` is two columns wide, which is what
       // makes a board look like a board rather than a uniform contact sheet.
       style={{ gridColumn: SPAN[item.size], opacity: dragging ? 0.4 : 1 }}
-      className="group relative rounded-xl overflow-hidden flex flex-col"
+      className="group relative rounded-card overflow-hidden flex flex-col"
       draggable={armed}
       onDragStart={(e) => {
         e.dataTransfer.effectAllowed = "move";

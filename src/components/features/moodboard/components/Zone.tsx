@@ -83,7 +83,7 @@ export function Zone({
   return (
     <section
       aria-label={title}
-      className="flex flex-col gap-3 rounded-2xl p-4"
+      className="flex flex-col gap-3 rounded-card p-4"
       style={{
         background: over ? "var(--surface-1)" : "transparent",
         boxShadow: over ? "inset 0 0 0 2px var(--accent)" : "inset 0 0 0 1px var(--hairline)",
@@ -154,7 +154,7 @@ export function Zone({
 
       {instructions && !zone.instructionsDismissed && (
         <div
-          className="flex items-start gap-2.5 rounded-xl px-3 py-2.5"
+          className="flex items-start gap-2.5 rounded-card px-3 py-2.5"
           style={{ background: "var(--surface-1)" }}
         >
           <Icon name="info-circle" size={13} style={{ color: "var(--text-faint)", flexShrink: 0, marginTop: 2 }} />
@@ -219,7 +219,7 @@ export function Zone({
             key={i}
             type="button"
             onClick={() => onAdd(zone, ghost.kind)}
-            className="rounded-xl grid place-items-center gap-1.5 cursor-pointer p-4"
+            className="rounded-card grid place-items-center gap-1.5 cursor-pointer p-4"
             style={{
               gridColumn: ghost.size === "l" ? "span 2" : "span 1",
               minHeight: 104,
@@ -295,7 +295,7 @@ function AddMenu({
             // Animated in, like every other menu in the app. A panel that
             // simply exists on the next frame gives no clue where it came
             // from, which is the one thing an entrance is for.
-            className="absolute z-20 flex flex-col rounded-xl overflow-hidden py-1 animate-fade-in"
+            className="absolute z-20 flex flex-col rounded-card overflow-hidden py-1 animate-fade-in"
             style={{
               insetInlineEnd: 0,
               top: "calc(100% + 4px)",

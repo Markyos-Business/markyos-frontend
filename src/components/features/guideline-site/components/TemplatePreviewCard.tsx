@@ -36,7 +36,7 @@ export function TemplatePreviewCard({
     <button
       type="button"
       onClick={onSelect}
-      className="mk-card rounded-2xl p-3 flex flex-col gap-2.5 text-start cursor-pointer w-full"
+      className="mk-card rounded-card p-3 flex flex-col gap-2.5 text-start cursor-pointer w-full"
       style={{ background: "var(--surface-2)", boxShadow: active ? "inset 0 0 0 2px var(--accent)" : "inset 0 0 0 1px var(--hairline)" }}
     >
       <div className="rounded-lg overflow-hidden h-[76px] flex" style={{ background: theme.canvas }}>
@@ -159,7 +159,7 @@ export function StudioStylePreviewCard({
     <button
       type="button"
       onClick={onSelect}
-      className="mk-card rounded-2xl p-3 flex flex-col gap-2.5 text-start cursor-pointer w-full"
+      className="mk-card rounded-card p-3 flex flex-col gap-2.5 text-start cursor-pointer w-full"
       style={{ background: "var(--surface-2)", boxShadow: active ? "inset 0 0 0 2px var(--accent)" : "inset 0 0 0 1px var(--hairline)" }}
     >
       <div className="rounded-lg overflow-hidden h-[64px] flex" style={{ background: theme.canvas }}>

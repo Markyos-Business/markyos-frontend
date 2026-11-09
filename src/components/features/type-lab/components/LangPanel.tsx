@@ -12,7 +12,7 @@ export function LangPanel(p: LangPanelState) {
   return (
     // A group, so the two panels' identically-named sliders ("Size",
     // "Line-height") are told apart by the script they belong to.
-    <div role="group" aria-label={p.label} className="mk-surface flex flex-col gap-4 rounded-2xl bg-surface-1 p-5">
+    <div role="group" aria-label={p.label} className="mk-surface flex flex-col gap-4 rounded-card bg-surface-1 p-5">
       <div className="flex items-center justify-between">
         <span className="text-[13px] font-semibold">{p.label}</span>
         <span

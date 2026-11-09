@@ -93,7 +93,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
           const file = e.dataTransfer.files?.[0];
           if (file) handleFile(file);
         }}
-        className="rounded-2xl p-6 flex items-center gap-5 cursor-pointer"
+        className="rounded-card p-6 flex items-center gap-5 cursor-pointer"
         style={{ background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
       >
         {previewUrl ? (
@@ -101,7 +101,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
           <img src={previewUrl} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 12 }} />
         ) : (
           <div
-            className="mk-surface w-[90px] h-[90px] rounded-xl grid place-items-center shrink-0"
+            className="mk-surface w-[90px] h-[90px] rounded-card grid place-items-center shrink-0"
             style={{ background: "var(--surface-2)" }}
           >
             <Icon name="upload" size={24} style={{ color: "var(--text-muted)" }} />
@@ -123,7 +123,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
       )}
 
       {result && !analyzing && (
-        <div className="rounded-2xl p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="rounded-card p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <span className="font-semibold text-[13px]">{t("Dominant colors found", "الألوان الغالبة")}</span>
           <div className="flex flex-col gap-2">
             {result.map((c) => {
@@ -195,7 +195,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
                       <span
                         key={hex}
                         title={`${t("Off-palette", "خارج الألوان المعتمدة")}: ${hex.toUpperCase()}`}
-                        className="w-4 h-4 rounded-[4px]"
+                        className="w-4 h-4 rounded-sm"
                         style={{ background: hex, boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
                       />
                     ))}

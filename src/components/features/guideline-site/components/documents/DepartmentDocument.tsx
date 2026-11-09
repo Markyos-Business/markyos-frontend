@@ -184,7 +184,7 @@ export function DepartmentDocument({
           </h3>
           <div className="flex flex-col gap-2">
             {resolved.map((r) => (
-              <div key={r.id} className="rounded-xl p-3.5 flex items-start gap-3" style={{ background: t.surface1 }}>
+              <div key={r.id} className="rounded-card p-3.5 flex items-start gap-3" style={{ background: t.surface1 }}>
                 <Icon
                   name={r.icon}
                   size={15}
@@ -219,7 +219,7 @@ export function DepartmentDocument({
         <a
           href={file.url}
           download={file.fileName}
-          className="flex items-center gap-2.5 rounded-xl px-4 py-3 self-start"
+          className="flex items-center gap-2.5 rounded-card px-4 py-3 self-start"
           style={{ background: t.surface1, color: t.text }}
         >
           <Icon name="download" size={14} style={{ color: t.accent }} />

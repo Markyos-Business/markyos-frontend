@@ -483,7 +483,7 @@ function LayoutPicker({
               // default ever changes — the same argument as every other unset
               // field in this panel.
               onClick={() => onChange({ variant: i === 0 ? undefined : v.key })}
-              className="flex flex-col gap-0.5 rounded-xl px-3 py-2.5 text-start cursor-pointer"
+              className="flex flex-col gap-0.5 rounded-card px-3 py-2.5 text-start cursor-pointer"
               style={{
                 background: on ? "var(--accent-soft)" : "var(--surface-1)",
                 boxShadow: on ? "inset 0 0 0 1px var(--accent)" : undefined,

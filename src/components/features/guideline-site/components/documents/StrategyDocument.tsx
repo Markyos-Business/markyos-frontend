@@ -202,7 +202,7 @@ export function StrategyDocument({
         <Chapter id={`${idPrefix}values`} n={num()} title={isAr ? "القيم الجوهرية" : "Core values"} t={t}>
           <div className="grid gap-3 sm:grid-cols-2">
             {s.coreValues.map((v, i) => (
-              <div key={v.id} className="rounded-2xl p-5 flex flex-col gap-2" style={{ background: t.surface1 }}>
+              <div key={v.id} className="rounded-card p-5 flex flex-col gap-2" style={{ background: t.surface1 }}>
                 <span
                   className="text-[10px] font-semibold"
                   style={{ fontFamily: "ui-monospace, Menlo, monospace", color: t.accent }}
@@ -229,7 +229,7 @@ export function StrategyDocument({
           {showPersonaCards && s.personas.length > 0 && (
             <div className="grid gap-3 sm:grid-cols-2 mt-1">
               {s.personas.map((p) => (
-                <div key={p.id} className="rounded-2xl p-5 flex flex-col gap-1.5" style={{ background: t.surface1 }}>
+                <div key={p.id} className="rounded-card p-5 flex flex-col gap-1.5" style={{ background: t.surface1 }}>
                   <span dir="auto" className="bidi-auto font-semibold text-[14px]" style={{ color: t.text }}>
                     {p.name}
                   </span>
@@ -296,7 +296,7 @@ export function StrategyDocument({
 
           <div className="flex flex-col gap-3 mt-1">
             {s.voiceTraits.map((v) => (
-              <div key={v.id} className="rounded-2xl overflow-hidden" style={{ background: t.surface1 }}>
+              <div key={v.id} className="rounded-card overflow-hidden" style={{ background: t.surface1 }}>
                 <div className="px-5 pt-4 pb-3">
                   <span dir="auto" className="bidi-auto font-semibold text-[15px]" style={{ color: t.text }}>
                     {v.trait}
@@ -313,7 +313,7 @@ export function StrategyDocument({
       )}
 
       {showMissing && missing.length > 0 && (
-        <div className="rounded-2xl p-5 flex flex-col gap-2.5" style={{ background: t.surface1 }}>
+        <div className="rounded-card p-5 flex flex-col gap-2.5" style={{ background: t.surface1 }}>
           <span className="text-[12px] font-semibold" style={{ color: t.text }}>
             {isAr ? "لم يُكتب بعد" : "Not written yet"}
           </span>
@@ -373,7 +373,7 @@ function CompetitorTable({ strategy, isAr, t }: { strategy: BrandStrategy; isAr:
 
   return (
     <>
-      <div className="hidden md:block overflow-x-auto rounded-xl" style={{ background: t.surface1 }}>
+      <div className="hidden md:block overflow-x-auto rounded-card" style={{ background: t.surface1 }}>
         <table className="w-full border-collapse text-[13px]">
           <thead>
             <tr>
@@ -422,7 +422,7 @@ function CompetitorTable({ strategy, isAr, t }: { strategy: BrandStrategy; isAr:
 
       <div className="md:hidden flex flex-col gap-2.5">
         {strategy.competitors.map((c) => (
-          <div key={c.id} className="rounded-2xl p-4 flex flex-col gap-2.5" style={{ background: t.surface1 }}>
+          <div key={c.id} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: t.surface1 }}>
             <span dir="auto" className="bidi-auto font-semibold text-[14px]" style={{ color: t.text }}>
               {c.name}
             </span>
