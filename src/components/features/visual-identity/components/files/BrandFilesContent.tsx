@@ -7,7 +7,7 @@ import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui/media";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
-import { fontMetaFromFileName, isFontFile } from "@/components/features/visual-identity/model/fontFile";
+import { fontMetaFromFileName, isFontFile } from "@/components/features/visual-identity/utils/fontFile";
 import { BulkBar, downloadFiles } from "./BulkBar";
 
 const TYPE_META: Record<AssetType | "logo", { label: string; arLabel: string; icon: string }> = {

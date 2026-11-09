@@ -7,7 +7,7 @@ import { useTheme } from "@/contexts/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
-import { validateFile } from "@/components/features/visual-identity/model/logoUpload";
+import { validateFile } from "@/components/features/visual-identity/utils/logoUpload";
 
 export function LogoSlotCard({
   workspaceId,

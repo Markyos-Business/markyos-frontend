@@ -8,7 +8,7 @@ import { LogoSlotCard } from "@/components/features/visual-identity/components/l
 import { ClearspacePanel } from "@/components/features/visual-identity/components/logo/ClearspacePanel";
 import { PreviewModal, PendingUpload } from "@/components/features/visual-identity/components/logo/PreviewModal";
 import { DownloadPanel } from "@/components/features/guideline-site";
-import { loadImageDimensions } from "@/components/features/visual-identity/model/logoUpload";
+import { loadImageDimensions } from "@/components/features/visual-identity/utils/logoUpload";
 import { SlotKind, Workspace } from "@/types";
 import { fileToDataUrl } from "@/lib/utils";
 

@@ -5,8 +5,8 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/components/features/guideline-site";
-import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "@/components/features/visual-identity/model/fontFile";
-import { importGoogleFont, SUGGESTED_FONTS } from "@/components/features/visual-identity/services/googleFonts";
+import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "@/components/features/visual-identity/utils/fontFile";
+import { importGoogleFont, SUGGESTED_FONTS } from "@/components/features/visual-identity/services/visualIdentityService";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
 
 const WEIGHTS = ["300", "400", "500", "600", "700"];

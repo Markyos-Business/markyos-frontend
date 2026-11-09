@@ -2,11 +2,11 @@
 
 import type { Workspace } from "@/types";
 import { ASSET_TABS, type VisualIdentityTab } from "../constants";
-import { AssetTypeGrid } from "./AssetTypeGrid";
-import { BrandFilesContent } from "./BrandFilesContent";
-import { ColorContent } from "./ColorContent";
-import { LogoSystemContent } from "./LogoSystemContent";
-import { TypographyContent } from "./TypographyContent";
+import { AssetTypeGrid } from "./files/AssetTypeGrid";
+import { BrandFilesContent } from "./files/BrandFilesContent";
+import { ColorContent } from "./color/ColorContent";
+import { LogoSystemContent } from "./logo/LogoSystemContent";
+import { TypographyContent } from "./typography/TypographyContent";
 
 type VisualIdentityViewProps = { ws: Workspace; tab: VisualIdentityTab; onTab: (tab: VisualIdentityTab) => void };
 
