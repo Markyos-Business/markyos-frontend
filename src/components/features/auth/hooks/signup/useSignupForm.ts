@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { AccountType } from "@/types";
+import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import { EMAIL_RE } from "../../constants";
 import { API_ENABLED } from "@/lib/api/client";
 import type { PasswordSetup } from "../../types";
@@ -27,8 +28,12 @@ export function useSignupForm() {
   const { signup, state, hydrated } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
+  // The website's sign-up buttons say who the account is for (/start?type=studio,
+  // forwarded here): that choice arrives already made, and stays changeable.
+  const fromSite = useSearchParams().get("type");
+  const presetType = ACCOUNT_TYPE_KEYS.find((k) => k === fromSite) ?? null;
 
-  const [accountType, setAccountType] = useState<AccountType | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(presetType);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

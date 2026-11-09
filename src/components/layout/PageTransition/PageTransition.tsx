@@ -3,8 +3,14 @@
 import { ViewTransition, useEffect, useState, type ReactNode } from "react";
 import { markPageArrived } from "@/lib/motion";
 
-/** Set after the first page has drawn, so a full load never moves focus. */
-let navigated = false;
+/**
+ * The address the tab first loaded, so a full load never moves focus. Compared
+ * by URL rather than a "has run" flag: React runs effects twice in development,
+ * and the second run is the same page, not a navigation (it used to focus the
+ * heading before the page had hydrated). Cleared after the first real move so
+ * coming back to that page still announces it.
+ */
+let firstUrl: string | null = null;
 
 /**
  * A page arriving: the content area only, so the sidebar and header stay put.
@@ -24,10 +30,13 @@ export function PageTransition({ children }: { children: ReactNode }) {
   // page is already animating and don't animate a second time.
   useState(markPageArrived);
   useEffect(() => {
-    if (!navigated) {
-      navigated = true;
+    const here = window.location.pathname + window.location.search;
+    if (firstUrl === null) {
+      firstUrl = here;
       return;
     }
+    if (here === firstUrl) return;
+    firstUrl = "";
     const heading = document.querySelector<HTMLElement>("main h1, h1");
     if (!heading) return;
     if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
