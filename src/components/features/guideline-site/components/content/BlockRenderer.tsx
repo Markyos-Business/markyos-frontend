@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, FormEvent, useContext, useMemo, useState, ReactNode } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, useUiStrings } from "@/components/ui";
+import { BLOCK_META } from "@/components/features/guideline-site/utils/blockCatalog";
 import { BrandMark } from "@/components/ui/media";
 import { ColorGrid, IconGrid, LogoGrid, TypeSpecimen } from "@/components/features/guideline-site/components/content/Content";
 import { BlockShell, EditableText, useLiveEdit } from "@/components/features/guideline-site/components/live/LiveEdit";
@@ -119,6 +120,8 @@ export function BlockRenderer(props: { block: PageBlock; ws: Workspace; isAr: bo
 
 function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr: boolean }) {
   const { enabled, update, addInColumn } = useLiveEdit();
+  const { isAr: interfaceIsAr } = useUiStrings();
+  const fieldLabel = (en: string, ar: string) => `${interfaceIsAr ? BLOCK_META[block.kind].arLabel : BLOCK_META[block.kind].label}: ${interfaceIsAr ? ar : en}`;
   // Blocks are drawn on the brand's ground, not the app's, so whether a
   // single-tone mark needs reversing is a question about the workspace's own
   // palette.
@@ -185,6 +188,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
       <div className="flex flex-col gap-3">
         {(title || enabled) && (
           <EditableText
+            label={fieldLabel("Heading", "العنوان")}
             as="h3"
             value={title || ""}
             onCommit={commitTitle}
@@ -195,6 +199,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
         )}
         {(body || enabled) && (
           <EditableText
+            label={fieldLabel("Body text", "النص")}
             as="p"
             multiline
             value={body || ""}
@@ -221,6 +226,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
       >
         {enabled ? (
           <EditableText
+            label={fieldLabel("Quote", "الاقتباس")}
             as="p"
             multiline
             value={body || ""}
@@ -268,6 +274,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
         )}
         {(title || enabled) && (
           <EditableText
+            label={fieldLabel("Caption", "التسمية")}
             value={title || ""}
             onCommit={commitTitle}
             placeholder={isAr ? "أضف تسمية" : "Add a caption"}
@@ -286,6 +293,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
       <div className="flex flex-col gap-2.5">
         {(title || enabled) && (
           <EditableText
+            label={fieldLabel("Caption", "التسمية")}
             value={title || ""}
             onCommit={commitTitle}
             placeholder={isAr ? "أضف تسمية" : "Add a caption"}
@@ -349,6 +357,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
       <div className="flex flex-col gap-2.5">
         {(title || enabled) && (
           <EditableText
+            label={fieldLabel("Heading", "العنوان")}
             as="h3"
             value={title || ""}
             onCommit={commitTitle}
@@ -397,6 +406,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
       <div className="rounded-card p-6 flex flex-col gap-1.5" style={{ background: "var(--surface-1)" }}>
         {enabled ? (
           <EditableText
+            label={fieldLabel("Metric value", "قيمة المؤشر")}
             value={title || ""}
             onCommit={commitTitle}
             placeholder="100%"
@@ -410,6 +420,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
         )}
         {(body || enabled) && (
           <EditableText
+            label={fieldLabel("Metric description", "وصف المؤشر")}
             value={body || ""}
             onCommit={commitBody}
             placeholder={isAr ? "وصف الرقم" : "What it measures"}
@@ -430,6 +441,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
         </summary>
         {(body || enabled) && (
           <EditableText
+            label={fieldLabel("Answer", "الإجابة")}
             as="p"
             multiline
             value={body || ""}

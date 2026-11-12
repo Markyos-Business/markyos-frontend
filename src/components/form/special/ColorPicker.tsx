@@ -4,7 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
 import { CopyButton } from "../../ui/buttons/CopyButton";
 import { IconButton } from "../../ui/buttons/IconButton";
-import { Tabs } from "../../ui/tabs/Tabs";
+import { TabPanel, Tabs, useTabIds } from "../../ui/tabs";
 import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { InputField } from "../fields/InputField";
 import { hexToRgb } from "@/lib/utils";
@@ -88,6 +88,7 @@ const dragHandlers = (onMove: (x: number, y: number) => void) => {
  * Arabic, as every colour tool does.
  */
 const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", className = "" }: ColorPickerProps) => {
+  const tabIds = useTabIds();
   const { t } = useUiStrings();
   const hex = normalizeHex(value) ?? "#000000";
   const [notation, setNotation] = useState<ColorNotation>(defaultNotation);
@@ -194,7 +195,7 @@ const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", class
       </div>
 
       <div className="flex items-center justify-between gap-space-3">
-        <Tabs
+        <Tabs {...tabIds}
           variant="pill"
           label={t.colorFormat}
           tabs={NOTATIONS}
@@ -216,6 +217,7 @@ const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", class
         />
       </div>
 
+      <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={notation} className="flex flex-col gap-space-4">
       {notation === "hex" ? (
         <InputField
           size="sm"
@@ -272,6 +274,7 @@ const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", class
         </div>
       )}
       {notation === "cmyk" && <p className="text-caption text-text-faint">{t.cmykNote}</p>}
+      </TabPanel>
 
       {swatches && swatches.length > 0 && (
         <div className="flex flex-col gap-space-2">

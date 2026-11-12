@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, EmptyState, ErrorState, Icon, Skeleton, Tabs } from "@/components/ui";
+import { Button, EmptyState, ErrorState, Icon, Skeleton, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { USER_TABS } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/useAdminLang";
 import { useUserPage } from "../../hooks/user-detail/useUserPage";
@@ -15,6 +15,7 @@ const TAB_ICONS = { overview: "user", activity: "history", permissions: "user-sh
 
 /** One account: who they are, what happened, what their role allows, and where they're signed in. */
 export function AdminUserView({ id }: { id: string }) {
+  const tabIds = useTabIds();
   const { c } = useAdminLang();
   const page = useUserPage(id);
   const { user, actions } = page;
@@ -58,19 +59,19 @@ export function AdminUserView({ id }: { id: string }) {
       <nav aria-label={c.breadcrumb}>{back}</nav>
       <UserHeader user={account} rules={page.rules} actions={actions} />
 
-      <Tabs
+      <Tabs {...tabIds}
         label={c.detail.tabsLabel}
         active={page.tab}
         onChange={page.setTab}
         tabs={USER_TABS.map((key) => ({ key, label: c.detail.tabs[key], icon: TAB_ICONS[key] }))}
       />
 
-      <div key={page.tab}>
+      <TabPanel key={page.tab} id={tabIds.panelId} tabsId={tabIds.id} active={page.tab}>
         {page.tab === "overview" && <OverviewTab user={account} sessionCount={page.sessions.data?.length ?? null} />}
         {page.tab === "activity" && <ActivityTab activity={page.activity} />}
         {page.tab === "permissions" && <PermissionsTab user={account} />}
         {page.tab === "sessions" && <SessionsTab user={account} sessions={page.sessions} actions={actions} />}
-      </div>
+      </TabPanel>
 
       {actions.roleFor && (
         <ChangeRoleDialog

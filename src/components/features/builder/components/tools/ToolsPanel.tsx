@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icon } from "@/components/ui";
+import { Icon, TabPanel, useTabIds } from "@/components/ui";
 import { TOOL_TABS } from "../../constants";
 import type { BuilderPageState } from "../../hooks/useBuilderPage";
 import { LayersTab } from "../layers/LayersTab";
@@ -11,6 +11,7 @@ import { TemplateTab } from "./TemplateTab";
 
 /** The editor's start panel: the way back out, the pages, and the four tool tabs. */
 export function ToolsPanel(b: BuilderPageState) {
+  const tabIds = useTabIds();
   const { ws, isAr, tab, activePage, sortedPages } = b;
   const back = isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`;
   const hide = isAr ? "إخفاء لوحة الأدوات" : "Hide the tools panel";
@@ -68,12 +69,11 @@ export function ToolsPanel(b: BuilderPageState) {
         </div>
       </div>
 
-      <Segments asTabs options={TOOL_TABS.map((t) => ({ value: t.key, label: isAr ? t.ar : t.en }))} value={tab} onChange={b.onTab} textClass="text-[10.5px]" />
-
-      {!activePage && tab !== "layers" && <SectionVisibility ws={ws} isAr={isAr} />}
+      <Segments asTabs {...tabIds} label={isAr ? "أدوات الدليل" : "Guideline tools"} options={TOOL_TABS.map((t) => ({ value: t.key, label: isAr ? t.ar : t.en }))} value={tab} onChange={b.onTab} textClass="text-[10.5px]" />
 
       {/* Keyed on the tab so the swap animates: the content moves, the chrome above it doesn't. */}
-      <div key={tab} className="flex flex-col gap-3">
+      <TabPanel key={tab} id={tabIds.panelId} tabsId={tabIds.id} active={tab} className="flex flex-col gap-3">
+        {!activePage && tab !== "layers" && <SectionVisibility ws={ws} isAr={isAr} />}
         {tab === "layers" ? (
           <LayersTab
             ws={ws}
@@ -93,7 +93,7 @@ export function ToolsPanel(b: BuilderPageState) {
         ) : (
           <SiteTab ws={ws} isAr={isAr} />
         )}
-      </div>
+      </TabPanel>
     </div>
   );
 }

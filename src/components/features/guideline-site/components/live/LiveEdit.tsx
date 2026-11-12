@@ -6,6 +6,8 @@ import { Icon, useUiStrings } from "@/components/ui";
 /** The live editor's own words: studio chrome, so in the interface language. */
 const EDIT_COPY = {
   en: {
+    sectionTitle: "Section title",
+    sectionGuidance: "Section guidance",
     dragNamed: (l: string) => `Drag ${l} to reorder`,
     dragTitle: (l: string) => `Drag to reorder — ${l}`,
     drag: "Drag to reorder",
@@ -18,6 +20,8 @@ const EDIT_COPY = {
     parked: "Off the published site",
   },
   ar: {
+    sectionTitle: "عنوان القسم",
+    sectionGuidance: "إرشادات القسم",
     dragNamed: (l: string) => `اسحب ${l} لإعادة الترتيب`,
     dragTitle: (l: string) => `اسحب لإعادة الترتيب — ${l}`,
     drag: "اسحب لإعادة الترتيب",
@@ -169,6 +173,7 @@ export function LiveEditProvider({
  * while the field is unfocused, and the edit is committed on blur.
  */
 export function EditableText({
+  label,
   value,
   onCommit,
   placeholder,
@@ -178,6 +183,8 @@ export function EditableText({
   multiline = false,
   render,
 }: {
+  /** Field purpose, independent of its value or placeholder. */
+  label: string;
   value: string;
   onCommit: (next: string) => void;
   placeholder: string;
@@ -224,6 +231,8 @@ export function EditableText({
       suppressContentEditableWarning
       dir="auto"
       role="textbox"
+      aria-label={label}
+      aria-multiline={multiline}
       tabIndex={0}
       data-placeholder={placeholder}
       className={`live-editable ${className}`}
@@ -284,10 +293,12 @@ export function SectionHeading({
   render?: { html: (value: string) => string; node: (value: string) => ReactNode };
 }) {
   const { renameSection } = useLiveEdit();
+  const c = useEditCopy();
   return (
     <EditableText
       as={as}
       value={value}
+      label={value ? `${c.sectionTitle}: ${value}` : c.sectionTitle}
       onCommit={(next) => renameSection(sectionId, next)}
       placeholder={placeholder}
       className={className}
@@ -331,6 +342,7 @@ export function SectionNote({
   style?: React.CSSProperties;
 }) {
   const { enabled, setSectionNote } = useLiveEdit();
+  const c = useEditCopy();
   const value = useContext(SectionNoteContext)(sectionId);
   if (!enabled && !value) return null;
   return (
@@ -338,6 +350,7 @@ export function SectionNote({
       as="p"
       multiline
       value={value}
+      label={c.sectionGuidance}
       onCommit={(next) => setSectionNote(sectionId, next)}
       placeholder={placeholder}
       className={className}

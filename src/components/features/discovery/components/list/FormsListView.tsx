@@ -14,6 +14,8 @@ import {
   TableLoadingRow,
   TablePagination,
   Tabs,
+  TabPanel,
+  useTabIds,
   cellClasses,
   rowClasses,
 } from "@/components/ui";
@@ -42,6 +44,7 @@ const formHref = (form: FormSummary) => `/w/${form.workspaceSlug}/forms/${form.i
  * what, and who has answered.
  */
 export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps) {
+  const tabIds = useTabIds();
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState<FormListQuery>({ status: "", ordering: "updated", page: 1, brand: brandId });
   const { data, error, loading, reload } = useForms(query);
@@ -93,7 +96,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
       />
 
       <div className="flex flex-wrap items-center justify-between gap-space-5">
-        <Tabs
+        <Tabs {...tabIds}
           label={isAr ? "حسب الحالة" : "By status"}
           tabs={(["", ...STATUS_ORDER] as (FormStatus | "")[]).map((status) => ({ key: status || "all", label: tab(status) }))}
           active={query.status || "all"}
@@ -122,6 +125,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
         </div>
       </div>
 
+      <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={query.status || "all"} className="flex min-w-0 flex-col gap-5">
       <AlertBanner message={error} />
 
       {data && data.counts.all === 0 && !query.search ? (
@@ -216,6 +220,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
           </Button>
         </div>
       )}
+      </TabPanel>
     </div>
   );
 }

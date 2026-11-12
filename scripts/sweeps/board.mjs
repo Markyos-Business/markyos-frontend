@@ -10,6 +10,9 @@ await assertServerUp(BASE, ["/studio/board"]);
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+// The interface defaults to Arabic. These English copy/ARIA assertions must
+// choose their language before login, which adopts the guest preference.
+await ctx.addInitScript(() => localStorage.setItem("markyos.lang", "en"));
 const page = await ctx.newPage();
 
 const fail = [];

@@ -25,6 +25,7 @@
     "sweep:contrast": "node scripts/sweeps/contrast.mjs",
     "sweep:drafts": "node scripts/sweeps/drafts.mjs",
     "sweep:moodboard": "node scripts/sweeps/moodboard.mjs",
+    "sweep:tabs": "node scripts/sweeps/tabs.mjs",
     "sweep:login-errors": "node scripts/sweeps/login-errors.mjs",
     "sweep:client-navigation": "node scripts/sweeps/client-navigation.mjs",
     "sweep:permissions": "node scripts/sweeps/permissions.mjs",

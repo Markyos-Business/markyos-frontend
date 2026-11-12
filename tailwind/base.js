@@ -1159,6 +1159,16 @@ export const baseStyles = [
       "outline-offset": "2px !important",
     },
   },
+  // Scrollable tab strips clip an outside ring. Reuse the kit's focus outline
+  // inside the button; selected solid tabs use their existing high-contrast ink.
+  {
+    '.mk-tabs > [role="tab"]:focus-visible': {
+      "outline-offset": "-2px !important",
+    },
+    '.mk-tabs[data-tabs-variant="icon"] > [aria-selected="true"]:focus-visible': {
+      "outline-color": "var(--accent-ink) !important",
+    },
+  },
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {

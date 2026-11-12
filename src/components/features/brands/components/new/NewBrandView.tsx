@@ -1,6 +1,6 @@
 "use client";
 
-import { MarkyosLogo, Tabs } from "@/components/ui";
+import { MarkyosLogo, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { START_TABS } from "../../constants";
 import type { NewBrandView as NewBrandViewProps } from "../../hooks/new/useNewBrandPage";
 import { ImportDropZone } from "../import/ImportDropZone";
@@ -11,6 +11,7 @@ import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /** Creating a brand: the bare chrome, the two ways to start, and the one in use. */
 export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewBrandViewProps) {
+  const tabIds = useTabIds();
   const { isAr } = useInterfaceLang();
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
@@ -23,7 +24,7 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
       </div>
 
       <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col justify-center px-[72px] py-10">
-        <Tabs
+        <Tabs {...tabIds}
           label={t("How to start", "طريقة البدء")}
           className="mb-space-10 self-start"
           tabs={START_TABS.map((tab) => ({ key: tab.key, label: isAr ? tab.arLabel : tab.label }))}
@@ -31,6 +32,7 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
           onChange={onMode}
         />
 
+        <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={mode}>
         {mode === "scratch" ? (
           <ScratchForm {...scratch} />
         ) : importer.stage === "idle" ? (
@@ -40,6 +42,7 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
         ) : importer.review ? (
           <ImportReview {...importer.review} />
         ) : null}
+        </TabPanel>
       </div>
 
       <div className="px-[72px] pb-10 text-caption text-text-faint">{t("Arabic and English are both on by default.", "العربية والإنجليزية مفعّلتان افتراضيًا.")}</div>

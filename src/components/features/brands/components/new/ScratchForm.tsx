@@ -29,7 +29,6 @@ export function ScratchForm({ title, description, name, onName, onSubmit }: Scra
           dir="auto"
           value={name}
           onChange={(e) => onName(e.target.value)}
-          autoFocus
           hint={`markyos.com/${slugify(name || "your-brand")}`}
         />
       </div>

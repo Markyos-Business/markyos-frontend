@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, Button, DataTable, EmptyState, Icon, StatusDot, Tag, useToast } from "@/components/ui";
+import { Avatar, Button, DataTable, EmptyState, Icon, StatusDot, Tag, TabPanel, useTabIds, useToast } from "@/components/ui";
 import type { DataColumn } from "@/components/ui";
 import { initialsFor } from "@/lib/utils";
 import { DEMO_USERS } from "../../constants";
@@ -10,6 +10,7 @@ import { Demo, GuideSection, StateTabs } from "./GuideParts";
 import type { DemoState } from "./GuideParts";
 
 const TableSection = ({ c }: { c: StyleGuideCopy }) => {
+  const tabIds = useTabIds();
   const [state, setState] = useState<DemoState>("ready");
   const [selected, setSelected] = useState<string[]>([]);
   const { showToast } = useToast();
@@ -46,7 +47,8 @@ const TableSection = ({ c }: { c: StyleGuideCopy }) => {
 
   return (
     <GuideSection id="table" title={c.sections.table}>
-      <StateTabs c={c} value={state} onChange={setState} label={c.sections.table} />
+      <StateTabs {...tabIds} c={c} value={state} onChange={setState} label={c.sections.table} />
+      <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={state} className="flex min-w-0 flex-col gap-5">
       <Demo name="DataTable">
         <DataTable
           label={t.label}
@@ -91,6 +93,7 @@ const TableSection = ({ c }: { c: StyleGuideCopy }) => {
           stickyHeader={false}
         />
       </Demo>
+      </TabPanel>
     </GuideSection>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ActionsDropdown, AppDate, AsyncStateView, Badge, Button, Faq, FilterChip, Icon, IconBadge, IconButton, ModalHeader, Skeleton, SolidBadge, Table, TableEmptyRow, TableErrorRow, TableLoadingRow, TablePagination, Tabs, Tooltip, cellClasses, rowClasses, useToast, type BadgeTone } from "@/components/ui";
+import { ActionsDropdown, AppDate, AsyncStateView, Badge, Button, Faq, FilterChip, Icon, IconBadge, IconButton, ModalHeader, Skeleton, SolidBadge, Table, TableEmptyRow, TableErrorRow, TableLoadingRow, TablePagination, TabPanel, Tabs, useTabIds, Tooltip, cellClasses, rowClasses, useToast, type BadgeTone } from "@/components/ui";
 import { Combobox, FileField, FilterSelectField, OtpField, PhoneField, RadioCardGroup, RadioField, RepeaterField, SearchableChecklist, SegmentedToggle, SelectField, SortControl, TextareaField, ToggleCardGroup, ToggleField, type RepeaterRow } from "@/components/form";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
 
@@ -27,6 +27,10 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 const UiGallery = () => {
   const [dir, setDir] = useState<"ltr" | "rtl">("ltr");
   const [tab, setTab] = useState("one");
+  const textTabIds = useTabIds();
+  const viewTabIds = useTabIds();
+  const verticalTabIds = useTabIds();
+  const [verticalTab, setVerticalTab] = useState("first");
   const [view, setView] = useState("list");
   const [city, setCity] = useState("");
   const [status, setStatus] = useState("");
@@ -132,17 +136,20 @@ const UiGallery = () => {
 
         <Section title="Tabs and accordion">
           <Tabs
+            {...textTabIds}
             label="Gallery tabs"
             tabs={[
               { key: "one", label: "Overview" },
               { key: "two", label: "Activity" },
+              { key: "unavailable", label: "Unavailable", disabled: true },
               { key: "three", label: "Settings" },
             ]}
             active={tab}
             onChange={setTab}
           />
-          <p className="text-body text-text-muted">Panel: {tab}</p>
+          <TabPanel id={textTabIds.panelId} tabsId={textTabIds.id} active={tab} className="text-body text-text-muted">Panel: {tab}</TabPanel>
           <Tabs
+            {...viewTabIds}
             label="View"
             variant="icon"
             tabs={[
@@ -152,6 +159,25 @@ const UiGallery = () => {
             active={view}
             onChange={setView}
           />
+          <TabPanel id={viewTabIds.panelId} tabsId={viewTabIds.id} active={view} className="text-body text-text-muted">View: {view}</TabPanel>
+          <div className="flex gap-space-6">
+            <Tabs
+              {...verticalTabIds}
+              label="Vertical keyboard tabs"
+              orientation="vertical"
+              variant="pill"
+              tabs={[
+                { key: "first", label: "First" },
+                { key: "unavailable", label: "Unavailable", disabled: true },
+                { key: "last", label: "Last" },
+              ]}
+              active={verticalTab}
+              onChange={setVerticalTab}
+            />
+            <TabPanel id={verticalTabIds.panelId} tabsId={verticalTabIds.id} active={verticalTab} className="min-w-0 flex-1 text-body text-text-muted">
+              Panel: {verticalTab}. Arrow keys activate tabs; Home and End jump to the ends. Unavailable is disabled.
+            </TabPanel>
+          </div>
           <Faq
             items={[
               { question: "What is Markyos?", answer: "A studio for brand guidelines." },

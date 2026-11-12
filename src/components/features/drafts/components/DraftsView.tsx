@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyHint, Tabs } from "@/components/ui";
+import { EmptyHint, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import type { Draft } from "@/types";
 import type { DraftsTab } from "../hooks/useDraftsPage";
 import { DraftCard } from "./DraftCard";
@@ -18,6 +18,7 @@ type DraftsViewProps = {
 
 /** The queue: what's waiting, what's decided, one card each. */
 export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept, onReject }: DraftsViewProps) {
+  const tabIds = useTabIds();
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
     <div className="flex min-h-0 max-w-[860px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
@@ -31,7 +32,7 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
         </p>
       </div>
 
-      <Tabs
+      <Tabs {...tabIds}
         variant="pill"
         label={isAr ? "المسودات" : "Drafts"}
         active={tab}
@@ -42,6 +43,7 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
         ]}
       />
 
+      <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={tab}>
       {shown.length === 0 ? (
         <EmptyHint>
           {tab === "pending"
@@ -55,6 +57,7 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
           ))}
         </div>
       )}
+      </TabPanel>
     </div>
   );
 }

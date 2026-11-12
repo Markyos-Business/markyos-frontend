@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChartCard, EmptyState } from "@/components/ui";
+import { ChartCard, EmptyState, TabPanel, useTabIds } from "@/components/ui";
 import type { StyleGuideCopy } from "../../constants";
 import { Demo, GuideSection, StateTabs } from "./GuideParts";
 import type { DemoState } from "./GuideParts";
@@ -16,6 +16,7 @@ const VALUES = [
 ];
 
 const ChartsSection = ({ c }: { c: StyleGuideCopy }) => {
+  const tabIds = useTabIds();
   const [state, setState] = useState<DemoState>("ready");
   const data = c.chart.months.map((label, i) => ({ label, values: VALUES[i] }));
   const shared = {
@@ -29,7 +30,8 @@ const ChartsSection = ({ c }: { c: StyleGuideCopy }) => {
 
   return (
     <GuideSection id="charts" title={c.sections.charts}>
-      <StateTabs c={c} value={state} onChange={setState} label={c.sections.charts} />
+      <StateTabs {...tabIds} c={c} value={state} onChange={setState} label={c.sections.charts} />
+      <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={state} className="flex min-w-0 flex-col gap-5">
       <div className="grid gap-5 lg:grid-cols-2">
         <Demo name="ChartCard · bar">
           <ChartCard {...shared} kind="bar" title={c.chart.title} label={c.chart.title} />
@@ -41,6 +43,7 @@ const ChartsSection = ({ c }: { c: StyleGuideCopy }) => {
       <Demo name="ChartCard · area">
         <ChartCard {...shared} kind="area" title={c.chart.title} label={c.chart.title} height={260} />
       </Demo>
+      </TabPanel>
     </GuideSection>
   );
 };

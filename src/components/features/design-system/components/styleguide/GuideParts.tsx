@@ -30,11 +30,11 @@ const Demo = ({ name, children, className = "" }: DemoProps) => (
   </div>
 );
 
-type StateTabsProps = { c: StyleGuideCopy; value: DemoState; onChange: (state: DemoState) => void; label: string };
+type StateTabsProps = { c: StyleGuideCopy; value: DemoState; onChange: (state: DemoState) => void; label: string; id: string; panelId: string };
 
 /** Ready / Loading / Empty / Error, for the components that load data. */
-const StateTabs = ({ c, value, onChange, label }: StateTabsProps) => (
-  <Tabs
+const StateTabs = ({ c, value, onChange, label, id, panelId }: StateTabsProps) => (
+  <Tabs id={id} panelId={panelId}
     variant="pill"
     label={label}
     active={value}

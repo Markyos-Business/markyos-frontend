@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, Tabs, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, TabPanel, Tabs, useTabIds, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay, publicUrl, sendForm } from "@/components/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../../constants";
 import { useDiscoveryFeed } from "../../hooks/discovery/useDiscoveryFeed";
@@ -29,6 +29,7 @@ const formHref = (slug: string, form: FeedForm) => `/w/${slug}/forms/${form.id}/
  * it is the point) and the notes from calls. The analysis reads both.
  */
 export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) {
+  const tabIds = useTabIds();
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { data, error, loading, reload } = useDiscoveryFeed(brandId);
   const router = useRouter();
@@ -76,7 +77,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
 
       <section className="mk-surface flex flex-col rounded-card bg-surface-1">
         <div className="flex flex-wrap items-center justify-between gap-space-5 px-space-8 pt-space-8 pb-space-5">
-          <Tabs
+          <Tabs {...tabIds}
             label={t("Discovery", "الاستكشاف")}
             tabs={[
               { key: "questionnaires", label: `${t("Questionnaire", "الاستبيان")} ${forms.length}` },
@@ -99,6 +100,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
           </div>
         </div>
 
+        <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={section}>
         {loading && !data ? (
           loadingRows
         ) : section === "questionnaires" ? (
@@ -137,6 +139,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
             ))}
           </Stagger>
         )}
+        </TabPanel>
       </section>
 
       <section className="mk-surface flex flex-wrap items-center justify-between gap-space-5 rounded-card bg-surface-1 p-space-8">

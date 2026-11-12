@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type DragEvent } from "react";
-import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, Tabs, useDialog } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, Tabs, useTabIds, tabButtonId, useDialog } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/useFormEditor";
 import { defaultConfig } from "../../utils/defaults";
@@ -46,6 +46,7 @@ const flatten = (form: DiscoveryForm): Placed[] => {
  * refuse.
  */
 export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
+  const tabIds = useTabIds();
   const editor = useFormEditor(formId);
   const { form, run } = editor;
   const { confirm } = useDialog();
@@ -159,7 +160,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
           </div>
         </div>
         {both && (
-          <Tabs
+          <Tabs {...tabIds}
             label={t("Edit in", "التحرير بـ")}
             tabs={[
               { key: "en", label: "English" },
@@ -175,6 +176,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </Button>
       </div>
 
+      <div id={tabIds.panelId} role={both ? "tabpanel" : undefined} aria-labelledby={both ? tabButtonId(tabIds.id, mode) : undefined} tabIndex={both ? 0 : undefined} className="flex min-w-0 flex-col gap-5">
       <AlertBanner message={editor.error} />
       {readOnly ? (
         <AlertBanner message={t("This questionnaire was submitted. Reopen it from its answers to change questions.", "سُلِّم هذا الاستبيان. أعد فتحه من صفحة الإجابات لتعديل الأسئلة.")} />
@@ -331,6 +333,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
             <p className="text-body text-text-muted">{t("Select a question to see its settings.", "اختر سؤالًا لعرض إعداداته.")}</p>
           )}
         </aside>
+      </div>
       </div>
     </div>
   );

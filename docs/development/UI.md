@@ -149,7 +149,7 @@ browser-tested for this documentation task.
 | Grouped content | [cards](../../src/components/ui/card), `Section` | Reuse the established header/body/action arrangement. |
 | Fields | [form fields](../../src/components/form/fields) | `InputField`, `TextareaField`, selects, checkboxes; compact variants for dense inspectors. |
 | Upload/color/choice input | [form](../../src/components/form) | Reuse upload, color, radio-card, toggle, and repeater controls rather than feature-specific copies. |
-| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filters) | Keep selection visible; avoid encoding state through color alone. |
+| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filters) | Use `useTabIds()` with `Tabs` and `TabPanel`; keep selection visible and give every row an accessible name. |
 | Loading | [loading](../../src/components/ui/loading) | Skeletons should match the pending content's shape. |
 | Empty/error | [empty](../../src/components/ui/empty) | Distinguish no records from no matching results and failed loading. |
 | Overlays | [overlays](../../src/components/ui/overlays) | Reuse modal/dialog, toast, and dismissal behavior. |
@@ -219,3 +219,15 @@ Before shipping a UI change:
   even though Prisma is not the active application persistence layer.
 - Run the relevant browser sweep/E2E test for changed behavior. Audits check
   selected contracts; passing them is not a complete accessibility assessment.
+
+### Keyboard tabs
+
+Use shared `Tabs` with `useTabIds()` and a matching `TabPanel` (`id={ids.panelId}`, `tabsId={ids.id}`, `active={active}`). Every tab points to the changing panel; its label names that panel. Builder tool `Segments` uses the same navigation hook when `asTabs` is enabled. Ordinary segmented settings remain buttons.
+
+These controls activate immediately on arrow movement because their panels update locally. Horizontal arrows follow the rendered LTR/RTL direction; vertical groups use Up/Down. Home/End select the first/last enabled tab, arrows wrap and skip disabled items, and Tab leaves the group. Keep one tab in the page tab order. Do not autofocus newly mounted panel inputs: this steals focus during arrow navigation. For future panels that require slow network work, explicitly design manual activation rather than silently changing this contract.
+
+Keep the inset focus outline on scrolling rows; a positive outline offset is clipped by their overflow container. Solid selected icon tabs use the existing accent-ink focus color. Verify keyboard scrolling at 375px and both directions. Run `npm run sweep:tabs` against a browser-only development server with `NEXT_PUBLIC_UI_GALLERY=1`; see the script header for environment variables. Custom legacy tablists are not automatically covered by this primitive.
+
+### Inline guideline editing
+
+`EditableText` requires a `label` describing the field, independently of its value and visual placeholder. It exposes `aria-multiline` from the editing mode. Supply localized field purpose and block context (for example “Quote: Quote” or “Metric: Metric value”); sample values such as “100%” are not labels. Section heading and guidance wrappers supply interface-language names. Published views retain ordinary text semantics. New block kinds must provide a meaningful label when adding an inline editor.

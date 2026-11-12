@@ -1,9 +1,11 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Icon } from "../primitives/Icon";
+import { useTabNavigation } from "./useTabNavigation";
+import { tabButtonId, type TabOrientation } from "./tabNavigation";
 
-type TabItem<T extends string = string> = { key: T; label: string; icon?: string };
+type TabItem<T extends string = string> = { key: T; label: string; icon?: string; disabled?: boolean };
 
 type TabsVariant = "text" | "icon" | "pill";
 
@@ -21,6 +23,10 @@ type TabsProps<T extends string> = {
    */
   variant?: TabsVariant;
   className?: string;
+  id: string;
+  /** ID of the changing content region, when this row controls a panel. */
+  panelId: string;
+  orientation?: TabOrientation;
 };
 
 /**
@@ -54,40 +60,45 @@ const looks: Record<TabsVariant, { base: string; on: string; off: string; indica
  * first time, so a page never opens with it gliding. The row scrolls sideways
  * when it outgrows its container.
  */
-const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text", className = "" }: TabsProps<T>) => {
+const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text", className = "", id, panelId, orientation = "horizontal" }: TabsProps<T>) => {
   const look = looks[variant];
-  const row = useRef<HTMLDivElement>(null);
-  const [pill, setPill] = useState<{ x: number; width: number; moved: boolean } | null>(null);
+  const groupId = id;
+  const { row, tabProps } = useTabNavigation({ tabs, active, onChange, orientation });
+  const [pill, setPill] = useState<{ x: number; y: number; width: number; height: number; moved: boolean } | null>(null);
 
   useLayoutEffect(() => {
     if (!look.indicator) return;
     const el = row.current?.querySelector<HTMLElement>('[aria-selected="true"]');
     if (!el) return;
-    const place = () => setPill((prev) => ({ x: el.offsetLeft, width: el.offsetWidth, moved: prev !== null }));
+    const place = () => setPill((prev) => ({ x: el.offsetLeft, y: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight, moved: prev !== null }));
     place();
     const ro = new ResizeObserver(place);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [active, look.indicator, tabs.length]);
+  }, [active, look.indicator, tabs.length, orientation, row]);
 
   return (
-    <div ref={row} role="tablist" aria-label={label} className={`relative flex items-center gap-space-3 overflow-x-auto ${className}`}>
+    <div ref={row} id={groupId} role="tablist" aria-label={label} aria-orientation={orientation} data-tabs-variant={variant} className={`mk-tabs relative flex gap-space-3 ${orientation === "vertical" ? "flex-col items-stretch overflow-y-auto" : "items-center overflow-x-auto"} ${className}`}>
       {look.indicator && pill && (
         <span
           aria-hidden
-          className={`pointer-events-none absolute start-0 top-0 h-full ${look.indicator} ${pill.moved ? "transition-[translate,width] duration-base ease-standard" : ""}`}
+          className={`pointer-events-none absolute start-0 top-0 ${look.indicator} ${pill.moved ? "transition-[translate,width,height] duration-base ease-standard" : ""}`}
           // Measured from the row's left edge, so a physical offset is right in both directions.
-          style={{ left: 0, insetInlineStart: "auto", translate: `${pill.x}px 0`, width: pill.width }}
+          style={{ left: 0, insetInlineStart: "auto", translate: `${pill.x}px ${pill.y}px`, width: pill.width, height: pill.height }}
         />
       )}
-      {tabs.map(({ key, label: name, icon }) => (
+      {tabs.map(({ key, label: name, icon, disabled }) => (
         <button
           key={key}
           type="button"
           role="tab"
-          aria-selected={active === key}
+          id={tabButtonId(groupId, key)}
+          aria-controls={panelId}
+          aria-selected={active === key && !disabled}
+          disabled={disabled}
+          {...tabProps(key)}
           onClick={() => onChange(key)}
-          className={`relative flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] ${look.base} ${
+          className={`relative flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] disabled:cursor-not-allowed disabled:text-text-disabled ${look.base} ${
             active === key ? look.on : look.off
           } ${active === key && look.indicator && !pill ? look.indicator /* before the first measure */ : ""}`}
         >
