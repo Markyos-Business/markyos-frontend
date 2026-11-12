@@ -3,7 +3,7 @@
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
-import { roleOn } from "@/lib/data/access";
+import { capabilitiesOn } from "@/lib/data/access";
 import type { TeamRole } from "@/types";
 import { PAGE_SECTION } from "../constants";
 
@@ -15,8 +15,9 @@ export function useTeamPage(slug: string) {
   if (!page) return null;
   const { workspace: ws, isAr } = page;
 
-  const myRole: TeamRole = roleOn(ws, state.session) ?? "viewer";
-  const canGovern = myRole === "owner";
+  const capabilities = capabilitiesOn(ws, state.session);
+  const myRole: TeamRole = capabilities.role ?? "viewer";
+  const { canGovern, canEdit } = capabilities;
   /*
    * Editor seats, by the owner's account type (constants/accountTypes.ts).
    * Only owners change the team, so the signed-in account is the owner here.
@@ -45,6 +46,7 @@ export function useTeamPage(slug: string) {
       isAr,
       myRole,
       canGovern,
+      canEdit,
       editorsFull,
       editorsFullNote,
       actorName: state.session?.name || state.session?.email || "You",

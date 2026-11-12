@@ -9,7 +9,7 @@ import { SignOffSection } from "./sign-off/SignOffSection";
 
 /** A brand's people, its client sign-off, its approval queue and its saved versions. */
 export function TeamView(view: TeamPageView) {
-  const { ws, isAr, myRole, canGovern, actorName } = view;
+  const { ws, isAr, myRole, canGovern, canEdit, actorName } = view;
   return (
     <div className="flex min-h-0 max-w-[820px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
       <div>
@@ -36,8 +36,8 @@ export function TeamView(view: TeamPageView) {
       </div>
       <TeamSection {...view} />
       <SignOffSection ws={ws} canGovern={canGovern} isAr={isAr} />
-      <ApprovalSection ws={ws} canGovern={canGovern} canPropose={myRole === "owner" || myRole === "editor"} isAr={isAr} />
-      <VersionHistorySection ws={ws} isAr={isAr} actorName={actorName} />
+      <ApprovalSection ws={ws} canGovern={canGovern} canPropose={canEdit} isAr={isAr} />
+      <VersionHistorySection ws={ws} isAr={isAr} actorName={actorName} canEdit={canEdit} />
     </div>
   );
 }

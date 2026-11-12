@@ -10,13 +10,14 @@ import { ROLES, ROLE_LABELS } from "../../constants";
 type InviteMemberFormProps = {
   ws: Workspace;
   isAr: boolean;
+  canGovern: boolean;
   editorsFull: boolean;
   editorsFullNote: string;
   onDone: () => void;
 };
 
 /** Adds someone to the brand's team with a role. */
-export function InviteMemberForm({ ws, isAr, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
+export function InviteMemberForm({ ws, isAr, canGovern, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { addTeamMember } = useApp();
   const { showToast } = useToast();
@@ -28,13 +29,15 @@ export function InviteMemberForm({ ws, isAr, editorsFull, editorsFullNote, onDon
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (!canGovern || !name.trim() || !email.trim()) return;
     addTeamMember(ws.id, name.trim(), email.trim(), inviteRole);
     setName("");
     setEmail("");
     onDone();
     showToast(t("Team member added.", "أُضيف عضو إلى الفريق."), "success");
   }
+
+  if (!canGovern) return null;
 
   return (
     <form onSubmit={submit} className="mk-surface flex flex-col gap-2.5 rounded-card bg-surface-2 p-4">

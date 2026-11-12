@@ -4,17 +4,20 @@ import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import type { TopBarTab } from "@/components/layout";
+import { capabilitiesOn } from "@/lib/data/access";
 import { PAGE_SECTION, STRATEGY_TABS, type StrategyMode, type StrategyTab } from "../constants";
 
 /** The strategy page: the section being edited, edit or read mode, and which sections are blank. */
 export function useStrategyPage(slug: string) {
-  const { uiLang } = useApp();
+  const { uiLang, state } = useApp();
   const page = useBrandPage(slug);
   const [tab, setTab] = useState<StrategyTab>("purpose");
-  const [mode, setMode] = useState<StrategyMode>("edit");
+  const [requestedMode, setMode] = useState<StrategyMode>("edit");
   const [importOpen, setImportOpen] = useState(false);
   if (!page) return null;
   const { workspace: ws, isAr } = page;
+  const { canEdit } = capabilitiesOn(ws, state.session);
+  const mode = canEdit ? requestedMode : "read";
 
   /* Which language of the brand's strategy is being *edited*.
      It follows the interface language, which is what the chrome toggle used to
@@ -67,8 +70,12 @@ export function useStrategyPage(slug: string) {
       tabs: mode === "edit" ? tabs : undefined,
       width: "full" as const,
     },
-    actions: { ws, isAr, mode, onMode: setMode, onImport: () => setImportOpen(true) },
-    importOpen,
+    actions: {
+      ws, isAr, mode, canEdit,
+      onMode: (next: StrategyMode) => { if (canEdit) setMode(next); },
+      onImport: () => { if (canEdit) setImportOpen(true); },
+    },
+    importOpen: canEdit && importOpen,
     onCloseImport: () => setImportOpen(false),
     edit: { ws, isAr, lang, tab, onTab: setTab, emptyTabs },
   };

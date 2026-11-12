@@ -7,7 +7,8 @@ import type { StrategyPageState } from "../../hooks/useStrategyPage";
 import { TranslateStrategy } from "../translate/TranslateStrategy";
 
 /** The top bar's strategy actions: share, translate, edit or read, import. */
-export function StrategyActions({ ws, isAr, mode, onMode, onImport }: StrategyPageState["actions"]) {
+export function StrategyActions({ ws, isAr, mode, canEdit, onMode, onImport }: StrategyPageState["actions"]) {
+  if (!canEdit) return null;
   return (
     <div className="flex items-center gap-2">
       {/* Share sits in the top bar, in both modes: sharing is a thing you

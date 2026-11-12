@@ -5,6 +5,8 @@ import { useApp } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
 import { AppSidebar, SidebarItem } from "./AppSidebar";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
+import { roleOn } from "@/lib/data/access";
+import { canOpenBrandPage, publishedGuidelineHref } from "@/lib/data/brandNavigation";
 
 interface NavItem {
   key: string;
@@ -41,8 +43,12 @@ const GOVERN_NAV: NavItem[] = [
 export function Sidebar({ workspace }: { workspace: Workspace }) {
   const pathname = usePathname();
   const base = `/w/${workspace.slug}`;
-  const { uiLang } = useApp();
+  const { uiLang, state } = useApp();
   const isAr = uiLang(workspace) === "ar";
+  const role = roleOn(workspace, state.session);
+  const isClient = role === "client";
+  const reviewHref = isClient ? publishedGuidelineHref(workspace) : null;
+  const available = (item: NavItem) => canOpenBrandPage(role, `${base}${item.href}`, workspace.slug);
 
   const filledSlots = Object.values(workspace.logo).filter((s) => s.phase === "attached").length;
 
@@ -81,7 +87,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
 
   return (
     <AppSidebar
-      label={isAr ? "تنقل العلامة" : "Brand"}
+      label={isClient ? (isAr ? "مراجعة العلامة" : "Brand review") : (isAr ? "تنقل العلامة" : "Brand")}
       title={workspace.name}
       titleHref="/brands"
       storageKey={SIDEBAR_RAILS.studio}
@@ -96,10 +102,21 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       // canvas worth looking at.
       rootProps={{ "data-studio-nav": "" }}
       sections={[
-        { key: "book", label: isAr ? "دليل الهوية" : "Brand book", items: BOOK_NAV.map(toItem) },
-        { key: "govern", label: isAr ? "الحوكمة" : "Governance", items: GOVERN_NAV.map(toItem) },
+        { key: "book", label: isAr ? "دليل الهوية" : "Brand book", items: BOOK_NAV.filter(available).map(toItem) },
+        { key: "govern", label: isAr ? "الحوكمة" : "Governance", items: GOVERN_NAV.filter(available).map(toItem) },
       ]}
+      footerSlot={isClient && !reviewHref ? (
+        <p className="px-space-2 text-caption text-text-muted">
+          {isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}
+        </p>
+      ) : undefined}
       footer={[
+        ...(reviewHref ? [{
+          key: "review-guideline",
+          label: isAr ? "مراجعة الدليل" : "Review guideline",
+          icon: "eye",
+          href: reviewHref,
+        }] : []),
         {
           key: "settings",
           label: isAr ? "الإعدادات" : "Settings",

@@ -95,6 +95,7 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // Accounts and sessions go to the backend when one is configured; see the
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, api, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
+import { classifyLoginFailure } from "@/components/features/auth/utils/loginFailure";
 import * as authApi from "@/components/features/auth/services/authService";
 import type {
   AuthOutcome,
@@ -1028,7 +1029,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           await pullServerWorkspaces();
           return {};
         } catch (err) {
-          return { error: apiMessage(err) };
+          return { error: apiMessage(err), loginFailure: classifyLoginFailure(err) };
         }
       }
       const account = findByEmail(email);
@@ -1037,10 +1038,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // have accounts here, and it does not help the person who simply
       // mistyped one of the two.
       const WRONG = "That email and password don't match an account.";
-      if (!account) return { error: WRONG };
+      if (!account) return { error: WRONG, loginFailure: { kind: "invalidCredentials" } };
 
       const { ok, needsUpgrade } = await verifyPassword(password, account.password);
-      if (!ok) return { error: WRONG };
+      if (!ok) return { error: WRONG, loginFailure: { kind: "invalidCredentials" } };
 
       // The one moment the plain password is in hand and verified — so it is
       // the only chance to re-hash a record left in the clear by an older

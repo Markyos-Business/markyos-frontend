@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildInitialWorkspaces } from "./mockData";
-import type { Session, TeamMember, Workspace } from "../../types";
-import { canEdit, roleOn } from "./access";
+import type { Session, TeamMember, TeamRole, Workspace } from "../../types";
+import { canEdit, capabilitiesOn, roleOn } from "./access";
 
 const session = (accountId: string, email: string): Session =>
   ({ accountId, email, name: "", startedAt: 0, remember: true }) as Session;
@@ -38,5 +38,24 @@ describe("canEdit", () => {
       false,
       false,
     ]);
+  });
+});
+
+
+describe("brand capabilities", () => {
+  it.each([
+    ["owner", true, true],
+    ["editor", true, false],
+    ["viewer", false, false],
+    ["client", false, false],
+    [null, false, false],
+  ] as const)("offers the right actions to %s", (role, editable, governance) => {
+    const ws = brand(role && role !== "owner" ? [{ email: "member@studio.com", role: role as TeamRole }] : []);
+    const actor = session(role === "owner" ? "owner-1" : "member-1", "member@studio.com");
+    expect(capabilitiesOn(ws, actor)).toEqual({ role, canEdit: editable, canGovern: governance });
+  });
+
+  it("offers no write actions when signed out", () => {
+    expect(capabilitiesOn(brand([]), null)).toEqual({ role: null, canEdit: false, canGovern: false });
   });
 });

@@ -77,11 +77,13 @@ export type PasswordSetup = { email: string; emailSent: boolean };
 /** What `POST /auth/signup/` answers: the account exists, the link is on its way. */
 export type SignupResponse = { requiresPasswordSetup: true } & PasswordSetup;
 
-/**
- * What signup and login resolve to in the store: done (`{}`), an error, the
- * emailed code to enter (`verify`), or the emailed link to follow (`setup`).
- */
-export type AuthOutcome = { error?: string; verify?: PendingVerification; setup?: PasswordSetup };
+/** Locale-neutral failure of password sign-in; no backend prose as a copy key. */
+export type LoginFailure =
+  | { kind: "invalidCredentials" | "network" | "unavailable" | "unexpected" }
+  | { kind: "rateLimited"; retryAfterSeconds?: number };
+
+/** Signup/login outcomes. The password form renders loginFailure with the current AUTH_COPY. */
+export type AuthOutcome = { error?: string; loginFailure?: LoginFailure; verify?: PendingVerification; setup?: PasswordSetup };
 
 /** A password set from an emailed link: signed in, and whether it was a new account's first. */
 export type PasswordSetResult = { error?: string; firstTime?: boolean };

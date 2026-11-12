@@ -1,5 +1,6 @@
 import { ApiError, api, setAccessToken } from "@/lib/api/client";
 import type { Account, AccountType, Lang } from "@/types";
+import { classifyLoginFailure, LoginFailureError } from "../utils/loginFailure";
 import type {
   ApiAccount,
   CodePurpose,
@@ -74,6 +75,8 @@ export async function login(
   const res = await api<{ access?: string; requires_otp?: boolean } | VerificationRequired>("/auth/login/", {
     method: "POST",
     body: { email, password, remember },
+  }).catch((error: unknown) => {
+    throw new LoginFailureError(classifyLoginFailure(error, true), error);
   });
   // Signed up but never confirmed: the server has emailed a fresh code.
   if ("requiresVerification" in res) return res;

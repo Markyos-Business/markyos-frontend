@@ -1,25 +1,90 @@
-# CODING AGENTS: READ THIS FIRST
+# Markyos platform
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+The bilingual Markyos application for managing brand strategy, visual identity,
+discovery, guideline sites, and client review. This is the Next.js frontend;
+`../markyos-backend` provides the Django API and `../landing-frontend` is the
+separately deployed marketing website and Payload CMS.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Development documentation
 
-## What you should do — IMPORTANT
+Start with these guides before adding or changing a feature. They describe the
+current implementation, distinguish browser-only behavior from API-backed
+behavior, and identify incomplete integrations and inconsistent older guidance.
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+| Guide | Use it for |
+| --- | --- |
+| [UI documentation](docs/development/UI.md) | Colors, typography, spacing, components, forms, tables, navigation, responsive behavior and accessibility. |
+| [UX documentation](docs/development/UX.md) | Roles, journeys, route flows, recipient experiences, loading/empty/error/success states and save feedback. |
+| [Functional documentation](docs/development/FUNCTIONAL.md) | Modules, permissions, business rules, persistence, concurrency, workflows, integrations and implementation limits. |
 
-**Read `project/Markyos MVP Screens.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+Last reviewed: 12 November 2026. Update the relevant guide in the same change as
+its behavior. Runtime code takes precedence when older docs or design exports
+disagree; record the discrepancy rather than silently treating a prototype as
+a completed feature.
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Run locally
 
-## About the design files
+Use a Node version supported by the installed Next.js and Prisma packages.
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+```sh
+npm ci
+npm run dev
+```
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+Without `NEXT_PUBLIC_API_URL`, the app uses browser-local demo accounts/data.
+This mode is useful for UI work but does not provide shared accounts, portable
+client links, real payment, or server authorization.
 
-## Bundle contents
+For the integrated application, configure the frontend's API base and start the
+Django service from its own repository:
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Markyos MVP Screen Inventory` project files (HTML prototypes, assets, components)
+```sh
+# Example frontend .env.local value; restart/rebuild after changing it.
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
+
+Follow the [backend setup](../markyos-backend/README.md) for its environment,
+database, migrations and provider configuration. CORS must allow the frontend
+origin and session-cookie settings must match the deployment. Do not place
+Stripe, mail, Google client secrets or LLM keys in public frontend variables.
+
+`NEXT_PUBLIC_UI_GALLERY=1` enables `/dev/components`, `/dev/motion` and the
+`/design-system` reference route. They return 404 without the flag.
+
+## Validation
+
+```sh
+npm run test             # Vitest unit tests
+npm run check            # types, lint, Prisma schema, tests and UI audits
+npm run e2e              # integrated Playwright scenarios; see setup below
+```
+
+`check` loads `prisma.config.ts`, which requires `DATABASE_URL` and
+`SHADOW_DATABASE_URL`. Prisma is currently a scaffold, not the platform's live
+persistence layer; Django stores API-backed application data. Do not run Prisma
+migrations against an unrelated database just to satisfy a validation command.
+
+[E2E setup and scenarios](e2e/README.md) describe the backend Python environment,
+ports, test analysis fake and provider mocks. Browser sweeps are separate
+`sweep:*` scripts in [package.json](package.json); use the relevant sweep when
+changing layout or interaction behavior.
+
+## Code and supporting references
+
+- [Routes](src/app) compose [feature modules](src/components/features), shared
+  [UI primitives](src/components/ui), [forms](src/components/form) and
+  [layout](src/components/layout).
+- [AppContext](src/contexts/AppContext.tsx) coordinates the client state and
+  [data adapters](src/lib/data/adapters); [API client](src/lib/api/client.ts)
+  centralizes authenticated requests and refresh.
+- [UI implementation reference](docs/ui/README.md),
+  [template token contract](docs/token-contract.md), and
+  [integration status](docs/INTEGRATION-STATUS.md) provide narrower background.
+- [Billing](../markyos-backend/docs/billing.md),
+  [approvals](../markyos-backend/docs/approvals.md), and
+  [sign-offs](../markyos-backend/docs/signoffs.md) document dedicated API rules.
+
+`project/` and `chats/` contain the original design-handoff material. They are
+historical design context, not the runtime application or an instruction to
+rebuild already implemented screens. The sibling `markyos-brand` folder contains
+the supplied originals; runtime assets are in [public/brand](public/brand).

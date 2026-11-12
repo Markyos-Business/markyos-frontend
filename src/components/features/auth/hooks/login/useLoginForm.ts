@@ -3,10 +3,11 @@
 import { useState, type FormEvent } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { EMAIL_RE } from "../../constants";
-import type { PendingVerification } from "../../types";
+import type { LoginFailure, PendingVerification } from "../../types";
+import { classifyLoginFailure, loginFailureMessage } from "../../utils/loginFailure";
 import { useAuthLang } from "../shared/useAuthLang";
 
-type LoginErrors = { email?: string; password?: string; form?: string };
+type LoginValidation = { email?: boolean; password?: boolean };
 
 /** The login form's fields, its checks, and the sign-in itself. */
 export function useLoginForm() {
@@ -15,7 +16,8 @@ export function useLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
-  const [errors, setErrors] = useState<LoginErrors>({});
+  const [validation, setValidation] = useState<LoginValidation>({});
+  const [failure, setFailure] = useState<LoginFailure | null>(null);
   const [busy, setBusy] = useState(false);
   // Set when the account's email was never confirmed: the form gives way to
   // the code step, and the server has already emailed a fresh code.
@@ -25,18 +27,23 @@ export function useLoginForm() {
     e.preventDefault();
     if (busy) return;
 
-    const field: LoginErrors = {};
-    if (!EMAIL_RE.test(email.trim())) field.email = c.errors.email;
-    if (!password) field.password = c.errors.password;
-    setErrors(field);
+    const field: LoginValidation = {};
+    if (!EMAIL_RE.test(email.trim())) field.email = true;
+    if (!password) field.password = true;
+    setValidation(field);
+    setFailure(null);
     if (Object.keys(field).length > 0) return;
 
     setBusy(true);
-    const out = await login(email, password, remember);
-    setBusy(false);
-
-    if (out.error) setErrors({ form: out.error });
-    else if (out.verify) setPending(out.verify);
+    try {
+      const out = await login(email, password, remember);
+      if (out.error || out.loginFailure) setFailure(out.loginFailure ?? { kind: "unexpected" });
+      else if (out.verify) setPending(out.verify);
+    } catch (error) {
+      setFailure(classifyLoginFailure(error));
+    } finally {
+      setBusy(false);
+    }
   }
 
   const resetHref = `/reset${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`;
@@ -48,7 +55,11 @@ export function useLoginForm() {
     setPassword,
     remember,
     setRemember,
-    errors,
+    errors: {
+      email: validation.email ? c.errors.email : undefined,
+      password: validation.password ? c.errors.password : undefined,
+      form: failure ? loginFailureMessage(failure, c.errors) : undefined,
+    },
     busy,
     submit,
     resetHref,

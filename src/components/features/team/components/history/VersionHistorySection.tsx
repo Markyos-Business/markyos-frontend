@@ -11,10 +11,11 @@ type VersionHistorySectionProps = {
   ws: Workspace;
   isAr: boolean;
   actorName: string;
+  canEdit: boolean;
 };
 
 /** Saved versions of the brand's colours and type, and restoring one. */
-export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySectionProps) {
+export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionHistorySectionProps) {
   const { saveVersionSnapshot, restoreVersion } = useApp();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -22,6 +23,7 @@ export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySec
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
   function save() {
+    if (!canEdit) return;
     saveVersionSnapshot(ws.id, label.trim() || t("Untitled version", "إصدار بلا عنوان"), actorName);
     setLabel("");
     showToast(t("Version saved.", "حُفظ الإصدار."), "success");
@@ -30,6 +32,7 @@ export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySec
   // Restoring overwrites the live brand. It was a single click next to a list
   // of dates — the easiest way to lose an afternoon's work by aiming one row off.
   async function restore(v: Workspace["versionHistory"][number]) {
+    if (!canEdit) return;
     const ok = await confirm({
       title: isAr ? `استعادة "${v.label}"؟` : `Restore "${v.label}"?`,
       body: isAr
@@ -46,7 +49,7 @@ export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySec
 
   return (
     <Section title={t("Version history", "سجل الإصدارات")} icon="history">
-      <div className="flex items-end gap-2.5">
+      {canEdit && <div className="flex items-end gap-2.5">
         <InputField
           size="sm"
           value={label}
@@ -59,9 +62,9 @@ export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySec
         <Button variant="outline" size="sm" onClick={save}>
           {t("Save current as version", "حفظ الحالي كإصدار")}
         </Button>
-      </div>
+      </div>}
       {ws.versionHistory.length === 0 ? (
-        <EmptyHint>{t("No saved versions yet — save one before a risky edit so it's easy to undo.", "لا إصدارات محفوظة بعد. احفظ واحدًا قبل أي تعديل خطِر ليسهل التراجع.")}</EmptyHint>
+        <EmptyHint>{canEdit ? t("No saved versions yet — save one before a risky edit so it's easy to undo.", "لا إصدارات محفوظة بعد. احفظ واحدًا قبل أي تعديل خطِر ليسهل التراجع.") : t("No saved versions yet.", "لا إصدارات محفوظة بعد.")}</EmptyHint>
       ) : (
         <div className="flex flex-col gap-2">
           {ws.versionHistory.map((v) => (
@@ -70,7 +73,7 @@ export function VersionHistorySection({ ws, isAr, actorName }: VersionHistorySec
               label={v.label}
               hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colors"}`}
               right={
-                <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
+                canEdit && <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
                   {t("Restore", "استعادة")}
                 </Button>
               }

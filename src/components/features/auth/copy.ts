@@ -1,5 +1,12 @@
 import type { Lang } from "@/types/lang";
 
+function loginRetryDelay(seconds: number, lang: Lang) {
+  const minutes = seconds >= 90;
+  return new Intl.NumberFormat(lang, {
+    style: "unit", unit: minutes ? "minute" : "second", unitDisplay: "long", numberingSystem: "latn",
+  }).format(Math.ceil(seconds / (minutes ? 60 : 1)));
+}
+
 /**
  * Every word on the signed-out screens, in English and Arabic.
  *
@@ -38,6 +45,12 @@ const en = {
     resetCode: "Reset code",
   },
   errors: {
+    loginCredentials: "That email and password don't match an account.",
+    loginNetwork: "Can't reach Markyos. Check your connection and try again.",
+    loginUnavailable: "Sign-in is unavailable right now. Try again later.",
+    loginFailed: "Sign-in didn't go through. Try again.",
+    loginRateLimited: "Too many attempts. Try again shortly.",
+    loginRetryAfter: (seconds: number) => `Too many attempts. Try again in ${loginRetryDelay(seconds, "en")}.`,
     email: "Enter a valid email address.",
     password: "Enter your password.",
     name: "Tell us your name.",
@@ -214,6 +227,12 @@ const ar: AuthCopy = {
     resetCode: "رمز إعادة التعيين",
   },
   errors: {
+    loginCredentials: "بيانات تسجيل الدخول غير صحيحة. تحقّق من البريد الإلكتروني وكلمة المرور.",
+    loginNetwork: "تعذّر الاتصال بماركيوس. تحقّق من اتصالك وحاول مجددًا.",
+    loginUnavailable: "تسجيل الدخول غير متاح الآن. حاول مجددًا لاحقًا.",
+    loginFailed: "تعذّر تسجيل الدخول. حاول مجددًا.",
+    loginRateLimited: "محاولات كثيرة. حاول مجددًا بعد قليل.",
+    loginRetryAfter: (seconds: number) => `محاولات كثيرة. مدة الانتظار: ${loginRetryDelay(seconds, "ar")}. حاول بعدها مجددًا.`,
     email: "أدخل بريدًا إلكترونيًا صحيحًا.",
     password: "أدخل كلمة المرور.",
     name: "أدخل اسمك.",
