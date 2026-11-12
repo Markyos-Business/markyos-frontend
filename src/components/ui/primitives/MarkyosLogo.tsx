@@ -15,7 +15,13 @@ type MarkyosLogoProps = {
   hideBeta?: boolean;
 };
 
-const SRC = { mark: "/markyos-mark.svg", wordmark: "/markyos-wordmark.svg", lockup: "/markyos-lockup.svg" } as const;
+// Keep the artwork in public/brand, matching the landing frontend. Arabic
+// uses its own designer-supplied lockup; logos are never mirrored.
+const SRC = {
+  mark: "/brand/markyos-mark.svg",
+  wordmark: "/brand/markyos-wordmark.svg",
+  lockup: "/brand/markyos-lockup-en.svg",
+} as const;
 
 /**
  * The Markyos logo, wherever the product shows it, with the beta tag beside
@@ -24,7 +30,7 @@ const SRC = { mark: "/markyos-mark.svg", wordmark: "/markyos-wordmark.svg", lock
 const MarkyosLogo = ({ variant, className = "", isAr = false, hideBeta = false }: MarkyosLogoProps) => (
   <span className="inline-flex shrink-0 items-center gap-space-3">
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src={SRC[variant]} alt="Markyos" className={`shrink-0 [filter:var(--chrome-mark-invert)] ${className}`} />
+    <img src={variant === "lockup" && isAr ? "/brand/markyos-lockup-ar.svg" : SRC[variant]} alt={isAr ? "ماركيوس" : "Markyos"} className={`shrink-0 [filter:var(--chrome-mark-invert)] ${className}`} />
     {MARKYOS_BETA && !hideBeta && <BetaTag isAr={isAr} />}
   </span>
 );
