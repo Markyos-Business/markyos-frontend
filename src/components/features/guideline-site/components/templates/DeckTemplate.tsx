@@ -205,7 +205,7 @@ export function DeckTemplate(props: TemplateProps) {
               {ws.name}
             </span>
           )}
-          <h1
+          <h2
             dir="auto"
             style={at(GUTTER_WIDE, GUTTER_WIDE, {
               fontFamily: "var(--font-display)",
@@ -219,7 +219,7 @@ export function DeckTemplate(props: TemplateProps) {
             })}
           >
             {activePage ? (isAr ? activePage.arName : activePage.name) : t("Brand\nGuidelines", "دليل\nالهوية")}
-          </h1>
+          </h2>
           {markUrl && (
             <BrandMark
               src={markUrl}

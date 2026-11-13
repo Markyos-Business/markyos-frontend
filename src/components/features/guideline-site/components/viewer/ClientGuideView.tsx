@@ -144,6 +144,7 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
     <SignOffSurface enabled={!isPreview}>
     <BlockScopeProvider blocks={v.allBlocks}>
       <BrandFonts fonts={v.fonts} isAr={isAr}>
+        <h1 className="sr-only">{v.activePage ? (isAr ? v.activePage.arName || v.activePage.name : v.activePage.name) : `${ws.name} · ${isAr ? "دليل الهوية" : "Brand guideline"}`}</h1>
         <GuidelineMotion sectionIds={v.sections.map((s) => s.id)} />
         {ws.guidelineTemplate === "docs" ? (
           <DocsTemplate {...templateProps} />

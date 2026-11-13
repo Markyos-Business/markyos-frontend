@@ -140,7 +140,7 @@ export function CanvasFrame({
           className="flex items-center gap-2 text-[10.5px] font-semibold shrink-0 pt-1"
           style={{ color: "var(--text-faint)", letterSpacing: "0.04em" }}
         >
-          <span>{label}</span>
+          <span lang={isAr ? "ar" : "en"} style={{ letterSpacing: isAr ? "normal" : undefined }}>{label}</span>
           {/* Wrapped so the width reads as a number in both directions: inside
               an Arabic interface a bare "1200 px" can paint as "px 1200". */}
           <span dir="ltr" className="bidi-auto">{width}px</span>

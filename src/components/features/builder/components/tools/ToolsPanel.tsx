@@ -19,7 +19,7 @@ export function ToolsPanel(b: BuilderPageState) {
     `h-8 cursor-pointer rounded-full px-3 text-[12px] font-semibold ${on ? "bg-accent-soft text-accent-on-soft" : "bg-surface-1 text-text-muted"}`;
 
   return (
-    <div className="animate-fade-in flex w-[240px] shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto p-4 shadow-[inset_-1px_0_0_var(--hairline)]">
+    <div className="motion-safe:animate-fade-in flex w-[240px] shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto p-4 shadow-[inset_-1px_0_0_var(--hairline)]">
       {/* The way back out. The studio's own navigation is not rendered on this
           route, so the editor carries its own exit and names the brand you are
           inside: a full-screen mode with no visible way out is a trap. */}
@@ -48,7 +48,7 @@ export function ToolsPanel(b: BuilderPageState) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <span className="px-1 text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase">{isAr ? "الصفحات" : "Pages"}</span>
+        <span lang={isAr ? "ar" : "en"} className={`px-1 text-[10.5px] font-semibold ${isAr ? "tracking-normal" : "tracking-[0.08em]"} text-text-faint uppercase`}>{isAr ? "الصفحات" : "Pages"}</span>
         <div className="flex flex-wrap items-center gap-1.5">
           <button type="button" onClick={() => b.onPage(null)} className={pageChip(!activePage)}>
             {isAr ? "الرئيسية" : "Home"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { cloneElement, isValidElement, useId } from "react";
+import { cloneElement, isValidElement, useId, useLayoutEffect, useRef } from "react";
 import type { ReactElement, ReactNode } from "react";
 
 /**
@@ -44,6 +44,23 @@ type TooltipProps = {
  */
 const Tooltip = ({ content, children, side = "top", className = "" }: TooltipProps) => {
   const id = useId();
+  const bubble = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const place = () => {
+      const el = bubble.current;
+      if (!el) return;
+      el.style.setProperty("--tooltip-shift-x", "0px");
+      const r = el.getBoundingClientRect();
+      const shift = r.left < 16 ? 16 - r.left : r.right > innerWidth - 16 ? innerWidth - 16 - r.right : 0;
+      el.style.setProperty("--tooltip-shift-x", `${shift}px`);
+    };
+    place();
+    const directionChanges = new MutationObserver(place);
+    directionChanges.observe(document.documentElement, { attributes: true, attributeFilter: ["dir"], subtree: true });
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => { directionChanges.disconnect(); window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); };
+  }, [side, content]);
   const trigger = isValidElement(children)
     ? cloneElement(children as ReactElement<{ "aria-describedby"?: string }>, { "aria-describedby": id })
     : children;
@@ -52,8 +69,10 @@ const Tooltip = ({ content, children, side = "top", className = "" }: TooltipPro
       {trigger}
       <span
         id={id}
+        ref={bubble}
+        style={{ transform: "translateX(var(--tooltip-shift-x, 0px))" }}
         role="tooltip"
-        className={`pointer-events-none absolute z-dropdown w-56 rounded-lg bg-solid px-space-4 py-space-3 text-caption font-normal text-solid-ink opacity-0 shadow-pop transition-opacity duration-fast ease-out group-hover/tooltip:opacity-100 group-hover/tooltip:delay-tooltip group-focus-within/tooltip:opacity-100 group-focus-within/tooltip:delay-0 ${sides[side]}`}
+        className={`pointer-events-none absolute z-dropdown w-56 max-w-[calc(100vw-32px)] rounded-lg bg-solid px-space-4 py-space-3 text-caption font-normal text-solid-ink opacity-0 shadow-pop transition-opacity duration-fast ease-out group-hover/tooltip:opacity-100 group-hover/tooltip:delay-tooltip group-focus-within/tooltip:opacity-100 group-focus-within/tooltip:delay-0 ${sides[side]}`}
       >
         {content}
         <span aria-hidden className={`absolute border-4 border-transparent ${arrows[side]}`} />

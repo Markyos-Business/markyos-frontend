@@ -235,9 +235,9 @@ export function StudioAtlas(props: TemplateProps) {
       <div className="flex-1 min-w-0 flex flex-col">
         {activePage && (
           <div className="px-8 md:px-16 py-16 max-w-[980px]">
-            <h1 dir="auto" className="bidi-auto text-[38px] font-semibold tracking-tight leading-[1.15]" style={{ fontFamily: "var(--font-display)" }}>
+            <h2 dir="auto" className="bidi-auto text-[38px] font-semibold tracking-tight leading-[1.15]" style={{ fontFamily: "var(--font-display)" }}>
               {isAr ? activePage.arName : activePage.name}
-            </h1>
+            </h2>
           </div>
         )}
 

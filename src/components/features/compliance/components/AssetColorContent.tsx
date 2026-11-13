@@ -168,7 +168,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
       )}
 
       <div className="flex flex-col gap-2.5">
-        <h2 className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
+        <h2 className="text-[11px] font-medium uppercase" style={{ letterSpacing: isAr ? "normal" : ".08em", color: "var(--text-faint)" }}>
           {t("Past checks", "الفحوص السابقة")}
         </h2>
         {ws.complianceChecks.length === 0 ? (

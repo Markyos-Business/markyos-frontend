@@ -317,13 +317,13 @@ function Hero({
           style={{ fontFamily: "var(--font-display)", fontSize: "clamp(44px, 9vw, 110px)", color: heroText }}
         />
       ) : (
-        <h1
+        <h2
           dir="auto"
           className="bidi-auto font-semibold tracking-tight leading-[0.95]"
           style={{ fontFamily: "var(--font-display)", fontSize: "clamp(44px, 9vw, 110px)", color: heroText }}
         >
           {title}
-        </h1>
+        </h2>
       )}
       {/* The variable, not the raw prop. As text this has to follow whatever
           accent the section resolves to — a section given its own background

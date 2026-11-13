@@ -41,7 +41,7 @@ export function TypeLabView({ isAr, fontCss, anyUploaded, latin, arabic }: TypeL
       </div>
 
       <div className="mk-surface flex flex-col gap-3 rounded-card bg-surface-1 p-6">
-        <span className="text-[11px] font-medium uppercase tracking-[.08em] text-text-faint">{t("Side by side", "جنبًا إلى جنب")}</span>
+        <span lang={isAr ? "ar" : "en"} className={`text-[11px] font-medium uppercase ${isAr ? "tracking-normal" : "tracking-[.08em]"} text-text-faint`}>{t("Side by side", "جنبًا إلى جنب")}</span>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div
             dir="ltr"

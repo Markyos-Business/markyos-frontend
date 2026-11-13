@@ -8,7 +8,7 @@ const BASE = process.env.SWEEP_BASE ?? "http://localhost:3000";
 // rather than an empty board — see serverGuard.mjs.
 await assertServerUp(BASE, ["/studio/board"]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 // The interface defaults to Arabic. These English copy/ARIA assertions must
 // choose their language before login, which adopts the guest preference.

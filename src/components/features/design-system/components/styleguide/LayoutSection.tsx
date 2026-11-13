@@ -33,6 +33,7 @@ const LayoutSection = ({ c }: { c: StyleGuideCopy }) => (
 
     <Demo name="PageHeader">
       <PageHeader
+        headingLevel={3}
         breadcrumb={c.breadcrumb}
         title={c.pageTitle}
         description={c.pageDescription}

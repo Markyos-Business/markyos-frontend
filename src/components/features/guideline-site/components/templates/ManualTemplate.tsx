@@ -337,7 +337,7 @@ function Cover({
           <BrandMark src={markSrc} lightSrc={lightMarkSrc} alt="" onDark style={{ maxHeight: 54, maxWidth: 90 }} />
         )}
       </div>
-      <h1
+      <h2
         dir="auto"
         className="bidi-auto"
         style={{
@@ -353,7 +353,7 @@ function Cover({
         }}
       >
         {runningHead}
-      </h1>
+      </h2>
       <p dir="auto" className="bidi-auto mt-4 text-[15px]" style={{ opacity: 0.7 }}>
         {ws.name}
       </p>

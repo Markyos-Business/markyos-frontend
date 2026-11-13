@@ -278,9 +278,9 @@ export function StudioSignal(props: TemplateProps) {
 
       {activePage && (
         <div className="min-h-[56vh] flex flex-col items-center justify-center text-center px-8 gap-5">
-          <h1 dir="auto" className="bidi-auto font-semibold tracking-tight leading-[0.98]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 8vw, 92px)" }}>
+          <h2 dir="auto" className="bidi-auto font-semibold tracking-tight leading-[0.98]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 8vw, 92px)" }}>
             {isAr ? activePage.arName : activePage.name}
-          </h1>
+          </h2>
         </div>
       )}
 

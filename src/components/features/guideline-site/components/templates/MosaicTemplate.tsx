@@ -196,9 +196,9 @@ export function MosaicTemplate(props: TemplateProps) {
 
       <div className="flex-1 w-full max-w-[1240px] mx-auto px-5 md:px-8 py-6 md:py-8">
         {activePage && (
-          <h1 dir="auto" className="bidi-auto mb-6" style={gHero}>
+          <h2 dir="auto" className="bidi-auto mb-6" style={gHero}>
             {isAr ? activePage.arName : activePage.name}
-          </h1>
+          </h2>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start pb-24">

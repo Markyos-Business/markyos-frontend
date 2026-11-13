@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState, type DragEvent } from "react";
-import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, Tabs, useTabIds, tabButtonId, useDialog } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, TabPanel, Tabs, useTabIds, tabButtonId, useDialog } from "@/components/ui";
+import { useTabNavigation } from "@/components/ui/tabs/useTabNavigation";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/useFormEditor";
 import { defaultConfig } from "../../utils/defaults";
@@ -47,6 +48,7 @@ const flatten = (form: DiscoveryForm): Placed[] => {
  */
 export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
   const tabIds = useTabIds();
+  const sectionTabIds = useTabIds();
   const editor = useFormEditor(formId);
   const { form, run } = editor;
   const { confirm } = useDialog();
@@ -58,13 +60,19 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
 
   const placed = useMemo(() => (form ? flatten(form) : []), [form]);
 
+  const section = form?.sections.find((s) => s.id === sectionId) ?? form?.sections[0];
+  const { row: sectionRow, tabProps: sectionTabProps } = useTabNavigation({
+    tabs: (form?.sections ?? []).map((s) => ({ key: s.id })),
+    active: section?.id ?? "",
+    onChange: setSectionId,
+  });
+
   if (editor.loadError) return <EmptyState icon="exclamation-circle" title={t("Couldn't open this questionnaire", "تعذّر فتح الاستبيان")} description={editor.loadError} />;
-  if (!form) return <Skeleton className="h-96 w-full rounded-card" />;
+  if (!form || !section) return <Skeleton className="h-96 w-full rounded-card" />;
 
   const languages = form.languages;
   const both = languages.length === 2;
   const mode: EditMode = both ? (modeChoice ?? "both") : languages[0];
-  const section = form.sections.find((s) => s.id === sectionId) ?? form.sections[0];
   const selected = placed.find((p) => p.question.id === selectedId) ?? null;
   const locked = editRefusal(form.status, "structure") !== null;
   const readOnly = editRefusal(form.status, "wording") !== null;
@@ -197,28 +205,33 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </div>
 
         <div className="flex min-w-0 flex-col gap-5">
-          <div role="tablist" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-space-3">
-            {form.sections.map((s, i) => {
-              const on = s.id === section.id;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => setSectionId(s.id)}
-                  {...dropProps(null, s.id)}
-                  className={`flex h-control-sm items-center gap-space-3 rounded-lg px-space-5 text-body font-medium transition-[background-color,color,box-shadow] ${
-                    on ? "bg-surface-2 text-text shadow-edge" : "text-text-muted hover:text-text"
-                  }`}
-                >
-                  <span className="max-w-48 truncate" dir="auto">
-                    {(isAr ? s.title.ar || s.title.en : s.title.en || s.title.ar) || t(`Section ${i + 1}`, `القسم ${i + 1}`)}
-                  </span>
-                  <span className="text-caption tabular-nums text-text-muted">{s.questions.length}</span>
-                </button>
-              );
-            })}
+          <div className="flex flex-wrap items-center gap-space-3">
+            <div ref={sectionRow} id={sectionTabIds.id} role="tablist" aria-orientation="horizontal" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-space-3">
+              {form.sections.map((s, i) => {
+                const on = s.id === section.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="tab"
+                    id={tabButtonId(sectionTabIds.id, s.id)}
+                    aria-controls={sectionTabIds.panelId}
+                    aria-selected={on}
+                    {...sectionTabProps(s.id)}
+                    onClick={() => setSectionId(s.id)}
+                    {...dropProps(null, s.id)}
+                    className={`flex h-control-sm items-center gap-space-3 rounded-lg px-space-5 text-body font-medium transition-[background-color,color,box-shadow] ${
+                      on ? "bg-surface-2 text-text shadow-edge" : "text-text-muted hover:text-text"
+                    }`}
+                  >
+                    <span className="max-w-48 truncate" dir="auto">
+                      {(isAr ? s.title.ar || s.title.en : s.title.en || s.title.ar) || t(`Section ${i + 1}`, `القسم ${i + 1}`)}
+                    </span>
+                    <span className="text-caption tabular-nums text-text-muted">{s.questions.length}</span>
+                  </button>
+                );
+              })}
+            </div>
             <Button
               variant="link"
               disabled={!canAdd}
@@ -238,85 +251,87 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
             </Button>
           </div>
 
-          <div className="flex items-end gap-space-4 rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
-            <div className="min-w-0 flex-1">
-              <LocalizedInput
-                label={{ en: "Section title", ar: "عنوان القسم" }}
-                value={section.title}
-                onCommit={(title) => run(() => renameSection(form.id, section.id, title))}
-                mode={mode}
-                languages={languages}
-                disabled={readOnly}
-                isAr={isAr}
+          <TabPanel id={sectionTabIds.panelId} tabsId={sectionTabIds.id} active={section.id} className="flex min-w-0 flex-col gap-5">
+            <div className="flex items-end gap-space-4 rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
+              <div className="min-w-0 flex-1">
+                <LocalizedInput
+                  label={{ en: "Section title", ar: "عنوان القسم" }}
+                  value={section.title}
+                  onCommit={(title) => run(() => renameSection(form.id, section.id, title))}
+                  mode={mode}
+                  languages={languages}
+                  disabled={readOnly}
+                  isAr={isAr}
+                />
+              </div>
+              <IconButton
+                icon="trash"
+                label={t("Delete section", "حذف القسم")}
+                disabled={locked || form.sections.length <= 1}
+                onClick={async () => {
+                  const ok = await confirm({
+                    title: t("Delete this section?", "حذف هذا القسم؟"),
+                    consequences: [t(`Its ${section.questions.length} questions go with it`, `ستُحذف أسئلته الـ${section.questions.length} معه`)],
+                    confirmLabel: t("Delete section", "حذف القسم"),
+                    tone: "danger",
+                    isAr,
+                  });
+                  if (ok) {
+                    setSectionId(null);
+                    await run(() => deleteSection(form.id, section.id));
+                  }
+                }}
+                className="text-text-muted hover:text-danger disabled:text-text-disabled"
               />
             </div>
-            <IconButton
-              icon="trash"
-              label={t("Delete section", "حذف القسم")}
-              disabled={locked || form.sections.length <= 1}
-              onClick={async () => {
-                const ok = await confirm({
-                  title: t("Delete this section?", "حذف هذا القسم؟"),
-                  consequences: [t(`Its ${section.questions.length} questions go with it`, `ستُحذف أسئلته الـ${section.questions.length} معه`)],
-                  confirmLabel: t("Delete section", "حذف القسم"),
-                  tone: "danger",
-                  isAr,
-                });
-                if (ok) {
-                  setSectionId(null);
-                  await run(() => deleteSection(form.id, section.id));
-                }
-              }}
-              className="text-text-muted hover:text-danger disabled:text-text-disabled"
-            />
-          </div>
 
-          {section.questions.length === 0 && (
-            <EmptyState
-              icon="clipboard-list"
-              title={t("No questions in this section", "لا أسئلة في هذا القسم")}
-              description={t("Add one from the library, or write your own.", "أضف سؤالًا من المكتبة، أو اكتب سؤالك.")}
-            />
-          )}
-
-          {section.questions.map((question, i) => {
-            const at = placed.find((p) => p.question.id === question.id)!;
-            return (
-              <QuestionCard
-                key={question.id}
-                question={question}
-                number={at.number}
-                selected={question.id === selectedId}
-                onSelect={() => setSelectedId(question.id)}
-                onPatch={(draft) => patch(question, draft)}
-                onDuplicate={() => run(() => duplicateQuestion(form.id, question.id))}
-                onDelete={() => void remove(question)}
-                onMove={(step) => move(question, step)}
-                canMoveUp={i > 0}
-                canMoveDown={i < section.questions.length - 1}
-                dragProps={dragProps(question)}
-                dropProps={dropProps(question.id, section.id)}
-                mode={mode}
-                languages={languages}
-                locked={locked}
-                isAr={isAr}
+            {section.questions.length === 0 && (
+              <EmptyState
+                icon="clipboard-list"
+                title={t("No questions in this section", "لا أسئلة في هذا القسم")}
+                description={t("Add one from the library, or write your own.", "أضف سؤالًا من المكتبة، أو اكتب سؤالك.")}
               />
-            );
-          })}
+            )}
 
-          {canAdd && (
-            <div>
-              <ActionsDropdown
-                label={t("Write a question", "اكتب سؤالًا")}
-                align="start"
-                items={TYPE_ORDER.map((type) => ({
-                  label: TYPE_META[type][isAr ? "ar" : "en"],
-                  icon: TYPE_META[type].icon,
-                  onSelect: () => void addBlank(type),
-                }))}
-              />
-            </div>
-          )}
+            {section.questions.map((question, i) => {
+              const at = placed.find((p) => p.question.id === question.id)!;
+              return (
+                <QuestionCard
+                  key={question.id}
+                  question={question}
+                  number={at.number}
+                  selected={question.id === selectedId}
+                  onSelect={() => setSelectedId(question.id)}
+                  onPatch={(draft) => patch(question, draft)}
+                  onDuplicate={() => run(() => duplicateQuestion(form.id, question.id))}
+                  onDelete={() => void remove(question)}
+                  onMove={(step) => move(question, step)}
+                  canMoveUp={i > 0}
+                  canMoveDown={i < section.questions.length - 1}
+                  dragProps={dragProps(question)}
+                  dropProps={dropProps(question.id, section.id)}
+                  mode={mode}
+                  languages={languages}
+                  locked={locked}
+                  isAr={isAr}
+                />
+              );
+            })}
+
+            {canAdd && (
+              <div>
+                <ActionsDropdown
+                  label={t("Write a question", "اكتب سؤالًا")}
+                  align="start"
+                  items={TYPE_ORDER.map((type) => ({
+                    label: TYPE_META[type][isAr ? "ar" : "en"],
+                    icon: TYPE_META[type].icon,
+                    onSelect: () => void addBlank(type),
+                  }))}
+                />
+              </div>
+            )}
+          </TabPanel>
         </div>
 
         <aside aria-label={t("Question settings", "إعدادات السؤال")} className="mk-surface rounded-card bg-surface-1 p-space-8 xl:sticky xl:top-0">

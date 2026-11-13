@@ -19,7 +19,7 @@ const SortHeader = ({ label, sortKey, sort, onSort }: SortHeaderProps) => {
   const { t } = useUiStrings();
   const dir = sort?.key === sortKey ? sort.dir : null;
   return (
-    <button type="button" onClick={() => onSort(sortKey)} className="inline-flex items-center gap-space-1 hover:text-text">
+    <button type="button" onClick={() => onSort(sortKey)} className="inline-flex min-h-6 min-w-6 items-center gap-space-1 hover:text-text">
       {label}
       {/* One arrow that turns over when the order flips, rather than swapping glyphs. */}
       <Icon

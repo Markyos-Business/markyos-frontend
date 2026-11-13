@@ -202,7 +202,7 @@ const Listbox = ({
         className={`flex cursor-pointer items-center gap-space-3 text-start ${triggerClassName}`}
       >
         {leading}
-        <span className={`min-w-0 flex-1 truncate ${current ? "" : "font-normal text-text-disabled"} ${valueClassName}`}>
+        <span className={`min-w-0 flex-1 truncate ${current ? "" : `font-normal ${disabled ? "text-text-disabled" : "text-text-muted"}`} ${valueClassName}`}>
           {current?.label ?? placeholder}
         </span>
         <Icon name={open ? "angle-up" : "angle-down"} size={16} className="shrink-0 text-text-muted" />

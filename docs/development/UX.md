@@ -275,3 +275,7 @@ and [SyncNotices](../../src/contexts/SyncNotices.tsx) before changing save feedb
   unrelated setup. Exercise another role/browser for cross-user behavior.
 - Update this journey and the [functional guide](FUNCTIONAL.md) whenever an API
   change changes what success, retry or permission means to the person.
+
+### Accessibility updates through audit 1.19
+
+Browser titles identify the current route in the interface language and follow Back navigation. Guideline editor, moodboard, public guideline and embedded preview headings distinguish the page from subordinate content. Section-tab navigation activates locally with arrow keys; adding or deleting a section resolves selection to the new or a surviving section. Scrollable API/comparison examples are named keyboard stops, and inline moodboard links remain underlined before hover. Arabic labels avoid letter spacing, and the builder tool entrance respects reduced motion.

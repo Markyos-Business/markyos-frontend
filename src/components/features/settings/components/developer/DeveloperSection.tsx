@@ -43,7 +43,13 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
           </div>
         }
       />
-      <div dir="ltr" className="overflow-x-auto rounded-lg bg-surface-2 px-3.5 py-3 font-mono text-[12px] text-text-secondary">
+      <div
+        role="region"
+        aria-label={t("API request example", "مثال طلب API")}
+        tabIndex={0}
+        dir="ltr"
+        className="overflow-x-auto rounded-lg bg-surface-2 px-3.5 py-3 font-mono text-[12px] text-text-secondary"
+      >
         curl https://api.markyos.com/v1/workspaces/{ws.slug} \{"\n"}
         {"  "}-H &quot;Authorization: Bearer {apiKey}&quot;
       </div>

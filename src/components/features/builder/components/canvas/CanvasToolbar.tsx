@@ -9,7 +9,7 @@ export function CanvasToolbar(b: BuilderPageState) {
   const roundIcon = "grid h-8 w-8 cursor-pointer place-items-center rounded-full text-text-muted disabled:cursor-not-allowed disabled:opacity-30";
   return (
     <div className="flex h-12 shrink-0 items-center gap-2 px-5 shadow-rule-b">
-      <span className="text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</span>
+      <h1 className="text-[13px] font-semibold"><span className="sr-only">{isAr ? "محرر الدليل: " : "Guideline editor: "}</span>{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h1>
       {activePage && (
         <>
           <IconButton icon="pen" label={isAr ? "أعد تسمية الصفحة" : "Rename page"} onClick={b.onRenamePage} className="cursor-pointer text-text-faint" />

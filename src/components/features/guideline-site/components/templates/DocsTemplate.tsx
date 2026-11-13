@@ -208,9 +208,9 @@ export function DocsTemplate(props: TemplateProps) {
       <div className="flex-1 min-w-0 flex flex-col">
         {activePage && (
           <div className="px-8 md:px-16 py-14 max-w-[900px]">
-            <h1 dir="auto" className="bidi-auto" style={gHero}>
+            <h2 dir="auto" className="bidi-auto" style={gHero}>
               {isAr ? activePage.arName : activePage.name}
-            </h1>
+            </h2>
           </div>
         )}
 

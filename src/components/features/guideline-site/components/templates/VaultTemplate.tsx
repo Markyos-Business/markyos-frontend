@@ -178,9 +178,9 @@ export function VaultTemplate(props: TemplateProps) {
 
         <div className="flex-1 min-w-0 flex flex-col pb-[70vh]" style={{ gap: "var(--g-rhythm)" }}>
           {activePage && (
-            <h1 dir="auto" className="bidi-auto" style={gHero}>
+            <h2 dir="auto" className="bidi-auto" style={gHero}>
               {isAr ? activePage.arName : activePage.name}
-            </h1>
+            </h2>
           )}
 
           {flow.map((item, i) => {

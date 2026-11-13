@@ -26,11 +26,11 @@ const icons: Record<TrendDirection, string> = {
 /** Which way a number moved, as a small tinted chip with a circled arrow. */
 const TrendChip = ({ direction = "neutral", value, label, className = "" }: TrendChipProps) => (
   <span
-    aria-label={label ?? `${direction} ${value}`}
     className={`inline-flex h-badge items-center gap-space-1 rounded-badge px-2 text-caption font-medium ${tones[direction]} ${className}`}
   >
     <Icon name={icons[direction]} size={16} />
     <span aria-hidden>{value}</span>
+    <span className="sr-only">{label ?? `${direction} ${value}`}</span>
   </span>
 );
 

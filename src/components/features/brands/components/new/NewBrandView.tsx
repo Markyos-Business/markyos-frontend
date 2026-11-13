@@ -23,10 +23,10 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
         </button>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col justify-center px-[72px] py-10">
+      <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col justify-center px-6 sm:px-[72px] py-10">
         <Tabs {...tabIds}
           label={t("How to start", "طريقة البدء")}
-          className="mb-space-10 self-start"
+          className="mb-space-10 max-w-full self-start"
           tabs={START_TABS.map((tab) => ({ key: tab.key, label: isAr ? tab.arLabel : tab.label }))}
           active={mode}
           onChange={onMode}
@@ -45,7 +45,7 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
         </TabPanel>
       </div>
 
-      <div className="px-[72px] pb-10 text-caption text-text-faint">{t("Arabic and English are both on by default.", "العربية والإنجليزية مفعّلتان افتراضيًا.")}</div>
+      <div className="px-6 sm:px-[72px] pb-10 text-caption text-text-faint">{t("Arabic and English are both on by default.", "العربية والإنجليزية مفعّلتان افتراضيًا.")}</div>
     </div>
   );
 }

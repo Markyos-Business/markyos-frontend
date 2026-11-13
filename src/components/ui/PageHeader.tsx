@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 type PageHeaderProps = {
   title: string;
+  headingLevel?: 1 | 2 | 3;
   description?: ReactNode;
   /** Above the title: where this page sits, e.g. "Admin / Users". */
   breadcrumb?: ReactNode;
@@ -12,11 +13,13 @@ type PageHeaderProps = {
 };
 
 /** A page's title, a line under it, and its actions; on a phone the actions drop under the title. */
-const PageHeader = ({ title, description, breadcrumb, actions, secondaryActions }: PageHeaderProps) => (
+const PageHeader = ({ headingLevel = 1, title, description, breadcrumb, actions, secondaryActions }: PageHeaderProps) => {
+  const Heading = `h${headingLevel}` as "h1" | "h2" | "h3";
+  return (
   <div className="flex flex-col gap-space-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
     <div className="min-w-0">
       {breadcrumb && <div className="mb-space-1 text-caption text-text-muted">{breadcrumb}</div>}
-      <h1 className="text-h1 font-medium text-text">{title}</h1>
+      <Heading className="text-h1 font-medium text-text">{title}</Heading>
       {description && <p className="text-body text-text-muted">{description}</p>}
     </div>
     {(actions || secondaryActions) && (
@@ -26,7 +29,8 @@ const PageHeader = ({ title, description, breadcrumb, actions, secondaryActions 
       </div>
     )}
   </div>
-);
+  );
+};
 
 export { PageHeader };
 export type { PageHeaderProps };

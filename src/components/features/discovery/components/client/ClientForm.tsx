@@ -52,6 +52,7 @@ const COPY = {
  * link and the studio's live preview.
  */
 export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubmit, submitted, onUpload, files, lang, onLang, preview = false }: ClientFormProps) {
+  const Heading = preview ? "h3" : "h1";
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -196,12 +197,12 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
               <span className="grid size-control place-items-center rounded-lg bg-[var(--f-accent)] text-[var(--f-accent-ink)]">
                 <Icon name="check" size={22} />
               </span>
-              <h1 className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{c("doneTitle")}</h1>
+              <Heading className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{c("doneTitle")}</Heading>
               <p className={`text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>{c("doneBody")}</p>
             </div>
           ) : step === 0 ? (
             <div className="flex flex-col gap-space-6 rounded-card bg-[var(--f-surface)] p-space-10 shadow-[inset_0_0_0_1px_var(--f-line)]">
-              <h1 className={`text-h2 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</h1>
+              <Heading className={`text-h2 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</Heading>
               {textIn(form.theme.welcome, lang) && (
                 <p className={`whitespace-pre-line text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>{textIn(form.theme.welcome, lang)}</p>
               )}
@@ -216,7 +217,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
           ) : (
             section && (
               <>
-                <h1 className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{textIn(section.title, lang)}</h1>
+                <Heading className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{textIn(section.title, lang)}</Heading>
                 {section.questions
                   .filter((q) => visible.has(q.id))
                   .map((q) => {

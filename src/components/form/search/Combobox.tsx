@@ -123,7 +123,7 @@ const Combobox = (props: ComboboxProps) => {
           compact ? "text-caption" : ""
         }`}
       >
-        <span className={`truncate ${summary ? "text-text" : "font-normal text-text-disabled"}`}>{summary || placeholder}</span>
+        <span className={`truncate ${summary ? "text-text" : `font-normal ${disabled ? "text-text-disabled" : "text-text-muted"}`}`}>{summary || placeholder}</span>
         <Icon name={open ? "angle-up" : "angle-down"} size={16} className="shrink-0 text-text-muted" />
       </button>
 

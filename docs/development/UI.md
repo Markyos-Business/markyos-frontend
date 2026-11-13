@@ -231,3 +231,35 @@ Keep the inset focus outline on scrolling rows; a positive outline offset is cli
 ### Inline guideline editing
 
 `EditableText` requires a `label` describing the field, independently of its value and visual placeholder. It exposes `aria-multiline` from the editing mode. Supply localized field purpose and block context (for example “Quote: Quote” or “Metric: Metric value”); sample values such as “100%” are not labels. Section heading and guidance wrappers supply interface-language names. Published views retain ordinary text semantics. New block kinds must provide a meaningful label when adding an inline editor.
+
+### Discovery section tabs
+
+Discovery builder section tabs use the same navigation hook while retaining their question drop targets. Keep Add section outside the tablist and keep the selected section editor inside its labelled `TabPanel`. After deletion, resolve selection to a surviving section before deriving its roving tab stop and panel label.
+
+### Empty select values
+
+Enabled Listbox and searchable Combobox placeholders use `text-muted`; reserve `text-disabled` for disabled controls. Test empty single and multiple selections as well as populated values when changing shared field styling. The gallery’s three enabled empty selects pass 4.5:1 in light/dark themes; `scripts/sweeps/select-contrast.mjs` measures rendered colors and runs axe contrast checks.
+
+### Trend descriptions
+
+`TrendChip` exposes its description as screen-reader-only text. Pass a localized `label` describing direction, amount and comparison period when known; the fallback remains direction plus value. Keep the visible value and arrow decorative to avoid duplicate announcement. Do not put `aria-label` on the generic wrapper span. Verify the styleguide with `scripts/sweeps/trend-accessibility.mjs` after changing this pattern.
+
+### Inline links in supporting copy
+
+Keep inline navigation links distinguishable at rest with `underline underline-offset-2` alongside the existing accent text token. Hover-only underlining does not distinguish a resting link when its luminance is close to adjacent copy. The moodboard project/detail footnote shares this treatment in both languages; retain the global keyboard focus outline.
+
+### Scrollable code examples
+
+The settings API example is a named region with `tabIndex={0}`, so keyboard users can focus it and scroll horizontally with native arrow keys. Keep its bilingual accessible name, global visible focus treatment and LTR code direction. Do not intercept Tab or add a keyboard trap. Verify real overflow at phone widths, plus desktop and all roles, with `scripts/sweeps/settings-code.mjs`.
+
+### Audit maintenance rules (versions 1.10–1.19)
+
+- Keep shared sort headers and compact back links at least 24×24px without enlarging their type.
+- Brand creation uses phone padding and bounded tabs. Tooltips clamp to viewport edges and recalculate on resize, scroll and direction changes; keep intentional table/canvas scrolling local.
+- Arabic labels use normal tracking at the text node, including in LTR canvas chrome. Latin tracked labels retain their existing treatment.
+- Use `motion-safe` for the builder tools entrance; reduced-motion users get an immediately visible panel.
+- Keep route names in `src/lib/i18n/pageTitles.ts`. The title catalog test covers every current page route, so new routes require English and Arabic names. Only authorized workspace routes include a brand name; public shares never put tokens or record contents in the title.
+- The page shell owns h1. Use `PageHeader.headingLevel` for embedded examples, h3 in questionnaire previews, and subordinate template cover headings. Public guideline pages supply a screen-reader h1 even when their branded cover only displays an image.
+- Discovery section tabs keep Add section outside the tablist. Preserve labelled panel relationships and roving focus after add/delete and keep drag targets attached to the section buttons.
+
+Run `scripts/sweeps/audit-rounds.mjs` with `AUDIT_ROUND` set to the relevant finding. The final builder sweep uses disposable discovery HTTP fixtures; API-backed form checks require an isolated preview whose offline shell gate is bypassed solely for those fixtures. Never apply that bypass to production source.

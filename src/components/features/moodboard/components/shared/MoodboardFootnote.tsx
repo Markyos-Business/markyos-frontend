@@ -8,7 +8,7 @@ export function MoodboardFootnote({ slug, isAr, hidden }: { slug: string; isAr: 
       {isAr ? (
         <>
           كل اقتراح من هنا يذهب إلى{" "}
-          <Link href={drafts} className="text-accent-text">
+          <Link href={drafts} className="text-accent-text underline underline-offset-2">
             المسودات
           </Link>{" "}
           — لا شيء يصل إلى الهوية حتى يوافق عليه شخص.
@@ -16,7 +16,7 @@ export function MoodboardFootnote({ slug, isAr, hidden }: { slug: string; isAr: 
       ) : (
         <>
           Everything proposed from this page lands in{" "}
-          <Link href={drafts} className="text-accent-text">
+          <Link href={drafts} className="text-accent-text underline underline-offset-2">
             Drafts
           </Link>{" "}
           — nothing reaches the brand until a person accepts it.
