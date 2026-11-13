@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { usePresence } from "@/hooks/usePresence";
+// The file, not the form barrel: the kit's form fields import from ui.
+import { DropdownPanel } from "../../form/fields/DropdownPanel";
 
 type PopoverAlign = "start" | "end";
 
-// Logical insets, so the panel hangs off the same edge of its trigger in
-// Arabic as it does in English.
-const aligns: Record<PopoverAlign, string> = {
-  start: "start-0",
-  end: "end-0",
-};
+const FOCUSABLE = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
 type PopoverProps = {
   /** What the trigger looks like. Rendered inside the trigger button. */
@@ -47,35 +44,48 @@ const triggers = {
 const Popover = ({ button, label, align = "end", width = 260, className, trigger = "plain", children }: PopoverProps) => {
   const [open, setOpen] = useState(false);
   const { mounted, closing } = usePresence(open);
-  const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const close = useCallback(() => setOpen(false), []);
+  const closeToTrigger = useCallback(() => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
-
-    function onPointerDown(e: MouseEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         e.stopPropagation();
-        setOpen(false);
-        triggerRef.current?.focus();
+        closeToTrigger();
       }
     }
-    // `mousedown`, not `click`: a control inside the panel that re-renders on
-    // press would otherwise be gone by the time the click lands, and the
-    // outside-click handler would read it as a click on the outside.
-    document.addEventListener("mousedown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, closeToTrigger]);
+
+  // The panel renders in a portal, at the end of the page, so Tab from the
+  // trigger would never reach it. Opening moves focus to its first control.
+  useEffect(() => {
+    if (!open) return;
+    const frame = requestAnimationFrame(() => contentRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(frame);
   }, [open]);
 
+  // Tabbing off either end of the panel closes it and goes back to the
+  // trigger, rather than dropping focus at the end of the page.
+  function onPanelKeyDown(e: ReactKeyboardEvent) {
+    if (e.key !== "Tab" || !contentRef.current) return;
+    const items = [...contentRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
+    const edge = e.shiftKey ? items[0] : items[items.length - 1];
+    if (!edge || document.activeElement === edge) {
+      e.preventDefault();
+      closeToTrigger();
+    }
+  }
+
   return (
-    <div ref={rootRef} className={`relative ${className ?? ""}`}>
+    <div className={`relative ${className ?? ""}`}>
       <button
         ref={triggerRef}
         type="button"
@@ -90,17 +100,13 @@ const Popover = ({ button, label, align = "end", width = 260, className, trigger
       </button>
 
       {mounted && (
-        <div
-          // A raised surface (spec §1.5): the card fill, its hairline and the
-          // one shadow the system allows, for menus and overlays.
-          data-side="bottom"
-          className={`absolute top-full z-dropdown mt-2 origin-top overflow-hidden rounded-card bg-surface-1 shadow-edge-pop ${aligns[align]} ${
-            closing ? "pointer-events-none animate-scale-out" : "animate-scale-in"
-          }`}
-          style={{ width, maxWidth: "min(92vw, 520px)" }}
-        >
-          {children(() => setOpen(false))}
-        </div>
+        // In a portal, above everything: a menu in a table row was painted
+        // under the rows after it, and a scrolling table would clip it.
+        <DropdownPanel anchor={triggerRef} closing={closing} onOutside={close} width={width} maxHeight={560} align={align} padded={false}>
+          <div ref={contentRef} onKeyDown={onPanelKeyDown} className="min-h-0 overflow-y-auto">
+            {children(close)}
+          </div>
+        </DropdownPanel>
       )}
     </div>
   );

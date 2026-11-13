@@ -15,6 +15,10 @@ type DropdownPanelProps = {
   width?: number;
   /** The tallest it may grow, room permitting. Default 320, a list's height. */
   maxHeight?: number;
+  /** Which edge of the anchor it lines up with, in logical terms. Default start. */
+  align?: "start" | "end";
+  /** The list padding. Off for a panel whose content brings its own. Default true. */
+  padded?: boolean;
   className?: string;
   children: ReactNode;
 };
@@ -34,7 +38,7 @@ const MARGIN = 8;
  * there, follows the field on scroll and resize, and lines up with the field's
  * start edge in either writing direction.
  */
-const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: cap = 320, className = "", children }: DropdownPanelProps) => {
+const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: cap = 320, align = "start", padded = true, className = "", children }: DropdownPanelProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Place | null>(null);
 
@@ -48,7 +52,9 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
       const above = r.top - MARGIN;
       const up = below < 220 && above > below;
       const rtl = getComputedStyle(el).direction === "rtl";
-      const rawLeft = rtl ? r.right - w : r.left;
+      // The start edge is the left in English and the right in Arabic.
+      const atStartEdge = (align === "start") !== rtl;
+      const rawLeft = atStartEdge ? r.left : r.right - w;
       const left = Math.max(MARGIN, Math.min(rawLeft, window.innerWidth - w - MARGIN));
       setPlace({
         // Above the field it hangs from its bottom edge, so no transform is
@@ -68,7 +74,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
-  }, [anchor, width, cap]);
+  }, [anchor, width, cap, align]);
 
   useEffect(() => {
     // `mousedown`, not `click`, so an option that re-renders on press is not
@@ -88,7 +94,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
       ref={panelRef}
       // A raised surface (spec §1.5): the card fill, its hairline and the one
       // shadow the system allows for menus.
-      className={`fixed z-popover flex flex-col overflow-hidden rounded-card bg-surface-1 p-space-3 shadow-edge-pop ${
+      className={`fixed z-popover flex flex-col overflow-hidden rounded-card bg-surface-1 shadow-edge-pop ${padded ? "p-space-3" : ""} ${
         closing ? "pointer-events-none animate-scale-out" : "animate-scale-in"
       } ${className}`}
       // Which side of the field it opens on: it arrives from there.
