@@ -96,7 +96,7 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
         }}
         placeholder={t("e.g. Nadeen Studio", "مثل: استوديو نادين")}
       />
-      <span className="text-[12px] text-text-faint">
+      <span className="px-space-5 text-[12px] text-text-faint">
         {t("Shown across the app and on the published guideline. Its shared link stays", "يظهر في التطبيق وفي موقع الدليل المنشور. يبقى الرابط المشترك")}{" "}
         <span dir="ltr" className="font-mono">/v/{ws.slug}</span>{" "}
         {t("— renaming never breaks a link you've already shared.", "، فإعادة التسمية لا تكسر أي رابط شاركته من قبل.")}

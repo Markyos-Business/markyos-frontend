@@ -30,7 +30,7 @@ export function StrategyActions({ ws, isAr, mode, canEdit, onMode, onImport }: S
           </div>
         )}
       </Popover>
-      <Popover label={isAr ? "تعبئة لغة أخرى" : "Fill another language"} button={<><Icon name="language" size={16} />{isAr ? "تعبئة لغة أخرى" : "Fill another language"}</>}>
+      <Popover label={isAr ? "تعبئة لغة أخرى" : "Fill another language"} trigger="pill" button={<><Icon name="language" size={16} />{isAr ? "تعبئة لغة أخرى" : "Fill another language"}</>}>
         {() => <div className="flex flex-col gap-space-3 p-space-3">
           <TranslateStrategy ws={ws} direction="ar-en" isAr={isAr} />
           <TranslateStrategy ws={ws} direction="en-ar" isAr={isAr} />
