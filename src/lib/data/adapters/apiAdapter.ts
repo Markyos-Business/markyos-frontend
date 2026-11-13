@@ -50,6 +50,12 @@ export interface ApiAdapter extends BrandRepository {
    * storage repairs applied. Null when the server could not be reached.
    */
   pullWorkspaces(state: AppState): Promise<Workspace[] | null>;
+  /**
+   * Signing out: send any edit still waiting, then forget what was synced, so
+   * the next account in this browser starts from nothing. Call it before the
+   * session is revoked, while saves are still allowed.
+   */
+  endSession(): Promise<void>;
 }
 
 export function isApiAdapter(repo: BrandRepository): repo is ApiAdapter {
@@ -143,8 +149,7 @@ export function createApiAdapter(options: {
   }
 
   /** Send every changed brand. True when something should be retried. */
-  async function syncOnce(): Promise<boolean> {
-    const state = latest;
+  async function syncOnce(state = latest): Promise<boolean> {
     if (!state?.session) return false;
 
     let retry = false;
@@ -242,6 +247,26 @@ export function createApiAdapter(options: {
         synced.set(ws.id, { json: portableJson(ws), version: brands[i].version })
       );
       return restored;
+    },
+
+    async endSession() {
+      // Taken now: the signed-out state replaces `latest` on the next render.
+      const pending = latest;
+      if (timer) clearTimeout(timer);
+      timer = null;
+      while (running) await new Promise((resolve) => setTimeout(resolve, 50));
+      running = true;
+      try {
+        await syncOnce(pending);
+      } catch {
+        // Offline: the edit cannot be kept without leaving the brand in this
+        // browser for whoever uses it next, and signing out asked for that.
+      } finally {
+        running = false;
+        again = false;
+        synced.clear();
+        latest = null;
+      }
     },
   };
 }

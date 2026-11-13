@@ -1070,13 +1070,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    // Not awaited: the person is signed out here the moment they ask. The
-    // server revoking the refresh token can finish in the background.
-    if (API_ENABLED) void authApi.logout().catch(() => undefined);
-    // The account records deliberately survive: signing out is not the same as
-    // forgetting who you are, and the derived key has to still be there to
-    // check against on the way back in.
     repo.markSessionAlive(false);
+    if (API_ENABLED && isApiAdapter(repo)) {
+      // The server holds everything, so nothing of this account's should stay
+      // in this browser: its brands, gate passwords and team carry over to
+      // whoever opens it next. Not awaited: the person is signed out here the
+      // moment they ask, while the last save and the revoke finish behind.
+      void repo.endSession().finally(() => authApi.logout().catch(() => undefined));
+      setState(defaultState());
+      return;
+    }
+    // Browser-only: the account records deliberately survive. Signing out is
+    // not forgetting who you are, and the derived key has to still be there to
+    // check against on the way back in.
     setState((prev) => ({ ...prev, session: null }));
   }, [repo]);
 
