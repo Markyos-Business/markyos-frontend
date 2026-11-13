@@ -621,6 +621,7 @@ tokens, the Tailwind utilities (`duration-instant|fast|base|slow`,
 | Tooltip | fade (`fast`) after 300ms hover | fade | `Tooltip` |
 | Dialog | scrim fade (`base`); panel zoom 0.96→1 (`slow`, out) | panel `fast`, scrim `instant` | `DialogHost`, `Dialog`, `FormDialog`, feature modals |
 | Sheet / drawer | slide from its edge (`slow`, out), mirrored in Arabic | `base`, in | `FormDialog variant="sheet"`, `Drawer`, `DownloadPanel` |
+| Action sheet (phone menus, under 640px) | up from the bottom (`slow`, out) over a fading scrim; title, one full-width row per action (destructive in danger red), Cancel | down (`base`, in) | `ActionSheet`, opened by `ActionsDropdown` |
 | Toast | slide from the bottom-end corner + fade (`base`, out); swipe to dismiss | fade (`instant`) | `Toast` |
 | Tabs | the active pill slides (`base`, standard) | — | `Tabs` |
 | Buttons, rows, nav items | colour/background/shadow `instant`; primary press scale .98 | — | `tailwind/base.js`, `Button` |

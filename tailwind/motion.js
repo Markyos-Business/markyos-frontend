@@ -116,6 +116,9 @@ export const keyframes = {
   /** A sheet from the reading-end edge. */
   "slide-in-end": { from: { transform: slideX(1) }, to: { transform: "none" } },
   "slide-out-end": { from: { transform: "none" }, to: { transform: slideX(1) } },
+  /** An action sheet up from the bottom edge, and back down. */
+  "slide-in-bottom": { from: { transform: "translate3d(0, 100%, 0)" }, to: { transform: "none" } },
+  "slide-out-bottom": { from: { transform: "none" }, to: { transform: "translate3d(0, 100%, 0)" } },
   /** A toast from the bottom-end corner. */
   "toast-in": {
     from: { opacity: "0", transform: "translate3d(calc(var(--dir-sign) * var(--distance-lg)), var(--distance-md), 0)" },
@@ -147,6 +150,8 @@ export const animation = {
   "sheet-out-start": "slide-out-start var(--duration-base) var(--ease-in) both",
   "sheet-in-end": "slide-in-end var(--duration-slow) var(--ease-out) both",
   "sheet-out-end": "slide-out-end var(--duration-base) var(--ease-in) both",
+  "sheet-in-bottom": "slide-in-bottom var(--duration-slow) var(--ease-out) both",
+  "sheet-out-bottom": "slide-out-bottom var(--duration-base) var(--ease-in) both",
   "toast-in": "toast-in var(--duration-base) var(--ease-out) both",
   "grow-y": "grow-y var(--duration-chart) var(--ease-out) both",
   draw: "draw var(--duration-chart) var(--ease-out) both",

@@ -99,6 +99,7 @@ export function BoardProjectCard({ board, slug, assets, isAr, onRename, onDuplic
         <ActionsDropdown
           iconOnly
           label={isAr ? `إجراءات ${board.title}` : `Actions for ${board.title}`}
+          title={isAr ? `إجراءات ${board.title}` : `${board.title} actions`}
           items={[
             { label: isAr ? "أعد التسمية" : "Rename", icon: "pen", onSelect: onRename },
             { label: isAr ? "تكرار" : "Duplicate", icon: "copy", onSelect: onDuplicate },

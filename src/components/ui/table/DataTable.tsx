@@ -178,7 +178,7 @@ const DataTable = <T,>(props: DataTableProps<T>) => {
                     ))}
                     {rowActions && (
                       <td className={`${cellClasses} w-12`} onClick={(e) => e.stopPropagation()}>
-                        <ActionsDropdown iconOnly label={named(t.rowActions)} items={rowActions(row)} />
+                        <ActionsDropdown iconOnly label={named(t.rowActions)} title={rowName ? t.actionsFor(rowName) : t.rowActions} items={rowActions(row)} />
                       </td>
                     )}
                   </tr>

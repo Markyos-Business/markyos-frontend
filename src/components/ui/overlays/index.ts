@@ -2,6 +2,7 @@ export * from "./Dialog";
 export * from "./ModalHeader";
 export * from "./Popover";
 export * from "./Toast";
+export * from "./ActionSheet";
 export * from "./Drawer";
 export * from "./FormDialog";
 export * from "./useZodForm";

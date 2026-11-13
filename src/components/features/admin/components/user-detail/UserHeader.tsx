@@ -12,7 +12,7 @@ type UserHeaderProps = { user: AdminUser; rules: UserRules; actions: UserActions
 
 /** Who the account is, where it stands, and what an admin can do to it. */
 export function UserHeader({ user, rules, actions }: UserHeaderProps) {
-  const { c } = useAdminLang();
+  const { c, isAr } = useAdminLang();
   const reason = (rule: Rule) => (rule.allowed ? undefined : c.reasons[rule.reason]);
 
   return (
@@ -82,6 +82,7 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
         <ActionsDropdown
           iconOnly
           label={c.actions.more}
+          title={isAr ? `إجراءات ${user.name}` : `${user.name} actions`}
           items={[{ label: c.actions.signOutAll, icon: "sign-out-alt", tone: "danger", onSelect: () => actions.signOutEverywhere(user) }]}
         />
       </div>

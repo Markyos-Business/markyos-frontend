@@ -25,14 +25,28 @@ export const NARROW_QUERY = "(max-width: 900px)";
  * shut.
  */
 export function useNarrowViewport(): boolean {
+  return useMediaQuery(NARROW_QUERY);
+}
+
+/**
+ * A phone: where a menu opens as an action sheet from the bottom, in reach of
+ * the thumb, instead of a dropdown hanging off a 40px button.
+ */
+export const PHONE_QUERY = "(max-width: 639px)";
+
+export function usePhoneViewport(): boolean {
+  return useMediaQuery(PHONE_QUERY);
+}
+
+function useMediaQuery(query: string): boolean {
   const subscribe = useCallback((notify: () => void) => {
-    const mql = window.matchMedia(NARROW_QUERY);
+    const mql = window.matchMedia(query);
     mql.addEventListener("change", notify);
     return () => mql.removeEventListener("change", notify);
-  }, []);
+  }, [query]);
   return useSyncExternalStore(
     subscribe,
-    () => window.matchMedia(NARROW_QUERY).matches,
+    () => window.matchMedia(query).matches,
     // Assume wide on the server: the desktop layout is the one that renders
     // correctly before the client knows the viewport.
     () => false,

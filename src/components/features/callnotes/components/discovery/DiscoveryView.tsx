@@ -246,6 +246,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
       )}
       <ActionsDropdown
         label={t("Actions", "إجراءات")}
+        title={t(`${form.title} actions`, `إجراءات ${form.title}`)}
         items={[
           isDraft
             ? { label: t("Edit questions", "تعديل الأسئلة"), icon: "pen", onSelect: () => router.push(formHref(slug, form)) }
@@ -318,6 +319,7 @@ function CallRow({ call, slug, canEdit, isAr, onChanged }: CallRowProps) {
       {canEdit ? (
         <ActionsDropdown
           label={t("Actions", "إجراءات")}
+          title={t(`${call.title} actions`, `إجراءات ${call.title}`)}
           items={[
             { label: t("Open", "فتح"), icon: "eye", onSelect: () => router.push(href) },
             { label: t("Edit", "تعديل"), icon: "pen", onSelect: () => router.push(`${href}/edit`) },

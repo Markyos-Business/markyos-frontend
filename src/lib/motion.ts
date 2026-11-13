@@ -19,6 +19,8 @@ export const variants = {
   slideFromStart: { enter: "animate-sheet-in-start", exit: "animate-sheet-out-start" },
   /** A sheet from the reading-end edge. */
   slideFromEnd: { enter: "animate-sheet-in-end", exit: "animate-sheet-out-end" },
+  /** An action sheet from the bottom edge (a phone's menus). */
+  slideFromBottom: { enter: "animate-sheet-in-bottom", exit: "animate-sheet-out-bottom" },
 } as const;
 
 export type Variant = keyof typeof variants;
