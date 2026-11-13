@@ -103,7 +103,7 @@ server enforcement aligned when changing these values.
 | Drafts | Proposed strategy/identity content for human acceptance or rejection | Brand document; acceptance can apply selected content |
 | Compliance | Brand/content checks including local copy lint | Frontend checks and document results; not an external legal certification service |
 | Team/reviews | Membership plus approval proposals and client sign-off handling | Membership index; approvals/sign-offs are separate server records |
-| Brand settings | Public access settings, per-brand billing and developer/domain controls | Mixed: real Stripe API plus document-only integration settings |
+| Brand settings | Public access, billing summary/link and developer/domain controls | Mixed: document settings and a link to account-level verified checkout |
 | Board/people | Cross-brand views derived from the account's visible workspaces | Frontend projections; do not infer separate project-management or contact APIs |
 | Operator admin | User directory/detail, status/type changes, invitations, sessions, activity, bulk actions and brand lookup | Dedicated `/admin/` APIs and admin-action records |
 
@@ -408,3 +408,9 @@ Known documentation/implementation discrepancies to resolve deliberately:
 - Custom domains, developer integrations and credits remain partial as listed
   above. The website's token-sync default path is stale and waitlist storage is
   unimplemented. These are not completed features merely because controls exist.
+
+## November audit implementation (2026-11-13)
+
+Pricing and limits remain unchanged by explicit product decision: Company $49 pass/$99 monthly, Studio $19/$29, Freelancer $15/$19. Company permits one brand, Freelancer three and Studio unlimited, subject to existing administrator overrides. Plans are per brand, and do not raise these caps. Account Billing owns checkout entry points; backend verification remains authoritative. Demo purchase actions are disabled.
+
+`lib/data/brandSetup.ts` derives setup progress and publishing warnings without persisting duplicate counters. `lib/data/accountExperience.ts` supplies audience wording and `accountNavigation.ts` supplies account/capability navigation. Hiding navigation is not authorization. Server role enforcement remains unchanged. Identity/strategy section state is deep-linkable through `?tab=`; unknown values fall back to the default section.

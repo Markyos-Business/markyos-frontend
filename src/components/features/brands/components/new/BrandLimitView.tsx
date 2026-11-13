@@ -12,9 +12,10 @@ export function BrandLimitView({ title, description }: { title: string; descript
           title={title}
           description={description}
           action={
-            <Button variant="outline" href="/brands">
-              {isAr ? "العودة إلى علاماتك" : "Back to your brands"}
-            </Button>
+            <div className="flex flex-wrap justify-center gap-space-3">
+              <Button href="/account?tab=billing">{isAr ? "مراجعة الخطط والحدود" : "Review plans & limits"}</Button>
+              <Button variant="outline" href="/brands">{isAr ? "العودة إلى علاماتك" : "Back to your brands"}</Button>
+            </div>
           }
         />
       </div>

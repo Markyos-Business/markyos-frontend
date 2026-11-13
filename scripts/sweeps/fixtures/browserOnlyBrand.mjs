@@ -20,7 +20,7 @@ export async function browserOnlyBrandSeed(browser, base) {
     await page.locator('button[type="submit"]').click();
     await page.waitForURL(/\/brands/, { timeout: 20_000 });
     await page.goto(`${base}/w/nadeen-studio/team?lang=en`, { waitUntil: "networkidle" });
-    assert(await page.getByText(/Roles shape this interface/).isVisible(), "This sweep requires browser-only mode");
+    assert(await page.locator('[data-app-mode="demo"]').count(), "This sweep requires browser-only mode");
     return await page.evaluate(() => JSON.parse(localStorage.getItem("markyos:v1")));
   } finally {
     await context.close();

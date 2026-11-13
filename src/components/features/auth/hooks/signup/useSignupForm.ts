@@ -18,7 +18,6 @@ type SignupErrors = {
   name?: string;
   email?: string;
   password?: string;
-  confirm?: string;
   form?: string;
 };
 
@@ -37,7 +36,6 @@ export function useSignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<SignupErrors>({});
   const [busy, setBusy] = useState(false);
   // Two steps: who the account is for, then the person's details.
@@ -109,7 +107,8 @@ export function useSignupForm() {
     // wording the account gets, so it has to be a choice, not a default.
     if (!accountType) field.accountType = c.errors.accountType;
     if (!name.trim()) field.name = c.errors.name;
-    if (!EMAIL_RE.test(email.trim())) field.email = c.errors.email;
+    if (!email.trim()) field.email = c.errors.emailRequired;
+    else if (!EMAIL_RE.test(email.trim())) field.email = c.errors.email;
     // With the backend the password is set from the emailed link; only the
     // browser-only build, which has no inbox, asks for it here.
     if (!API_ENABLED) {
@@ -117,9 +116,6 @@ export function useSignupForm() {
       else if (scorePassword(password).score === 0) {
         field.password = c.errors.guessable;
       }
-      // Compared rather than assumed. A typo in a password nobody can see is the
-      // single most common way someone locks themselves out on the first day.
-      if (confirm !== password) field.confirm = c.errors.mismatch;
     }
     setErrors(field);
     if (Object.keys(field).length > 0) return;
@@ -168,8 +164,6 @@ export function useSignupForm() {
     checkEmailTaken,
     password,
     setPassword,
-    confirm,
-    setConfirm,
     errors,
     busy,
     submit,

@@ -59,7 +59,7 @@ admin/editor/viewer permission system; its editors are not platform editors.
 | `/w/[slug]/builder` | Guideline pages, templates, blocks, styles and publish. |
 | `/w/[slug]/departments` | Department instructions and curated brand references. |
 | `/w/[slug]/drafts`, `/compliance` | Proposed content review and rule-based checks. |
-| `/w/[slug]/team`, `/settings` | Team/reviews and brand access/billing/developer settings. |
+| `/w/[slug]/team`, `/settings` | Team/reviews and brand access/developer settings, with a link to Account Billing. |
 | `/admin`, `/admin/users`, `/admin/users/[id]` | Operator overview, directory and account detail. |
 | `/v/[slug]`, `/v/[slug]/p/[page]` | Published guideline and its pages. |
 | `/s/[token]` | Live strategy or scoped department share. |
@@ -279,3 +279,11 @@ and [SyncNotices](../../src/contexts/SyncNotices.tsx) before changing save feedb
 ### Accessibility updates through audit 1.19
 
 Browser titles identify the current route in the interface language and follow Back navigation. Guideline editor, moodboard, public guideline and embedded preview headings distinguish the page from subordinate content. Section-tab navigation activates locally with arrow keys; adding or deleting a section resolves selection to the new or a surviving section. Scrollable API/comparison examples are named keyboard stops, and inline moodboard links remain underlined before hover. Arabic labels avoid letter spacing, and the builder tool entrance respects reduced motion.
+
+## November audit implementation (2026-11-13)
+
+Brand cards and overview derive five setup steps from saved data: attached logo, colours, both font families, purpose in the brand's primary language and a published snapshot. Supplied default fonts count as configured. Every incomplete step links to its editor. The builder includes missing essentials as warnings and asks for confirmation before publishing; it does not create a new mandatory publication rule.
+
+Company wording addresses teams and partners; studio/freelancer wording retains client language. These labels do not change server membership permissions. Demo builds explain local persistence once in a dismissible notice, omit unavailable API navigation and provide feature-specific direct-route previews. Connected research workflows remain available.
+
+Billing purchase options live in Account → Billing. Brand settings and limit states link there. A per-brand purchase does not increase the account's brand limit. Signup chooses an account type before Google authentication, displays type descriptions, distinguishes missing and malformed email, and asks for one password in browser-only signup. Email-link setup and password reset retain their confirmation/security behavior.

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { ThemeToggle } from "@/contexts/ThemeProvider";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { API_ENABLED } from "@/lib/api/client";
 import type { MenuLink } from "../../types";
@@ -27,12 +28,10 @@ export function AccountMenu({
   /** The page's language; the person's own interface language when not given. */
   isAr?: boolean;
   /**
-   * Controls the top bar shows inline but has no room for on a phone (theme,
-   * interface language). Shown in the menu below `sm` only, so they are never
-   * in two places on the same screen.
+   * Optional replacement controls for the shared theme and language row.
    */
   controls?: ReactNode;
-  /** Header links that fold into the menu on a phone, e.g. Board, Templates. */
+  /** Account navigation available in the menu at every viewport. */
   phoneLinks?: MenuLink[];
 }) {
   const { state, logout } = useApp();
@@ -65,12 +64,12 @@ export function AccountMenu({
           </div>
 
           {controls ? (
-            <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b sm:hidden">{controls}</div>
+            <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b">{controls}</div>
           ) : (
             // Pages with no language switch of their own (the brands gallery,
             // People, Forms, Account) change it here.
-            <div className="flex items-center justify-between gap-space-4 px-space-6 py-space-4 shadow-rule-b">
-              <span className="text-caption text-text-muted">{isAr ? "اللغة" : "Language"}</span>
+            <div className="flex flex-wrap items-center justify-between gap-space-4 px-space-6 py-space-4 shadow-rule-b">
+              <ThemeToggle isAr={isAr} />
               <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" size="sm" />
             </div>
           )}
@@ -80,7 +79,7 @@ export function AccountMenu({
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body sm:hidden"
+              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
               style={{ color: "var(--text-secondary)" }}
             >
               <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />

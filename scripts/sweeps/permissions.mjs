@@ -30,7 +30,7 @@ try {
   await login.locator('button[type="submit"]').click();
   await login.waitForURL(/\/brands/, { timeout: 20_000 });
   await login.goto(`${BASE}/w/nadeen-studio/team?lang=en`, { waitUntil: "networkidle" });
-  assert(await login.getByText(/Roles shape this interface/).isVisible(), "This sweep requires browser-only mode");
+  assert(await login.locator('[data-app-mode="demo"]').count(), "This sweep requires browser-only mode");
   const seed = await login.evaluate(() => JSON.parse(localStorage.getItem("markyos:v1")));
   assert(seed.session, "Demo login did not persist");
   await initial.close();

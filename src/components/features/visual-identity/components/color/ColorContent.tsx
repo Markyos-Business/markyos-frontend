@@ -135,13 +135,14 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   </div>
                 </div>
                 <div
+                  dir="ltr"
                   className="flex flex-col text-[11px]"
                   style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}
                 >
                   <button
                     type="button"
                     onClick={() => copyValue("HEX", c.hex.toUpperCase())}
-                    title={`Copy the HEX value for ${c.name}`}
+                    title={isAr ? `نسخ قيمة HEX للون ${c.name}` : `Copy the HEX value for ${c.name}`}
                     className="mk-tap text-start cursor-pointer hover:text-text"
                   >
                     {c.hex.toUpperCase()}
@@ -150,7 +151,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                     type="button"
                     disabled={!rgb}
                     onClick={() => rgb && copyValue("RGB", `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}
-                    title={rgb ? `Copy the RGB value for ${c.name}` : undefined}
+                    title={rgb ? (isAr ? `نسخ قيمة RGB للون ${c.name}` : `Copy the RGB value for ${c.name}`) : undefined}
                     className="mk-tap text-start cursor-pointer hover:text-text disabled:cursor-default"
                   >
                     {rgb ? `${rgb.r} · ${rgb.g} · ${rgb.b}` : "—"}
@@ -161,7 +162,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                     onClick={() =>
                       cmyk && copyValue("CMYK", `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`)
                     }
-                    title={cmyk ? `Copy the CMYK value for ${c.name}` : undefined}
+                    title={cmyk ? (isAr ? `نسخ قيمة CMYK للون ${c.name}` : `Copy the CMYK value for ${c.name}`) : undefined}
                     className="mk-tap text-start cursor-pointer hover:text-text disabled:cursor-default"
                   >
                     {cmyk ? `${cmyk.c} ${cmyk.m} ${cmyk.y} ${cmyk.k}` : "—"}

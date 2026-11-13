@@ -16,6 +16,7 @@ behavior, and identify incomplete integrations and inconsistent older guidance.
 | [UI documentation](docs/development/UI.md) | Colors, typography, spacing, components, forms, tables, navigation, responsive behavior and accessibility. |
 | [UX documentation](docs/development/UX.md) | Roles, journeys, route flows, recipient experiences, loading/empty/error/success states and save feedback. |
 | [Functional documentation](docs/development/FUNCTIONAL.md) | Modules, permissions, business rules, persistence, concurrency, workflows, integrations and implementation limits. |
+| [November audit follow-up](docs/development/NOVEMBER_AUDIT_FOLLOWUP.md) | Finding-by-finding validation, fixes, preserved pricing decisions and verification limits. |
 
 Last reviewed: 12 November 2026. Update the relevant guide in the same change as
 its behavior. Runtime code takes precedence when older docs or design exports

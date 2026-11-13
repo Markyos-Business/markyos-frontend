@@ -324,7 +324,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         >
           <span className="font-semibold text-[13px]">{isAr ? "مقياس الخط" : "Type scale"}</span>
           <span className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
-            4 steps · locked to 1.25 ratio
+            {isAr ? "٤ مستويات بنسبة ثابتة ١٫٢٥" : "4 steps · locked to 1.25 ratio"}
           </span>
         </div>
         <div dir={rowDir} className="flex-1 min-h-0 flex flex-col">
@@ -335,8 +335,8 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
               style={i < scale.length - 1 ? { boxShadow: "inset 0 -1px 0 var(--hairline)" } : undefined}
             >
               <div className="w-[150px] shrink-0">
-                <div className="font-semibold text-[13px]">{row.name}</div>
-                <div className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
+                <div className="font-semibold text-[13px]">{isAr ? ({ Display: "العرض", Heading: "العنوان", Body: "النص", Caption: "التعليق" }[row.name] ?? row.name) : row.name}</div>
+                <div dir="ltr" className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
                   {row.meta}
                 </div>
               </div>

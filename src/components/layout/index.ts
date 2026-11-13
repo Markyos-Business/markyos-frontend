@@ -11,3 +11,5 @@ export { Sidebar } from "./Sidebar";
 export { TopBar } from "./TopBar";
 export type { TopBarTab } from "./TopBar";
 export * from "./PageTransition";
+
+export * from "./AccountHeader";

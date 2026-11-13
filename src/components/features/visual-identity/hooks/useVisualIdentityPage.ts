@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useBrandPage } from "@/contexts/pageGuards";
 import type { TopBarTab } from "@/components/layout";
 import { PAGE_SECTION, TABS, type VisualIdentityTab } from "../constants";
 
 /** Visual identity: which tab is open, and which tabs hold nothing yet. */
+const TAB_KEYS = TABS.map(tab => tab.key);
+
 export function useVisualIdentityPage(slug: string) {
   const page = useBrandPage(slug);
-  const [tab, setTab] = useState<VisualIdentityTab>("files");
+  const [tab, setTab] = useUrlTab<VisualIdentityTab>(TAB_KEYS, "files");
   if (!page) return null;
   const ws = page.workspace;
 

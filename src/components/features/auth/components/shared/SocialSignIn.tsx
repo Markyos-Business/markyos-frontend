@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
+import { AlertBanner, Button, Icon } from "@/components/ui";
 import type { GoogleSignInState } from "../../hooks/shared/useGoogleSignIn";
 import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
@@ -19,8 +19,8 @@ const OrRule = ({ label }: { label: string }) => (
  * form.
  */
 export function SocialSignIn({ google }: { google: GoogleSignInState }) {
-  const { showToast } = useToast();
   const { c } = useAuthLang();
+  if (!google.enabled) return null;
   return (
     <>
       <AlertBanner message={google.error} />
@@ -29,7 +29,7 @@ export function SocialSignIn({ google }: { google: GoogleSignInState }) {
         variant="outline"
         className="w-full"
         disabled={google.busy}
-        onClick={google.enabled ? google.start : () => showToast(c.google.notSetUp)}
+        onClick={google.start}
         icon={<Icon name="google" size={17} />}
       >
         {google.busy ? c.google.waiting : c.google.start}

@@ -38,9 +38,9 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
         icon="clock"
         title="Not published yet"
         arTitle="لم يُنشر بعد"
-        body="This brand guideline hasn't been published. Its studio will share it once it's ready."
-        arBody="لم يتم نشر دليل الهوية هذا بعد. سيشاركه الاستوديو عندما يصبح جاهزًا."
-        isAr={readerAr}
+        body="This brand guideline hasn't been published yet. Check back once its owner shares it."
+        arBody="لم يُنشر دليل العلامة هذا بعد. يمكنك العودة إليه عندما يشاركه مالك العلامة."
+        isAr={v.unpublishedLocale ? v.unpublishedLocale === "ar" : readerAr}
       />
     );
   }
@@ -67,8 +67,8 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
         icon="clock"
         title="Not available yet"
         arTitle="غير متاح بعد"
-        body="This brand guideline hasn't been shared with clients — check back once its owner publishes it."
-        arBody="لم تتم مشاركة دليل الهوية هذا مع العملاء بعد — يُرجى المراجعة لاحقًا."
+        body="This brand guideline isn't available yet. Check back once its owner publishes it."
+        arBody="هذا الدليل غير متاح بعد. يمكنك العودة إليه بعد أن ينشره مالك العلامة."
         isAr={ws.primaryLocale === "ar"}
         theme={theme}
       />

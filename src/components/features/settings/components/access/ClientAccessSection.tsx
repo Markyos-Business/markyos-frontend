@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useApp } from "@/contexts/AppContext";
 import { Button, CopyButton, Icon, Row, Section, Switch } from "@/components/ui";
 import { InputField } from "@/components/form";
@@ -9,13 +10,14 @@ import { randomPassword } from "../../utils/random";
 /** The password in front of the client link, and the link itself. */
 export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; clientLink: string; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const { toggleClientPassword, setClientPassword } = useApp();
   const { password, passwordEnabled } = ws.clientAccess;
   return (
-    <Section title={t("Client access", "وصول العميل")} icon="lock">
+    <Section title={copy.accessTitle} icon="lock">
       <Row
         label={t("Password-protect this guideline", "حماية الدليل بكلمة مرور")}
-        hint={t("Clients enter this password before viewing the client link.", "يُدخل العميل كلمة المرور هذه قبل فتح الرابط.")}
+        hint={t("People enter this password before opening the shared guideline.", "يُدخل من يفتح الدليل المشترك كلمة المرور هذه.")}
         right={<Switch label={t("Password-protect this guideline", "حماية الدليل بكلمة مرور")} checked={passwordEnabled} onToggle={() => toggleClientPassword(ws.id, !passwordEnabled)} />}
       />
       {passwordEnabled && (

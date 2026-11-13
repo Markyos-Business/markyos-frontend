@@ -1,3 +1,5 @@
+import type { AccountType } from "@/types";
+import { accountExperience } from "@/lib/data/accountExperience";
 import type { Lang } from "@/types/lang";
 
 /** The brands gallery and its header, in English and Arabic. */
@@ -7,13 +9,14 @@ const en = {
   yourBrands: "Your brands",
   summary: (count: number, shared: number, owned: number, limit: number | null) =>
     `${count} workspace${count === 1 ? "" : "s"} · ${shared} shared with clients${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
-  limitNote: (type: string, limit: number | null, noun: string) => `${type} accounts own up to ${limit} ${noun}. Contact Markyos to change your plan.`,
+  limitNote: (type: string, limit: number | null, noun: string) => `${type} accounts own up to ${limit} ${noun}. Per-brand plans do not increase this account limit.`,
+  reviewPlans: "Review plans & limits",
   lastEdited: "Last edited",
   nameAz: "Name A–Z",
   newWorkspace: "New workspace",
   sharedLegendBefore: "A brand marked",
   shared: "Shared",
-  sharedLegendAfter: "has a live client link — anyone holding it can open the guideline. Switch it off in that brand's Settings.",
+  sharedLegendAfter: "has a published guideline link. Its access settings and password still apply.",
   edited: (when: string) => `Edited ${when}`,
   active: "active",
   empty: "empty",
@@ -28,13 +31,14 @@ const ar: typeof en = {
   yourBrands: "علاماتك",
   summary: (count, shared, owned, limit) =>
     `${count} ${count === 1 ? "مساحة عمل" : "مساحات عمل"} · ${shared} مشاركة مع العملاء${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`,
-  limitNote: (type, limit, noun) => `حسابات ${type} تملك حتى ${limit} ${noun}. تواصل مع ماركيوس لتغيير خطتك.`,
+  limitNote: (type, limit, noun) => `حسابات ${type} تملك حتى ${limit} ${noun}. خطط العلامات المدفوعة لا تزيد حد هذا الحساب.`,
+  reviewPlans: "مراجعة الخطط والحدود",
   lastEdited: "آخر تعديل",
   nameAz: "الاسم أ–ي",
   newWorkspace: "مساحة عمل جديدة",
   sharedLegendBefore: "العلامة الموسومة بـ",
   shared: "مشاركة",
-  sharedLegendAfter: "لها رابط عميل فعّال، ويستطيع أي شخص يملكه فتح الدليل. أوقفه من إعدادات تلك العلامة.",
+  sharedLegendAfter: "لها رابط دليل منشور، وتبقى إعدادات الوصول وكلمة المرور سارية.",
   edited: (when) => `عُدّلت ${when}`,
   active: "نشطة",
   empty: "فارغة",
@@ -44,3 +48,13 @@ const ar: typeof en = {
 };
 
 export const BRANDS_COPY: Record<Lang, typeof en> = { en, ar };
+
+/** The company owns its brand; it is not presented as a studio's client. */
+export function brandsCopyFor(type: AccountType, lang: Lang): typeof en {
+  const copy = BRANDS_COPY[lang];
+  const experience = accountExperience(type, lang);
+  return { ...copy, summary: (count, shared, owned, limit) => lang === "ar"
+    ? `${count} مساحة عمل · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`
+    : `${count} workspace${count === 1 ? "" : "s"} · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
+  };
+}

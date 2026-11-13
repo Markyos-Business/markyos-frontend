@@ -36,7 +36,7 @@ export function AuthShell({
     <main className="relative flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-10 sm:px-8">
       {/* Arabic first; the switch is here because these are the screens
           someone sees before they have an account to keep a choice on. */}
-      <div className="absolute inset-e-5 top-5 sm:inset-e-8">
+      <div className="fixed inset-e-5 top-5 z-sticky rounded-lg bg-canvas p-space-1 sm:inset-e-8">
         <LangToggle value={lang} onChange={setLang} label={c.langSwitch} scope="chrome" />
       </div>
       <Link href="/" aria-label={c.home}>

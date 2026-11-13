@@ -7,7 +7,7 @@ import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes
 import { roleOn } from "@/lib/data/access";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../../constants";
-import { BRANDS_COPY } from "../../copy";
+import { brandsCopyFor } from "../../copy";
 
 /** The brands gallery: the signed-in account's brands, searched and sorted, and its brand limit. */
 export function useBrandsPage() {
@@ -16,7 +16,8 @@ export function useBrandsPage() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<BrandSort>("updated");
   const { lang } = useInterfaceLang();
-  const c = BRANDS_COPY[lang];
+  const account = useCurrentAccount();
+  const c = brandsCopyFor(accountTypeOf(account), lang);
 
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");
@@ -33,7 +34,6 @@ export function useBrandsPage() {
 
   // The account type names what a brand is here ("client brands" for a
   // studio, "your brand" for a company) and how many this account may own.
-  const account = useCurrentAccount();
   const type = ACCOUNT_TYPES[accountTypeOf(account)];
   const brandLimit = limitsOf(account).brands;
   const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
@@ -51,8 +51,8 @@ export function useBrandsPage() {
       sort,
       c,
       lang,
-      onToggleSort: () => setSort((s) => (s === "updated" ? "name" : "updated")),
-      onNew: () => router.push("/brands/new"),
+      onSort: setSort,
+      onNew: () => router.push(atLimit ? "/account?tab=billing" : "/brands/new"),
       brands: workspaces.map((ws) => ({ workspace: ws, role: roleOn(ws, state.session) })),
       atLimit,
       limitNote,

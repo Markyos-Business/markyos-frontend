@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useApp } from "@/contexts/AppContext";
 import { FilterSelectField } from "@/components/form";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
@@ -21,7 +22,8 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
   const { confirm } = useDialog();
   const who = m.name || m.email;
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const roleName = (r: TeamRole) => ROLE_LABELS[r][isAr ? "ar" : "en"];
+  const copy = useAccountCopy(isAr);
+  const roleName = (r: TeamRole) => r === "client" ? copy.reviewerLabel : ROLE_LABELS[r][isAr ? "ar" : "en"];
 
   /**
    * Hands the brand over.
@@ -47,7 +49,7 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
       consequences: [
         t("Only the new owner can change roles or approve proposals", "المالك الجديد وحده يغيّر الأدوار ويعتمد المقترحات"),
         t("Only the new owner can transfer ownership again — including back to you", "المالك الجديد وحده ينقل الملكية مجددًا، بما في ذلك إعادتها إليك"),
-        t("Sharing, the client link and the subdomain move with it", "تنتقل معها المشاركة ورابط العميل والنطاق الفرعي"),
+        t("Sharing, the guideline link and the subdomain move with it", "تنتقل معها المشاركة ورابط الدليل والنطاق الفرعي"),
       ],
       confirmPhrase: ws.name,
       confirmLabel: t("Transfer", "نقل الملكية"),

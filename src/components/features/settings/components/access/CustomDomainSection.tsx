@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useApp } from "@/contexts/AppContext";
 import { Badge, Button, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/form";
@@ -9,6 +10,7 @@ import type { Workspace } from "@/types";
 /** Mapping the client link to the studio's own domain, and the DNS record that verifies it. */
 export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const { setCustomDomain, setDomainStatus } = useApp();
   const { showToast } = useToast();
   const [domain, setDomain] = useState(ws.clientAccess.customDomain);
@@ -38,10 +40,7 @@ export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean
   return (
     <Section title={t("Custom domain", "نطاق خاص")} icon="globe">
       <p className="-mt-1 text-[13px] text-text-muted">
-        {t(
-          "Map the client link to your own domain, like brand.yourstudio.com, so it reads as your agency's link, not Markyos's.",
-          "اربط رابط العميل بنطاقك الخاص، مثل brand.yourstudio.com، ليظهر كرابط وكالتك لا رابط ماركيوس."
-        )}
+        {copy.domainHint}
       </p>
       <div className="flex items-end gap-2.5">
         <InputField label={t("Domain", "النطاق")} dir="ltr" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="brand.client.com" />

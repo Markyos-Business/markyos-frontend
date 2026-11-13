@@ -159,7 +159,7 @@ export function LogoSlotCard({
         boxShadow:
           kind === "symbol" && isEmptyLike
             ? "inset 0 0 0 1px var(--hairline-strong)"
-            : selected
+            : selected && slot.phase === "attached"
             ? "inset 0 0 0 1px var(--accent-edge)"
             : "none",
       }}

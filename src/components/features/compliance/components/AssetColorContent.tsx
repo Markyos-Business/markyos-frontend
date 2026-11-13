@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { useToast, Icon, EmptyHint } from "@/components/ui";
+import { useToast, Icon, EmptyHint, EmptyState, Button } from "@/components/ui";
 import { DominantColor, colorDistance, extractDominantColors } from "@/components/features/compliance/utils/colorExtract";
 import { formatRelative } from "@/lib/utils";
 import { ColorSwatch, Workspace } from "@/types";
@@ -36,6 +36,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
   }
 
   async function handleFile(file: File) {
+    if (ws.colors.length === 0) return;
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     setFileName(file.name);
@@ -58,6 +59,15 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
       setAnalyzing(false);
     }
   }
+
+  if (ws.colors.length === 0) return (
+    <div className="flex-1 overflow-auto px-space-7 py-space-8">
+      <h1 className="text-h3 font-medium">{t("Asset colors", "ألوان الأصول")}</h1>
+      <EmptyState icon="palette" title={t("Add your brand colours first", "أضف ألوان علامتك أولًا")}
+        description={t("The checker needs your palette before it can compare an image.", "يحتاج الفاحص إلى ألوان علامتك قبل مقارنة صورة بها.")}
+        action={<Button href={`/w/${ws.slug}/visual-identity?tab=color`}>{t("Add colours", "أضف الألوان")}</Button>} />
+    </div>
+  );
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto max-w-[820px]">
@@ -85,7 +95,8 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
         }}
       />
 
-      <div
+      <div role="button" tabIndex={0} aria-label={t("Choose an asset image", "اختر صورة للأصل")}
+        onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); inputRef.current?.click(); } }}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {

@@ -56,17 +56,15 @@ export function LoginForm() {
 
           <PasswordField
             label={c.fields.password}
-            placeholder="••••••••••"
             value={form.password}
             onChange={(e) => form.setPassword(e.target.value)}
             error={form.errors.password}
             autoComplete="current-password"
-            labelRight={
-              <Button variant="link" href={form.resetHref} className="text-[12px] font-medium">
-                {c.login.forgot}
-              </Button>
-            }
           />
+
+          <Button variant="link" href={form.resetHref} className="self-end text-caption font-medium">
+            {c.login.forgot}
+          </Button>
 
           <CheckboxField label={c.login.stay} checked={form.remember} onChange={(e) => form.setRemember(e.target.checked)} />
           <p className="-mt-2 text-[11.5px] leading-normal text-text-faint">

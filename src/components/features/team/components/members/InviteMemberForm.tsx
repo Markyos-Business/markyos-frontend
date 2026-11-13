@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useApp } from "@/contexts/AppContext";
 import { Button, useToast } from "@/components/ui";
 import { ChipPicker, InputField } from "@/components/form";
@@ -19,6 +20,7 @@ type InviteMemberFormProps = {
 /** Adds someone to the brand's team with a role. */
 export function InviteMemberForm({ ws, isAr, canGovern, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const { addTeamMember } = useApp();
   const { showToast } = useToast();
   const [name, setName] = useState("");
@@ -50,11 +52,11 @@ export function InviteMemberForm({ ws, isAr, canGovern, editorsFull, editorsFull
         onChange={setRole}
         options={ROLES.map((r) => {
           const full = r === "editor" && editorsFull;
-          return { value: r, label: ROLE_LABELS[r][isAr ? "ar" : "en"], disabled: full, title: full ? editorsFullNote : undefined };
+          return { value: r, label: r === "client" ? copy.reviewerLabel : ROLE_LABELS[r][isAr ? "ar" : "en"], disabled: full, title: full ? editorsFullNote : undefined };
         })}
       />
       {editorsFull && <p className="text-caption text-text-muted">{editorsFullNote}</p>}
-      <Button type="submit" variant="solid" size="sm" className="self-start">
+      <Button type="submit" variant="primary" size="sm" className="self-start">
         {t("Add to team", "إضافة إلى الفريق")}
       </Button>
     </form>

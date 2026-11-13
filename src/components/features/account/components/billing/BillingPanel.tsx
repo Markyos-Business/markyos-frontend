@@ -1,9 +1,10 @@
 "use client";
 
+import { BrandPlanOptions } from "./BrandPlanOptions";
 import Link from "next/link";
 import { Icon, StatTile, Section, Row, Badge, EmptyHint, Stagger } from "@/components/ui";
 import { useCurrentAccount } from "@/contexts/AppContext";
-import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
 import { Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import { lookup, planTable } from "../../utils/billing";
@@ -18,7 +19,9 @@ import { useAccountLang } from "../../hooks/shared/useAccountLang";
  * plans confirmed by the backend, and a brand without a plan says so.
  */
 export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
-  const type = ACCOUNT_TYPES[accountTypeOf(useCurrentAccount())];
+  const account = useCurrentAccount();
+  const type = ACCOUNT_TYPES[accountTypeOf(account)];
+  const limits = limitsOf(account);
   const { t, isAr } = useAccountLang();
   const table = planTable(type);
   const priceOf = (plan: string) => lookup(table, plan);
@@ -32,6 +35,8 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
 
   return (
     <>
+      <p className="text-body text-text-muted">{isAr ? `حد الحساب: ${limits.brands ?? "غير محدود"} علامة. الخطط المدفوعة تخص كل علامة، ولا تغيّر هذا الحد.` : `Account brand limit: ${limits.brands ?? "unlimited"}. Paid plans apply per brand and do not change this limit.`}</p>
+      <div className="flex flex-col gap-space-5">{workspaces.map(ws => <BrandPlanOptions key={ws.id} ws={ws} typeLabel={isAr ? type.arLabel : type.label} prices={type.prices} isAr={isAr} />)}</div>
       <Section title={t("Subscription", "الاشتراك")} icon="credit-card">
         {subscriptions.length ? (
           <Row
@@ -42,7 +47,7 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         ) : (
           <Row
             label={t("No subscription", "لا يوجد اشتراك")}
-            hint={t("Choose a Project Pass or a monthly plan from each brand's Settings.", "اختر تصريح مشروع أو خطة شهرية من إعدادات كل علامة.")}
+            hint={t("Choose a Project Pass or a monthly brand plan above.", "اختر تصريح مشروع أو خطة شهرية للعلامة من الخيارات أعلاه.")}
             right={<Badge tone="neutral">{t("None", "لا شيء")}</Badge>}
           />
         )}
@@ -64,12 +69,12 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
               return (
                 <div
                   key={w.id}
-                  className={`flex items-center gap-space-4 py-space-4 ${i > 0 ? "shadow-rule-t" : ""}`}
+                  className={`flex flex-wrap items-center gap-space-4 py-space-4 ${i > 0 ? "shadow-rule-t" : ""}`}
                 >
                   <Link
-                    href={`/w/${w.slug}/settings`}
+                    href={`/w/${w.slug}/overview`}
                     dir="auto"
-                    className="mk-tap bidi-auto flex-1 min-w-0 truncate text-body font-medium"
+                    className="mk-tap bidi-auto w-full sm:w-auto sm:flex-1 min-w-0 truncate text-body font-medium"
                   >
                     {w.name}
                   </Link>

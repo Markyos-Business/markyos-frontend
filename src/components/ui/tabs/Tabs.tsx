@@ -78,7 +78,7 @@ const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text
   }, [active, look.indicator, tabs.length, orientation, row]);
 
   return (
-    <div ref={row} id={groupId} role="tablist" aria-label={label} aria-orientation={orientation} data-tabs-variant={variant} className={`mk-tabs relative flex gap-space-3 ${orientation === "vertical" ? "flex-col items-stretch overflow-y-auto" : "items-center overflow-x-auto"} ${className}`}>
+    <div ref={row} id={groupId} role="tablist" aria-label={label} aria-orientation={orientation} data-tabs-variant={variant} className={`mk-tabs relative flex shrink-0 gap-space-3 ${orientation === "vertical" ? "flex-col items-stretch overflow-y-auto" : "items-center overflow-x-auto"} ${className}`}>
       {look.indicator && pill && (
         <span
           aria-hidden

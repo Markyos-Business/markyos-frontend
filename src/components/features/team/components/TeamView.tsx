@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui";
-import { API_ENABLED } from "@/lib/api/client";
 import type { TeamPageView } from "../hooks/useTeamPage";
 import { PAGE_SECTION, ROLE_LABELS, ROLE_TONE } from "../constants";
 import { ApprovalSection } from "./approvals/ApprovalSection";
@@ -20,19 +19,7 @@ export function TeamView(view: TeamPageView) {
             : "Who can change what, who approved it, and how to undo a mistake. You're signed in on this brand as"}{" "}
           <Badge tone={ROLE_TONE[myRole]}>{ROLE_LABELS[myRole][isAr ? "ar" : "en"]}</Badge>
         </p>
-        {/*
-          Architecture principle 7: no UI promise without server enforcement.
-          In the browser-only build these roles decide what this interface
-          offers, and nothing more — every check runs against state the browser
-          owns. With a backend the server checks every save against the role.
-        */}
-        {!API_ENABLED && (
-          <p className="mt-2 text-[12.5px] text-text-faint">
-            {isAr
-              ? "الأدوار تشكّل هذه الواجهة لكنها ليست حدًا أمنيًا بعد، فكل تحقق ما زال يجري في المتصفح. التطبيق الفعلي يأتي مع الخادم."
-              : "Roles shape this interface but are not a security boundary yet — every check still runs in the browser. Real enforcement arrives with the server."}
-          </p>
-        )}
+
       </div>
       <TeamSection {...view} />
       <SignOffSection ws={ws} canGovern={canGovern} isAr={isAr} />

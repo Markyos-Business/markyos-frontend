@@ -7,7 +7,7 @@ import type { LoginFailure, PendingVerification } from "../../types";
 import { classifyLoginFailure, loginFailureMessage } from "../../utils/loginFailure";
 import { useAuthLang } from "../shared/useAuthLang";
 
-type LoginValidation = { email?: boolean; password?: boolean };
+type LoginValidation = { email?: "required" | "invalid"; password?: boolean };
 
 /** The login form's fields, its checks, and the sign-in itself. */
 export function useLoginForm() {
@@ -28,7 +28,8 @@ export function useLoginForm() {
     if (busy) return;
 
     const field: LoginValidation = {};
-    if (!EMAIL_RE.test(email.trim())) field.email = true;
+    if (!email.trim()) field.email = "required";
+    else if (!EMAIL_RE.test(email.trim())) field.email = "invalid";
     if (!password) field.password = true;
     setValidation(field);
     setFailure(null);
@@ -56,7 +57,7 @@ export function useLoginForm() {
     remember,
     setRemember,
     errors: {
-      email: validation.email ? c.errors.email : undefined,
+      email: validation.email === "required" ? c.errors.emailRequired : validation.email ? c.errors.email : undefined,
       password: validation.password ? c.errors.password : undefined,
       form: failure ? loginFailureMessage(failure, c.errors) : undefined,
     },

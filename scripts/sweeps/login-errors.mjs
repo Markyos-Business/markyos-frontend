@@ -110,11 +110,11 @@ try {
     }
     const { context, page, calls } = await fixture(config, { id: "validation" });
     await page.locator('button[type="submit"]').click();
-    await page.getByText(AUTH_COPY[config.lang].errors.email, { exact: true }).waitFor();
+    await page.getByText(AUTH_COPY[config.lang].errors.emailRequired, { exact: true }).waitFor();
     await page.getByText(AUTH_COPY[config.lang].errors.password, { exact: true }).waitFor();
     const otherLang = config.lang === "en" ? "ar" : "en";
     await changeLang(page, otherLang);
-    await page.getByText(AUTH_COPY[otherLang].errors.email, { exact: true }).waitFor();
+    await page.getByText(AUTH_COPY[otherLang].errors.emailRequired, { exact: true }).waitFor();
     await page.getByText(AUTH_COPY[otherLang].errors.password, { exact: true }).waitFor();
     assert.equal(calls.filter((call) => call.endpoint === "/auth/login/").length, 0);
     results.push({ kind: "validation", ...config, localizedAfterSwitch: true, loginRequests: 0 });

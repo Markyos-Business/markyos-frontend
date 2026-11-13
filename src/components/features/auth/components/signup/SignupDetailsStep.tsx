@@ -8,7 +8,7 @@ import type { SignupFormState } from "../../hooks/signup/useSignupForm";
 import { PasswordField } from "../shared/PasswordField";
 import { useAuthLang } from "../../hooks/shared/useAuthLang";
 
-/** Step two: name, email and a password, twice. */
+/** Step two: name and email; local-only signup also asks for a password. */
 export function SignupDetailsStep({ form }: { form: SignupFormState }) {
   const { lang, c } = useAuthLang();
   const type = form.accountType ? ACCOUNT_TYPES[form.accountType] : null;
@@ -64,14 +64,7 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
             autoComplete="new-password"
           />
 
-          <PasswordField
-            label={c.fields.confirmPassword}
-            placeholder={c.fields.confirmPlaceholder}
-            value={form.confirm}
-            onChange={(e) => form.setConfirm(e.target.value)}
-            error={form.errors.confirm}
-            autoComplete="new-password"
-          />
+
         </>
       )}
 

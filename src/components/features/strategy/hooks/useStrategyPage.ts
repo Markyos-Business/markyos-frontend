@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import type { TopBarTab } from "@/components/layout";
@@ -8,10 +9,12 @@ import { capabilitiesOn } from "@/lib/data/access";
 import { PAGE_SECTION, STRATEGY_TABS, type StrategyMode, type StrategyTab } from "../constants";
 
 /** The strategy page: the section being edited, edit or read mode, and which sections are blank. */
+const TAB_KEYS = STRATEGY_TABS.map(tab => tab.key);
+
 export function useStrategyPage(slug: string) {
   const { uiLang, state } = useApp();
   const page = useBrandPage(slug);
-  const [tab, setTab] = useState<StrategyTab>("purpose");
+  const [tab, setTab] = useUrlTab<StrategyTab>(TAB_KEYS, "purpose");
   const [requestedMode, setMode] = useState<StrategyMode>("edit");
   const [importOpen, setImportOpen] = useState(false);
   if (!page) return null;

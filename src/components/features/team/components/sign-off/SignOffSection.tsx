@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useApp } from "@/contexts/AppContext";
 import { useEffect, useState } from "react";
 import { API_ENABLED } from "@/lib/api/client";
@@ -13,6 +14,7 @@ import type { Workspace } from "@/types";
  * the client should not be able to close their own note.
  */
 export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGovern: boolean; isAr: boolean }) {
+  const copy = useAccountCopy(isAr);
   const { resolveSignOffPin, refreshSignOffPins } = useApp();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(API_ENABLED);
@@ -44,13 +46,13 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
 
   return (
     <Section
-      title={isAr ? "اعتماد العميل" : "Client sign-off"}
+      title={copy.reviewTitle}
       icon="map-marker"
       right={<div className="flex items-center gap-2">{openPins.length > 0 && <span className="text-[12px] text-text-muted">{openPins.length} {isAr ? "مفتوحة" : "open"}</span>}{API_ENABLED && <Button variant="link" size="sm" disabled={loading} onClick={() => { setLoading(true); setRefresh((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الملاحظات" : "Refresh notes")}</Button>}</div>}
     >
       {error && <p role="alert" className="text-[13px] text-danger">{error}</p>}
       {pins.length === 0 ? (
-        <EmptyHint>{loading ? (isAr ? "جارٍ تحميل ملاحظات العميل…" : "Loading client notes…") : (isAr ? "لا توجد ملاحظات بعد. تظهر هنا ملاحظات العميل على الدليل المنشور." : "Nothing yet. Clients leave notes on each section of the published guideline, and they land here.")}</EmptyHint>
+        <EmptyHint>{loading ? (isAr ? "جارٍ تحميل ملاحظات المراجعة…" : "Loading review notes…") : (isAr ? "لا توجد ملاحظات بعد. تظهر هنا ملاحظات المراجعين على الدليل المنشور." : "Nothing yet. Reviewers leave notes on each section of the published guideline, and they land here.")}</EmptyHint>
       ) : (
         <div className="flex flex-col gap-2.5">
           {pins.map((p) => (

@@ -30,7 +30,7 @@ export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: 
             className="h-9 cursor-pointer p-1.5 hover:text-text"
           />
         ))}
-        <span className="ms-auto font-mono text-[11px] text-text-faint">{wordCount} words</span>
+        <span dir="auto" className="ms-auto text-caption tabular-nums text-text-muted">{isAr ? `${wordCount} كلمة` : `${wordCount} words`}</span>
       </div>
       <div
         ref={editorRef}

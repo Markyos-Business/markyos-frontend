@@ -90,7 +90,9 @@ const PAGES = [
 // Switch the whole app to Arabic once; the choice persists in the store.
 await page.goto(`${BASE}/w/${WS}/overview`);
 await page.waitForLoadState("networkidle");
+await page.getByRole("button", { name: "Account", exact: true }).click();
 await page.click('button:has-text("ع")');
+await page.keyboard.press("Escape");
 await page.waitForTimeout(600);
 
 let total = 0;
@@ -128,3 +130,5 @@ for (const slug of PAGES) {
 console.log(`\nTotal reversed Latin/numeric runs in Arabic: ${total}`);
 
 await browser.close();
+
+if (total > 0) process.exitCode = 1;

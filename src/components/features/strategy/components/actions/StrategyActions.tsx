@@ -30,7 +30,12 @@ export function StrategyActions({ ws, isAr, mode, canEdit, onMode, onImport }: S
           </div>
         )}
       </Popover>
-      <TranslateStrategy ws={ws} direction={isAr ? "en-ar" : "ar-en"} isAr={isAr} />
+      <Popover label={isAr ? "تعبئة لغة أخرى" : "Fill another language"} button={<><Icon name="language" size={16} />{isAr ? "تعبئة لغة أخرى" : "Fill another language"}</>}>
+        {() => <div className="flex flex-col gap-space-3 p-space-3">
+          <TranslateStrategy ws={ws} direction="ar-en" isAr={isAr} />
+          <TranslateStrategy ws={ws} direction="en-ar" isAr={isAr} />
+        </div>}
+      </Popover>
       <SegmentedToggle
         label={isAr ? "وضع العرض" : "Mode"}
         off={{ label: isAr ? "تحرير" : "Edit", icon: "pen" }}

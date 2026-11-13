@@ -6,6 +6,7 @@ import { AssetThumb } from "@/components/ui/media";
 import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import type { Lang } from "@/types/lang";
+import { brandInitials, brandSetup } from "@/lib/data/brandSetup";
 import { BRANDS_COPY } from "../../copy";
 
 /**
@@ -24,6 +25,8 @@ export function WorkspaceCard({
   lang?: Lang;
   c?: (typeof BRANDS_COPY)["en"];
 }) {
+  const setup = brandSetup(workspace);
+  const complete = setup.filter(step => step.done).length;
   const symbol = workspace.logo.symbol;
   const hasSymbol = symbol.phase === "attached" && symbol.url;
 
@@ -38,14 +41,14 @@ export function WorkspaceCard({
         ) : (
           // The initials are the only thing identifying a brand with no
           // symbol yet, so they sit at a contrast that can be read.
-          <span className="text-h1 font-medium text-text-faint">{workspace.initials}</span>
+          <span className="text-h1 font-medium text-text-faint">{brandInitials(workspace.name)}</span>
         )}
       </div>
       <div className="flex items-start gap-space-4">
         <div className="flex-1 min-w-0">
           <div className="text-h5 font-medium truncate">{workspace.name}</div>
           <div className="text-caption text-text-muted">
-            {c.edited(formatRelative(workspace.updatedAt, undefined, lang))} · {workspace.colors.length > 0 ? c.active : c.empty}
+            {c.edited(formatRelative(workspace.updatedAt, undefined, lang))} · {lang === "ar" ? `${complete} من ${setup.length} مكتمل` : `${complete} of ${setup.length} done`}
           </div>
           {role && role !== "owner" && <div className="text-caption text-text-muted">{c.sharedWithYou(c.roles[role] ?? role)}</div>}
         </div>

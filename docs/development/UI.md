@@ -279,3 +279,9 @@ themes and viewport widths.
 
 Focusable tab panels are content entry points. Keep their keyboard focus
 checks, but do not demand pointer cursors or hover fills intended for actions.
+
+## November audit implementation (2026-11-13)
+
+Account pages use `AccountHeader`; brand pages use a compact breadcrumb, account menu and a separate wrapping actions row. Keep Team and Settings in the sidebar footer; group identity, strategy, guideline, research and tools. Assets has its own `/w/[slug]/assets` entry. Account navigation follows account type and configured API capability.
+
+Brand identity and strategy tabs use `useUrlTab`, roving keyboard focus and a linked `TabPanel`. Preserve other query parameters and browser history. Shared tab rows must not shrink to zero in constrained flex layouts. Arabic uses Plex after Inter without an Arial metric fallback; check actual platform fonts when changing font configuration.

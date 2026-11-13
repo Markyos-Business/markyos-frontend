@@ -31,8 +31,8 @@ export function useNewBrandPage() {
       limit: {
         title: isAr ? `وصلت إلى حد حساب ${type.arLabel}` : `You're at your ${type.label.toLowerCase()} limit`,
         description: isAr
-          ? `حسابات ${type.arLabel} تملك حتى ${brandLimit} ${brandLimit === 1 ? type.arHome.noun : type.arHome.nounPlural}. تواصل مع ماركيوس لتغيير خطتك.`
-          : `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Contact Markyos to change your plan.`,
+          ? `حسابات ${type.arLabel} تملك حتى ${brandLimit} ${brandLimit === 1 ? type.arHome.noun : type.arHome.nounPlural}. خطط العلامات المدفوعة لا تزيد حد هذا الحساب.`
+          : `${type.label} accounts own up to ${brandLimit} ${brandLimit === 1 ? type.home.noun : type.home.nounPlural}. Per-brand plans do not increase this account limit.`,
       },
       view: null,
     };

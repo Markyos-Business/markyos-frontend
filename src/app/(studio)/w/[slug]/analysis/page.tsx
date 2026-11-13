@@ -10,7 +10,7 @@ export default function BrandAnalysisPage() {
   const page = useAnalysisPage(slug);
   if (!page) return null;
   return (
-    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} />}>
+    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} feature="analysis" />}>
       <AnalysisView {...page.view} />
     </PageShell>
   );

@@ -321,8 +321,8 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
           </h1>
           <p dir="auto" className="bidi-auto text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
             {isAr
-              ? "كل ملف تملكه مساحة العمل هذه، في مكان واحد. كل تبويب آخر في الهوية البصرية — الشعار، الخطوط، الأنماط، الرسومات، الرسوم التوضيحية، الأيقونات — يشير إلى هذه الملفات بالمعرّف بدلًا من الاحتفاظ برفع خاص به."
-              : "Every file this workspace owns, in one place. Every other Visual identity tab — Logo, Typography, Patterns, Graphics, Illustrations, Icons — references these by id rather than holding its own upload."}
+              ? "شعاراتك وخطوطك وصورك في مكتبة واحدة. أعد استخدام الملفات نفسها في أنحاء هوية علامتك."
+              : "Keep your logos, fonts and images in one library. Reuse the same files throughout your brand identity."}
           </p>
         </div>
         <input

@@ -393,6 +393,7 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
     ws,
     record,
     notPublished,
+    unpublishedLocale: record?.primaryLocale,
     hydrated,
     checkedStorage,
     unlocked,

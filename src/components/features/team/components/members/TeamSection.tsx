@@ -23,7 +23,7 @@ export function TeamSection({ ws, isAr, canGovern, editorsFull, editorsFullNote 
       {!canGovern && <p className="text-caption text-text-muted">{t("Only the brand owner can manage the team. Ask the owner to add someone or change a role.", "مالك العلامة وحده يدير الفريق. اطلب منه إضافة شخص أو تغيير دوره.")}</p>}
       {adding && canGovern && <InviteMemberForm ws={ws} isAr={isAr} canGovern={canGovern} editorsFull={editorsFull} editorsFullNote={editorsFullNote} onDone={() => setAdding(false)} />}
       {ws.team.length === 0 ? (
-        <EmptyHint>{canGovern ? t("Just you so far. Invite an editor or a client viewer to see roles in action.", "أنت وحدك حتى الآن. ادعُ محرّرًا أو عميلًا مشاهدًا لترى الأدوار عمليًا.") : t("No team members yet.", "لا يوجد أعضاء في الفريق بعد.")}</EmptyHint>
+        <EmptyHint>{canGovern ? t("Just you so far. Invite editors to collaborate or reviewers to read and leave feedback.", "أنت وحدك حتى الآن. ادعُ محرّرين للعمل معك أو مراجعين للقراءة وإبداء الملاحظات.") : t("No team members yet.", "لا يوجد أعضاء في الفريق بعد.")}</EmptyHint>
       ) : (
         <div className="flex flex-col gap-2">
           {ws.team.map((m) => (

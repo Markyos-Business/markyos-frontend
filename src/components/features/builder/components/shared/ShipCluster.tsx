@@ -60,7 +60,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
                 ? "انشر التغييرات ليراها العميل."
                 : "Push these changes to the client's site."
           }
-          className="h-9 cursor-pointer rounded-lg bg-solid px-4 text-[12px] font-semibold text-solid-ink disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 cursor-pointer rounded-lg bg-accent px-4 text-[12px] font-semibold text-accent-ink disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isAr ? "نشر" : "Publish"}
         </button>

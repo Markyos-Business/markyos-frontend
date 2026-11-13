@@ -8,13 +8,13 @@ import { PAGE_SECTION } from "../constants";
 /** The type sandbox: a Latin and an Arabic specimen, each with its own size, leading and weight. */
 export function useTypeLabPage(slug: string) {
   const page = useBrandPage(slug);
-  const [latinText, setLatinText] = useState("Brand governance for studios that ship in two directions.");
+  const [latinText, setLatinText] = useState("Brand governance that works in both directions.");
   const [latinSize, setLatinSize] = useState(40);
   const [latinLeading, setLatinLeading] = useState(1.2);
   const [latinTracking, setLatinTracking] = useState(-0.02);
   const [latinWeight, setLatinWeight] = useState<number>(600);
 
-  const [arabicText, setArabicText] = useState("إدارة الهوية البصرية للاستوديوهات التي تعمل باتجاهين.");
+  const [arabicText, setArabicText] = useState("إدارة الهوية البصرية التي تعمل باتجاهين.");
   const [arabicSize, setArabicSize] = useState(36);
   const [arabicLeading, setArabicLeading] = useState(1.5);
   const [arabicWeight, setArabicWeight] = useState<number>(500);

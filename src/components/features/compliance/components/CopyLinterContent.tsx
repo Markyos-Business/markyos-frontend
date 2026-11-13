@@ -33,6 +33,29 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
     setter(value.slice(0, f.start) + f.replacement + value.slice(f.end));
   }
 
+  const englishDraft = (<DraftPanel
+          label="English"
+          arLabel="الإنجليزية"
+          dir="ltr"
+          isAr={isAr}
+          value={en}
+          onChange={setEn}
+          placeholder={isAr ? "الصق المسودة الإنجليزية: عنوان أو تعليق أو سطر منتج." : "Paste the English draft: a headline, a caption, a product line."}
+          findings={enFindings}
+          onFix={(f) => applyFix("en", f)}
+        />);
+  const arabicDraft = (<DraftPanel
+          label="Arabic"
+          arLabel="العربية"
+          dir="rtl"
+          isAr={isAr}
+          value={ar}
+          onChange={setAr}
+          placeholder="الصق النسخة العربية هنا."
+          findings={arFindings}
+          onFix={(f) => applyFix("ar", f)}
+        />);
+
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
       <div>
@@ -93,28 +116,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        <DraftPanel
-          label="English"
-          arLabel="الإنجليزية"
-          dir="ltr"
-          isAr={isAr}
-          value={en}
-          onChange={setEn}
-          placeholder={isAr ? "الصق المسودة الإنجليزية: عنوان أو تعليق أو سطر منتج." : "Paste the English draft: a headline, a caption, a product line."}
-          findings={enFindings}
-          onFix={(f) => applyFix("en", f)}
-        />
-        <DraftPanel
-          label="Arabic"
-          arLabel="العربية"
-          dir="rtl"
-          isAr={isAr}
-          value={ar}
-          onChange={setAr}
-          placeholder="الصق النسخة العربية هنا."
-          findings={arFindings}
-          onFix={(f) => applyFix("ar", f)}
-        />
+        {isAr ? <>{arabicDraft}{englishDraft}</> : <>{englishDraft}{arabicDraft}</>}
       </div>
 
       {touched && total === 0 && (

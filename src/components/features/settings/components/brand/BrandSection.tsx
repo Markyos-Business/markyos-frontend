@@ -79,7 +79,7 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
     }
     if (next === ws.name) return;
     renameWorkspace(ws.id, next);
-    showToast(isAr ? `أُعيدت التسمية إلى ${next}. رابط العميل لم يتغير.` : `Renamed to ${next}. The client link is unchanged.`, "success");
+    showToast(isAr ? `أُعيدت التسمية إلى ${next}. رابط الدليل المشترك لم يتغير.` : `Renamed to ${next}. The shared guideline link is unchanged.`, "success");
   }
 
   return (
@@ -97,7 +97,7 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
         placeholder={t("e.g. Nadeen Studio", "مثل: استوديو نادين")}
       />
       <span className="text-[12px] text-text-faint">
-        {t("Shown across the app and on the client's guideline site. The client link stays", "يظهر في التطبيق وفي موقع الدليل لدى العميل. يبقى رابط العميل")}{" "}
+        {t("Shown across the app and on the published guideline. Its shared link stays", "يظهر في التطبيق وفي موقع الدليل المنشور. يبقى الرابط المشترك")}{" "}
         <span dir="ltr" className="font-mono">/v/{ws.slug}</span>{" "}
         {t("— renaming never breaks a link you've already shared.", "، فإعادة التسمية لا تكسر أي رابط شاركته من قبل.")}
       </span>

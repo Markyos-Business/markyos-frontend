@@ -60,7 +60,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
           value={webhook}
           onChange={(e) => setWebhook(e.target.value)}
           placeholder="https://yourapp.com/webhooks/markyos"
-          hint={t("Fires on publish, approval and sign-off events. Not sent anywhere yet in this demo.", "يُرسل عند النشر والموافقة والاعتماد. لا يُرسل إلى أي مكان بعد في هذه النسخة.")}
+          hint={t("Delivery is not active yet. Save a destination for future notifications; use activity history for current updates.", "الإرسال غير مفعّل بعد. احفظ الوجهة للإشعارات المستقبلية، وتابع التحديثات الحالية في سجل النشاط.")}
         />
         <Button
           variant="soft"

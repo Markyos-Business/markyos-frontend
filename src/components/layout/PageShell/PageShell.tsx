@@ -1,5 +1,6 @@
 "use client";
 
+import { TabPanel, useTabIds } from "@/components/ui";
 import type { ReactNode } from "react";
 import type { Workspace } from "@/types";
 import { PageContainer } from "../PageContainer";
@@ -23,16 +24,13 @@ type PageShellProps = {
 
 /** A brand page: its top bar, then the scrolling body. */
 export function PageShell({ workspace, section, arSection, right, tabs, tabsRight, width = "default", offline, topBar = true, children }: PageShellProps) {
+  const ids = useTabIds();
+  const active = tabs?.find(tab => tab.active)?.key ?? tabs?.[0]?.key;
+  const content = width === "full" ? children : <PageContainer width={width} offline={offline}>{children}</PageContainer>;
   return (
     <>
-      {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} />}
-      {width === "full" ? (
-        children
-      ) : (
-        <PageContainer width={width} offline={offline}>
-          {children}
-        </PageContainer>
-      )}
+      {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} tabsId={ids.id} panelId={ids.panelId} />}
+      {active ? <TabPanel id={ids.panelId} tabsId={ids.id} active={active} className="flex min-h-0 flex-1 flex-col overflow-hidden">{content}</TabPanel> : content}
     </>
   );
 }

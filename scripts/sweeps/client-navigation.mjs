@@ -46,7 +46,7 @@ try {
       await page.goto(`${BASE}/w/nadeen-studio/overview?lang=${lang}`, { waitUntil: "networkidle" });
       const nav = await sidebar(page, config);
       const hrefs = await nav.locator("a").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      for (const section of ["discovery", "analysis"]) assert.equal(hrefs.includes(`/w/nadeen-studio/${section}`), role !== "client", `${role}: ${section}`);
+      for (const section of ["discovery", "analysis"]) assert.equal(hrefs.includes(`/w/nadeen-studio/${section}`), false, `browser-only build omits unavailable ${section}`);
       assert(hrefs.includes("/w/nadeen-studio/strategy"));
       assert(hrefs.includes("/w/nadeen-studio/team"));
       assert.equal(hrefs.includes("/v/nadeen-studio"), role === "client");

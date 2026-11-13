@@ -13,7 +13,7 @@ const pages: Record<string, Name> = {
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
 };
 const brandPages: Record<string, Name> = {
-  "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], builder: ["Guideline editor", "محرر الدليل"],
+  "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], assets: ["Assets", "الأصول"], builder: ["Guideline editor", "محرر الدليل"],
   strategy: ["Strategy", "الاستراتيجية"], "visual-identity": ["Visual identity", "الهوية البصرية"],
   moodboard: ["Moodboards", "الألواح الإلهامية"], brief: ["Brand brief", "ملخص العلامة"], team: ["Team", "الفريق"],
   compliance: ["Brand checks", "فحوص العلامة"], departments: ["Departments", "الأقسام"], discovery: ["Discovery", "الاكتشاف"],

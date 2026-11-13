@@ -20,7 +20,7 @@ const SLOT_ORDER: { kind: SlotKind; label: string; arLabel: string; tag: string 
 
 export function LogoSystemContent({ ws }: { ws: Workspace }) {
   const { updateLogoSlot, setLogoUsageNotes, setLogoColorIds, uiLang } = useApp();
-  const [selectedKind, setSelectedKind] = useState<SlotKind>("latin");
+  const [selectedKind, setSelectedKind] = useState<SlotKind>(ws.primaryLocale === "ar" ? "arabic" : "latin");
   const [pending, setPending] = useState<(PendingUpload & { kind: SlotKind }) | null>(null);
   const [showDownload, setShowDownload] = useState(false);
   const [notesDraft, setNotesDraft] = useState<string | null>(null);
@@ -87,6 +87,8 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setShowDownload(true)}
+          disabled={!Object.values(ws.logo).some(slot => slot.phase === "attached")}
+          title={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
           className="h-9 px-[18px] rounded-lg text-[13px] font-semibold cursor-pointer"
           style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >

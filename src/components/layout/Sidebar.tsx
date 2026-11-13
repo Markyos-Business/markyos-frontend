@@ -2,129 +2,63 @@
 
 import { usePathname } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
-import { Workspace } from "@/types";
-import { AppSidebar, SidebarItem } from "./AppSidebar";
+import type { Workspace } from "@/types";
+import { AppSidebar, type SidebarItem } from "./AppSidebar";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 import { roleOn } from "@/lib/data/access";
+import { API_ENABLED } from "@/lib/api/client";
 import { canOpenBrandPage, publishedGuidelineHref } from "@/lib/data/brandNavigation";
 
-interface NavItem {
-  key: string;
-  label: string;
-  arLabel: string;
-  icon: string;
-  href: string;
-  /** Other paths under the brand that count as this item. */
-  also?: string[];
-}
+type Item = { key: string; label: string; arLabel: string; icon: string; path: string; api?: boolean };
+const groups = [
+  { key: "identity", label: "Brand identity", arLabel: "هوية العلامة", items: [
+    { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", path: "overview" },
+    { key: "assets", label: "Assets", arLabel: "الأصول", icon: "file-alt", path: "assets" },
+    { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", path: "visual-identity" },
+  ] },
+  { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", items: [
+    { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", path: "strategy" },
+    { key: "departments", label: "Departments", arLabel: "الأقسام", icon: "book", path: "departments" },
+  ] },
+  { key: "site", label: "Guideline site", arLabel: "موقع الدليل", items: [
+    { key: "builder", label: "Guidelines editor", arLabel: "محرر الدليل", icon: "layer-group", path: "builder" },
+  ] },
+  { key: "research", label: "Research", arLabel: "البحث", items: [
+    { key: "discovery", label: "Discovery", arLabel: "الاستكشاف", icon: "clipboard-list", path: "discovery", api: true },
+    { key: "analysis", label: "Analysis", arLabel: "التحليل", icon: "chart-line", path: "analysis", api: true },
+    { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", path: "moodboard" },
+  ] },
+  { key: "tools", label: "Tools", arLabel: "الأدوات", items: [
+    { key: "drafts", label: "Drafts", arLabel: "المسودات", icon: "inbox", path: "drafts" },
+    { key: "type-lab", label: "Type sandbox", arLabel: "مختبر الخطوط", icon: "sliders", path: "type-lab" },
+    { key: "compliance", label: "Compliance", arLabel: "المطابقة", icon: "shield-alt", path: "compliance" },
+  ] },
+] satisfies { key: string; label: string; arLabel: string; items: Item[] }[];
 
-const BOOK_NAV: NavItem[] = [
-  { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", href: "" },
-  // First in the list because it is first in the work: discovery happens before
-  // any design decision, and a nav that buries it teaches the opposite. Forms
-  // and call notes both live under it.
-  { key: "discovery", label: "Discovery", arLabel: "الاستكشاف", icon: "clipboard-list", href: "/discovery", also: ["/forms"] },
-  { key: "analysis", label: "Analysis", arLabel: "التحليل", icon: "chart-line", href: "/analysis" },
-  { key: "moodboard", label: "Moodboard", arLabel: "لوح الإلهام", icon: "image", href: "/moodboard" },
-  { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", href: "/visual-identity" },
-  { key: "strategy", label: "Strategy", arLabel: "الاستراتيجية", icon: "bullseye", href: "/strategy" },
-  { key: "departments", label: "Departments", arLabel: "أقسام الشركة", icon: "book", href: "/departments" },
-  { key: "builder", label: "Guidelines editor", arLabel: "محرر الدليل", icon: "layer-group", href: "/builder" },
-];
-
-const GOVERN_NAV: NavItem[] = [
-  { key: "drafts", label: "Drafts", arLabel: "المسودات", icon: "inbox", href: "/drafts" },
-  { key: "type-lab", label: "Type sandbox", arLabel: "مختبر الخطوط", icon: "sliders", href: "/type-lab" },
-  { key: "compliance", label: "Compliance", arLabel: "المطابقة", icon: "shield-alt", href: "/compliance" },
-  { key: "team", label: "Team & history", arLabel: "الفريق والإصدارات", icon: "users", href: "/team" },
-];
-
-/** A brand's navigation: its book, its governance and its settings. */
 export function Sidebar({ workspace }: { workspace: Workspace }) {
   const pathname = usePathname();
-  const base = `/w/${workspace.slug}`;
   const { uiLang, state } = useApp();
   const isAr = uiLang(workspace) === "ar";
   const role = roleOn(workspace, state.session);
   const isClient = role === "client";
+  const base = `/w/${workspace.slug}`;
   const reviewHref = isClient ? publishedGuidelineHref(workspace) : null;
-  const available = (item: NavItem) => canOpenBrandPage(role, `${base}${item.href}`, workspace.slug);
-
-  const filledSlots = Object.values(workspace.logo).filter((s) => s.phase === "attached").length;
-
-  function badgeFor(key: string): string | number | undefined {
-    if (key === "visual-identity") return `${filledSlots}/3`;
-    if (key === "builder") {
-      const total = workspace.customBlocks.length + workspace.pages.reduce((n, p) => n + p.blocks.length, 0);
-      return total || undefined;
-    }
-    if (key === "departments") return workspace.departmentViews.length || undefined;
-    // A queue nobody can see the depth of is a queue that stops being worked.
-    if (key === "drafts") return workspace.drafts.filter((d) => d.status === "pending").length || undefined;
-    // Boards are projects, so the count is how many there are.
-    if (key === "moodboard") return workspace.moodboards.length || undefined;
-    if (key === "team") {
-      const pending = workspace.approvals.filter((a) => a.status === "pending").length;
-      return pending || undefined;
-    }
-    return undefined;
-  }
-
-  function toItem(item: NavItem): SidebarItem {
-    const href = `${base}${item.href}`;
-    return {
-      key: item.key,
-      label: isAr ? item.arLabel : item.label,
-      icon: item.icon,
-      href: item.href === "" ? `${base}/overview` : href,
-      active:
-        item.href === ""
-          ? pathname === base || pathname === `${base}/overview`
-          : [item.href, ...(item.also ?? [])].some((h) => pathname.startsWith(`${base}${h}`)),
-      badge: badgeFor(item.key),
-    };
-  }
-
-  return (
-    <AppSidebar
-      label={isClient ? (isAr ? "مراجعة العلامة" : "Brand review") : (isAr ? "تنقل العلامة" : "Brand")}
-      title={workspace.name}
-      titleHref="/brands"
-      storageKey={SIDEBAR_RAILS.studio}
-      isAr={isAr}
-      collapseLabels={
-        isAr ? { collapse: "طيّ القائمة", expand: "توسيع القائمة" } : { collapse: "Collapse sidebar", expand: "Expand sidebar" }
-      }
-      // Named so a sweep can assert where this rail is *not* rendered. The
-      // guidelines editor runs without it — see `focused` in the workspace
-      // layout — and "the studio nav is absent on that route" is a claim worth
-      // holding to account, because it is the whole reason that editor has a
-      // canvas worth looking at.
-      rootProps={{ "data-studio-nav": "" }}
-      sections={[
-        { key: "book", label: isAr ? "دليل الهوية" : "Brand book", items: BOOK_NAV.filter(available).map(toItem) },
-        { key: "govern", label: isAr ? "الحوكمة" : "Governance", items: GOVERN_NAV.filter(available).map(toItem) },
-      ]}
-      footerSlot={isClient && !reviewHref ? (
-        <p className="px-space-2 text-caption text-text-muted">
-          {isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}
-        </p>
-      ) : undefined}
-      footer={[
-        ...(reviewHref ? [{
-          key: "review-guideline",
-          label: isAr ? "مراجعة الدليل" : "Review guideline",
-          icon: "eye",
-          href: reviewHref,
-        }] : []),
-        {
-          key: "settings",
-          label: isAr ? "الإعدادات" : "Settings",
-          icon: "cog",
-          href: `${base}/settings`,
-          active: pathname === `${base}/settings`,
-        },
-      ]}
-    />
-  );
+  const toItem = (item: Item): SidebarItem => ({
+    key: item.key, label: isAr ? item.arLabel : item.label, icon: item.icon, href: `${base}/${item.path}`,
+    active: pathname === `${base}/${item.path}` || pathname.startsWith(`${base}/${item.path}/`) || (item.key === "discovery" && pathname.startsWith(`${base}/forms`)),
+    badge: item.key === "assets" ? workspace.assets.length || undefined : item.key === "drafts" ? workspace.drafts.filter(draft => draft.status === "pending").length || undefined : undefined,
+  });
+  const sections = groups.map(group => ({ key: group.key, label: isAr ? group.arLabel : group.label,
+    items: group.items.filter((item: Item) => (!item.api || API_ENABLED) && canOpenBrandPage(role, `${base}/${item.path}`, workspace.slug)).map(toItem),
+  })).filter(group => group.items.length > 0);
+  return <AppSidebar label={isClient ? (isAr ? "مراجعة العلامة" : "Brand review") : (isAr ? "تنقل العلامة" : "Brand")}
+    title={workspace.name} titleHref="/brands" storageKey={SIDEBAR_RAILS.studio} isAr={isAr}
+    collapseLabels={isAr ? {collapse:"طيّ القائمة",expand:"توسيع القائمة"} : {collapse:"Collapse sidebar",expand:"Expand sidebar"}}
+    rootProps={{"data-studio-nav":""}} sections={sections}
+    footerSlot={isClient && !reviewHref ? <p className="px-space-2 text-caption text-text-muted">{isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}</p> : undefined}
+    footer={[
+      ...(reviewHref ? [{key:"review-guideline",label:isAr?"مراجعة الدليل":"Review guideline",icon:"eye",href:reviewHref}] : []),
+      toItem({key:"team",label:"Team & history",arLabel:"الفريق والإصدارات",icon:"users",path:"team"}),
+      toItem({key:"settings",label:"Settings",arLabel:"الإعدادات",icon:"cog",path:"settings"}),
+    ]} />;
 }

@@ -107,8 +107,8 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
           {t("Checked against every brand in your account. Leave it empty and the client link stays", "يُتحقق منه مقابل كل علامات حسابك. اتركه فارغًا ويبقى رابط العميل")}{" "}
           <span dir="ltr" className="font-mono">/v/{ws.slug}</span>.{" "}
           {t(
-            "Pointing a real subdomain at this build needs DNS and hosting that aren't part of it yet, so this reserves the name rather than serving from it.",
-            "توجيه نطاق فرعي حقيقي يحتاج إلى إعداد DNS واستضافة غير متوفرين بعد، لذلك يحجز هذا الاسم ولا يخدم منه."
+            "Your preferred address is saved here. Keep using the Markyos link until this address is activated.",
+            "حُفظ العنوان الذي تفضّله هنا. استخدم رابط ماركيوس إلى أن يُفعَّل هذا العنوان."
           )}
         </span>
       </div>

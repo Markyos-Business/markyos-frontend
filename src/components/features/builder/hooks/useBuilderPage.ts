@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
@@ -19,6 +21,7 @@ import { useBuilderPanels } from "./useBuilderPanels";
  * editor's panels offer.
  */
 export function useBuilderPage(slug: string) {
+  const router = useRouter();
   const {
     addBlock,
     updateBlock,
@@ -84,6 +87,11 @@ export function useBuilderPage(slug: string) {
    * is the hook, set by both editing shells.
    */
   const revealFlow = useCallback((flowId: string | null) => {
+    if (flowId?.startsWith("setup:") && ws) {
+      const step = brandSetup(ws).find(step => `setup:${step.key}` === flowId);
+      if (step) router.push(step.href);
+      return;
+    }
     setSelectedId(flowId);
     // Deselecting has nowhere to scroll to.
     if (!flowId) return;
@@ -105,7 +113,7 @@ export function useBuilderPage(slug: string) {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       el.scrollIntoView({ behavior: far || reduced ? "auto" : "smooth", block: "center" });
     });
-  }, []);
+  }, [ws, router]);
 
   /**
    * The review of whichever page is on the canvas.
@@ -119,7 +127,7 @@ export function useBuilderPage(slug: string) {
   const review = useMemo(() => {
     if (!ws) return { findings: [], errors: 0, warnings: 0, checked: 0 };
     const page = activePageId ? ws.pages.find((p) => p.id === activePageId) : undefined;
-    return reviewPage({
+    const report = reviewPage({
       blocks: page ? page.blocks : ws.customBlocks,
       traits: ws.strategy.voiceTraits,
       // Only the three the renderer has an empty state for — see
@@ -130,6 +138,12 @@ export function useBuilderPage(slug: string) {
         iconAssetCount: ws.assets.filter((a) => a.type === "icon").length,
       },
     });
+    const setup = brandSetup(ws).filter(step => step.key !== "publish" && !step.done).map(step => ({
+      id: `setup:${step.key}`, flowId: `setup:${step.key}`, label: step.label, arLabel: step.arLabel,
+      severity: "warning" as const, message: "Brand essentials are missing. Open this setup step before publishing.",
+      arMessage: "أحد أساسيات العلامة غير مكتمل. افتح هذه الخطوة قبل النشر.",
+    }));
+    return { ...report, findings: [...setup, ...report.findings], warnings: report.warnings + setup.length };
   }, [ws, activePageId]);
 
   /**
@@ -254,14 +268,16 @@ export function useBuilderPage(slug: string) {
    * it was empty.
    */
   async function handlePublish() {
-    if (review.errors > 0) {
+    const incomplete = brandSetup(ws!).filter(step => step.key !== "publish" && !step.done);
+    if (review.errors > 0 || incomplete.length > 0) {
       const ok = await confirm({
         title: isAr
-          ? `${review.errors} مشكلة في هذه الصفحة — أتريد النشر؟`
-          : `${review.errors} thing${review.errors === 1 ? "" : "s"} on this page look${review.errors === 1 ? "s" : ""} broken. Publish anyway?`,
-        body: isAr
-          ? "راجع القائمة بجوار زر النشر لرؤية ما هي — أقسام فارغة أو روابط لا تعمل يراها العميل كما هي."
-          : "The list beside the Publish button says what they are. Empty sections and dead links reach the client exactly as they are here.",
+          ? "الدليل يحتاج إلى مراجعة — أتريد النشر؟"
+          : "This guideline needs a review. Publish anyway?",
+        body: [
+          review.errors > 0 ? (isAr ? `${review.errors} عناصر في هذه الصفحة تحتاج إلى إصلاح. راجع القائمة بجوار زر النشر.` : `${review.errors} thing${review.errors === 1 ? "" : "s"} on this page look${review.errors === 1 ? "s" : ""} broken. Review the list beside Publish.`) : "",
+          incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}. يمكنك المتابعة أو إكمالها أولًا.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}. You can continue or finish these first.`) : "",
+        ].filter(Boolean).join("\n\n"),
         confirmLabel: isAr ? "انشر على أي حال" : "Publish anyway",
         isAr,
       });

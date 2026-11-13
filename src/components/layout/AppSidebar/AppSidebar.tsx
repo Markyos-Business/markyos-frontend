@@ -179,7 +179,7 @@ export function AppSidebar({
       data-rail={inDrawer ? undefined : rail}
       data-ready={ready && !inDrawer ? "" : undefined}
       // The 1px separator on the inline-end side is the hairline at 10%.
-      className={`flex shrink-0 flex-col gap-space-8 overflow-y-auto overflow-x-hidden py-space-8 ${
+      className={`flex shrink-0 flex-col gap-space-8 overflow-hidden py-space-8 ${
         inDrawer
           ? "h-full w-72 max-w-full px-space-3"
           : `bg-sidebar shadow-[inset_-1px_0_0_var(--hairline-strong)] rtl:shadow-[inset_1px_0_0_var(--hairline-strong)] ${collapsed ? RAIL : OPEN}`
@@ -215,6 +215,7 @@ export function AppSidebar({
         </div>
       )}
 
+      <div className="flex min-h-0 flex-1 flex-col gap-space-5 overflow-y-auto">
       {sections.map((section) => (
         <div key={section.key} className="flex flex-col gap-space-1">
           {section.label &&
@@ -233,7 +234,8 @@ export function AppSidebar({
         </div>
       ))}
 
-      {footer.map((item, i) => renderItem(item, `shrink-0 ${i === 0 ? "mt-auto" : ""}`))}
+      </div>
+      <div className="flex shrink-0 flex-col gap-space-1">{footer.map(item => renderItem(item))}</div>
       {footerSlot && !collapsed && <div className={`shrink-0 pt-space-4 ${footer.length ? "" : "mt-auto"}`}>{footerSlot}</div>}
     </nav>
   );
