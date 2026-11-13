@@ -23,7 +23,7 @@ const fieldBlockClasses = (size: FieldSize = "md", labelled = true) =>
   size === "sm" ? "flex w-full flex-col gap-space-1" : `flex w-full flex-col gap-space-2 ${labelled ? "min-h-field" : ""}`;
 
 /** A field's title: 12px, muted, weight 400. */
-const labelClasses = "cursor-pointer px-space-4 text-caption text-text-muted";
+const labelClasses = "cursor-pointer px-space-5 text-caption text-text-muted";
 
 type FieldLabelProps = { htmlFor?: string; required?: boolean; children: ReactNode };
 
@@ -54,7 +54,7 @@ const FieldNote = ({ id, error, hint }: FieldNoteProps) => {
       // Errors are announced the moment they appear. A hint is not: it is
       // there before you start and repeating it would talk over the field.
       role={error ? "alert" : undefined}
-      className={`px-space-4 text-caption ${error ? "text-danger" : "text-text-faint"}`}
+      className={`px-space-5 text-caption ${error ? "text-danger" : "text-text-faint"}`}
     >
       {note}
     </span>
@@ -92,7 +92,7 @@ const InputField = ({ label, labelRight, error, hint, icon, iconSide = "start", 
   return (
     <div className={`${fieldBlockClasses(size, Boolean(label || hint || error))} ${className}`}>
       {(label || labelRight) && (
-        <div className="flex items-center justify-between pe-space-4">
+        <div className="flex items-center justify-between pe-space-5">
           {label && (
             <FieldLabel htmlFor={id} required={inputProps.required}>
               {label}

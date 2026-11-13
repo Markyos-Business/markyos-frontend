@@ -1191,18 +1191,30 @@ export const baseStyles = [
       "border": "0",
       "border-bottom": "1px solid var(--line-strong)",
       "border-radius": "0",
-      "background": "transparent",
-      "padding-block": "8px",
-      // --space-4. Keeps the value off the field's edges, which matters when
-      // something does fill it (browser autofill paints a box behind it).
-      // Labels and notes take the same inset so they line up with the value.
-      "padding-inline": "10px",
+      // The same ground as the filter select (`bg-ink-soft`), so a text field
+      // and a select side by side read as one family. State stays the underline.
+      "background": "var(--ink-soft)",
+      // The select's measurements: 40px tall (--control-h-sm: 9 + 21 + 9 + the
+      // 1px underline) with --space-5 either side, so a field and a select in
+      // one row line up. Labels and notes take the same inset as the value.
+      "padding-block": "9px",
+      "padding-inline": "14px",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
       "color": "var(--text)",
       "outline": "none",
       "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
+    },
+  },
+  {
+    // The select's hover: the button scrim over the resting ground. An input
+    // can't hold the ::after the buttons use, so the scrim is a background
+    // layer here, and it adapts to the theme through `--hover-scrim`.
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-field:hover:not(:disabled):not(:has(:disabled))": {
+        "background-image": "linear-gradient(var(--hover-scrim), var(--hover-scrim))",
+      },
     },
   },
   {
