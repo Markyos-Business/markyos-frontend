@@ -110,6 +110,14 @@ type RichTextEditorProps = {
   isAr?: boolean;
   minHeight?: number;
   autoFocus?: boolean;
+  /** Ids and states for the editable area, from a Field around it. */
+  editorProps?: {
+    id?: string;
+    "aria-labelledby"?: string;
+    "aria-describedby"?: string;
+    "aria-invalid"?: true;
+    "aria-required"?: true;
+  };
 };
 
 const RichTextEditor = ({
@@ -120,6 +128,7 @@ const RichTextEditor = ({
   isAr = false,
   minHeight = 140,
   autoFocus = false,
+  editorProps,
 }: RichTextEditorProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [empty, setEmpty] = useState(() => richIsEmpty(value));
@@ -309,9 +318,12 @@ const RichTextEditor = ({
           </span>
         )}
         <div
+          {...editorProps}
           ref={attach}
           contentEditable
           suppressContentEditableWarning
+          role="textbox"
+          aria-multiline="true"
           dir="auto"
           onInput={sync}
           onBlur={onBlur}

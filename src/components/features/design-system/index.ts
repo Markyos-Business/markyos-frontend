@@ -5,3 +5,4 @@ export { UiGallery } from "./components/UiGallery";
 export { MotionGallery } from "./components/motion/MotionGallery";
 
 export { TableSelectGallery } from "./components/TableSelectGallery";
+export { FormsGallery } from "./components/FormsGallery";

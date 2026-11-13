@@ -1,82 +1,144 @@
 "use client";
 
-import { useId } from "react";
-import { Listbox } from "../fields/Listbox";
+import { useState } from "react";
+import { AsYouType, isValidPhoneNumber, parsePhoneNumberFromString } from "libphonenumber-js";
+import { DEFAULT_DIAL_CODE, DIAL_CODES } from "@/constants/dialCodes";
 import { useUiStrings } from "../../ui/i18n/uiStrings";
-import { DIAL_CODES } from "@/constants/dialCodes";
-import { FieldLabel, FieldNote } from "../fields/InputField";
+import { Field, type FieldState } from "../field/Field";
+import { Listbox } from "../fields/Listbox";
+import { describedBy } from "../fields/InputField";
 
-type PhoneFieldProps = {
+type PhoneFieldProps = Omit<FieldState, "success"> & {
   label?: string;
+  info?: string;
+  /** "+966". */
   dialCode: string;
+  /** The national number as typed; formatted as you go ("50 123 4567"). */
   number: string;
   onDialCodeChange: (code: string) => void;
   onNumberChange: (number: string) => void;
   onBlur?: () => void;
-  required?: boolean;
   placeholder?: string;
-  error?: string;
+  success?: string;
+  invalidMessage?: string;
+  className?: string;
 };
+
+const isoFor = (code: string) => DIAL_CODES.find((d) => d.code === code)?.iso;
 
 /**
  * A phone number: country code and number side by side in one box. The pair
- * stays left to right in Arabic, the way a phone number is written; the
- * number keeps only digits, spaces, brackets and dashes.
+ * stays left to right in Arabic, the way a phone number is written. The
+ * number is formatted for its country as you type, and an incomplete one is
+ * flagged on leaving the field.
  */
 const PhoneField = ({
-  label = "Phone number",
+  label,
+  info,
   dialCode,
   number,
   onDialCodeChange,
   onNumberChange,
   onBlur,
-  required = false,
   placeholder = "50 123 4567",
+  invalidMessage,
   error,
+  className = "",
+  ...state
 }: PhoneFieldProps) => {
   const { t } = useUiStrings();
-  const id = `ph-${useId()}`;
-  const noteId = `${id}-note`;
+  const [invalid, setInvalid] = useState(false);
+  const iso = isoFor(dialCode);
+  const digits = number.replace(/\D/g, "");
+
   return (
-    <div className="flex min-h-field w-full flex-col gap-space-2">
-      <FieldLabel htmlFor={id} required={required}>
-        {label}
-      </FieldLabel>
-      <div
-        dir="ltr"
-        // The underline field around both parts, so the code and the number
-        // read as one field and share its focus and error state.
-        className="mk-field flex gap-space-4"
-      >
-        <span className="shrink-0">
-          <Listbox
-            aria-label={t.countryCode}
-            value={dialCode}
-            onChange={onDialCodeChange}
-            options={DIAL_CODES.map((d) => ({ value: d.code, label: d.label }))}
-            panelWidth={220}
-            triggerClassName="h-full bg-transparent text-body font-medium text-text outline-none"
-          />
-        </span>
+    <Field
+      label={label ?? t.phoneNumber}
+      info={info}
+      {...state}
+      error={error ?? (invalid ? (invalidMessage ?? t.invalidPhone) : undefined)}
+      boxDir="ltr"
+      className={`min-h-field ${className}`}
+      prefix={
+        <Listbox
+          aria-label={t.countryCode}
+          value={dialCode}
+          onChange={(code) => {
+            onDialCodeChange(code);
+            const nextIso = isoFor(code);
+            if (digits) onNumberChange(nextIso ? new AsYouType(nextIso).input(digits) : digits);
+          }}
+          options={DIAL_CODES.map((d) => ({ value: d.code, label: d.label }))}
+          panelWidth={200}
+          disabled={state.disabled || state.locked || state.readOnly}
+          triggerClassName="h-full bg-transparent font-medium text-text outline-none"
+        />
+      }
+    >
+      {(control) => (
         <input
-          id={id}
+          {...control}
           type="tel"
           inputMode="tel"
           autoComplete="tel-national"
+          dir="ltr"
           value={number}
-          required={required}
           placeholder={placeholder}
-          onChange={(e) => onNumberChange(e.target.value.replace(/[^\d\s()-]/g, ""))}
-          onBlur={onBlur}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? noteId : undefined}
-          className="min-w-0 flex-1 bg-transparent text-body font-medium text-text outline-none placeholder:font-normal placeholder:text-text-disabled"
+          aria-describedby={describedBy(undefined, control)}
+          onChange={(e) => {
+            const typed = e.target.value.replace(/[^\d\s()+-]/g, "");
+            // Deleting a space or bracket shouldn't fight the formatter.
+            const deleting = typed.length < number.length;
+            onNumberChange(iso && !deleting ? new AsYouType(iso).input(typed) : typed);
+            if (invalid) setInvalid(false);
+          }}
+          onBlur={() => {
+            setInvalid(digits !== "" && !isValidPhoneNumber(`${dialCode}${digits}`));
+            onBlur?.();
+          }}
+          className="mk-field-control"
         />
-      </div>
-      <FieldNote id={noteId} error={error} />
-    </div>
+      )}
+    </Field>
   );
 };
 
-export { PhoneField };
-export type { PhoneFieldProps };
+type PhoneInputProps = Omit<PhoneFieldProps, "dialCode" | "number" | "onDialCodeChange" | "onNumberChange"> & {
+  /** E.164, "+966501234567", or "". */
+  value: string;
+  onChange: (e164: string) => void;
+  /** The code to start on when the value has none. Default +966. */
+  defaultDialCode?: string;
+};
+
+/**
+ * PhoneInput: one value in E.164 ("+966501234567"), the form a backend and
+ * libphonenumber store, with the same field. Controlled.
+ */
+const PhoneInput = ({ value, onChange, defaultDialCode = DEFAULT_DIAL_CODE, ...rest }: PhoneInputProps) => {
+  const parsed = value ? parsePhoneNumberFromString(value) : undefined;
+  const [dialCode, setDialCode] = useState(() => (parsed ? `+${parsed.countryCallingCode}` : defaultDialCode));
+  const [number, setNumber] = useState(() => (parsed ? parsed.formatNational() : ""));
+  const emit = (code: string, typed: string) => {
+    const digits = typed.replace(/\D/g, "").replace(/^0+/, "");
+    onChange(digits ? `${code}${digits}` : "");
+  };
+  return (
+    <PhoneField
+      {...rest}
+      dialCode={dialCode}
+      number={number}
+      onDialCodeChange={(code) => {
+        setDialCode(code);
+        emit(code, number);
+      }}
+      onNumberChange={(typed) => {
+        setNumber(typed);
+        emit(dialCode, typed);
+      }}
+    />
+  );
+};
+
+export { PhoneField, PhoneInput };
+export type { PhoneFieldProps, PhoneInputProps };

@@ -1212,7 +1212,7 @@ export const baseStyles = [
     // can't hold the ::after the buttons use, so the scrim is a background
     // layer here, and it adapts to the theme through `--hover-scrim`.
     "@media (hover: hover) and (pointer: fine)": {
-      ".mk-field:hover:not(:disabled):not(:has(:disabled))": {
+      ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
         "background-image": "linear-gradient(var(--hover-scrim), var(--hover-scrim))",
       },
     },
@@ -1237,6 +1237,61 @@ export const baseStyles = [
   {
     ".mk-field[data-state=\"success\"]": {
       "border-bottom-color": "var(--success)",
+    },
+  },
+  {
+    ".mk-field[data-state=\"warning\"]": {
+      "border-bottom-color": "var(--warning)",
+    },
+  },
+  {
+    // Read-only and locked: the value is shown, not offered. A dashed rule
+    // and muted ink say "you can't change this" before anyone tries.
+    ".mk-field[data-readonly]": {
+      "border-bottom-style": "dashed",
+      "color": "var(--text-muted)",
+    },
+  },
+  /*
+   * A field with parts (prefix, suffix, a Copy button): `.mk-field` is the
+   * box and the control inside it is bare, so the box keeps the one look and
+   * the parts sit inside it.
+   */
+  {
+    ".mk-field-control": {
+      "flex": "1 1 0%",
+      // An input brings an intrinsic width of about 20 characters into its
+      // box's minimum width, so in a narrow column the box outgrew it and was
+      // clipped at its start. Width 0 takes that out; flex still grows it.
+      "width": "0",
+      "min-width": "0",
+      "border": "0",
+      "padding": "0",
+      "background": "transparent",
+      "font": "inherit",
+      "color": "inherit",
+      "outline": "none",
+    },
+  },
+  {
+    ".mk-field .mk-field-control::placeholder": {
+      "font-weight": "400",
+      "color": "var(--text-disabled)",
+    },
+  },
+  {
+    // Autofill: the browser's own yellow box is held off (its background
+    // never gets to transition in), and the field says it was filled for you
+    // with the accent's soft tint instead.
+    ".mk-field-control:autofill, .mk-field-control:-webkit-autofill, .mk-field:autofill, .mk-field:-webkit-autofill": {
+      "-webkit-text-fill-color": "var(--text)",
+      "caret-color": "var(--text)",
+      "transition": "background-color 600000s 0s, color 600000s 0s",
+    },
+  },
+  {
+    ".mk-field:has(:autofill), .mk-field:has(:-webkit-autofill), .mk-field:autofill": {
+      "background": "var(--accent-soft)",
     },
   },
   {

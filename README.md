@@ -70,6 +70,82 @@ ports, test analysis fake and provider mocks. Browser sweeps are separate
 `sweep:*` scripts in [package.json](package.json); use the relevant sweep when
 changing layout or interaction behavior.
 
+## Form fields
+
+Every field is built on one wrapper, `Field` ([src/components/form/field](src/components/form/field)),
+so they share the label, the note under the field, the states and the look
+(the underline field in [tailwind/base.js](tailwind/base.js), `.mk-field`). Import
+everything from `@/components/form`. Status and notes per component are in
+[STATUS.md](STATUS.md) (`npm run status`); the gallery is `/design-system/forms`
+with `NEXT_PUBLIC_UI_GALLERY=1`.
+
+**Shared props.** `label`, `info` (an ⓘ tooltip), `hint`, `required` or
+`optional`, and the states `error`, `warning`, `success`, `validating`,
+`locked` + `lockedReason`, `readOnly`, `disabled` and `loading` (a skeleton).
+`error` wins over `warning`, which wins over `success`. Text fields also take
+`prefix`, `suffix`, `action` (a Copy or Generate button), `showCount` with
+`maxLength`, `layout="horizontal"` and `size="sm"`. Every built-in word comes
+from the kit's strings in English or Arabic, and each can be overridden by a prop.
+
+| Field | Library name | Value |
+| --- | --- | --- |
+| `InputField` | TextInput | text, `register` |
+| `TextareaField` | Textarea | text, `register`; `autoGrow`, `maxRows` |
+| `EmailField`, `PasswordField` (`strength`), `SearchField` | EmailInput, PasswordInput, SearchInput | text, `register` |
+| `NumberField`, `CurrencyField` (`currency="SAR"`), `PercentageField` | NumberInput, CurrencyInput, PercentageInput | `number \| null`, `Controller` |
+| `UrlField` | UrlInput | full URL string, `Controller` |
+| `PhoneInput` (or `PhoneField` with code and number apart) | PhoneInput | E.164 string, `Controller` |
+| `SlugField` (`base`, `from`, `checkAvailability`) | SlugInput | slug string, `Controller` |
+| `HexColorField` | HexColorInput | `#RRGGBB`, `Controller` |
+| `BilingualField` (`layout="side" \| "tabs"`, `multiline`) | BilingualInput | `{ en, ar }`, `Controller` |
+| `RichTextField` | RichTextEditor | HTML string, `Controller` |
+| `OtpField` (`length` 4–6) | OtpInput | digits, `Controller` |
+| `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
+
+Text fields take react-hook-form's `register` directly; its `ref` lands on the
+real input. Fields that store a number or a structured value are controlled,
+so use `Controller`:
+
+```tsx
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { BilingualField, CurrencyField, EmailField, Fieldset, InputField } from "@/components/form";
+
+const schema = z.object({
+  name: z.string().min(1, "Enter a campaign name."),
+  email: z.email("Enter an email like nour@studio.sa."),
+  budget: z.number({ error: "Enter a budget." }).min(1000, "The minimum is SAR 1,000."),
+  title: z.object({ en: z.string().min(1, "Enter an English title."), ar: z.string() }),
+});
+
+function CampaignForm() {
+  const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: { name: "", email: "", budget: null as unknown as number, title: { en: "", ar: "" } },
+  });
+  return (
+    <form onSubmit={handleSubmit(save)} noValidate>
+      <Fieldset legend="Campaign">
+        <InputField label="Name" required maxLength={60} showCount {...register("name")} error={errors.name?.message} />
+        <EmailField label="Contact email" {...register("email")} error={errors.email?.message} />
+        <Controller name="budget" control={control} render={({ field, fieldState }) => (
+          <CurrencyField label="Budget" currency="SAR" value={field.value} onChange={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+        )} />
+        <Controller name="title" control={control} render={({ field }) => (
+          <BilingualField label="Title" value={field.value} onChange={field.onChange} errors={{ en: errors.title?.en?.message }} />
+        )} />
+      </Fieldset>
+      <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving…" : "Save"}</Button>
+    </form>
+  );
+}
+```
+
+An async check (is this name or slug free?) is `validating` while it runs,
+then `success` or `error` with the answer. The note is a live region, so the
+result is announced; `SlugField` does this for you given `checkAvailability`.
+
 ## Code and supporting references
 
 - [Routes](src/app) compose [feature modules](src/components/features), shared

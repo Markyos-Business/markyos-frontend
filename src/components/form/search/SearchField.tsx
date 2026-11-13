@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
+import { IconButton } from "../../ui/buttons/IconButton";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { Icon } from "../../ui/primitives/Icon";
 import { Kbd } from "../../ui/primitives/Kbd";
 import { fieldClasses, type FieldSize } from "../fields/InputField";
@@ -22,10 +24,12 @@ type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" 
   size?: FieldSize;
   /** Fill the row instead of the list-header width. */
   fullWidth?: boolean;
+  /** The clear button's name, e.g. "Clear search". Default from the kit's words. */
+  clearLabel?: string;
 };
 
 /** The search field of list headers and pickers: the underline field with a search glyph. */
-const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, ...rest }: SearchFieldProps) => {
+const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, clearLabel, ...rest }: SearchFieldProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const initial = typeof rest.defaultValue === "string" ? rest.defaultValue : "";
   const [text, setText] = useState(initial);
@@ -62,6 +66,24 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
     return () => window.removeEventListener("keydown", onKey);
   }, [shortcut]);
 
+  const { t } = useUiStrings();
+  // Whether there is anything to clear: the caller's value, or what's typed.
+  const [typed, setTyped] = useState(initial !== "");
+  const hasText = debounced ? text !== "" : rest.value !== undefined ? String(rest.value) !== "" : typed;
+
+  /**
+   * Clears through the input's own change event, so a controlled caller's
+   * onChange, the debounced search and an uncontrolled field all hear it.
+   */
+  const clear = () => {
+    const input = ref.current;
+    if (!input) return;
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(input, "");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    setTyped(false);
+    input.focus();
+  };
+
   const { defaultValue: _defaultValue, ...inputProps } = rest;
   return (
     <label className={`${fieldClasses(size)} flex items-center gap-space-3 ${fullWidth ? "" : "sm:w-65"}`}>
@@ -72,8 +94,20 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
         {...inputProps}
         {...(debounced ? { value: text, onChange: (e) => setText(e.target.value) } : { defaultValue: rest.value === undefined ? _defaultValue : undefined })}
         type="search"
-        className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-[12.5px]" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled`}
+        onInput={(e) => {
+          setTyped(e.currentTarget.value !== "");
+          inputProps.onInput?.(e);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && hasText) {
+            e.stopPropagation();
+            clear();
+          }
+          inputProps.onKeyDown?.(e);
+        }}
+        className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-[12.5px]" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled [&::-webkit-search-cancel-button]:hidden`}
       />
+      {hasText && <IconButton icon="times" label={clearLabel ?? t.clearField(label)} onClick={clear} className="-me-space-2 shrink-0 text-text-muted" />}
       {shortcut && (
         <span aria-hidden className="hidden shrink-0 sm:inline">
           <Kbd>⌘K</Kbd>
@@ -83,5 +117,8 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
   );
 };
 
-export { SearchField };
+/** SearchInput, by the UI library's name. */
+const SearchInput = SearchField;
+
+export { SearchField, SearchInput };
 export type { SearchFieldProps };

@@ -19,14 +19,7 @@ export interface ApiAccount {
   hasPassword: boolean;
 }
 
-export interface Strength {
-  /** 0–4. */
-  score: number;
-  /** A special case, or "" to read the level for `score` (see the copy's `strength`). */
-  label: "" | "tooCommon" | "tooSimple";
-  /** The single most useful thing to do next, as a copy key, or null when it's strong. */
-  advice: "commonAdvice" | "repeatAdvice" | "lengthAdvice" | "moreAdvice" | null;
-}
+export type { Strength } from "@/lib/passwordStrength";
 
 /** Where the reset flow is. */
 export type ResetStep = "request" | "sent" | "confirm";

@@ -2,6 +2,7 @@
 
 import { useId, useRef } from "react";
 import type { ClipboardEvent, KeyboardEvent } from "react";
+import { useUiStrings } from "../../ui/i18n/uiStrings";
 import { FieldNote, labelClasses } from "../fields/InputField";
 
 type OtpFieldProps = {
@@ -9,9 +10,12 @@ type OtpFieldProps = {
   /** The code so far, digits only. */
   value: string;
   onChange: (value: string) => void;
+  /** 4 to 6 digits. Default 6. */
   length?: number;
   required?: boolean;
   error?: string;
+  /** Each box's name, e.g. "Digit 2 of 6". Default from the kit's words. */
+  digitLabel?: (index: number, length: number) => string;
 };
 
 /**
@@ -19,7 +23,8 @@ type OtpFieldProps = {
  * and pasting a whole code fills every box. The boxes stay left to right in
  * Arabic too, because that is how a code is read and typed everywhere.
  */
-const OtpField = ({ label, value, onChange, length = 6, required = true, error }: OtpFieldProps) => {
+const OtpField = ({ label, value, onChange, length = 6, required = true, error, digitLabel }: OtpFieldProps) => {
+  const { t } = useUiStrings();
   const id = useId();
   const noteId = `${id}-note`;
   const digits = Array.from({ length }, (_, i) => value[i] ?? "");
@@ -75,7 +80,7 @@ const OtpField = ({ label, value, onChange, length = 6, required = true, error }
             type="text"
             inputMode="numeric"
             autoComplete={i === 0 ? "one-time-code" : "off"}
-            aria-label={`Digit ${i + 1} of ${length}`}
+            aria-label={(digitLabel ?? t.digitOf)(i + 1, length)}
             maxLength={1}
             value={digit}
             onChange={(e) => handleChange(i, e.target.value)}
@@ -93,5 +98,8 @@ const OtpField = ({ label, value, onChange, length = 6, required = true, error }
   );
 };
 
-export { OtpField };
+/** OtpInput, by the UI library's name. */
+const OtpInput = OtpField;
+
+export { OtpField, OtpInput };
 export type { OtpFieldProps };

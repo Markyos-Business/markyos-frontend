@@ -9,7 +9,7 @@ const pages: Record<string, Name> = {
   "/studio/board": ["Studio board", "لوحة الاستوديو"], "/account": ["Account", "الحساب"],
   "/people": ["People", "الأشخاص"], "/forms": ["Questionnaires", "الاستبيانات"], "/forms/new": ["New questionnaire", "استبيان جديد"],
   "/templates": ["Templates", "القوالب"], "/design-system": ["UI gallery", "معرض الواجهة"],
-  "/design-system/table-select": ["Table and select gallery", "معرض الجداول والقوائم"],
+  "/design-system/forms": ["Forms gallery", "معرض النماذج"], "/design-system/table-select": ["Table and select gallery", "معرض الجداول والقوائم"],
   "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"],
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
 };
