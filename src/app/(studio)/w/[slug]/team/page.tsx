@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { TeamView, useTeamPage } from "@/components/features/team";
+import { PageShell } from "@/features/shell";
+import { TeamView, useTeamPage } from "@/features/team";
 
 export default function TeamPage() {
   const { slug } = useParams<{ slug: string }>();

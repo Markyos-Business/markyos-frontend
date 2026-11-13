@@ -24,9 +24,9 @@ import { join, relative } from "node:path";
  */
 
 const ROOT = process.cwd();
-const THEME = join(ROOT, "src", "components", "features", "guideline-site", "utils", "theme.ts");
-const BLOCK_STYLE = join(ROOT, "src", "components", "features", "guideline-site", "utils", "blockStyle.ts");
-const GUIDELINE_DIR = join(ROOT, "src", "components", "features", "guideline-site", "components");
+const THEME = join(ROOT, "src", "features", "guideline-site", "utils", "theme.ts");
+const BLOCK_STYLE = join(ROOT, "src", "features", "guideline-site", "utils", "block-style.ts");
+const GUIDELINE_DIR = join(ROOT, "src", "features", "guideline-site", "components");
 
 /**
  * Tokens provided from outside the two emitters, and therefore exempt.
@@ -101,14 +101,14 @@ const unused = [...provided].filter((t) => !allConsumed.has(t) && !APP_PROVIDED.
 console.log(`Guideline token contract — ${provided.size} provided, ${allConsumed.size} consumed\n`);
 
 const TEMPLATES = [
-  ["Vault", "templates/VaultTemplate.tsx"],
-  ["Docs", "templates/DocsTemplate.tsx"],
-  ["Studio · Atlas", "templates/studio/StudioAtlas.tsx"],
-  ["Studio · Prism", "templates/studio/StudioPrism.tsx"],
-  ["Studio · Signal", "templates/studio/StudioSignal.tsx"],
-  ["Manual", "templates/ManualTemplate.tsx"],
-  ["Mosaic", "templates/MosaicTemplate.tsx"],
-  ["Deck", "templates/DeckTemplate.tsx"],
+  ["Vault", "templates/vault-template.tsx"],
+  ["Docs", "templates/docs-template.tsx"],
+  ["Studio · Atlas", "templates/studio/studio-atlas.tsx"],
+  ["Studio · Prism", "templates/studio/studio-prism.tsx"],
+  ["Studio · Signal", "templates/studio/studio-signal.tsx"],
+  ["Manual", "templates/manual-template.tsx"],
+  ["Mosaic", "templates/mosaic-template.tsx"],
+  ["Deck", "templates/deck-template.tsx"],
 ];
 
 for (const [name, rel] of TEMPLATES) {
@@ -136,7 +136,7 @@ if (unused.length) {
  * so BrandTheme is the contract a renderer should bind to; --g-* is one
  * serialisation of it.
  */
-const deckTheme = readFileSync(join(GUIDELINE_DIR, "templates", "deck", "deckTheme.ts"), "utf8");
+const deckTheme = readFileSync(join(GUIDELINE_DIR, "templates", "deck", "deck-theme.ts"), "utf8");
 const deckFromBrandTheme = /BrandTheme/.test(deckTheme);
 console.log("\n  Derivations from BrandTheme:");
 /* Counted from each emitter rather than from `provided.size`, which is the

@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { DraftsView, useDraftsPage } from "@/components/features/drafts";
+import { PageShell } from "@/features/shell";
+import { DraftsView, useDraftsPage } from "@/features/drafts";
 
 export default function DraftsPage() {
   const { slug } = useParams<{ slug: string }>();

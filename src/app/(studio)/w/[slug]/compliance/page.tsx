@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { AssetColorContent, CopyLinterContent, useCompliancePage } from "@/components/features/compliance";
+import { PageShell } from "@/features/shell";
+import { AssetColorContent, CopyLinterContent, useCompliancePage } from "@/features/compliance";
 
 export default function CompliancePage() {
   const { slug } = useParams<{ slug: string }>();

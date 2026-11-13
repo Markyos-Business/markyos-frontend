@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { AnalysisView, useAnalysisPage } from "@/components/features/briefs";
-import { NeedsServer } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { AnalysisView, useAnalysisPage } from "@/features/briefs";
+import { NeedsServer } from "@/features/discovery";
 
 export default function BrandAnalysisPage() {
   const { slug } = useParams<{ slug: string }>();

@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { OverviewView, SavedLabel, useOverviewPage } from "@/components/features/overview";
+import { PageShell } from "@/features/shell";
+import { OverviewView, SavedLabel, useOverviewPage } from "@/features/overview";
 
 export default function OverviewPage() {
   const { slug } = useParams<{ slug: string }>();

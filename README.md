@@ -52,6 +52,65 @@ Stripe, mail, Google client secrets or LLM keys in public frontend variables.
 `NEXT_PUBLIC_UI_GALLERY=1` enables `/dev/components`, `/dev/motion` and the
 `/design-system` reference route. They return 404 without the flag.
 
+## Folder structure
+
+```
+src/
+├─ app/                        routes only: thin pages that compose features
+├─ components/
+│  └─ ui/                      shared, reusable, no business logic
+│     ├─ index.ts              exports every component ("@/components/ui")
+│     ├─ registry.ts           build status of every component (npm run status)
+│     ├─ <name>.tsx            a simple component is one file
+│     └─ <name>/               a complex one is a folder
+│        ├─ index.ts           public exports only
+│        ├─ <name>.tsx
+│        ├─ <name>-<part>.tsx
+│        ├─ use-<name>.ts      its own hook, if any
+│        └─ types.ts
+├─ features/<domain>/          one folder per business area
+│  ├─ index.ts                 the only file other code may import
+│  ├─ components/              domain UI built from "@/components/ui"
+│  ├─ hooks/                   use-*.ts
+│  ├─ api/                     *.api.ts
+│  ├─ schemas/                 *.schema.ts (zod)
+│  ├─ types.ts
+│  ├─ constants.ts
+│  └─ i18n/en.json, ar.json
+└─ lib/                        helpers and the API client
+```
+
+The rest of `src/` supports these: `contexts/` (the app store and its
+providers), `hooks/` (generic hooks), `types/` and `constants/`. `features/shell`
+is the app frame (studio sidebar, top bar, account header), which knows about
+brands and accounts, so it is a feature rather than UI. [features/assets](src/features/assets)
+is the reference feature for the pattern, at `/assets` with `NEXT_PUBLIC_UI_GALLERY=1`.
+
+Rules:
+
+1. `components/ui` never imports from `features/`.
+2. Features import shared UI only from `"@/components/ui"`, never a file inside it.
+3. A feature never imports another feature's internal files, only its `index.ts`.
+   If two features need the same piece, move it into `components/ui` with a generic API.
+4. Placement: if it knows about brands, assets, discovery or another domain, it goes
+   in `features/<domain>/components`. If it would work in any product, it goes in `components/ui`.
+5. One file or a folder: a component with sub-parts, its own hook or its own types
+   gets a folder with `index.ts`. Otherwise it is one file.
+6. Naming: kebab-case files, PascalCase components. Feature components start with
+   the domain name (`AssetTable`, `BrandCard`). Hooks `use-*.ts`, schemas `*.schema.ts`,
+   API `*.api.ts`.
+7. Every new component in `components/ui` goes in `registry.ts` with a status
+   (planned, in-progress, in-review, ready, deprecated), then `npm run status`.
+   Feature components don't go in the registry.
+8. Pages in `app/` contain no business logic or data fetching. They compose features.
+
+Rules 1–3 are enforced by `npm run lint` ([eslint.config.mjs](eslint.config.mjs)).
+Existing exceptions, to be removed as those areas are reworked: `src/contexts`
+and `src/lib/data` still import a few feature internals (auth's API, moodboard
+templates); older features keep their `copy.ts` and `utils/` rather than
+`i18n/*.json`; and a few older feature components don't yet start with the
+domain name.
+
 ## Validation
 
 ```sh
@@ -72,10 +131,10 @@ changing layout or interaction behavior.
 
 ## Form fields
 
-Every field is built on one wrapper, `Field` ([src/components/form/field](src/components/form/field)),
+Every field is built on one wrapper, `Field` ([src/components/ui/field/field.tsx](src/components/ui/field/field.tsx)),
 so they share the label, the note under the field, the states and the look
 (the underline field in [tailwind/base.js](tailwind/base.js), `.mk-field`). Import
-everything from `@/components/form`. Status and notes per component are in
+everything from `@/components/ui`. Status and notes per component are in
 [STATUS.md](STATUS.md) (`npm run status`); the gallery is `/design-system/forms`
 with `NEXT_PUBLIC_UI_GALLERY=1`.
 
@@ -110,7 +169,7 @@ so use `Controller`:
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { BilingualField, CurrencyField, EmailField, Fieldset, InputField } from "@/components/form";
+import { BilingualField, CurrencyField, EmailField, Fieldset, InputField } from "@/components/ui";
 
 const schema = z.object({
   name: z.string().min(1, "Enter a campaign name."),
@@ -148,9 +207,8 @@ result is announced; `SlugField` does this for you given `checkAvailability`.
 
 ## Code and supporting references
 
-- [Routes](src/app) compose [feature modules](src/components/features), shared
-  [UI primitives](src/components/ui), [forms](src/components/form) and
-  [layout](src/components/layout).
+- [Routes](src/app) compose [features](src/features) built from the shared
+  [UI kit](src/components/ui); see "Folder structure" above.
 - [AppContext](src/contexts/AppContext.tsx) coordinates the client state and
   [data adapters](src/lib/data/adapters); [API client](src/lib/api/client.ts)
   centralizes authenticated requests and refresh.

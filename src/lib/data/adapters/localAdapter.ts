@@ -23,7 +23,7 @@ import {
   unpublishWorkspace,
 } from "./entityOps";
 import { nBetween } from "@/lib/doc/core/order";
-import { DEFAULT_TEMPLATE_KEY, zonesFromTemplate } from "@/components/features/moodboard/utils/zones";
+import { DEFAULT_TEMPLATE_KEY, zonesFromTemplate } from "@/features/moodboard/utils/zones";
 import {
   DEMO_ACCOUNT_ID,
   DEMO_PASSWORD,
@@ -35,7 +35,7 @@ import {
   emptySlot,
 } from "../mockData";
 import { uid } from "@/lib/utils";
-import { RESET_TTL_MS } from "@/components/features/auth/constants";
+import { RESET_TTL_MS } from "@/features/auth/constants";
 import { readAllBlobs, writeBlobs } from "../blobStore";
 
 /**

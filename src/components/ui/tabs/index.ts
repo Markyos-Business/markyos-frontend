@@ -1,4 +1,5 @@
-export * from "./TabIndicator";
-export * from "./Tabs";
-export * from "./TabPanel";
-export { tabButtonId } from "./tabNavigation";
+export * from "./tab-indicator";
+export * from "./tabs";
+export * from "./tab-panel";
+export { tabButtonId } from "./tab-navigation";
+export { useTabNavigation } from "./use-tab-navigation";

@@ -12,8 +12,8 @@ English/Arabic toggles. Run with `NEXT_PUBLIC_UI_GALLERY=1` to see it.
 - The reference feature that uses all of them is
   `docs/features/admin-users.md`.
 
-**Import** from the barrels: `@/components/ui`, `@/components/form` and
-`@/components/layout`, never from a file inside them.
+**Import** from the barrels: `@/components/ui`, `@/components/ui` and
+`@/components/ui`, never from a file inside them.
 
 **Rules every component here follows**
 

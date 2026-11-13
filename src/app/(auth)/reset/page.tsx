@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { ResetView } from "@/components/features/auth";
+import { ResetView } from "@/features/auth";
 
 // Suspense, because the view reads the `token` and `email` search params.
 export default function ResetPage() {

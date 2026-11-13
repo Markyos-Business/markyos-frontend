@@ -4,7 +4,7 @@
 > their forms and on calls, turned into a 10-part report the studio can edit,
 > add to Strategy, share with the client and print. Route `/w/[slug]/analysis`,
 > client link `/a/[token]`, print view `/print/analysis/[id]`. Code in
-> `src/components/features/briefs/`; backend in `markyos-backend/apps/briefs/`.
+> `src/features/briefs/`; backend in `markyos-backend/apps/briefs/`.
 > The first half of the feature (running, the report, regenerate, compare,
 > credit rules) shipped on 25–26 Oct; this doc covers the whole feature.
 

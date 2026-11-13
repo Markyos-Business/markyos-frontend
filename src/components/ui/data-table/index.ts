@@ -1,3 +1,3 @@
-export * from "./DataTable";
+export * from "./data-table";
 export * from "./types";
 export * from "./labels";

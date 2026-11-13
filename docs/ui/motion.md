@@ -13,7 +13,7 @@ this page is the how-to for code.
 | Keep something mounted through its exit | `src/hooks/usePresence.ts` — `usePresence(open, EXIT.fast \| base \| slow)` |
 | Reduced-motion preference in JS | `src/hooks/usePrefersReducedMotion.ts` |
 | Fade content in / stagger a group | `FadeIn`, `Stagger` (`src/components/ui/motion`) |
-| Page transitions | `PageTransition` (`src/components/layout`), used by each area's `template.tsx` |
+| Page transitions | `PageTransition` (`src`), used by each area's `template.tsx` |
 | Sidebar remembered collapsed before paint | `src/lib/sidebarRails.ts` |
 | Every transition, live | `/dev/motion` (needs `NEXT_PUBLIC_UI_GALLERY=1`) |
 

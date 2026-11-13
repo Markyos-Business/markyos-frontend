@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { FormsGallery } from "@/components/features/design-system";
+import { FormsGallery } from "@/features/design-system";
 
 // A development page: only built into a deploy that asks for it.
 export default function FormsGalleryPage() {

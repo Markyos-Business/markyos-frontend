@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { LoginView } from "@/components/features/auth";
+import { LoginView } from "@/features/auth";
 
 // Suspense, because the view reads the `next` search param.
 export default function LoginPage() {

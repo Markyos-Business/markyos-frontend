@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useBrandPage } from "@/contexts/pageGuards";
-import { PageShell } from "@/components/layout";
-import { BrandFilesContent } from "@/components/features/visual-identity";
+import { PageShell } from "@/features/shell";
+import { BrandFilesContent } from "@/features/visual-identity";
 
 export default function AssetsPage() {
   const { slug } = useParams<{ slug: string }>();

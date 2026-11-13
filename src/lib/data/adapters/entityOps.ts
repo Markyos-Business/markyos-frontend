@@ -1,6 +1,6 @@
 import { AppState, Asset, PublishedSnapshot, ShareLink, Workspace } from "../../../types";
 import { BlockStyle } from "../../../types";
-import { SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
+import { SectionOptions } from "@/features/guideline-site/utils/section-options";
 
 /**
  * The entity operations, as pure state transitions.

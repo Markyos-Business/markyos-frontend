@@ -3,7 +3,7 @@ import { inter, plexArabic, bricolage } from "./fonts";
 import { AppProvider } from "@/contexts/AppContext";
 import { ToastProvider, DialogProvider } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
-import { ThemeProvider } from "@/contexts/ThemeProvider";
+import { ThemeProvider } from "@/components/ui";
 import { THEME_INIT_SCRIPT } from "@/lib/interfaceTheme";
 import { PageTitleSync } from "@/contexts/PageTitleSync";
 import { InterfaceLangSync } from "@/contexts/InterfaceLangSync";

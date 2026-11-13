@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { StyleGuide } from "@/components/features/design-system";
+import { StyleGuide } from "@/features/design-system";
 
 // A development page: only built into a deploy that asks for it.
 export default function ComponentsPage() {

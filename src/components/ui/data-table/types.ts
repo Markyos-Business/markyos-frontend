@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { ColumnFiltersState, ExpandedState, OnChangeFn, PaginationState, RowSelectionState, SortingState, VisibilityState } from "@tanstack/react-table";
-import type { ActionItem } from "../buttons/ActionsDropdown";
-import type { SortState } from "../table/DataTableParts";
+import type { ActionItem } from "../button/actions-dropdown";
+import type { SortState } from "../table/data-table-parts";
 import type { SelectOption } from "../select/types";
 export type { SortingState, ColumnFiltersState, VisibilityState, PaginationState, RowSelectionState };
 export type DataColumn<T> = {
@@ -44,7 +44,7 @@ export type DataTableProps<T> = {
   columnControls?: boolean; densityControl?: boolean;
   columnOrder?: string[]; onColumnOrderChange?: OnChangeFn<string[]>; resizable?: boolean; reorderColumns?: boolean;
   pagination?: boolean | { pageIndex: number; pageSize: number }; onPaginationChange?: OnChangeFn<PaginationState>;
-  paginationLabels?: import("../table/TablePagination").TablePaginationProps["labels"];
+  paginationLabels?: import("../table/table-pagination").TablePaginationProps["labels"];
   paging?: ServerPaging; pageSizes?: number[]; infinite?: { hasMore: boolean; loading?: boolean; onLoadMore: () => void; auto?: boolean };
   density?: "comfortable" | "compact"; defaultDensity?: "comfortable" | "compact"; onDensityChange?: (density: "comfortable" | "compact") => void;
   stickyHeader?: boolean; stickyColumns?: { first?: boolean; actions?: boolean };

@@ -1,2 +1,2 @@
-export * from "./FadeIn";
-export * from "./Stagger";
+export * from "./fade-in";
+export * from "./stagger";

@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { TypeLabView, useTypeLabPage } from "@/components/features/type-lab";
+import { PageShell } from "@/features/shell";
+import { TypeLabView, useTypeLabPage } from "@/features/type-lab";
 
 export default function TypeLabPage() {
   const { slug } = useParams<{ slug: string }>();

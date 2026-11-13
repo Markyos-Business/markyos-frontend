@@ -16,9 +16,9 @@ Use runtime configuration and component implementations when older prose differs
 | Tailwind names, type scale, sizes, radii | [tailwind.config.js](../../tailwind.config.js) |
 | Shared CSS and focus states | [base.js](../../tailwind/base.js), [CSS entry](../../src/app/tailwind.css) |
 | Motion | [motion.js](../../tailwind/motion.js), [JS helpers](../../src/lib/motion.ts) |
-| Generic components | [UI barrel](../../src/components/ui/index.ts), [form barrel](../../src/components/form/index.ts) |
-| Shell and navigation | [layout components](../../src/components/layout) |
-| Client guideline rendering | [guideline-site](../../src/components/features/guideline-site), [token contract](../token-contract.md) |
+| Generic components | [UI barrel](../../src/components/ui/index.ts), [form barrel](../../src/components/ui/index.ts) |
+| Shell and navigation | [layout components](../../src) |
+| Client guideline rendering | [guideline-site](../../src/features/guideline-site), [token contract](../token-contract.md) |
 
 The older [UI reference](../ui/README.md) and [design export](../MARKYOS_UI.md)
 contain useful detail but are not proof that every screen follows every rule.
@@ -116,7 +116,7 @@ Common radii: `rounded-sm` 4px, `rounded-md` 6px, `rounded-lg` 8px,
 `rounded-card`/`rounded-widget` 15px, `rounded-feature` 25px, `rounded-full` for
 circles/pills. The radius audit restricts unsupported alternatives.
 
-[AppLayout](../../src/components/layout/AppLayout/AppLayout.tsx) is one viewport
+[AppLayout](../../src/features/shell/components/app-layout.tsx) is one viewport
 high (`h-screen overflow-hidden`). The page's designated content pane scrolls;
 children normally need `min-h-0`, `min-w-0`, and the appropriate overflow rule.
 Do not fix a scrolling defect by letting the entire shell grow indefinitely.
@@ -150,14 +150,14 @@ browser-tested for this documentation task.
 
 | Need | Existing implementation | Guidance |
 | --- | --- | --- |
-| Actions | [buttons](../../src/components/ui/buttons) | Use `Button`, `IconButton`, and action dropdowns; preserve busy/disabled handling and accessible names. |
+| Actions | [buttons](../../src/components/ui/button) | Use `Button`, `IconButton`, and action dropdowns; preserve busy/disabled handling and accessible names. |
 | Grouped content | [cards](../../src/components/ui/card), `Section` | Reuse the established header/body/action arrangement. |
-| Fields | [form fields](../../src/components/form/fields) | `InputField`, `TextareaField`, selects, checkboxes; compact variants for dense inspectors. |
-| Upload/color/choice input | [form](../../src/components/form) | Reuse upload, color, radio-card, toggle, and repeater controls rather than feature-specific copies. |
-| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filters) | Use `useTabIds()` with `Tabs` and `TabPanel`; keep selection visible and give every row an accessible name. |
-| Loading | [loading](../../src/components/ui/loading) | Skeletons should match the pending content's shape. |
-| Empty/error | [empty](../../src/components/ui/empty) | Distinguish no records from no matching results and failed loading. |
-| Overlays | [overlays](../../src/components/ui/overlays) | Reuse modal/dialog, toast, and dismissal behavior. |
+| Fields | [form fields](../../src/components/ui) | `InputField`, `TextareaField`, selects, checkboxes; compact variants for dense inspectors. |
+| Upload/color/choice input | [form](../../src/components/ui) | Reuse upload, color, radio-card, toggle, and repeater controls rather than feature-specific copies. |
+| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filter-chip.tsx) | Use `useTabIds()` with `Tabs` and `TabPanel`; keep selection visible and give every row an accessible name. |
+| Loading | [loading](../../src/components/ui) | Skeletons should match the pending content's shape. |
+| Empty/error | [empty](../../src/components/ui/empty-state) | Distinguish no records from no matching results and failed loading. |
+| Overlays | [overlays](../../src/components/ui/overlay) | Reuse modal/dialog, toast, and dismissal behavior. |
 
 `InputField` is an underlined field, normally without a boxed background. It
 connects label, control, and hint/error IDs; errors set invalid state and are
@@ -175,7 +175,7 @@ sync has different guarantees; see [UX states](UX.md#saving-and-feedback).
 
 ## Tables
 
-[DataTable](../../src/components/ui/table/DataTable.tsx) composes column
+[DataTable](../../src/components/ui/table/data-table.tsx) composes column
 renderers, sorting, optional selection, bulk actions, pagination, loading, and
 errors. A column's `sortValue` enables local sorting; server sorting uses the
 callback contract. Do not silently sort one downloaded page and present it as a

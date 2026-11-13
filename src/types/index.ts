@@ -1,7 +1,7 @@
 import type { Lang } from "@/types/lang";
 export type { Lang };
 
-import type { SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
+import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 
 export type SlotKind = "arabic" | "latin" | "symbol";
 

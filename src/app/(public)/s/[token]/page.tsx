@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ShareView, useSharePage } from "@/components/features/sharing";
+import { ShareView, useSharePage } from "@/features/sharing";
 
 export default function SharePage() {
   const { token } = useParams<{ token: string }>();

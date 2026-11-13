@@ -63,10 +63,10 @@ import {
   WorkspaceStage,
   ZoneKind,
 } from "@/types";
-import type { SectionOptions } from "@/components/features/guideline-site/utils/sectionOptions";
+import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 import { between, nBetween } from "@/lib/doc/core/order";
-import { zonesFromTemplate } from "@/components/features/moodboard/utils/zones";
-import { withoutPosition } from "@/components/features/moodboard/utils/layout";
+import { zonesFromTemplate } from "@/features/moodboard/utils/zones";
+import { withoutPosition } from "@/features/moodboard/utils/layout";
 import {
   DEMO_ACCOUNT_ID,
   buildDemoAccount,
@@ -81,11 +81,11 @@ import { roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
 // Deep imports, not the feature's index: its components import this file,
 // so going through index.ts would make a cycle.
-import { EMAIL_RE, RESET_TTL_MS } from "@/components/features/auth/constants";
-import { normaliseEmail } from "@/components/features/auth/utils/email";
-import { hashPassword, verifyPassword } from "@/components/features/auth/utils/password";
-import { newResetToken } from "@/components/features/auth/utils/resetToken";
-import { validateSubdomain } from "@/components/features/sharing/utils/subdomain";
+import { EMAIL_RE, RESET_TTL_MS } from "@/features/auth/constants";
+import { normaliseEmail } from "@/features/auth/utils/email";
+import { hashPassword, verifyPassword } from "@/features/auth/utils/password";
+import { newResetToken } from "@/features/auth/utils/reset-token";
+import { validateSubdomain } from "@/features/sharing/utils/subdomain";
 import { BrandRepository } from "@/lib/data/repository";
 // The entity operations, as pure state transitions. The store calls these
 // rather than keeping its own copy — see the file's own note on why there is
@@ -95,8 +95,8 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // Accounts and sessions go to the backend when one is configured; see the
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, api, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
-import { classifyLoginFailure } from "@/components/features/auth/utils/loginFailure";
-import * as authApi from "@/components/features/auth/services/authService";
+import { classifyLoginFailure } from "@/features/auth/utils/login-failure";
+import * as authApi from "@/features/auth/api/auth.api";
 import type {
   AuthOutcome,
   CodePurpose,
@@ -104,7 +104,7 @@ import type {
   GooglePendingSignup,
   PasswordSetResult,
   PendingVerification,
-} from "@/components/features/auth/types";
+} from "@/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
 import { DEFAULT_LANG } from "@/lib/i18n/interfaceLang";
 

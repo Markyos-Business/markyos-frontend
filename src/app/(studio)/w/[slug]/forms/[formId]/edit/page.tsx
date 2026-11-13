@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { BuilderView, NeedsServer, useFormBuilderPage } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { BuilderView, NeedsServer, useFormBuilderPage } from "@/features/discovery";
 
 export default function FormBuilderPage() {
   const { slug, formId } = useParams<{ slug: string; formId: string }>();

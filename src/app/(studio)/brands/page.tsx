@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandsHeader, BrandsView, useBrandsPage } from "@/components/features/brands";
+import { BrandsHeader, BrandsView, useBrandsPage } from "@/features/brands";
 
 export default function BrandsPage() {
   const page = useBrandsPage();

@@ -1,4 +1,4 @@
-import type { BadgeTone } from "../badges/variants";
+import type { BadgeTone } from "../badge/variants";
 
 export type SelectOption = {
   value: string;

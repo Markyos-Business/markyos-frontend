@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { MoodboardProjectsView, useMoodboardProjectsPage } from "@/components/features/moodboard";
+import { PageShell } from "@/features/shell";
+import { MoodboardProjectsView, useMoodboardProjectsPage } from "@/features/moodboard";
 
 export default function MoodboardProjectsPage() {
   const { slug } = useParams<{ slug: string }>();

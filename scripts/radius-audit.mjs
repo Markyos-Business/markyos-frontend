@@ -7,7 +7,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const SKIP = ["src/components/features/guideline-site/components/templates"];
+const SKIP = ["src/features/guideline-site/components/templates"];
 const BAD = /(?<![\w-])(?:[a-z0-9]+:)*rounded(?:-(?:[trblse]{1,2}))?-(?:xl|2xl|3xl|4xl|\[[^\]]+\])(?![\w-])/g;
 
 const walk = (dir) =>
@@ -22,7 +22,7 @@ const walk = (dir) =>
 // (avatars, dots, round icon buttons, switches) stay round. The guideline
 // site is the client's brand design, and the count bubble is a circle that
 // grows with its number.
-const PILL_OK = ["src/components/features/guideline-site", "src/components/ui/badges/CountBadge.tsx"];
+const PILL_OK = ["src/features/guideline-site", "src/components/ui/badge/count-badge.tsx"];
 const CLASSES = /(["`])([^"`]*\brounded-full\b[^"`]*)\1/g;
 
 const hits = [];

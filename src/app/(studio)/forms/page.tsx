@@ -1,8 +1,9 @@
 "use client";
 
-import { PageContainer, StudioHeader } from "@/components/layout";
-import { AccountMenu } from "@/components/features/account";
-import { FormsListView, NeedsServer, useStudioFormsPage } from "@/components/features/discovery";
+import { PageContainer } from "@/features/shell";
+import { StudioHeader } from "@/features/shell";
+import { AccountMenu } from "@/features/account";
+import { FormsListView, NeedsServer, useStudioFormsPage } from "@/features/discovery";
 
 /** Every discovery form across the studio's brands. */
 export default function StudioFormsPage() {

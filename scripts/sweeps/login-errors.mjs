@@ -15,7 +15,7 @@ const API_PATH = process.env.SWEEP_API_PATH ?? "/__audit_api__";
 assert(API_PATH.startsWith("/") && !API_PATH.endsWith("/"));
 const output = path.resolve(process.env.SWEEP_OUTPUT ?? ".visual/login-errors");
 fs.mkdirSync(output, { recursive: true });
-const copyPath = path.resolve(import.meta.dirname, "../../src/components/features/auth/copy.ts");
+const copyPath = path.resolve(import.meta.dirname, "../../src/features/auth/copy.ts");
 const copyJs = ts.transpileModule(fs.readFileSync(copyPath, "utf8"), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const { AUTH_COPY } = await import(`data:text/javascript;base64,${Buffer.from(copyJs).toString("base64")}`);
 await assertServerUp(BASE, ["/login"]);

@@ -134,7 +134,7 @@ Django's `/admin/` and the landing site's Payload login.
 
 Sources: [session helpers](../../../markyos-backend/apps/authentication/session.py),
 [auth views](../../../markyos-backend/apps/authentication/views.py),
-[auth service](../../src/components/features/auth/services/authService.ts).
+[auth service](../../src/features/auth/api/auth.api.ts).
 
 ## API areas and error handling
 

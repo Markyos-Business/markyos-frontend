@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { SettingsView, useSettingsPage } from "@/components/features/settings";
+import { PageShell } from "@/features/shell";
+import { SettingsView, useSettingsPage } from "@/features/settings";
 
 export default function SettingsPage() {
   const { slug } = useParams<{ slug: string }>();

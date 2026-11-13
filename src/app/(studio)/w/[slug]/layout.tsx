@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { canEdit, roleOn } from "@/lib/data/access";
-import { AppLayout, Sidebar } from "@/components/layout";
+import { AppLayout, Sidebar } from "@/features/shell";
 import { UiStringsProvider } from "@/components/ui";
 import { canOpenBrandPage } from "@/lib/data/brandNavigation";
-import { BrandAccessNotice } from "@/components/layout/BrandAccessNotice";
+import { BrandAccessNotice } from "@/features/shell";
 
 export default function WorkspaceLayout({
   children,

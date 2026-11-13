@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --max-warnings=0",
     "audit:contrast": "node scripts/contrast-audit.mjs",
     "audit:tokens": "node scripts/token-contract.mjs",
     "audit:logical": "node scripts/no-physical-props.mjs",
