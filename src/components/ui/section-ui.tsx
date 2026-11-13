@@ -65,6 +65,9 @@ type SwitchProps = {
   checked: boolean;
   onToggle: () => void;
   label: string;
+  disabled?: boolean;
+  /** The change is being saved: busy, and it can't be flipped again until done. */
+  loading?: boolean;
 };
 
 /**
@@ -76,19 +79,24 @@ type SwitchProps = {
  * the control itself. Making it required means a new switch can't ship without
  * one.
  */
-const Switch = ({ checked, onToggle, label }: SwitchProps) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={checked}
-    aria-label={label}
-    onClick={onToggle}
-    // The button is 24px tall so the target clears WCAG 2.5.8's 24px floor;
-    // the switch it draws is the spec's 22px.
-    className="relative flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-switch"
-  >
-    <SwitchMark checked={checked} />
-  </button>
+const Switch = ({ checked, onToggle, label, disabled = false, loading = false }: SwitchProps) => (
+  <span className="flex shrink-0 items-center gap-space-3">
+    {loading && <Icon name="circle-notch" size={16} className="animate-spin text-text-muted" />}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      aria-busy={loading || undefined}
+      disabled={disabled || loading}
+      onClick={onToggle}
+      // The button is 24px tall so the target clears WCAG 2.5.8's 24px floor;
+      // the switch it draws is the spec's 22px.
+      className="relative flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-switch disabled:cursor-not-allowed disabled:opacity-58"
+    >
+      <SwitchMark checked={checked} />
+    </button>
+  </span>
 );
 
 type EmptyHintProps = { children: ReactNode };

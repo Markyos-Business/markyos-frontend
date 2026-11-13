@@ -20,3 +20,4 @@ export * from "./slug-field";
 export * from "./textarea-field";
 export * from "./toggle-field";
 export * from "./url-field";
+export * from "./tag-input";

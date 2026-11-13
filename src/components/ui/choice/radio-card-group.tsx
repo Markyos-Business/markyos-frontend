@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "../icon";
+import { useRadioNavigation } from "./use-radio-navigation";
 
 type RadioCardOption<T extends string> = {
   value: T;
@@ -34,9 +35,12 @@ const COLUMNS = { 1: "", 2: "sm:grid-cols-2", 3: "sm:grid-cols-3" } as const;
 /** Two or more cards acting as one single-choice group, each with a line of explanation. */
 const RadioCardGroup = <T extends string>({ label, options, value, onChange, columns = 2, compact = false, error }: RadioCardGroupProps<T>) => {
   const chosen = options.find((o) => o.value === value);
+  // One Tab stop, arrow keys between cards (mirrored in Arabic), like native radios.
+  const { group, radioProps } = useRadioNavigation({ items: options, value, onChange });
   return (
     <div className="flex flex-col gap-space-2">
       <div
+        ref={group}
         role="radiogroup"
         aria-label={label}
         aria-invalid={error ? true : undefined}
@@ -49,8 +53,7 @@ const RadioCardGroup = <T extends string>({ label, options, value, onChange, col
             <button
               key={optionValue}
               type="button"
-              role="radio"
-              aria-checked={active}
+              {...radioProps({ value: optionValue })}
               onClick={() => onChange(optionValue)}
               className={`rounded-lg transition-[background-color,box-shadow] ${fill} ${
                 compact
@@ -85,5 +88,8 @@ const RadioCardGroup = <T extends string>({ label, options, value, onChange, col
   );
 };
 
-export { RadioCardGroup };
+/** RadioCards, by the UI library's name. */
+const RadioCards = RadioCardGroup;
+
+export { RadioCardGroup, RadioCards };
 export type { RadioCardGroupProps, RadioCardOption };

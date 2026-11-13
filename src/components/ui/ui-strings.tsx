@@ -99,6 +99,12 @@ const en = {
   invalidUrl: "Enter a web address like markyos.com.",
   invalidPhone: "Enter a full phone number.",
   phoneNumber: "Phone number",
+  selectAllOptions: "Select all",
+  chooseAtLeast: (n: number) => `Choose at least ${n}.`,
+  chooseUpTo: (n: number) => `You can choose up to ${n}.`,
+  alreadyAdded: (tag: string) => `"${tag}" is already added.`,
+  tagLimit: (n: number) => `Up to ${n} tags.`,
+  tagHint: "Press Enter or a comma to add.",
 };
 
 type UiStrings = typeof en;
@@ -194,6 +200,12 @@ const ar: UiStrings = {
   invalidUrl: "أدخل عنوانًا مثل markyos.com.",
   invalidPhone: "أدخل رقم هاتف كاملًا.",
   phoneNumber: "رقم الهاتف",
+  selectAllOptions: "تحديد الكل",
+  chooseAtLeast: (n) => `اختر ${n} على الأقل.`,
+  chooseUpTo: (n) => `يمكنك اختيار ${n} كحد أقصى.`,
+  alreadyAdded: (tag) => `«${tag}» مضاف من قبل.`,
+  tagLimit: (n) => `حتى ${n} وسوم.`,
+  tagHint: "اضغط Enter أو فاصلة للإضافة.",
 };
 
 type UiLang = "en" | "ar";

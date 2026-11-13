@@ -23,7 +23,7 @@ import {
   UrlField,
   type FieldState,
 } from "@/components/ui";
-import { IconButton, UiStringsProvider } from "@/components/ui";
+import { CheckboxField, CheckboxGroup, ChipSelector, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
 import { ThemeToggle } from "@/components/ui";
 
 type Lang = "en" | "ar";
@@ -95,8 +95,49 @@ export function FormsGallery() {
   const [tagline, setTagline] = useState({ en: "Built in Riyadh, for the region.", ar: "صُنع في الرياض، للمنطقة." });
   const [story, setStory] = useState("<p>Launching across <strong>Riyadh</strong>, Dubai and Cairo.</p><p dir=\"rtl\">إطلاق في الرياض ودبي والقاهرة.</p>");
   const [biLayout, setBiLayout] = useState(false);
+  const [terms, setTerms] = useState(false);
+  const [markets, setMarkets] = useState<string[]>(["riyadh"]);
+  const [channels, setChannels] = useState<string[]>([]);
+  const [plan, setPlan] = useState("pass");
+  const [tier, setTier] = useState<"studio" | "freelancer" | "company">("studio");
+  const [view, setView] = useState<"day" | "week" | "month">("week");
+  const [tags, setTags] = useState<string[]>(["Ramadan", "Riyadh"]);
+  const [city, setCity] = useState<"riyadh" | "dubai" | "cairo" | null>("riyadh");
+  const [types, setTypes] = useState<("logo" | "photo" | "video")[]>(["photo"]);
+  const [notify, setNotify] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const flip = () => {
+    setSaving(true);
+    setTimeout(() => {
+      setNotify((v) => !v);
+      setSaving(false);
+    }, 900);
+  };
 
+  const na = <span className="text-caption text-text-faint">—</span>;
   const matrix: { name: string; render: (s: MatrixState) => ReactNode }[] = [
+    {
+      name: "CheckboxField",
+      render: (s) =>
+        ["validating", "readOnly", "locked", "loading", "warning"].includes(s) ? na : (
+          <CheckboxField label={t("Riyadh", "الرياض")} defaultChecked={s !== "default"} disabled={s === "disabled"} error={s === "error" ? t("Choose a market.", "اختر سوقًا.") : undefined} success={s === "success" ? t("Saved.", "تم الحفظ.") : undefined} />
+        ),
+    },
+    {
+      name: "ToggleField",
+      render: (s) =>
+        ["warning", "success", "readOnly", "locked", "loading"].includes(s) ? na : (
+          <ToggleField label={t("Notify reviewers", "إشعار المراجعين")} checked={s !== "default"} onChange={() => undefined} disabled={s === "disabled"} loading={s === "validating"} error={s === "error" ? t("Couldn't save.", "تعذّر الحفظ.") : undefined} />
+        ),
+    },
+    {
+      name: "TagInput",
+      render: (s) =>
+        s === "readOnly" ? na : (
+          <TagInput label={t("Tags", "الوسوم")} value={s === "default" ? [] : ["Ramadan", "Riyadh"]} onChange={() => undefined} {...stateProps(s, t)} />
+        ),
+    },
     { name: "InputField", render: (s) => <InputField label={t("Campaign name", "اسم الحملة")} placeholder={t("Start typing…", "ابدأ الكتابة…")} defaultValue={s === "default" ? "" : t("Ramadan launch", "إطلاق رمضان")} {...stateProps(s, t)} /> },
     { name: "TextareaField", render: (s) => <TextareaField label={t("Brief", "الموجز")} rows={2} placeholder={t("Start typing…", "ابدأ الكتابة…")} defaultValue={s === "default" ? "" : t("Three cities, one launch.", "ثلاث مدن، إطلاق واحد.")} {...stateProps(s, t)} /> },
     { name: "EmailField", render: (s) => <EmailField label={t("Email", "البريد")} placeholder="nour@studio.sa" defaultValue={s === "default" ? "" : "omar@studio.ae"} {...stateProps(s, t)} /> },
@@ -180,6 +221,106 @@ export function FormsGallery() {
               <BilingualField label={t("Tagline", "الشعار")} value={tagline} onChange={setTagline} multiline layout={biLayout ? "tabs" : "side"} maxLength={120} />
             </div>
             <RichTextField label={t("Story", "القصة")} value={story} onChange={setStory} maxLength={1200} hint={t("Each paragraph takes its own direction.", "لكل فقرة اتجاهها.")} />
+          </Section>
+
+          <Section id="choice" title={t("Choice inputs", "مدخلات الاختيار")}>
+            <FieldGroup>
+              <div className="flex flex-col gap-space-5">
+                <CheckboxField label={t("I agree to the brand terms", "أوافق على شروط العلامة")} description={t("Required to publish.", "مطلوب للنشر.")} checked={terms} onChange={(e) => setTerms(e.target.checked)} />
+                <CheckboxField label={t("Indeterminate", "غير محدد")} indeterminate onChange={() => undefined} />
+              </div>
+              <CheckboxGroup
+                label={t("Markets", "الأسواق")}
+                selectAll
+                min={1}
+                options={[
+                  { value: "riyadh", label: t("Riyadh", "الرياض"), description: "ar-SA" },
+                  { value: "dubai", label: t("Dubai", "دبي"), description: "ar-AE" },
+                  { value: "cairo", label: t("Cairo", "القاهرة"), description: "ar-EG" },
+                  { value: "doha", label: t("Doha", "الدوحة"), disabled: true },
+                ]}
+                value={markets}
+                onChange={setMarkets}
+              />
+              <CheckboxGroup
+                label={t("Channels, up to 2", "القنوات، حتى قناتين")}
+                orientation="horizontal"
+                max={2}
+                options={[
+                  { value: "social", label: t("Social", "التواصل") },
+                  { value: "print", label: t("Print", "المطبوعات") },
+                  { value: "outdoor", label: t("Outdoor", "الإعلانات الخارجية") },
+                ]}
+                value={channels}
+                onChange={setChannels}
+              />
+              <RadioField
+                label={t("Billing", "الفوترة")}
+                orientation="vertical"
+                options={[
+                  { value: "pass", label: t("Brand pass", "اشتراك العلامة"), description: "SAR 1,900" },
+                  { value: "monthly", label: t("Monthly", "شهري"), description: "SAR 2,900" },
+                  { value: "enterprise", label: t("Enterprise", "مؤسسات"), disabled: true },
+                ]}
+                value={plan}
+                onChange={setPlan}
+                hint={t("Arrow keys move the choice.", "تنقل الأسهم بين الخيارات.")}
+              />
+            </FieldGroup>
+            <RadioCardGroup
+              label={t("Account type", "نوع الحساب")}
+              columns={3}
+              options={[
+                { value: "studio", label: t("Studio", "استوديو"), hint: t("A team serving several brands.", "فريق يخدم عدة علامات."), icon: "users" },
+                { value: "freelancer", label: t("Freelancer", "مستقل"), hint: t("One person, a few clients.", "شخص واحد وبضعة عملاء."), icon: "user" },
+                { value: "company", label: t("Company", "شركة"), hint: t("Your own brand, in-house.", "علامتك أنت، داخليًا."), icon: "sitemap" },
+              ]}
+              value={tier}
+              onChange={setTier}
+            />
+            <FieldGroup>
+              <div className="flex flex-col gap-space-4">
+                <ToggleField label={t("Notify reviewers", "إشعار المراجعين")} description={{ on: t("They get an email for each change.", "يصلهم بريد لكل تغيير."), off: t("No emails.", "بلا رسائل.") }} checked={notify} onChange={flip} loading={saving} />
+                <span className="flex items-center justify-between gap-space-4 px-space-5 text-body">
+                  {t("Compact rows", "صفوف مضغوطة")}
+                  <Switch label={t("Compact rows", "صفوف مضغوطة")} checked={compact} onToggle={() => setCompact((v) => !v)} />
+                </span>
+              </div>
+              <div className="flex flex-col gap-space-5">
+                <SegmentedControl
+                  label={t("Calendar view", "عرض التقويم")}
+                  options={[
+                    { value: "day", label: t("Day", "يوم") },
+                    { value: "week", label: t("Week", "أسبوع") },
+                    { value: "month", label: t("Month", "شهر") },
+                  ]}
+                  value={view}
+                  onChange={setView}
+                />
+                <ChipSelector
+                  label={t("City", "المدينة")}
+                  options={[
+                    { value: "riyadh", label: t("Riyadh", "الرياض"), count: 12 },
+                    { value: "dubai", label: t("Dubai", "دبي"), count: 8 },
+                    { value: "cairo", label: t("Cairo", "القاهرة"), count: 5 },
+                  ]}
+                  value={city}
+                  onChange={setCity}
+                />
+                <ChipSelector
+                  multiple
+                  label={t("Asset type", "نوع الأصل")}
+                  options={[
+                    { value: "logo", label: t("Logo", "شعار") },
+                    { value: "photo", label: t("Photo", "صورة") },
+                    { value: "video", label: t("Video", "فيديو") },
+                  ]}
+                  value={types}
+                  onChange={setTypes}
+                />
+              </div>
+            </FieldGroup>
+            <TagInput label={t("Tags", "الوسوم")} value={tags} onChange={setTags} max={6} placeholder={t("Add a tag…", "أضف وسمًا…")} />
           </Section>
 
           <Section id="matrix" title={t("State matrix", "مصفوفة الحالات")}>

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-const roots = ["src/components/ui/data-table", "src/components/ui/select", "src/components/ui/progress.tsx", "src/components/ui/field", "src/components/ui/listbox"];
+const roots = ["src/components/ui/data-table", "src/components/ui/select", "src/components/ui/progress.tsx", "src/components/ui/field", "src/components/ui/listbox", "src/components/ui/choice"];
 // A hex colour field has to parse and show hex codes; colours anywhere else are tokens.
 const hexAllowed = new Set(["src/components/ui/field/hex-color-field.tsx"]);
 function files(path) { return path.endsWith(".tsx") || path.endsWith(".ts") ? [path] : readdirSync(path, { withFileTypes: true }).flatMap(item => files(join(path, item.name))); }

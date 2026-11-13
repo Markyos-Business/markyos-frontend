@@ -159,6 +159,14 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `BilingualField` (`layout="side" \| "tabs"`, `multiline`) | BilingualInput | `{ en, ar }`, `Controller` |
 | `RichTextField` | RichTextEditor | HTML string, `Controller` |
 | `OtpField` (`length` 4–6) | OtpInput | digits, `Controller` |
+| `CheckboxField` (`indeterminate`, `error`, `success`) | Checkbox | `checked`, `register` |
+| `CheckboxGroup` (`min`, `max`, `selectAll`) | CheckboxGroup | `string[]`, `Controller` |
+| `RadioField` (`orientation`) | RadioGroup | string, `Controller` |
+| `RadioCardGroup` | RadioCards | string, `Controller` |
+| `ToggleField` (card, `loading`), `Switch` (compact, `loading`) | Switch | boolean, `Controller` |
+| `SegmentedControl`, `SegmentedToggle` (two sides) | SegmentedControl | string, `Controller` |
+| `TagInput` (`max`) | TagInput | `string[]`, `Controller` |
+| `ChipSelector` (`multiple`) | ChipSelector | string or `string[]`, `Controller` |
 | `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
 
 Text fields take react-hook-form's `register` directly; its `ref` lands on the
