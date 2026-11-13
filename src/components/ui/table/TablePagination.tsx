@@ -1,4 +1,4 @@
-import { useUiStrings } from "../i18n";
+import { useUiStrings, type UiStrings } from "../i18n";
 import { Icon } from "../primitives/Icon";
 
 type TablePaginationProps = {
@@ -13,6 +13,7 @@ type TablePaginationProps = {
   /** What a row is, plural: "users", "brands". */
   itemLabel: string;
   loading?: boolean;
+  labels?: Partial<Pick<UiStrings, "prev" | "next" | "page" | "pagesOf" | "showing">>;
 };
 
 /** The pages to show: the first, the last, and the current one with its neighbours; `null` is a gap. */
@@ -39,13 +40,15 @@ const TablePagination = ({
   totalCount,
   itemLabel,
   loading = false,
+  labels,
 }: TablePaginationProps) => {
   // A short last page is the end, whatever the stale total says.
   const total = itemCount < itemsPerPage ? (currentPage - 1) * itemsPerPage + itemCount : totalCount;
   const pages = Math.max(Math.ceil(total / itemsPerPage), 1);
   const first = (currentPage - 1) * itemsPerPage + 1;
   const last = (currentPage - 1) * itemsPerPage + itemCount;
-  const { t } = useUiStrings();
+  const { t: defaults } = useUiStrings();
+  const t = { ...defaults, ...labels };
 
   return (
     <nav

@@ -3,3 +3,5 @@
 export { StyleGuide } from "./components/styleguide/StyleGuide";
 export { UiGallery } from "./components/UiGallery";
 export { MotionGallery } from "./components/motion/MotionGallery";
+
+export { TableSelectGallery } from "./components/TableSelectGallery";

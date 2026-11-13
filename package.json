@@ -37,11 +37,18 @@
     "sweep": "npm run sweep:bidi && npm run sweep:responsive && npm run sweep:persistence && npm run sweep:assets && npm run sweep:drafts && npm run sweep:moodboard && npm run sweep:board && npm run sweep:builder && npm run sweep:modals && npm run sweep:interaction && npm run sweep:surfaces && npm run sweep:contrast",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && prisma validate && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs && node scripts/radius-audit.mjs",
+    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && prisma validate && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs && node scripts/radius-audit.mjs && npm run lint:tokens",
     "e2e": "playwright test -c e2e/playwright.config.ts",
-    "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui"
+    "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui",
+    "status": "node --experimental-strip-types --no-warnings scripts/component-status.mjs",
+    "lint:tokens": "node scripts/ui-library-tokens.mjs"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.3.1",
+    "@radix-ui/react-select": "^2.4.1",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.14.26",
+    "cmdk": "^1.1.1",
     "mammoth": "^1.12.3",
     "next": "16.3.4",
     "pdfjs-dist": "^5.6.205",

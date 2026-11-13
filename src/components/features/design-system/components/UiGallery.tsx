@@ -61,7 +61,8 @@ const UiGallery = () => {
     <div dir={dir} className="min-h-screen bg-canvas text-text">
       <header className="sticky top-0 z-sticky flex flex-wrap items-center justify-between gap-3 bg-canvas px-5 py-3 shadow-rule-b">
         <h1 className="text-h3 font-medium">UI gallery</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button href="/design-system/table-select" size="sm" variant="outline">Tables & selects</Button>
           <Button size="sm" variant="outline" onClick={() => setDir((d) => (d === "ltr" ? "rtl" : "ltr"))} data-gallery-dir>
             {dir === "ltr" ? "Switch to RTL" : "Switch to LTR"}
           </Button>
