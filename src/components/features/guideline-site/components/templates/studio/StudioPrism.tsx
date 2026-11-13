@@ -6,7 +6,7 @@
 
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { LangToggle, Icon } from "@/components/ui";
+import { LangToggle, Icon, richToPlainText } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
 import { navLogo } from "@/components/features/guideline-site/utils/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
@@ -77,7 +77,7 @@ export function StudioPrism(props: TemplateProps) {
   const navActive = theme.isLight ? "rgba(0,0,0,.08)" : "rgba(255,255,255,.14)";
   const logo = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
-  const heroTitle = sectionTitle("overview-title", ws.strategy.purpose || (isAr ? "دليل الهوية" : "Brand guideline"));
+  const heroTitle = sectionTitle("overview-title", richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية" : "Brand guideline"));
 
   return (
     <SectionNoteProvider lookup={sectionNote}>

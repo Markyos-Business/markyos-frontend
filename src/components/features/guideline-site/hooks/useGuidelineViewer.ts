@@ -11,6 +11,7 @@ import { departmentHasContent } from "@/components/features/guideline-site/compo
 import { strategyNarrativeFilled } from "@/components/features/guideline-site/components/documents/StrategyDocument";
 import type { TocSection } from "@/components/features/guideline-site/types";
 import { usePublishedSite } from "./usePublishedSite";
+import { richToPlainText } from "@/components/ui";
 
 function unlockKey(slug: string) {
   return `markyos:client-unlock:${slug}`;
@@ -216,7 +217,7 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
    * An override alone is enough to give the band content, so it can also say
    * something a brand has no mission field for at all.
    */
-  const statementText = ws ? (titleOverrides["statement-text"]?.[previewLang] || ws.strategy.mission) : "";
+  const statementText = ws ? (titleOverrides["statement-text"]?.[previewLang] || richToPlainText(ws.strategy.mission)) : "";
 
   const availableFixed: TocSection[] = !ws
     ? []

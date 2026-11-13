@@ -12,7 +12,7 @@
 
 import { Fragment, ReactNode, useState } from "react";
 import Link from "next/link";
-import { Icon, LangToggle } from "@/components/ui";
+import { Icon, LangToggle, richToPlainText } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
 import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { BrandMark } from "@/components/ui/media";
@@ -172,7 +172,7 @@ export function StudioSignal(props: TemplateProps) {
   } = props;
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const heroTitle = sectionTitle("overview-title", ws.strategy.purpose || (isAr ? "دليل الهوية" : "Brand guideline"));
+  const heroTitle = sectionTitle("overview-title", richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية" : "Brand guideline"));
   const navLogoArt = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
   const runs = chapterRuns(flow);

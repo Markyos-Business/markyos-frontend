@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "@/components/ui";
+import { Icon, richToPlainText } from "@/components/ui";
 import { DepartmentView, SectionKey, Workspace } from "@/types";
 import { DocSurface, docTokens } from "@/components/features/guideline-site/components/documents/StrategyDocument";
 
@@ -51,7 +51,7 @@ export function resolveDeptItems(ws: Workspace, view: DepartmentView, isAr: bool
         id: item.id,
         icon: "bullseye",
         title: isAr ? "الغاية" : "Purpose",
-        body: ws.strategy.purpose || (isAr ? "لم تُكتب بعد." : "Not written yet."),
+        body: richToPlainText(ws.strategy.purpose) || (isAr ? "لم تُكتب بعد." : "Not written yet."),
         note: item.relevanceNote,
         dangling: false,
       };
@@ -61,7 +61,7 @@ export function resolveDeptItems(ws: Workspace, view: DepartmentView, isAr: bool
         id: item.id,
         icon: "bullseye",
         title: isAr ? "الرسالة" : "Mission",
-        body: ws.strategy.mission || (isAr ? "لم تُكتب بعد." : "Not written yet."),
+        body: richToPlainText(ws.strategy.mission) || (isAr ? "لم تُكتب بعد." : "Not written yet."),
         note: item.relevanceNote,
         dangling: false,
       };

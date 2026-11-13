@@ -46,14 +46,25 @@ const toRichHtml = (value: string): string => {
     .join("");
 };
 
-/** Plain text of a rich value — for word counts, linting and "is it empty?". */
+const NAMED_ENTITIES: Record<string, string> = { nbsp: " ", amp: "&", lt: "<", gt: ">", quot: "\"", apos: "'" };
+
+/**
+ * Plain text of a rich value — for word counts, linting, "is it empty?" and
+ * anywhere a rich field is shown as a title or one line. Pure string work, so
+ * the server and the browser produce the same text and hydration agrees.
+ */
 const richToPlainText = (value: string): string => {
   if (!value) return "";
   if (!isHtml(value)) return value;
-  if (typeof document === "undefined") return value.replace(/<[^>]+>/g, " ");
-  const el = document.createElement("div");
-  el.innerHTML = value;
-  return el.textContent || "";
+  return value
+    // A block ending is a break between words, not nothing.
+    .replace(/<\/(p|div|h[1-6]|li|blockquote|tr)>|<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, code: string) =>
+      code[0] !== "#" ? NAMED_ENTITIES[code.toLowerCase()] ?? m
+        : String.fromCodePoint(parseInt(code[1].toLowerCase() === "x" ? code.slice(2) : code.slice(1), code[1].toLowerCase() === "x" ? 16 : 10)))
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
 const richIsEmpty = (value: string): boolean => {

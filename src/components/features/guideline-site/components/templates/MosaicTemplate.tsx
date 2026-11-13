@@ -18,7 +18,7 @@
 
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { Icon, LangToggle } from "@/components/ui";
+import { Icon, LangToggle, richToPlainText } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
 import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { BrandMark } from "@/components/ui/media";
@@ -98,7 +98,7 @@ export function MosaicTemplate(props: TemplateProps) {
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
   const heroTitle = sectionTitle(
     "overview-title",
-    ws.strategy.purpose || (isAr ? "دليل الهوية البصرية" : "Brand guideline")
+    richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية البصرية" : "Brand guideline")
   );
 
   return (

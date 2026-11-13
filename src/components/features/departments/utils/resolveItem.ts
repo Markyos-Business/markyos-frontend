@@ -1,5 +1,6 @@
 import type { Workspace } from "@/types";
 import { SECTION_META } from "../constants";
+import { richToPlainText } from "@/components/ui";
 
 export type DeptItem = Workspace["departmentViews"][number]["items"][number];
 
@@ -10,8 +11,8 @@ export function resolveItem(ws: Workspace, item: DeptItem, isAr = false): { icon
     const meta = SECTION_META[item.sectionKey];
     return { icon: meta.icon, title: isAr ? meta.arLabel : meta.label, body: t("Guideline section", "قسم من الدليل") };
   }
-  if (item.itemType === "purpose") return { icon: "bullseye", title: t("Purpose", "الغاية"), body: ws.strategy.purpose || t("Not written yet.", "لم تُكتب بعد.") };
-  if (item.itemType === "mission") return { icon: "bullseye", title: t("Mission", "الرسالة"), body: ws.strategy.mission || t("Not written yet.", "لم تُكتب بعد.") };
+  if (item.itemType === "purpose") return { icon: "bullseye", title: t("Purpose", "الغاية"), body: richToPlainText(ws.strategy.purpose) || t("Not written yet.", "لم تُكتب بعد.") };
+  if (item.itemType === "mission") return { icon: "bullseye", title: t("Mission", "الرسالة"), body: richToPlainText(ws.strategy.mission) || t("Not written yet.", "لم تُكتب بعد.") };
   if (item.itemType === "persona") {
     const p = ws.strategy.personas.find((x) => x.id === item.refId);
     return {

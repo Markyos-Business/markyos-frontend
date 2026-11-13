@@ -7,7 +7,7 @@
 
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { Icon, LangToggle, useToast } from "@/components/ui";
+import { Icon, LangToggle, useToast, richToPlainText } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
 import { navLogo } from "@/components/features/guideline-site/utils/brandLogo";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
@@ -28,7 +28,7 @@ function previewFor(id: string, props: TemplateProps, isAr: boolean): string | n
   const { ws, attachedSlots, photoAssets, iconAssets } = props;
   switch (id) {
     case "overview":
-      return ws.strategy.purpose || null;
+      return richToPlainText(ws.strategy.purpose) || null;
     case "logo":
       return attachedSlots.length > 0 ? (isAr ? `${attachedSlots.length} من 3 خانات` : `${attachedSlots.length} of 3 slots filled`) : null;
     case "color":
@@ -263,7 +263,7 @@ export function StudioAtlas(props: TemplateProps) {
                       />
                       {ws.strategy.purpose && (
                         <Row label={isAr ? "الغاية" : "Purpose"}>
-                          <p dir="auto" className="bidi-auto text-[16px] leading-[1.7]" style={{ color: "var(--g-text-muted)" }}>{ws.strategy.purpose}</p>
+                          <p dir="auto" className="bidi-auto text-[16px] leading-[1.7]" style={{ color: "var(--g-text-muted)" }}>{richToPlainText(ws.strategy.purpose)}</p>
                         </Row>
                       )}
                       {ws.overviewHtml && (

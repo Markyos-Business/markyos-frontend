@@ -14,7 +14,7 @@
 
 import { ReactNode, useCallback, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { LangToggle, Icon } from "@/components/ui";
+import { LangToggle, Icon, richToPlainText } from "@/components/ui";
 import { DownloadPanel } from "@/components/features/guideline-site/components/documents/DownloadPanel";
 import { BlockRenderer } from "@/components/features/guideline-site/components/content/BlockRenderer";
 import { BrandMark } from "@/components/ui/media";
@@ -310,7 +310,7 @@ export function DeckTemplate(props: TemplateProps) {
                 number="1.1"
                 title={t("Purpose", "الغاية")}
                 note={t("Why this brand exists, in one sentence.", "لماذا توجد هذه العلامة، في جملة واحدة.")}
-                statement={ws.strategy.purpose}
+                statement={richToPlainText(ws.strategy.purpose)}
                 fill={pal.primary}
                 background={pal.panel}
                 markUrl={markUrl}
@@ -325,7 +325,7 @@ export function DeckTemplate(props: TemplateProps) {
                 number="1.2"
                 title={ws.strategy.vision ? t("Vision", "الرؤية") : t("Mission", "الرسالة")}
                 note={t("Where the brand is going, and what it does to get there.", "إلى أين تتجه العلامة، وما تفعله للوصول.")}
-                statement={ws.strategy.vision || ws.strategy.mission}
+                statement={richToPlainText(ws.strategy.vision || ws.strategy.mission)}
                 fill={pal.secondary}
                 background={pal.panelWarm}
                 markUrl={markUrl}
