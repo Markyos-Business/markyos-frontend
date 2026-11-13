@@ -24,6 +24,13 @@ export const selectLabels: SelectLabels = {
   create: q => `Create “${q}”`, remove: label => `Remove ${label}`, overflow: n => `+${n}`,
   selected: n => `${n} selected`,
 };
+export const selectLabelsAr: SelectLabels = {
+  placeholder: "اختر خيارًا", search: "ابحث في الخيارات", noOptions: "لا توجد خيارات متاحة.",
+  noResults: "لا توجد خيارات تطابق بحثك.", loading: "جارٍ تحميل الخيارات…", loadError: "تعذّر تحميل الخيارات.",
+  retry: "إعادة المحاولة", success: "حُفظ الاختيار.", maxReached: n => `يمكنك اختيار ${n} خيارات كحد أقصى.`,
+  create: q => `إنشاء «${q}»`, remove: label => `إزالة ${label}`, overflow: n => `+${n}`,
+  selected: n => `${n} مختارة`,
+};
 export type SelectCommonProps = {
   id?: string; name?: string; label?: string; hint?: string; error?: string; success?: boolean;
   disabled?: boolean; readOnly?: boolean; required?: boolean; dir?: "ltr" | "rtl";

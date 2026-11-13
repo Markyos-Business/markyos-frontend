@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { DropdownPanel } from "../listbox/dropdown-panel";
 import { FieldLabel, FieldNote, fieldBlockClasses, fieldClasses, type FieldSize } from "../field/input-field";
 import { useUiStrings } from "../ui-strings";
+import { useRecentColours } from "./use-recent-colours";
 import { ColorPicker, type ColorSwatch } from "./color-picker";
 import { normalizeHex } from "@/lib/color";
 import { usePresence } from "@/hooks/usePresence";
@@ -38,7 +39,29 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
   const { mounted, closing } = usePresence(open);
   const trigger = useRef<HTMLButtonElement>(null);
   const panelId = useId();
-  const close = useCallback(() => setOpen(false), []);
+  const { recent, remember } = useRecentColours();
+  // The colour it closes on is the one chosen; dragging through others doesn't count.
+  const close = useCallback(() => {
+    setOpen(false);
+    remember(value);
+  }, [remember, value]);
+
+  // Escape closes it wherever focus is (the panel handles its own, below), and
+  // opening moves focus into the panel: it renders in a portal Tab can't reach.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      close();
+      trigger.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    const frame = requestAnimationFrame(() => document.getElementById(panelId)?.focus({ preventScroll: true }));
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      cancelAnimationFrame(frame);
+    };
+  }, [open, close, panelId]);
 
   return (
     <>
@@ -52,7 +75,7 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onPointerDown={(e) => e.stopPropagation()}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => (open ? close() : setOpen(true))}
         className={`cursor-pointer ${triggerClassName}`}
         style={triggerStyle}
       >
@@ -64,7 +87,8 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
             id={panelId}
             role="dialog"
             aria-label={label}
-            className="overflow-y-auto p-space-3"
+            tabIndex={-1}
+            className="overflow-y-auto p-space-3 outline-none"
             onPointerDown={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
               e.stopPropagation();
@@ -74,7 +98,7 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
               }
             }}
           >
-            <ColorPicker value={value} onChange={onChange} swatches={swatches} />
+            <ColorPicker value={value} onChange={onChange} swatches={swatches} recent={recent} />
           </div>
         </DropdownPanel>
       )}

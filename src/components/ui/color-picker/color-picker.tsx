@@ -19,6 +19,8 @@ type ColorPickerProps = {
   onChange: (hex: string) => void;
   /** Colours to pick in one press, e.g. the brand palette. */
   swatches?: Swatch[];
+  /** The person's last colours, newest first (useRecentColours). */
+  recent?: string[];
   /** The notation the fields open in. Default HEX. */
   defaultNotation?: ColorNotation;
   className?: string;
@@ -87,7 +89,7 @@ const dragHandlers = (onMove: (x: number, y: number) => void) => {
  * steps). Colour space has no reading direction, so they stay left-to-right in
  * Arabic, as every colour tool does.
  */
-const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", className = "" }: ColorPickerProps) => {
+const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex", className = "" }: ColorPickerProps) => {
   const tabIds = useTabIds();
   const { t } = useUiStrings();
   const hex = normalizeHex(value) ?? "#000000";
@@ -298,6 +300,28 @@ const ColorPicker = ({ value, onChange, swatches, defaultNotation = "hex", class
                 />
               );
             })}
+          </div>
+        </div>
+      )}
+      {recent && recent.length > 0 && (
+        <div className="flex flex-col gap-space-2">
+          <span className="text-caption text-text-muted">{t.recentColours}</span>
+          <div className="flex flex-wrap gap-space-3">
+            {recent.map((r) => (
+              <button
+                key={r}
+                type="button"
+                title={r}
+                aria-label={r}
+                aria-pressed={normalizeHex(r) === hex}
+                onClick={() => {
+                  const next = normalizeHex(r);
+                  if (next) setFromHex(next);
+                }}
+                className={`size-7 cursor-pointer rounded-full transition-shadow duration-fast ${normalizeHex(r) === hex ? "ring-2 ring-accent ring-offset-2 ring-offset-surface-1" : "shadow-edge"}`}
+                style={{ background: r }}
+              />
+            ))}
           </div>
         </div>
       )}

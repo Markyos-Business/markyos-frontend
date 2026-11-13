@@ -51,6 +51,7 @@ export * from "./rich-text";
 export * from "./section-ui";
 export * from "./select";
 export * from "./skeleton";
+export * from "./special";
 export * from "./switch-mark";
 export * from "./table";
 export * from "./tabs";

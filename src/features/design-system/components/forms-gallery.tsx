@@ -23,7 +23,7 @@ import {
   UrlField,
   type FieldState,
 } from "@/components/ui";
-import { AvatarUpload, CheckboxField, CheckboxGroup, ChipSelector, FileDropzone, ImageUpload, UploadList, type UploadItem, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
+import { AddressFields, ConfirmByTyping, CountryPicker, LocalePicker, MarketPicker, MentionTextarea, PeoplePicker, RangeSlider, Rating, SliderField, TimezonePicker, type Address, type Person, AvatarUpload, CheckboxField, CheckboxGroup, ChipSelector, FileDropzone, ImageUpload, UploadList, type UploadItem, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
 import { ThemeToggle } from "@/components/ui";
 
 type Lang = "en" | "ar";
@@ -135,6 +135,25 @@ export function FormsGallery() {
       if (p >= 100) clearInterval(tick);
     }, 400);
   };
+  const [opacity, setOpacity] = useState(80);
+  const [budgetRange, setBudgetRange] = useState<[number, number]>([20_000, 60_000]);
+  const [score, setScore] = useState(4);
+  const [locale, setLocale] = useState("ar-SA");
+  const [country, setCountry] = useState("SA");
+  const [marketsPicked, setMarketsPicked] = useState<string[]>(["SA", "AE"]);
+  const [zone, setZone] = useState("Asia/Riyadh");
+  const team: Person[] = [
+    { id: "nour", name: "Nour Haddad", email: "nour@studio.sa", presence: "online" },
+    { id: "omar", name: "Omar Aziz", email: "omar@studio.ae", presence: "busy" },
+    { id: "lina", name: "Lina Mansour", email: "lina@studio.eg", presence: "away" },
+    { id: "yousef", name: "Yousef Ali", email: "yousef@studio.sa", presence: "offline" },
+  ];
+  const [reviewers, setReviewers] = useState<string[]>(["nour"]);
+  const [note, setNote] = useState("");
+  const [mentioned, setMentioned] = useState<string[]>([]);
+  const [address, setAddress] = useState<Address>({ country: "SA", building: "8228", street: "King Fahd Road", district: "Al Olaya", city: "Riyadh", postalCode: "12271", additional: "2121" });
+  const [deleted, setDeleted] = useState(false);
+  const sar = (n: number) => `SAR ${n.toLocaleString("en-US")}`;
   const weekend = (iso: string) => [5, 6].includes(new Date(`${iso}T12:00`).getDay());
   const flip = () => {
     setSaving(true);
@@ -146,6 +165,10 @@ export function FormsGallery() {
 
   const na = <span className="text-caption text-text-faint">—</span>;
   const matrix: { name: string; render: (s: MatrixState) => ReactNode }[] = [
+    {
+      name: "CountryPicker",
+      render: (s) => (["validating", "readOnly", "locked", "warning", "loading"].includes(s) ? na : <CountryPicker value={s === "default" ? "" : "AE"} onChange={() => undefined} disabled={s === "disabled"} error={s === "error" ? t("Choose a country.", "اختر دولة.") : undefined} success={s === "success"} />),
+    },
     { name: "DatePicker", render: (s) => <DatePicker label={t("Launch date", "تاريخ الإطلاق")} value={s === "default" ? null : "2026-09-12"} onChange={() => undefined} {...stateProps(s, t)} /> },
     { name: "TimePicker", render: (s) => <TimePicker label={t("Time", "الوقت")} value={s === "default" ? null : "14:30"} onChange={() => undefined} hour12 {...stateProps(s, t)} /> },
     {
@@ -402,6 +425,30 @@ export function FormsGallery() {
               <ImageUpload label={t("Cover image", "صورة الغلاف")} value={cover} onChange={setCover} aspect={16 / 9} />
               <AvatarUpload label={t("Profile photo", "الصورة الشخصية")} value={photo} onChange={setPhoto} initials="NH" />
             </FieldGroup>
+          </Section>
+
+          <Section id="special" title={t("Special inputs", "مدخلات خاصة")}>
+            <FieldGroup>
+              <SliderField label={t("Opacity", "الشفافية")} value={opacity} min={0} max={100} step={5} onChange={setOpacity} valueText={`${opacity}%`} marks={[{ value: 0, label: "0%" }, { value: 50, label: "50%" }, { value: 100, label: "100%" }]} />
+              <RangeSlider label={t("Budget", "الميزانية")} value={budgetRange} onChange={setBudgetRange} min={0} max={100_000} step={5_000} minGap={5_000} format={sar} />
+              <Rating label={t("Brand fit", "ملاءمة العلامة")} value={score} onChange={setScore} clearable />
+              <Rating label={t("Average review", "متوسط التقييم")} value={4} readOnly />
+              <LocalePicker value={locale} onChange={setLocale} />
+              <CountryPicker value={country} onChange={setCountry} />
+              <MarketPicker value={marketsPicked} onChange={setMarketsPicked} max={4} />
+              <TimezonePicker value={zone} onChange={setZone} hint={t("Campaign times are shown in this zone.", "تظهر أوقات الحملة بهذه المنطقة.")} />
+              <PeoplePicker label={t("Reviewers", "المراجعون")} people={team} value={reviewers} onChange={setReviewers} max={3} />
+              <MentionTextarea label={t("Note to the team", "ملاحظة للفريق")} people={team} value={note} onChange={setNote} onMentionsChange={setMentioned} rows={3} />
+            </FieldGroup>
+            {mentioned.length > 0 && <p className="px-space-5 text-caption text-text-muted">{t("Mentioned:", "المذكورون:")} {mentioned.join(", ")}</p>}
+            <AddressFields value={address} onChange={setAddress} />
+            <div className="max-w-md">
+              {deleted ? (
+                <p className="text-body text-text-muted">{t("Ramadan launch was deleted.", "تم حذف إطلاق رمضان.")}</p>
+              ) : (
+                <ConfirmByTyping name="Ramadan launch" actionLabel={t("Delete brand", "حذف العلامة")} description={t("Its guidelines, files and share links go with it.", "تُحذف معها أدلتها وملفاتها وروابط مشاركتها.")} onConfirm={() => setDeleted(true)} />
+              )}
+            </div>
           </Section>
 
           <Section id="matrix" title={t("State matrix", "مصفوفة الحالات")}>

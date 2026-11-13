@@ -40,7 +40,7 @@ export function SearchSelect(props: SearchSelectProps) {
   }
   return <SelectFrame props={props} id={field.id}>
     <Popover.Root open={open} onOpenChange={next => { if (!props.disabled && !props.readOnly) { setDirection(getComputedStyle(trigger.current!).direction === "rtl" ? "rtl" : "ltr"); setOpen(next); } }}>
-      <div className="flex min-w-0 flex-wrap items-center gap-space-2 rounded-lg bg-surface-2 px-space-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-space-2">
         {props.multiple && chosen.slice(0, props.maxVisibleTags ?? 3).map(option => <span key={option.value} className="inline-flex max-w-full items-center gap-space-1 rounded-md bg-accent-soft px-space-2 py-space-1 text-caption text-text">
           <span className="max-w-36 truncate">{option.label}</span><button type="button" aria-label={field.labels.remove(option.label)} disabled={props.disabled || props.readOnly} onClick={() => choose(option)} className="mk-tap flex size-6 items-center justify-center"><Icon name="times" size={16} /></button>
         </span>)}

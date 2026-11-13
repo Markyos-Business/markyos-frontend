@@ -1217,6 +1217,59 @@ export const baseStyles = [
       },
     },
   },
+  /*
+   * Range slider: two real range inputs over one track. The inputs are
+   * transparent and only their thumbs take the pointer, so each thumb is a
+   * standard slider for the keyboard and screen readers.
+   */
+  {
+    ".mk-range": {
+      "position": "absolute",
+      "inset": "0",
+      "width": "100%",
+      "height": "100%",
+      "margin": "0",
+      "background": "transparent",
+      "appearance": "none",
+      "-webkit-appearance": "none",
+      "pointer-events": "none",
+      "outline": "none",
+    },
+    ".mk-range::-webkit-slider-thumb": {
+      "-webkit-appearance": "none",
+      "appearance": "none",
+      "pointer-events": "auto",
+      "width": "18px",
+      "height": "18px",
+      "border-radius": "9999px",
+      "background": "var(--accent)",
+      "box-shadow": "0 0 0 3px var(--surface-1)",
+      "cursor": "grab",
+    },
+    ".mk-range::-moz-range-thumb": {
+      "pointer-events": "auto",
+      "width": "18px",
+      "height": "18px",
+      "border": "0",
+      "border-radius": "9999px",
+      "background": "var(--accent)",
+      "box-shadow": "0 0 0 3px var(--surface-1)",
+      "cursor": "grab",
+    },
+    ".mk-range::-webkit-slider-runnable-track, .mk-range::-moz-range-track": {
+      "background": "transparent",
+    },
+    ".mk-range:focus-visible::-webkit-slider-thumb": {
+      "outline": "2px solid var(--accent)",
+      "outline-offset": "2px",
+    },
+    ".mk-range:focus-visible::-moz-range-thumb": {
+      "outline": "2px solid var(--accent)",
+      "outline-offset": "2px",
+    },
+    ".mk-range:disabled::-webkit-slider-thumb": { "background": "var(--text-disabled)", "cursor": "not-allowed" },
+    ".mk-range:disabled::-moz-range-thumb": { "background": "var(--text-disabled)", "cursor": "not-allowed" },
+  },
   {
     ".mk-field::placeholder": {
       "font-weight": "400",
