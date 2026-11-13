@@ -23,7 +23,7 @@ import {
   UrlField,
   type FieldState,
 } from "@/components/ui";
-import { CheckboxField, CheckboxGroup, ChipSelector, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
+import { AvatarUpload, CheckboxField, CheckboxGroup, ChipSelector, FileDropzone, ImageUpload, UploadList, type UploadItem, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
 import { ThemeToggle } from "@/components/ui";
 
 type Lang = "en" | "ar";
@@ -115,6 +115,26 @@ export function FormsGallery() {
   const [meeting24, setMeeting24] = useState<string | null>("09:00");
   const [kickoff, setKickoff] = useState<string | null>("2026-09-15T10:00");
   const [length, setLength] = useState<number | null>(90);
+  const [uploads, setUploads] = useState<UploadItem[]>([
+    { id: "u1", name: "Riyadh launch brief.pdf", size: 2_516_582, status: "done" },
+    { id: "u2", name: "Dubai Mall billboard.png", size: 4_404_019, status: "failed", error: "connection" },
+  ]);
+  const [cover, setCover] = useState<string | null>("/markyos-pattern.png");
+  const [photo, setPhoto] = useState<string | null>(null);
+  // A pretend upload: queued, then climbing, then done (or, for names with "fail", failed).
+  const upload = (files: File[]) => {
+    const fresh = files.map((f, i) => ({ id: `${Date.now()}-${i}`, name: f.name, size: f.size, status: "queued" as const }));
+    setUploads((u) => [...u, ...fresh]);
+    fresh.forEach((item) => run(item.id, /fail/i.test(item.name)));
+  };
+  const run = (id: string, fail: boolean) => {
+    let p = 0;
+    const tick = setInterval(() => {
+      p += 20;
+      setUploads((u) => u.map((x) => (x.id !== id ? x : p >= 100 ? { ...x, status: fail ? "failed" : "done", progress: undefined, error: fail ? "unreadable" : undefined } : { ...x, status: "uploading", progress: p })));
+      if (p >= 100) clearInterval(tick);
+    }, 400);
+  };
   const weekend = (iso: string) => [5, 6].includes(new Date(`${iso}T12:00`).getDay());
   const flip = () => {
     setSaving(true);
@@ -354,6 +374,34 @@ export function FormsGallery() {
               <DurationInput label={t("Session length", "مدة الجلسة")} value={length} onChange={setLength} maxHours={12} hint={length !== null ? `${t("Stored as", "يُحفظ كـ")} ${length} ${t("minutes", "دقيقة")}` : undefined} />
             </FieldGroup>
             <DateTimePicker label={t("Kick-off", "الانطلاق")} value={kickoff} onChange={setKickoff} hour12 weekStart={0} hint={kickoff ?? undefined} />
+          </Section>
+
+          <Section id="files" title={t("Files and media", "الملفات والوسائط")}>
+            <FileDropzone
+              label={t("Brief files", "ملفات الموجز")}
+              description={t("Up to 5 files. Name one with \"fail\" in it to see a failed upload.", "حتى 5 ملفات. سمِّ ملفًا يحتوي على \"fail\" لترى رفعًا متعثرًا.")}
+              accept=".pdf,image/*"
+              acceptLabel={t("PDF or image", "PDF أو صورة")}
+              maxBytes={10 * 1024 * 1024}
+              maxFiles={5}
+              already={uploads.length}
+              onFiles={upload}
+            />
+            <UploadList
+              label={t("Brief files", "ملفات الموجز")}
+              // Sample errors are keys, written in the current language here.
+              items={uploads.map((u) => (u.error === "connection" ? { ...u, error: t("The connection dropped. Try again.", "انقطع الاتصال. حاول مرة أخرى.") } : u.error === "unreadable" ? { ...u, error: t("The file couldn't be read.", "تعذّرت قراءة الملف.") } : u))}
+              onCancel={(id) => setUploads((u) => u.filter((x) => x.id !== id))}
+              onRemove={(id) => setUploads((u) => u.filter((x) => x.id !== id))}
+              onRetry={(id) => {
+                setUploads((u) => u.map((x) => (x.id === id ? { ...x, status: "queued", error: undefined } : x)));
+                run(id, false);
+              }}
+            />
+            <FieldGroup>
+              <ImageUpload label={t("Cover image", "صورة الغلاف")} value={cover} onChange={setCover} aspect={16 / 9} />
+              <AvatarUpload label={t("Profile photo", "الصورة الشخصية")} value={photo} onChange={setPhoto} initials="NH" />
+            </FieldGroup>
           </Section>
 
           <Section id="matrix" title={t("State matrix", "مصفوفة الحالات")}>

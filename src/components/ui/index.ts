@@ -57,3 +57,4 @@ export * from "./tabs";
 export * from "./theme";
 export * from "./tooltip";
 export * from "./ui-strings";
+export * from "./upload";

@@ -172,6 +172,9 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `TimePicker` (`hour12`, `minuteStep`) | TimePicker | `"HH:mm"`, `Controller` |
 | `DateTimePicker` | DateTimePicker | `"YYYY-MM-DDTHH:mm"`, `Controller` |
 | `DurationInput` (`maxHours`) | DurationInput | minutes, `Controller` |
+| `FileDropzone` (`accept`, `maxBytes`, `maxFiles`, `multiple`) | FileDropzone | `onFiles(File[])` |
+| `UploadList` | UploadList | `UploadItem[]` with `onCancel`, `onRetry`, `onRemove` |
+| `ImageUpload` (`aspect`, `outputWidth`), `AvatarUpload` | ImageUpload / AvatarUpload | data URL, `Controller` |
 | `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
 
 Text fields take react-hook-form's `register` directly; its `ref` lands on the

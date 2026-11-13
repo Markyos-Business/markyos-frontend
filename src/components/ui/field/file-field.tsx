@@ -7,6 +7,8 @@ import { Button } from "../button/button";
 import { IconButton } from "../button/icon-button";
 import { Icon } from "../icon";
 import { useToast } from "../overlay/toast";
+import { Progress } from "../progress";
+import { accepts } from "../upload/file-rules";
 import { useUiStrings } from "../ui-strings";
 import { FieldLabel } from "./input-field";
 
@@ -37,37 +39,6 @@ type FileFieldProps = {
 };
 
 const MB = 1024 * 1024;
-
-/** Whether `file` is one of `accept`'s extensions or MIME types. */
-const accepts = (file: File, accept: string) =>
-  accept
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean)
-    .some((rule) =>
-      rule.startsWith(".")
-        ? file.name.toLowerCase().endsWith(rule)
-        : rule.endsWith("/*")
-          ? file.type.toLowerCase().startsWith(rule.slice(0, -1))
-          : file.type.toLowerCase() === rule
-    );
-
-/**
- * The spec's progress bar (§6.10): a 6px track on the neutral soft fill, the
- * fill moving in the 180ms reserved for it. It fills from the reading-start
- * side, by transform rather than width.
- */
-const Progress = ({ value }: { value: number }) => (
-  <span className="flex items-center gap-space-3">
-    <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-soft">
-      <span
-        className="block h-full origin-left rounded-full bg-accent transition-transform duration-base rtl:origin-right"
-        style={{ transform: `scaleX(${Math.min(Math.max(value, 0), 100) / 100})` }}
-      />
-    </span>
-    <span className="shrink-0 text-caption font-medium tabular-nums text-accent-text">{value}%</span>
-  </span>
-);
 
 /**
  * Choose a file by dropping it or browsing. It checks type and size and says
@@ -143,7 +114,7 @@ const FileField = ({
           </label>
           {file && uploading ? (
             <span className="mt-space-2 block">
-              <Progress value={progress} />
+              <Progress value={progress} label={`${file.name}, ${progress}%`} size="md" showValue />
             </span>
           ) : (
             <span className="block truncate text-caption text-text-muted">{file ? file.name : (description ?? fallback)}</span>
@@ -196,7 +167,7 @@ const FileField = ({
           </div>
           {uploading && (
             <span className="mt-space-4 block">
-              <Progress value={progress} />
+              <Progress value={progress} label={`${file.name}, ${progress}%`} size="md" showValue />
             </span>
           )}
         </div>
