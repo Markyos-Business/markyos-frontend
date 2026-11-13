@@ -204,8 +204,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                       onChange={(e) => setNames((p) => ({ ...p, [c.hex]: e.target.value }))}
                       disabled={already}
                       aria-label={isAr ? "اسم اللون" : "Colour name"}
-                      className="flex-1 min-w-0 h-9 px-3 rounded-lg outline-none text-[13px]"
-                      style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                      className="mk-field mk-field-sm flex-1 min-w-0"
                     />
 
                     <span dir="ltr" className="text-[12px] shrink-0" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}>

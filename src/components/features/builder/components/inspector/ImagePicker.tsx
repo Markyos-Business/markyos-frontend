@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchField } from "@/components/form";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui/media";
@@ -298,8 +299,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
           if (e.key === "Enter") void add();
         }}
         placeholder="https://…/photo.jpg"
-        className="h-9 px-3 rounded-lg outline-none text-[12.5px]"
-        style={{ background: "var(--surface-1)", color: "var(--text)" }}
+        className="mk-field mk-field-sm"
       />
       <button
         type="button"
@@ -426,8 +426,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
             value={keyDraft}
             onChange={(e) => setKeyDraft(e.target.value)}
             placeholder="Access Key"
-            className="h-9 px-3 rounded-lg outline-none text-[12.5px]"
-            style={{ background: "var(--surface-1)", color: "var(--text)" }}
+            className="mk-field mk-field-sm"
           />
           <button
             type="button"
@@ -445,19 +444,17 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
         </div>
       ) : (
         <>
-          <label className="flex items-center gap-2 h-9 px-3 rounded-lg" style={{ background: "var(--surface-1)" }}>
-            <Icon name="search" size={13} style={{ color: "var(--text-faint)" }} />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void run();
-              }}
-              placeholder={isAr ? "ابحث عن صور…" : "Search photos…"}
-              className="bg-transparent outline-none text-[12px] flex-1 min-w-0"
-              style={{ color: "var(--text)" }}
-            />
-          </label>
+          <SearchField
+            size="sm"
+            fullWidth
+            label={isAr ? "ابحث عن صور" : "Search photos"}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void run();
+            }}
+            placeholder={isAr ? "ابحث عن صور…" : "Search photos…"}
+          />
 
           {status === "searching" && (
             <span className="text-[11.5px]" style={{ color: "var(--text-faint)" }}>

@@ -193,10 +193,8 @@ function DraftPanel({
         onChange={(e) => onChange(e.target.value)}
         rows={7}
         placeholder={placeholder}
-        className="w-full rounded-card p-4 outline-none resize-y text-[14px]"
+        className="mk-field w-full resize-y"
         style={{
-          background: "var(--surface-2)",
-          color: "var(--text)",
           lineHeight: dir === "rtl" ? 1.85 : 1.6,
           fontFamily: dir === "rtl" ? "var(--font-arabic)" : "var(--font-sans)",
         }}

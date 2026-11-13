@@ -583,8 +583,7 @@ function GoogleFontImport({
             if (e.key === "Escape") setOpen(false);
           }}
           placeholder={script === "arabic" ? "Cairo" : "Inter"}
-          className="h-8 px-2.5 rounded-md outline-none text-[12px] flex-1 min-w-0"
-          style={{ background: "var(--surface-2)", color: "var(--text)" }}
+          className="mk-field mk-field-sm flex-1 min-w-0"
         />
         <button
           type="button"

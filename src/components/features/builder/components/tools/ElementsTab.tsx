@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchField } from "@/components/form";
 import { useMemo, useState } from "react";
 import { EmptyHint, Icon } from "@/components/ui";
 import { ALL_BLOCK_KINDS, BLOCK_DRAG_TYPE, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "@/components/features/guideline-site";
@@ -30,15 +31,14 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
 
   return (
     <>
-      <label className="flex h-9 items-center gap-2 rounded-lg bg-surface-1 px-3">
-        <Icon name="search" size={13} className="text-text-faint" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={isAr ? "بحث..." : "Search..."}
-          className="flex-1 bg-transparent text-[12px] text-text outline-none"
-        />
-      </label>
+      <SearchField
+        size="sm"
+        fullWidth
+        label={isAr ? "بحث في العناصر" : "Search elements"}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={isAr ? "بحث…" : "Search…"}
+      />
       {matchingKinds.length === 0 ? (
         <EmptyHint>{isAr ? "لا توجد نتائج." : "No matches."}</EmptyHint>
       ) : (

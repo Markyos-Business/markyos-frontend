@@ -104,8 +104,7 @@ export function InstructionEditor({
                   }
                   placeholder={isAr ? "عنوان القسم" : "Section heading"}
                   onChange={(e) => update(s.id, { heading: e.target.value })}
-                  className="flex-1 min-w-0 h-8 px-2.5 rounded-md outline-none text-[13px] font-semibold bidi-auto"
-                  style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                  className="mk-field mk-field-sm flex-1 min-w-0 font-semibold bidi-auto"
                 />
                 <button
                   type="button"

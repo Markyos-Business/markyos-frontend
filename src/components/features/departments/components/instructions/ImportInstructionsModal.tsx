@@ -193,8 +193,7 @@ export function ImportInstructionsModal({
                     onChange={(e) =>
                       setRows((prev) => prev.map((x, xi) => (xi === i ? { ...x, heading: e.target.value } : x)))
                     }
-                    className="h-8 px-2.5 rounded-md outline-none text-[13px] font-semibold bidi-auto"
-                    style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                    className="mk-field mk-field-sm font-semibold bidi-auto"
                   />
                   <textarea
                     dir="auto"
@@ -203,8 +202,7 @@ export function ImportInstructionsModal({
                     onChange={(e) =>
                       setRows((prev) => prev.map((x, xi) => (xi === i ? { ...x, body: e.target.value } : x)))
                     }
-                    className="rounded-md p-2.5 outline-none text-[12.5px] resize-none leading-[1.6] bidi-auto"
-                    style={{ background: "var(--surface-1)", color: "var(--text-secondary)" }}
+                    className="mk-field mk-field-sm resize-none leading-[1.6] bidi-auto"
                   />
                 </div>
               </div>

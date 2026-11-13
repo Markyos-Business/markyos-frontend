@@ -282,8 +282,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                     onChange={(e) =>
                       setSingles((prev) => prev.map((r, ri) => (ri === i ? { ...r, value: e.target.value } : r)))
                     }
-                    className="rounded-lg p-2.5 outline-none text-[13px] resize-none bidi-auto"
-                    style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                    className="mk-field mk-field-sm resize-none bidi-auto"
                   />
                 </label>
               ))}
@@ -436,16 +435,14 @@ function ListRowEditor({
           value={row.title}
           placeholder={titlePlaceholder}
           onChange={(e) => onChange({ ...row, title: e.target.value })}
-          className="h-8 px-2.5 rounded-md outline-none text-[13px] font-medium bidi-auto"
-          style={{ background: "var(--surface-1)", color: "var(--text)" }}
+          className="mk-field mk-field-sm font-medium bidi-auto"
         />
         <input
           dir="auto"
           value={row.description}
           placeholder={descPlaceholder}
           onChange={(e) => onChange({ ...row, description: e.target.value })}
-          className="h-8 px-2.5 rounded-md outline-none text-[12px] bidi-auto"
-          style={{ background: "var(--surface-1)", color: "var(--text-secondary)" }}
+          className="mk-field mk-field-sm bidi-auto"
         />
       </div>
     </label>
@@ -484,9 +481,8 @@ function TripleRowEditor({
               next[i] = e.target.value;
               onChange(include, next);
             }}
-            className="h-8 px-2.5 rounded-md outline-none text-[12.5px] bidi-auto"
+            className="mk-field mk-field-sm bidi-auto"
             style={{
-              background: "var(--surface-1)",
               color: i === 0 ? "var(--text)" : "var(--text-secondary)",
               fontWeight: i === 0 ? 500 : 400,
             }}

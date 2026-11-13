@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { FilterSelectField } from "@/components/form";
+import { FilterSelectField, SearchField } from "@/components/form";
 import { useApp } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui/media";
@@ -346,16 +346,12 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
       </div>
 
       <div className="flex items-center gap-2.5 flex-wrap">
-        <label className="flex items-center gap-2 h-9 px-3.5 rounded-lg min-w-[200px]" style={{ background: "var(--surface-1)" }}>
-          <Icon name="search" size={14} style={{ color: "var(--text-muted)" }} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
-            className="bg-transparent outline-none text-[12px] flex-1"
-            style={{ color: "var(--text)" }}
-          />
-        </label>
+        <SearchField
+          label={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
+        />
         <FilterSelectField
           label={isAr ? "ترتيب الملفات" : "Sort files"}
           hideLabel
@@ -799,8 +795,7 @@ function AssetDetailModal({
             onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
             placeholder={isAr ? "أضف وسمًا…" : "add a tag…"}
             aria-label={isAr ? "أضف وسمًا" : "Add a tag"}
-            className="text-[11px] px-2 py-1 rounded-md outline-none w-[100px]"
-            style={{ background: "var(--surface-2)", color: "var(--text)" }}
+            className="mk-field mk-field-sm w-[100px]"
           />
         </div>
       </div>

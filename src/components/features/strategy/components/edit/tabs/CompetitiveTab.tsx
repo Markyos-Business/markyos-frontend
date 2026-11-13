@@ -315,8 +315,7 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
         onChange={(e) => setText(e.target.value)}
         rows={7}
         placeholder={"Competitor\tPrice\tArabic support\nDual Studio\t$$\tNone"}
-        className="rounded-lg p-3 outline-none text-[12.5px] resize-y bidi-auto"
-        style={{ background: "var(--surface-2)", color: "var(--text)", fontFamily: "ui-monospace, Menlo, monospace" }}
+        className="mk-field resize-y bidi-auto font-mono"
       />
 
       {grid.length > 0 && (

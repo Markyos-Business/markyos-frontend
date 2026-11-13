@@ -61,7 +61,8 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
   }
 
   if (ws.colors.length === 0) return (
-    <div className="flex-1 overflow-auto px-space-7 py-space-8">
+    // The same frame as the checker below, so the empty page doesn't shift.
+    <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto max-w-[820px]">
       <h1 className="text-h3 font-medium">{t("Asset colors", "ألوان الأصول")}</h1>
       <EmptyState icon="palette" title={t("Add your brand colours first", "أضف ألوان علامتك أولًا")}
         description={t("The checker needs your palette before it can compare an image.", "يحتاج الفاحص إلى ألوان علامتك قبل مقارنة صورة بها.")}

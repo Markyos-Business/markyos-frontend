@@ -668,8 +668,7 @@ function OptionsPanel({
                   // so it is stored as undefined rather than as an empty string.
                   onChange={(e) => onChange({ [key]: e.target.value || undefined } as Partial<SectionOptions>)}
                   placeholder={ar ? "الجملة المعيارية" : "The standard pangram"}
-                  className="h-8 px-2.5 rounded-lg text-[12px] outline-none"
-                  style={{ background: "var(--surface-1)", color: "var(--text)" }}
+                  className="mk-field mk-field-sm"
                 />
               </label>
             );

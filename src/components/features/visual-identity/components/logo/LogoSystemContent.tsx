@@ -263,8 +263,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               setLogoUsageNotes(ws.id, notesDraft.trim());
               setNotesDraft(null);
             }}
-            className="rounded-lg p-3 outline-none text-[14px] resize-none"
-            style={{ background: "var(--surface-2)", color: "var(--text)", boxShadow: "inset 0 0 0 1px var(--accent-edge)" }}
+            className="mk-field resize-none"
           />
         ) : (
           <button
