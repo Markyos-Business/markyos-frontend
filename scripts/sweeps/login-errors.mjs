@@ -7,9 +7,12 @@ import { assertServerUp } from "./serverGuard.mjs";
 
 // Start one frontend with NEXT_PUBLIC_API_URL=http://localhost:3212/__audit_api__.
 // SWEEP_BASE=http://localhost:3212 PLAYWRIGHT_CHANNEL=chrome npm run sweep:login-errors
+// For an isolated API build, set SWEEP_API_PATH=/api/v1.
 // All audit API calls are fulfilled here; other network mutations are blocked.
 const BASE = process.env.SWEEP_BASE ?? "http://localhost:3212";
 assert(["localhost", "127.0.0.1", "[::1]"].includes(new URL(BASE).hostname), "Use the local audit frontend");
+const API_PATH = process.env.SWEEP_API_PATH ?? "/__audit_api__";
+assert(API_PATH.startsWith("/") && !API_PATH.endsWith("/"));
 const output = path.resolve(process.env.SWEEP_OUTPUT ?? ".visual/login-errors");
 fs.mkdirSync(output, { recursive: true });
 const copyPath = path.resolve(import.meta.dirname, "../../src/components/features/auth/copy.ts");
@@ -45,10 +48,10 @@ async function fixture(config, scenario) {
   await context.route("**/*", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
-    if (!url.pathname.startsWith("/__audit_api__/")) {
+    if (!url.pathname.startsWith(`${API_PATH}/`)) {
       return ["GET", "HEAD"].includes(request.method()) ? route.continue() : route.abort();
     }
-    const endpoint = url.pathname.slice("/__audit_api__".length);
+    const endpoint = url.pathname.slice(API_PATH.length);
     calls.push({ endpoint, method: request.method() });
     if (endpoint === "/auth/token/refresh/") return route.fulfill({ status: 401, json: { detail: "Not signed in" } });
     if (endpoint === "/auth/login/") {
@@ -60,7 +63,7 @@ async function fixture(config, scenario) {
       if (scenario.id === "unavailable") return route.fulfill({ status: 503, contentType: "text/html", body: "<html>PRIVATE_SERVER_DETAIL</html>" });
       const detail = scenario.id === "credentials" ? "That email and password don't match an account." : "PRIVATE_SERVER_DETAIL";
       const json = scenario.id === "unknown-validation" ? { email: [detail] } : { detail };
-      return route.fulfill({ status: scenario.status, headers: scenario.retry ? { "Retry-After": scenario.retry } : {}, json });
+      return route.fulfill({ status: scenario.status, headers: { "Access-Control-Expose-Headers": "Retry-After", ...(scenario.retry ? { "Retry-After": scenario.retry } : {}) }, json });
     }
     if (endpoint === "/auth/me/") {
       if (scenario.id === "profile-denied") return route.fulfill({ status: 401, json: { detail: "PRIVATE_SERVER_DETAIL" } });

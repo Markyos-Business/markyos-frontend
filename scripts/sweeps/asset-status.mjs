@@ -10,7 +10,7 @@ const WS = "nadeen-studio";
 // server would read as a pass here, which is the worst case of all.
 await assertServerUp(BASE, [`/w/${WS}/visual-identity`, `/v/${WS}`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
 
@@ -21,7 +21,7 @@ const check = (name, ok, detail = "") => {
   console.log(`${ok ? "ok    " : "FAIL  "} ${name}${detail ? ` — ${detail}` : ""}`);
 };
 
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 await page.fill('input[type="email"]', "nadeen@studio.com");
 await page.fill('input[type="password"]', "markyos2026");

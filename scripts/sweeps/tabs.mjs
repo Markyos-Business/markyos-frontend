@@ -108,6 +108,7 @@ try {
       await selected.press("Space");
       assert.equal(await selected.getAttribute("id"), enabled[0].id);
       assert.deepEqual(errors, []);
+      assert.deepEqual(consoleErrors, [], "No hydration attribute warnings");
       const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       const knownWidth = width === 375 && entry.route === "/design-system" ? 405 : width === 375 && entry.route === "/brands/new" ? 378 : width;
       assert(documentWidth <= knownWidth, `${entry.id}: new document overflow ${documentWidth} > ${knownWidth}`);

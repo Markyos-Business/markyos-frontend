@@ -9,7 +9,7 @@ const WS = "nadeen-studio";
 // a dead server rather than lost state — see serverGuard.mjs.
 await assertServerUp(BASE, [`/w/${WS}/settings`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const fail = [];
 const pass = [];
 const check = (name, ok, detail = "") => {
@@ -23,7 +23,7 @@ const check = (name, ok, detail = "") => {
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
 
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 const seeded = await page.evaluate(() => !!localStorage.getItem("markyos:v1"));
 check("cold start seeds a store", seeded);
@@ -136,7 +136,7 @@ check("snapshot holds no inline data: URLs", !blobShape.hasDataUrls, `${blobShap
    prove a broken store does not blank the app — which also ends the session.
    Reaching Settings without this lands on /login, and the control is reported
    missing when it is only out of reach. */
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 await page.fill('input[type="email"]', "nadeen@studio.com");
 await page.fill('input[type="password"]', "markyos2026");

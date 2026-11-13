@@ -9,10 +9,10 @@ const WS = "nadeen-studio";
 // server reports zero reversed runs and passes. See serverGuard.mjs.
 await assertServerUp(BASE, [`/w/${WS}/overview`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 await page.fill('input[type="email"]', "nadeen@studio.com");
 await page.fill('input[type="password"]', "markyos2026");

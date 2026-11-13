@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActionsDropdown, AppDate, AsyncStateView, Badge, Button, Faq, FilterChip, Icon, IconBadge, IconButton, ModalHeader, Skeleton, SolidBadge, Table, TableEmptyRow, TableErrorRow, TableLoadingRow, TablePagination, TabPanel, Tabs, useTabIds, Tooltip, cellClasses, rowClasses, useToast, type BadgeTone } from "@/components/ui";
 import { Combobox, FileField, FilterSelectField, OtpField, PhoneField, RadioCardGroup, RadioField, RepeaterField, SearchableChecklist, SegmentedToggle, SelectField, SortControl, TextareaField, ToggleCardGroup, ToggleField, type RepeaterRow } from "@/components/form";
 import { ThemeToggle } from "@/contexts/ThemeProvider";
@@ -49,8 +49,13 @@ const UiGallery = () => {
   const [file, setFile] = useState<File | null>(null);
   const [page, setPage] = useState(1);
   const { showToast } = useToast();
-  // Once, not on every render: a relative date needs a fixed "a moment ago".
-  const [recent] = useState(() => new Date(Date.now() - 5 * 60_000));
+  // The browser clock is unavailable during SSR. Hydrate the same empty
+  // example first, then capture a fixed recent value for this visit.
+  const [recent, setRecent] = useState<Date | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read the browser clock only after hydration
+    setRecent(new Date(Date.now() - 5 * 60_000));
+  }, []);
 
   return (
     <div dir={dir} className="min-h-screen bg-canvas text-text">

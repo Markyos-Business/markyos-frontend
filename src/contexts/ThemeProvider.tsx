@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import { Icon } from "@/components/ui/primitives/Icon";
+import { THEME_STORAGE_KEY, type ThemeChoice } from "@/lib/interfaceTheme";
 
 /**
  * The app's own light/dark theme.
@@ -12,16 +13,7 @@ import { Icon } from "@/components/ui/primitives/Icon";
  * those are two different products with two different owners.
  */
 
-export type ThemeChoice = "system" | "light" | "dark";
-
-export const THEME_STORAGE_KEY = "markyos:theme";
-
-/**
- * Runs before first paint, so the page never renders dark and then flips.
- * Kept in sync with `applyTheme` below — both read the same key and stamp the
- * same attribute.
- */
-export const THEME_INIT_SCRIPT = `(function(){try{var c=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})||"system";var d=c==="dark"||(c==="system"&&!window.matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
+export type { ThemeChoice } from "@/lib/interfaceTheme";
 
 function resolve(choice: ThemeChoice): "light" | "dark" {
   if (choice !== "system") return choice;

@@ -30,7 +30,12 @@ current 100/150/200/280/500ms scale.
 The internal UI supports `system`, `light`, and `dark`. The preference is stored
 under `markyos:theme`; a script stamps `data-theme` before hydration. The CSS
 base is dark, but a fresh browser normally follows its system preference.
-See [ThemeProvider](../../src/contexts/ThemeProvider.tsx).
+See [ThemeProvider](../../src/contexts/ThemeProvider.tsx) and the shared
+[theme bootstrap](../../src/lib/interfaceTheme.ts). The server layout must
+import inline script text from a module without `"use client"`; otherwise the
+RSC payload contains an asynchronous client reference in `<head>` and can
+interrupt production hydration. Keep browser preferences out of SSR date
+initializers, and check production builds for hydration errors and warnings.
 
 Use semantic classes, not a fixed hex value or a separate `dark:` class for each
 color. Values below are the current tokens; changing a token requires updating
@@ -263,3 +268,14 @@ The settings API example is a named region with `tabIndex={0}`, so keyboard user
 - Discovery section tabs keep Add section outside the tablist. Preserve labelled panel relationships and roving focus after add/delete and keep drag targets attached to the section buttons.
 
 Run `scripts/sweeps/audit-rounds.mjs` with `AUDIT_ROUND` set to the relevant finding. The final builder sweep uses disposable discovery HTTP fixtures; API-backed form checks require an isolated preview whose offline shell gate is bypassed solely for those fixtures. Never apply that bypass to production source.
+
+### Chart data points
+
+The shared SVG chart is a named group. Each focusable data-point hit area has
+`role="img"` and a label containing its period and series values. Focus shows
+the same tooltip as hover. Do not use a button role without an action. The
+trend accessibility sweep checks `aria-prohibited-attr` in both languages,
+themes and viewport widths.
+
+Focusable tab panels are content entry points. Keep their keyboard focus
+checks, but do not demand pointer cursors or hover fills intended for actions.

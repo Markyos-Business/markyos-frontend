@@ -9,7 +9,7 @@ const WS = "nadeen-studio";
 // server what it said before trusting what it drew — see serverGuard.mjs.
 await assertServerUp(BASE, [`/w/${WS}/builder`, `/v/${WS}`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const findings = [];
 
 /**
@@ -118,7 +118,7 @@ for (const theme of ["dark", "light"]) {
   });
   const page = await ctx.newPage();
 
-  await page.goto(`${BASE}/login`);
+  await page.goto(`${BASE}/login?lang=en`);
   await page.waitForLoadState("networkidle");
   await page.fill('input[type="email"]', "nadeen@studio.com");
   await page.fill('input[type="password"]', "markyos2026");

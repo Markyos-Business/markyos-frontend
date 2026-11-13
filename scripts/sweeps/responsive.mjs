@@ -22,13 +22,13 @@ const TEMPLATES = [
 // cannot serve while / and /login still answer 200.
 await assertServerUp(BASE, [`/v/${WS}`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const ctx = await browser.newContext({ viewport: PHONE, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await ctx.newPage();
 const guard = installServerGuard(page);
 
 // Seed the store once so localStorage exists on this origin.
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 await page.fill('input[type="email"]', "nadeen@studio.com");
 await page.fill('input[type="password"]', "markyos2026");

@@ -66,7 +66,7 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
   return (
     <div ref={ref} dir="ltr" className="relative w-full" style={{ height }}>
       {width > 0 && (
-        <svg width={width} height={height} role="img" aria-label={label}>
+        <svg width={width} height={height} role="group" aria-label={label}>
           {ticks.map((t) => (
             <g key={t}>
               <line x1={PAD.start} x2={width - PAD.end} y1={y(t)} y2={y(t)} className="stroke-hairline-strong" strokeDasharray="3 4" />
@@ -128,6 +128,7 @@ const Chart = ({ kind = "bar", data, series, height = 220, format = (n) => Strin
               width={band}
               height={plotH}
               fill="transparent"
+              role="img"
               tabIndex={0}
               aria-label={`${p.label}: ${p.values.map((v, s) => `${series[s]} ${format(v)}`).join(", ")}`}
               onMouseEnter={() => setHover(i)}

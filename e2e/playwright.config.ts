@@ -29,12 +29,14 @@ export default defineConfig({
   outputDir: "test-results",
   use: {
     baseURL: BASE,
+    ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}),
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     viewport: { width: 1440, height: 1000 },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 1000 } } }],
-  webServer: [
+  // Set this only when isolated servers are already managed by the caller.
+  webServer: process.env.E2E_EXTERNAL_SERVERS === "1" ? [] : [
     {
       command: `${python} manage.py migrate --noinput && ${python} manage.py runserver 127.0.0.1:8010 --noreload`,
       cwd: backendDir,

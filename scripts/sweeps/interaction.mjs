@@ -169,6 +169,8 @@ const COLLECT = `(() => {
     out.push({
       index,
       tag: el.tagName.toLowerCase(),
+      // A tab panel is a keyboard entry point to content, not an action.
+      contentPanel: el.getAttribute("role") === "tabpanel",
       desc: describe(el),
       disabled: el.disabled === true || el.getAttribute('aria-disabled') === 'true',
       /*
@@ -309,7 +311,7 @@ function changed(before, after) {
 // ----------------------------------------------------------------- run ----
 
 async function signIn(page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/login?lang=en`, { waitUntil: "networkidle" });
   await page.fill('input[type="email"]', EMAIL);
   await page.fill('input[type="password"]', PASSWORD);
   await page.click('button[type="submit"]');
@@ -447,7 +449,7 @@ async function auditPage(page, theme, name, path) {
       }
       continue;
     }
-    if (el.tag === "select" || el.tag === "input") continue;
+    if (el.tag === "select" || el.tag === "input" || el.contentPanel) continue;
     // A resize corner and a connection port are interactive and are *not*
     // pointers: `nwse-resize` and `crosshair` are what those gestures look like
     // everywhere, and reporting them would be this check insisting on a
@@ -461,7 +463,7 @@ async function auditPage(page, theme, name, path) {
   // Sampled rather than exhaustive: a page with 120 controls would take a
   // minute to hover through, and the patterns repeat. Every distinct element
   // *shape* is covered because the sample is spread across the list.
-  const sample = elements.filter((e) => !e.disabled && !e.editable);
+  const sample = elements.filter((e) => !e.disabled && !e.editable && !e.contentPanel);
   const step = Math.max(1, Math.floor(sample.length / 30));
   for (let i = 0; i < sample.length; i += step) {
     const el = sample[i];
@@ -569,7 +571,7 @@ async function run() {
      serverGuard.mjs. */
   await assertServerUp(BASE, [`/w/${SLUG}/overview`, `/w/${SLUG}/builder`]);
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
   const context = await browser.newContext({ viewport: { width: 1440, height: 950 } });
   const page = await context.newPage();
   await signIn(page);
