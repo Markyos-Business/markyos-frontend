@@ -27,34 +27,50 @@ test.describe("analysis", () => {
     });
     await signIn(page, studio);
 
-    await page.goto(`/w/${brand.slug}/discovery`);
-    const panel = page.getByRole("region", { name: "Analysis" });
-    await panel.getByRole("button", { name: "Run analysis" }).click();
-    await expect(panel.getByText("Purpose")).toBeVisible({ timeout: 30_000 });
-    await expect(panel.getByRole("link", { name: "Form · Q1" }).first()).toBeVisible();
-    await expect(panel.getByRole("link", { name: "Call · 14 Oct · Omar Aziz" }).first()).toBeVisible();
-    await expect(panel.getByText(/proposals waiting in Drafts/)).toBeVisible();
+    await page.goto(`/w/${brand.slug}/analysis`);
+    await page.getByRole("button", { name: "Run analysis", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Export PDF", exact: true })).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("#section-snapshot")).toBeVisible();
 
-    // A call citation opens the cited turn, lit.
-    const callChip = panel.locator("a[href*='?turn=']").first();
-    const turn = new URL((await callChip.getAttribute("href"))!, "http://x").searchParams.get("turn");
-    await callChip.click();
+    const overview = await call(`/briefs/?brand=${brand.id}`, { token: studio.token });
+    expect(overview.versions).toHaveLength(1);
+    const analysisId = overview.versions[0].id;
+    const report = await call(`/briefs/${analysisId}/`, { token: studio.token });
+    expect(report.status).toBe("ready");
+    expect(report.sections).toHaveLength(10);
+
+    // Sources now open beside the report, with links to the exact source.
+    await page.getByRole("button", { name: "Call · 14 Oct · Omar Aziz", exact: true }).first().click();
+    const source = page.getByRole("dialog", { name: "Source", exact: true });
+    await expect(source.getByText("Kick-off with Omar", { exact: true })).toBeVisible();
+    const callLink = source.getByRole("link", { name: "Open the call", exact: true });
+    const turn = new URL((await callLink.getAttribute("href"))!, "http://x").searchParams.get("turn");
+    await callLink.click();
     await expect(page.locator(`#turn-${turn}`)).toHaveClass(/bg-accent-soft/);
 
-    // A form citation opens the cited answer.
-    await page.goBack();
-    await panel.locator("a[href*='?q=']").first().click();
+    await page.goto(`/w/${brand.slug}/analysis`);
+    await page.getByRole("button", { name: /^Form · Q/ }).first().click();
+    await expect(source.getByText("نحمّص القهوة في وادي رم ونبيعها في عمّان.", { exact: true })).toBeVisible();
+    await source.getByRole("link", { name: "Open the answers", exact: true }).click();
     await expect(page).toHaveURL(/answers\?q=/);
     const qid = new URL(page.url()).searchParams.get("q");
     await expect(page.locator(`#q-${qid}`)).toContainText("وادي رم");
 
-    // The proposals wait in Drafts, citing their sources.
-    await page.goto(`/w/${brand.slug}/drafts`);
-    await expect(page.getByText(/Discovery analysis — Purpose/).first()).toBeVisible();
+    // Approved report items go directly to Strategy and record their source.
+    await page.goto(`/w/${brand.slug}/analysis`);
+    await page.locator("#section-goals").getByRole("button", { name: /Add all to Strategy/ }).click();
+    await expect.poll(async () => {
+      const saved = await call(`/briefs/${analysisId}/`, { token: studio.token });
+      return saved.sections.find((section: { key: string }) => section.key === "goals").addedToStrategyAt;
+    }).toBeTruthy();
+    await expect.poll(async () => {
+      const saved = await call(`/brands/${brand.id}/`, { token: studio.token });
+      return saved.data.strategy?.objectives?.some((goal: { source?: { analysisId: string; sectionKey: string } }) =>
+        goal.source?.analysisId === analysisId && goal.source?.sectionKey === "goals") ?? false;
+    }).toBe(true);
 
-    // Editing a note afterwards marks the analysis stale.
     await call(`/call-notes/${note.id}/`, { method: "PATCH", token: studio.token, body: { title: "Kick-off, edited" } });
-    await page.goto(`/w/${brand.slug}/discovery`);
-    await expect(page.getByText("Notes changed since last analysis.")).toBeVisible();
+    await page.goto(`/w/${brand.slug}/analysis`);
+    await expect(page.getByRole("status").filter({ hasText: "Sources changed since this analysis." })).toBeVisible();
   });
 });

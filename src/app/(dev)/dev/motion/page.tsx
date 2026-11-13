@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MotionGallery } from "@/components/features/design-system";
+import { MotionGallery } from "@/features/design-system";
 
 // A development page: only built into a deploy that asks for it.
 export default function MotionPage() {

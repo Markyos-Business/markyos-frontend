@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { BuilderView, useBuilderPage } from "@/components/features/builder";
+import { BuilderView, useBuilderPage } from "@/features/builder";
 
 // No top bar: the editor takes the window and carries its own way back out.
 export default function BuilderPage() {

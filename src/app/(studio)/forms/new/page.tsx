@@ -1,7 +1,7 @@
 "use client";
 
-import { PageContainer } from "@/components/layout";
-import { NeedsServer, NewFormView, useStudioNewFormPage } from "@/components/features/discovery";
+import { PageContainer } from "@/features/shell";
+import { NeedsServer, NewFormView, useStudioNewFormPage } from "@/features/discovery";
 
 export default function StudioNewFormPage() {
   const page = useStudioNewFormPage();

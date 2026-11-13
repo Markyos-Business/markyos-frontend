@@ -1,0 +1,30 @@
+// Public API of the guideline-site feature. Code outside features/guideline-site/
+// imports from "@/features/guideline-site", never from a file inside it.
+export { BlockScopeProvider } from "./components/content/block-renderer";
+export { BrandFonts } from "./components/shared/brand-fonts";
+export { ClientGuideView } from "./components/viewer/client-guide-view";
+export { ContrastReport } from "./components/shared/contrast-report";
+export { GuidelineMotion } from "./components/viewer/guideline-motion";
+export { LiveCanvas } from "./components/live/live-canvas";
+export { BLOCK_DRAG_TYPE } from "./components/live/live-edit";
+export { StudioStylePreviewCard, TemplatePreviewCard } from "./components/shared/template-preview-card";
+export { CenteredMessage, PasswordGate } from "./components/viewer/viewer-chrome";
+export { DepartmentDocument } from "./components/documents/department-document";
+export { DownloadPanel } from "./components/documents/download-panel";
+export { StrategyContents, StrategyDocument, StrategyProgress, strategyIsEmpty } from "./components/documents/strategy-document";
+export { DeckTemplate } from "./components/templates/deck-template";
+export { DocsTemplate } from "./components/templates/docs-template";
+export { ManualTemplate } from "./components/templates/manual-template";
+export { MosaicTemplate } from "./components/templates/mosaic-template";
+export { StudioTemplate } from "./components/templates/studio-template";
+export { VaultTemplate } from "./components/templates/vault-template";
+export { useGuidelineViewer } from "./hooks/use-guideline-viewer";
+export { ALL_BLOCK_KINDS, BLOCK_META, CATEGORY_META, CATEGORY_ORDER } from "./utils/block-catalog";
+export { SCALE_MAX, SCALE_MIN, backgroundInkWarning, overriddenIn, patchScope, resolveStyle } from "./utils/block-style";
+export { brandFontStacks, familyFiles } from "./utils/brand-fonts";
+export { navLogo } from "./utils/brand-logo";
+export { DESIGN_SYSTEMS } from "./utils/design-system";
+export { COLOR_FORMATS, COLUMN_CHOICES, SECTION_OPTIONS, hasOptions, resolveOptions } from "./utils/section-options";
+export type { OptionKey, SectionOptions } from "./utils/section-options";
+export { resolveVariantKey, variantsFor } from "./utils/section-variants";
+export { personaIn, strategyText, textKey, traitIn, valueIn } from "./utils/strategy-lang";

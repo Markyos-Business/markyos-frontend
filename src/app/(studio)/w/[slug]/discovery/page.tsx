@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { DiscoveryView, useDiscoveryPage } from "@/components/features/callnotes";
-import { NeedsServer } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { DiscoveryView, useDiscoveryPage } from "@/features/callnotes";
+import { NeedsServer } from "@/features/discovery";
 
 export default function BrandDiscoveryPage() {
   const { slug } = useParams<{ slug: string }>();

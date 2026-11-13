@@ -30,9 +30,9 @@ const ROOT = process.cwd();
  */
 const GEOMETRY_SCOPES = [
   join("src", "lib", "doc"),
-  join("src", "components", "features", "moodboard", "model"),
-  join("src", "components", "features", "builder", "components"),
-  join("src", "components", "features", "moodboard", "components"),
+  join("src", "features", "moodboard", "model"),
+  join("src", "features", "builder", "components"),
+  join("src", "features", "moodboard", "components"),
 ];
 
 /**

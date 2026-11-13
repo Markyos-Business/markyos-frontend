@@ -1,10 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { AnalysisLink } from "@/components/features/briefs";
-import { RelatedCalls } from "@/components/features/callnotes";
-import { AnswersView, NeedsServer, useFormAnswersPage } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { AnalysisLink } from "@/features/briefs";
+import { RelatedCalls } from "@/features/callnotes";
+import { AnswersView, NeedsServer, useFormAnswersPage } from "@/features/discovery";
 
 export default function FormAnswersPage() {
   const { slug, formId } = useParams<{ slug: string; formId: string }>();

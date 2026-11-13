@@ -106,8 +106,8 @@ export const baseStyles = [
       background: "var(--surface-2)",
       "border-start-start-radius": "0",
       "border-end-start-radius": "0",
-      "border-start-end-radius": "10px",
-      "border-end-end-radius": "10px",
+      "border-start-end-radius": "8px",
+      "border-end-end-radius": "8px",
       "font-size": "15px",
       "line-height": "1.7",
       color: "var(--text-secondary)",
@@ -187,7 +187,11 @@ export const baseStyles = [
       "padding": "12px 16px",
       "border-inline-start": "2px solid var(--accent)",
       "background": "var(--surface-2)",
-      "border-radius": "0 10px 10px 0",
+      // On the end side, away from the bar, in either reading direction.
+      "border-start-start-radius": "0",
+      "border-end-start-radius": "0",
+      "border-start-end-radius": "8px",
+      "border-end-end-radius": "8px",
       "line-height": "1.7",
     },
   },
@@ -1155,6 +1159,16 @@ export const baseStyles = [
       "outline-offset": "2px !important",
     },
   },
+  // Scrollable tab strips clip an outside ring. Reuse the kit's focus outline
+  // inside the button; selected solid tabs use their existing high-contrast ink.
+  {
+    '.mk-tabs > [role="tab"]:focus-visible': {
+      "outline-offset": "-2px !important",
+    },
+    '.mk-tabs[data-tabs-variant="icon"] > [aria-selected="true"]:focus-visible': {
+      "outline-color": "var(--accent-ink) !important",
+    },
+  },
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
@@ -1177,18 +1191,30 @@ export const baseStyles = [
       "border": "0",
       "border-bottom": "1px solid var(--line-strong)",
       "border-radius": "0",
-      "background": "transparent",
-      "padding-block": "8px",
-      // --space-4. Keeps the value off the field's edges, which matters when
-      // something does fill it (browser autofill paints a box behind it).
-      // Labels and notes take the same inset so they line up with the value.
-      "padding-inline": "10px",
+      // The same ground as the filter select (`bg-ink-soft`), so a text field
+      // and a select side by side read as one family. State stays the underline.
+      "background": "var(--ink-soft)",
+      // The select's measurements: 40px tall (--control-h-sm: 9 + 21 + 9 + the
+      // 1px underline) with --space-5 either side, so a field and a select in
+      // one row line up. Labels and notes take the same inset as the value.
+      "padding-block": "9px",
+      "padding-inline": "14px",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
       "color": "var(--text)",
       "outline": "none",
       "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
+    },
+  },
+  {
+    // The select's hover: the button scrim over the resting ground. An input
+    // can't hold the ::after the buttons use, so the scrim is a background
+    // layer here, and it adapts to the theme through `--hover-scrim`.
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
+        "background-image": "linear-gradient(var(--hover-scrim), var(--hover-scrim))",
+      },
     },
   },
   {
@@ -1211,6 +1237,61 @@ export const baseStyles = [
   {
     ".mk-field[data-state=\"success\"]": {
       "border-bottom-color": "var(--success)",
+    },
+  },
+  {
+    ".mk-field[data-state=\"warning\"]": {
+      "border-bottom-color": "var(--warning)",
+    },
+  },
+  {
+    // Read-only and locked: the value is shown, not offered. A dashed rule
+    // and muted ink say "you can't change this" before anyone tries.
+    ".mk-field[data-readonly]": {
+      "border-bottom-style": "dashed",
+      "color": "var(--text-muted)",
+    },
+  },
+  /*
+   * A field with parts (prefix, suffix, a Copy button): `.mk-field` is the
+   * box and the control inside it is bare, so the box keeps the one look and
+   * the parts sit inside it.
+   */
+  {
+    ".mk-field-control": {
+      "flex": "1 1 0%",
+      // An input brings an intrinsic width of about 20 characters into its
+      // box's minimum width, so in a narrow column the box outgrew it and was
+      // clipped at its start. Width 0 takes that out; flex still grows it.
+      "width": "0",
+      "min-width": "0",
+      "border": "0",
+      "padding": "0",
+      "background": "transparent",
+      "font": "inherit",
+      "color": "inherit",
+      "outline": "none",
+    },
+  },
+  {
+    ".mk-field .mk-field-control::placeholder": {
+      "font-weight": "400",
+      "color": "var(--text-disabled)",
+    },
+  },
+  {
+    // Autofill: the browser's own yellow box is held off (its background
+    // never gets to transition in), and the field says it was filled for you
+    // with the accent's soft tint instead.
+    ".mk-field-control:autofill, .mk-field-control:-webkit-autofill, .mk-field:autofill, .mk-field:-webkit-autofill": {
+      "-webkit-text-fill-color": "var(--text)",
+      "caret-color": "var(--text)",
+      "transition": "background-color 600000s 0s, color 600000s 0s",
+    },
+  },
+  {
+    ".mk-field:has(:autofill), .mk-field:has(:-webkit-autofill), .mk-field:autofill": {
+      "background": "var(--accent-soft)",
     },
   },
   {

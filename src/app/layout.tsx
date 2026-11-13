@@ -3,7 +3,9 @@ import { inter, plexArabic, bricolage } from "./fonts";
 import { AppProvider } from "@/contexts/AppContext";
 import { ToastProvider, DialogProvider } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
-import { ThemeProvider, THEME_INIT_SCRIPT } from "@/contexts/ThemeProvider";
+import { ThemeProvider } from "@/components/ui";
+import { THEME_INIT_SCRIPT } from "@/lib/interfaceTheme";
+import { PageTitleSync } from "@/contexts/PageTitleSync";
 import { InterfaceLangSync } from "@/contexts/InterfaceLangSync";
 import { InterfaceUiStrings } from "@/contexts/InterfaceUiStrings";
 import { LANG_INIT_SCRIPT } from "@/lib/i18n/interfaceLang";
@@ -11,7 +13,6 @@ import { SIDEBAR_INIT_SCRIPT } from "@/lib/sidebarRails";
 import "./tailwind.css";
 
 export const metadata: Metadata = {
-  title: "Markyos",
   description: "Brand books that work in both directions.",
 };
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <ToastProvider>
                 <SyncNotices />
                 <InterfaceLangSync />
+                <PageTitleSync />
                 <DialogProvider>{children}</DialogProvider>
               </ToastProvider>
             </InterfaceUiStrings>

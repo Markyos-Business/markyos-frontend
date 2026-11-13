@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { FormsListView, NeedsServer, useBrandFormsPage } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { FormsListView, NeedsServer, useBrandFormsPage } from "@/features/discovery";
 
 export default function BrandFormsPage() {
   const { slug } = useParams<{ slug: string }>();

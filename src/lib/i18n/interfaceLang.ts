@@ -43,10 +43,17 @@ export function readGuestLang(): Lang | null {
 }
 
 export function writeGuestLang(lang: Lang) {
+  // An explicit choice replaces a landing link's ?lang= instead of being
+  // overridden by it on every read. Native history preserves form state.
+  const url = new URL(window.location.href);
+  url.searchParams.set("lang", lang);
+  // Next preserves its own router state and updates useSearchParams for the
+  // public native-history call; passing its internal state back skips that.
+  window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   try {
     window.localStorage.setItem(LANG_STORAGE_KEY, lang);
   } catch {
-    // Private mode or blocked storage: the choice lasts this page only.
+    // The URL still carries the choice when storage is blocked.
   }
   listeners.forEach((fn) => fn());
 }

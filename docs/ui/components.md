@@ -1,7 +1,7 @@
 # Components
 
 Shared, domain-free building blocks. Import from the folder barrel
-(`@/components/ui`, `@/components/form`, `@/components/layout`), never from a
+(`@/components/ui`, `@/components/ui`, `@/components/ui`), never from a
 file inside it. The one exception is media (`@/components/ui/media`), which
 stays out of the main barrel because it imports from it.
 
@@ -220,7 +220,7 @@ form toggles; the control around it carries the state.
 it would vanish into its ground, and `BrandMark` is a brand's mark,
 reversed or plated on dark grounds.
 
-## Form — `@/components/form`
+## Form — `@/components/ui`
 
 ```tsx
 <InputField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
@@ -254,10 +254,11 @@ label, `*` for `required`, hint and error as `InputField`:
 | `ToggleField`, `ToggleCardGroup` | One setting, or several, as switch cards. The thumb goes to the reading end. |
 | `SegmentedToggle` | Two named modes with a sliding highlight. |
 | `OtpField`, `PhoneField` | A one-time code with paste support, and a dial code plus number. Both stay left-to-right. |
+| `ColorPicker`, `ColorField`, `ColorPopover` | The one colour picker: a saturation/brightness square, a hue track, HEX / RGB / HSL / CMYK fields (CMYK marked approximate), Copy, the screen eyedropper where the browser has one, and optional brand `swatches`. `ColorPicker` sits inline (a dialog), `ColorField` is the underline field that opens it, `ColorPopover` opens it from any trigger (an icon on a card). Never `<input type="color">`. |
 | `RepeaterField` | A list of same-shaped rows, with add and remove. |
 | `FileField` | Drop or browse with type and size checks. Use `variant="compact"` for forms with several uploads. The caller does the upload. |
 
-## Layout — `@/components/layout`
+## Layout — `@/components/ui`
 
 | Component | What |
 | --- | --- |

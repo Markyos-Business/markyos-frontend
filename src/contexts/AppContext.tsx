@@ -63,10 +63,10 @@ import {
   WorkspaceStage,
   ZoneKind,
 } from "@/types";
-import type { SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
+import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 import { between, nBetween } from "@/lib/doc/core/order";
-import { zonesFromTemplate } from "@/components/features/moodboard/model/zones";
-import { withoutPosition } from "@/components/features/moodboard/model/layout";
+import { zonesFromTemplate } from "@/features/moodboard/utils/zones";
+import { withoutPosition } from "@/features/moodboard/utils/layout";
 import {
   DEMO_ACCOUNT_ID,
   buildDemoAccount,
@@ -81,11 +81,11 @@ import { roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
 // Deep imports, not the feature's index: its components import this file,
 // so going through index.ts would make a cycle.
-import { EMAIL_RE, RESET_TTL_MS } from "@/components/features/auth/constants";
-import { normaliseEmail } from "@/components/features/auth/utils/email";
-import { hashPassword, verifyPassword } from "@/components/features/auth/utils/password";
-import { newResetToken } from "@/components/features/auth/utils/resetToken";
-import { validateSubdomain } from "@/components/features/sharing/model/subdomain";
+import { EMAIL_RE, RESET_TTL_MS } from "@/features/auth/constants";
+import { normaliseEmail } from "@/features/auth/utils/email";
+import { hashPassword, verifyPassword } from "@/features/auth/utils/password";
+import { newResetToken } from "@/features/auth/utils/reset-token";
+import { validateSubdomain } from "@/features/sharing/utils/subdomain";
 import { BrandRepository } from "@/lib/data/repository";
 // The entity operations, as pure state transitions. The store calls these
 // rather than keeping its own copy — see the file's own note on why there is
@@ -95,7 +95,8 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // Accounts and sessions go to the backend when one is configured; see the
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, api, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
-import * as authApi from "@/components/features/auth/services/authService";
+import { classifyLoginFailure } from "@/features/auth/utils/login-failure";
+import * as authApi from "@/features/auth/api/auth.api";
 import type {
   AuthOutcome,
   CodePurpose,
@@ -103,7 +104,7 @@ import type {
   GooglePendingSignup,
   PasswordSetResult,
   PendingVerification,
-} from "@/components/features/auth/types";
+} from "@/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
 import { DEFAULT_LANG } from "@/lib/i18n/interfaceLang";
 
@@ -321,6 +322,8 @@ interface AppContextValue {
   createMoodboard: (workspaceId: string, title: string, templateKey?: string) => string;
   renameMoodboard: (workspaceId: string, boardId: string, title: string) => void;
   deleteMoodboard: (workspaceId: string, boardId: string) => void;
+  /** A copy of a board with fresh ids, placed first; returns its id. */
+  duplicateMoodboard: (workspaceId: string, boardId: string, title: string) => string | null;
   addMoodboardZone: (workspaceId: string, boardId: string, title: string, kind?: ZoneKind) => void;
   patchMoodboardZone: (
     workspaceId: string,
@@ -1026,7 +1029,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           await pullServerWorkspaces();
           return {};
         } catch (err) {
-          return { error: apiMessage(err) };
+          return { error: apiMessage(err), loginFailure: classifyLoginFailure(err) };
         }
       }
       const account = findByEmail(email);
@@ -1035,10 +1038,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // have accounts here, and it does not help the person who simply
       // mistyped one of the two.
       const WRONG = "That email and password don't match an account.";
-      if (!account) return { error: WRONG };
+      if (!account) return { error: WRONG, loginFailure: { kind: "invalidCredentials" } };
 
       const { ok, needsUpgrade } = await verifyPassword(password, account.password);
-      if (!ok) return { error: WRONG };
+      if (!ok) return { error: WRONG, loginFailure: { kind: "invalidCredentials" } };
 
       // The one moment the plain password is in hand and verified — so it is
       // the only chance to re-hash a record left in the clear by an older
@@ -1067,13 +1070,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    // Not awaited: the person is signed out here the moment they ask. The
-    // server revoking the refresh token can finish in the background.
-    if (API_ENABLED) void authApi.logout().catch(() => undefined);
-    // The account records deliberately survive: signing out is not the same as
-    // forgetting who you are, and the derived key has to still be there to
-    // check against on the way back in.
     repo.markSessionAlive(false);
+    if (API_ENABLED && isApiAdapter(repo)) {
+      // The server holds everything, so nothing of this account's should stay
+      // in this browser: its brands, gate passwords and team carry over to
+      // whoever opens it next. Not awaited: the person is signed out here the
+      // moment they ask, while the last save and the revoke finish behind.
+      void repo.endSession().finally(() => authApi.logout().catch(() => undefined));
+      setState(defaultState());
+      return;
+    }
+    // Browser-only: the account records deliberately survive. Signing out is
+    // not forgetting who you are, and the derived key has to still be there to
+    // check against on the way back in.
     setState((prev) => ({ ...prev, session: null }));
   }, [repo]);
 
@@ -1758,7 +1767,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const patchMoodboard = useCallback(
     (workspaceId: string, boardId: string, fn: (b: Moodboard) => Moodboard) => {
       mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, { moodboards: ws.moodboards.map((b) => (b.id === boardId ? fn(b) : b)) })
+        // Stamped here, the one door every change to a board goes through, so
+        // the projects page can say when each board was last worked on.
+        touchWorkspace(ws, { moodboards: ws.moodboards.map((b) => (b.id === boardId ? { ...fn(b), updatedAt: Date.now() } : b)) })
       );
     },
     [mutateWorkspace, touchWorkspace]
@@ -1769,6 +1780,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       patchMoodboard(workspaceId, boardId, (b) => ({ ...b, title }));
     },
     [patchMoodboard]
+  );
+
+  const duplicateMoodboard = useCallback(
+    (workspaceId: string, boardId: string, title: string): string | null => {
+      const ws = stateRef.current.workspaces.find((w) => w.id === workspaceId);
+      const source = ws?.moodboards.find((b) => b.id === boardId);
+      if (!source) return null;
+      const id = uid();
+      // Every card gets a new id, and connections follow their cards, so the
+      // copy can be edited without touching the original.
+      const itemIds = new Map<string, string>();
+      const zones = source.zones.map((z) => ({
+        ...z,
+        id: uid(),
+        items: z.items.map((i) => {
+          const next = uid();
+          itemIds.set(i.id, next);
+          return { ...i, id: next, votes: [] };
+        }),
+      }));
+      const edges = (source.edges ?? [])
+        .filter((e) => itemIds.has(e.from) && itemIds.has(e.to))
+        .map((e) => ({ ...e, id: uid(), from: itemIds.get(e.from)!, to: itemIds.get(e.to)! }));
+      const now = Date.now();
+      mutateWorkspace(workspaceId, (w) =>
+        touchWorkspace(w, { moodboards: [{ ...source, id, title, createdAt: now, updatedAt: now, zones, edges }, ...w.moodboards] })
+      );
+      return id;
+    },
+    [mutateWorkspace, touchWorkspace]
   );
 
   const deleteMoodboard = useCallback(
@@ -3568,6 +3609,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createMoodboard,
       renameMoodboard,
       deleteMoodboard,
+      duplicateMoodboard,
       addMoodboardZone,
       patchMoodboardZone,
       removeMoodboardZone,
@@ -3725,6 +3767,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       createMoodboard,
       renameMoodboard,
       deleteMoodboard,
+      duplicateMoodboard,
       addMoodboardZone,
       patchMoodboardZone,
       removeMoodboardZone,

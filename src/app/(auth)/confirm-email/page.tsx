@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { ConfirmEmailView } from "@/components/features/auth";
+import { ConfirmEmailView } from "@/features/auth";
 
 // Suspense, because the view reads the `token` search param.
 export default function ConfirmEmailPage() {

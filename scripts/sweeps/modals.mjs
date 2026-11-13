@@ -29,7 +29,7 @@ const SLUG = "nadeen-studio";
 // Escape — a dead server passes this sweep. See serverGuard.mjs.
 await assertServerUp(BASE, [`/w/${SLUG}/visual-identity`, `/w/${SLUG}/strategy`]);
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
 
@@ -41,7 +41,7 @@ const bad = (m) => { fail.push(m); };
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e).slice(0, 160)));
 
-await page.goto(`${BASE}/login`);
+await page.goto(`${BASE}/login?lang=en`);
 await page.waitForLoadState("networkidle");
 await page.fill('input[type="email"]', "nadeen@studio.com");
 await page.fill('input[type="password"]', "markyos2026");
@@ -49,7 +49,7 @@ await page.click('button[type="submit"]');
 await page.waitForURL(/\/brands/, { timeout: 20000 });
 
 /** The overlay layers these panels all render as: the named `modal` layer. */
-const openLayers = () => page.locator("div.fixed.inset-0.z-modal").count();
+const openLayers = () => page.locator("div.fixed.inset-0.z-dialog").count();
 
 async function escapes(name, open) {
   await open();

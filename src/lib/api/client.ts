@@ -53,7 +53,9 @@ export class ApiError extends Error {
     /** The parsed response body, for callers that need more than a message
      *  (a 409 carries the server's current copy). */
     readonly data: unknown = null,
-    readonly requestId: string | null = null
+    readonly requestId: string | null = null,
+    /** Numeric Retry-After, rounded up. Null when the server supplies no usable delay. */
+    readonly retryAfterSeconds: number | null = null
   ) {
     super(message);
     this.name = "ApiError";
@@ -64,13 +66,14 @@ export class ApiError extends Error {
 function toApiError(status: number, data: unknown, retryAfter?: string | null): ApiError {
   if (status === 429) {
     const seconds = Number(retryAfter);
+    const retryAfterSeconds = Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : null;
     const wait =
-      Number.isFinite(seconds) && seconds > 0
-        ? seconds < 90
-          ? `${Math.ceil(seconds)} seconds`
-          : `${Math.ceil(seconds / 60)} minutes`
-        : "a minute";
-    return new ApiError(`Too many attempts. Try again in ${wait}.`, 429);
+      retryAfterSeconds !== null
+        ? retryAfterSeconds < 90
+          ? `${retryAfterSeconds} seconds`
+          : `${Math.ceil(retryAfterSeconds / 60)} minutes`
+        : null;
+    return new ApiError(wait ? `Too many attempts. Try again in ${wait}.` : "Too many attempts. Try again shortly.", 429, {}, data, null, retryAfterSeconds);
   }
   const fields: Record<string, string> = {};
   let detail: string | null = null;
@@ -138,7 +141,8 @@ interface RequestOptions {
 
 /**
  * Call the API. Resolves to the parsed JSON (undefined for a 204), or throws
- * an `ApiError` whose message is fit to show the person.
+ * an `ApiError` retaining transport detail/status. Calling features localize
+ * expected failures before displaying them.
  *
  * A 401 on an authenticated call gets one refresh and one retry, so a
  * fifteen-minute access token expiring mid-session is invisible.
@@ -174,7 +178,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   if (!res.ok) {
     const error = toApiError(res.status, data, res.headers.get("Retry-After"));
     throw new ApiError(error.message, error.status, error.fields, error.data,
-      res.headers.get("X-Request-ID"));
+      res.headers.get("X-Request-ID"), error.retryAfterSeconds);
   }
   return data as T;
 }

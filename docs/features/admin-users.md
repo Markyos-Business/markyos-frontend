@@ -2,7 +2,7 @@
 
 > The reference feature for the dashboard component library: the template
 > every later feature overview follows. Routes `/admin/users` and
-> `/admin/users/[id]`. Code in `src/components/features/admin/`; backend in
+> `/admin/users/[id]`. Code in `src/features/admin/`; backend in
 > `markyos-backend/apps/admin_api/`.
 
 ## 1. Purpose and who it serves
@@ -552,7 +552,7 @@ the code). Sample values stand in for names and counts.
 | `sessions.emptyBody` | Each browser they sign in on shows up here. | يظهر هنا كل متصفح يسجّل الدخول منه. |
 
 The kit's own words (Retry, Clear filters, "3 selected", pagination, date
-picker) are in `src/components/ui/i18n/uiStrings.tsx`, also in both languages.
+picker) are in `src/components/ui/ui-strings.tsx`, also in both languages.
 
 ## 9. Accessibility
 

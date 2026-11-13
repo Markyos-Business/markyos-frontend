@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ClientGuideView } from "@/components/features/guideline-site";
+import { ClientGuideView } from "@/features/guideline-site";
 
 /** A real, addressable URL for one custom guideline page. */
 export default function ClientGuidePageViewer() {

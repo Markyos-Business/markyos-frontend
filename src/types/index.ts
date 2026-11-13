@@ -1,7 +1,7 @@
 import type { Lang } from "@/types/lang";
 export type { Lang };
 
-import type { SectionOptions } from "@/components/features/guideline-site/model/sectionOptions";
+import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 
 export type SlotKind = "arabic" | "latin" | "symbol";
 
@@ -701,6 +701,8 @@ export interface Moodboard {
   id: string;
   title: string;
   createdAt: number;
+  /** The last change to anything on it. Absent until a board is first edited. */
+  updatedAt?: number;
   /** The template it was made from, so zone copy is looked up rather than copied. */
   templateKey?: string;
   zones: MoodboardZone[];

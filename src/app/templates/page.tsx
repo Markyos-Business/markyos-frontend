@@ -1,6 +1,6 @@
 "use client";
 
-import { TemplatesHeader, TemplatesView, useTemplatesPage } from "@/components/features/templates";
+import { TemplatesHeader, TemplatesView, useTemplatesPage } from "@/features/templates";
 
 export default function TemplatesPage() {
   const page = useTemplatesPage();

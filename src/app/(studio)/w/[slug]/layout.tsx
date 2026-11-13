@@ -4,8 +4,10 @@ import { useEffect, useRef } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { canEdit, roleOn } from "@/lib/data/access";
-import { AppLayout, Sidebar } from "@/components/layout";
+import { AppLayout, Sidebar } from "@/features/shell";
 import { UiStringsProvider } from "@/components/ui";
+import { canOpenBrandPage } from "@/lib/data/brandNavigation";
+import { BrandAccessNotice } from "@/features/shell";
 
 export default function WorkspaceLayout({
   children,
@@ -134,7 +136,7 @@ export default function WorkspaceLayout({
             : `You're a ${role} on this brand, so it's view only. Ask the owner if you need to make changes.`}
         </div>
       )}
-      {children}
+      {canOpenBrandPage(role, pathname, ws.slug) ? children : <BrandAccessNotice workspace={ws} isAr={isAr} />}
     </AppLayout>
     </UiStringsProvider>
   );

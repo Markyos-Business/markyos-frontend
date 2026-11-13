@@ -118,7 +118,7 @@ export async function submitAsClient(form: any, answer = "نحمّص القهو�
 }
 
 export async function signIn(page: Page, studio: Studio) {
-  await page.goto("/login");
+  await page.goto("/login?lang=en");
   await page.getByLabel("Email").fill(studio.email);
   await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
   await page.locator('button[type="submit"]').click();
@@ -135,6 +135,10 @@ export const test = base.extend<{ consoleErrors: string[]; expectedErrors: RegEx
   expectedErrors: [[], { option: true }],
   consoleErrors: [
     async ({ page, expectedErrors }, use) => {
+      // These journeys assert English labels; the product defaults to Arabic.
+      await page.addInitScript(() => {
+        if (!localStorage.getItem("markyos.lang")) localStorage.setItem("markyos.lang", "en");
+      });
       const errors: string[] = [];
       const allowed = [/status of (401|404|410)/, ...expectedErrors];
       page.on("pageerror", (e) => errors.push(e.message));

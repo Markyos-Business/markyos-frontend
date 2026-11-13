@@ -19,3 +19,9 @@ export const homePath = (account: Account | null) => (account?.isAdmin ? "/admin
 
 /** Owners and editors change a brand; viewers and clients only read it. */
 export const canEdit = (role: TeamRole | null) => role === "owner" || role === "editor";
+
+/** UI capabilities mirror the existing server rules; they do not grant access. */
+export function capabilitiesOn(ws: Workspace, session: Session | null) {
+  const role = roleOn(ws, session);
+  return { role, canEdit: canEdit(role), canGovern: role === "owner" };
+}

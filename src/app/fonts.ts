@@ -2,6 +2,8 @@ import { Inter, IBM_Plex_Sans_Arabic } from "next/font/google";
 import localFont from "next/font/local";
 
 export const inter = Inter({
+  // Arial contains Arabic glyphs and must not precede Plex in shared stacks.
+  adjustFontFallback: false,
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",

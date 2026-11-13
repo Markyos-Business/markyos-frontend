@@ -4,8 +4,8 @@ Playwright tests that drive the real app against the real Django backend:
 sign-up and sign-in, discovery forms (studio screens, the client's form in
 Arabic with upload, resume and submit, dead links), call notes (paste, speaker
 mapping, timeline, include switch, delete and undo, citation highlight) and the
-brand analysis (citations that open the exact answer or call turn, drafts,
-stale after an edit).
+brand analysis (the current report, source drawers and links to the exact
+answer/call turn, Add to Strategy, and stale state after an edit).
 Client sign-off also covers password-gated submission, handling a note from a
 second browser, and retrying a saved note whose success response was lost.
 Approval tests cover an editor's proposal, the owner's decision in another
@@ -39,7 +39,19 @@ backend you started yourself needs those two variables set too.
 | `E2E_API` | `http://localhost:8010/api/v1` | |
 | `E2E_BASE` | `http://localhost:3100` | |
 
-The backend must allow `http://localhost:3100` in `CORS_ALLOWED_ORIGINS`.
+The backend must allow the frontend origin in `CORS_ALLOWED_ORIGINS`.
+
+For manually managed disposable servers, set `E2E_EXTERNAL_SERVERS=1`,
+`E2E_API` and `E2E_BASE`. This skips Playwright's server startup/reuse logic;
+it does not build or reconfigure the running frontend. Set
+`PLAYWRIGHT_CHANNEL=chrome` to use installed Chrome. Always point
+`E2E_BACKEND_DIR` and its Django database settings at the same isolated
+backend: fixtures run management commands there. Do not reuse a personal
+service/database. The fake AI provider requires both DEBUG=True and
+DISCOVERY_ANALYSIS_FAKE=True in that server's settings.
+
+English-label journeys seed the visitor language explicitly; secondary browser
+contexts use `/login?lang=en`. Other browser suites cover Arabic/RTL.
 
 ## Writing tests
 

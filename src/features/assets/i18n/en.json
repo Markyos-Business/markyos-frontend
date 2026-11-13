@@ -1,0 +1,36 @@
+{
+  "title": "Asset library",
+  "label": "Assets",
+  "search": "Search assets",
+  "searchPlaceholder": "Search assets…",
+  "columns": {
+    "name": "Asset",
+    "owner": "Owner",
+    "market": "Market",
+    "status": "Status",
+    "rights": "Rights until",
+    "updated": "Updated"
+  },
+  "status": {
+    "approved": "Approved",
+    "in-review": "In review",
+    "draft": "Draft",
+    "rights-expiring": "Rights expiring",
+    "archived": "Archived"
+  },
+  "type": {
+    "logo": "Logo",
+    "photo": "Photo",
+    "video": "Video",
+    "document": "Document"
+  },
+  "noExpiry": "No end date",
+  "items": "assets",
+  "emptyTitle": "No assets yet.",
+  "emptyBody": "Upload a logo, photo or video to start the library.",
+  "noResults": "No assets match \"{query}\".",
+  "errorTitle": "Couldn't load assets.",
+  "errorBody": "Check your connection and try again.",
+  "retry": "Retry",
+  "noResultsHint": "Try another name, owner or market."
+}

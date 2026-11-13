@@ -1,6 +1,6 @@
 "use client";
 
-import { BoardHeader, BoardView, useBoardPage } from "@/components/features/board";
+import { BoardHeader, BoardView, useBoardPage } from "@/features/board";
 
 export default function StudioBoardPage() {
   const board = useBoardPage();

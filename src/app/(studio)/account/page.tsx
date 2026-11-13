@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { AccountView } from "@/components/features/account";
+import { AccountView } from "@/features/account";
 
 /*
  * The Suspense boundary is required, not decorative: the view reads `?tab=`,

@@ -35,7 +35,7 @@ function fail(name, detail) {
 }
 
 async function signIn(page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/login?lang=en`, { waitUntil: "networkidle" });
   await page.fill('input[type="email"]', EMAIL);
   await page.fill('input[type="password"]', PASSWORD);
   await page.click('button[type="submit"]');
@@ -57,7 +57,7 @@ async function run() {
      /login still answer 200. See serverGuard.mjs. */
   await assertServerUp(BASE, [`/w/${SLUG}/builder`]);
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const page = await context.newPage();
 
@@ -428,17 +428,17 @@ async function run() {
       );
     }
 
-    // No preference: the chrome follows the brand, which is what the single
-    // field did. This default is what makes the split change nothing on its own.
-    await apply("ar", null);
+    // No account preference: keep the visitor's Arabic choice even for an
+    // English brand. Brand content and interface language are independent.
+    await apply("en", null);
     await page.reload();
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(900);
     const followed = await read();
-    if (followed.docDir === "rtl") ok("with no preference stated, the chrome follows the brand");
-    else fail("lang", `adminLang=null did not fall back to primaryLocale (dir=${followed.docDir})`);
+    if (followed.docDir === "rtl") ok("with no account preference, the chrome follows the visitor");
+    else fail("lang", `adminLang=null did not fall back to the visitor language (dir=${followed.docDir})`);
 
-    await apply("en", null);
+    await apply("en", "en");
     await page.reload();
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(900);

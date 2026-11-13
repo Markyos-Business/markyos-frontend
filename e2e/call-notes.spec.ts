@@ -24,18 +24,20 @@ test.describe("call notes", () => {
     await page.getByRole("link", { name: "Add call notes" }).first().click();
     await page.getByLabel(/^Title/).fill("Kick-off with Omar");
     await page.getByLabel("Duration (minutes)").fill("35");
-    await page.getByLabel("Related form").selectOption({ label: "Wadi Rum Coffee rebrand" });
+    await page.getByLabel("Related questionnaire").click();
+    await page.getByRole("option", { name: "Wadi Rum Coffee rebrand", exact: true }).click();
     await page.getByLabel("Paste the text").fill(TRANSCRIPT);
 
     // The preview reads it: a mixed transcript with two speakers.
     await expect(page.getByLabel("Who is Omar")).toBeVisible();
-    await expect(page.getByLabel("Kind", { exact: true })).toHaveValue("transcript");
-    await expect(page.getByLabel("Language", { exact: true })).toHaveValue("mixed");
+    await expect(page.getByLabel("Kind", { exact: true })).toContainText("Transcript");
+    await expect(page.getByLabel("Language", { exact: true })).toContainText("Mixed");
     const omar = page.locator("li", { has: page.getByLabel("Who is Omar") });
     const layla = page.locator("li", { has: page.getByLabel("Who is Layla") });
-    await expect(omar.getByLabel("Role")).toHaveValue("client"); // guessed from the brand's team
+    await expect(omar.getByLabel("Role")).toContainText("Client"); // guessed from the brand's team
     await page.getByLabel("Who is Omar").fill("Omar Aziz");
-    await layla.getByLabel("Role").selectOption("studio");
+    await layla.getByLabel("Role").click();
+    await page.getByRole("option", { name: "Studio", exact: true }).click();
 
     await page.getByRole("button", { name: "Save notes" }).click();
     await expect(page).toHaveURL(/\/calls\/[0-9a-f-]{36}$/);
@@ -58,6 +60,7 @@ test.describe("call notes", () => {
     );
 
     await page.goto(`/w/${brand.slug}/discovery`);
+    await page.getByRole("tab", { name: /Call notes 1/ }).click();
     await expect(page.getByRole("link", { name: "Kick-off with Omar" })).toBeVisible();
     await expect(page.getByText("In analysis")).toBeVisible();
 

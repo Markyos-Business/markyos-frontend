@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { CallNoteDetail, useCallNotePage } from "@/components/features/callnotes";
-import { NeedsServer } from "@/components/features/discovery";
+import { PageShell } from "@/features/shell";
+import { CallNoteDetail, useCallNotePage } from "@/features/callnotes";
+import { NeedsServer } from "@/features/discovery";
 
 export default function CallNotePage() {
   const { slug, noteId } = useParams<{ slug: string; noteId: string }>();

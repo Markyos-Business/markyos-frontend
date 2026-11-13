@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { ImportStrategyModal, StrategyActions, StrategyEditView, StrategyReadView, useStrategyPage } from "@/components/features/strategy";
+import { PageShell } from "@/features/shell";
+import { ImportStrategyModal, StrategyActions, StrategyEditView, StrategyReadView, useStrategyPage } from "@/features/strategy";
 
 export default function StrategyPage() {
   const { slug } = useParams<{ slug: string }>();

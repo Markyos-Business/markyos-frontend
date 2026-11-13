@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { PageShell } from "@/components/layout";
-import { AddDepartmentButton, DepartmentActions, DepartmentsView, useDepartmentsPage } from "@/components/features/departments";
+import { PageShell } from "@/features/shell";
+import { AddDepartmentButton, DepartmentActions, DepartmentsView, useDepartmentsPage } from "@/features/departments";
 
 export default function DepartmentsPage() {
   const { slug } = useParams<{ slug: string }>();

@@ -80,7 +80,7 @@ function makePng(width, height, a, b, split) {
 // ------------------------------------------------------------------ run ----
 
 async function signIn(page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/login?lang=en`, { waitUntil: "networkidle" });
   await page.fill('input[type="email"]', EMAIL);
   await page.fill('input[type="password"]', PASSWORD);
   await page.click('button[type="submit"]');
@@ -92,7 +92,7 @@ async function run() {
      checks here have nothing to contradict them. See serverGuard.mjs. */
   await assertServerUp(BASE, [`/w/${SLUG}/moodboard`]);
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
   const context = await browser.newContext({ viewport: { width: 1500, height: 1000 } });
   const page = await context.newPage();
 
