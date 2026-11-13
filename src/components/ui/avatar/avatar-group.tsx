@@ -1,6 +1,6 @@
 "use client";
 
-import { useUiStrings } from "./ui-strings";
+import { useUiStrings } from "../ui-strings";
 import { Avatar } from "./avatar";
 
 type AvatarGroupPerson = { id: string; initials: string; src?: string | null; name: string };

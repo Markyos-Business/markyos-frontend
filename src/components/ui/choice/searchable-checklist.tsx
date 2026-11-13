@@ -1,10 +1,10 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Badge } from "./badge/badge";
-import { Icon } from "./icon";
-import { useUiStrings } from "./ui-strings";
-import { CheckboxInput } from "./field/checkbox-field";
+import { Badge } from "../badge/badge";
+import { Icon } from "../icon";
+import { useUiStrings } from "../ui-strings";
+import { CheckboxInput } from "../field/checkbox-field";
 
 type SearchableChecklistItem = {
   id: string;

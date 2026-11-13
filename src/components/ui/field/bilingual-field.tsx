@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { useUiStrings } from "../ui-strings";
 import { InputField } from "./input-field";
 import { TextareaField } from "./textarea-field";
-import { SegmentedToggle } from "../segmented-toggle";
+import { SegmentedToggle } from "../choice/segmented-toggle";
 import type { FieldState } from "./field";
 
 type Bilingual = { en: string; ar: string };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "./icon";
+import { Icon } from "../icon";
 
 type Segment = { label: string; icon?: string };
 

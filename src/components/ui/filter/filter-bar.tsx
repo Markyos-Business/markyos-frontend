@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Button } from "./button/button";
-import { Icon } from "./icon";
-import { useUiStrings } from "./ui-strings";
+import { Button } from "../button/button";
+import { Icon } from "../icon";
+import { useUiStrings } from "../ui-strings";
 
 type FilterBarProps = {
   /** Usually a SearchField. */

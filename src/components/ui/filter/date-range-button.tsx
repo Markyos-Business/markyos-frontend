@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Popover } from "./overlay/popover";
-import { Icon } from "./icon";
-import { Button } from "./button/button";
-import { formatDayMonth } from "./app-date/date-format";
-import { useUiStrings } from "./ui-strings";
+import { Popover } from "../overlay/popover";
+import { Icon } from "../icon";
+import { Button } from "../button/button";
+import { formatDayMonth } from "../app-date/date-format";
+import { useUiStrings } from "../ui-strings";
 
 type DateRange = { from?: string; to?: string };
 

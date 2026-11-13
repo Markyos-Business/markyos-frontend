@@ -6,7 +6,7 @@ import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import { useNarrowViewport } from "@/hooks/useNarrowViewport";
 import { useSidebarPlacement } from "./sidebar-drawer";
-import { BetaTag, MARKYOS_BETA, MarkyosLogo } from "./markyos-logo";
+import { BetaTag, MARKYOS_BETA, MarkyosLogo } from "../brand/markyos-logo";
 import { SIDEBAR_RAILS, type SidebarRail } from "@/lib/sidebarRails";
 
 export interface SidebarItem {

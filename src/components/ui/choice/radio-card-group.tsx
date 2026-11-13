@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "./icon";
+import { Icon } from "../icon";
 
 type RadioCardOption<T extends string> = {
   value: T;

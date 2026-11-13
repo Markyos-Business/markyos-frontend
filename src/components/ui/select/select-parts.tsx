@@ -1,7 +1,7 @@
 "use client";
 import { useId, useSyncExternalStore, type ReactNode } from "react";
 import { FieldLabel, FieldNote } from "../field/input-field";
-import { Avatar } from "../avatar";
+import { Avatar } from "../avatar/avatar";
 import { Icon } from "../icon";
 import { Badge } from "../badge/badge";
 import { selectLabels, type SelectCommonProps, type SelectOption } from "./types";

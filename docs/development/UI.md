@@ -154,7 +154,7 @@ browser-tested for this documentation task.
 | Grouped content | [cards](../../src/components/ui/card), `Section` | Reuse the established header/body/action arrangement. |
 | Fields | [form fields](../../src/components/ui) | `InputField`, `TextareaField`, selects, checkboxes; compact variants for dense inspectors. |
 | Upload/color/choice input | [form](../../src/components/ui) | Reuse upload, color, radio-card, toggle, and repeater controls rather than feature-specific copies. |
-| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filter-chip.tsx) | Use `useTabIds()` with `Tabs` and `TabPanel`; keep selection visible and give every row an accessible name. |
+| Tabs and filters | [tabs](../../src/components/ui/tabs), [filters](../../src/components/ui/filter) | Use `useTabIds()` with `Tabs` and `TabPanel`; keep selection visible and give every row an accessible name. |
 | Loading | [loading](../../src/components/ui) | Skeletons should match the pending content's shape. |
 | Empty/error | [empty](../../src/components/ui/empty-state) | Distinguish no records from no matching results and failed loading. |
 | Overlays | [overlays](../../src/components/ui/overlay) | Reuse modal/dialog, toast, and dismissal behavior. |

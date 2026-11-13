@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterSelectField } from "./listbox/filter-select-field";
+import { FilterSelectField } from "../listbox/filter-select-field";
 
 type SortOption = { value: string; label: string };
 

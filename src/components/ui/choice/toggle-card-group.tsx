@@ -1,7 +1,7 @@
 "use client";
 
-import { SwitchMark } from "./switch-mark";
-import { labelClasses } from "./field/input-field";
+import { SwitchMark } from "../switch-mark";
+import { labelClasses } from "../field/input-field";
 
 type ToggleCardOption = { id: string; name: string };
 
