@@ -218,8 +218,9 @@ export const motionBase = [
    */
   {
     // The wrapper is invisible to layout: a page that fills its pane as a flex
-    // child still does, one level down.
-    ".mk-page": { display: "flex", "flex-direction": "column", flex: "1 1 auto", "min-height": "0", "min-width": "0" },
+    // child still does, one level down, and its sections keep the container's
+    // gap (PageContainer's gap-5), which they would lose to the wrapper.
+    ".mk-page": { display: "flex", "flex-direction": "column", gap: "inherit", flex: "1 1 auto", "min-height": "0", "min-width": "0" },
     "::view-transition-old(root), ::view-transition-new(root)": { animation: "none" },
     "::view-transition-old(.page-exit)": { animation: "fade-out var(--duration-instant) var(--ease-in) both" },
     "::view-transition-new(.page-enter)": { animation: "fade-up var(--duration-base) var(--ease-out) both" },
