@@ -29,6 +29,7 @@ export * from "./choice/segmented-toggle";
 export * from "./choice/toggle-card-group";
 export * from "./color-picker";
 export * from "./data-table";
+export * from "./date";
 export * from "./empty-state";
 export * from "./faq";
 export * from "./field";

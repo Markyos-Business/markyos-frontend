@@ -23,7 +23,7 @@ import {
   UrlField,
   type FieldState,
 } from "@/components/ui";
-import { CheckboxField, CheckboxGroup, ChipSelector, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
+import { CheckboxField, CheckboxGroup, ChipSelector, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
 import { ThemeToggle } from "@/components/ui";
 
 type Lang = "en" | "ar";
@@ -107,6 +107,15 @@ export function FormsGallery() {
   const [notify, setNotify] = useState(true);
   const [saving, setSaving] = useState(false);
   const [compact, setCompact] = useState(false);
+  const [launch, setLaunch] = useState<string | null>("2026-09-12");
+  const [review, setReview] = useState<string | null>(null);
+  const [hijriDay, setHijriDay] = useState<string | null>("2026-03-20");
+  const [range, setRange] = useState<{ from?: string; to?: string }>({ from: "2026-09-01", to: "2026-09-30" });
+  const [meeting, setMeeting] = useState<string | null>("14:30");
+  const [meeting24, setMeeting24] = useState<string | null>("09:00");
+  const [kickoff, setKickoff] = useState<string | null>("2026-09-15T10:00");
+  const [length, setLength] = useState<number | null>(90);
+  const weekend = (iso: string) => [5, 6].includes(new Date(`${iso}T12:00`).getDay());
   const flip = () => {
     setSaving(true);
     setTimeout(() => {
@@ -117,6 +126,8 @@ export function FormsGallery() {
 
   const na = <span className="text-caption text-text-faint">—</span>;
   const matrix: { name: string; render: (s: MatrixState) => ReactNode }[] = [
+    { name: "DatePicker", render: (s) => <DatePicker label={t("Launch date", "تاريخ الإطلاق")} value={s === "default" ? null : "2026-09-12"} onChange={() => undefined} {...stateProps(s, t)} /> },
+    { name: "TimePicker", render: (s) => <TimePicker label={t("Time", "الوقت")} value={s === "default" ? null : "14:30"} onChange={() => undefined} hour12 {...stateProps(s, t)} /> },
     {
       name: "CheckboxField",
       render: (s) =>
@@ -321,6 +332,28 @@ export function FormsGallery() {
               </div>
             </FieldGroup>
             <TagInput label={t("Tags", "الوسوم")} value={tags} onChange={setTags} max={6} placeholder={t("Add a tag…", "أضف وسمًا…")} />
+          </Section>
+
+          <Section id="dates" title={t("Date and time", "التاريخ والوقت")}>
+            <FieldGroup>
+              <DatePicker label={t("Launch date", "تاريخ الإطلاق")} value={launch} onChange={setLaunch} weekStart={0} hint={t("Type 12 Sep 2026 or pick a day. Weeks start on Sunday.", "اكتب 12 سبتمبر 2026 أو اختر يومًا. يبدأ الأسبوع يوم الأحد.")} />
+              <DatePicker
+                label={t("Review day", "يوم المراجعة")}
+                value={review}
+                onChange={setReview}
+                weekStart={1}
+                min="2026-09-01"
+                max="2026-10-31"
+                isDisabled={weekend}
+                hint={t("Sep to Oct, weekdays only. Weeks start on Monday.", "من سبتمبر إلى أكتوبر، أيام العمل فقط. يبدأ الأسبوع يوم الاثنين.")}
+              />
+              <DatePicker label={t("Eid campaign", "حملة العيد")} value={hijriDay} onChange={setHijriDay} weekStart={6} hijri digits={isAr ? "arab" : "latn"} hint={t("With Hijri dates; weeks start on Saturday.", "مع التاريخ الهجري؛ يبدأ الأسبوع يوم السبت.")} />
+              <DateRangePicker label={t("Reporting period", "فترة التقرير")} value={range} onChange={setRange} weekStart={0} />
+              <TimePicker label={t("Meeting, 12 hours", "الاجتماع، 12 ساعة")} value={meeting} onChange={setMeeting} hour12 hint={meeting ? `${t("Stored as", "يُحفظ كـ")} ${meeting}` : undefined} />
+              <TimePicker label={t("Meeting, 24 hours", "الاجتماع، 24 ساعة")} value={meeting24} onChange={setMeeting24} minuteStep={15} />
+              <DurationInput label={t("Session length", "مدة الجلسة")} value={length} onChange={setLength} maxHours={12} hint={length !== null ? `${t("Stored as", "يُحفظ كـ")} ${length} ${t("minutes", "دقيقة")}` : undefined} />
+            </FieldGroup>
+            <DateTimePicker label={t("Kick-off", "الانطلاق")} value={kickoff} onChange={setKickoff} hour12 weekStart={0} hint={kickoff ?? undefined} />
           </Section>
 
           <Section id="matrix" title={t("State matrix", "مصفوفة الحالات")}>

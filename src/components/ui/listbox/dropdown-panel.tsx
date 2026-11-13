@@ -23,7 +23,7 @@ type DropdownPanelProps = {
   children: ReactNode;
 };
 
-type Place = { top?: number; bottom?: number; left: number; width: number; maxHeight: number; up: boolean };
+type Place = { top?: number; bottom?: number; left: number; width: number; maxHeight: number; up: boolean; dir: "ltr" | "rtl" };
 
 const GAP = 4;
 const MARGIN = 8;
@@ -64,6 +64,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
         width: w,
         maxHeight: Math.max(160, Math.min(cap, (up ? above : below) - GAP)),
         up,
+        dir: rtl ? "rtl" : "ltr",
       });
     };
     measure();
@@ -99,6 +100,10 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
       } ${className}`}
       // Which side of the field it opens on: it arrives from there.
       data-side={place.up ? "top" : "bottom"}
+      // The portal sits at the end of the page, outside the field's own
+      // direction; it takes the field's, so an English section on an Arabic
+      // page (or the reverse) opens its menu the same way round.
+      dir={place.dir}
       style={{
         top: place.top,
         bottom: place.bottom,

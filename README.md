@@ -167,6 +167,11 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `SegmentedControl`, `SegmentedToggle` (two sides) | SegmentedControl | string, `Controller` |
 | `TagInput` (`max`) | TagInput | `string[]`, `Controller` |
 | `ChipSelector` (`multiple`) | ChipSelector | string or `string[]`, `Controller` |
+| `DatePicker` (`weekStart`, `min`, `max`, `isDisabled`, `hijri`, `digits`) | DatePicker | `"YYYY-MM-DD"`, `Controller` |
+| `DateRangePicker` (`presets`) | DateRangePicker | `{ from, to }`, `Controller` |
+| `TimePicker` (`hour12`, `minuteStep`) | TimePicker | `"HH:mm"`, `Controller` |
+| `DateTimePicker` | DateTimePicker | `"YYYY-MM-DDTHH:mm"`, `Controller` |
+| `DurationInput` (`maxHours`) | DurationInput | minutes, `Controller` |
 | `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
 
 Text fields take react-hook-form's `register` directly; its `ref` lands on the

@@ -21,7 +21,7 @@ type PopoverProps = {
   width?: number;
   className?: string;
   /** `pill` gives the trigger Button's xs/soft look (a top-bar action); `plain` leaves it to its content. */
-  trigger?: "plain" | "pill";
+  trigger?: "plain" | "pill" | "block";
   /** Given a `close` so an item can dismiss the panel after acting. */
   children: (close: () => void) => ReactNode;
 };
@@ -38,6 +38,8 @@ type PopoverProps = {
  */
 const triggers = {
   plain: "flex cursor-pointer items-center",
+  // Fills its row: a field-shaped trigger (a date range).
+  block: "flex w-full cursor-pointer items-center",
   pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
 };
 
@@ -68,7 +70,11 @@ const Popover = ({ button, label, align = "end", width = 260, className, trigger
   // trigger would never reach it. Opening moves focus to its first control.
   useEffect(() => {
     if (!open) return;
-    const frame = requestAnimationFrame(() => contentRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus({ preventScroll: true }));
+    // A panel can name where focus should land (a calendar's chosen day) with
+    // `data-autofocus`; otherwise its first control.
+    const frame = requestAnimationFrame(() =>
+      (contentRef.current?.querySelector<HTMLElement>("[data-autofocus]") ?? contentRef.current?.querySelector<HTMLElement>(FOCUSABLE))?.focus({ preventScroll: true }),
+    );
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
