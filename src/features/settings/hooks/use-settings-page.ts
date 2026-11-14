@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { capabilitiesOn } from "@/lib/data/access";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { useToast } from "@/components/ui";
@@ -10,7 +11,7 @@ import { PAGE_SECTION } from "../constants";
 
 /** The settings page: the client link, and finishing a return from checkout. */
 export function useSettingsPage(slug: string) {
-  const { confirmPurchase } = useApp();
+  const { confirmPurchase, state } = useApp();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
   const router = useRouter();
@@ -65,7 +66,7 @@ export function useSettingsPage(slug: string) {
   if (!page || !ws) return null;
   return {
     shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const },
-    view: { ws, isAr: page.isAr, typeLabel, prices, clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}` },
+    view: { ws, isAr: page.isAr, typeLabel, prices, canGovern: capabilitiesOn(ws, state.session).canGovern, clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}` },
   };
 }
 

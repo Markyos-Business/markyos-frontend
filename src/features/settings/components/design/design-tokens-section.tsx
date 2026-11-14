@@ -9,16 +9,19 @@ import type { Workspace } from "@/types";
 import { diffTokens, parseDesignTokens, serializeTokens } from "../../utils/design-tokens";
 
 /** The palette and type as W3C design tokens: out to Figma and back. */
-export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
+export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; isAr: boolean; canGovern: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const { addColor, updateColor, setTypography, toggleFigmaSync } = useApp();
+  // "Last exchanged" lives in the owner-only developer settings, so only an
+  // owner's export or import records it; the server keeps it for anyone else.
+  const markSynced = () => { if (canGovern) toggleFigmaSync(ws.id, true); };
   const { showToast } = useToast();
   const [syncing, setSyncing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function downloadTokens() {
     triggerBlobDownload(new Blob([serializeTokens(ws)], { type: "application/json" }), `${ws.slug}-tokens.json`);
-    toggleFigmaSync(ws.id, true);
+    markSynced();
     showToast(t("Tokens exported.", "صُدّرت الرموز."), "success");
   }
 
@@ -36,7 +39,7 @@ export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean
       if (parsed.tokens.typography.latinFamily || parsed.tokens.typography.arabicFamily) {
         setTypography(ws.id, parsed.tokens.typography);
       }
-      toggleFigmaSync(ws.id, true);
+      markSynced();
 
       // Says what actually changed, including when the answer is "nothing" —
       // a silent success on an import is indistinguishable from a failure.
@@ -82,7 +85,7 @@ export function DesignTokensSection({ ws, isAr }: { ws: Workspace; isAr: boolean
               label={t("Copy JSON", "نسخ JSON")}
               copiedLabel={t("Copied", "تم النسخ")}
               copiedMessage={t("Design tokens copied.", "تم نسخ رموز التصميم.")}
-              onCopied={() => toggleFigmaSync(ws.id, true)}
+              onCopied={markSynced}
               failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             />
             <Button variant="outline" size="sm" onClick={downloadTokens}>
