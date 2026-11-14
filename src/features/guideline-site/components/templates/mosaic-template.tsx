@@ -89,7 +89,6 @@ export function MosaicTemplate(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -255,11 +254,6 @@ export function MosaicTemplate(props: TemplateProps) {
         </div>
       </div>
 
-      {showMarkyosBadge && (
-        <div className="pb-6 pt-2 flex justify-center">
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-        </div>
-      )}
 
       {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 

@@ -1,3 +1,4 @@
+import { clearSignupRef, signupRefBody } from "../utils/signup-ref";
 import { ApiError, api, setAccessToken } from "@/lib/api/client";
 import type { Account, AccountType, Lang } from "@/types";
 import { classifyLoginFailure, LoginFailureError } from "../utils/login-failure";
@@ -46,10 +47,13 @@ export async function signup(
   accountType: AccountType
 ): Promise<SignupResponse> {
   // No password and no session yet: both come from the emailed link.
-  return api<SignupResponse>("/auth/signup/", {
+  const res = await api<SignupResponse>("/auth/signup/", {
     method: "POST",
-    body: { name, email, accountType },
+    // Where the sign-up came from (a Made with Markyos badge), if anywhere.
+    body: { name, email, accountType, ...signupRefBody() },
   });
+  clearSignupRef();
+  return res;
 }
 
 /** Checks an emailed code (a signup's, or a two-step sign-in's) and signs in. */
@@ -95,10 +99,12 @@ export async function login(
  */
 export async function googleSignIn(body: GoogleSignInBody): Promise<GoogleSignInResult> {
   await pendingLogout;
-  const res = await api<GoogleSignInResponse>("/auth/google/", { method: "POST", body });
+  const res = await api<GoogleSignInResponse>("/auth/google/", { method: "POST", body: { ...body, ...signupRefBody() } });
   if (res.needsAccountType) {
     return { kind: "needsAccountType", signupToken: res.signupToken, name: res.name, email: res.email };
   }
+  // Signed in: a new account took the attribution, an existing one never needed it.
+  clearSignupRef();
   setAccessToken(res.access);
   return { kind: "signedIn", account: await fetchMe() };
 }

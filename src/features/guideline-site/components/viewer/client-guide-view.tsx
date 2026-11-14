@@ -110,7 +110,6 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   }
 
   const isAr = v.previewLang === "ar";
-  const showMarkyosBadge = ws.billing.plan !== "subscription";
 
   const templateProps = {
     ws,
@@ -135,7 +134,6 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
     setDownloadOpen: v.setDownloadOpen,
     previewLang: v.previewLang,
     setPreviewLang: v.setPreviewLang,
-    showMarkyosBadge,
     pages: v.pages,
     activePage: v.activePage,
   };

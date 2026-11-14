@@ -186,11 +186,11 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
               isAr={isAr}
             />
 
+            {/* Not a switch: the server decides from the brand's plan (free shows it, paid doesn't). */}
             <Row
-              label={t("“Made with Markyos” badge", "شارة «صُنع باستخدام ماركيوس»")}
-              right={
-                <Switch label={t("Show the badge", "إظهار الشارة")} checked={form.theme.showMarkyosBadge} onToggle={() => save({ theme: { showMarkyosBadge: !form.theme.showMarkyosBadge } })} />
-              }
+              label={t("“Made with Markyos” badge", "شارة «صُنع بماركيوس»")}
+              hint={t("Forms from a free brand show a small badge in the corner. Upgrading removes it from every public page.", "تظهر شارة صغيرة في زاوية نماذج العلامات المجانية. الترقية تزيلها من كل الصفحات العامة.")}
+              right={null}
             />
           </Section>
 

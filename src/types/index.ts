@@ -1005,6 +1005,12 @@ export interface Workspace {
   approvals: ApprovalRequest[];
   versionHistory: VersionSnapshot[];
   whiteLabel: boolean;
+  /**
+   * A paid brand switched "Remove Markyos branding" off to give the credit:
+   * its public pages show the Made with Markyos badge. Free brands always do,
+   * whatever this says; the server decides (apps/brands/branding.py).
+   */
+  brandingCredit?: boolean;
   complianceChecks: ComplianceCheck[];
   /**
    * Pending and decided proposals into this brand. Kept on the workspace

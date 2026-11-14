@@ -53,6 +53,7 @@ export function PublicReportView({ token }: { token: string }) {
         sections={shared.sections}
         sourceIndex={shared.sourceIndex}
         onCitation={open}
+        credit={false}
         toolbar={
           <Button variant="outline" size="sm" icon={<Icon name="file-export" size={16} />} onClick={() => window.print()}>
             {t("Print / PDF", "طباعة / PDF")}

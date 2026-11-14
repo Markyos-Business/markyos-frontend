@@ -350,7 +350,6 @@ export function LiveCanvas({
     setPreviewLang: onLangChange ?? v.setPreviewLang,
     // The badge is a billing artifact of the published site; showing it on the
     // canvas would just be chrome the studio can't act on while editing.
-    showMarkyosBadge: false,
     pages: v.pages,
     activePage: v.activePage,
   };

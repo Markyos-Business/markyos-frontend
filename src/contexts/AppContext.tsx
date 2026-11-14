@@ -306,6 +306,8 @@ interface AppContextValue {
   toggleFigmaSync: (workspaceId: string, connected: boolean) => void;
   // v5.0 white-label
   toggleWhiteLabel: (workspaceId: string, on: boolean) => void;
+  /** A paid brand's choice to show the Made with Markyos badge on its public pages. */
+  setBrandingCredit: (workspaceId: string, on: boolean) => void;
   setGuidelineTemplate: (workspaceId: string, template: GuidelineTemplate) => void;
   setStudioStyle: (workspaceId: string, style: StudioStyle) => void;
   // v2.0 sign-off pins
@@ -1712,6 +1714,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (workspaceId: string, on: boolean) => {
       mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { whiteLabel: on }));
       logAudit(on ? "Enabled white-label" : "Disabled white-label", workspaceId);
+    },
+    [mutateWorkspace, touchWorkspace, logAudit]
+  );
+
+  const setBrandingCredit = useCallback(
+    (workspaceId: string, on: boolean) => {
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { brandingCredit: on }));
+      logAudit(on ? "Showed the Made with Markyos badge" : "Removed Markyos branding", workspaceId);
     },
     [mutateWorkspace, touchWorkspace, logAudit]
   );
@@ -3603,6 +3613,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setWebhookUrl,
       toggleFigmaSync,
       toggleWhiteLabel,
+      setBrandingCredit,
       setGuidelineTemplate,
       setStudioStyle,
       setWorkspaceStage,
@@ -3761,6 +3772,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setWebhookUrl,
       toggleFigmaSync,
       toggleWhiteLabel,
+      setBrandingCredit,
       setGuidelineTemplate,
       setStudioStyle,
       setWorkspaceStage,

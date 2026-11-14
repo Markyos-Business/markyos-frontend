@@ -167,7 +167,6 @@ export function StudioSignal(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -399,11 +398,6 @@ export function StudioSignal(props: TemplateProps) {
 
       <div className="h-[24vh]" />
 
-      {showMarkyosBadge && (
-        <div className="pb-6 pt-2 flex justify-center">
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-        </div>
-      )}
 
       {attachedSlots.length > 0 && (
         <button

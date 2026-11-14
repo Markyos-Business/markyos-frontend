@@ -21,8 +21,10 @@ const walk = (dir) =>
 // pills beside 8px buttons were the inconsistency clients noticed. Circles
 // (avatars, dots, round icon buttons, switches) stay round. The guideline
 // site is the client's brand design, and the count bubble is a circle that
-// grows with its number.
-const PILL_OK = ["src/features/guideline-site", "src/components/ui/badge/count-badge.tsx"];
+// grows with its number. The Made with Markyos badge is a pill by its spec
+// (the client's pill image): a brand mark alone in a corner, not a control
+// beside buttons.
+const PILL_OK = ["src/features/guideline-site", "src/components/ui/badge/count-badge.tsx", "src/components/ui/made-with-badge/made-with-badge.tsx"];
 const CLASSES = /(["`])([^"`]*\brounded-full\b[^"`]*)\1/g;
 
 const hits = [];

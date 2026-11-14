@@ -3,5 +3,6 @@
 export { useShareLink } from "./hooks/use-share-link";
 export { ShareLinksPanel } from "./components/share-links-panel";
 export { ShareView } from "./components/share-view";
+export { SharePage } from "./components/share-page";
 export { useSharePage } from "./hooks/use-share-page";
 export { suggestSubdomain, validateSubdomain } from "./utils/subdomain";

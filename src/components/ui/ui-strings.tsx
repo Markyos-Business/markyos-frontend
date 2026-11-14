@@ -195,6 +195,13 @@ const en = {
   marketGroups: { gcc: "GCC", levant: "Levant", northAfrica: "North Africa", global: "Global" },
   worldwide: "Worldwide",
   presence: { online: "Online", busy: "Busy", away: "Away", offline: "Offline" },
+  madeWith: {
+    badge: "Made with Markyos",
+    open: "Made with Markyos. Open details",
+    invite: { form: "Make your own form with Markyos, free.", moodboard: "Make your own moodboard with Markyos, free.", guide: "Make your own brand guide with Markyos, free.", other: "Make your own with Markyos, free." },
+    startFree: "Start free",
+    learnMore: "Learn about Markyos",
+  },
   form: {
     summaryTitle: (n: number) => (n === 1 ? "Fix 1 field to continue" : `Fix ${n} fields to continue`),
     edit: "Edit",
@@ -436,6 +443,13 @@ const ar: UiStrings = {
   marketGroups: { gcc: "الخليج", levant: "بلاد الشام", northAfrica: "شمال أفريقيا", global: "عالمي" },
   worldwide: "حول العالم",
   presence: { online: "متصل", busy: "مشغول", away: "بعيد", offline: "غير متصل" },
+  madeWith: {
+    badge: "صُنع بماركيوس",
+    open: "صُنع بماركيوس. افتح التفاصيل",
+    invite: { form: "اصنع استبيانك بماركيوس، مجانًا.", moodboard: "اصنع لوحة إلهامك بماركيوس، مجانًا.", guide: "اصنع دليل علامتك بماركيوس، مجانًا.", other: "اصنع صفحتك بماركيوس، مجانًا." },
+    startFree: "ابدأ مجانًا",
+    learnMore: "تعرّف على ماركيوس",
+  },
   form: {
     summaryTitle: (n) => (n === 1 ? "صحّح حقلًا واحدًا للمتابعة" : n === 2 ? "صحّح حقلين للمتابعة" : `صحّح ${n} حقول للمتابعة`),
     edit: "تعديل",
