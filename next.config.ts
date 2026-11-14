@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Optional isolated output for gallery checks alongside a running app.
+  distDir: process.env.NEXT_BUILD_DIR ?? ".next",
   // The front door is always login; it sends anyone already signed in on to their home.
   async redirects() {
     return [

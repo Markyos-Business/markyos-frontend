@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import Link from "next/link";
 import { LangToggle, richToPlainText } from "@/components/ui";
 import { DownloadPanel } from "../documents/download-panel";
@@ -223,7 +224,7 @@ export function VaultTemplate(props: TemplateProps) {
                         style={gBody}
                       />
                       {ws.overviewHtml && (
-                        <div dir="auto" className="bidi-auto vault-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+                        <div dir="auto" className="bidi-auto vault-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
                       )}
                       <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                     </div>

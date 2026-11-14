@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { useCallback, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Icon } from "../icon";
@@ -39,7 +40,7 @@ function escapeHtml(s: string): string {
  */
 const toRichHtml = (value: string): string => {
   if (!value.trim()) return "";
-  if (isHtml(value)) return value;
+  if (isHtml(value)) return sanitizeRichHtml(value);
   return value
     .split(/\n{2,}/)
     .map((p) => `<p>${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`)

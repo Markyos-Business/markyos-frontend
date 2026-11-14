@@ -1,137 +1,103 @@
 "use client";
 
 import Link from "next/link";
+import { Slot } from "@radix-ui/react-slot";
+import { cloneElement, forwardRef, isValidElement, useEffect } from "react";
+import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
+import { Icon } from "../icon";
 import { Tooltip } from "../tooltip";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "success-soft" | "danger-soft" | "danger" | "light" | "solid" | "link";
-type ButtonSize = "xs" | "sm" | "md";
-
-// Spec §6.2: 46px, an 8px radius and a 14px label at weight 500, with the
-// icon before it. Hover and press are the shared `mk-btn` scrim over the
-// resting fill (tailwind/base.js): no lift, no scale, no darker colour.
-const base =
-  "mk-btn inline-flex items-center justify-center leading-none font-medium whitespace-nowrap transition-colors " +
-  "disabled:bg-surface-2 disabled:text-text-disabled disabled:shadow-none aria-disabled:bg-surface-2 aria-disabled:text-text-disabled aria-disabled:shadow-none";
-
-// Radius and type size live with the size, so a size never fights the base.
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "destructive" | "link" | "soft" | "success-soft" | "danger-soft" | "danger" | "light" | "solid";
+export type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon";
+export type ButtonStatus = "idle" | "loading" | "success" | "error";
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  icon?: ReactNode;
+  iconEnd?: ReactNode;
+  active?: boolean;
+  block?: boolean;
+  href?: string;
+  asChild?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  successText?: string;
+  errorText?: string;
+  status?: ButtonStatus;
+  disabledReason?: string;
+  locked?: boolean;
+  lockedReason?: string;
+  skeleton?: boolean;
+  /** Gallery-only state simulation; never changes interaction semantics. */
+  "data-state"?: string;
+}
 const sizes: Record<ButtonSize, string> = {
-  // A pill for top bars, toolbars and row actions: 32px, fully round, a 12px
-  // label. Smaller than the spec's controls, kept for the dense chrome built
-  // before it.
-  xs: "h-8 rounded-lg px-3.5 gap-1.5 text-[12px]",
-  // The compact step, for dense toolbars: the spec's 40px control height.
-  sm: "h-control-sm rounded-lg text-body px-space-6 gap-space-3",
-  md: "h-control rounded-lg text-body px-space-8 gap-space-4",
+  xs: "h-7 px-2.5 gap-1.5 text-caption",
+  sm: "h-8 px-3 gap-1.5 text-caption",
+  md: "h-9 px-4 gap-2 text-body",
+  lg: "h-10 px-5 gap-2 text-body",
+  icon: "size-9 p-0 text-body",
 };
-
-const variants: Record<Exclude<ButtonVariant, "link">, string> = {
-  // The one press with movement: a primary action dips to 98% for a beat.
-  primary: "bg-accent text-accent-ink active:not-disabled:scale-[0.98]",
+const variants: Record<ButtonVariant, string> = {
+  primary: "bg-accent text-accent-ink",
+  secondary: "bg-surface-2 text-text",
   outline: "bg-ink-soft text-text shadow-edge",
   ghost: "bg-accent-soft text-accent-on-soft",
-  // The raised neutral fill (spec §2.3): a quiet action that still reads as a button.
+  destructive: "bg-danger-fill text-danger-ink",
+  link: "bg-transparent text-accent-text hover:underline underline-offset-2",
   soft: "bg-surface-2 text-text",
-  // A decision on a status: the hue's tint with the hue as text (spec §2.2).
   "success-soft": "bg-success-soft text-success",
   "danger-soft": "bg-danger-soft text-danger",
-  // Confirms something destructive: the spec's red, with the ink solved for it.
   danger: "bg-danger-fill text-danger-ink",
-  // White on black whichever theme is on: marketing calls to action only.
-  light: "bg-white text-black",
-  // The theme's own ink as the fill: black on light, white on dark. For a
-  // card's single action where the accent would compete with its content.
+  light: "bg-solid text-solid-ink",
   solid: "bg-solid text-solid-ink",
 };
 
-// A text action: "Forgot?", "Log in", "Try another email". No fill and no
-// size of its own, so it sits in a sentence; the caller sets the text size.
-// The minimum height keeps it a comfortable tap target.
-const linkVariant =
-  "inline-flex items-center gap-1.5 min-h-6.5 text-accent-text underline-offset-2 transition-colors " +
-  "not-disabled:hover:underline focus-visible:underline disabled:text-text-disabled";
-
-type CommonProps = {
-  variant?: ButtonVariant;
-  /** Ignored by the `link` variant, which takes the size of the text around it. */
-  size?: ButtonSize;
-  /** An icon node, drawn before the label; use an 18px `Icon`. */
-  icon?: ReactNode;
-  /** Keep the hover scrim on: the button stands for the current choice. */
-  active?: boolean;
-  /** Fill the width of the container. */
-  block?: boolean;
-  className?: string;
-  children?: ReactNode;
-};
-
-type ButtonElementProps = CommonProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
-    href?: undefined;
-    /**
-     * Off, and why: the button stays focusable (`aria-disabled`, clicks
-     * ignored) so a keyboard reaches it and hears the reason, shown as its
-     * tooltip. A plain `disabled` button can't be focused, so it can't explain.
-     */
-    disabledReason?: string;
-  };
-
-type ButtonLinkProps = CommonProps & { href: string };
-
-type ButtonProps = ButtonElementProps | ButtonLinkProps;
-
-/** The app's button, as a `<button>` or, given `href`, a link. */
-const Button = (props: ButtonProps) => {
-  const { variant = "outline", size = "md", icon, active, block, className = "", children } = props;
-  const cls =
-    variant === "link"
-      ? `${linkVariant} ${className}`
-      : `${base} ${sizes[size]} ${variants[variant]} ${active ? "is-active" : ""} ${block ? "w-full" : ""} ${className}`;
-
-  if ("href" in props && props.href) {
-    return (
-      <Link href={props.href} className={cls}>
-        {icon}
-        {children}
-      </Link>
-    );
-  }
-
-  const {
-    href: _href,
-    variant: _v,
-    size: _s,
-    icon: _i,
-    active: _a,
-    block: _b,
-    className: _c,
-    disabledReason,
-    ...buttonProps
-  } = props as ButtonElementProps;
-  void [_href, _v, _s, _i, _a, _b, _c];
-  if (disabledReason) {
-    return (
-      <Tooltip content={disabledReason}>
-        <button
-          {...buttonProps}
-          type={buttonProps.type ?? "button"}
-          aria-disabled="true"
-          onClick={(e) => e.preventDefault()}
-          className={`${cls} cursor-not-allowed`}
-        >
-          {icon}
-          {children}
-        </button>
-      </Tooltip>
-    );
-  }
-  return (
-    <button {...buttonProps} className={cls}>
-      {icon}
-      {children}
-    </button>
-  );
-};
-
-export { Button };
-export type { ButtonProps, ButtonSize, ButtonVariant };
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
+  variant = "outline", size = "md", icon, iconEnd, active, block, href, asChild,
+  loading, loadingText = "Saving", successText = "Saved", errorText = "Try again",
+  status = "idle", disabledReason, locked, lockedReason = "Ask for access", skeleton,
+  disabled, children, className = "", type = "button", onClick, onClickCapture,
+  "aria-label": ariaLabel, ...props
+}, ref) {
+  const busy = loading || status === "loading";
+  const reason = locked ? lockedReason : disabledReason;
+  const blocked = disabled || !!reason || busy || skeleton;
+  const stateText = busy ? loadingText : status === "success" ? successText : status === "error" ? errorText : null;
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && !children && !ariaLabel) console.warn("Button: icon-only buttons require an aria-label.");
+  }, [children, ariaLabel]);
+  const original = asChild && isValidElement(children) ? (children as ReactElement<{ children?: ReactNode }>).props.children : children;
+  const content = <>
+    <span className="inline-grid items-center gap-[inherit]">
+    <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-[inherit] ${stateText ? "invisible" : ""}`} aria-hidden={!!stateText || undefined}>
+      {locked ? <Icon name="lock" size={18} /> : icon}{original}{iconEnd}
+    </span>
+    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-2"><span className="w-[18px] shrink-0" />{text}</span>)}
+    </span>
+    {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-2">
+      <Icon name={busy ? "clock" : status === "success" ? "check" : "exclamation-circle"} size={18} />{original && stateText}
+    </span>}
+    <span className="sr-only" role="status" aria-live="polite">{stateText}</span>
+  </>;
+  const slotted = href ? <Link href={href}>{content}</Link> : asChild && isValidElement(children) ? cloneElement(children as ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>, blocked ? { onClick: undefined, onClickCapture: undefined } : {}, content) : content;
+  const Component = href || asChild ? Slot : "button";
+  const control = <Component
+    {...props} ref={ref} type={href || asChild ? undefined : type}
+    disabled={href || asChild ? undefined : !!disabled && !reason}
+    aria-disabled={blocked || undefined} aria-busy={busy || undefined}
+    aria-label={ariaLabel ? stateText ? `${ariaLabel}: ${stateText}` : ariaLabel : undefined}
+    data-status={busy ? "loading" : status} data-skeleton={skeleton || undefined}
+    data-active={active || undefined}
+    className={`mk-btn mk-family-button relative inline-flex shrink-0 items-center justify-center rounded-lg font-medium leading-none whitespace-nowrap ${sizes[size]} ${variants[variant]} ${active ? "is-active" : ""} ${block ? "w-full" : ""} ${blocked ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
+    onClickCapture={(event) => {
+      if (blocked) { event.preventDefault(); event.stopPropagation(); return; }
+      onClickCapture?.(event as React.MouseEvent<HTMLButtonElement>);
+    }}
+    onClick={(event) => {
+      if (blocked) { event.preventDefault(); event.stopPropagation(); return; }
+      onClick?.(event as React.MouseEvent<HTMLButtonElement>);
+    }}
+  >{slotted}</Component>;
+  return reason ? <Tooltip content={reason} className={block ? "w-full" : ""}>{control}</Tooltip> : control;
+});

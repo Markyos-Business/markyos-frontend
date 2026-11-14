@@ -16,6 +16,7 @@
 // come from the Mosaic design system in lib/designSystem.ts — so the same
 // layout arrives warm and gold for one brand and cool and teal for the next.
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { Icon, LangToggle, richToPlainText } from "@/components/ui";
@@ -439,7 +440,7 @@ function BentoHero({
 
       {ws.overviewHtml && (
         <div className="col-span-2 lg:col-span-6 p-6 md:p-7" style={gCard}>
-          <div dir="auto" className="bidi-auto mosaic-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+          <div dir="auto" className="bidi-auto mosaic-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
         </div>
       )}
 

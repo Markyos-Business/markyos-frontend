@@ -339,7 +339,13 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
 
   if (block.kind === "embed") {
     return block.embedHtml ? (
-      <div dir="ltr" dangerouslySetInnerHTML={{ __html: block.embedHtml }} />
+      <iframe
+        title={isAr ? "محتوى مضمّن" : "Embedded content"}
+        sandbox="allow-scripts allow-forms allow-popups"
+        referrerPolicy="no-referrer"
+        srcDoc={block.embedHtml}
+        className="w-full min-h-[300px] border-0"
+      />
     ) : (
       <div className="rounded-card h-[100px] grid place-items-center text-[12px]" style={{ background: "var(--surface-1)", color: "var(--text-faint)" }}>
         {isAr ? "لم تتم إضافة كود HTML بعد." : "No HTML added yet."}

@@ -83,6 +83,7 @@ export function createApiAdapter(options: {
 }): ApiAdapter {
   const local = createLocalAdapter();
   const synced = new Map<string, Synced>();
+  const refusedCreates = new Map<string, string>();
   let latest: AppState | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let running = false;
@@ -160,7 +161,7 @@ export function createApiAdapter(options: {
       if (!canEdit(role)) continue;
       const json = portableJson(ws);
       const known = synced.get(ws.id);
-      if (known?.json === json) continue;
+      if (known?.json === json || (!known && refusedCreates.get(ws.id) === json)) continue;
 
       try {
         const data = await uploadFiles(ws);
@@ -168,6 +169,7 @@ export function createApiAdapter(options: {
           // Only an owner creates; anyone else's brand came from the server.
           if (role !== "owner") continue;
           const created = await api<ServerBrand>("/brands/", { method: "POST", body: { data } });
+          refusedCreates.delete(ws.id);
           synced.set(ws.id, { json, version: created.version });
           options.onBilling(ws.id, created.data.billing);
           // The server may have moved it to a free slug (`acme-2`).
@@ -211,7 +213,9 @@ export function createApiAdapter(options: {
           // attempt so the same document is not resent on every keystroke;
           // the next real edit tries again.
           console.error(`Markyos: could not save "${ws.name}": ${err.message}`);
-          synced.set(ws.id, { json, version: known?.version ?? 0 });
+          if (known) synced.set(ws.id, { json, version: known.version });
+          else refusedCreates.set(ws.id, json);
+          options.onRefused(ws, err.message);
         }
       }
     }
@@ -265,6 +269,7 @@ export function createApiAdapter(options: {
         running = false;
         again = false;
         synced.clear();
+        refusedCreates.clear();
         latest = null;
       }
     },

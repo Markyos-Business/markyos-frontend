@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { api, ApiError } from "@/lib/api/client";
 import type { AppState, Workspace } from "../../../types";
 import { buildInitialWorkspaces } from "../mockData";
 
@@ -75,6 +76,35 @@ describe("endSession", () => {
       await vi.advanceTimersByTimeAsync(10_000);
       expect(calls).toEqual([]);
     } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+
+describe("rejected creates", () => {
+  it("retries a corrected brand as a create and reports the refusal", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("window", { localStorage: memoryStorage(), sessionStorage: memoryStorage() });
+    const onRefused = vi.fn();
+    const repo = createApiAdapter({ onServerCopy: noop, onRefused, onLost: noop, onBilling: noop });
+    const state = signedInState();
+    const start = calls.length;
+    vi.mocked(api).mockRejectedValueOnce(new ApiError("Invalid slug", 400));
+    const log = vi.spyOn(console, "error").mockImplementation(noop);
+    try {
+      await repo.save(state);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(onRefused).toHaveBeenCalledWith(state.workspaces[0], "Invalid slug");
+      await repo.save(state);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(calls.length).toBe(start);
+      await repo.save({ ...state, workspaces: [{ ...state.workspaces[0], slug: "corrected" }] });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(calls.slice(start)).toEqual([{ path: "/brands/", method: "POST" }]);
+      await repo.endSession();
+    } finally {
+      log.mockRestore();
       vi.useRealTimers();
     }
   });

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-const roots = ["src/components/ui/data-table", "src/components/ui/select", "src/components/ui/progress.tsx", "src/components/ui/field", "src/components/ui/listbox", "src/components/ui/choice", "src/components/ui/date", "src/components/ui/upload", "src/components/ui/special", "src/components/ui/color-picker"];
+const roots = ["src/components/ui/tabs","src/components/ui/button","src/components/ui/data-table", "src/components/ui/select", "src/components/ui/progress.tsx", "src/components/ui/field", "src/components/ui/listbox", "src/components/ui/choice", "src/components/ui/date", "src/components/ui/upload", "src/components/ui/special", "src/components/ui/color-picker"];
 // Colour inputs have to parse, default to and show hex codes; colours anywhere else are tokens.
 const hexAllowed = new Set(["src/components/ui/field/hex-color-field.tsx", "src/components/ui/color-picker/color-field.tsx", "src/components/ui/color-picker/color-picker.tsx"]);
 function files(path) { return path.endsWith(".tsx") || path.endsWith(".ts") ? [path] : readdirSync(path, { withFileTypes: true }).flatMap(item => files(join(path, item.name))); }

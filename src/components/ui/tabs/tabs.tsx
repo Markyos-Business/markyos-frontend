@@ -1,114 +1,113 @@
 "use client";
-
-import { useLayoutEffect, useState } from "react";
-import { Icon } from "../icon";
-import { useTabNavigation } from "./use-tab-navigation";
-import { tabButtonId, type TabOrientation } from "./tab-navigation";
-
-type TabItem<T extends string = string> = { key: T; label: string; icon?: string; disabled?: boolean };
-
-type TabsVariant = "text" | "icon" | "pill";
-
-type TabsProps<T extends string> = {
-  tabs: TabItem<T>[];
-  active: T;
-  onChange: (key: T) => void;
-  /** The tab row's accessible name. */
-  label: string;
-  /**
-   * The spec's two tab styles (§6.11), both 40px tall: `text` puts the active
-   * tab on a raised pill with a hairline; `icon` makes it solid accent with an
-   * overline label (LIST / GRID). `pill` is the compact filter row (Waiting /
-   * Decided): 32px pills with an 8px radius, the active one on the accent tint.
-   */
+import * as Primitive from "@radix-ui/react-tabs";
+import { usePhoneViewport } from "@/hooks/useNarrowViewport";
+import { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
+import type { ReactElement, Ref } from "react";
+import { TabsContext, type RegisteredTab, type TabData, type TabItem, type TabsSize, type TabsVariant } from "./tabs-context";
+import { TabsList } from "./tabs-list";
+import { TabsTrigger } from "./tabs-trigger";
+import { TabsContent } from "./tabs-content";
+import { tabButtonId } from "./tab-navigation";
+export type { TabData, TabItem, TabsSize, TabsVariant } from "./tabs-context";
+export interface TabsRootProps extends Omit<Primitive.TabsProps, "value" | "defaultValue" | "onValueChange" | "onChange"> {
+  tabs?: never;
+  active?: never;
+  onChange?: never;
+  panelId?: never;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
   variant?: TabsVariant;
-  className?: string;
-  id: string;
-  /** ID of the changing content region, when this row controls a panel. */
-  panelId: string;
-  orientation?: TabOrientation;
+  size?: TabsSize;
+  fill?: boolean;
+  activationMode?: "automatic" | "manual";
+  mobileAs?: "select" | "scroll";
+  items?: readonly TabData[];
+  label?: string;
+  keepMounted?: boolean;
+  onBeforeChange?: (next: string, previous: string) => boolean | Promise<boolean>;
+  onChangeError?: (error: unknown) => void;
+  changeErrorText?: string;
+}
+export interface LegacyTabsProps<T extends string = string> {
+  tabs: TabItem<T>[]; active: T; onChange: (key: T) => void; label: string;
+  variant?: TabsVariant; className?: string; id: string; panelId: string;
+  orientation?: "horizontal" | "vertical";
+}
+export type TabsProps<T extends string = string> = TabsRootProps | LegacyTabsProps<T>;
+export const TabsRoot = forwardRef<HTMLDivElement, TabsRootProps>(function TabsRoot({ value: controlled, defaultValue, onValueChange, onBeforeChange, onChangeError, changeErrorText = "Could not change tab", variant = "underline", size = "md", fill = false, mobileAs, orientation: direction, dir, items, label = "Sections", keepMounted, children, className = "", id: providedId, ...props }, ref) {
+  const generated = useId();
+  const id = providedId ?? generated;
+  const [local, setLocal] = useState(defaultValue ?? items?.find(item => !item.disabled && !item.disabledReason)?.id ?? "");
+  const value = controlled ?? local;
+  const current = useRef(value); current.current = value;
+  const [tabs, setTabs] = useState<RegisteredTab[]>([]);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const serial = useRef(0);
+  const refusedFocus = useRef<string | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const isControlled = controlled !== undefined;
+  const register = useCallback((tab: RegisteredTab) => {
+    setTabs(previous => [...previous.filter(item => item.value !== tab.value), tab]);
+    if (!tab.disabled && !isControlled && defaultValue === undefined) setLocal(previous => previous || tab.value);
+    return () => setTabs(previous => previous.filter(item => item.value !== tab.value));
+  }, [isControlled, defaultValue]);
+  const inFlight = useRef<{ value: string; promise: Promise<boolean> } | null>(null);
+  const change = useCallback(async (next: string) => {
+    if (next === current.current) return true;
+    if (tabs.find(tab => tab.value === next)?.disabled) return false;
+    const token = ++serial.current;
+    const previous = current.current;
+    setPending(true); setError("");
+    try {
+      if (onBeforeChange && !(await onBeforeChange(next, previous))) { if (serial.current === token) refusedFocus.current = next; return false; }
+      if (!mounted.current || serial.current !== token || current.current !== previous) return false;
+      if (controlled === undefined) setLocal(next);
+      onValueChange?.(next);
+      return true;
+    } catch (failure) {
+      if (mounted.current && serial.current === token) { setError(changeErrorText); onChangeError?.(failure); }
+      return false;
+    } finally { if (mounted.current && serial.current === token) setPending(false); }
+  }, [tabs, onBeforeChange, controlled, onValueChange, changeErrorText, onChangeError]);
+  const request = useCallback((next: string) => {
+    if (inFlight.current?.value === next) return inFlight.current.promise;
+    const promise = change(next);
+    inFlight.current = { value: next, promise };
+    void promise.finally(() => { if (inFlight.current?.promise === promise) inFlight.current = null; });
+    return promise;
+  }, [change]);
+  const phone = usePhoneViewport();
+  const orientation = direction ?? (variant === "vertical" && !(phone && mobileAs === "scroll") ? "vertical" : "horizontal");
+  const [inheritedDir, setInheritedDir] = useState<"ltr" | "rtl">("ltr");
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const read = () => { if (root.current) setInheritedDir(getComputedStyle(root.current.parentElement ?? root.current).direction === "rtl" ? "rtl" : "ltr"); };
+    read();
+    const observer = new MutationObserver(read);
+    for (let element: HTMLElement | null = root.current; element; element = element.parentElement) observer.observe(element, { attributes: true, attributeFilter: ["dir"] });
+    return () => observer.disconnect();
+  }, []);
+  return <TabsContext.Provider value={{ id, value, variant, size, fill, orientation, dir: dir ?? inheritedDir, mobileAs, pending, refusedFocus, request, register, tabs }}>
+    <Primitive.Root {...props} id={id} ref={(node) => { root.current = node; if (typeof ref === "function") ref(node); else if (ref) ref.current = node; }} value={value} onValueChange={next => void request(next)} orientation={orientation} dir={dir ?? inheritedDir} aria-busy={pending || undefined} data-family-variant={variant} data-mobile-as={mobileAs} className={`mk-tabs-family min-w-0 ${orientation === "vertical" ? "flex gap-4" : ""} ${className}`}>
+      {items ? <><TabsList label={label}>{items.map(({ id: itemId, content: _content, load: _load, ...item }, index) => { void [_content, _load]; return <TabsTrigger key={itemId} value={itemId} {...item} position={index + 1} total={items.length}>{item.label}</TabsTrigger>; })}</TabsList>{items.map(item => <TabsContent key={item.id} value={item.id} keepMounted={keepMounted} load={item.load}>{item.content}</TabsContent>)}</> : children}
+      <span role="status" className="sr-only">{error}</span>
+    </Primitive.Root>
+  </TabsContext.Provider>;
+});
+const TabsImplementation = forwardRef<HTMLDivElement, TabsProps>(function TabsImplementation(props, ref) {
+  if (!props.tabs) return <TabsRoot {...props} ref={ref} />;
+  const { tabs, active, onChange, label, variant = "text", className, id, panelId, orientation } = props;
+  return <TabsRoot ref={ref} value={active} onValueChange={onChange} variant={variant} id={`${id}-root`} orientation={orientation}>
+    <TabsList id={id} label={label} className={className}>
+      {tabs.map(({ key, ...item }, index) => <TabsTrigger key={key} value={key} id={tabButtonId(id, key)} aria-controls={panelId} {...item} position={index + 1} total={tabs.length}>{item.label}</TabsTrigger>)}
+    </TabsList>
+  </TabsRoot>;
+});
+/** Legacy generic keys remain inferred at existing call sites. */
+export const Tabs = TabsImplementation as {
+  (props: TabsRootProps & { ref?: Ref<HTMLDivElement> }): ReactElement;
+  <T extends string>(props: LegacyTabsProps<T> & { ref?: Ref<HTMLDivElement> }): ReactElement;
 };
-
-/**
- * `indicator` is the pill that slides under the active tab (text and pill
- * styles); `on` is what the active tab itself keeps. The icon style keeps
- * its solid buttons and has no indicator.
- */
-const looks: Record<TabsVariant, { base: string; on: string; off: string; indicator?: string }> = {
-  text: {
-    base: "h-control-sm rounded-lg px-space-5 text-body font-medium",
-    on: "text-text",
-    off: "text-text-muted hover:text-text",
-    indicator: "rounded-lg bg-surface-2 shadow-edge",
-  },
-  icon: {
-    base: "h-control-sm mk-btn rounded-lg px-space-5 text-overline uppercase",
-    on: "bg-accent text-accent-ink",
-    off: "bg-surface-2 text-text-muted",
-  },
-  pill: {
-    base: "h-8 cursor-pointer rounded-lg px-3.5 text-[12px] font-semibold",
-    on: "text-accent-on-soft",
-    off: "bg-surface-1 text-text-muted",
-    indicator: "rounded-full bg-accent-soft",
-  },
-};
-
-/**
- * A row of tabs. The active pill slides to the tab chosen (transform, the
- * base duration) rather than jumping; it is placed without animation the
- * first time, so a page never opens with it gliding. The row scrolls sideways
- * when it outgrows its container.
- */
-const Tabs = <T extends string>({ tabs, active, onChange, label, variant = "text", className = "", id, panelId, orientation = "horizontal" }: TabsProps<T>) => {
-  const look = looks[variant];
-  const groupId = id;
-  const { row, tabProps } = useTabNavigation({ tabs, active, onChange, orientation });
-  const [pill, setPill] = useState<{ x: number; y: number; width: number; height: number; moved: boolean } | null>(null);
-
-  useLayoutEffect(() => {
-    if (!look.indicator) return;
-    const el = row.current?.querySelector<HTMLElement>('[aria-selected="true"]');
-    if (!el) return;
-    const place = () => setPill((prev) => ({ x: el.offsetLeft, y: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight, moved: prev !== null }));
-    place();
-    const ro = new ResizeObserver(place);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [active, look.indicator, tabs.length, orientation, row]);
-
-  return (
-    <div ref={row} id={groupId} role="tablist" aria-label={label} aria-orientation={orientation} data-tabs-variant={variant} className={`mk-tabs relative flex shrink-0 gap-space-3 ${orientation === "vertical" ? "flex-col items-stretch overflow-y-auto" : "items-center overflow-x-auto"} ${className}`}>
-      {look.indicator && pill && (
-        <span
-          aria-hidden
-          className={`pointer-events-none absolute start-0 top-0 ${look.indicator} ${pill.moved ? "transition-[translate,width,height] duration-base ease-standard" : ""}`}
-          // Measured from the row's left edge, so a physical offset is right in both directions.
-          style={{ left: 0, insetInlineStart: "auto", translate: `${pill.x}px ${pill.y}px`, width: pill.width, height: pill.height }}
-        />
-      )}
-      {tabs.map(({ key, label: name, icon, disabled }) => (
-        <button
-          key={key}
-          type="button"
-          role="tab"
-          id={tabButtonId(groupId, key)}
-          aria-controls={panelId}
-          aria-selected={active === key && !disabled}
-          disabled={disabled}
-          {...tabProps(key)}
-          onClick={() => onChange(key)}
-          className={`relative flex shrink-0 items-center gap-space-3 whitespace-nowrap transition-[background-color,color,box-shadow] disabled:cursor-not-allowed disabled:text-text-disabled ${look.base} ${
-            active === key ? look.on : look.off
-          } ${active === key && look.indicator && !pill ? look.indicator /* before the first measure */ : ""}`}
-        >
-          {icon && <Icon name={icon} size={16} />}
-          {name}
-        </button>
-      ))}
-    </div>
-  );
-};
-
-export { Tabs };
-export type { TabItem, TabsProps, TabsVariant };

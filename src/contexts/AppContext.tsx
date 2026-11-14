@@ -1076,7 +1076,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // in this browser: its brands, gate passwords and team carry over to
       // whoever opens it next. Not awaited: the person is signed out here the
       // moment they ask, while the last save and the revoke finish behind.
-      void repo.endSession().finally(() => authApi.logout().catch(() => undefined));
+      void authApi.logout(() => repo.endSession());
       setState(defaultState());
       return;
     }

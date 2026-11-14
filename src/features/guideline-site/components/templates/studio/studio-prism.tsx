@@ -4,6 +4,7 @@
 // system deck: a centered floating pill nav, a full-bleed gradient hero per
 // section, and bracket-style eyebrow labels (`{ WORKSPACE }`, `{ 01 }`).
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Icon, richToPlainText } from "@/components/ui";
@@ -207,7 +208,7 @@ export function StudioPrism(props: TemplateProps) {
                   />
                   {sections.length > 0 && <Index ws={ws} sections={sections} scrollTo={scrollTo} isAr={isAr} />}
                   <div id="overview" className="px-8 md:px-16 py-14 max-w-[900px] mx-auto flex flex-col gap-5 scroll-mt-0">
-                    {ws.overviewHtml && <div dir="auto" className="bidi-auto studio-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />}
+                    {ws.overviewHtml && <div dir="auto" className="bidi-auto studio-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />}
                     <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                   </div>
                 </>

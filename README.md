@@ -246,3 +246,130 @@ result is announced; `SlugField` does this for you given `checkAvailability`.
 historical design context, not the runtime application or an instruction to
 rebuild already implemented screens. The sibling `markyos-brand` folder contains
 the supplied originals; runtime assets are in [public/brand](public/brand).
+
+### Button family (wave 2, in review)
+
+All controls are exported from `@/components/ui`. The gallery at
+`/design-system#buttons` is enabled with `NEXT_PUBLIC_UI_GALLERY=1`.
+
+```tsx
+import { Button, ConfirmButton, SplitButton, ToggleGroup, useAsyncButton } from "@/components/ui";
+
+// Inside a client component. Repeated clicks are blocked while saving;
+// success/error is announced for two seconds. `error` retains the failure.
+const save = useAsyncButton(async () => { await saveDocument(); });
+<Button variant="primary" status={save.status} onClick={() => void save.run()}>
+  Save changes
+</Button>
+
+<SplitButton onClick={saveDraft} items={[
+  { label: "Publish changes", icon: "upload", onSelect: publish },
+  { separator: true },
+  { label: "Delete draft", destructive: true, onSelect: deleteDraft },
+]}>Save draft</SplitButton>
+
+<ToggleGroup label="Choose view" type="single" value={view} onValueChange={setView}
+  options={[{ value: "list", label: "List view" }, { value: "grid", label: "Grid view" }]} />
+
+<ConfirmButton mode="dialog" dialogTitle="Delete asset?" onConfirm={deleteAsset}>
+  Delete asset
+</ConfirmButton>
+```
+
+`status` accepts `idle`, `loading`, `success`, or `error`; controlled status remains
+until the caller updates it. `useAsyncButton` resets feedback after two seconds.
+`loadingText`, `successText`, `errorText`, labels and confirmation copy are props.
+`disabledReason` and `lockedReason` keep controls focusable and explain why they
+cannot run. Use `asChild` with a Next `Link` or `LinkButton` for navigation.
+Menus use Radix DropdownMenu; toggle groups use one Tab stop and arrow keys.
+Hold-to-confirm supports pointer, Space and Enter; release, blur or Escape cancels.
+Provider buttons use the bundled Line Awesome brand font, without remote assets.
+
+Assumptions: the current app is Next 16 and uses `app/tailwind.css`, rather than
+the older paths in the request. The existing design-system route hosts the gallery;
+the root login redirect is retained. Existing variant names remain aliases.
+Requested 28/32/36/40px size classes have a 36px minimum hit area (40px for coarse
+pointers). Button colour fades use the requested 120ms override; other motion
+keeps the existing tokens. No new colour tokens were introduced.
+
+For an isolated gallery beside an existing dev server, run
+`NEXT_BUILD_DIR=.next-buttons NEXT_PUBLIC_UI_GALLERY=1 npm run dev -- --webpack --hostname 127.0.0.1 -p 3105`,
+then `npm run test:buttons`. The browser check uses a fresh headless Chrome profile;
+set `BUTTON_CHROME` to a different executable or `BUTTON_GALLERY_URL` to another
+running gallery. Evidence is written to `audit/buttons-2026-11-14/`.
+
+### Tabs family (wave 2, in review)
+
+Import the whole family from `@/components/ui`. Existing
+`<Tabs tabs={...} active={...} onChange={...} {...useTabIds()} />` and external
+`TabPanel` usage remain supported. New panels can live beside their triggers:
+
+```tsx
+<Tabs defaultValue="details" variant="underline" activationMode="automatic">
+  <TabsList label="Asset sections">
+    <TabsTrigger value="details" icon="info-circle">Details</TabsTrigger>
+    <TabsTrigger value="rights" count={2} status="warning">Rights</TabsTrigger>
+  </TabsList>
+  <TabsContent value="details">Asset details</TabsContent>
+  <TabsContent value="rights">Review licences</TabsContent>
+</Tabs>
+```
+
+Use `items={[{ id: "details", label: "Details", content: ... }]}` for the shortcut.
+Variants are `underline`, `segmented`, `boxed` and `vertical`; the old `text`,
+`icon` and `pill` aliases remain. Sizes are `sm`, `md`, `lg`. `fill` shares available
+space. `mobileAs="select"` replaces the list below 640px; `mobileAs="scroll"`
+keeps a scrollable list and adapts vertical settings to horizontal mobile use.
+
+```tsx
+// Router tabs render links in a nav, with one most-specific current page.
+<RouterTabs label="Asset pages" items={[
+  { href: `/assets/${id}`, label: "Details" },
+  { href: `/assets/${id}/rights`, label: "Rights" },
+]} />
+
+// Fetch only after selection. keepMounted preserves child form state after
+// first opening. The loader receives an AbortSignal; failures offer a retry.
+<TabsContent value="versions" keepMounted load={async (signal) => {
+  const response = await fetch(`/api/assets/${id}/versions`, { signal });
+  if (!response.ok) throw new Error("Could not load versions");
+  const versions = await response.json();
+  return <VersionList versions={versions} />;
+}} />
+
+// A refused or failed guard preserves the selected tab. Competing requests
+// cannot commit stale results, and repeated requests share the pending guard.
+<Tabs value={section} onValueChange={setSection}
+  onBeforeChange={async () => !dirty || await confirm({
+    title: "Leave unsaved edits?", confirmLabel: "Leave tab",
+  })}>
+  {/* TabsList, TabsTrigger and TabsContent */}
+</Tabs>
+
+<StepperTabs linear value={step} onValueChange={setStep} steps={[
+  { id: "brief", label: "Brief", completed: briefComplete, content: <BriefForm /> },
+  { id: "assets", label: "Assets", error: assetsHaveErrors, content: <AssetPicker /> },
+  { id: "review", label: "Review", content: <CampaignReview /> },
+]} />
+```
+
+`ScrollableTabs` and `OverflowTabs` live inside a `Tabs` root. The latter takes
+`items` and puts hidden sections in a More menu while retaining an active tab
+trigger. `EditableTabs` takes `items`, `onItemsChange` and optional `onAdd`; its
+handles support pointer dragging, and Alt + arrows reorder the focused tab.
+Delete closes a closable tab. `LanguageTabs` takes `english`, `arabic`, and
+`arabicValue` to show the missing-translation warning. Labels, status descriptions,
+position formatting, confirmation copy and loading/error/empty messages are props.
+
+The full gallery is `/design-system/tabs`, also embedded in `/design-system`.
+Enable it with `NEXT_PUBLIC_UI_GALLERY=1`. For an isolated preview, run
+`NEXT_BUILD_DIR=.next-tabs NEXT_PUBLIC_UI_GALLERY=1 npm run dev -- --webpack --hostname 127.0.0.1 -p 3106`,
+then `npm run test:tabs`. Evidence is in `audit/tabs-2026-11-14/`.
+
+Assumptions: this checkout uses Next 16 and `app/tailwind.css`, so those supersede
+the older paths/version in the brief. The existing gallery and login redirect are
+retained. Active states use existing accent/primary tokens; boxed edges use the
+existing `hairline-strong` role. No new colour tokens were introduced. Explicit
+120ms colour and 180ms underline timing overrides the older motion values for
+this family. Inactive panels unmount by default; `keepMounted` preserves them only
+after first activation, while `forceMount` mounts them immediately but hides them.

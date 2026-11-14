@@ -54,6 +54,7 @@ export async function signup(
 
 /** Checks an emailed code (a signup's, or a two-step sign-in's) and signs in. */
 export async function verifyEmail(email: string, code: string, remember = true, purpose: CodePurpose = "register"): Promise<Account> {
+  await pendingLogout;
   const res = await api<{ access: string }>("/auth/otp/verify/", {
     method: "POST",
     body: { email, code, purpose, remember },
@@ -72,6 +73,7 @@ export async function login(
   password: string,
   remember = true
 ): Promise<Account | VerificationRequired | SignInCodeRequired> {
+  await pendingLogout;
   const res = await api<{ access?: string; requires_otp?: boolean } | VerificationRequired>("/auth/login/", {
     method: "POST",
     body: { email, password, remember },
@@ -92,6 +94,7 @@ export async function login(
  * `signupToken` the first call returned plus the account type they picked.
  */
 export async function googleSignIn(body: GoogleSignInBody): Promise<GoogleSignInResult> {
+  await pendingLogout;
   const res = await api<GoogleSignInResponse>("/auth/google/", { method: "POST", body });
   if (res.needsAccountType) {
     return { kind: "needsAccountType", signupToken: res.signupToken, name: res.name, email: res.email };
@@ -100,12 +103,21 @@ export async function googleSignIn(body: GoogleSignInBody): Promise<GoogleSignIn
   return { kind: "signedIn", account: await fetchMe() };
 }
 
-export async function logout(): Promise<void> {
-  try {
-    await api<void>("/auth/logout/", { method: "POST" });
-  } finally {
-    setAccessToken(null);
-  }
+// Register the transition before flushing edits so every sign-in method waits
+// for both the old cookie revocation and access-token cleanup.
+let pendingLogout: Promise<void> = Promise.resolve();
+
+export function logout(flush: () => Promise<void> = async () => {}): Promise<void> {
+  const flushed = flush();
+  pendingLogout = pendingLogout.then(async () => {
+    try {
+      await flushed;
+      await api<void>("/auth/logout/", { method: "POST" });
+    } finally {
+      setAccessToken(null);
+    }
+  }).catch(() => undefined);
+  return pendingLogout;
 }
 
 export async function fetchMe(): Promise<Account> {
@@ -150,6 +162,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
 
 /** Sets the password from an emailed link; the server signs this browser in. */
 export async function resetPassword(token: string, password: string): Promise<{ account: Account; firstTime: boolean }> {
+  await pendingLogout;
   const res = await api<{ access: string; firstTime: boolean }>("/auth/password-reset/", {
     method: "POST",
     body: { token, password },

@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Button, Icon, richToPlainText } from "@/components/ui";
@@ -239,7 +240,7 @@ export function DocsTemplate(props: TemplateProps) {
                         placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
                         style={gBody}
                       />
-                      {ws.overviewHtml && <div dir="auto" className="bidi-auto docs-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />}
+                      {ws.overviewHtml && <div dir="auto" className="bidi-auto docs-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />}
                       <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                     </div>
                   ) : item.id === "statement" ? (

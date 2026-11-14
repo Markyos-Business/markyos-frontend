@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
@@ -17,6 +18,7 @@ export function useOverviewPage(slug: string) {
   const { prompt } = useDialog();
   const ws = page?.workspace;
   const editorRef = useRef<HTMLDivElement>(null);
+  const lastInput = useRef<{ id: string; html: string } | null>(null);
   const [, forceTick] = useState(0);
   const [wordCount, setWordCount] = useState(0);
 
@@ -25,13 +27,18 @@ export function useOverviewPage(slug: string) {
     return () => window.clearInterval(id);
   }, []);
 
+  const workspaceId = ws?.id;
+  const overviewHtml = ws?.overviewHtml;
   useEffect(() => {
-    if (editorRef.current && ws) {
-      editorRef.current.innerHTML = ws.overviewHtml;
-      setWordCount(countWords(editorRef.current));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+    const editor = editorRef.current;
+    if (!editor || !workspaceId || overviewHtml === undefined) return;
+    // Our own input already exists in the DOM. Avoid replacing it and moving
+    // the caret; hydration, undo and server copies still update the editor.
+    if (lastInput.current?.id === workspaceId && lastInput.current.html === overviewHtml) return;
+    editor.innerHTML = sanitizeRichHtml(overviewHtml);
+    lastInput.current = null;
+    setWordCount(countWords(editor));
+  }, [workspaceId, overviewHtml]);
 
   const savedLabel = useMemo(
     () => (ws ? (page?.isAr ? `حُفظ ${formatRelative(ws.overviewSavedAt)}` : `Saved ${formatRelative(ws.overviewSavedAt)}`) : ""),
@@ -44,7 +51,9 @@ export function useOverviewPage(slug: string) {
   function handleInput() {
     if (!editorRef.current || !ws) return;
     setWordCount(countWords(editorRef.current));
-    setOverview(ws.id, editorRef.current.innerHTML);
+    const html = sanitizeRichHtml(editorRef.current.innerHTML);
+    lastInput.current = { id: ws.id, html };
+    setOverview(ws.id, html);
   }
 
   /**

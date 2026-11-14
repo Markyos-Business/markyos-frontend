@@ -13,6 +13,7 @@
 // the same manual is gold-on-charcoal for one brand and teal-on-bone for the
 // next without a line of this file changing.
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Icon } from "@/components/ui";
@@ -257,7 +258,7 @@ export function ManualTemplate(props: TemplateProps) {
                             <div
                               dir="auto"
                               className="bidi-auto manual-overview"
-                              dangerouslySetInnerHTML={{ __html: ws.overviewHtml }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }}
                             />
                           )}
                           <SignOffPanel ws={ws} section="overview" isAr={isAr} />

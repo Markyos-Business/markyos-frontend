@@ -6,6 +6,34 @@ Galleries: `/design-system/table-select` and `/design-system/forms`, with `NEXT_
 
 | Component | Status | Wave | File | Notes |
 | --- | --- | --- | --- | --- |
+| TabsRoot | in-review | 2 | [source](src/components/ui/tabs/tabs.tsx) | Radix root shared by compound and specialized tabs; controlled/uncontrolled state and asynchronous guards. |
+| Tabs | in-review | 2 | [source](src/components/ui/tabs/tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| TabsList | in-review | 2 | [source](src/components/ui/tabs/tabs-list.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| TabsTrigger | in-review | 2 | [source](src/components/ui/tabs/tabs-trigger.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| TabsContent | in-review | 2 | [source](src/components/ui/tabs/tabs-content.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| ScrollableTabs | in-review | 2 | [source](src/components/ui/tabs/scrollable-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| OverflowTabs | in-review | 2 | [source](src/components/ui/tabs/overflow-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| EditableTabs | in-review | 2 | [source](src/components/ui/tabs/editable-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| RouterTabs | in-review | 2 | [source](src/components/ui/tabs/router-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| LanguageTabs | in-review | 2 | [source](src/components/ui/tabs/language-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| StepperTabs | in-review | 2 | [source](src/components/ui/tabs/stepper-tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
+| Button | in-review | 2 | [source](src/components/ui/button/button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| IconButton | in-review | 2 | [source](src/components/ui/button/icon-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| ButtonGroup | in-review | 2 | [source](src/components/ui/button/button-group.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| SplitButton | in-review | 2 | [source](src/components/ui/button/split-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| MenuButton | in-review | 2 | [source](src/components/ui/button/menu-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| ToggleButton | in-review | 2 | [source](src/components/ui/button/toggle-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| ToggleGroup | in-review | 2 | [source](src/components/ui/button/toggle-group.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| Fab | in-review | 2 | [source](src/components/ui/button/fab.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| CopyButton | in-review | 2 | [source](src/components/ui/button/copy-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| UploadButton | in-review | 2 | [source](src/components/ui/button/upload-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| ConfirmButton | in-review | 2 | [source](src/components/ui/button/confirm-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| HoldToConfirmButton | in-review | 2 | [source](src/components/ui/button/hold-to-confirm-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| ProviderButton | in-review | 2 | [source](src/components/ui/button/provider-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| LinkButton | in-review | 2 | [source](src/components/ui/button/link-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| CloseButton | in-review | 2 | [source](src/components/ui/button/close-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| BackButton | in-review | 2 | [source](src/components/ui/button/back-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
+| BadgeButton | in-review | 2 | [source](src/components/ui/button/badge-button.tsx) | Button family: semantic tokens, refs, RTL, keyboard and async states; legacy APIs preserved. Awaiting review. |
 | DataTable | in-review | 2 | [source](src/components/ui/data-table/data-table.tsx) | TanStack v8 pipeline; basic, selected, sorted, filtered, paged, infinite, nested/grouped, edited, sticky, resized/reordered, virtualized, media and mobile-card variants. Legacy table import remains compatible. |
 | Select | in-review | 2 | [source](src/components/ui/select/select.tsx) | Radix Select; grouped/rich options, validation, readonly and native-on-touch. |
 | Combobox | in-review | 2 | [source](src/components/ui/select/combobox.tsx) | Radix Popover + cmdk; searchable single and creatable. |

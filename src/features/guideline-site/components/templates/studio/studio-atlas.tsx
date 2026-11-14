@@ -5,6 +5,7 @@
 // section opens with an oversized numbered color-band hero, followed by
 // two-column "label / description" content rows.
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { Icon, LangToggle, useToast, richToPlainText } from "@/components/ui";
@@ -268,7 +269,7 @@ export function StudioAtlas(props: TemplateProps) {
                       )}
                       {ws.overviewHtml && (
                         <Row label={isAr ? "نظرة عامة" : "Overview"}>
-                          <div dir="auto" className="bidi-auto atlas-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+                          <div dir="auto" className="bidi-auto atlas-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
                         </Row>
                       )}
                       <SignOffPanel ws={ws} section="overview" isAr={isAr} />

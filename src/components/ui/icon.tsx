@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 // Glyphs that live in the brand set rather than the solid one.
-const BRAND_ICONS = new Set(["google"]);
+const BRAND_ICONS = new Set(["google", "microsoft", "apple"]);
 
 type IconProps = {
   /** A name from the icon set (tailwind/icons.js). */

@@ -6,3 +6,67 @@
 @config "../../tailwind.config.js";
 @source not "../../tailwind";
 @source not "../../docs";
+
+/* Button family: explicit request overrides the older primary press transform. */
+.mk-family-button { min-height: 36px; transition: color 120ms, background-color 120ms, border-color 120ms; }
+.mk-family-button::after { transition: opacity 120ms; }
+.mk-family-button:focus-visible, .mk-family-button[data-state="focus"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mk-family-button[data-state="hover"]::after, .mk-family-button[data-state="pressed"]::after { opacity: 1; }
+.mk-family-button[aria-disabled="true"]:not([data-status="loading"]), .mk-family-button:disabled { background: var(--surface-2); color: var(--text-muted); box-shadow: none; }
+.mk-family-button[data-skeleton="true"] > * { visibility: hidden; }
+.mk-button-group > :not(:first-child), .mk-button-group > :not(:first-child) > .mk-family-button { border-start-start-radius: 0; border-end-start-radius: 0; }
+.mk-button-group > :not(:last-child), .mk-button-group > :not(:last-child) > .mk-family-button { border-start-end-radius: 0; border-end-end-radius: 0; }
+.mk-button-group[data-orientation="vertical"] > *, .mk-button-group[data-orientation="vertical"] > * > .mk-family-button { border-radius: 0; }
+.mk-button-group[data-orientation="vertical"] > :first-child, .mk-button-group[data-orientation="vertical"] > :first-child > .mk-family-button { border-start-start-radius: var(--radius-lg); border-start-end-radius: var(--radius-lg); }
+.mk-button-group[data-orientation="vertical"] > :last-child, .mk-button-group[data-orientation="vertical"] > :last-child > .mk-family-button { border-end-start-radius: var(--radius-lg); border-end-end-radius: var(--radius-lg); }
+@media (pointer: coarse) { .mk-family-button { min-height: 40px; min-width: 40px; } }
+@media (prefers-reduced-motion: reduce) { .mk-family-button, .mk-family-button::after { transition: none; } }
+
+/* Only the provider marks use the official Line Awesome brand font. */
+@font-face { font-family: "Markyos brands"; src: url("../../node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: block; }
+.lab.la-google, .lab.la-microsoft, .lab.la-apple { font-family: "Markyos brands"; font-weight: 400; font-style: normal; line-height: 1; background: none; mask: none; -webkit-mask: none; }
+.lab.la-google::before { content: "\f1a0"; }
+.lab.la-microsoft::before { content: "\f3ca"; }
+.lab.la-apple::before { content: "\f179"; }
+.mk-family-button .la-arrow-left, .mk-family-button .la-arrow-right, .mk-family-button .la-angle-left, .mk-family-button .la-angle-right { transform: none; }
+.mk-family-button:dir(rtl) .la-arrow-left, .mk-family-button:dir(rtl) .la-arrow-right, .mk-family-button:dir(rtl) .la-angle-left, .mk-family-button:dir(rtl) .la-angle-right { transform: rotate(180deg); }
+.mk-button-group > * + * { margin-inline-start: -1px; }
+.mk-button-group > :focus-within { z-index: 1; }
+.mk-button-group[data-orientation="vertical"] > * + * { margin-inline-start: 0; margin-block-start: -1px; }
+/* A full legacy scrim drops accent text below 4.5:1. Keep state veils subtle. */
+.mk-family-button:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus-visible, .is-active, [data-state="hover"], [data-state="focus"])::after { opacity: .1; }
+.mk-family-button:not(:disabled):not([aria-disabled="true"]):is(:active, [data-state="pressed"])::after { opacity: .15; }
+
+/* Tabs family: colour-only feedback, with an optional measured underline. */
+.mk-family-tab, .mk-tabs-close { transition: color 120ms, background-color 120ms; }
+.mk-family-tab:hover:not([aria-disabled="true"]) { background: var(--ink-soft); color: var(--text); }
+.mk-family-tab[aria-selected="true"] { color: var(--accent-text); }
+.mk-tabs-family:is([data-family-variant="segmented"], [data-family-variant="text"], [data-family-variant="pill"]) .mk-family-tab[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-on-soft); }
+.mk-tabs-family[data-family-variant="icon"] .mk-family-tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tab[aria-selected="true"] { background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--hairline-strong); }
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tabpanel { box-shadow: inset 0 0 0 1px var(--hairline-strong); border-start-start-radius: 0; }
+.mk-tabs-family[data-family-variant="vertical"] .mk-family-tab[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-on-soft); box-shadow: inset 3px 0 var(--accent); }
+.mk-tabs-family[data-family-variant="vertical"]:dir(rtl) .mk-family-tab[aria-selected="true"] { box-shadow: inset -3px 0 var(--accent); }
+.mk-family-tab[aria-disabled="true"] { color: var(--text-muted); cursor: not-allowed; }
+.mk-family-tab[data-skeleton="true"] { color: transparent; background: var(--surface-2); pointer-events: none; }
+.mk-family-tab[data-skeleton="true"] > * { visibility: hidden; }
+.mk-tabs-underline { transition: inset-inline-start 180ms, width 180ms; }
+.mk-family-tablist > [data-tab-item] { position: relative; }
+.mk-family-tablist:focus-visible, .mk-family-tab:focus-visible, .mk-tabs-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 639px) { .mk-tabs-family[data-family-variant="vertical"] { flex-direction: column; } .mk-tabs-family[data-family-variant="vertical"][data-mobile-as="scroll"] .mk-family-tablist { flex-direction: row; overflow-x: auto; } }
+@media (prefers-reduced-motion: reduce) { .mk-family-tab, .mk-tabs-close, .mk-tabs-underline { transition: none; } }
+.mk-router-tabs [aria-current="page"] { background: var(--accent-soft); color: var(--accent-on-soft); }
+.mk-family-tab[aria-selected="true"]::after { background: transparent; }
+.mk-family-tablist > [data-tab-item] > .group\/tooltip { width: 100%; }
+.mk-family-tablist > [data-tab-item] > .group\/tooltip > button { width: 100%; }
+@media (max-width: 639px) { .mk-tabs-family[data-family-variant="vertical"] .mk-tabs-mobile-select ~ .mk-family-tablist { display: none; } }
+.mk-family-tab[data-demo-state="hover"] { background: var(--ink-soft); color: var(--text); }
+.mk-family-tab[data-demo-state="focus"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Boxed triggers meet the panel edge instead of floating above it. */
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tablist { padding-inline: 0; padding-block-end: 0; }
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tab[aria-selected="true"] { border-end-start-radius: 0; border-end-end-radius: 0; z-index: 1; }
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tab[aria-selected="true"]::after { content: ""; position: absolute; inset-inline: 1px; bottom: -1px; height: 2px; background: var(--surface-1); }
+
+/* Family tabs own their hover treatment; opt out of the legacy button veil. */
+.mk-family-tab::after, .mk-tabs-close::after { display: none; }
+.mk-tabs-family[data-family-variant="boxed"] .mk-family-tab[aria-selected="true"]::after { display: block; }
