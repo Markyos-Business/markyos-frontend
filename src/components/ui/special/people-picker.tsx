@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { initialsFor } from "@/lib/utils";
 import { Avatar } from "../avatar/avatar";
+import { Badge } from "../badge/badge";
 import { TextareaField, type TextareaFieldProps } from "../field/textarea-field";
 import { DropdownPanel } from "../listbox/dropdown-panel";
 import { MultiSelect } from "../select/multi-select";
@@ -64,10 +65,19 @@ const typedMention = (text: string, caret: number) => text.slice(0, caret).match
  * "@Name" in, Escape closes it. It's a combobox for assistive tech, so the
  * highlighted person is announced.
  */
-const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ...rest }: MentionTextareaProps) => {
+const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ref, onBlur, onKeyDown: callerKeyDown, onClick, onSelect, ...rest }: MentionTextareaProps) => {
   const { t } = useUiStrings();
   const listId = `${useId()}-people`;
   const area = useRef<HTMLTextAreaElement | null>(null);
+  // Ours (the caret, the list's position) and the caller's (a form library's focus ref).
+  const setArea = useCallback(
+    (el: HTMLTextAreaElement | null) => {
+      area.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    },
+    [ref],
+  );
   const [query, setQuery] = useState<string | null>(null);
   const [active, setActive] = useState(0);
   const matches = query === null ? [] : people.filter((p) => `${p.name} ${p.email ?? ""}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
@@ -100,7 +110,8 @@ const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ...r
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (!open) return;
+    callerKeyDown?.(e);
+    if (!open || e.defaultPrevented) return;
     if (e.key === "Escape") {
       e.preventDefault();
       setQuery(null);
@@ -117,7 +128,7 @@ const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ...r
     <>
       <TextareaField
         {...rest}
-        ref={area}
+        ref={setArea}
         value={value}
         hint={hint ?? t.mentionHint}
         role="combobox"
@@ -131,8 +142,19 @@ const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ...r
           read(e.target.value, e.target.selectionStart ?? e.target.value.length);
         }}
         onKeyDown={onKeyDown}
-        onClick={(e) => read(e.currentTarget.value, e.currentTarget.selectionStart ?? 0)}
-        onBlur={() => setQuery(null)}
+        onClick={(e) => {
+          read(e.currentTarget.value, e.currentTarget.selectionStart ?? 0);
+          onClick?.(e);
+        }}
+        // The caret moved (arrows, Home, a click): the "@" before it may have changed.
+        onSelect={(e) => {
+          read(e.currentTarget.value, e.currentTarget.selectionStart ?? 0);
+          onSelect?.(e);
+        }}
+        onBlur={(e) => {
+          setQuery(null);
+          onBlur?.(e);
+        }}
       />
       {open && (
         <DropdownPanel anchor={area} onOutside={() => setQuery(null)} width={280}>
@@ -163,6 +185,13 @@ const MentionTextarea = ({ value, onChange, people, onMentionsChange, hint, ...r
                       </span>
                     )}
                   </span>
+                  {p.presence && (
+                    <span className="ms-auto shrink-0">
+                      <Badge dot tone={PRESENCE_TONE[p.presence]}>
+                        {t.presence[p.presence]}
+                      </Badge>
+                    </span>
+                  )}
                 </li>
               ))
             )}

@@ -52,10 +52,17 @@ const UploadList = ({ label, items, onCancel, onRetry, onRemove }: UploadListPro
   // What changed since the last render, said once in a polite live region.
   const [seen, setSeen] = useState<Record<string, UploadStatus>>({});
   const [announcement, setAnnouncement] = useState("");
-  const changed = items.filter((i) => seen[i.id] !== i.status && i.status !== "uploading");
-  if (changed.length || items.some((i) => !(i.id in seen))) {
+  // Every move is recorded (uploading too), so failed → uploading → failed is
+  // a change; only the moves worth saying are said.
+  const moved = items.filter((i) => seen[i.id] !== i.status);
+  const said = moved.filter((i) => i.status !== "uploading");
+  if (moved.length || Object.keys(seen).some((id) => !items.some((i) => i.id === id))) {
     setSeen(Object.fromEntries(items.map((i) => [i.id, i.status])));
-    if (changed.length && Object.keys(seen).length) setAnnouncement(changed.map((i) => `${i.name}: ${statusText(i)}`).join(". "));
+    if (said.length && Object.keys(seen).length) {
+      const text = said.map((i) => `${i.name}: ${statusText(i)}`).join(". ");
+      // The same words twice in a row aren't re-read; a zero-width space makes them new.
+      setAnnouncement((prev) => (prev === text ? `${text}\u200b` : text));
+    }
   }
 
   if (!items.length) return null;

@@ -35,6 +35,8 @@ type ConfirmByTypingProps = {
     matches?: string;
     pasteBlocked?: string;
     cancel?: string;
+    /** When `onConfirm` rejects. */
+    failed?: string;
   };
 };
 
@@ -67,6 +69,10 @@ const ConfirmByTyping = ({
   const [typed, setTyped] = useState("");
   const [tried, setTried] = useState(false);
   const [pasted, setPasted] = useState(false);
+  // While `onConfirm` runs, whether or not the caller passes `busy`: a second press can't run it twice.
+  const [pending, setPending] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const working = busy || pending;
   const same = (a: string, b: string) => (ignoreCase ? a.toLocaleLowerCase() === b.toLocaleLowerCase() : a === b);
   const matches = same(typed.trim(), name.trim());
   const prompt = (labels?.typeToConfirm ?? t.typeToConfirm)(
@@ -75,15 +81,25 @@ const ConfirmByTyping = ({
     </bdi>,
   );
 
+  const confirm = async () => {
+    if (!matches || working) {
+      setTried(true);
+      return;
+    }
+    setFailed(false);
+    setPending(true);
+    try {
+      await onConfirm();
+    } catch {
+      setFailed(true);
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
-    <form
-      className="flex flex-col gap-space-5"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (matches && !busy) void onConfirm();
-        else setTried(true);
-      }}
-    >
+    // A group, not a form, so it can sit inside a form (or a Dialog's form) of its own.
+    <div role="group" aria-busy={working || undefined} className="flex flex-col gap-space-5">
       {description && (
         <p className="flex items-start gap-space-3 text-body text-text">
           <Icon name="exclamation-circle" size={18} className="mt-0.5 shrink-0 text-danger" />
@@ -101,7 +117,13 @@ const ConfirmByTyping = ({
           autoCapitalize="off"
           spellCheck={false}
           autoFocus={autoFocus}
-          disabled={busy}
+          disabled={working}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              void confirm();
+            }
+          }}
           onChange={(e) => {
             setTyped(e.target.value);
             setTried(false);
@@ -120,17 +142,22 @@ const ConfirmByTyping = ({
           success={matches ? (labels?.matches ?? t.confirmMatches) : undefined}
         />
       </div>
+      {failed && (
+        <p role="alert" className="text-caption text-danger">
+          {labels?.failed ?? t.confirmFailed}
+        </p>
+      )}
       <div className="flex flex-wrap items-center gap-space-3">
-        <Button type="submit" variant="danger" disabled={!matches || busy} icon={<Icon name={busy ? "circle-notch" : "trash"} size={18} className={busy ? "animate-spin" : ""} />}>
+        <Button type="button" variant="danger" onClick={() => void confirm()} disabled={!matches || working} icon={<Icon name={working ? "circle-notch" : "trash"} size={18} className={working ? "animate-spin" : ""} />}>
           {actionLabel}
         </Button>
         {onCancel && (
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={working}>
             {labels?.cancel ?? t.cancel}
           </Button>
         )}
       </div>
-    </form>
+    </div>
   );
 };
 

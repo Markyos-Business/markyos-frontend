@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import {
   BilingualField,
+  Button,
   CurrencyField,
   EmailField,
   FieldGroup,
@@ -29,8 +30,9 @@ import { ThemeToggle } from "@/components/ui";
 type Lang = "en" | "ar";
 const T = (lang: Lang) => (en: string, ar: string) => (lang === "ar" ? ar : en);
 
-/** Pretend availability: "riyadh" and "dubai" are taken. */
-const checkSlug = (slug: string) => new Promise<boolean>((resolve) => setTimeout(() => resolve(!["riyadh", "dubai"].includes(slug)), 700));
+/** Pretend availability: "riyadh" and "dubai" are taken; "offline" fails to check. */
+const checkSlug = (slug: string) =>
+  new Promise<boolean>((resolve, reject) => setTimeout(() => (slug === "offline" ? reject(new Error("offline")) : resolve(!["riyadh", "dubai"].includes(slug))), 700));
 
 /** The brand palette, as a picker's quick picks. */
 const brandSwatches = [
@@ -221,7 +223,7 @@ export function FormsGallery() {
     {
       name: "TagInput",
       render: (s) =>
-        s === "readOnly" ? na : (
+        (
           <TagInput label={t("Tags", "الوسوم")} value={s === "default" ? [] : ["Ramadan", "Riyadh"]} onChange={() => undefined} {...stateProps(s, t)} />
         ),
     },
@@ -229,6 +231,20 @@ export function FormsGallery() {
     { name: "TextareaField", render: (s) => <TextareaField label={t("Brief", "الموجز")} rows={2} placeholder={t("Start typing…", "ابدأ الكتابة…")} defaultValue={s === "default" ? "" : t("Three cities, one launch.", "ثلاث مدن، إطلاق واحد.")} {...stateProps(s, t)} /> },
     { name: "EmailField", render: (s) => <EmailField label={t("Email", "البريد")} placeholder="nour@studio.sa" defaultValue={s === "default" ? "" : "omar@studio.ae"} {...stateProps(s, t)} /> },
     { name: "PasswordField", render: (s) => <PasswordField label={t("Password", "كلمة المرور")} defaultValue={s === "default" ? "" : "riyadh-dubai-cairo"} {...stateProps(s, t)} /> },
+    {
+      name: "RichTextField",
+      render: (s) =>
+        s === "validating" ? na : (
+          <RichTextField label={t("Caption", "التعليق")} value={s === "default" ? "" : t("<p>Ramadan nights, Riyadh.</p>", "<p>ليالي رمضان، الرياض.</p>")} onChange={() => undefined} maxLength={40} minHeight={64} {...stateProps(s, t)} />
+        ),
+    },
+    {
+      name: "DateRangePicker",
+      render: (s) =>
+        ["validating", "readOnly", "locked", "warning", "success", "loading"].includes(s) ? na : (
+          <DateRangePicker label={t("Flight dates", "تواريخ العرض")} value={s === "default" ? {} : { from: "2026-09-01", to: "2026-09-30" }} onChange={() => undefined} min="2026-09-10" disabled={s === "disabled"} error={s === "error" ? t("Choose dates after 10 Sep.", "اختر تواريخ بعد 10 سبتمبر.") : undefined} />
+        ),
+    },
     { name: "PhoneInput", render: (s) => <PhoneInput label={t("Phone", "الهاتف")} value={s === "default" ? "" : "+971501234567"} onChange={() => undefined} {...stateProps(s, t)} /> },
     { name: "CurrencyField", render: (s) => <CurrencyField label={t("Budget", "الميزانية")} value={s === "default" ? null : 84500} onChange={() => undefined} {...stateProps(s, t)} /> },
     { name: "UrlField", render: (s) => <UrlField label={t("Website", "الموقع")} value={s === "default" ? "" : "https://studio.sa"} onChange={() => undefined} {...stateProps(s, t)} /> },
@@ -298,7 +314,7 @@ export function FormsGallery() {
                 value={slug}
                 onChange={setSlug}
                 checkAvailability={checkSlug}
-                hint={t("Try riyadh or dubai to see a taken one.", "جرّب riyadh أو dubai لترى عنوانًا مستخدمًا.")}
+                hint={t("Try riyadh or dubai to see a taken one, offline for a failed check.", "جرّب riyadh أو dubai لترى عنوانًا مستخدمًا، أو offline لفشل التحقق.")}
               />
               <HexColorField label={t("Accent colour", "لون التمييز")} value={colour} onChange={setColour} />
             </FieldGroup>
@@ -308,6 +324,21 @@ export function FormsGallery() {
               <BilingualField label={t("Tagline", "الشعار")} value={tagline} onChange={setTagline} multiline layout={biLayout ? "tabs" : "side"} maxLength={120} />
             </div>
             <RichTextField label={t("Story", "القصة")} value={story} onChange={setStory} maxLength={1200} hint={t("Each paragraph takes its own direction.", "لكل فقرة اتجاهها.")} />
+            <div>
+              {/* A form reset from outside: the phone and the story must show the saved values again. */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPhone("+966501234567");
+                  setStory("<p>Launching across <strong>Riyadh</strong>, Dubai and Cairo.</p>");
+                  setRange({ from: "2026-09-01", to: "2026-09-30" });
+                  setSite("http://studio.sa");
+                }}
+              >
+                {t("Reset to saved values", "استعادة القيم المحفوظة")}
+              </Button>
+            </div>
           </Section>
 
           <Section id="choice" title={t("Choice inputs", "مدخلات الاختيار")}>

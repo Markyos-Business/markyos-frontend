@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type { InputHTMLAttributes, ReactNode, Ref } from "react";
 import { Icon } from "../icon";
 
 type CheckboxState = "default" | "error" | "success";
@@ -11,6 +11,8 @@ type CheckboxInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "
   indeterminate?: boolean;
   /** The box's ring: danger for an error, success for a confirmed choice (spec §6.6). */
   state?: CheckboxState;
+  /** The input itself: react-hook-form's `register` ref, or a focus target. */
+  ref?: Ref<HTMLInputElement>;
 };
 
 const RING: Record<CheckboxState, string> = { default: "shadow-edge", error: "shadow-edge-danger", success: "shadow-edge-success" };
@@ -21,13 +23,16 @@ const RING: Record<CheckboxState, string> = { default: "shadow-edge", error: "sh
  * a real checkbox underneath (its native `indeterminate` is what assistive
  * tech reads as "mixed"); put it inside a `<label>`.
  */
-const CheckboxInput = ({ indeterminate = false, state = "default", ...props }: CheckboxInputProps) => (
+const CheckboxInput = ({ indeterminate = false, state = "default", ref, ...props }: CheckboxInputProps) => (
   <span className="relative flex size-5 shrink-0">
     <input
       {...props}
       type="checkbox"
+      // Ours sets the native mixed state; the caller's still gets the element.
       ref={(input) => {
         if (input) input.indeterminate = indeterminate;
+        if (typeof ref === "function") ref(input);
+        else if (ref) ref.current = input;
       }}
       data-indeterminate={indeterminate || undefined}
       className={`peer size-5 cursor-pointer appearance-none rounded-sm bg-surface-2 transition-colors checked:bg-accent checked:shadow-none data-indeterminate:bg-accent data-indeterminate:shadow-none disabled:cursor-not-allowed ${RING[state]}`}

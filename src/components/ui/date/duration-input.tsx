@@ -36,7 +36,7 @@ const DurationInput = ({ label, info, value, onChange, maxHours = 99, minuteStep
         <span className="flex items-center gap-space-2">
           <SegmentInput
             id={control.id}
-            label={strings?.hours ?? t.hours}
+            label={`${label}, ${strings?.hours ?? t.hours}`}
             value={hours}
             min={0}
             max={maxHours}
@@ -46,6 +46,8 @@ const DurationInput = ({ label, info, value, onChange, maxHours = 99, minuteStep
             disabled={state.disabled}
             readOnly={control.readOnly}
             invalid={!!state.error}
+            required={state.required}
+            busy={state.validating}
             describedBy={control["aria-describedby"]}
           />
           <span aria-hidden className="text-text-muted">
@@ -53,7 +55,7 @@ const DurationInput = ({ label, info, value, onChange, maxHours = 99, minuteStep
           </span>
           <SegmentInput
             ref={minutesRef}
-            label={strings?.minutes ?? t.minutes}
+            label={`${label}, ${strings?.minutes ?? t.minutes}`}
             value={minutes}
             min={0}
             max={59}
@@ -62,6 +64,8 @@ const DurationInput = ({ label, info, value, onChange, maxHours = 99, minuteStep
             disabled={state.disabled}
             readOnly={control.readOnly}
             invalid={!!state.error}
+            required={state.required}
+            busy={state.validating}
             describedBy={control["aria-describedby"]}
           />
           <span aria-hidden className="text-text-muted">

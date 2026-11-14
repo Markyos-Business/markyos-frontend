@@ -30,7 +30,7 @@ function addTags(tags: readonly string[], incoming: readonly string[], max = Inf
   return { next, duplicate, overLimit };
 }
 
-type TagInputProps = Omit<FieldState, "readOnly"> & {
+type TagInputProps = FieldState & {
   label: string;
   info?: string;
   value: readonly string[];
@@ -55,7 +55,9 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
   const [text, setText] = useState("");
   const [refusal, setRefusal] = useState<string | null>(null);
   const full = max !== undefined && value.length >= max;
-  const blocked = state.disabled || state.locked;
+  // Read-only and locked keep the input reachable (its note says why) but take no edits.
+  const frozen = Boolean(state.readOnly || state.locked);
+  const blocked = state.disabled || frozen;
 
   const add = (incoming: string[]) => {
     if (!incoming.length) return;
@@ -65,6 +67,7 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (blocked) return;
     if ((e.key === "Enter" || e.key === "," || e.key === "،") && !e.nativeEvent.isComposing) {
       e.preventDefault();
       add(splitTags(text));
@@ -99,7 +102,7 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
         <div
           className="mk-field flex min-h-control-sm w-full cursor-text flex-wrap items-center gap-space-2"
           data-state={state.error ? "error" : warning || refusal ? "warning" : state.success ? "success" : undefined}
-          data-readonly={state.locked ? "" : undefined}
+          data-readonly={frozen ? "" : undefined}
           onClick={() => input.current?.focus()}
         >
           {value.map((tag) => (
@@ -126,7 +129,8 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
             ref={input}
             {...control}
             value={text}
-            disabled={blocked}
+            disabled={state.disabled}
+            readOnly={frozen}
             placeholder={value.length ? undefined : placeholder}
             enterKeyHint="enter"
             onChange={(e) => {
@@ -144,8 +148,15 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
               onBlur?.();
             }}
             aria-describedby={control["aria-describedby"]}
-            className={`mk-field-control min-w-24 ${full ? "sr-only" : ""}`}
+            // Full, it stays visible and small: Backspace still removes the last
+            // tag, and a new one gets the "up to n" note.
+            className={`mk-field-control ${full || frozen ? "min-w-8" : "min-w-24"}`}
           />
+          {(state.validating || state.locked) && (
+            <span className="ms-auto flex shrink-0 items-center text-text-muted">
+              <Icon name={state.validating ? "circle-notch" : "lock"} size={18} className={state.validating ? "animate-spin" : ""} />
+            </span>
+          )}
         </div>
       )}
     </Field>

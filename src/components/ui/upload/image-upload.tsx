@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useFileDrop } from "@/hooks/useFileDrop";
 import { Avatar } from "../avatar/avatar";
 import { Button } from "../button/button";
@@ -77,6 +77,10 @@ const ImageUpload = ({ label, description, value, onChange, aspect = 16 / 9, out
   const picker = useRef<HTMLInputElement>(null);
   const crop = useCropDialog({ aspect, outputWidth, onDone: onChange });
   const choose = (file: File) => crop.open(URL.createObjectURL(file));
+  const noteId = `${useId()}-note`;
+  // A replacement that's the wrong type or too big says so, as the empty dropzone and AvatarUpload do.
+  const [refused, setRefused] = useState<string | null>(null);
+  const note = error ?? refused;
 
   if (!value) {
     return (
@@ -96,10 +100,10 @@ const ImageUpload = ({ label, description, value, onChange, aspect = 16 / 9, out
         <img src={value} alt={t.imagePreview(label)} className="size-full object-cover" />
       </div>
       <div className="flex flex-wrap gap-space-3">
-        <Button size="sm" variant="outline" icon={<Icon name="expand" size={16} />} disabled={disabled} onClick={() => crop.open(value)}>
+        <Button size="sm" variant="outline" icon={<Icon name="expand" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => crop.open(value)}>
           {t.crop}
         </Button>
-        <Button size="sm" variant="outline" icon={<Icon name="upload" size={16} />} disabled={disabled} onClick={() => picker.current?.click()}>
+        <Button size="sm" variant="outline" icon={<Icon name="upload" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => picker.current?.click()}>
           {t.replace}
         </Button>
         <Button size="sm" variant="ghost" icon={<Icon name="trash" size={16} />} disabled={disabled} onClick={() => onChange(null)}>
@@ -115,11 +119,18 @@ const ImageUpload = ({ label, description, value, onChange, aspect = 16 / 9, out
         onChange={(e) => {
           const f = e.target.files?.[0];
           e.target.value = "";
-          if (f && sortFiles([f], { accept, maxBytes }).accepted.length) choose(f);
+          if (!f) return;
+          const { accepted, rejected } = sortFiles([f], { accept, maxBytes });
+          setRefused(rejected[0] ? (rejected[0].reason === "type" ? t.wrongFileType(f.name, acceptLabel) : t.fileTooLarge(f.name, fileSize(maxBytes))) : null);
+          if (accepted[0]) choose(accepted[0]);
         }}
         className="hidden"
       />
-      {error && <span className="px-space-5 text-caption text-danger">{error}</span>}
+      {note && (
+        <span id={noteId} role="alert" className="px-space-5 text-caption text-danger">
+          {note}
+        </span>
+      )}
       {crop.dialog(t.adjustImage, t.apply, "rect")}
     </div>
   );

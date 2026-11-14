@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
+import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes, type Ref } from "react";
 import { IconButton } from "../button/icon-button";
 import { useUiStrings } from "../ui-strings";
 import { Icon } from "../icon";
@@ -26,11 +26,22 @@ type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" 
   fullWidth?: boolean;
   /** The clear button's name, e.g. "Clear search". Default from the kit's words. */
   clearLabel?: string;
+  /** The input, for a caller that focuses it or a form library. */
+  ref?: Ref<HTMLInputElement>;
 };
 
 /** The search field of list headers and pickers: the underline field with a search glyph. */
-const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, clearLabel, ...rest }: SearchFieldProps) => {
-  const ref = useRef<HTMLInputElement>(null);
+const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = false, size = "md", fullWidth = false, clearLabel, ref: callerRef, ...rest }: SearchFieldProps) => {
+  const ref = useRef<HTMLInputElement | null>(null);
+  // Ours (⌘K, Clear) and the caller's, on the one input.
+  const setRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      ref.current = el;
+      if (typeof callerRef === "function") callerRef(el);
+      else if (callerRef) callerRef.current = el;
+    },
+    [callerRef],
+  );
   const initial = typeof rest.defaultValue === "string" ? rest.defaultValue : "";
   const [text, setText] = useState(initial);
   const debounced = onDebouncedChange !== undefined;
@@ -85,21 +96,32 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
   };
 
   const { defaultValue: _defaultValue, ...inputProps } = rest;
+  // Nothing to clear in a field that can't change.
+  const protectedField = Boolean(rest.disabled || rest.readOnly);
   return (
     <label className={`${fieldClasses(size)} flex items-center gap-space-3 ${fullWidth ? "" : "sm:w-65"}`}>
-      <Icon name="search" size={size === "sm" ? 15 : 18} className="shrink-0 text-text-muted" />
+      <Icon name="search" size={size === "sm" ? 16 : 18} className="shrink-0 text-text-muted" />
       <span className="sr-only">{label}</span>
       <input
-        ref={ref}
+        ref={setRef}
         {...inputProps}
-        {...(debounced ? { value: text, onChange: (e) => setText(e.target.value) } : { defaultValue: rest.value === undefined ? _defaultValue : undefined })}
+        {...(debounced
+          ? {
+              value: text,
+              // The debounced search, and the caller's own onChange still hears each keystroke.
+              onChange: (e) => {
+                setText(e.target.value);
+                inputProps.onChange?.(e);
+              },
+            }
+          : { defaultValue: rest.value === undefined ? _defaultValue : undefined })}
         type="search"
         onInput={(e) => {
           setTyped(e.currentTarget.value !== "");
           inputProps.onInput?.(e);
         }}
         onKeyDown={(e) => {
-          if (e.key === "Escape" && hasText) {
+          if (e.key === "Escape" && hasText && !protectedField) {
             e.stopPropagation();
             clear();
           }
@@ -107,7 +129,7 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
         }}
         className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-[12.5px]" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled [&::-webkit-search-cancel-button]:hidden`}
       />
-      {hasText && <IconButton icon="times" label={clearLabel ?? t.clearField(label)} onClick={clear} className="-me-space-2 shrink-0 text-text-muted" />}
+      {hasText && !protectedField && <IconButton icon="times" label={clearLabel ?? t.clearField(label)} onClick={clear} className="-me-space-2 shrink-0 text-text-muted" />}
       {shortcut && (
         <span aria-hidden className="hidden shrink-0 sm:inline">
           <Kbd>⌘K</Kbd>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useUiStrings } from "../ui-strings";
 import type { FieldState } from "../field/field";
 import { DatePicker, type DatePickerProps } from "./date-picker";
@@ -24,7 +25,10 @@ type DateTimePickerProps = FieldState &
  */
 const DateTimePicker = ({ label, value, onChange, hour12, minuteStep, className = "", strings, error, warning, success, hint, required, ...rest }: DateTimePickerProps) => {
   const { t } = useUiStrings();
-  const [date, time] = value ? value.split("T") : [null, null];
+  const [date, saved] = value ? value.split("T") : [null, null];
+  // A time chosen before the date waits here until a date arrives.
+  const [pending, setPending] = useState<string | null>(null);
+  const time = saved ?? pending;
   const { weekStart, min, max, isDisabled, hijri, digits, ...state } = rest;
   return (
     <fieldset className={`flex min-w-0 flex-col gap-space-2 ${className}`}>
@@ -52,11 +56,11 @@ const DateTimePicker = ({ label, value, onChange, hour12, minuteStep, className 
         <TimePicker
           label={strings?.time ?? t.time}
           value={time}
-          onChange={(tm) => onChange(date ? `${date}T${tm ?? "00:00"}` : null)}
+          onChange={(tm) => (date ? onChange(`${date}T${tm ?? "00:00"}`) : setPending(tm))}
           hour12={hour12}
           minuteStep={minuteStep}
           {...state}
-          disabled={state.disabled || !date}
+          disabled={state.disabled}
         />
       </div>
     </fieldset>

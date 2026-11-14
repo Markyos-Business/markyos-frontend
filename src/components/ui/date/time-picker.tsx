@@ -15,6 +15,10 @@ type TimePickerProps = FieldState & {
   hour12?: boolean;
   /** Minutes the arrow keys move. Default 5. */
   minuteStep?: number;
+  /** When focus leaves the whole time (not between hour and minute). */
+  onBlur?: () => void;
+  /** Submitted with a native form as "HH:mm". */
+  name?: string;
   className?: string;
   strings?: { hour?: string; minute?: string; am?: string; pm?: string };
 };
@@ -27,7 +31,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * is "HH:mm" in 24 hours regardless. Left to right in Arabic too, as times
  * are written. Controlled.
  */
-const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep = 5, className = "", strings, ...state }: TimePickerProps) => {
+const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep = 5, onBlur, name, className = "", strings, ...state }: TimePickerProps) => {
   const { t } = useUiStrings();
   const minuteRef = useRef<HTMLInputElement>(null);
   const [h24, m] = value ? value.split(":").map(Number) : [null, null];
@@ -44,10 +48,17 @@ const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep =
   return (
     <Field label={label} info={info} {...state} boxDir="ltr" className={`min-h-field ${className}`}>
       {(control) => (
-        <span className="flex items-center gap-space-1">
+        <span
+          className="flex items-center gap-space-1"
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) onBlur?.();
+          }}
+        >
+          {name && <input type="hidden" name={name} value={value ?? ""} />}
           <SegmentInput
             id={control.id}
-            label={strings?.hour ?? t.hour}
+            // Named with the field, so "Meeting, Hour" is clear on its own.
+            label={`${label}, ${strings?.hour ?? t.hour}`}
             value={shownHour}
             min={hour12 ? 1 : 0}
             max={hour12 ? 12 : 23}
@@ -56,6 +67,8 @@ const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep =
             disabled={state.disabled}
             readOnly={control.readOnly}
             invalid={!!state.error}
+            required={state.required}
+            busy={state.validating}
             describedBy={control["aria-describedby"]}
           />
           <span aria-hidden className="text-text-muted">
@@ -63,7 +76,7 @@ const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep =
           </span>
           <SegmentInput
             ref={minuteRef}
-            label={strings?.minute ?? t.minute}
+            label={`${label}, ${strings?.minute ?? t.minute}`}
             value={m}
             min={0}
             max={59}
@@ -72,6 +85,8 @@ const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep =
             disabled={state.disabled}
             readOnly={control.readOnly}
             invalid={!!state.error}
+            required={state.required}
+            busy={state.validating}
             describedBy={control["aria-describedby"]}
           />
           {hour12 && (
