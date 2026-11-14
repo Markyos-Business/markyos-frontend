@@ -1057,6 +1057,28 @@ export const baseStyles = [
     },
   },
   /*
+   * Quiet regions: no hover tint inside `.mk-no-hover`.
+   *
+   * The app sidebar, the top bar and table grids are on screen all day, and a
+   * tint chasing the pointer across them read as noise (Adnan, 14 Nov 2026).
+   * Only hover goes: the cursor still says "clickable", keyboard focus keeps
+   * its veil and ring, and a press still shows, so nothing is withheld from
+   * someone tabbing and a click is still acknowledged.
+   *
+   * It outranks the veil and the `.mk-btn` scrim above on specificity, and the
+   * veil's `!important` with its own; it must stay below them in this file.
+   */
+  {
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-no-hover :is(button, [role=\"button\"], summary, a[href], label):hover:not(:focus-visible):not(:active)": {
+        "background-image": "none !important",
+      },
+      ".mk-no-hover .mk-btn:hover:not(:focus-visible):not(:active):not(.is-active)::after": {
+        "opacity": "0",
+      },
+    },
+  },
+  /*
    * A link inside a sentence is not a button, and veiling one looks like the
    * browser's own text selection. The conventional answer is the one people
    * already know, which is the whole of Jakob's Law: underline it.

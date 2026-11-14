@@ -60,7 +60,7 @@ const Table = ({ columns, label, footer, children }: TableProps) => {
     <div className="mk-surface overflow-hidden rounded-card bg-surface-1">
       <div className="relative">
         <div ref={scrollRef} className="overflow-x-auto">
-          <table aria-label={label} className="w-full border-collapse text-start text-body">
+          <table aria-label={label} className="mk-no-hover w-full border-collapse text-start text-body">
             <thead>
               <tr>
                 {columns.map((c) => (
