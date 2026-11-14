@@ -155,7 +155,7 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `UrlField` | UrlInput | full URL string, `Controller` |
 | `PhoneInput` (or `PhoneField` with code and number apart) | PhoneInput | E.164 string, `Controller` |
 | `SlugField` (`base`, `from`, `checkAvailability`) | SlugInput | slug string, `Controller` |
-| `HexColorField` | HexColorInput | `#RRGGBB`, `Controller` |
+| `HexColorInput` (`picker`, `swatches`); `HexColorField` = with the picker | HexColorInput | `#RRGGBB`, `register` or `Controller` |
 | `BilingualField` (`layout="side" \| "tabs"`, `multiline`) | BilingualInput | `{ en, ar }`, `Controller` |
 | `RichTextField` | RichTextEditor | HTML string, `Controller` |
 | `OtpField` (`length` 4–6) | OtpInput | digits, `Controller` |
@@ -176,12 +176,12 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `UploadList` | UploadList | `UploadItem[]` with `onCancel`, `onRetry`, `onRemove` |
 | `ImageUpload` (`aspect`, `outputWidth`), `AvatarUpload` | ImageUpload / AvatarUpload | data URL, `Controller` |
 | `SliderField` (`marks`), `RangeSlider` (`format`, `minGap`) | Slider / RangeSlider | number or `[low, high]`, `Controller` |
-| `ColorPicker` / `ColorField` (`recent` via `useRecentColours`) | ColorPicker | `#RRGGBB`, `Controller` |
-| `Rating` (`max`, `readOnly`, `clearable`) | Rating | number, `Controller` |
-| `LocalePicker`, `CountryPicker`, `MarketPicker`, `TimezonePicker` | LocalePicker / CountryPicker / MarketPicker / TimezonePicker | code(s), `Controller` |
+| `ColorPicker` / `ColorField` (`swatches`, `contrastWith`; recent colours built in) | ColorPicker | `#RRGGBB`, `Controller` |
+| `Rating` (`max`, `allowHalf`, `readOnly`, `clearable`) | Rating | number, `Controller` |
+| `LocalePicker`, `MarketPicker` (`multiple`), `CountryPicker`, `TimezonePicker` | LocalePicker / MarketPicker / CountryPicker / TimezonePicker | code(s), `Controller` |
 | `PeoplePicker`, `MentionTextarea` | PeoplePicker | ids, or text with `onMentionsChange` |
-| `AddressFields` | AddressFields | `Address`, `Controller` |
-| `ConfirmByTyping` (`name`, `actionLabel`) | ConfirmByTyping | `onConfirm` |
+| `AddressFields` (`lineProps` for separate fields) | AddressFields | `Address`, `Controller` or `register` per line |
+| `ConfirmByTyping` (`name`, `actionLabel`, `ignoreCase`, `allowPaste`, `onCancel`) | ConfirmByTyping | `onConfirm` |
 | `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
 
 Text fields take react-hook-form's `register` directly; its `ref` lands on the
@@ -222,6 +222,40 @@ function CampaignForm() {
     </form>
   );
 }
+```
+
+The special inputs, with react-hook-form (`form` from `useForm`):
+
+```tsx
+import { Controller } from "react-hook-form";
+import { AddressFields, ColorField, ConfirmByTyping, HexColorInput, LocalePicker, MarketPicker, Rating, addressIssues } from "@/components/ui";
+
+// A hex is text: register works, and a pasted rgb(11, 93, 109) arrives as "#0B5D6D".
+<HexColorInput label="Brand colour" {...register("brandColour")} error={errors.brandColour?.message} />
+
+// The full picker, checked against white text.
+<Controller name="buttonColour" control={control} render={({ field, fieldState }) => (
+  <ColorField label="Button colour" {...field} contrastWith="#FFFFFF" swatches={[{ hex: "#0B5D6D", name: "Teal" }]} error={fieldState.error?.message} />
+)} />
+
+// Rating a delivered asset, in halves.
+<Controller name="assetRating" control={control} render={({ field }) => <Rating label="Rate the delivered asset" {...field} allowHalf clearable />} />
+
+<Controller name="locale" control={control} render={({ field }) => <LocalePicker value={field.value} onChange={field.onChange} onBlur={field.onBlur} />} />
+<Controller name="markets" control={control} render={({ field }) => <MarketPicker multiple max={4} value={field.value} onChange={field.onChange} />} />
+
+// A Riyadh National Address as one field, the same rules in zod:
+const address = z.object({ country: z.string() /* …lines */ }).superRefine((a, ctx) => {
+  for (const [path, issue] of Object.entries(addressIssues(a))) ctx.addIssue({ code: "custom", path: [path], message: issue.code });
+});
+<Controller name="address" control={control} render={({ field }) => (
+  <AddressFields value={field.value} onChange={field.onChange} onBlur={field.onBlur} errors={{ postalCode: errors.address?.postalCode?.message }} />
+)} />
+// …or each line its own field:
+<AddressFields defaultValue={{ country: "SA" }} lineProps={(k) => register(`address.${k}`)} />
+
+// Inside a Dialog:
+<ConfirmByTyping name="Ramadan 2027" actionLabel="Delete campaign" onConfirm={remove} onCancel={close} autoFocus />
 ```
 
 An async check (is this name or slug free?) is `validating` while it runs,

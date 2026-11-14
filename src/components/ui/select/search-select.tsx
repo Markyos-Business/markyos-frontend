@@ -26,7 +26,7 @@ export function SearchSelect(props: SearchSelectProps) {
   const canCreate = props.creatable && query.trim() && !options.some(o => o.label.toLocaleLowerCase() === query.trim().toLocaleLowerCase());
   const setSearch = (value: string) => { setQuery(value); props.onSearchChange?.(value); };
   const choose = (option: SelectOption) => {
-    if (props.disabled || props.readOnly || option.disabled) return;
+    if (props.disabled || (props.readOnly || props.locked) || option.disabled) return;
     if (props.multiple) {
       if (props.values.includes(option.value)) props.onValuesChange(props.values.filter(v => v !== option.value));
       else if (!max) props.onValuesChange([...props.values, option.value]);
@@ -39,10 +39,10 @@ export function SearchSelect(props: SearchSelectProps) {
     finally { setCreating(false); }
   }
   return <SelectFrame props={props} id={field.id}>
-    <Popover.Root open={open} onOpenChange={next => { if (!props.disabled && !props.readOnly) { setDirection(getComputedStyle(trigger.current!).direction === "rtl" ? "rtl" : "ltr"); setOpen(next); } }}>
+    <Popover.Root open={open} onOpenChange={next => { if (!props.disabled && !(props.readOnly || props.locked)) { setDirection(getComputedStyle(trigger.current!).direction === "rtl" ? "rtl" : "ltr"); setOpen(next); } }}>
       <div className="flex min-w-0 flex-wrap items-center gap-space-2">
         {props.multiple && chosen.slice(0, props.maxVisibleTags ?? 3).map(option => <span key={option.value} className="inline-flex max-w-full items-center gap-space-1 rounded-md bg-accent-soft px-space-2 py-space-1 text-caption text-text">
-          <span className="max-w-36 truncate">{option.label}</span><button type="button" aria-label={field.labels.remove(option.label)} disabled={props.disabled || props.readOnly} onClick={() => choose(option)} className="mk-tap flex size-6 items-center justify-center"><Icon name="times" size={16} /></button>
+          <span className="max-w-36 truncate">{option.label}</span><button type="button" aria-label={field.labels.remove(option.label)} disabled={props.disabled || (props.readOnly || props.locked)} onClick={() => choose(option)} className="mk-tap flex size-6 items-center justify-center"><Icon name="times" size={16} /></button>
         </span>)}
         {props.multiple && chosen.length > (props.maxVisibleTags ?? 3) && <span className="text-caption">{field.labels.overflow(chosen.length - (props.maxVisibleTags ?? 3))}</span>}
         <Popover.Trigger asChild><button {...field.accessible} ref={trigger} type="button" role="combobox" aria-expanded={open} aria-controls={open ? `${field.id}-options` : undefined} aria-haspopup="listbox" disabled={props.disabled} onBlur={props.onBlur} className={`${controlClasses} min-w-16 flex-1`}>
@@ -61,7 +61,7 @@ export function SearchSelect(props: SearchSelectProps) {
               {optionGroups(visible).map(({ group, options: groupOptions }) => <Command.Group key={group} heading={group || undefined} className="[&_[cmdk-group-heading]]:px-space-4 [&_[cmdk-group-heading]]:py-space-2 [&_[cmdk-group-heading]]:text-caption [&_[cmdk-group-heading]]:text-text-muted">
                 {groupOptions.map(option => <Command.Item key={option.value} value={option.value} disabled={option.disabled || (!!max && !props.values.includes(option.value))} onSelect={() => choose(option)}
                   data-checked={props.values.includes(option.value)} aria-label={option.label}
-                  className="flex min-h-10 cursor-pointer items-center gap-space-3 rounded-lg px-space-4 py-space-2 text-body outline-none transition-colors duration-[120ms] data-[selected=true]:bg-accent-soft data-[disabled=true]:cursor-not-allowed data-[disabled=true]:text-text-disabled motion-reduce:transition-none">
+                  className={`flex min-h-10 cursor-pointer items-center gap-space-3 rounded-lg ${option.indent ? "pe-space-4 ps-space-8" : "px-space-4"} py-space-2 text-body outline-none transition-colors duration-[120ms] data-[selected=true]:bg-accent-soft data-[disabled=true]:cursor-not-allowed data-[disabled=true]:text-text-disabled motion-reduce:transition-none`}>
                   <OptionContent option={option} />{props.values.includes(option.value) && <Icon name="check" size={16} />}
                 </Command.Item>)}
               </Command.Group>)}

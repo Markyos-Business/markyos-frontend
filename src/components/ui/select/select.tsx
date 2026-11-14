@@ -12,8 +12,8 @@ export function Select(props: SelectProps) {
   const native = useNativeTouch(props.useNative); const field = useSelectField(props); const value = props.value ?? own;
   if (native) return <NativeSelect {...props} value={value} onValueChange={next => { setOwn(next); props.onValueChange?.(next); }} />;
   return <SelectFrame props={props} id={field.id}><Radix.Root value={value} name={props.name} required={props.required} disabled={props.disabled} dir={props.dir ?? direction}
-    open={open} onOpenChange={next => { if (!props.readOnly) { setDirection(getComputedStyle(trigger.current!).direction === "rtl" ? "rtl" : "ltr"); setOpen(next); } }}
-    onValueChange={next => { if (!props.readOnly) { setOwn(next); props.onValueChange?.(next); } }}>
+    open={open} onOpenChange={next => { if (!(props.readOnly || props.locked)) { setDirection(getComputedStyle(trigger.current!).direction === "rtl" ? "rtl" : "ltr"); setOpen(next); } }}
+    onValueChange={next => { if (!(props.readOnly || props.locked)) { setOwn(next); props.onValueChange?.(next); } }}>
     <Radix.Trigger {...field.accessible} ref={trigger} className={controlClasses} onBlur={props.onBlur}>
       <Radix.Value placeholder={props.placeholder ?? field.labels.placeholder} /><Radix.Icon className="ms-auto"><Icon name="angle-down" size={18} /></Radix.Icon>
     </Radix.Trigger>
@@ -21,7 +21,7 @@ export function Select(props: SelectProps) {
       <Radix.Viewport>{props.options.length === 0 ? <p className="p-space-4 text-body text-text-muted">{field.labels.noOptions}</p> : optionGroups(props.options).map(({ group, options }) => <Radix.Group key={group}>
         {group && <Radix.Label className="px-space-4 py-space-2 text-caption text-text-muted">{group}</Radix.Label>}
         {options.map(option => <Radix.Item key={option.value} value={option.value} textValue={option.label} disabled={option.disabled}
-          className="flex min-h-10 cursor-pointer items-center gap-space-3 rounded-lg px-space-4 py-space-2 text-body outline-none transition-colors duration-[120ms] data-highlighted:bg-accent-soft data-highlighted:text-text data-disabled:cursor-not-allowed data-disabled:text-text-disabled motion-reduce:transition-none">
+          className={`flex min-h-10 cursor-pointer items-center gap-space-3 rounded-lg ${option.indent ? "pe-space-4 ps-space-8" : "px-space-4"} py-space-2 text-body outline-none transition-colors duration-[120ms] data-highlighted:bg-accent-soft data-highlighted:text-text data-disabled:cursor-not-allowed data-disabled:text-text-disabled motion-reduce:transition-none`}>
           <OptionContent option={option} /><Radix.ItemText className="sr-only">{option.label}</Radix.ItemText><Radix.ItemIndicator><Icon name="check" size={16} /></Radix.ItemIndicator>
         </Radix.Item>)}
       </Radix.Group>)}</Radix.Viewport>

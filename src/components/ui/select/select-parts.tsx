@@ -1,6 +1,6 @@
 "use client";
 import { useId, useSyncExternalStore, type ReactNode } from "react";
-import { FieldLabel, FieldNote } from "../field/input-field";
+import { Field } from "../field/field";
 import { Avatar } from "../avatar/avatar";
 import { Icon } from "../icon";
 import { Badge } from "../badge/badge";
@@ -15,22 +15,30 @@ export function useSelectField(props: SelectCommonProps) {
   const generated = useId(); const id = props.id ?? `select-${generated}`;
   const { isAr } = useUiStrings();
   const labels = { ...(isAr ? selectLabelsAr : selectLabels), ...props.labels };
-  const described = [props["aria-describedby"], (props.error || props.hint || props.success) ? `${id}-note` : undefined].filter(Boolean).join(" ") || undefined;
+  const described = [props["aria-describedby"], (props.error || props.hint || props.success || props.warning || props.locked) ? `${id}-note` : undefined].filter(Boolean).join(" ") || undefined;
   return { id, labels, described, accessible: { id, "aria-label": props["aria-label"] ?? props.label ?? labels.placeholder, "aria-labelledby": props["aria-labelledby"], "aria-describedby": described, "aria-invalid": !!props.error, "aria-readonly": !!props.readOnly, "aria-required": !!props.required } };
 }
+/**
+ * The select family's frame is the kit's Field (bare, since each select draws
+ * its own trigger): the same label, required star, note, warning, async
+ * check, locked reason and skeleton as every other field.
+ */
 export function SelectFrame({ props, id, children }: { props: SelectCommonProps; id: string; children: ReactNode }) {
   const { isAr } = useUiStrings();
-  return <div dir={props.dir} className={`flex min-w-0 flex-col gap-space-2 ${props.className ?? ""}`} data-select-state={props.disabled ? "disabled" : props.readOnly ? "readonly" : props.error ? "invalid" : props.success ? "success" : "default"}>
-    {props.label && <FieldLabel htmlFor={id} required={props.required}>{props.label}</FieldLabel>}
-    {children}
-    <FieldNote id={`${id}-note`} error={props.error} hint={props.success ? ({ ...(isAr ? selectLabelsAr : selectLabels), ...props.labels }).success : props.hint} />
-  </div>;
+  const success = props.success ? ({ ...(isAr ? selectLabelsAr : selectLabels), ...props.labels }).success : undefined;
+  const field = (
+    <Field id={id} label={props.label} required={props.required} disabled={props.disabled} readOnly={props.readOnly} error={props.error} warning={props.warning} success={success} hint={props.hint}
+      validating={props.validating} locked={props.locked} lockedReason={props.lockedReason} loading={props.loading} bare className={props.className}>
+      {() => <div className="flex min-w-0 flex-col" data-select-state={props.disabled ? "disabled" : (props.readOnly || props.locked) ? "readonly" : props.error ? "invalid" : props.success ? "success" : "default"}>{children}</div>}
+    </Field>
+  );
+  return props.dir ? <div dir={props.dir}>{field}</div> : field;
 }
 export function OptionContent({ option }: { option: SelectOption }) {
   return <span className="flex min-w-0 flex-1 items-center gap-space-3">
     {option.avatar && <Avatar {...option.avatar} size={28} />}
     {option.icon && <Icon name={option.icon} size={18} />}
-    <span className="min-w-0 flex-1"><span className="block truncate">{option.label}</span>{option.description && <span className="block truncate text-caption text-text-muted">{option.description}</span>}</span>
+    <span className="min-w-0 flex-1"><span lang={option.lang} className="block truncate">{option.label}</span>{option.description && <span className="block truncate text-caption text-text-muted">{option.description}</span>}</span>
     {option.status && <Badge dot tone={option.status.tone}>{option.status.label}</Badge>}
   </span>;
 }

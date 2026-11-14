@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ButtonHTMLAttributes, CSSProperties, ReactNode, Ref } from "react";
 import { DropdownPanel } from "../listbox/dropdown-panel";
-import { FieldLabel, FieldNote, fieldBlockClasses, fieldClasses, type FieldSize } from "../field/input-field";
+import { Field, type FieldSize, type FieldState } from "../field/field";
 import { useUiStrings } from "../ui-strings";
 import { useRecentColours } from "./use-recent-colours";
 import { ColorPicker, type ColorSwatch } from "./color-picker";
@@ -14,6 +14,8 @@ type ColorPopoverProps = {
   value: string;
   onChange: (hex: string) => void;
   swatches?: ColorSwatch[];
+  /** The picker checks the colour against this background (ratio + AA badge). */
+  contrastWith?: string;
   /** The trigger's accessible name, e.g. "Card colour". */
   label: string;
   /** What the trigger shows: a swatch, an icon. */
@@ -23,6 +25,14 @@ type ColorPopoverProps = {
   title?: string;
   /** For a `<label htmlFor>` outside. */
   id?: string;
+  /** More on the trigger: a field's aria-describedby, aria-invalid, disabled. */
+  triggerProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "type" | "children">;
+  /** Shown but not opened: a read-only or locked field. */
+  inert?: boolean;
+  /** The trigger, for a form library to focus. */
+  ref?: Ref<HTMLButtonElement>;
+  /** After it closes: a field's blur. */
+  onClose?: () => void;
 };
 
 /**
@@ -34,17 +44,26 @@ type ColorPopoverProps = {
  * Presses and keys inside stop here, so a canvas behind it does not start a
  * drag or move its selection while a colour is being picked.
  */
-const ColorPopover = ({ value, onChange, swatches, label, children, triggerClassName = "", triggerStyle, title, id }: ColorPopoverProps) => {
+const ColorPopover = ({ value, onChange, swatches, contrastWith, label, children, triggerClassName = "", triggerStyle, title, id, triggerProps, inert = false, ref, onClose }: ColorPopoverProps) => {
   const [open, setOpen] = useState(false);
   const { mounted, closing } = usePresence(open);
-  const trigger = useRef<HTMLButtonElement>(null);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const setTrigger = useCallback(
+    (el: HTMLButtonElement | null) => {
+      trigger.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    },
+    [ref],
+  );
   const panelId = useId();
   const { recent, remember } = useRecentColours();
   // The colour it closes on is the one chosen; dragging through others doesn't count.
   const close = useCallback(() => {
     setOpen(false);
     remember(value);
-  }, [remember, value]);
+    onClose?.();
+  }, [remember, value, onClose]);
 
   // Escape closes it wherever focus is (the panel handles its own, below), and
   // opening moves focus into the panel: it renders in a portal Tab can't reach.
@@ -66,7 +85,8 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
   return (
     <>
       <button
-        ref={trigger}
+        {...triggerProps}
+        ref={setTrigger}
         id={id}
         type="button"
         aria-label={label}
@@ -75,7 +95,7 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onPointerDown={(e) => e.stopPropagation()}
-        onClick={() => (open ? close() : setOpen(true))}
+        onClick={() => (open ? close() : !inert && !triggerProps?.disabled && setOpen(true))}
         className={`cursor-pointer ${triggerClassName}`}
         style={triggerStyle}
       >
@@ -98,7 +118,7 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
               }
             }}
           >
-            <ColorPicker value={value} onChange={onChange} swatches={swatches} recent={recent} />
+            <ColorPicker value={value} onChange={onChange} swatches={swatches} recent={recent} contrastWith={contrastWith} />
           </div>
         </DropdownPanel>
       )}
@@ -106,43 +126,69 @@ const ColorPopover = ({ value, onChange, swatches, label, children, triggerClass
   );
 };
 
-type ColorFieldProps = {
+type ColorFieldProps = FieldState & {
   label?: string;
-  value: string;
-  onChange: (hex: string) => void;
+  /** "#RRGGBB". Controlled with `onChange`; or `defaultValue`. */
+  value?: string;
+  defaultValue?: string;
+  onChange?: (hex: string) => void;
+  /** When the picker closes, as a field's blur. */
+  onBlur?: () => void;
+  /** Submitted with a native form as "#RRGGBB". */
+  name?: string;
   swatches?: ColorSwatch[];
-  hint?: string;
-  error?: string;
+  /** Check the colour against this background in the picker. */
+  contrastWith?: string;
   size?: FieldSize;
   className?: string;
+  /** The trigger button, for `Controller` to focus on an error. */
+  ref?: Ref<HTMLButtonElement>;
+  labels?: { chooseColour?: string };
 };
 
 /**
- * A colour as a form field: the underline field with the colour's swatch and
- * hex in it, opening the picker on press.
+ * ColorPicker as a form field: the trigger shows the swatch and the hex
+ * (left to right in any language) and opens the picker: the colour area
+ * (arrow keys move in it), hue, the hex input, the brand swatches, the last 8
+ * colours, the eyedropper where the browser has one and, with
+ * `contrastWith`, an AA check. Every Field state applies; read-only and
+ * locked show the colour without opening.
  */
-const ColorField = ({ label, value, onChange, swatches, hint, error, size = "md", className = "" }: ColorFieldProps) => {
+const ColorField = ({ label, value, defaultValue, onChange, onBlur, name, swatches, contrastWith, size = "md", className = "", ref, labels, ...state }: ColorFieldProps) => {
   const { t } = useUiStrings();
-  const id = useId();
-  const hex = normalizeHex(value);
+  const [own, setOwn] = useState(defaultValue ?? "");
+  const hex = normalizeHex(value ?? own);
+  const choose = labels?.chooseColour ?? t.chooseColour;
   return (
-    <div className={`${fieldBlockClasses(size, Boolean(label || hint || error))} ${className}`}>
-      {label && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
-      <ColorPopover
-        id={id}
-        value={hex ?? "#000000"}
-        onChange={onChange}
-        swatches={swatches}
-        label={label ?? t.chooseColour}
-        triggerClassName={`${fieldClasses(size)} flex items-center gap-space-4 text-start`}
-      >
-        <span aria-hidden className="size-5 shrink-0 rounded-sm shadow-edge" style={{ background: hex ?? "transparent" }} />
-        <span dir="ltr" className="font-mono">
-          {hex ?? t.chooseColour}
-        </span>
-      </ColorPopover>
-      <FieldNote id={`${id}-note`} error={error} hint={hint} />
-    </div>
+    // The hex reads left to right in any language, so its box does too (as HexColorInput's).
+    <Field label={label} size={size} className={className} boxDir="ltr" {...state}>
+      {({ readOnly, required, ...control }) => (
+        <>
+          <ColorPopover
+            ref={ref}
+            id={control.id}
+            value={hex ?? "#000000"}
+            onChange={(next) => {
+              if (value === undefined) setOwn(next);
+              onChange?.(next);
+            }}
+            onClose={onBlur}
+            swatches={swatches}
+            contrastWith={contrastWith}
+            label={label ?? choose}
+            inert={readOnly}
+            triggerProps={{ ...control, "aria-labelledby": label ? `${control.id}-label ${control.id}-value` : undefined, disabled: control.disabled }}
+            triggerClassName="mk-field-control flex min-w-0 items-center gap-space-4 text-start disabled:cursor-not-allowed"
+          >
+            <span aria-hidden className="size-5 shrink-0 rounded-sm shadow-edge" style={{ background: hex ?? "transparent" }} />
+            <span id={`${control.id}-value`} dir="ltr" className={hex ? "font-mono" : "text-text-muted"}>
+              {hex ?? choose}
+            </span>
+          </ColorPopover>
+          {name && <input type="hidden" name={name} value={hex ?? ""} required={required} />}
+        </>
+      )}
+    </Field>
   );
 };
 

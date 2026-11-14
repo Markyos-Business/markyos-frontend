@@ -23,7 +23,7 @@ import {
   UrlField,
   type FieldState,
 } from "@/components/ui";
-import { AddressFields, ConfirmByTyping, CountryPicker, LocalePicker, MarketPicker, MentionTextarea, PeoplePicker, RangeSlider, Rating, SliderField, TimezonePicker, type Address, type Person, AvatarUpload, CheckboxField, CheckboxGroup, ChipSelector, FileDropzone, ImageUpload, UploadList, type UploadItem, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
+import { AddressFields, ColorField, ConfirmByTyping, HexColorInput, CountryPicker, LocalePicker, MarketPicker, MentionTextarea, PeoplePicker, RangeSlider, Rating, SliderField, TimezonePicker, type Address, type Person, AvatarUpload, CheckboxField, CheckboxGroup, ChipSelector, FileDropzone, ImageUpload, UploadList, type UploadItem, DatePicker, DateRangePicker, DateTimePicker, DurationInput, TimePicker, IconButton, RadioCardGroup, RadioField, SegmentedControl, Switch, TagInput, ToggleField, UiStringsProvider } from "@/components/ui";
 import { ThemeToggle } from "@/components/ui";
 
 type Lang = "en" | "ar";
@@ -31,6 +31,14 @@ const T = (lang: Lang) => (en: string, ar: string) => (lang === "ar" ? ar : en);
 
 /** Pretend availability: "riyadh" and "dubai" are taken. */
 const checkSlug = (slug: string) => new Promise<boolean>((resolve) => setTimeout(() => resolve(!["riyadh", "dubai"].includes(slug)), 700));
+
+/** The brand palette, as a picker's quick picks. */
+const brandSwatches = [
+  { hex: "#0B5D6D", name: "Teal" },
+  { hex: "#E3A72F", name: "Saffron" },
+  { hex: "#1F2A44", name: "Night" },
+  { hex: "#F4EFE6", name: "Sand" },
+];
 
 const STATES = ["default", "filled", "error", "success", "warning", "validating", "disabled", "readOnly", "locked", "loading"] as const;
 type MatrixState = (typeof STATES)[number];
@@ -90,7 +98,7 @@ export function FormsGallery() {
   const [search, setSearch] = useState("");
   const [otp, setOtp] = useState("");
   const [slug, setSlug] = useState("");
-  const [colour, setColour] = useState("#0099FF");
+  const [colour, setColour] = useState("#0B5D6D");
   const [title, setTitle] = useState({ en: "Ramadan launch", ar: "" });
   const [tagline, setTagline] = useState({ en: "Built in Riyadh, for the region.", ar: "صُنع في الرياض، للمنطقة." });
   const [story, setStory] = useState("<p>Launching across <strong>Riyadh</strong>, Dubai and Cairo.</p><p dir=\"rtl\">إطلاق في الرياض ودبي والقاهرة.</p>");
@@ -137,10 +145,13 @@ export function FormsGallery() {
   };
   const [opacity, setOpacity] = useState(80);
   const [budgetRange, setBudgetRange] = useState<[number, number]>([20_000, 60_000]);
-  const [score, setScore] = useState(4);
+  const [score, setScore] = useState(3.5);
+  const [brandColour, setBrandColour] = useState("#0B5D6D");
+  const [languages, setLanguages] = useState<string[]>(["ar-SA", "en-US"]);
+  const [market, setMarket] = useState("SA-riyadh");
   const [locale, setLocale] = useState("ar-SA");
   const [country, setCountry] = useState("SA");
-  const [marketsPicked, setMarketsPicked] = useState<string[]>(["SA", "AE"]);
+  const [marketsPicked, setMarketsPicked] = useState<string[]>(["SA-riyadh", "AE-dubai"]);
   const [zone, setZone] = useState("Asia/Riyadh");
   const team: Person[] = [
     { id: "nour", name: "Nour Haddad", email: "nour@studio.sa", presence: "online" },
@@ -169,6 +180,28 @@ export function FormsGallery() {
       name: "CountryPicker",
       render: (s) => (["validating", "readOnly", "locked", "warning", "loading"].includes(s) ? na : <CountryPicker value={s === "default" ? "" : "AE"} onChange={() => undefined} disabled={s === "disabled"} error={s === "error" ? t("Choose a country.", "اختر دولة.") : undefined} success={s === "success"} />),
     },
+    { name: "HexColorInput", render: (s) => <HexColorInput label={t("Brand colour", "لون الهوية")} defaultValue={s === "default" ? "" : "#0B5D6D"} {...stateProps(s, t)} /> },
+    { name: "ColorField", render: (s) => <ColorField label={t("Button colour", "لون الزر")} defaultValue={s === "default" ? undefined : "#0B5D6D"} contrastWith="#FFFFFF" {...stateProps(s, t)} /> },
+    { name: "Rating", render: (s) => <Rating label={t("Asset rating", "تقييم الملف")} defaultValue={s === "default" ? 0 : 4} {...stateProps(s, t)} /> },
+    { name: "LocalePicker", render: (s) => <LocalePicker defaultValue={s === "default" ? undefined : "ar-SA"} {...stateProps(s, t)} success={s === "success"} /> },
+    { name: "MarketPicker", render: (s) => <MarketPicker defaultValue={s === "default" ? undefined : "SA-riyadh"} {...stateProps(s, t)} success={s === "success"} /> },
+    {
+      name: "AddressFields",
+      render: (s) =>
+        ["success", "warning", "validating"].includes(s) ? na : (
+          <AddressFields
+            columns={1}
+            defaultValue={s === "default" ? { country: "SA" } : { country: "SA", building: "8228", street: "King Fahd Road", district: "Al Olaya", city: "Riyadh", postalCode: "1227", additional: "2121" }}
+            errors={s === "error" ? { postalCode: t("Postal code is 5 digits.", "الرمز البريدي 5 أرقام.") } : undefined}
+            disabled={s === "disabled"}
+            readOnly={s === "readOnly"}
+            locked={s === "locked"}
+            lockedReason={s === "locked" ? t("Only owners can change this.", "يغيّر هذا المالكون فقط.") : undefined}
+            loading={s === "loading"}
+          />
+        ),
+    },
+    { name: "ConfirmByTyping", render: (s) => (s === "default" ? <ConfirmByTyping name="Ramadan 2027" actionLabel={t("Delete campaign", "حذف الحملة")} onConfirm={() => undefined} /> : s === "validating" ? <ConfirmByTyping name="Ramadan 2027" actionLabel={t("Delete campaign", "حذف الحملة")} onConfirm={() => undefined} busy /> : na) },
     { name: "DatePicker", render: (s) => <DatePicker label={t("Launch date", "تاريخ الإطلاق")} value={s === "default" ? null : "2026-09-12"} onChange={() => undefined} {...stateProps(s, t)} /> },
     { name: "TimePicker", render: (s) => <TimePicker label={t("Time", "الوقت")} value={s === "default" ? null : "14:30"} onChange={() => undefined} hour12 {...stateProps(s, t)} /> },
     {
@@ -431,22 +464,26 @@ export function FormsGallery() {
             <FieldGroup>
               <SliderField label={t("Opacity", "الشفافية")} value={opacity} min={0} max={100} step={5} onChange={setOpacity} valueText={`${opacity}%`} marks={[{ value: 0, label: "0%" }, { value: 50, label: "50%" }, { value: 100, label: "100%" }]} />
               <RangeSlider label={t("Budget", "الميزانية")} value={budgetRange} onChange={setBudgetRange} min={0} max={100_000} step={5_000} minGap={5_000} format={sar} />
-              <Rating label={t("Brand fit", "ملاءمة العلامة")} value={score} onChange={setScore} clearable />
-              <Rating label={t("Average review", "متوسط التقييم")} value={4} readOnly />
+              <Rating label={t("Rate the delivered asset", "قيّم الملف المسلَّم")} value={score} onChange={setScore} allowHalf clearable hint={t("Ramadan hero banner, 1080×1350.", "بانر رمضان الرئيسي، 1080×1350.")} />
+              <Rating label={t("Average review", "متوسط التقييم")} value={4.5} readOnly />
+              <HexColorInput label={t("Brand colour", "لون الهوية")} value={brandColour} onChange={(e) => setBrandColour(e.target.value)} hint={t("Paste rgb(11, 93, 109) to see it convert.", "الصق rgb(11, 93, 109) لترى التحويل.")} />
+              <ColorField label={t("Button colour", "لون الزر")} value={brandColour} onChange={setBrandColour} contrastWith="#FFFFFF" swatches={brandSwatches} hint={t("Checked against white text.", "يُفحص مقابل نص أبيض.")} />
               <LocalePicker value={locale} onChange={setLocale} />
+              <LocalePicker multiple label={t("Guideline languages", "لغات الدليل")} value={languages} onChange={setLanguages} />
               <CountryPicker value={country} onChange={setCountry} />
-              <MarketPicker value={marketsPicked} onChange={setMarketsPicked} max={4} />
+              <MarketPicker label={t("Launch market", "سوق الإطلاق")} value={market} onChange={setMarket} />
+              <MarketPicker multiple label={t("Markets", "الأسواق")} value={marketsPicked} onChange={setMarketsPicked} max={4} />
               <TimezonePicker value={zone} onChange={setZone} hint={t("Campaign times are shown in this zone.", "تظهر أوقات الحملة بهذه المنطقة.")} />
               <PeoplePicker label={t("Reviewers", "المراجعون")} people={team} value={reviewers} onChange={setReviewers} max={3} />
               <MentionTextarea label={t("Note to the team", "ملاحظة للفريق")} people={team} value={note} onChange={setNote} onMentionsChange={setMentioned} rows={3} />
             </FieldGroup>
             {mentioned.length > 0 && <p className="px-space-5 text-caption text-text-muted">{t("Mentioned:", "المذكورون:")} {mentioned.join(", ")}</p>}
-            <AddressFields value={address} onChange={setAddress} />
+            <AddressFields legend={t("Riyadh office", "مكتب الرياض")} value={address} onChange={setAddress} />
             <div className="max-w-md">
               {deleted ? (
-                <p className="text-body text-text-muted">{t("Ramadan launch was deleted.", "تم حذف إطلاق رمضان.")}</p>
+                <p className="text-body text-text-muted">{t("Ramadan 2027 was deleted.", "تم حذف رمضان 2027.")}</p>
               ) : (
-                <ConfirmByTyping name="Ramadan launch" actionLabel={t("Delete brand", "حذف العلامة")} description={t("Its guidelines, files and share links go with it.", "تُحذف معها أدلتها وملفاتها وروابط مشاركتها.")} onConfirm={() => setDeleted(true)} />
+                <ConfirmByTyping name="Ramadan 2027" actionLabel={t("Delete campaign", "حذف الحملة")} description={t("Its posts, assets and schedule go with it.", "تُحذف معها منشوراتها وملفاتها وجدولها.")} onConfirm={() => setDeleted(true)} />
               )}
             </div>
           </Section>

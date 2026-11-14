@@ -1005,12 +1005,12 @@ export const baseStyles = [
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
-    "button:not(:disabled):not(.mk-btn):not(.mk-field):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):not(.mk-field-control):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
       "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
-    "button:not(:disabled):not(.mk-btn):not(.mk-field):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):not(.mk-field-control):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
       "background-image": "linear-gradient(var(--press-veil), var(--press-veil)) !important",
     },
   },

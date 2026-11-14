@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Icon, Button } from "@/components/ui";
-import { InputField } from "@/components/ui";
+import { PasswordField } from "@/components/ui";
 import { getBrandTheme, themeCssVars } from "../../utils/theme";
 
 /** Wrong guesses allowed before the form stops answering. */
@@ -133,9 +133,8 @@ export function PasswordGate({
         </p>
       </div>
       <form onSubmit={handleSubmit} className="w-full max-w-[360px] rounded-card p-[26px] flex flex-col gap-3.5" style={{ background: "var(--g-surface-1)" }}>
-        <InputField
+        <PasswordField
           label={isAr ? "كلمة المرور" : "Access password"}
-          type="password"
           autoFocus
           disabled={locked}
           value={value}

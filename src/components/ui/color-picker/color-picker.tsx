@@ -7,6 +7,9 @@ import { IconButton } from "../button/icon-button";
 import { TabPanel, Tabs, useTabIds } from "../tabs";
 import { useUiStrings } from "../ui-strings";
 import { InputField } from "../field/input-field";
+import { HexColorInput } from "../field/hex-color-input";
+import { Badge } from "../badge/badge";
+import { checkContrast } from "@/lib/contrast";
 import { hexToRgb } from "@/lib/utils";
 import { CHANNEL_MAX, channels, formatColor, fromChannels, hsvToRgb, normalizeHex, rgbToHex, rgbToHsv, type ColorNotation, type Hsv } from "@/lib/color";
 
@@ -23,6 +26,8 @@ type ColorPickerProps = {
   recent?: string[];
   /** The notation the fields open in. Default HEX. */
   defaultNotation?: ColorNotation;
+  /** Check the colour against this background: the ratio and an AA (4.5:1) pass or fail. */
+  contrastWith?: string;
   className?: string;
 };
 
@@ -89,7 +94,7 @@ const dragHandlers = (onMove: (x: number, y: number) => void) => {
  * steps). Colour space has no reading direction, so they stay left-to-right in
  * Arabic, as every colour tool does.
  */
-const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex", className = "" }: ColorPickerProps) => {
+const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex", contrastWith, className = "" }: ColorPickerProps) => {
   const tabIds = useTabIds();
   const { t } = useUiStrings();
   const hex = normalizeHex(value) ?? "#000000";
@@ -106,7 +111,6 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
   }
   // What is being typed, until it parses: a half-typed field never jumps.
   const [draft, setDraft] = useState<string[] | null>(null);
-  const [hexError, setHexError] = useState(false);
   const canDrop = useSyncExternalStore(noSubscribe, () => Boolean(eyeDropper()), () => false);
 
   const emit = (next: string) => {
@@ -156,6 +160,7 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
     }
   };
 
+  const contrast = contrastWith ? checkContrast(hex, contrastWith) : null;
   const hueColor = rgbToHex(hsvToRgb({ h: hsv.h, s: 100, v: 100 }));
   const shown = notation === "hex" ? null : (draft ?? channels(hex, notation).map(String));
 
@@ -205,7 +210,6 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
           onChange={(k) => {
             setNotation(k);
             setDraft(null);
-            setHexError(false);
           }}
         />
         <CopyButton
@@ -221,28 +225,7 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
 
       <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={notation} className="flex flex-col gap-space-4">
       {notation === "hex" ? (
-        <InputField
-          size="sm"
-          dir="ltr"
-          aria-label="HEX"
-          spellCheck={false}
-          autoComplete="off"
-          value={draft?.[0] ?? hex}
-          error={hexError ? t.invalidHex : undefined}
-          onChange={(e) => {
-            const text = e.target.value;
-            setDraft([text]);
-            const next = normalizeHex(text);
-            setHexError(false);
-            if (next && text.replace("#", "").length === 6) setFromHex(next);
-          }}
-          onBlur={() => {
-            const next = draft && normalizeHex(draft[0]);
-            if (next) setFromHex(next);
-            setHexError(Boolean(draft) && !next);
-            if (next || !draft) setDraft(null);
-          }}
-        />
+        <HexColorInput size="sm" aria-label="HEX" value={hex} onValueChange={setFromHex} />
       ) : (
         <div dir="ltr" className="flex gap-space-3">
           {shown!.map((v, i) => {
@@ -277,6 +260,16 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
       )}
       {notation === "cmyk" && <p className="text-caption text-text-faint">{t.cmykNote}</p>}
       </TabPanel>
+
+      {contrast && (
+        <div className="flex items-center justify-between gap-space-3 text-caption text-text-muted">
+          <span className="flex items-center gap-space-2">
+            <span aria-hidden className="size-4 rounded-sm shadow-edge" style={{ background: contrastWith }} />
+            {t.contrastOn(contrast.ratio.toFixed(1))}
+          </span>
+          <Badge tone={contrast.aa ? "success" : "danger"}>{contrast.aa ? t.contrastPass : t.contrastFail}</Badge>
+        </div>
+      )}
 
       {swatches && swatches.length > 0 && (
         <div className="flex flex-col gap-space-2">

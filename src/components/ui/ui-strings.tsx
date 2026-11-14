@@ -55,7 +55,7 @@ const en = {
   eyedropper: "Pick from screen",
   channels: { rgb: ["Red", "Green", "Blue"], hsl: ["Hue", "Saturation", "Lightness"], cmyk: ["Cyan", "Magenta", "Yellow", "Black"] },
   cmykNote: "Approximate, without an ICC profile. Confirm with your printer.",
-  invalidHex: "Enter a hex like #0099FF.",
+  invalidHex: "Enter a hex code like #0B5D6D.",
   copy: "Copy",
   copied: "Copied",
   valueCopied: (v: string) => `${v} copied`,
@@ -147,6 +147,8 @@ const en = {
   minimum: "Minimum",
   maximum: "Maximum",
   stars: (n: number) => (n === 1 ? "1 star" : `${n} stars`),
+  ratingOf: (n: number, max: number) => `${n} of ${max}`,
+  noRating: "Not rated",
   clearRating: "Clear rating",
   recentColours: "Recent colours",
   languageRegion: "Language and region",
@@ -172,8 +174,24 @@ const en = {
   poBox: "PO box",
   digitsHint: (n: number) => `${n} digits.`,
   digitsError: (label: string, n: number) => `${label} is ${n} digits.`,
-  typeToConfirm: (name: string) => `Type ${name} to confirm.`,
+  enterField: (label: string) => `Enter the ${label.toLocaleLowerCase("en")}.`,
+  region: "Region",
+  typeToConfirm: (name: ReactNode): ReactNode => (
+    <>
+      Type {name} to confirm.
+    </>
+  ),
   doesntMatch: "That doesn't match.",
+  confirmMatches: "It matches. You can continue.",
+  pasteBlocked: "Type it rather than pasting, so it's deliberate.",
+  contrastOn: (ratio: string) => `Contrast ${ratio}:1 on the background`,
+  contrastPass: "AA pass",
+  contrastFail: "AA fail",
+  languages: "Languages",
+  searchLanguages: "Search languages",
+  market: "Market",
+  marketGroups: { gcc: "GCC", levant: "Levant", northAfrica: "North Africa", global: "Global" },
+  worldwide: "Worldwide",
   presence: { online: "Online", busy: "Busy", away: "Away", offline: "Offline" },
 };
 
@@ -226,7 +244,7 @@ const ar: UiStrings = {
   eyedropper: "التقط من الشاشة",
   channels: { rgb: ["أحمر", "أخضر", "أزرق"], hsl: ["الدرجة", "التشبّع", "الإضاءة"], cmyk: ["سماوي", "أرجواني", "أصفر", "أسود"] },
   cmykNote: "قيمة تقريبية بدون ملف ألوان ICC. تأكّد منها مع المطبعة.",
-  invalidHex: "أدخل قيمة سداسية مثل ‎#0099FF.",
+  invalidHex: "أدخل رمزًا سداسيًا مثل ‎#0B5D6D.",
   copy: "نسخ",
   copied: "تم النسخ",
   valueCopied: (v) => `تم نسخ ${v}`,
@@ -318,6 +336,8 @@ const ar: UiStrings = {
   minimum: "الحد الأدنى",
   maximum: "الحد الأقصى",
   stars: (n) => (n === 1 ? "نجمة واحدة" : n === 2 ? "نجمتان" : `${n} نجوم`),
+  ratingOf: (n, max) => `${n} من ${max}`,
+  noRating: "بلا تقييم",
   clearRating: "مسح التقييم",
   recentColours: "الألوان الأخيرة",
   languageRegion: "اللغة والمنطقة",
@@ -343,8 +363,24 @@ const ar: UiStrings = {
   poBox: "صندوق البريد",
   digitsHint: (n) => `${n} أرقام.`,
   digitsError: (label, n) => `${label} من ${n} أرقام.`,
-  typeToConfirm: (name) => `اكتب ${name} للتأكيد.`,
+  enterField: (label) => `أدخل ${label}.`,
+  region: "المنطقة",
+  typeToConfirm: (name) => (
+    <>
+      اكتب {name} للتأكيد.
+    </>
+  ),
   doesntMatch: "النص غير مطابق.",
+  confirmMatches: "النص مطابق. يمكنك المتابعة.",
+  pasteBlocked: "اكتبه بدل لصقه، ليكون الإجراء مقصودًا.",
+  contrastOn: (ratio) => `التباين ${ratio}:1 على الخلفية`,
+  contrastPass: "يجتاز AA",
+  contrastFail: "لا يجتاز AA",
+  languages: "اللغات",
+  searchLanguages: "ابحث في اللغات",
+  market: "السوق",
+  marketGroups: { gcc: "الخليج", levant: "بلاد الشام", northAfrica: "شمال أفريقيا", global: "عالمي" },
+  worldwide: "حول العالم",
   presence: { online: "متصل", busy: "مشغول", away: "بعيد", offline: "غير متصل" },
 };
 
