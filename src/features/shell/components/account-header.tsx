@@ -18,11 +18,11 @@ export function AccountHeader({ search }: { search?: ReactNode }) {
   const account = useCurrentAccount();
   const pathname = usePathname();
   const links = accountNavigation(accountTypeOf(account), API_ENABLED);
-  return <><header className="flex min-h-topbar shrink-0 flex-wrap items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
+  return <><header className="mk-no-hover flex min-h-topbar shrink-0 flex-wrap items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
     <Link href="/brands" aria-label={isAr ? "العلامات" : "Brands"} className="mk-tap shrink-0"><MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} /></Link>
     <nav aria-label={isAr ? "تنقل الحساب" : "Account navigation"} className="hidden min-w-0 flex-1 flex-wrap items-center gap-space-4 md:flex">
       {links.map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}
-        className={`mk-tap text-body ${pathname === link.href ? "font-medium text-accent-text" : "text-text-muted hover:text-text"}`}>{isAr ? link.arLabel : link.label}</Link>)}
+        className={`mk-tap text-body ${pathname === link.href ? "font-medium text-accent-text" : "text-text-muted"}`}>{isAr ? link.arLabel : link.label}</Link>)}
     </nav>
     {search && <div className="ms-auto w-36 sm:w-48">{search}</div>}
     <div className={search ? "" : "ms-auto"}><AccountMenu phoneLinks={links} /></div>
