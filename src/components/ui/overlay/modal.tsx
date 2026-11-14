@@ -68,6 +68,9 @@ const Modal = ({ open = true, title, label, description, onClose, size = "md", v
     first?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Already handled by something on top (a confirm, a popover): one
+        // Escape closes one layer, not this modal as well.
+        if (e.defaultPrevented) return;
         e.stopPropagation();
         closeRef.current();
       }

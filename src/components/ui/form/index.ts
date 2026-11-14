@@ -1,6 +1,8 @@
 // Public exports of the form structure family.
 export * from "./collapsible-section";
 export * from "./conditional-field";
+export * from "./dialog-form";
+export * from "./drawer-form";
 export * from "./error-summary";
 export * from "./field-array";
 export * from "./form";

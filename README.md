@@ -359,6 +359,36 @@ fields only when they apply and unregisters them once hidden.
 For an object value (a bilingual name), FormField's render gets `errors` by
 key: `errors?.en?.message`.
 
+**Dialog and drawer forms.** `DialogForm` (centred) and `DrawerForm` (from
+the end edge) take Form's props plus the shell: `open`, `onClose`, `title`,
+`submitLabel`. Closing with unsaved changes asks "Discard changes?"; a save
+closes with a toast; every opening starts from `defaultValues`.
+
+```tsx
+<DialogForm
+  open={open}
+  onClose={() => setOpen(false)}
+  title="Invite teammate"
+  submitLabel="Send invite"
+  successToast="Invite sent."
+  schema={inviteSchema}
+  defaultValues={{ email: "", role: "" }}
+  onSubmit={async (v) => {
+    const res = await api.invite(v);
+    if (res.status === 409) return { fields: { email: "They're already in this workspace." } };
+  }}
+>
+  <FormField name="email" label="Email" render={({ field, id, error }) => <EmailField label="Email" id={id} {...field} error={error} />} />
+</DialogForm>
+```
+
+**Inline edit.** `InlineEdit` (the upgraded `InlineTextField`) saves on its
+own: return a promise from `onCommit` to get saving, saved and failed states.
+
+```tsx
+<InlineEdit label="Asset name" value={asset.name} onCommit={(name) => api.renameAsset(asset.id, name)} />
+```
+
 **Settings pages.** `SettingsLayout` with `SettingsLayout.Section` rows,
 `StickySaveBar` (appears while there are changes: Discard · Save changes) and
 `<LeaveGuard />` (asks before leaving with unsaved changes). `readOnly` starts
