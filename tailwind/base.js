@@ -1354,6 +1354,26 @@ export const baseStyles = [
     },
   },
   {
+    // A Form in view mode (or locked): its fieldset is disabled, so nothing
+    // can change, but each field reads as its value, not as a greyed-out
+    // control: no ground, no underline, the normal ink.
+    "[data-form-view] .mk-field, [data-form-view] .mk-field:disabled, [data-form-view] .mk-field:has(:disabled)": {
+      "background": "transparent",
+      "border-bottom-color": "transparent",
+      "box-shadow": "none",
+      "color": "var(--text)",
+      "cursor": "default",
+      "opacity": "1",
+    },
+    "[data-form-view] .mk-field :disabled, [data-form-view] :disabled.mk-field-control": {
+      "color": "var(--text)",
+      "-webkit-text-fill-color": "var(--text)",
+      "opacity": "1",
+      "cursor": "default",
+    },
+    "[data-form-view] .mk-field ::placeholder": { "color": "transparent" },
+  },
+  {
     ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible": {
       "outline": "none !important",
       "border-radius": "0 !important",

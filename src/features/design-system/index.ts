@@ -6,5 +6,6 @@ export { MotionGallery } from "./components/motion/motion-gallery";
 
 export { TableSelectGallery } from "./components/table-select-gallery";
 export { FormsGallery } from "./components/forms-gallery";
+export { FormStructureGallery } from "./components/form-structure-gallery";
 
 export { TabsGalleryPage } from "./components/tabs-gallery";

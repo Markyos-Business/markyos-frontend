@@ -262,6 +262,61 @@ An async check (is this name or slug free?) is `validating` while it runs,
 then `success` or `error` with the answer. The note is a live region, so the
 result is announced; `SlugField` does this for you given `checkAvailability`.
 
+## Form structure
+
+`Form` ([src/components/ui/form/](src/components/ui/form/)) wraps react-hook-form
+with a zod schema, typed from the schema. Fields stay the kit's own (above);
+`FormField` binds one to the form. Gallery: `/design-system/form-structure`.
+
+**Basic form.** Submitting validates; an invalid submit shows the error
+summary at the top (each line links to its field) and focuses the first
+error. While `onSubmit` runs the form is `aria-busy`, its fields are disabled
+and the button spins.
+
+```tsx
+import { z } from "zod";
+import { Form, FormActions, FormField, FormGrid, FormSection, InputField, MarketPicker } from "@/components/ui";
+
+const schema = z.object({
+  brand: z.string().trim().min(1, "Enter the brand's name."),
+  market: z.string().min(1, "Choose a launch market."),
+});
+type Brand = z.input<typeof schema>;
+
+<Form label="New brand" schema={schema} defaultValues={{ brand: "", market: "" }} onSubmit={createBrand} successMessage="Brand created.">
+  <FormSection title="Brand details" variant="card">
+    <FormGrid columns={2}>
+      <FormField<Brand, "brand"> name="brand" label="Brand name" render={({ field, id, error }) => (
+        <InputField label="Brand name" id={id} required {...field} error={error} />
+      )} />
+      <FormField<Brand, "market"> name="market" label="Launch market" render={({ field, id, error }) => (
+        <MarketPicker id={id} label="Launch market" value={field.value} onChange={field.onChange} error={error} />
+      )} />
+    </FormGrid>
+  </FormSection>
+  <FormActions submitLabel="Create brand" />
+</Form>
+```
+
+**Server errors.** Return them from `onSubmit`: the form's line shows in the
+banner, each field's under the field (and in the summary), focus goes to the
+first, and the values stay. A throw shows "Couldn't save. Check your
+connection and try again."
+
+```tsx
+onSubmit={async (values) => {
+  const res = await api.saveWorkspace(values);
+  if (res.status === 409) return { fields: { slug: "markyos.com/nadeen is taken. Try another." } };
+  if (!res.ok) return { form: "Couldn't save. Try again in a minute." };
+}}
+```
+
+**Settings pages.** `SettingsLayout` with `SettingsLayout.Section` rows,
+`StickySaveBar` (appears while there are changes: Discard · Save changes) and
+`<LeaveGuard />` (asks before leaving with unsaved changes). `readOnly` starts
+the form as values with an Edit button; `locked` + `lockedReason` changes
+nothing and says why. `FormSkeleton` is the loading shape.
+
 ## Code and supporting references
 
 - [Routes](src/app) compose [features](src/features) built from the shared

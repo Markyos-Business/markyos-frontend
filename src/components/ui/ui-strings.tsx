@@ -193,6 +193,21 @@ const en = {
   marketGroups: { gcc: "GCC", levant: "Levant", northAfrica: "North Africa", global: "Global" },
   worldwide: "Worldwide",
   presence: { online: "Online", busy: "Busy", away: "Away", offline: "Offline" },
+  form: {
+    summaryTitle: (n: number) => (n === 1 ? "Fix 1 field to continue" : `Fix ${n} fields to continue`),
+    edit: "Edit",
+    saveChanges: "Save changes",
+    discard: "Discard",
+    unsaved: "You have unsaved changes.",
+    serverError: "Couldn't save. Check your connection and try again.",
+    saved: "Changes saved.",
+    leaveTitle: "Leave without saving?",
+    leaveBody: "Your changes on this page will be lost.",
+    leave: "Leave",
+    stay: "Stay",
+    locked: "Only owners can change these settings.",
+    submitting: "Saving changes…",
+  },
 };
 
 type UiStrings = typeof en;
@@ -382,6 +397,21 @@ const ar: UiStrings = {
   marketGroups: { gcc: "الخليج", levant: "بلاد الشام", northAfrica: "شمال أفريقيا", global: "عالمي" },
   worldwide: "حول العالم",
   presence: { online: "متصل", busy: "مشغول", away: "بعيد", offline: "غير متصل" },
+  form: {
+    summaryTitle: (n) => (n === 1 ? "صحّح حقلًا واحدًا للمتابعة" : n === 2 ? "صحّح حقلين للمتابعة" : `صحّح ${n} حقول للمتابعة`),
+    edit: "تعديل",
+    saveChanges: "حفظ التغييرات",
+    discard: "تجاهل",
+    unsaved: "لديك تغييرات غير محفوظة.",
+    serverError: "تعذّر الحفظ. تحقّق من اتصالك وحاول مرة أخرى.",
+    saved: "حُفظت التغييرات.",
+    leaveTitle: "المغادرة دون حفظ؟",
+    leaveBody: "ستفقد تغييراتك في هذه الصفحة.",
+    leave: "مغادرة",
+    stay: "البقاء",
+    locked: "يغيّر هذه الإعدادات المالكون فقط.",
+    submitting: "جارٍ حفظ التغييرات…",
+  },
 };
 
 type UiLang = "en" | "ar";
