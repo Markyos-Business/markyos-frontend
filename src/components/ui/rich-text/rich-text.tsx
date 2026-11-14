@@ -1,7 +1,7 @@
 "use client";
 
 import { sanitizeRichHtml } from "@/lib/safeHtml";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 import { Icon } from "../icon";
 import { useDialog } from "../overlay/dialog";
@@ -111,6 +111,12 @@ type RichTextEditorProps = {
   isAr?: boolean;
   minHeight?: number;
   autoFocus?: boolean;
+  /** Nothing can change and the tools are off; the text is dimmed. */
+  disabled?: boolean;
+  /** The text can be read and selected, not changed; the tools are off. */
+  readOnly?: boolean;
+  /** Typing or pasting past this many characters of text is refused. */
+  maxLength?: number;
   /** Ids and states for the editable area, from a Field around it. */
   editorProps?: {
     id?: string;
@@ -129,18 +135,48 @@ const RichTextEditor = ({
   isAr = false,
   minHeight = 140,
   autoFocus = false,
+  disabled = false,
+  readOnly = false,
+  maxLength,
   editorProps,
 }: RichTextEditorProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [empty, setEmpty] = useState(() => richIsEmpty(value));
+  // The HTML this editor last sent: when `value` comes back as that, it's our
+  // own typing and the DOM already shows it; anything else came from outside.
+  const sent = useRef<string | null>(null);
+  const empty = richIsEmpty(value);
+  const editable = !disabled && !readOnly;
   const { prompt } = useDialog();
 
   const sync = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    setEmpty(!(el.textContent || "").trim());
+    sent.current = el.innerHTML;
     onChange(el.innerHTML);
   }, [onChange]);
+
+  // A value set from outside (a form reset, another record) replaces the text.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || value === sent.current) return;
+    const html = toRichHtml(value);
+    if (el.innerHTML !== html) el.innerHTML = html;
+    sent.current = value;
+  }, [value]);
+
+  // maxLength counts text, not tags, so it's checked before each insertion.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !maxLength) return;
+    const onBeforeInput = (e: InputEvent) => {
+      if (!e.inputType.startsWith("insert")) return;
+      const adding = e.data ?? e.dataTransfer?.getData("text/plain") ?? (e.inputType === "insertParagraph" ? "\n" : "");
+      const replacing = window.getSelection()?.toString().length ?? 0;
+      if ((el.textContent ?? "").length - replacing + adding.length > maxLength) e.preventDefault();
+    };
+    el.addEventListener("beforeinput", onBeforeInput);
+    return () => el.removeEventListener("beforeinput", onBeforeInput);
+  }, [maxLength]);
 
   /**
    * React must not own this node's children. Re-rendering a contentEditable
@@ -153,7 +189,7 @@ const RichTextEditor = ({
       ref.current = el;
       if (!el) return;
       el.innerHTML = toRichHtml(value);
-      setEmpty(!(el.textContent || "").trim());
+      sent.current = value;
       if (autoFocus) {
         el.focus();
         const range = document.createRange();
@@ -304,7 +340,8 @@ const RichTextEditor = ({
               // toolbar button takes it, so the press must not move focus at all.
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => run(t.action)}
-              className="grid size-7 cursor-pointer place-items-center rounded-md hover:text-text"
+              disabled={!editable}
+              className="grid size-7 cursor-pointer place-items-center rounded-md enabled:hover:text-text disabled:cursor-not-allowed disabled:text-text-disabled"
             >
               <Icon name={t.icon} size={16} />
             </button>
@@ -321,14 +358,18 @@ const RichTextEditor = ({
         <div
           {...editorProps}
           ref={attach}
-          contentEditable
+          contentEditable={editable}
           suppressContentEditableWarning
           role="textbox"
           aria-multiline="true"
+          aria-readonly={readOnly || undefined}
+          aria-disabled={disabled || undefined}
+          // Read-only text can still be reached and read; disabled can't.
+          tabIndex={disabled ? -1 : 0}
           dir="auto"
           onInput={sync}
           onBlur={onBlur}
-          className="rich-text bidi-auto px-3 py-3 text-ui-md text-text outline-none"
+          className={`rich-text bidi-auto px-3 py-3 text-ui-md outline-none ${disabled ? "cursor-not-allowed text-text-disabled" : "text-text"}`}
           style={{ minHeight }}
         />
       </div>

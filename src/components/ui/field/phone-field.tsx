@@ -111,17 +111,38 @@ type PhoneInputProps = Omit<PhoneFieldProps, "dialCode" | "number" | "onDialCode
   defaultDialCode?: string;
 };
 
+/** The code and the national number a stored E.164 value shows as. */
+const splitPhone = (value: string, fallbackCode: string) => {
+  const parsed = value ? parsePhoneNumberFromString(value) : undefined;
+  return parsed ? { dialCode: `+${parsed.countryCallingCode}`, number: parsed.formatNational() } : { dialCode: fallbackCode, number: "" };
+};
+
 /**
  * PhoneInput: one value in E.164 ("+966501234567"), the form a backend and
- * libphonenumber store, with the same field. Controlled.
+ * libphonenumber store, with the same field. Controlled: a value set from
+ * outside (a form reset, another record) is shown at once; the field's own
+ * typing coming back as `value` is left alone, so the caret never jumps.
  */
 const PhoneInput = ({ value, onChange, defaultDialCode = DEFAULT_DIAL_CODE, ...rest }: PhoneInputProps) => {
-  const parsed = value ? parsePhoneNumberFromString(value) : undefined;
-  const [dialCode, setDialCode] = useState(() => (parsed ? `+${parsed.countryCallingCode}` : defaultDialCode));
-  const [number, setNumber] = useState(() => (parsed ? parsed.formatNational() : ""));
+  const [dialCode, setDialCode] = useState(() => splitPhone(value, defaultDialCode).dialCode);
+  const [number, setNumber] = useState(() => splitPhone(value, defaultDialCode).number);
+  // The last value this field sent, and the last it was given.
+  const [sent, setSent] = useState(value);
+  const [seen, setSeen] = useState(value);
+  if (value !== seen) {
+    setSeen(value);
+    if (value !== sent) {
+      const next = splitPhone(value, dialCode);
+      setDialCode(next.dialCode);
+      setNumber(next.number);
+      setSent(value);
+    }
+  }
   const emit = (code: string, typed: string) => {
     const digits = typed.replace(/\D/g, "").replace(/^0+/, "");
-    onChange(digits ? `${code}${digits}` : "");
+    const next = digits ? `${code}${digits}` : "";
+    setSent(next);
+    onChange(next);
   };
   return (
     <PhoneField

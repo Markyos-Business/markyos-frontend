@@ -30,6 +30,28 @@ type CalendarProps = {
 };
 
 /**
+ * The first day from `day` (itself included) walking `by` days at a time that
+ * isn't blocked, or null within `limit` steps: arrows skip over disabled days
+ * instead of landing on one, and stop at min or max.
+ */
+function nextEnabled(day: IsoDate, by: number, blocked: (d: IsoDate) => boolean, limit = 400): IsoDate | null {
+  let d = day;
+  for (let i = 0; i < limit; i++, d = addDays(d, by)) if (!blocked(d)) return d;
+  return null;
+}
+
+/**
+ * The grid's one Tab stop: `preferred` if it can be chosen, else the nearest
+ * enabled day shown (this month's first), else none (nothing to choose).
+ */
+function tabStop(days: IsoDate[], preferred: IsoDate, blocked: (d: IsoDate) => boolean, inMonth: (d: IsoDate) => boolean): IsoDate | null {
+  if (days.includes(preferred) && !blocked(preferred)) return preferred;
+  const from = Math.max(0, days.indexOf(preferred));
+  const order = days.map((d, i) => ({ d, i })).sort((a, b) => Number(!inMonth(a.d)) - Number(!inMonth(b.d)) || Math.abs(a.i - from) - Math.abs(b.i - from));
+  return order.find(({ d }) => !blocked(d))?.d ?? null;
+}
+
+/**
  * A month of days to choose from (spec §6.16 CalendarMonth). A real grid: one
  * Tab stop, arrows move a day or a week (and mirror in Arabic), Home and End
  * go to the week's ends, Page Up and Page Down a month (Shift: a year), Enter
@@ -82,7 +104,12 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
     };
     if (!next[e.key]) return;
     e.preventDefault();
-    go(next[e.key]());
+    const target = next[e.key]();
+    // Past a disabled day in the same direction (a week at a time for Up and
+    // Down); nothing enabled that way (min, max): stay put.
+    const by = e.key === "ArrowDown" ? 7 : e.key === "ArrowUp" ? -7 : target < day ? -1 : 1;
+    const landing = nextEnabled(target, by, blocked);
+    if (landing) go(landing);
   };
 
   const step = (n: number) => {
@@ -91,8 +118,9 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
     setFocused(startOfMonth(target));
   };
 
-  // The day the grid's one Tab stop sits on: the focused day if it's shown.
-  const stop = weeks.flat().includes(focused) ? focused : startOfMonth(month);
+  // The grid's one Tab stop: the focused day if it's shown and can be chosen,
+  // else the nearest one that can, so the grid is always reachable by keyboard.
+  const stop = tabStop(weeks.flat(), weeks.flat().includes(focused) ? focused : startOfMonth(month), blocked, inMonth);
 
   return (
     <div className="flex flex-col gap-space-4">
@@ -165,5 +193,5 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
   );
 };
 
-export { Calendar };
+export { Calendar, nextEnabled, tabStop };
 export type { CalendarProps };

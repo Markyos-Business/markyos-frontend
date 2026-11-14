@@ -4,7 +4,7 @@ import { RichTextEditor, richToPlainText } from "../rich-text/rich-text";
 import { useUiStrings } from "../ui-strings";
 import { Field, type FieldState } from "./field";
 
-type RichTextFieldProps = Omit<FieldState, "readOnly"> & {
+type RichTextFieldProps = FieldState & {
   label: string;
   info?: string;
   /** HTML from the editor. */
@@ -49,6 +49,9 @@ const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxL
             placeholder={placeholder}
             isAr={isAr}
             minHeight={minHeight}
+            maxLength={maxLength}
+            disabled={control.disabled}
+            readOnly={control.readOnly}
             editorProps={{
               id: control.id,
               "aria-labelledby": `${control.id}-label`,
