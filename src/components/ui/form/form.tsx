@@ -37,6 +37,8 @@ import {
 type ServerErrors<V extends FieldValues = FieldValues> = {
   form?: string;
   fields?: Partial<Record<Path<V>, string>>;
+  /** Not saved, and something else already says why (a conflict alert): no banner, no reset. */
+  silent?: boolean;
 };
 
 /**
@@ -92,6 +94,12 @@ type FormProps<S extends AnySchema> = {
   successMessage?: string | false;
   /** The error summary at the top after a failed submit. Default true. */
   summary?: boolean;
+  /**
+   * Draw the form's own top parts (locked note, Edit, outcome banner, error
+   * summary). Default true; false when a shell places them itself, as
+   * DialogForm does inside its modal.
+   */
+  chrome?: boolean;
   id?: string;
   className?: string;
   labels?: Partial<FormStrings>;
@@ -128,6 +136,7 @@ function Form<S extends AnySchema>({
   lockedReason,
   successMessage,
   summary = true,
+  chrome = true,
   id: givenId,
   className = "",
   labels,
@@ -186,7 +195,7 @@ function Form<S extends AnySchema>({
         setSubmitting(true);
         try {
           const refused = await onSubmit(parsed, form);
-          if (refused && (refused.form || refused.fields)) {
+          if (refused && (refused.form || refused.fields || refused.silent)) {
             const first = setServerErrors(
               form as UseFormReturn<Input<S>, unknown, FieldValues>,
               refused,
@@ -222,6 +231,25 @@ function Form<S extends AnySchema>({
     (name: string) => `${id}-${name.replace(/[^\w-]/g, "-")}`,
     [id],
   );
+
+  // Straight from the schema rather than react-hook-form's trigger, which
+  // drops the errors of any field that re-renders while it validates.
+  const validate = useCallback(
+    async (paths: readonly string[]) => {
+      const owns = (owner: string, path: string) => path === owner || path.startsWith(`${owner}.`);
+      const result = await schema.safeParseAsync(form.getValues());
+      const issues = result.success ? [] : result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })).filter((i) => paths.some((p) => owns(p, i.path)));
+      form.clearErrors(paths as Path<Input<S>>[]);
+      const seen = new Set<string>();
+      for (const issue of issues) {
+        if (seen.has(issue.path)) continue;
+        seen.add(issue.path);
+        form.setError(issue.path as Path<Input<S>>, { type: "schema", message: issue.message });
+      }
+      return issues.length === 0;
+    },
+    [schema, form],
+  );
   const meta: FormMeta = {
     id,
     submitting,
@@ -232,6 +260,7 @@ function Form<S extends AnySchema>({
     summaryOpen,
     labels: fieldLabels,
     fieldId,
+    validate,
     startEdit: () => {
       setOutcome({ kind: "idle" });
       setView(false);
@@ -261,10 +290,10 @@ function Form<S extends AnySchema>({
           }}
           className={`flex min-w-0 flex-col gap-space-8 ${className}`}
         >
-          {locked && (
+          {chrome && locked && (
             <FormAlert tone="info" message={lockedReason ?? strings.locked} />
           )}
-          {view && editable && !locked && (
+          {chrome && view && editable && !locked && (
             <div className="flex justify-end">
               <Button
                 type="button"
@@ -277,8 +306,8 @@ function Form<S extends AnySchema>({
               </Button>
             </div>
           )}
-          {!locked && <FormAlert />}
-          {summary && <ErrorSummary />}
+          {chrome && !locked && <FormAlert />}
+          {chrome && summary && <ErrorSummary />}
           <fieldset
             disabled={submitting || view || locked}
             data-form-view={view || locked || undefined}
@@ -293,4 +322,4 @@ function Form<S extends AnySchema>({
 }
 
 export { Form, setServerErrors };
-export type { FormMethods, FormProps, ServerErrors };
+export type { AnySchema as FormSchema, FormMethods, FormProps, ServerErrors };

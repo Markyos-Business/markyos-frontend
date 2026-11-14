@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { ReactElement } from "react";
-import { useController, type ControllerRenderProps, type FieldPath, type FieldValues } from "react-hook-form";
+import { get, useController, useFormState, type ControllerRenderProps, type FieldError, type FieldErrors, type FieldPath, type FieldValues } from "react-hook-form";
 import { useFormMeta } from "./form-context";
 
 type FormFieldRender<V extends FieldValues, N extends FieldPath<V>> = {
@@ -12,6 +12,11 @@ type FormFieldRender<V extends FieldValues, N extends FieldPath<V>> = {
   id: string;
   /** The field's message, client or server. */
   error?: string;
+  /**
+   * The errors under an object value, by key: a bilingual name's
+   * `errors.en?.message` and `errors.ar?.message`.
+   */
+  errors?: Record<string, FieldError | undefined>;
 };
 
 type FormFieldProps<V extends FieldValues, N extends FieldPath<V>> = {
@@ -32,11 +37,15 @@ type FormFieldProps<V extends FieldValues, N extends FieldPath<V>> = {
  */
 function FormField<V extends FieldValues = FieldValues, N extends FieldPath<V> = FieldPath<V>>({ name, label, render }: FormFieldProps<V, N>) {
   const meta = useFormMeta();
-  const { field, fieldState } = useController<V, N>({ name });
+  const { field } = useController<V, N>({ name });
+  // Not the controller's own field state: that only re-renders for this exact
+  // path, so an error on "title.en" would never show on a "title" field.
+  const { errors: all } = useFormState<V>({ name });
+  const own = get(all as FieldErrors, name) as (FieldError & Record<string, FieldError | undefined>) | undefined;
   useEffect(() => {
     if (label) meta.labels.set(name, label);
   }, [meta.labels, name, label]);
-  return render({ field, id: meta.fieldId(name), error: fieldState.error?.message });
+  return render({ field, id: meta.fieldId(name), error: own?.message, errors: own && typeof own === "object" ? own : undefined });
 }
 
 export { FormField };

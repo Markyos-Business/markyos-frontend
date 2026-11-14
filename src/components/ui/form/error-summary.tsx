@@ -5,12 +5,12 @@ import { AlertBanner } from "../alert-banner";
 import { useFormMeta } from "./form-context";
 
 /** Every message in a (nested) errors object, with its field path. */
-function flatten(errors: FieldErrors, prefix = ""): { path: string; message: string }[] {
+function flattenErrors(errors: FieldErrors, prefix = ""): { path: string; message: string }[] {
   return Object.entries(errors).flatMap(([key, value]) => {
     if (!value || key === "root" || key === "ref") return [];
     const path = prefix ? `${prefix}.${key}` : key;
     if (typeof value.message === "string" && value.message) return [{ path, message: value.message }];
-    return typeof value === "object" ? flatten(value as FieldErrors, path) : [];
+    return typeof value === "object" ? flattenErrors(value as FieldErrors, path) : [];
   });
 }
 
@@ -23,15 +23,21 @@ function flatten(errors: FieldErrors, prefix = ""): { path: string; message: str
 const ErrorSummary = () => {
   const meta = useFormMeta();
   const { formState, setFocus } = useFormContext();
-  const items = flatten(formState.errors);
+  const items = flattenErrors(formState.errors);
   const open = meta.summaryOpen && items.length > 0;
 
   const go = (path: string) => {
-    const before = document.activeElement;
-    setFocus(path);
-    // A control the form library can't focus (a group) still has its id.
-    if (document.activeElement === before) document.getElementById(meta.fieldId(path))?.focus();
-    (document.activeElement as HTMLElement | null)?.scrollIntoView({ block: "center", behavior: "smooth" });
+    // A wizard opens the field's step first; the focus waits a frame for it.
+    document.dispatchEvent(new CustomEvent("mk-form-focus-field", { detail: { form: meta.id, path } }));
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const before = document.activeElement;
+        setFocus(path);
+        // A control the form library can't focus (a group) still has its id.
+        if (document.activeElement === before) document.getElementById(meta.fieldId(path))?.focus();
+        (document.activeElement as HTMLElement | null)?.scrollIntoView({ block: "center", behavior: "smooth" });
+      }),
+    );
   };
 
   return (
@@ -65,4 +71,4 @@ const ErrorSummary = () => {
   );
 };
 
-export { ErrorSummary };
+export { ErrorSummary, flattenErrors };

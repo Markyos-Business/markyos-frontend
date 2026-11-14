@@ -28,6 +28,12 @@ type FormMeta = {
   labels: Map<string, string>;
   /** The id FormField gives a field's control, for the summary's links. */
   fieldId: (name: string) => string;
+  /**
+   * Check only these field paths (and everything under them) against the
+   * schema, now: their errors are set or cleared and the rest are left alone.
+   * True when they all pass. A wizard step's Next uses this.
+   */
+  validate: (paths: readonly string[]) => Promise<boolean>;
   startEdit: () => void;
   /** Back to the saved values (and to view mode, for a form that started there). */
   cancelEdit: () => void;

@@ -311,6 +311,54 @@ onSubmit={async (values) => {
 }}
 ```
 
+**Wizard.** `FormWizard` inside a `Form` (one schema for every step). Each
+step lists its `fields`; Next checks only those, a stepper move forward checks
+the steps it passes, Enter moves on, and `storageKey` keeps a draft in the
+browser until the form is sent. `ReviewStep` ends it with an Edit per step.
+
+```tsx
+<Form label="New campaign" schema={campaignSchema} defaultValues={empty} onSubmit={createCampaign}>
+  <FormWizard
+    submitLabel="Create campaign"
+    storageKey="markyos:new-campaign:draft"
+    steps={[
+      { id: "details", title: "Details", fields: ["title", "markets", "dates"], content: <DetailsStep /> },
+      { id: "budget", title: "Budget and team", fields: ["budget", "reviewers"], content: <BudgetStep /> },
+      { id: "brief", title: "Brief", optional: true, fields: ["tags", "brief"], content: <BriefStep /> },
+      { id: "review", title: "Review", content: <ReviewStep sections={[{ step: "details", items: [{ label: "Name", value: name }] }]} /> },
+    ]}
+  />
+</Form>
+```
+
+**Field array.** Rows of fields bound with `useFieldArray`: add, remove,
+`min`/`max`, an empty state, and reordering by the grip (drag, or Arrow keys).
+Name each row's fields by index.
+
+```tsx
+<FieldArray<Campaign, "reviewers">
+  name="reviewers"
+  legend="Reviewers"
+  rowLabel={(n) => `Reviewer ${n}`}
+  newRow={() => ({ name: "", email: "" })}
+  max={5}
+  addLabel="Add reviewer"
+  empty={{ title: "No reviewers yet.", description: "Add someone to approve posts before they go out." }}
+  renderRow={({ index }) => (
+    <FormField name={`reviewers.${index}.email`} label="Email" render={({ field, id, error }) => (
+      <EmailField label="Email" id={id} {...field} error={error} />
+    )} />
+  )}
+/>
+```
+
+`ConditionalField when={(v) => v.paidMedia} fields={["mediaBudget"]}` shows
+fields only when they apply and unregisters them once hidden.
+`CollapsibleSection title="Advanced options"` hides rarely used fields behind
+"Show advanced options" and opens itself if one of its `fields` has an error.
+For an object value (a bilingual name), FormField's render gets `errors` by
+key: `errors?.en?.message`.
+
 **Settings pages.** `SettingsLayout` with `SettingsLayout.Section` rows,
 `StickySaveBar` (appears while there are changes: Discard · Save changes) and
 `<LeaveGuard />` (asks before leaving with unsaved changes). `readOnly` starts
