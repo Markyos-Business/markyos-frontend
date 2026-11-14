@@ -72,6 +72,18 @@ const OtpField = ({ label, value, defaultValue = "", onChange, onBlur, name, len
   };
 
   const handleKeyDown = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
+    // A digit key fills the box and moves on, even when it's the digit already
+    // there (that's no "change", so the change handler alone would stall).
+    const digit = westernDigits(e.key);
+    if (/^\d$/.test(digit) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      if (locked) return;
+      const next = [...cells];
+      next[i] = digit;
+      commit(next);
+      if (i < length - 1) focus(i + 1);
+      return;
+    }
     if (e.key === "Backspace") {
       // Ours, not the browser's: it would clear the box we just moved to.
       e.preventDefault();

@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { AssetFilterExample } from "./asset-filter-example";
+import { AuthExample } from "./auth-example";
+import { NewCampaignWizard } from "./new-campaign-wizard";
+import { OverlayFormExamples } from "./overlay-form-examples";
+import { ProfileAutosaveExample } from "./profile-autosave-example";
 import {
   ChipSelector,
   EmailField,
@@ -21,6 +26,7 @@ import {
   MarketPicker,
   SegmentedToggle,
   SettingsLayout,
+  useConflictCheck,
   StickySaveBar,
   TextareaField,
   ThemeToggle,
@@ -34,7 +40,7 @@ type Lang = "en" | "ar";
 const T = (lang: Lang) => (en: string, ar: string) => (lang === "ar" ? ar : en);
 type Tr = ReturnType<typeof T>;
 
-const STATES = ["pristine", "dirty", "validating", "invalid", "submitting", "success", "serverError", "fieldErrors", "loading", "loadFailed", "readOnly", "locked"] as const;
+const STATES = ["pristine", "dirty", "validating", "invalid", "submitting", "success", "serverError", "fieldErrors", "conflict", "loading", "loadFailed", "readOnly", "locked"] as const;
 type DemoState = (typeof STATES)[number];
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -73,7 +79,7 @@ const Drive = ({ state, formId }: { state: DemoState; formId: string }) => {
       setValue("email", "nour@", dirty);
       submit();
     }
-    if (["submitting", "success", "serverError", "fieldErrors"].includes(state)) {
+    if (["submitting", "success", "serverError", "fieldErrors", "conflict"].includes(state)) {
       setValue("name", "Nadeen Studio KSA", dirty);
       submit();
     }
@@ -94,6 +100,21 @@ const Section = ({ id, title, children }: { id: string; title: string; children:
 const WorkspaceSettings = ({ state, t }: { state: DemoState; t: Tr }) => {
   const formId = "workspace-settings";
   // The demo remounts per state, so `state` is fixed for this form's life.
+  // Conflict: the server is a version ahead (Lina saved meanwhile) until Reload.
+  const [version, setVersion] = useState("v1");
+  const [server, setServer] = useState<Workspace | undefined>(undefined);
+  const conflict = useConflictCheck({
+    formId,
+    version,
+    fetchLatest: async () => {
+      await wait(300);
+      return state === "conflict" && version === "v1" ? { version: "v2", updatedBy: "Lina Mansour", updatedAt: Date.now() - 5 * 60_000 } : { version, updatedBy: "Nour Haddad", updatedAt: Date.now() };
+    },
+    onReload: (latest) => {
+      setServer({ ...SAVED, name: "Nadeen Studio Riyadh" });
+      setVersion(String(latest.version));
+    },
+  });
 
   const onSubmit = async (): Promise<ServerErrors<Workspace> | void> => {
     if (state === "submitting") return new Promise(() => undefined);
@@ -108,12 +129,14 @@ const WorkspaceSettings = ({ state, t }: { state: DemoState; t: Tr }) => {
       label={t("Workspace settings", "إعدادات مساحة العمل")}
       schema={workspaceSchema(t)}
       defaultValues={SAVED}
-      onSubmit={onSubmit}
+      values={server}
+      onSubmit={conflict.guard(onSubmit)}
       readOnly={state === "readOnly"}
       locked={state === "locked"}
       lockedReason={t("Only owners can change these settings. Ask Nour Haddad.", "يغيّر هذه الإعدادات المالكون فقط. اطلب ذلك من نور حداد.")}
     >
       <Drive state={state} formId={formId} />
+      {conflict.alert}
       <LeaveGuard />
       <SettingsLayout>
         <SettingsLayout.Section title={t("Workspace", "مساحة العمل")} description={t("How your studio appears to clients and in shared links.", "كيف يظهر الاستوديو لعملائك وفي الروابط المشتركة.")}>
@@ -235,6 +258,7 @@ const FormStructureGallery = () => {
     success: t("Success", "نجاح"),
     serverError: t("Server error", "خطأ الخادم"),
     fieldErrors: t("Field server errors", "أخطاء حقول من الخادم"),
+    conflict: t("Conflict", "تعارض"),
     loading: t("Loading", "تحميل"),
     loadFailed: t("Load failed", "فشل التحميل"),
     readOnly: t("Read-only", "للقراءة فقط"),
@@ -263,6 +287,21 @@ const FormStructureGallery = () => {
             ) : (
               <WorkspaceSettings key={`${state}-${lang}`} state={state} t={t} />
             )}
+          </Section>
+          <Section id="campaign" title={t("New campaign wizard", "معالج الحملة الجديدة")}>
+            <NewCampaignWizard key={lang} t={t} isAr={isAr} storageKey="markyos:new-campaign:draft" />
+          </Section>
+          <Section id="autosave" title={t("Profile with autosave", "ملف شخصي بحفظ تلقائي")}>
+            <ProfileAutosaveExample key={lang} t={t} />
+          </Section>
+          <Section id="filters" title={t("Asset filters in the URL", "تصفية الملفات في الرابط")}>
+            <AssetFilterExample key={lang} t={t} />
+          </Section>
+          <Section id="auth" title={t("Sign in and code check", "تسجيل الدخول والتحقق بالرمز")}>
+            <AuthExample key={lang} t={t} isAr={isAr} />
+          </Section>
+          <Section id="overlays" title={t("Dialog, drawer and inline edit", "نافذة ودرج وتعديل مباشر")}>
+            <OverlayFormExamples key={lang} t={t} />
           </Section>
           <Section id="brand" title={t("Section, grid and actions", "قسم وشبكة وأزرار")}>
             <BrandDetails key={lang} t={t} />

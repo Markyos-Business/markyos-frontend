@@ -389,6 +389,31 @@ own: return a promise from `onCommit` to get saving, saved and failed states.
 <InlineEdit label="Asset name" value={asset.name} onCommit={(name) => api.renameAsset(asset.id, name)} />
 ```
 
+**Autosave.** No Save button: a pause in typing saves the changed fields
+once they pass, with "Saving…", "Saved 10m ago" or "Couldn't save." and
+Retry beside it. Offline, changes are kept on the device and sent on
+reconnect.
+
+```tsx
+<Form label="Profile" schema={profileSchema} defaultValues={profile} onSubmit={() => undefined} successMessage={false}>
+  <Autosave storageKey="markyos:profile:draft" savedAt={profile.updatedAt} onSave={(values) => api.saveProfile(values)} />
+  {/* fields */}
+</Form>
+```
+
+**Conflicts.** `useConflictCheck` wraps the save: if the server's version
+moved on since loading, the save stops and the form says "Updated by Lina
+Mansour 5m ago." with Reload and Overwrite.
+
+```tsx
+const conflict = useConflictCheck({ formId: "brand", version: brand.etag, fetchLatest: () => api.brandVersion(id), onReload: refetch });
+<Form id="brand" onSubmit={conflict.guard(save)} …>{conflict.alert}{/* fields */}</Form>
+```
+
+**Filters.** `FilterForm` keeps applied filters in the URL (shareable, Back
+works) and hands them to the list with `onApply`. `AuthLayout` is the
+signed-out frame (AuthShell wraps it).
+
 **Settings pages.** `SettingsLayout` with `SettingsLayout.Section` rows,
 `StickySaveBar` (appears while there are changes: Discard · Save changes) and
 `<LeaveGuard />` (asks before leaving with unsaved changes). `readOnly` starts
