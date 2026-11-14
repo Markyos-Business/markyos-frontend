@@ -25,7 +25,7 @@ a completed feature.
 
 ## Run locally
 
-Use a Node version supported by the installed Next.js and Prisma packages.
+Use Node 22, the version CI runs.
 
 ```sh
 npm ci
@@ -115,14 +115,13 @@ domain name.
 
 ```sh
 npm run test             # Vitest unit tests
-npm run check            # types, lint, Prisma schema, tests and UI audits
+npm run check            # types, lint, tests and UI audits
 npm run e2e              # integrated Playwright scenarios; see setup below
 ```
 
-`check` loads `prisma.config.ts`, which requires `DATABASE_URL` and
-`SHADOW_DATABASE_URL`. Prisma is currently a scaffold, not the platform's live
-persistence layer; Django stores API-backed application data. Do not run Prisma
-migrations against an unrelated database just to satisfy a validation command.
+The frontend has no database of its own: Django stores all API-backed
+application data. The early Prisma data model is kept for reference in
+[docs/archive/prisma-schema.prisma](docs/archive/prisma-schema.prisma).
 
 [E2E setup and scenarios](e2e/README.md) describe the backend Python environment,
 ports, test analysis fake and provider mocks. Browser sweeps are separate

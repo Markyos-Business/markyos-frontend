@@ -220,8 +220,7 @@ Before shipping a UI change:
 - Check keyboard order, labels, focus visibility, focus return, and error announcements.
 - Check light/dark, Arabic/English, long content, and phone/desktop widths.
 - Test loading, empty, validation, server error, busy, and disabled states.
-- Run `npm run check`; database URL variables are required by Prisma validation
-  even though Prisma is not the active application persistence layer.
+- Run `npm run check`.
 - Run the relevant browser sweep/E2E test for changed behavior. Audits check
   selected contracts; passing them is not a complete accessibility assessment.
 

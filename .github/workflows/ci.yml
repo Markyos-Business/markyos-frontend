@@ -29,22 +29,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # `prisma validate` runs inside `npm run check`, and it loads
-  # prisma.config.ts, whose `env()` *throws* on a missing variable rather than
-  # yielding undefined. `.env` is gitignored, so without these the whole check
-  # script fails on a step that never opens a connection. Verified by hiding
-  # `.env` locally: "PrismaConfigEnvError: Cannot resolve environment variable:
-  # DATABASE_URL".
-  #
-  # Placeholders on purpose. Nothing in CI connects to a database — there is no
-  # database yet — and a real URL here would be a secret in a public log.
-  DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/markyos_ci
-  SHADOW_DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/markyos_ci_shadow
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
   # ------------------------------------------------------------------ check --
-  # tsc, eslint at zero warnings, prisma validate, 252 unit tests, and the four
+  # tsc, eslint at zero warnings, 252 unit tests, and the four
   # static gates: contrast, the --g-* token contract, no physical properties,
   # and icon names. All of it is one script so that what CI runs and what a
   # person runs before committing cannot drift apart.
@@ -58,21 +47,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # Matches the version this project is developed against. Next 16 and
-          # prisma.config.ts both rely on Node 22 built-ins — the config file
-          # uses `process.loadEnvFile`, which is 22-only.
+          # Matches the version this project is developed against.
           node-version: "22"
           cache: npm
 
       - name: Install
         run: npm ci
 
-      - name: Generate the Prisma client
-        # Prisma 7 dropped the postinstall hook, so `npm ci` does not do this.
-        # Nothing imports the client yet, but generating it here is what proves
-        # the schema can still produce one — a stronger check than `validate`,
-        # and it costs under a second.
-        run: npm run db:generate
 
       - name: Check
         run: npm run check
@@ -101,8 +82,6 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Generate the Prisma client
-        run: npm run db:generate
 
       - name: Install Chromium
         # Only Chromium: every sweep launches `chromium` explicitly, so pulling
