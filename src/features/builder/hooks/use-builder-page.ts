@@ -283,7 +283,11 @@ export function useBuilderPage(slug: string) {
       });
       if (!ok) return;
     }
-    publishGuideline(ws!.id);
+    const result = await publishGuideline(ws!.id);
+    if (!result.ok) {
+      showToast(isAr ? "لم يُنشر الدليل. حاول مرة أخرى." : `Not published: ${result.message ?? "try again."}`, "danger");
+      return;
+    }
     showToast(isAr ? "تم نشر الدليل للعملاء." : "Published — clients now see these changes.", "success");
   }
 

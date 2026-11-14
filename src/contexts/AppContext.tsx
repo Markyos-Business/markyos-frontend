@@ -603,9 +603,10 @@ interface AppContextValue {
   /** Forces the client-facing site's ground light or dark, or back to inferring it. */
   setSiteMode: (workspaceId: string, mode: Workspace["siteMode"]) => void;
   /** Copies the current draft to the live site clients see. */
-  publishGuideline: (workspaceId: string) => void;
+  /** Publishes on the server when signed in; resolves with what happened. */
+  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   /** Takes the live site down; the draft is untouched. */
-  unpublishGuideline: (workspaceId: string) => void;
+  unpublishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   addTemplateBlocks: (workspaceId: string, blocks: Omit<PageBlock, "id" | "order">[], pageId?: string) => void;
   autoFillBlocks: (workspaceId: string) => void;
   // Guidelines editor — custom pages beyond Home, each with its own URL
@@ -3325,7 +3326,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const publishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
       /*
        * The transition itself lives in `lib/adapters/entityOps.ts`.
        *
@@ -3338,18 +3339,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        *
        * The reasoning for each subtraction moved with the code. Read it there.
        */
+      // Signed in, the server builds the public copy (and refuses a stale
+      // one); this browser's own transition is the demo's and the fallback
+      // for a server that predates the endpoint.
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, true);
+        if (result.ok) logAudit("Published the guideline site", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => publishWorkspace(ws, Date.now()));
       logAudit("Published the guideline site", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const unpublishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, false);
+        if (result.ok) logAudit("Took the guideline site offline", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => unpublishWorkspace(ws));
       logAudit("Took the guideline site offline", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const toggleSectionHidden = useCallback(

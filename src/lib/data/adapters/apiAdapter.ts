@@ -56,7 +56,16 @@ export interface ApiAdapter extends BrandRepository {
    * session is revoked, while saves are still allowed.
    */
   endSession(): Promise<void>;
+  /**
+   * Publishes (or takes down) a brand's guideline site on the server, which
+   * builds the public copy from the stored brand. Pending edits are sent
+   * first, so what goes live is what is on screen. `unsupported` means the
+   * server predates the endpoint, and the caller may use the old path.
+   */
+  publishSite(workspaceId: string, on: boolean): Promise<PublishOutcome>;
 }
+
+export type PublishOutcome = { ok: true } | { ok: false; unsupported?: boolean; message: string };
 
 export function isApiAdapter(repo: BrandRepository): repo is ApiAdapter {
   return "pullWorkspaces" in repo;
@@ -251,6 +260,48 @@ export function createApiAdapter(options: {
         synced.set(ws.id, { json: portableJson(ws), version: brands[i].version })
       );
       return restored;
+    },
+
+    async publishSite(workspaceId: string, on: boolean): Promise<PublishOutcome> {
+      // Send what is waiting, so the version below is the one on screen.
+      if (timer) clearTimeout(timer);
+      timer = null;
+      while (running) await new Promise((resolve) => setTimeout(resolve, 50));
+      running = true;
+      try {
+        await syncOnce();
+      } finally {
+        running = false;
+        if (again) {
+          again = false;
+          schedule(0);
+        }
+      }
+
+      const ws = latest?.workspaces.find((w) => w.id === workspaceId);
+      const known = synced.get(workspaceId);
+      if (!ws || !known) {
+        return { ok: false, message: "This brand isn't saved to the server yet. Try again in a moment." };
+      }
+      const url = `/brands/${encodeURIComponent(workspaceId)}/publish/`;
+      try {
+        const brand = await api<ServerBrand>(url, {
+          method: on ? "POST" : "DELETE",
+          body: { version: known.version },
+        });
+        await adopt(brand, ws.slug);
+        return { ok: true };
+      } catch (err) {
+        if (!(err instanceof ApiError)) throw err;
+        const body = err.data as { current?: ServerBrand } | null;
+        // An unknown route is an HTML 404 with no JSON body: an older server.
+        if (err.status === 404 && !err.data) return { ok: false, unsupported: true, message: err.message };
+        if (err.status === 409 && body?.current) {
+          await adopt(body.current, ws.slug);
+          return { ok: false, message: "Someone saved changes just now. Check them, then publish again." };
+        }
+        return { ok: false, message: err.message };
+      }
     },
 
     async endSession() {
