@@ -174,3 +174,50 @@ describe("publishSite", () => {
     await repo.endSession();
   });
 });
+
+describe("voteOnCard", () => {
+  beforeEach(() => {
+    calls.length = 0;
+    vi.stubGlobal("window", { localStorage: memoryStorage(), sessionStorage: memoryStorage() });
+  });
+
+  it("votes and takes back a vote on the card's own endpoint", async () => {
+    const repo = adapter();
+    vi.mocked(api)
+      .mockResolvedValueOnce({ itemId: "card-1", votes: ["Nour Haddad"] })
+      .mockResolvedValueOnce({ itemId: "card-1", votes: [] });
+    expect(await repo.voteOnCard("b1", "card-1", true)).toEqual({ ok: true, votes: ["Nour Haddad"] });
+    expect(await repo.voteOnCard("b1", "card-1", false)).toEqual({ ok: true, votes: [] });
+    expect(vi.mocked(api).mock.calls.slice(-2).map(([path, options]) => [path, options?.method])).toEqual([
+      ["/brands/b1/moodboard/votes/card-1/", "PUT"],
+      ["/brands/b1/moodboard/votes/card-1/", "DELETE"],
+    ]);
+  });
+
+  it("reports an older server", async () => {
+    vi.mocked(api).mockRejectedValueOnce(new ApiError("Not found", 404));
+    expect(await adapter().voteOnCard("b1", "card-1", true)).toMatchObject({ ok: false, unsupported: true });
+  });
+
+  it("a changed vote alone doesn't send the whole brand", async () => {
+    vi.useFakeTimers();
+    try {
+      const repo = adapter();
+      const state = signedInState();
+      const brand = {
+        ...state.workspaces[0],
+        moodboards: [{ id: "m1", title: "B", createdAt: 0, zones: [{ id: "z1", kind: "mood", title: "", arTitle: "", order: "a", items: [{ id: "card-1", kind: "note", order: "a", size: "m", votes: [] }] }] }],
+      } as unknown as Workspace;
+      await repo.save({ ...state, workspaces: [brand] });
+      await vi.advanceTimersByTimeAsync(1000);
+      calls.length = 0;
+      const voted = { ...brand, moodboards: brand.moodboards.map((b) => ({ ...b, zones: b.zones.map((z) => ({ ...z, items: z.items.map((i) => ({ ...i, votes: ["Nour Haddad"] })) })) })) };
+      await repo.save({ ...state, workspaces: [voted] });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(calls).toEqual([]);
+      await repo.endSession();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

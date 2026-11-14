@@ -874,9 +874,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         return;
       }
+      // An editor's change to owner-only settings is dropped too, matching
+      // the server, which keeps the stored values on an editor's save.
       const apply =
         role === "editor"
-          ? (ws: Workspace) => ({ ...fn(ws), team: ws.team, billing: ws.billing })
+          ? (ws: Workspace) => ({
+              ...fn(ws),
+              team: ws.team,
+              billing: ws.billing,
+              clientAccess: ws.clientAccess,
+              developer: ws.developer,
+              whiteLabel: ws.whiteLabel,
+              brandingCredit: ws.brandingCredit,
+            })
           : fn;
 
       // Pushed before the change, from the last committed state — an updater
@@ -2142,8 +2152,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const voteMoodboardItem = useCallback(
     (workspaceId: string, boardId: string, itemId: string) => {
-      const who = stateRef.current.session?.name ?? "You";
-      patchMoodboard(workspaceId, boardId, (b) => ({
+      const current = stateRef.current;
+      const who = current.session?.name ?? "You";
+      const toggle = (b: Moodboard) => ({
         ...b,
         zones: b.zones.map((z) => ({
           ...z,
@@ -2153,9 +2164,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               : i,
           ),
         })),
-      }));
+      });
+      // Signed out (the browser-only demo): the vote is part of the brand.
+      if (!current.session || !isApiAdapter(repo)) {
+        patchMoodboard(workspaceId, boardId, toggle);
+        return;
+      }
+
+      // Signed in, a vote is the voter's own record, so viewers can vote too.
+      // It shows at once, then takes the server's answer.
+      const item = current.workspaces
+        .find((w) => w.id === workspaceId)
+        ?.moodboards.find((b) => b.id === boardId)
+        ?.zones.flatMap((z) => z.items)
+        .find((i) => i.id === itemId);
+      if (!item) return;
+      const before = item.votes;
+      const on = !before.includes(who);
+      const setVotes = (votes: string[]) =>
+        setState((prev) => ({
+          ...prev,
+          workspaces: prev.workspaces.map((w) =>
+            w.id !== workspaceId
+              ? w
+              : {
+                  ...w,
+                  moodboards: w.moodboards.map((b) => ({
+                    ...b,
+                    zones: b.zones.map((z) => ({
+                      ...z,
+                      items: z.items.map((i) => (i.id === itemId ? { ...i, votes } : i)),
+                    })),
+                  })),
+                },
+          ),
+        }));
+      setVotes(on ? [...before, who] : before.filter((v) => v !== who));
+      void repo.voteOnCard(workspaceId, itemId, on).then((result) => {
+        if (result.ok) return setVotes(result.votes);
+        setVotes(before);
+        if (result.unsupported) patchMoodboard(workspaceId, boardId, toggle);
+        else setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message: `Your vote wasn't saved: ${result.message}`, tone: "danger" }));
+      });
     },
-    [patchMoodboard]
+    [patchMoodboard, repo]
   );
 
   const addMoodboardZone = useCallback(
