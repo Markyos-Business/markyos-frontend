@@ -13,6 +13,7 @@ import { MosaicTemplate } from "../templates/mosaic-template";
 import { LiveEditProvider } from "./live-edit";
 import { BrandFonts } from "../shared/brand-fonts";
 import { BlockKind, Lang } from "@/types";
+import { withSwatchNamesIn } from "@/lib/data/colorNames";
 
 /** The block behind a flow id, or null for a derived section. */
 function blockIdOf(flowId: string): string | null {
@@ -326,7 +327,8 @@ export function LiveCanvas({
   if (!v.ws || !v.theme) return null;
 
   const templateProps = {
-    ws: v.ws,
+    // Colour names in the preview's language (stored translations only).
+    ws: withSwatchNamesIn(v.ws, previewLang === "ar" ? "ar" : "en"),
     isAr: previewLang === "ar",
     theme: v.theme,
     sections: v.sections,

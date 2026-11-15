@@ -77,7 +77,7 @@ import {
   defaultCompetitorColumns,
   defaultTypography,
 } from "@/lib/data/mockData";
-import { roleOn } from "@/lib/data/access";
+import { canEdit, roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
 // Deep imports, not the feature's index: its components import this file,
 // so going through index.ts would make a cycle.
@@ -284,6 +284,11 @@ interface AppContextValue {
   setOverview: (workspaceId: string, html: string) => void;
   addColor: (workspaceId: string, swatch: Omit<ColorSwatch, "id">) => void;
   updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => void;
+  /**
+   * Stores a colour name's machine translation. Not an edit: no undo step,
+   * and ignored if the name changed since, or the reader can't edit the brand.
+   */
+  setColorNameTranslation: (workspaceId: string, colorId: string, translation: NonNullable<ColorSwatch["nameTranslation"]>) => void;
   removeColor: (workspaceId: string, colorId: string) => void;
   /** Moves the primary marker to this swatch, clearing it from the others. */
   setPrimaryColor: (workspaceId: string, colorId: string) => void;
@@ -1547,6 +1552,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       );
     },
     [mutateWorkspace, touchWorkspace]
+  );
+
+  const setColorNameTranslation = useCallback(
+    (workspaceId: string, colorId: string, translation: NonNullable<ColorSwatch["nameTranslation"]>) => {
+      const current = stateRef.current;
+      const target = current.workspaces.find((w) => w.id === workspaceId);
+      if (!target || !canEdit(roleOn(target, current.session))) return;
+      setState((prev) => ({
+        ...prev,
+        workspaces: prev.workspaces.map((w) =>
+          w.id !== workspaceId
+            ? w
+            : {
+                ...w,
+                colors: w.colors.map((c) =>
+                  c.id === colorId && c.name === translation.source ? { ...c, nameTranslation: translation } : c
+                ),
+              }
+        ),
+      }));
+    },
+    []
   );
 
   /**
@@ -3674,6 +3701,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setBrandDetails,
       addColor,
       updateColor,
+      setColorNameTranslation,
       removeColor,
       setPrimaryColor,
       setTypography,
@@ -3824,6 +3852,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setBrandDetails,
       addColor,
       updateColor,
+      setColorNameTranslation,
       removeColor,
       setPrimaryColor,
       setTypography,

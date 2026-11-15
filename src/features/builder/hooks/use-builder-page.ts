@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
+import { useColorNameTranslations } from "@/features/visual-identity";
 import { useDialog, useToast } from "@/components/ui";
 import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
@@ -47,6 +48,9 @@ export function useBuilderPage(slug: string) {
   const { confirm, prompt } = useDialog();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
+  // The English and Arabic previews both show colour names; fill in the
+  // missing language while an editor is here.
+  useColorNameTranslations(ws);
   /** A flow id: "block-<id>" for an authored section, or a derived section's own id. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   /**
