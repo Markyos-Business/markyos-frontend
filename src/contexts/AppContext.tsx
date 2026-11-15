@@ -283,7 +283,7 @@ interface AppContextValue {
   uiLang: (ws?: Pick<Workspace, "primaryLocale"> | null) => Lang;
   setOverview: (workspaceId: string, html: string) => void;
   addColor: (workspaceId: string, swatch: Omit<ColorSwatch, "id">) => void;
-  updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => void;
+  updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string; nameTranslation?: ColorSwatch["nameTranslation"] }) => void;
   /**
    * Stores a colour name's machine translation. Not an edit: no undo step,
    * and ignored if the name changed since, or the reader can't edit the brand.
@@ -1544,7 +1544,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateColor = useCallback(
-    (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => {
+    (workspaceId: string, colorId: string, patch: { name: string; hex: string; nameTranslation?: ColorSwatch["nameTranslation"] }) => {
       mutateWorkspace(workspaceId, (ws) =>
         touchWorkspace(ws, {
           colors: ws.colors.map((c) => (c.id === colorId ? { ...c, ...patch } : c)),
