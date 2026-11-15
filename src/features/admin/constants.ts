@@ -59,7 +59,10 @@ export const ADMIN_NAV = [
   {
     key: "manage",
     label: { en: "Manage", ar: "الإدارة" },
-    items: [{ key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" }],
+    items: [
+      { key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" },
+      { key: "content", label: { en: "Website content", ar: "محتوى الموقع" }, icon: "globe", href: "/content" },
+    ],
   },
 ];
 

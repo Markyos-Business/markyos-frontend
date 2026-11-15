@@ -85,3 +85,50 @@ export function uploadMedia(file: File, alt: { en?: string; ar?: string } = {}) 
 export const listAuthors = () => api<Author[]>("/content/authors/");
 export const listCategories = () => api<Category[]>("/content/categories/");
 export const listTags = () => api<Tag[]>("/content/tags/");
+
+// ---- library and admin ----------------------------------------------------------
+
+export const updateMedia = (id: string, patch: { altEn?: string; altAr?: string; credit?: string }) =>
+  api<MediaItem>(`/content/media/${id}/`, { method: "PATCH", body: patch });
+export const deleteMedia = (id: string) => api<void>(`/content/media/${id}/`, { method: "DELETE" });
+
+export const saveAuthor = (author: Omit<Author, "id"> & { id?: number }) =>
+  author.id
+    ? api<Author>(`/content/authors/${author.id}/`, { method: "PATCH", body: author })
+    : api<Author>("/content/authors/", { method: "POST", body: author });
+export const deleteAuthor = (id: number) => api<void>(`/content/authors/${id}/`, { method: "DELETE" });
+
+type Label = Omit<Category, "id"> & { id?: number };
+export const saveLabel = (kind: "categories" | "tags", item: Label) =>
+  item.id
+    ? api<Category>(`/content/${kind}/${item.id}/`, { method: "PATCH", body: item })
+    : api<Category>(`/content/${kind}/`, { method: "POST", body: item });
+export const deleteLabel = (kind: "categories" | "tags", id: number) => api<void>(`/content/${kind}/${id}/`, { method: "DELETE" });
+
+export type Redirect = { id: number; fromPath: string; toPath: string; statusCode: 301 | 302 };
+export const listRedirects = () => api<Redirect[]>("/content/redirects/");
+export const saveRedirect = (r: Omit<Redirect, "id"> & { id?: number }) =>
+  r.id
+    ? api<Redirect>(`/content/redirects/${r.id}/`, { method: "PATCH", body: r })
+    : api<Redirect>("/content/redirects/", { method: "POST", body: r });
+export const deleteRedirect = (id: number) => api<void>(`/content/redirects/${id}/`, { method: "DELETE" });
+
+export type Traffic = {
+  days: number;
+  views: number;
+  visitors: number;
+  byDay: { date: string; views: number }[];
+  topPages: { path: string; views: number }[];
+  devices: Record<string, number>;
+  locales: Record<string, number>;
+  referrers: { host: string; views: number }[];
+};
+export const getTraffic = (days = 30) => api<Traffic>(`/content/traffic/?days=${days}`);
+
+export type Person = { id: number; userId: string; email: string; name: string; role: "admin" | "editor" | "viewer"; sections: ContentKind[]; notes: string; grantedAt: string };
+export const listPeople = () => api<{ results: Person[] }>("/content/people/").then((r) => r.results);
+export const grantAccess = (p: { email: string; role: Person["role"]; sections: ContentKind[]; notes?: string }) =>
+  api<Person>("/content/people/", { method: "POST", body: p });
+export const updateAccess = (id: number, p: Partial<Pick<Person, "role" | "sections" | "notes">>) =>
+  api<Person>(`/content/people/${id}/`, { method: "PATCH", body: p });
+export const revokeAccess = (id: number) => api<void>(`/content/people/${id}/`, { method: "DELETE" });

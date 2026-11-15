@@ -67,6 +67,28 @@ function ContentFrame({ children }: { children: ReactNode }) {
         })),
       ],
     },
+    {
+      key: "library",
+      label: c.nav.library,
+      items: [
+        { key: "media", label: c.nav.media, icon: "image", href: "/content/media", active: pathname === "/content/media" },
+        { key: "taxonomy", label: c.nav.taxonomy, icon: "layer-group", href: "/content/taxonomy", active: pathname === "/content/taxonomy" },
+      ],
+    },
+    // Content admins only; the server refuses the rest anyway.
+    ...(me.data?.canPublish
+      ? [
+          {
+            key: "manage",
+            label: c.nav.manage,
+            items: [
+              { key: "redirects", label: c.nav.redirects, icon: "external-link-alt", href: "/content/redirects", active: pathname === "/content/redirects" },
+              { key: "traffic", label: c.nav.traffic, icon: "chart-line", href: "/content/traffic", active: pathname === "/content/traffic" },
+              { key: "people", label: c.nav.people, icon: "users", href: "/content/people", active: pathname === "/content/people" },
+            ],
+          },
+        ]
+      : []),
   ];
 
   return (

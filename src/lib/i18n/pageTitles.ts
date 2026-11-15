@@ -14,6 +14,8 @@ const pages: Record<string, Name> = {
   "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"],
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
   "/content": ["Website content", "محتوى الموقع"],
+  "/content/media": ["Media", "الوسائط"], "/content/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],
+  "/content/redirects": ["Redirects", "إعادة التوجيه"], "/content/traffic": ["Traffic", "الزيارات"], "/content/people": ["People", "الأشخاص"],
 };
 const brandPages: Record<string, Name> = {
   "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], assets: ["Assets", "الأصول"], builder: ["Guideline editor", "محرر الدليل"],
