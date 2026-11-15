@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { FilterSelectField } from "@/components/ui";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
@@ -17,7 +17,7 @@ type MemberControlsProps = {
 
 /** A team row's controls: make owner, the role, and remove — or just the role, for someone who can't govern. */
 export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: MemberControlsProps) {
-  const { removeTeamMember, setTeamRole, transferOwnership } = useApp();
+  const { removeTeamMember, setTeamRole, transferOwnership } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const who = m.name || m.email;

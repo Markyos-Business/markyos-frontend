@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { EmptyState, Icon } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import type { MoodboardZone } from "@/types";
 import type { MoodboardPageView } from "../../hooks/board/use-moodboard-page";
 import { useMoodboardActions } from "../../hooks/board/use-moodboard-actions";
@@ -38,7 +38,7 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBo
     connectMoodboardItems,
     removeMoodboardEdge,
     setMoodboardView,
-  } = useApp();
+  } = useAppActions();
   const fileRef = useRef<HTMLInputElement>(null);
   const actions = useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone, fileRef });
   const [draggingId, setDraggingId] = useState<string | null>(null);

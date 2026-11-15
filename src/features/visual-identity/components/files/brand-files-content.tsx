@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { FilterSelectField, SearchField } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
@@ -90,7 +90,7 @@ interface Row {
 }
 
 export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManageLogo: () => void }) {
-  const { addAsset, removeAsset, setAssetTags, uiLang } = useApp();
+  const { addAsset, removeAsset, setAssetTags, uiLang } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -639,7 +639,7 @@ function AssetDetailModal({
   onStatusChange: (status: AssetStatus) => void;
   isAr: boolean;
 }) {
-  const { addAssetVersion, restoreAssetVersion, setAssetStatus, setAssetType, renameAsset } = useApp();
+  const { addAssetVersion, restoreAssetVersion, setAssetStatus, setAssetType, renameAsset } = useAppActions();
   const { showToast } = useToast();
   const [tagInput, setTagInput] = useState("");
   const [name, setName] = useState(asset.fileName);

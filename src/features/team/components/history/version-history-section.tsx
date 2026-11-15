@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
@@ -16,7 +16,7 @@ type VersionHistorySectionProps = {
 
 /** Saved versions of the brand's colours and type, and restoring one. */
 export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionHistorySectionProps) {
-  const { saveVersionSnapshot, restoreVersion } = useApp();
+  const { saveVersionSnapshot, restoreVersion } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const [label, setLabel] = useState("");

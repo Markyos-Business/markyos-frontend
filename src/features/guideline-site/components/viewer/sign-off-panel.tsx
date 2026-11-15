@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon, useToast } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import { submitPublicSignOff } from "@/lib/api/public";
@@ -23,7 +23,7 @@ const SECTION: Record<PinSection, [string, string]> = {
 
 export function SignOffPanel({ ws, section, isAr }: { ws: Workspace; section: PinSection; isAr: boolean }) {
   const enabled = useContext(SubmissionEnabled);
-  const { addSignOffPin } = useApp();
+  const { addSignOffPin } = useAppActions();
   const { showToast } = useToast();
   const [name, setName] = useState("");
   const [note, setNote] = useState("");

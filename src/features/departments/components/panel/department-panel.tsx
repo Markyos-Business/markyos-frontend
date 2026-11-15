@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Switch } from "@/components/ui";
 import type { Workspace } from "@/types";
 import { DepartmentHeader } from "./department-header";
@@ -12,7 +12,7 @@ import { RelevantLinksCard } from "./relevant-links-card";
 
 /** Editing one department: its name, whether it is published, its instructions, guideline and links. */
 export function DepartmentPanel({ ws, viewId }: { ws: Workspace; viewId: string }) {
-  const { setDeptPublish, uiLang } = useApp();
+  const { setDeptPublish, uiLang } = useAppActions();
   const [importOpen, setImportOpen] = useState(false);
   const view = ws.departmentViews.find((d) => d.id === viewId);
   if (!view) return null;

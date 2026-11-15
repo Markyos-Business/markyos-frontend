@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { PendingVerification } from "../../types";
 import { useAuthLang } from "../shared/use-auth-lang";
@@ -16,7 +16,7 @@ const RESEND_AFTER = 30;
  */
 export function useVerifyEmail(pending: PendingVerification, onVerified?: () => void) {
   const { c } = useAuthLang();
-  const { verifyEmail, resendVerification } = useApp();
+  const { verifyEmail, resendVerification } = useAppActions();
   const { showToast } = useToast();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(

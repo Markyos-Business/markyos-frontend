@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
@@ -15,7 +15,7 @@ type Props = { ws: Workspace; canGovern: boolean; canPropose: boolean; isAr: boo
 
 /** The server confirms every proposal and decision before it appears here. */
 export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
-  const { proposeApproval, resolveApproval, refreshApprovals } = useApp();
+  const { proposeApproval, resolveApproval, refreshApprovals } = useAppActions();
   const { showToast } = useToast();
   const [text, setText] = useState("");
   const [notes, setNotes] = useState<Record<string, string>>({});

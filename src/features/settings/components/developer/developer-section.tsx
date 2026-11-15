@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
@@ -10,7 +10,7 @@ import { randomApiKey } from "../../utils/random";
 /** The workspace's API key, an example call, and the webhook address. */
 export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const { setApiKey, setWebhookUrl } = useApp();
+  const { setApiKey, setWebhookUrl } = useAppActions();
   const { showToast } = useToast();
   const [webhook, setWebhook] = useState(ws.developer.webhookUrl);
   const { apiKey } = ws.developer;

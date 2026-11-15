@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { StrategyAdditions, Workspace } from "@/types";
 import { markAddedToStrategy } from "../../api/briefs.api";
@@ -17,7 +17,7 @@ type Item = Parameters<typeof itemKey>[1];
  * analysis records which items went.
  */
 export function useAddToStrategy(workspace: Workspace, analysis: BriefAnalysis, onSection: (s: Section) => void) {
-  const { addToStrategy, removeFromStrategy } = useApp();
+  const { addToStrategy, removeFromStrategy } = useAppActions();
   const { showToast } = useToast();
   const lang = analysis.language;
   const isAr = lang === "ar";

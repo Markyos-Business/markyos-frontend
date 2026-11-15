@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/features/guideline-site";
@@ -40,7 +40,7 @@ const SCALE_META = [
 ];
 
 export function TypographyContent({ ws }: { ws: Workspace }) {
-  const { setTypography, setFontAsset, addAsset, uiLang } = useApp();
+  const { setTypography, setFontAsset, addAsset, uiLang } = useAppActions();
   const { showToast } = useToast();
   const [editing, setEditing] = useState<"latin" | "arabic" | null>(null);
   const [draft, setDraft] = useState("");

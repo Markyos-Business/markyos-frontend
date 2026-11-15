@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
-import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { useAppActions, useCurrentAccount, useSession } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { API_ENABLED } from "@/lib/api/client";
@@ -20,7 +20,7 @@ import type { MenuLink } from "../../types";
  * what it looks like it does, and names who is signed in while it's open,
  * which is the other half of what people open an avatar for.
  */
-export function AccountMenu({
+export const AccountMenu = memo(function AccountMenu({
   isAr: isArProp,
   controls,
   phoneLinks = [],
@@ -34,12 +34,12 @@ export function AccountMenu({
   /** Account navigation available in the menu at every viewport. */
   phoneLinks?: MenuLink[];
 }) {
-  const { state, logout } = useApp();
+  const { logout } = useAppActions();
   const interfaceLang = useInterfaceLang();
   const isAr = isArProp ?? interfaceLang.isAr;
   const account = useCurrentAccount();
   const router = useRouter();
-  const session = state.session;
+  const session = useSession();
   const initials = session ? session.name.slice(0, 2).toUpperCase() : "ND";
 
   const items: MenuLink[] = [
@@ -117,4 +117,4 @@ export function AccountMenu({
       )}
     </Popover>
   );
-}
+});

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { Account } from "@/types";
 import { setTwoFactor } from "../../api/account.api";
@@ -13,7 +13,7 @@ import { useAccountLang } from "../shared/use-account-lang";
  */
 export function useTwoFactor(account: Account) {
   const { t } = useAccountLang();
-  const { setServerAccount } = useApp();
+  const { setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");

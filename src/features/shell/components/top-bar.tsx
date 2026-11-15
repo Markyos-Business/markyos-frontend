@@ -4,7 +4,7 @@ import { TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { AccountMenu } from "@/features/account";
 import { SidebarMenuButton } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import type { Workspace } from "@/types";
 import type { ReactNode } from "react";
 
@@ -22,7 +22,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
   workspace: Workspace; section: string; arSection?: string; right?: ReactNode;
   tabs?: TopBarTab[]; tabsRight?: ReactNode; tabsId: string; panelId: string;
 }) {
-  const { uiLang } = useApp();
+  const { uiLang } = useAppActions();
   const isAr = uiLang(workspace) === "ar";
   const active = tabs?.find(tab => tab.active)?.key ?? tabs?.[0]?.key ?? "";
   const { row, tabProps } = useTabNavigation({ tabs: tabs ?? [], active, onChange: key => tabs?.find(tab => tab.key === key)?.onSelect() });

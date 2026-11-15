@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
 import { validateFile } from "../../utils/logo-upload";
@@ -32,7 +32,7 @@ export function LogoSlotCard({
   selected: boolean;
   onSelect: (kind: SlotKind) => void;
 }) {
-  const { updateLogoSlot } = useApp();
+  const { updateLogoSlot } = useAppActions();
   const { resolved } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const lightInputRef = useRef<HTMLInputElement>(null);
