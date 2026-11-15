@@ -69,8 +69,8 @@ export const deleteArticle = (id: string) => api<void>(`/content/articles/${id}/
 export const listVersions = (id: string) =>
   api<{ results: { number: number; createdAt: string; createdBy: string | null }[] }>(`/content/articles/${id}/versions/`).then((r) => r.results);
 
-export const restoreVersion = (id: string, number: number) =>
-  api<ArticleDoc>(`/content/articles/${id}/versions/${number}/restore/`, { method: "POST" });
+export const restoreVersion = (id: string, number: number, version: number) =>
+  api<ArticleDoc>(`/content/articles/${id}/versions/${number}/restore/`, { method: "POST", body: { version } });
 
 export const listMedia = () => api<{ results: MediaItem[] }>("/content/media/").then((r) => r.results);
 

@@ -56,10 +56,12 @@ export function useNotifications(open: boolean, unreadOnly: boolean) {
     const timer = setInterval(refresh, 30000);
     document.addEventListener("visibilitychange", refresh);
     window.addEventListener("focus", refresh);
+    window.addEventListener("markyos:notifications-changed", refresh);
     return () => {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", refresh);
       window.removeEventListener("focus", refresh);
+      window.removeEventListener("markyos:notifications-changed", refresh);
     };
   }, [refreshCount]);
 
@@ -83,6 +85,7 @@ export function useNotifications(open: boolean, unreadOnly: boolean) {
       if (!alive.current) return false;
       await load();
       await refreshCount();
+      window.dispatchEvent(new Event("markyos:notifications-changed"));
       return true;
     } catch {
       if (alive.current) {

@@ -7,6 +7,7 @@ const pages: Record<string, Name> = {
   "/confirm-email": ["Confirm email", "تأكيد البريد الإلكتروني"],
   "/brands": ["Brands", "العلامات"], "/brands/new": ["New brand", "علامة جديدة"],
   "/studio/board": ["Studio board", "لوحة الاستوديو"], "/account": ["Account", "الحساب"],
+  "/notifications": ["Notifications", "الإشعارات"],
   "/people": ["People", "الأشخاص"], "/forms": ["Questionnaires", "الاستبيانات"], "/forms/new": ["New questionnaire", "استبيان جديد"],
   "/templates": ["Templates", "القوالب"], "/design-system": ["UI gallery", "معرض الواجهة"],
   "/design-system/filters": ["Filter gallery", "معرض عوامل التصفية"],

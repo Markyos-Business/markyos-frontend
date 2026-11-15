@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/lib/api/client";
 import { useToast } from "@/components/ui";
-import { deleteArticle, getArticle, publishArticle, saveArticle, unpublishArticle } from "../api/content.api";
+import { deleteArticle, getArticle, publishArticle, saveArticle, unpublishArticle, restoreVersion } from "../api/content.api";
 import type { ArticleDoc, ArticleDraft, ContentLocale, TranslationDraft } from "../types";
 import { useContentLang } from "./use-content-lang";
 
@@ -48,7 +48,7 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
   // The draft as last loaded or saved: what "unsaved changes" compares to.
   const [saved, setSaved] = useState<ArticleDraft | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<null | "save" | "publish" | "unpublish" | "delete">(null);
+  const [busy, setBusy] = useState<null | "save" | "publish" | "unpublish" | "delete" | "restore">(null);
 
   const adopt = useCallback(
     (next: ArticleDoc) => {
@@ -122,5 +122,5 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
     setDraft((d) => (d ? { ...d, translations: { ...d.translations, [locale]: { ...d.translations[locale], ...patch } } } : d));
   const patch = (next: Partial<ArticleDraft>) => setDraft((d) => (d ? { ...d, ...next } : d));
 
-  return { doc, draft, error, busy, dirty, save, publish, unpublish, remove, setTranslation, patch };
+  return { doc, draft, error, busy, dirty, restore: (number:number) => doc ? handle("restore", () => restoreVersion(id, number, doc.version)) : Promise.resolve(false), save, publish, unpublish, remove, setTranslation, patch };
 }

@@ -89,6 +89,7 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, na
     rootProps={{"data-studio-nav":""}} sections={sections}
     footerSlot={isClient && !reviewHref ? <p className="px-space-2 text-caption text-text-muted">{isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}</p> : undefined}
     footer={[
+      ...(API_ENABLED ? [{key:"notifications",label:isAr?"الإشعارات":"Notifications",icon:"bell",href:"/notifications"}] : []),
       ...(reviewHref ? [{key:"review-guideline",label:isAr?"مراجعة الدليل":"Review guideline",icon:"eye",href:reviewHref}] : []),
       toItem({key:"team",label:"Team & history",arLabel:"الفريق والإصدارات",icon:"users",path:"team"}),
       toItem({key:"settings",label:"Settings",arLabel:"الإعدادات",icon:"cog",path:"settings"}),

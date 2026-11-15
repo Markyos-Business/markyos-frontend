@@ -115,3 +115,13 @@ before manual recovery; provider acceptance is not proof of recipient delivery.
 Run migration `notifications.0002_securityemail` before deploying these backend
 changes. The frontend bell needs no code change for email delivery, and no
 historical notifications are emailed retroactively.
+
+## Notifications page and navigation
+
+`/notifications` provides the same inbox controls as the bell sheet. It requires
+a signed-in API session and is linked from account navigation, the mobile account
+menu, the brand sidebar footer and the admin sidebar footer. `NotificationsView`
+is exported through the notifications feature index; route files only compose
+the feature. Both surfaces reuse InboxContent and the same request hook.
+Successful read changes notify other mounted inbox/count instances in the same
+window to refresh; polling/focus refresh remains the cross-tab fallback.

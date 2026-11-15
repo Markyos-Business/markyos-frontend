@@ -29,6 +29,7 @@ import { useContentLang } from "../../hooks/use-content-lang";
 import { useContentMe } from "../../hooks/use-content-me";
 import { useTaxonomy } from "../../hooks/use-taxonomy";
 import type { ArticleDraft, ContentLocale, MediaRef, TranslationDraft } from "../../types";
+import { VersionHistory } from "./version-history";
 import { useMediaPicker } from "./media-picker";
 
 const toRef = (m: { id: string; url: string; altEn: string; altAr: string; width: number | null; height: number | null }): MediaRef => ({
@@ -110,8 +111,7 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
             </>
           ) : undefined
         }
-        secondaryActions={
-          canPublish ? (
+        secondaryActions={<><VersionHistory id={id} version={doc.version} canWrite={canWrite} dirty={editor.dirty} busy={!!editor.busy} onRestore={editor.restore}/>{          canPublish ? (
             <>
               {doc.isPublished && (
                 <Button variant="ghost" icon={<Icon name="eye-slash" size={18} />} onClick={() => void editor.unpublish()} disabled={!!editor.busy}>
@@ -122,9 +122,9 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
                 {t.remove}
               </Button>
             </>
-          ) : undefined
-        }
+          ) : undefined}</>}
       />
+
 
       <div className="grid gap-space-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <section className="mk-surface rounded-card bg-surface-1 p-space-8">

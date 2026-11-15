@@ -90,7 +90,7 @@ function AdminFrame({ children }: { children: ReactNode }) {
           isAr={isAr}
           storageKey={SIDEBAR_RAILS.admin}
           sections={sections}
-          footer={[{ key: "studio", label: copy.back, icon: "arrow-left", href: "/brands" }]}
+          footer={[{ key: "notifications", label: isAr ? "الإشعارات" : "Notifications", icon: "bell", href: "/notifications" }, { key: "studio", label: copy.back, icon: "arrow-left", href: "/brands" }]}
         />
       }
       topbar={

@@ -287,3 +287,9 @@ Brand cards and overview derive five setup steps from saved data: attached logo,
 Company wording addresses teams and partners; studio/freelancer wording retains client language. These labels do not change server membership permissions. Demo builds explain local persistence once in a dismissible notice, omit unavailable API navigation and provide feature-specific direct-route previews. Connected research workflows remain available.
 
 Billing purchase options live in Account → Billing. Brand settings and limit states link there. A per-brand purchase does not increase the account's brand limit. Signup chooses an account type before Google authentication, displays type descriptions, distinguishes missing and malformed email, and asks for one password in browser-only signup. Email-link setup and password reset retain their confirmation/security behavior.
+
+Notifications also has a signed-in `/notifications` page, reachable from account
+navigation and brand/admin sidebar footers. It reuses the bell inbox's filters,
+read actions and empty/error states. CMS article version history shows the last
+20 saved states and requires confirmation before restoring a draft; restoration
+does not publish and refuses a stale server draft version.
