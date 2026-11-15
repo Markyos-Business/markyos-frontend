@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { Icon, RichText, richIsEmpty } from "@/components/ui";
 import { resolveStrategy } from "../../utils/strategy-lang";
+import { withSwatchNamesIn } from "@/lib/data/colorNames";
 import { BrandStrategy, Lang, Workspace } from "@/types";
 
 /**
@@ -120,7 +121,7 @@ export function strategyNarrativeFilled(ws: Workspace): boolean {
 }
 
 export function StrategyDocument({
-  ws,
+  ws: source,
   isAr,
   lang,
   surface = "app",
@@ -148,7 +149,8 @@ export function StrategyDocument({
 }) {
   const t = docTokens(surface);
   // Flattened to one language up front, so nothing below this line has to
-  // know the strategy is bilingual at all.
+  // know the strategy (or a colour's name) is bilingual at all.
+  const ws = withSwatchNamesIn(source, lang ?? (isAr ? "ar" : "en"));
   const s = resolveStrategy(ws.strategy, lang ?? (isAr ? "ar" : "en"));
   const omit = (id: string) => omitChapters.includes(id);
   /** These fields hold markup, so emptiness is a text question, not a trim. */

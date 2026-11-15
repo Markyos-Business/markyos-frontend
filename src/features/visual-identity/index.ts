@@ -7,3 +7,4 @@ export { LogoSystemContent } from "./components/logo/logo-system-content";
 export { TypographyContent } from "./components/typography/typography-content";
 export { VisualIdentityView } from "./components/visual-identity-view";
 export { useVisualIdentityPage } from "./hooks/use-visual-identity-page";
+export { useColorNameTranslations } from "./hooks/use-color-name-translations";

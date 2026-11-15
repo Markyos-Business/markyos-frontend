@@ -45,10 +45,17 @@ export interface LogoSlot {
 
 export interface ColorSwatch {
   id: string;
+  /** As the studio wrote it, in either language. */
   name: string;
   hex: string;
   isPrimary?: boolean;
   locked?: boolean;
+  /**
+   * The name in the other language, machine-translated. `source` is the name
+   * it was made from: once the name is edited they differ, and the
+   * translation is stale until it is redone. See lib/data/colorNames.ts.
+   */
+  nameTranslation?: { lang: Lang; text: string; source: string };
 }
 
 export interface Typography {

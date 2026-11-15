@@ -8,11 +8,13 @@ import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
 import { ColorSwatch, SlotKind, Workspace } from "@/types";
 import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
+import { useColorNameTranslations } from "../../hooks/use-color-name-translations";
 
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
 export function ColorContent({ ws }: { ws: Workspace }) {
   const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useAppActions();
+  useColorNameTranslations(ws);
   const { showToast } = useToast();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [showReport, setShowReport] = useState(false);
