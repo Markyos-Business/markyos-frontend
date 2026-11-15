@@ -35,6 +35,21 @@ export function navMarkSlot(ws: Workspace): LogoSlot | undefined {
   return undefined;
 }
 
+/**
+ * The lockup a logo section demonstrates on — clearspace, variations, misuse.
+ *
+ * The reading language's own lockup first, then the other script's, then the
+ * symbol: an English guide shows the Latin logo when the brand has one, and
+ * the Arabic guide the Arabic one.
+ */
+export function lockupSlot(ws: Workspace, isAr: boolean): LogoSlot | undefined {
+  const order: SlotKind[] = isAr ? ["arabic", "latin", "symbol"] : ["latin", "arabic", "symbol"];
+  for (const kind of order) {
+    if (ws.logo[kind]?.phase === "attached") return ws.logo[kind];
+  }
+  return undefined;
+}
+
 export function navMark(ws: Workspace): MarkSources {
   return markSources(navMarkSlot(ws));
 }
