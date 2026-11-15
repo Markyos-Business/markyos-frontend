@@ -113,7 +113,7 @@ const TOOLS: { action: ToolAction; icon: string; en: string; ar: string }[] = [
  */
 const ARTICLE_TOOLS: typeof TOOLS = [
   { action: "heading", icon: "heading", en: "Heading", ar: "عنوان" },
-  { action: "subheading", icon: "text-height", en: "Subheading", ar: "عنوان فرعي" },
+  { action: "subheading", icon: "font", en: "Subheading", ar: "عنوان فرعي" },
   ...TOOLS.filter((t) => !["heading", "table", "row", "clear"].includes(t.action)),
   { action: "image", icon: "image", en: "Insert image", ar: "إدراج صورة" },
   { action: "divider", icon: "minus", en: "Insert divider", ar: "إدراج فاصل" },
