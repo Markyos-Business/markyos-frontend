@@ -13,9 +13,9 @@ const pages: Record<string, Name> = {
   "/design-system/forms": ["Forms gallery", "معرض النماذج"], "/design-system/form-structure": ["Form structure gallery", "معرض بنية النماذج"], "/design-system/badge": ["Badge gallery", "معرض الشارة"], "/assets": ["Assets", "الأصول"], "/design-system/table-select": ["Table and select gallery", "معرض الجداول والقوائم"],
   "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"],
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
-  "/content": ["Website content", "محتوى الموقع"],
-  "/content/media": ["Media", "الوسائط"], "/content/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],
-  "/content/redirects": ["Redirects", "إعادة التوجيه"], "/content/traffic": ["Traffic", "الزيارات"], "/content/people": ["People", "الأشخاص"],
+  "/admin/cms": ["Website content", "محتوى الموقع"],
+  "/admin/cms/media": ["Media", "الوسائط"], "/admin/cms/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],
+  "/admin/cms/redirects": ["Redirects", "إعادة التوجيه"], "/admin/cms/traffic": ["Website traffic", "زيارات الموقع"], "/admin/cms/people": ["CMS people", "فريق المحتوى"],
 };
 const brandPages: Record<string, Name> = {
   "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], assets: ["Assets", "الأصول"], builder: ["Guideline editor", "محرر الدليل"],
@@ -31,7 +31,7 @@ export function routePageName(pathname: string): Name {
   const path = pathname.replace(/\/$/, "") || "/";
   if (pages[path]) return pages[path];
   if (/^\/admin\/users\/[^/]+$/.test(path)) return ["User details", "تفاصيل المستخدم"];
-  if (/^\/content\/articles\/[^/]+$/.test(path)) return ["Edit article", "تحرير المقال"];
+  if (/^\/admin\/cms\/articles\/[^/]+$/.test(path)) return ["Edit article", "تحرير المقال"];
   if (/^\/print\/analysis\/[^/]+$/.test(path)) return ["Analysis report", "تقرير التحليل"];
   if (/^\/v\/[^/]+(?:\/p\/[^/]+)?$/.test(path)) return ["Published guideline", "الدليل المنشور"];
   const share = path.match(/^\/([abfs])\/[^/]+$/)?.[1];

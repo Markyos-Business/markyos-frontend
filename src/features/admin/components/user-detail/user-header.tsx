@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionsDropdown, Avatar, Button, ContentCard, Icon, StatusDot, Tag } from "@/components/ui";
-import { STATUS_TONE } from "../../constants";
+import { STATUS_TONE, roleTone } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { UserActions } from "../../hooks/shared/use-user-actions";
 import type { AdminUser } from "../../types";
@@ -28,7 +28,7 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
             {user.email}
           </div>
           <div className="flex flex-wrap items-center gap-space-5 pt-space-2">
-            <Tag tone={user.isAdmin ? "primary" : "neutral"}>{c.roles[user.role]}</Tag>
+            <Tag tone={roleTone(user)}>{c.roles[user.role]}</Tag>
             <StatusDot tone={STATUS_TONE[user.status]} label={c.statuses[user.status]} />
           </div>
         </div>

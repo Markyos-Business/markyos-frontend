@@ -1193,7 +1193,8 @@ export interface Account {
   hasPassword?: boolean;
 }
 
-export type AccountRole = "admin" | "member";
+/** Admin runs the platform; content runs the website's content only. */
+export type AccountRole = "admin" | "member" | "content";
 
 export type AccountType = "studio" | "freelancer" | "company";
 

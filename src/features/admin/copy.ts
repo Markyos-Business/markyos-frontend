@@ -35,7 +35,7 @@ const en = {
     lastActive: "Last active",
   },
 
-  roles: { admin: "Admin", member: "Member" },
+  roles: { admin: "Admin", member: "Member", content: "Content manager" },
   statuses: { active: "Active", deactivated: "Deactivated", waiting: "Waiting to join" },
   types: { studio: "Studio", freelancer: "Freelancer", company: "Company", none: "No type" },
   locales: { en: "en-US", ar: "ar-SA" },
@@ -110,6 +110,7 @@ const en = {
     help: {
       admin: "Admin: sees every account on Markyos and can change them.",
       member: "Member: uses Markyos with their own brands.",
+      content: "Content manager: runs the website's content (CMS) and nothing else of the admin area.",
     },
   },
 
@@ -202,7 +203,8 @@ const en = {
     notAllowed: "Not allowed",
     items: {
       ownBrands: "Create and edit their own brands",
-      adminArea: "Open the admin area",
+      adminArea: "Open the dashboard and users",
+      websiteContent: "Manage website content (CMS)",
       seeAccounts: "See every account on Markyos",
       invite: "Invite people to Markyos",
       changeRoles: "Change roles and account types",
@@ -261,7 +263,7 @@ const ar: UsersCopy = {
     lastActive: "آخر نشاط",
   },
 
-  roles: { admin: "مسؤول", member: "عضو" },
+  roles: { admin: "مسؤول", member: "عضو", content: "مدير المحتوى" },
   statuses: { active: "نشط", deactivated: "معطّل", waiting: "بانتظار الانضمام" },
   types: { studio: "استوديو", freelancer: "مستقل", company: "شركة", none: "بلا نوع" },
   locales: { en: "en-US", ar: "ar-SA" },
@@ -336,6 +338,7 @@ const ar: UsersCopy = {
     help: {
       admin: "مسؤول: يرى كل الحسابات على ماركيوس ويمكنه تغييرها.",
       member: "عضو: يستخدم ماركيوس مع علاماته الخاصة.",
+      content: "مدير المحتوى: يدير محتوى الموقع (نظام المحتوى) ولا شيء غيره من منطقة الإدارة.",
     },
   },
 
@@ -428,7 +431,8 @@ const ar: UsersCopy = {
     notAllowed: "غير مسموح",
     items: {
       ownBrands: "إنشاء علاماته وتعديلها",
-      adminArea: "فتح منطقة الإدارة",
+      adminArea: "فتح لوحة المعلومات والمستخدمين",
+      websiteContent: "إدارة محتوى الموقع (نظام المحتوى)",
       seeAccounts: "رؤية كل الحسابات على ماركيوس",
       invite: "دعوة أشخاص إلى ماركيوس",
       changeRoles: "تغيير الأدوار وأنواع الحسابات",

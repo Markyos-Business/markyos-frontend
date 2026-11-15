@@ -43,11 +43,12 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
           onChange={(value) => set("role", value as AccountRole)}
           options={[
             { value: "member", label: c.roles.member },
+            { value: "content", label: c.roles.content },
             { value: "admin", label: c.roles.admin },
           ]}
         />
         {/* Admins have no account type: it sets a customer's plans and limits. */}
-        {form.role === "member" && (
+        {form.role !== "admin" && (
           <SelectField
             label={d.type}
             value={form.accountType}

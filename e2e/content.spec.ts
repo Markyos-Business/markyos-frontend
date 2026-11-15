@@ -16,12 +16,12 @@ test("an article goes from draft to the public API and back", async ({ page }) =
   await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
   await page.locator('button[type="submit"]').click();
   await page.waitForURL(/\/admin/);
-  await page.goto("/content?lang=en");
+  await page.goto("/admin/cms?lang=en");
   await page.getByRole("button", { name: "New article" }).click();
   await page.getByLabel("English title").fill(title);
   await page.getByLabel("Arabic title").fill("تآكل العلامة");
   await page.getByRole("button", { name: "Create" }).click();
-  await page.waitForURL(/\/content\/articles\//);
+  await page.waitForURL(/\/admin\/cms\/articles\//);
   const editor = page.locator('[role="textbox"][contenteditable="true"]').first();
   await editor.click();
   await page.keyboard.type("A brand lives in two places and drifts.");

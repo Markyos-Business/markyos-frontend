@@ -20,7 +20,7 @@ export const CONTENT_COPY = {
     language: "Interface language",
     allContent: "All content",
     retry: "Try again",
-    nav: { library: "Library", media: "Media", taxonomy: "Authors and labels", manage: "Manage", redirects: "Redirects", traffic: "Traffic", people: "People" },
+    nav: { cms: "CMS", library: "CMS library", media: "Media", taxonomy: "Authors and labels", manage: "Manage", cmsManage: "CMS settings", redirects: "Redirects", traffic: "Website traffic", people: "CMS people" },
     common: { save: "Save", add: "Add", remove: "Remove", cancel: "Cancel", edit: "Edit", confirmRemove: "Remove this?", saved: "Saved.", removed: "Removed." },
     media: {
       title: "Media",
@@ -169,7 +169,7 @@ export const CONTENT_COPY = {
     language: "لغة الواجهة",
     allContent: "كل المحتوى",
     retry: "إعادة المحاولة",
-    nav: { library: "المكتبة", media: "الوسائط", taxonomy: "الكُتّاب والتصنيفات", manage: "الإدارة", redirects: "إعادة التوجيه", traffic: "الزيارات", people: "الأشخاص" },
+    nav: { cms: "نظام المحتوى", library: "مكتبة المحتوى", media: "الوسائط", taxonomy: "الكُتّاب والتصنيفات", manage: "الإدارة", cmsManage: "إعدادات المحتوى", redirects: "إعادة التوجيه", traffic: "زيارات الموقع", people: "فريق المحتوى" },
     common: { save: "حفظ", add: "إضافة", remove: "إزالة", cancel: "إلغاء", edit: "تعديل", confirmRemove: "إزالة هذا العنصر؟", saved: "تم الحفظ.", removed: "تمت الإزالة." },
     media: {
       title: "الوسائط",

@@ -37,6 +37,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
           { value: "", label: f.allRoles },
           { value: "admin", label: c.roles.admin },
           { value: "member", label: c.roles.member },
+          { value: "content", label: c.roles.content },
         ]}
       />
       <FilterSelectField

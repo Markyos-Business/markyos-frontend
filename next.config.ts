@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       // The website's sign-up buttons all point at /start (with ?type=, ?plan=
       // and ?lang=); the query string carries through to the sign-up form.
       { source: "/start", destination: "/signup", permanent: false },
+      // The CMS moved into the admin area; old links still land.
+      { source: "/content", destination: "/admin/cms", permanent: false },
+      { source: "/content/:path*", destination: "/admin/cms/:path*", permanent: false },
     ];
   },
 };

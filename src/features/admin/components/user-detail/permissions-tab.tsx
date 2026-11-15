@@ -10,7 +10,7 @@ export function PermissionsTab({ user }: { user: AdminUser }) {
   const { c } = useAdminLang();
   const p = c.permissions;
   // A superuser is an admin whatever their role says.
-  const role = user.isAdmin ? "admin" : "member";
+  const role = user.isAdmin ? "admin" : user.role;
   return (
     <ContentCard title={p.title(c.roles[role])} footer={<p className="text-caption text-text-muted">{p.note}</p>}>
       <KeyValueList

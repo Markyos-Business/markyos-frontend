@@ -82,14 +82,14 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
 
   const remove = async () => {
     const ok = await confirm({ title: t.removeTitle, body: t.removeBody, confirmLabel: t.remove, tone: "danger" });
-    if (ok && (await editor.remove())) router.replace("/content");
+    if (ok && (await editor.remove())) router.replace("/admin/cms");
   };
 
   return (
     <div className="flex flex-col gap-space-8">
       <PageHeader
         title={title}
-        breadcrumb={<Link href={`/content?kind=${doc.kind}`}>{kindLabel(doc.kind, lang)}</Link>}
+        breadcrumb={<Link href={`/admin/cms?kind=${doc.kind}`}>{kindLabel(doc.kind, lang)}</Link>}
         description={
           <span className="inline-flex flex-wrap items-center gap-space-4">
             <StatusDot tone={doc.isPublished ? (doc.hasUnpublishedChanges || editor.dirty ? "warning" : "success") : "neutral"} label={status} />
