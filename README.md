@@ -601,3 +601,7 @@ with `NEXT_PUBLIC_UI_GALLERY=1`.
 The shared responsive filter pattern is documented in
 [UI development guidance](docs/development/UI.md#responsive-filters).
 With `NEXT_PUBLIC_UI_GALLERY=1`, preview it at `/design-system/filters`.
+
+The persistent notification bell and inbox are described in
+[Notification inbox](docs/features/notifications.md), including events, API,
+recipient permissions and migration/deployment steps.

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { NotificationBell } from "@/features/notifications";
 import { memo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
@@ -68,7 +69,7 @@ export const AccountMenu = memo(function AccountMenu({
   }
 
   return (
-    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250} onOpen={checkContentAccess}>
+    <div className="flex items-center gap-space-3"><NotificationBell isAr={isAr}/><Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250} onOpen={checkContentAccess}>
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">
@@ -130,6 +131,6 @@ export const AccountMenu = memo(function AccountMenu({
           </button>
         </div>
       )}
-    </Popover>
+    </Popover></div>
   );
 });

@@ -150,3 +150,10 @@ export interface AdminBulkResult {
   done: string[];
   refused: { id: string; email: string; detail: string }[];
 }
+
+/** Latest platform events; deleted accounts retain a subject but no link. */
+export interface DashboardActivity extends Omit<AdminActivity, "kind"> {
+  kind: AdminActivityKind | "removed";
+  userId: string | null;
+  subject: string;
+}

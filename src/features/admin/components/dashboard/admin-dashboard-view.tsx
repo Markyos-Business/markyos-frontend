@@ -1,14 +1,20 @@
 "use client";
 
-import { AlertBanner, Button, PageHeader, Stagger, StatTile } from "@/components/ui";
+import { AlertBanner, Button, PageHeader, Skeleton, Stagger, StatTile } from "@/components/ui";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import { useAdminStats } from "../../hooks/shared/use-admin-stats";
+import { useRequest } from "@/hooks/useRequest";
+import { getDashboardActivity } from "../../api/admin.api";
+import { NeedsAttention } from "./needs-attention";
+import { RecentActivity } from "./recent-activity";
 import { Breakdown } from "./breakdown";
 import { SignupsChart } from "./signups-chart";
 
 export function AdminDashboardView() {
   const { data, error, loading, reload } = useAdminStats();
+  const activity = useRequest(getDashboardActivity, "dashboard-activity");
+  const refresh = () => { reload(); activity.reload(); };
   const { isAr, lang } = useAdminLang();
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
@@ -18,8 +24,8 @@ export function AdminDashboardView() {
         title={t("Dashboard", "لوحة المعلومات")}
         description={t("Everyone on Markyos, and what they're building.", "كل من على ماركيوس، وما يبنونه.")}
         actions={
-          <Button variant="outline" size="sm" onClick={reload} disabled={loading}>
-            {loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
+          <Button variant="outline" size="sm" onClick={refresh} disabled={loading || activity.loading}>
+            {loading || activity.loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
           </Button>
         }
       />
@@ -27,16 +33,25 @@ export function AdminDashboardView() {
       <AlertBanner message={error} />
 
       {data && (
-        <>
           <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-            <StatTile value={data.users.total} label={t("Accounts", "الحسابات")} />
+            <StatTile value={data.users.total} label={t("Registered accounts", "الحسابات المسجلة")} />
             <StatTile value={data.users.pending} label={t("Waiting to join", "بانتظار الانضمام")} />
-            <StatTile value={data.users.activeLast30d} label={t("Active in 30 days", "نشطة خلال 30 يومًا")} />
+            <StatTile value={data.users.activeLast30d} label={t("Signed in · 30 days", "سجّلوا الدخول · 30 يومًا")} />
             <StatTile value={data.users.new7d} label={t("New this week", "جديدة هذا الأسبوع")} />
             <StatTile value={data.brands.total} label={t("Brands", "العلامات")} />
             <StatTile value={data.brands.shared} label={t("Brands with a team", "علامات لها فريق")} />
             <StatTile value={data.members.people} label={t("People on teams", "أشخاص في الفرق")} />
           </Stagger>
+      )}
+      {loading && !data && <div aria-busy="true" className="grid grid-cols-2 gap-space-3 sm:grid-cols-4">{[0,1,2,3].map(i=><Skeleton key={i} className="h-24 w-full rounded-lg"/>)}</div>}
+      <div className="grid grid-cols-1 gap-space-5 lg:grid-cols-2">
+        <NeedsAttention stats={data} loading={loading}/>
+        <RecentActivity items={activity.data} error={activity.error} loading={activity.loading} onRetry={activity.reload}/>
+      </div>
+
+      {data && (
+        <>
+
 
           <SignupsChart signups={data.signups} lang={lang} />
 

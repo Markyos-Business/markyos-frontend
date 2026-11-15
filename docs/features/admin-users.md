@@ -620,3 +620,21 @@ selection, and opens all users or the selected status. Sort and page size remain
 Counts show placeholders during initial loading, an em dash on initial failure,
 and an explicit retry message. A refresh failure retains previous data with a
 stale-data message. Both languages use the same data definitions.
+
+## Admin dashboard: attention and activity
+
+`/admin` keeps existing aggregate metrics and charts. Needs attention links to
+unfiltered waiting/deactivated user lists; deactivation is a review category,
+not an inferred failure. Counts come from the existing stats endpoint.
+
+Recent activity reads `GET /admin/activity/`, a platform-admin-only endpoint
+returning at most 12 events ordered newest first. Coverage is account creation,
+email verification and persisted AdminAction records. It is not a complete
+operational or failed-request log. Events include `id`, `kind`, `at`, `detail`,
+`subject` and nullable `userId`. Live subjects link to their activity tab;
+deleted accounts remain readable without a broken link. Session IPs and
+arbitrary action detail fields are excluded from this dashboard payload.
+
+Refresh reloads both stats and activity. Each section handles unavailable data;
+activity has its own Retry, empty state and stale-data notice. Ship the backend
+endpoint with the frontend change. No database migration is required.
