@@ -40,7 +40,7 @@ export function AdminUsersView() {
         }
       />
 
-      <UsersStats stats={page.stats.data} loading={page.stats.loading} />
+      <UsersStats stats={page.stats.data} loading={page.stats.loading} error={page.stats.error} onRetry={page.stats.reload} status={page.values.status} filtered={page.filtered} onSelect={page.selectStatus} />
 
       <div className="flex flex-col gap-space-5">
         <UsersFilters {...page} />

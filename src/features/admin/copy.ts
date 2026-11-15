@@ -10,6 +10,15 @@ const en = {
   export: "Export",
   exported: (n: number) => `${n} users exported.`,
 
+  overview: {
+    title: "User overview", scope: "All accounts · select a card to view users",
+    all: "All users", allHint: "Registered accounts and pending invites",
+    activeHint: "Registered accounts with access enabled", pendingHint: "Accounts waiting to complete activation",
+    deactivatedHint: "Registered accounts with access disabled",
+    newUsers: "Registered in the last 30 days", recentActivity: "Signed in during the last 30 days",
+    failed: "User counts could not be loaded.", stale: "Counts could not be refreshed. Showing the last loaded data.", retry: "Retry",
+  },
+
   stats: {
     total: "Total users",
     active: "Active",
@@ -237,6 +246,15 @@ const ar: UsersCopy = {
   invite: "دعوة مستخدم",
   export: "تصدير",
   exported: (n) => `تم تصدير ${n} مستخدم.`,
+
+  overview: {
+    title: "نظرة عامة على المستخدمين", scope: "كل الحسابات · اختر بطاقة لعرض المستخدمين",
+    all: "كل المستخدمين", allHint: "الحسابات المسجلة والدعوات المعلقة",
+    activeHint: "حسابات مسجلة يُسمح لها بالدخول", pendingHint: "حسابات بانتظار إكمال التفعيل",
+    deactivatedHint: "حسابات مسجلة تم إيقاف وصولها",
+    newUsers: "حسابات مسجلة خلال آخر 30 يومًا", recentActivity: "سجّلوا الدخول خلال آخر 30 يومًا",
+    failed: "تعذر تحميل أعداد المستخدمين.", stale: "تعذر تحديث الأعداد. تظهر آخر بيانات تم تحميلها.", retry: "إعادة المحاولة",
+  },
 
   stats: {
     total: "إجمالي المستخدمين",

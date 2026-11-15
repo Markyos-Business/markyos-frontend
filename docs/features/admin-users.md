@@ -11,7 +11,7 @@ The people who run Markyos (platform admins: `User.role = admin`, or a Django
 superuser) need one place to see every account and act on it without opening
 Django's `/admin/`. They use it to:
 
-- see how many people use Markyos and how that moved since last month;
+- see account totals, activation status, recent registrations and sign-ins;
 - find an account by name, email, role, status, account type, language or
   last activity;
 - invite someone (an account that waits for its emailed set-password link);
@@ -94,7 +94,7 @@ components only compose them.
 | Part | Kit components and key props |
 | --- | --- |
 | `AdminUsersView` | `PageHeader` (`breadcrumb`, `title`, `description`, `secondaryActions`=Export `Button` outline, `actions`=Invite `Button` primary) |
-| `UsersStats` | `StatGrid` › 4 × `StatCard` (`label`, `value`, `footnote`="vs last month", `trend`={direction, value, label}, `loading`) |
+| `UsersStats` | `StatGrid` › 4 accessible count buttons with status explanations, selection state and loading placeholders |
 | `UsersFilters` | `FilterBar` (`active`, `onClear`) › `SearchField` (`shortcut`, `onDebouncedChange`), 4 × `FilterSelectField` (`hideLabel`, `icon`), `DateRangeButton` |
 | `UsersTable` | `DataTable<AdminUser>` (`selectable`, `bulkActions`, server `sort` + `paging`, `rowActions`, `getRowLabel`, `onRowClick`, `empty`) with `Avatar`, `Tag`, `StatusDot`; empty states via `EmptyState` |
 | `InviteUsersDialog` | `FormDialog` › `TextareaField`, 3 × `SelectField` |
@@ -187,7 +187,7 @@ interface AdminUser {
 
 | Method and path | Purpose | Notes |
 | --- | --- | --- |
-| `GET stats/` | Totals | `users.now` and `users.monthAgo` (`total`, `active`, `pending`, `deactivated`) feed the trends; `users.activeAdmins` feeds the last-admin rule |
+| `GET stats/` | Totals | `users.now` feeds global count cards; All users includes `total + pending`. `new30d` and `activeLast30d` provide recent context. `users.activeAdmins` feeds the last-admin rule |
 | `GET users/` | Paginated list | `search`, `role`, `status`, `account_type`, `language` (`en`, `ar`, `none`), `last_active_from` / `last_active_to` (ISO dates), `ordering` (`full_name`, `role`, `status`, `last_login`, `brands_owned`, `created_at`; `-` for descending), `page`, `page_size` (max 100) |
 | `POST users/` | Invite | `{ email, name?, role, accountType?, language? }` → 201 `AdminUser`; 400 `{ email }` if taken |
 | `GET users/<id>/` | One account | 404 when it doesn't exist |
@@ -605,3 +605,18 @@ picker) are in `src/components/ui/ui-strings.tsx`, also in both languages.
   each brand's Team page. A studio-wide People view was planned separately.
 - **Audit log UI.** `AdminAction` records every admin change. A platform-wide
   "Admin activity" page would read the same table.
+
+## User overview behavior (16 November 2026)
+
+The four overview counts always cover all accounts, independently of table
+filters. All users includes registered accounts and pending invitations; Active
+means access enabled, not recently online. Recent context reports registered
+accounts created in the last 30 days and accounts that signed in during that
+period. The old percentage trends were removed because `monthAgo` describes
+older accounts in their current states, rather than historical state snapshots.
+
+Selecting a count clears search and advanced filters, resets the page and row
+selection, and opens all users or the selected status. Sort and page size remain.
+Counts show placeholders during initial loading, an em dash on initial failure,
+and an explicit retry message. A refresh failure retains previous data with a
+stale-data message. Both languages use the same data definitions.

@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui";
 import type { SortState } from "@/components/ui";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { listUsers } from "../../api/admin.api";
-import type { AdminUserQuery } from "../../types";
+import type { AdminUserQuery, AdminUserStatus } from "../../types";
 import { usersCsv } from "../../utils/csv";
 import { useAdminLang } from "../shared/use-admin-lang";
 import { useAdminStats } from "../shared/use-admin-stats";
@@ -69,6 +69,13 @@ export function useUsersPage() {
     setSearchKey((k) => k + 1);
   };
 
+  const selectStatus = (status: AdminUserStatus | "") => {
+    filters.setMany({ ...FILTERS, status });
+    setSelected([]);
+    setSearchSeed("");
+    setSearchKey((key) => key + 1);
+  };
+
   const desc = values.sort.startsWith("-");
   const field = values.sort.replace(/^-/, "");
   const sortKey = Object.keys(SORT_FIELDS).find((k) => SORT_FIELDS[k] === field) ?? "joined";
@@ -111,6 +118,7 @@ export function useUsersPage() {
     values,
     filtered,
     clearFilters,
+    selectStatus,
     searchKey,
     searchSeed,
     users,
