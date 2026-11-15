@@ -17,7 +17,9 @@ Generation uses Django post-save signals for User, AdminAction and FormEvent.
 The notification is written in the event's transaction where one exists. Each
 recipient/event key is unique, so dispatching the same event again creates no
 duplicate. Raw fixture loads are ignored. This is an in-app inbox, not an email
-queue. Existing transactional email behavior remains separate. Historical
+queue. Existing invitation and discovery email behavior remains separate. Selected
+account security events additionally use the durable email delivery described
+below. Historical
 activity is not backfilled. Deleted accounts cascade-delete their inboxes.
 
 ## API and security
@@ -86,3 +88,30 @@ Other features import only `@/features/notifications`. The shared UI library
 provides generic Popup, Button and date primitives; it contains no notification
 business rules. The account header composes the public bell without owning its
 requests or state. ESLint enforces imports through each feature's public index.
+
+## Security email delivery
+
+Admin role changes, account deactivation/reactivation, signing out all sessions,
+and ending an individual session also notify the affected user by email.
+These are mandatory security notices. Account-type changes, welcome inbox
+items and invitations do not trigger this new mail path. Existing invitation,
+verification and discovery emails keep their own delivery rules.
+
+The backend stores one SecurityEmail per notification, snapshots the recipient
+address and interface language, and sends only after the business transaction
+commits. Unset language follows the application's Arabic default. Emails
+contain the event, acting administrator and time; passwords, verification codes
+and session IPs are excluded. Disabled-access notices do not direct users to an
+account page they cannot open. Account links use configured FRONTEND_URL.
+
+Delivery has pending/sending/sent/failed states and an attempt count. Atomic
+claiming prevents concurrent workers sending the same delivery. Sent rows are
+never retried. A failure does not undo the security action or its inbox item.
+The management command `send_security_emails --limit 100` drains pending rows;
+`--retry-failed` explicitly retries failures. No periodic job is configured by
+this implementation. In-flight/ambiguous sends require provider-log review
+before manual recovery; provider acceptance is not proof of recipient delivery.
+
+Run migration `notifications.0002_securityemail` before deploying these backend
+changes. The frontend bell needs no code change for email delivery, and no
+historical notifications are emailed retroactively.
