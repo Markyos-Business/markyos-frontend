@@ -11,3 +11,23 @@ describe("rich HTML", () => {
     expect(sanitizeRichHtml(html)).toBe(html);
   });
 });
+
+describe("sanitizeRichHtml media", () => {
+  const figure = '<figure><img src="https://cdn.markyos.com/a.png" alt="Logo"><figcaption>Logo</figcaption></figure>';
+
+  it("drops images from brand copy", () => {
+    expect(sanitizeRichHtml(figure)).not.toContain("<img");
+  });
+
+  it("keeps images, figures and captions in articles", () => {
+    const clean = sanitizeRichHtml(figure, { media: true });
+    expect(clean).toContain('<img src="https://cdn.markyos.com/a.png" alt="Logo" />');
+    expect(clean).toContain("<figcaption>Logo</figcaption>");
+  });
+
+  it("never lets a data: or script source through", () => {
+    for (const src of ["data:image/png;base64,AAAA", "javascript:alert(1)", "//evil.test/x.png"]) {
+      expect(sanitizeRichHtml(`<img src="${src}" onerror="x()">`, { media: true })).not.toMatch(/src=|onerror/);
+    }
+  });
+});

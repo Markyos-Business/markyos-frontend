@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { memo, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
 import { useAppActions, useCurrentAccount, useSession } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
-import { API_ENABLED } from "@/lib/api/client";
+import { api, API_ENABLED } from "@/lib/api/client";
 import type { MenuLink } from "../../types";
 
 /**
@@ -51,9 +51,23 @@ export const AccountMenu = memo(function AccountMenu({
   if (API_ENABLED && account?.isAdmin) {
     items.push({ href: "/admin", label: "Platform admin", arLabel: "إدارة المنصة", icon: "key" });
   }
+  // Website editors aren't platform admins, so this is how they find the
+  // content area. Asked once, the first time the menu opens, not per page.
+  const [contentAccess, setContentAccess] = useState<boolean | null>(null);
+  const checkContentAccess = () => {
+    if (!API_ENABLED || !session || contentAccess !== null) return;
+    if (account?.isAdmin) return setContentAccess(true);
+    // Direct, not through the content feature: its shell renders this menu.
+    api<{ role: string | null }>("/content/me/")
+      .then((me) => setContentAccess(me.role !== null))
+      .catch(() => setContentAccess(false));
+  };
+  if (contentAccess || (API_ENABLED && account?.isAdmin)) {
+    items.push({ href: "/content", label: "Website content", arLabel: "محتوى الموقع", icon: "globe" });
+  }
 
   return (
-    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250}>
+    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250} onOpen={checkContentAccess}>
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">

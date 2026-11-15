@@ -8,7 +8,8 @@ import { useDialog } from "../overlay/dialog";
 
 /**
  * A small rich-text editor for brand copy — headings, emphasis, lists, quotes,
- * links and tables.
+ * links and tables — and, with `tools="article"`, website articles (two
+ * heading levels, images and dividers as well).
  *
  * Strategy used to store plain strings, which is fine for a one-line purpose
  * and wrong for everything else: a competitive analysis is a table, a set of
@@ -23,7 +24,7 @@ import { useDialog } from "../overlay/dialog";
 
 /** Detects whether a stored value is already an HTML fragment. */
 function isHtml(value: string): boolean {
-  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a)\b/i.test(value);
+  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a|figure|img|hr)\b/i.test(value);
 }
 
 function escapeHtml(s: string): string {
@@ -38,9 +39,9 @@ function escapeHtml(s: string): string {
  * lines into paragraphs, so old data keeps rendering correctly with no
  * migration step and no risk of a half-converted field.
  */
-const toRichHtml = (value: string): string => {
+const toRichHtml = (value: string, { media = false }: { media?: boolean } = {}): string => {
   if (!value.trim()) return "";
-  if (isHtml(value)) return sanitizeRichHtml(value);
+  if (isHtml(value)) return sanitizeRichHtml(value, { media });
   return value
     .split(/\n{2,}/)
     .map((p) => `<p>${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`)
@@ -74,6 +75,9 @@ const richIsEmpty = (value: string): boolean => {
 
 type ToolAction =
   | "heading"
+  | "subheading"
+  | "image"
+  | "divider"
   | "bold"
   | "italic"
   | "bullets"
@@ -103,6 +107,21 @@ const TOOLS: { action: ToolAction; icon: string; en: string; ar: string }[] = [
   { action: "clear", icon: "undo", en: "Clear formatting", ar: "إزالة التنسيق" },
 ];
 
+/**
+ * The article set, for website content: two heading levels (an article's
+ * sections and their parts), images and dividers on top of the rest.
+ */
+const ARTICLE_TOOLS: typeof TOOLS = [
+  { action: "heading", icon: "heading", en: "Heading", ar: "عنوان" },
+  { action: "subheading", icon: "font", en: "Subheading", ar: "عنوان فرعي" },
+  ...TOOLS.filter((t) => !["heading", "table", "row", "clear"].includes(t.action)),
+  { action: "image", icon: "image", en: "Insert image", ar: "إدراج صورة" },
+  { action: "divider", icon: "minus", en: "Insert divider", ar: "إدراج فاصل" },
+  ...TOOLS.filter((t) => ["table", "row", "clear"].includes(t.action)),
+];
+
+const escapeAttr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
 type RichTextEditorProps = {
   value: string;
   onChange: (html: string) => void;
@@ -117,6 +136,13 @@ type RichTextEditorProps = {
   readOnly?: boolean;
   /** Typing or pasting past this many characters of text is refused. */
   maxLength?: number;
+  /**
+   * `article` adds a second heading level, images and dividers, for website
+   * content. Brand copy keeps the standard set, which has no images.
+   */
+  tools?: "standard" | "article";
+  /** With `article` tools: asks for an image (a media picker); null cancels. */
+  onInsertImage?: () => Promise<{ url: string; alt: string } | null>;
   /** Ids and states for the editable area, from a Field around it. */
   editorProps?: {
     id?: string;
@@ -138,8 +164,12 @@ const RichTextEditor = ({
   disabled = false,
   readOnly = false,
   maxLength,
+  tools = "standard",
+  onInsertImage,
   editorProps,
 }: RichTextEditorProps) => {
+  const article = tools === "article";
+  const toolbar = article ? ARTICLE_TOOLS.filter((t) => t.action !== "image" || onInsertImage) : TOOLS;
   const ref = useRef<HTMLDivElement | null>(null);
   // The HTML this editor last sent: when `value` comes back as that, it's our
   // own typing and the DOM already shows it; anything else came from outside.
@@ -159,10 +189,10 @@ const RichTextEditor = ({
   useEffect(() => {
     const el = ref.current;
     if (!el || value === sent.current) return;
-    const html = toRichHtml(value);
+    const html = toRichHtml(value, { media: article });
     if (el.innerHTML !== html) el.innerHTML = html;
     sent.current = value;
-  }, [value]);
+  }, [value, article]);
 
   // maxLength counts text, not tags, so it's checked before each insertion.
   useEffect(() => {
@@ -188,7 +218,7 @@ const RichTextEditor = ({
     (el: HTMLDivElement | null) => {
       ref.current = el;
       if (!el) return;
-      el.innerHTML = toRichHtml(value);
+      el.innerHTML = toRichHtml(value, { media: article });
       sent.current = value;
       if (autoFocus) {
         el.focus();
@@ -202,7 +232,7 @@ const RichTextEditor = ({
     },
     // Intentionally not re-running on `value`: see the comment above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [autoFocus]
+    [autoFocus, article]
   );
 
   const run = useCallback(
@@ -248,7 +278,24 @@ const RichTextEditor = ({
 
       switch (action) {
         case "heading":
+          // Articles have two levels; brand copy has one, which stays an h3.
+          return exec("formatBlock", article ? "h2" : "h3");
+        case "subheading":
           return exec("formatBlock", "h3");
+        case "divider":
+          return exec("insertHorizontalRule");
+        case "image": {
+          if (!onInsertImage) return;
+          void (async () => {
+            const picked = await askKeepingSelection(onInsertImage);
+            if (!picked?.url) return;
+            exec(
+              "insertHTML",
+              `<figure><img src="${escapeAttr(picked.url)}" alt="${escapeAttr(picked.alt ?? "")}"></figure><p><br></p>`
+            );
+          })();
+          return;
+        }
         case "bold":
           return exec("bold");
         case "italic":
@@ -318,7 +365,7 @@ const RichTextEditor = ({
         }
       }
     },
-    [sync, isAr, prompt]
+    [sync, isAr, prompt, article, onInsertImage]
   );
 
   return (
@@ -328,7 +375,7 @@ const RichTextEditor = ({
       <div
         className="flex shrink-0 flex-wrap items-center gap-0.5 px-2 py-1.5 text-text-muted shadow-rule-b"
       >
-        {TOOLS.map((t) => {
+        {toolbar.map((t) => {
           const label = isAr ? t.ar : t.en;
           return (
             <button
@@ -381,6 +428,8 @@ type RichTextProps = {
   value: string;
   className?: string;
   style?: CSSProperties;
+  /** Lets images through, for website articles (see sanitizeRichHtml). */
+  media?: boolean;
 };
 
 /** Read-only rendering of a rich value, on either surface. */
@@ -388,6 +437,7 @@ const RichText = ({
   value,
   className = "",
   style,
+  media = false,
 }: RichTextProps) => {
   if (richIsEmpty(value)) return null;
   return (
@@ -395,7 +445,7 @@ const RichText = ({
       dir="auto"
       className={`rich-text bidi-auto ${className}`}
       style={style}
-      dangerouslySetInnerHTML={{ __html: toRichHtml(value) }}
+      dangerouslySetInnerHTML={{ __html: toRichHtml(value, { media }) }}
     />
   );
 };
