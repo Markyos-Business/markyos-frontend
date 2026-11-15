@@ -603,9 +603,10 @@ interface AppContextValue {
   /** Forces the client-facing site's ground light or dark, or back to inferring it. */
   setSiteMode: (workspaceId: string, mode: Workspace["siteMode"]) => void;
   /** Copies the current draft to the live site clients see. */
-  publishGuideline: (workspaceId: string) => void;
+  /** Publishes on the server when signed in; resolves with what happened. */
+  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   /** Takes the live site down; the draft is untouched. */
-  unpublishGuideline: (workspaceId: string) => void;
+  unpublishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   addTemplateBlocks: (workspaceId: string, blocks: Omit<PageBlock, "id" | "order">[], pageId?: string) => void;
   autoFillBlocks: (workspaceId: string) => void;
   // Guidelines editor — custom pages beyond Home, each with its own URL
@@ -873,9 +874,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         return;
       }
+      // An editor's change to owner-only settings is dropped too, matching
+      // the server, which keeps the stored values on an editor's save.
       const apply =
         role === "editor"
-          ? (ws: Workspace) => ({ ...fn(ws), team: ws.team, billing: ws.billing })
+          ? (ws: Workspace) => ({
+              ...fn(ws),
+              team: ws.team,
+              billing: ws.billing,
+              clientAccess: ws.clientAccess,
+              developer: ws.developer,
+              whiteLabel: ws.whiteLabel,
+              brandingCredit: ws.brandingCredit,
+            })
           : fn;
 
       // Pushed before the change, from the last committed state — an updater
@@ -2141,8 +2152,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const voteMoodboardItem = useCallback(
     (workspaceId: string, boardId: string, itemId: string) => {
-      const who = stateRef.current.session?.name ?? "You";
-      patchMoodboard(workspaceId, boardId, (b) => ({
+      const current = stateRef.current;
+      const who = current.session?.name ?? "You";
+      const toggle = (b: Moodboard) => ({
         ...b,
         zones: b.zones.map((z) => ({
           ...z,
@@ -2152,9 +2164,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               : i,
           ),
         })),
-      }));
+      });
+      // Signed out (the browser-only demo): the vote is part of the brand.
+      if (!current.session || !isApiAdapter(repo)) {
+        patchMoodboard(workspaceId, boardId, toggle);
+        return;
+      }
+
+      // Signed in, a vote is the voter's own record, so viewers can vote too.
+      // It shows at once, then takes the server's answer.
+      const item = current.workspaces
+        .find((w) => w.id === workspaceId)
+        ?.moodboards.find((b) => b.id === boardId)
+        ?.zones.flatMap((z) => z.items)
+        .find((i) => i.id === itemId);
+      if (!item) return;
+      const before = item.votes;
+      const on = !before.includes(who);
+      const setVotes = (votes: string[]) =>
+        setState((prev) => ({
+          ...prev,
+          workspaces: prev.workspaces.map((w) =>
+            w.id !== workspaceId
+              ? w
+              : {
+                  ...w,
+                  moodboards: w.moodboards.map((b) => ({
+                    ...b,
+                    zones: b.zones.map((z) => ({
+                      ...z,
+                      items: z.items.map((i) => (i.id === itemId ? { ...i, votes } : i)),
+                    })),
+                  })),
+                },
+          ),
+        }));
+      setVotes(on ? [...before, who] : before.filter((v) => v !== who));
+      void repo.voteOnCard(workspaceId, itemId, on).then((result) => {
+        if (result.ok) return setVotes(result.votes);
+        setVotes(before);
+        if (result.unsupported) patchMoodboard(workspaceId, boardId, toggle);
+        else setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message: `Your vote wasn't saved: ${result.message}`, tone: "danger" }));
+      });
     },
-    [patchMoodboard]
+    [patchMoodboard, repo]
   );
 
   const addMoodboardZone = useCallback(
@@ -3325,7 +3378,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const publishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
       /*
        * The transition itself lives in `lib/adapters/entityOps.ts`.
        *
@@ -3338,18 +3391,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        *
        * The reasoning for each subtraction moved with the code. Read it there.
        */
+      // Signed in, the server builds the public copy (and refuses a stale
+      // one); this browser's own transition is the demo's and the fallback
+      // for a server that predates the endpoint.
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, true);
+        if (result.ok) logAudit("Published the guideline site", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => publishWorkspace(ws, Date.now()));
       logAudit("Published the guideline site", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const unpublishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, false);
+        if (result.ok) logAudit("Took the guideline site offline", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => unpublishWorkspace(ws));
       logAudit("Took the guideline site offline", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const toggleSectionHidden = useCallback(

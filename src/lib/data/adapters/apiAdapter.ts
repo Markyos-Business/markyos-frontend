@@ -56,7 +56,25 @@ export interface ApiAdapter extends BrandRepository {
    * session is revoked, while saves are still allowed.
    */
   endSession(): Promise<void>;
+  /**
+   * Publishes (or takes down) a brand's guideline site on the server, which
+   * builds the public copy from the stored brand. Pending edits are sent
+   * first, so what goes live is what is on screen. `unsupported` means the
+   * server predates the endpoint, and the caller may use the old path.
+   */
+  publishSite(workspaceId: string, on: boolean): Promise<PublishOutcome>;
+  /** This account's vote on a moodboard card; resolves with the card's votes. */
+  voteOnCard(workspaceId: string, itemId: string, on: boolean): Promise<VoteOutcome>;
 }
+
+export type VoteOutcome =
+  | { ok: true; votes: string[] }
+  | { ok: false; unsupported?: boolean; message: string };
+
+export type PublishOutcome = { ok: true } | { ok: false; unsupported?: boolean; message: string };
+
+const withoutVotes = (boards: Workspace["moodboards"]) =>
+  boards.map((b) => ({ ...b, zones: b.zones.map((z) => ({ ...z, items: z.items.map((i) => ({ ...i, votes: [] })) })) }));
 
 export function isApiAdapter(repo: BrandRepository): repo is ApiAdapter {
   return "pullWorkspaces" in repo;
@@ -91,8 +109,9 @@ export function createApiAdapter(options: {
 
   // Feedback has its own API. A refreshed client note must not trigger a
   // whole-brand save or conflict with someone editing the guideline.
+  // Moodboard votes too: they are records per account (`voteOnCard`).
   const portableJson = (ws: Workspace) => JSON.stringify(local.toPortable({
-    ...ws, signOffPins: [], approvals: [],
+    ...ws, signOffPins: [], approvals: [], moodboards: withoutVotes(ws.moodboards),
     published: ws.published ? { ...ws.published, signOffPins: [], approvals: [] } : ws.published,
   }));
 
@@ -251,6 +270,61 @@ export function createApiAdapter(options: {
         synced.set(ws.id, { json: portableJson(ws), version: brands[i].version })
       );
       return restored;
+    },
+
+    async publishSite(workspaceId: string, on: boolean): Promise<PublishOutcome> {
+      // Send what is waiting, so the version below is the one on screen.
+      if (timer) clearTimeout(timer);
+      timer = null;
+      while (running) await new Promise((resolve) => setTimeout(resolve, 50));
+      running = true;
+      try {
+        await syncOnce();
+      } finally {
+        running = false;
+        if (again) {
+          again = false;
+          schedule(0);
+        }
+      }
+
+      const ws = latest?.workspaces.find((w) => w.id === workspaceId);
+      const known = synced.get(workspaceId);
+      if (!ws || !known) {
+        return { ok: false, message: "This brand isn't saved to the server yet. Try again in a moment." };
+      }
+      const url = `/brands/${encodeURIComponent(workspaceId)}/publish/`;
+      try {
+        const brand = await api<ServerBrand>(url, {
+          method: on ? "POST" : "DELETE",
+          body: { version: known.version },
+        });
+        await adopt(brand, ws.slug);
+        return { ok: true };
+      } catch (err) {
+        if (!(err instanceof ApiError)) throw err;
+        const body = err.data as { current?: ServerBrand } | null;
+        // An unknown route is an HTML 404 with no JSON body: an older server.
+        if (err.status === 404 && !err.data) return { ok: false, unsupported: true, message: err.message };
+        if (err.status === 409 && body?.current) {
+          await adopt(body.current, ws.slug);
+          return { ok: false, message: "Someone saved changes just now. Check them, then publish again." };
+        }
+        return { ok: false, message: err.message };
+      }
+    },
+
+    async voteOnCard(workspaceId: string, itemId: string, on: boolean): Promise<VoteOutcome> {
+      const url = `/brands/${encodeURIComponent(workspaceId)}/moodboard/votes/${encodeURIComponent(itemId)}/`;
+      try {
+        const answer = await api<{ itemId: string; votes: string[] }>(url, { method: on ? "PUT" : "DELETE" });
+        return { ok: true, votes: answer.votes };
+      } catch (err) {
+        if (!(err instanceof ApiError)) throw err;
+        // An unknown route is an HTML 404 with no JSON body: an older server.
+        if (err.status === 404 && !err.data) return { ok: false, unsupported: true, message: err.message };
+        return { ok: false, message: err.message };
+      }
     },
 
     async endSession() {

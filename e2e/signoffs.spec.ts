@@ -11,9 +11,11 @@ async function publishedBrand(password = "") {
     overviewHtml: "<p>A guideline ready for client review.</p>",
     clientAccess: { passwordEnabled: !!password, password }, signOffPins: [],
   };
-  await call(`/brands/${brand.id}/`, { method: "PUT", token: studio.token, body: {
-    version: stored.version, data: { ...snapshot, published: snapshot, publishedAt: Date.now() },
+  const saved = await call(`/brands/${brand.id}/`, { method: "PUT", token: studio.token, body: {
+    version: stored.version, data: snapshot,
   } });
+  // The server builds the public copy from what was just saved.
+  await call(`/brands/${brand.id}/publish/`, { method: "POST", token: studio.token, body: { version: saved.version } });
   return { studio, brand };
 }
 
