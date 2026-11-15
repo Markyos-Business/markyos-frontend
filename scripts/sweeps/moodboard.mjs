@@ -709,8 +709,14 @@ async function run() {
        and only where those boxes *landed* was wrong. */
     // By data hook, not by name: the group's accessible name is translated, so
     // selecting on it only works in one of the two languages this check drives.
-    const langs = page.locator('[data-lang-toggle="chrome"] [role="radio"]');
-    await langs.nth(1).click();
+    // The interface language switch lives in the account menu in the studio,
+    // so open it, pick, and close it again.
+    const chromeLang = async (index) => {
+      await page.getByRole("button", { name: /^(Account|الحساب)$/ }).click();
+      await page.locator('[data-lang-toggle="chrome"] [role="radio"]').nth(index).click();
+      await page.keyboard.press("Escape");
+    };
+    await chromeLang(1);
     await page.waitForTimeout(900);
     // Fit, so "on screen" means what it means here: the bug this check exists
     // for put every frame outside the canvas whatever the zoom, and asking for
@@ -741,7 +747,7 @@ async function run() {
       fail("rtl", `${rtl.frames - rtl.onScreen} of ${rtl.frames} frames fell outside the canvas in Arabic`);
     }
     // Back to English for the rest of the pass.
-    await langs.nth(0).click();
+    await chromeLang(0);
     await page.waitForTimeout(800);
 
     // ----------------------------------------------------------- tidy ----
