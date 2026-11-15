@@ -31,11 +31,10 @@ provider credentials belong on the backend. Read [client.ts](../../src/lib/api/c
 and [apiAdapter.ts](../../src/lib/data/adapters/apiAdapter.ts), not old comments
 that say brands are not yet stored on the server.
 
-Prisma schema/config/scripts remain in the frontend as a foundation/scaffold.
-No runtime Prisma client usage was found in `src` during this review. Current
-API-backed persistence is Django; do not add a second live write path because a
-Prisma model happens to exist. Its config still requires `DATABASE_URL` and
-`SHADOW_DATABASE_URL` for the frontend's Prisma validation step.
+The frontend has no database layer. The early Prisma scaffold was removed on
+14 November 2026 (never used at runtime); its schema is archived in
+[prisma-schema.prisma](../archive/prisma-schema.prisma) as design reference only.
+API-backed persistence is Django; model new data there.
 
 ## Roles, permissions, and account limits
 
@@ -377,7 +376,7 @@ When adding/changing a feature:
 Validation commands:
 
 ```sh
-# Platform repository; Prisma validation needs both configured database URLs.
+# Platform repository.
 npm run check
 # Targeted integrated browser tests; see e2e/README.md for isolated server setup.
 E2E_PYTHON=/absolute/path/to/markyos-backend/venv/bin/python npm run e2e

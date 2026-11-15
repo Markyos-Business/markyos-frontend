@@ -1,3 +1,7 @@
+// ARCHIVED 14 November 2026. Not wired to any tooling and not the live data
+// model: Django (markyos-backend) owns persistence. Kept as a record of the
+// early data-model design; read it for ideas, don't treat it as current.
+//
 // Markyos — database schema.
 //
 // This is the MVP Foundation target described in the architecture revision:
