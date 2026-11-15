@@ -6,6 +6,7 @@ import { Button } from "../button";
 import { EmptyState } from "../empty-state";
 import { useTabsFamily, tabContentId } from "./tabs-context";
 import { tabButtonId } from "./tab-navigation";
+import { useUiStrings } from "../ui-strings";
 export interface TabsContentProps extends Primitive.TabsContentProps {
   keepMounted?: boolean; loading?: boolean; load?: (signal: AbortSignal) => Promise<ReactNode>;
   loadingText?: string; errorText?: string; retryLabel?: string; emptyTitle?: string; emptyDescription?: string;
@@ -25,7 +26,11 @@ function LazyBody({ load, loadingText, errorText, retryLabel, emptyTitle, emptyD
   if (result.error) return <div role="alert" className="flex items-center gap-3 py-4 text-body text-danger">{errorText}<Button onClick={() => setRetry(value => value + 1)}>{retryLabel}</Button></div>;
   return result.data ?? <EmptyState icon="file-alt" title={emptyTitle} description={emptyDescription} />;
 }
-export const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(function TabsContent({ value, keepMounted, forceMount, loading, load, loadingText = "Loading content", errorText = "Could not load content", retryLabel = "Try again", emptyTitle = "No content", emptyDescription = "Content will appear here.", children, className = "", ...props }, ref) {
+export const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(function TabsContent({ value, keepMounted, forceMount, loading, load, loadingText: loadingTextProp, errorText: errorTextProp, retryLabel: retryLabelProp, emptyTitle = "No content", emptyDescription = "Content will appear here.", children, className = "", ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const loadingText = loadingTextProp ?? ui.tabs.loading;
+  const errorText = errorTextProp ?? ui.tabs.loadFailed;
+  const retryLabel = retryLabelProp ?? ui.tabs.retry;
   const family = useTabsFamily();
   const selected = family.value === value;
   const [visited, setVisited] = useState(selected);

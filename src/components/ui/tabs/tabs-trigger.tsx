@@ -5,6 +5,7 @@ import { Icon } from "../icon";
 import { Tooltip } from "../tooltip";
 import { useTabsFamily, tabContentId, type TabStatus } from "./tabs-context";
 import { tabButtonId } from "./tab-navigation";
+import { useUiStrings } from "../ui-strings";
 export interface TabsTriggerProps extends Primitive.TabsTriggerProps {
   icon?: string; iconOnly?: boolean; label?: string; count?: number; unread?: boolean;
   status?: TabStatus; disabledReason?: string; closable?: boolean; onClose?: () => void;
@@ -13,7 +14,16 @@ export interface TabsTriggerProps extends Primitive.TabsTriggerProps {
   errorLabel?: string; warningLabel?: string; successLabel?: string;
   position?: number; total?: number; positionLabel?: (position: number, total: number) => string;
 }
-export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(function TabsTrigger({ value, icon, iconOnly, label, count, unread, status, disabled, disabledReason, closable, onClose, closeLabel = "Close tab", unsaved, loading, skeleton, countLabel = "items", unreadLabel = "Unread", unsavedLabel = "Unsaved changes", errorLabel = "Has errors", warningLabel = "Needs attention", successLabel = "Completed", position, total, positionLabel = (index, length) => `${index} of ${length}`, children, className = "", onKeyDown, onMouseDown, onFocus, ...props }, ref) {
+export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(function TabsTrigger({ value, icon, iconOnly, label, count, unread, status, disabled, disabledReason, closable, onClose, closeLabel: closeLabelProp, unsaved, loading, skeleton, countLabel: countLabelProp, unreadLabel: unreadLabelProp, unsavedLabel: unsavedLabelProp, errorLabel: errorLabelProp, warningLabel: warningLabelProp, successLabel: successLabelProp, position, total, positionLabel: positionLabelProp, children, className = "", onKeyDown, onMouseDown, onFocus, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const closeLabel = closeLabelProp ?? ui.tabs.close;
+  const countLabel = countLabelProp ?? ui.tabs.items;
+  const unreadLabel = unreadLabelProp ?? ui.tabs.unread;
+  const unsavedLabel = unsavedLabelProp ?? ui.tabs.unsaved;
+  const errorLabel = errorLabelProp ?? ui.tabs.hasErrors;
+  const warningLabel = warningLabelProp ?? ui.tabs.needsAttention;
+  const successLabel = successLabelProp ?? ui.tabs.completed;
+  const positionLabel = positionLabelProp ?? ui.tabs.position;
   const family = useTabsFamily();
   const name = label ?? (typeof children === "string" ? children : value);
   const blocked = disabled || !!disabledReason || skeleton;

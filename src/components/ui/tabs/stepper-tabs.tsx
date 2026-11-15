@@ -6,9 +6,13 @@ import type { TabLabels } from "./tabs-context";
 import { TabsList } from "./tabs-list";
 import { TabsTrigger } from "./tabs-trigger";
 import { TabsContent } from "./tabs-content";
+import { useUiStrings } from "../ui-strings";
 export interface StepperStep { id: string; label: string; content?: ReactNode; completed?: boolean; error?: boolean; }
 export interface StepperTabsProps extends Omit<TabsRootProps, "items" | "children"> { steps: readonly StepperStep[]; label?: string; triggerLabels?: TabLabels; linear?: boolean; completedLabel?: string; errorLabel?: string; upcomingReason?: string; }
-export const StepperTabs = forwardRef<HTMLDivElement, StepperTabsProps>(function StepperTabs({ steps, label = "Campaign steps", linear, completedLabel = "Completed", errorLabel = "Has errors", upcomingReason = "Complete earlier steps", value, defaultValue, onValueChange, triggerLabels, ...props }, ref) {
+export const StepperTabs = forwardRef<HTMLDivElement, StepperTabsProps>(function StepperTabs({ steps, label = "Campaign steps", linear, completedLabel: completedLabelProp, errorLabel: errorLabelProp, upcomingReason = "Complete earlier steps", value, defaultValue, onValueChange, triggerLabels, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const completedLabel = completedLabelProp ?? ui.tabs.completed;
+  const errorLabel = errorLabelProp ?? ui.tabs.hasErrors;
   const [local, setLocal] = useState(defaultValue ?? steps[0]?.id ?? "");
   const active = value ?? local;
   const currentIndex = steps.findIndex(step => step.id === active);

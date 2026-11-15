@@ -102,7 +102,11 @@ const record = (rule, theme, page, detail, selector) =>
  * each one currently looks. Runs inside the page.
  */
 const COLLECT = `(() => {
-  const SELECTOR = 'button, a[href], [role="button"], summary, input[type="checkbox"], input[type="radio"], select, [tabindex]:not([tabindex="-1"])';
+  // A focusable tab list or tab panel is a keyboard stop, not a pointer
+  // control: Radix's tab list takes focus only to hand it to the active tab,
+  // and a panel is focusable so its content can be reached. The tabs inside
+  // are still checked.
+  const SELECTOR = 'button, a[href], [role="button"], summary, input[type="checkbox"], input[type="radio"], select, [tabindex]:not([tabindex="-1"]):not([role="tablist"]):not([role="tabpanel"])';
 
   function describe(el) {
     // A stable-ish handle for the report. Not used to re-find the element —
@@ -491,6 +495,16 @@ async function auditPage(page, theme, name, path) {
       );
       if (!reallyHovered) {
         stats.unreachable++;
+        await handle.dispose();
+        continue;
+      }
+
+      // Quiet chrome (MARKYOS_UI.md rule 6): the sidebar, top bars, tab lists
+      // and table grids carry `.mk-no-hover` and deliberately show no hover
+      // tint. Focus and press still answer; those are checked elsewhere.
+      const quiet = await page.evaluate((idx) => !!window.__ux[idx]?.closest(".mk-no-hover"), el.index);
+      if (quiet) {
+        stats.quiet = (stats.quiet ?? 0) + 1;
         await handle.dispose();
         continue;
       }
