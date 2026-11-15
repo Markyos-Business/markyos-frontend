@@ -51,19 +51,20 @@ export const AccountMenu = memo(function AccountMenu({
   if (API_ENABLED && account?.isAdmin) {
     items.push({ href: "/admin", label: "Platform admin", arLabel: "إدارة المنصة", icon: "key" });
   }
-  // Website editors aren't platform admins, so this is how they find the
-  // content area. Asked once, the first time the menu opens, not per page.
+  // Content managers and the editors a content admin added aren't platform
+  // admins, so this is how they find the CMS. Asked once, the first time the
+  // menu opens, not per page.
   const [contentAccess, setContentAccess] = useState<boolean | null>(null);
   const checkContentAccess = () => {
     if (!API_ENABLED || !session || contentAccess !== null) return;
-    if (account?.isAdmin) return setContentAccess(true);
-    // Direct, not through the content feature: its shell renders this menu.
+    if (account?.isAdmin || account?.role === "content") return setContentAccess(true);
+    // Direct: one small call, without pulling the CMS screens into the menu.
     api<{ role: string | null }>("/content/me/")
       .then((me) => setContentAccess(me.role !== null))
       .catch(() => setContentAccess(false));
   };
-  if (contentAccess || (API_ENABLED && account?.isAdmin)) {
-    items.push({ href: "/content", label: "Website content", arLabel: "محتوى الموقع", icon: "globe" });
+  if (contentAccess || (API_ENABLED && (account?.isAdmin || account?.role === "content"))) {
+    items.push({ href: "/admin/cms", label: "Website content", arLabel: "محتوى الموقع", icon: "globe" });
   }
 
   return (

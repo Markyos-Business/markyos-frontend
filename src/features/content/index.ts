@@ -1,4 +1,6 @@
-export { ContentShell } from "./components/shell/content-shell";
+// The CMS part of the admin sidebar, and where the CMS starts.
+export { useCmsNav, CMS_HOME } from "./hooks/use-cms-nav";
+export type { CmsNavSection } from "./hooks/use-cms-nav";
 export { ArticlesView } from "./components/articles/articles-view";
 export { ArticleEditorView } from "./components/editor/article-editor-view";
 export { MediaView } from "./components/library/media-view";

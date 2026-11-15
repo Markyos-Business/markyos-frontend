@@ -75,14 +75,14 @@ export function ArticlesView() {
         error={articles.error}
         onRetry={articles.reload}
         empty={<EmptyState icon="globe" title={t.empty} description="" />}
-        onRowClick={(a) => router.push(`/content/articles/${a.id}`)}
+        onRowClick={(a) => router.push(`/admin/cms/articles/${a.id}`)}
       />
       {creating && (
         <CreateArticleDialog
           kinds={writable.map((k) => k.kind)}
           initialKind={kind && writable.some((k) => k.kind === kind) ? kind : writable[0]?.kind}
           onClose={() => setCreating(false)}
-          onCreated={(id) => router.push(`/content/articles/${id}`)}
+          onCreated={(id) => router.push(`/admin/cms/articles/${id}`)}
         />
       )}
     </div>

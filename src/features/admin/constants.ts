@@ -12,6 +12,10 @@ export const AR_ACCOUNT_TYPE_LABELS: Record<string, string> = {
   none: "بلا نوع (المسؤولون)",
 };
 
+/** A role's tag: admins in the accent, content managers in indigo, members plain. */
+export const roleTone = (u: { isAdmin: boolean; role: string }): "primary" | "indigo" | "neutral" =>
+  u.isAdmin ? "primary" : u.role === "content" ? "indigo" : "neutral";
+
 /** A user's status dot; the word beside it says the same. */
 export const STATUS_TONE: Record<AdminUserStatus, BadgeTone> = {
   active: "success",
@@ -49,7 +53,7 @@ export const AR_PLAN_LABELS: Record<string, string> = {
   pass: "تصريح لمرة واحدة",
 };
 
-/** The admin sidebar, in both languages. Each new admin page adds its link here. */
+/** The platform part of the admin sidebar, in both languages; the CMS part comes from the content feature. Each new admin page adds its link here. */
 export const ADMIN_NAV = [
   {
     key: "overview",
@@ -61,7 +65,6 @@ export const ADMIN_NAV = [
     label: { en: "Manage", ar: "الإدارة" },
     items: [
       { key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" },
-      { key: "content", label: { en: "Website content", ar: "محتوى الموقع" }, icon: "globe", href: "/content" },
     ],
   },
 ];
@@ -77,12 +80,13 @@ export const STAGE_ORDER = ["discovery", "strategy", "design", "review", "delive
 
 /** What each role may do, for the read-only Permissions tab. Keys are the copy's `permissions.items`. */
 export const ROLE_PERMISSIONS = {
-  ownBrands: { admin: true, member: true },
-  adminArea: { admin: true, member: false },
-  seeAccounts: { admin: true, member: false },
-  invite: { admin: true, member: false },
-  changeRoles: { admin: true, member: false },
-  removeAccounts: { admin: true, member: false },
+  ownBrands: { admin: true, member: true, content: true },
+  adminArea: { admin: true, member: false, content: false },
+  websiteContent: { admin: true, member: false, content: true },
+  seeAccounts: { admin: true, member: false, content: false },
+  invite: { admin: true, member: false, content: false },
+  changeRoles: { admin: true, member: false, content: false },
+  removeAccounts: { admin: true, member: false, content: false },
 } as const;
 
 /** The account page's tabs, in order. */

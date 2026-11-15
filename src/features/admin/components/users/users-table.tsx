@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Avatar, Button, DataTable, EmptyState, Icon, StatusDot, Tag } from "@/components/ui";
 import type { ActionItem, DataColumn } from "@/components/ui";
-import { STATUS_TONE } from "../../constants";
+import { STATUS_TONE, roleTone } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { useBulkUserActions } from "../../hooks/users/use-bulk-user-actions";
 import type { UserActions } from "../../hooks/shared/use-user-actions";
@@ -51,7 +51,7 @@ export function UsersTable({ page, viewer, activeAdmins, actions, bulk, onInvite
         </div>
       ),
     },
-    { key: "role", header: t.role, sortable: true, cell: (u) => <Tag tone={u.isAdmin ? "primary" : "neutral"}>{c.roles[u.role]}</Tag> },
+    { key: "role", header: t.role, sortable: true, cell: (u) => <Tag tone={roleTone(u)}>{c.roles[u.role]}</Tag> },
     { key: "status", header: t.status, sortable: true, cell: (u) => <StatusDot tone={STATUS_TONE[u.status]} label={c.statuses[u.status]} /> },
     { key: "type", header: t.type, sortable: false, cell: (u) => c.types[u.accountType ?? "none"], className: "hidden lg:table-cell" },
     {

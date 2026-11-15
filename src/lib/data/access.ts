@@ -14,8 +14,12 @@ export function roleOn(ws: Workspace, session: Session | null): TeamRole | null 
   return ws.team.find((m) => m.email.trim().toLowerCase() === email)?.role ?? null;
 }
 
-/** Where a signed-in person starts: admins on the admin overview, everyone else on their brands. */
-export const homePath = (account: Account | null) => (account?.isAdmin ? "/admin" : "/brands");
+/**
+ * Where a signed-in person starts: admins on the admin overview, content
+ * managers in the CMS, everyone else on their brands.
+ */
+export const homePath = (account: Account | null) =>
+  account?.isAdmin ? "/admin" : account?.role === "content" ? "/admin/cms" : "/brands";
 
 /** Owners and editors change a brand; viewers and clients only read it. */
 export const canEdit = (role: TeamRole | null) => role === "owner" || role === "editor";
