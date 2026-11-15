@@ -43,7 +43,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
             type="button"
             onClick={onUnpublish}
             title={isAr ? "أوقف رابط العميل؛ تبقى المسودة كما هي." : "Stop the client's link; your draft is kept."}
-            className="mk-danger-text h-9 cursor-pointer rounded-lg px-2.5 text-[12px] font-semibold text-text-muted"
+            className="mk-danger-text h-9 cursor-pointer rounded-lg px-2.5 text-body font-medium text-text-muted"
           >
             {isAr ? "إيقاف" : "Take offline"}
           </button>
@@ -52,7 +52,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
           href={`${previewHref}?preview=1`}
           target="_blank"
           title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
-          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-surface-2 px-3.5 text-[12px] font-semibold text-text"
+          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-surface-2 px-3.5 text-body font-medium text-text"
         >
           <Icon name="eye" size={13} />
           {isAr ? "معاينة" : "Preview"}
@@ -72,7 +72,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
                 ? "انشر التغييرات ليراها العميل."
                 : "Push these changes to the client's site."
           }
-          className="h-9 cursor-pointer rounded-lg bg-accent px-4 text-[12px] font-semibold text-accent-ink disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 cursor-pointer rounded-lg bg-accent px-4 text-body font-medium text-accent-ink disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isAr ? "نشر" : "Publish"}
         </button>
