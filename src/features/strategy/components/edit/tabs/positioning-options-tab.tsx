@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, EmptyHint, Icon, IconButton, Section, Tag, useDialog, useToast } from "@/components/ui";
 import type { Lang, PositioningOption, Workspace } from "@/types";
 import { InlineText, MiniInput } from "../../shared/inputs";
@@ -12,7 +12,7 @@ import { InlineText, MiniInput } from "../../shared/inputs";
  * makes it the brand's positioning statement.
  */
 export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addPositioningOption, updatePositioningOption, removePositioningOption, choosePositioningOption } = useApp();
+  const { addPositioningOption, updatePositioningOption, removePositioningOption, choosePositioningOption } = useAppActions();
   const { confirm } = useDialog();
   const { showToast } = useToast();
   const isAr = lang === "ar";

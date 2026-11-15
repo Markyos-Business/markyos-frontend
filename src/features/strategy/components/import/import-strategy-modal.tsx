@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, Button, Modal } from "@/components/ui";
 import { Workspace } from "@/types";
 import {
@@ -45,7 +45,7 @@ interface VoiceRow extends ParsedVoiceTrait {
 type Step = "pick" | "parsing" | "review";
 
 export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait, uiLang } = useApp();
+  const { setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait, uiLang } = useAppActions();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 

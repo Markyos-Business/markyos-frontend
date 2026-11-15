@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { LangToggle, Button, Icon, richToPlainText } from "@/components/ui";
@@ -57,7 +58,6 @@ export function DocsTemplate(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -239,7 +239,7 @@ export function DocsTemplate(props: TemplateProps) {
                         placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
                         style={gBody}
                       />
-                      {ws.overviewHtml && <div dir="auto" className="bidi-auto docs-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />}
+                      {ws.overviewHtml && <div dir="auto" className="bidi-auto docs-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />}
                       <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                     </div>
                   ) : item.id === "statement" ? (
@@ -274,11 +274,6 @@ export function DocsTemplate(props: TemplateProps) {
           })}
         </div>
 
-        {showMarkyosBadge && (
-          <div className="pb-6 pt-2 flex justify-center">
-            <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-          </div>
-        )}
       </div>
 
       {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}

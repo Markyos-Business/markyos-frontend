@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, CopyButton, Icon, Row, Section, Switch } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
@@ -11,7 +11,7 @@ import { randomPassword } from "../../utils/random";
 export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; clientLink: string; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const copy = useAccountCopy(isAr);
-  const { toggleClientPassword, setClientPassword } = useApp();
+  const { toggleClientPassword, setClientPassword } = useAppActions();
   const { password, passwordEnabled } = ws.clientAccess;
   return (
     <Section title={copy.accessTitle} icon="lock">

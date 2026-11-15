@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { LogoSlotCard } from "./logo-slot-card";
@@ -19,7 +19,7 @@ const SLOT_ORDER: { kind: SlotKind; label: string; arLabel: string; tag: string 
 ];
 
 export function LogoSystemContent({ ws }: { ws: Workspace }) {
-  const { updateLogoSlot, setLogoUsageNotes, setLogoColorIds, uiLang } = useApp();
+  const { updateLogoSlot, setLogoUsageNotes, setLogoColorIds, uiLang } = useAppActions();
   const [selectedKind, setSelectedKind] = useState<SlotKind>(ws.primaryLocale === "ar" ? "arabic" : "latin");
   const [pending, setPending] = useState<(PendingUpload & { kind: SlotKind }) | null>(null);
   const [showDownload, setShowDownload] = useState(false);

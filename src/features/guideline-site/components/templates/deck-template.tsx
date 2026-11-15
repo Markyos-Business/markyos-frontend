@@ -61,7 +61,6 @@ export function DeckTemplate(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -629,11 +628,6 @@ export function DeckTemplate(props: TemplateProps) {
           )}
         </Slide>
 
-        {showMarkyosBadge && (
-          <div style={{ padding: "8px 0 24px", textAlign: "center", fontSize: 11, color: pal.textMuted }}>
-            {t("Guideline delivered with Markyos", "دليل الهوية مقدَّم عبر ماركيوس")}
-          </div>
-        )}
       </div>
 
       {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}

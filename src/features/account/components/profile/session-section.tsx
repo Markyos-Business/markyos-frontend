@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, DataTable, Icon, Row, Section, Tag, useToast } from "@/components/ui";
 import type { DataColumn } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
@@ -14,7 +14,7 @@ type SessionSectionProps = { account: Account; sessions: MySessionsState };
 
 /** Every browser you're signed in on: sign one out, the others, or this one. */
 export function SessionSection({ account, sessions }: SessionSectionProps) {
-  const { logout } = useApp();
+  const { logout } = useAppActions();
   const { showToast } = useToast();
   const { t, isAr } = useAccountLang();
   const signOutHere = () => {

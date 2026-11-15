@@ -12,7 +12,7 @@ import { ReviewChip } from "../review/review-panel";
  * `pointer-events-none` on the rail and `auto` on the cluster: the rail spans
  * the canvas so the cluster can sit in its corner without swallowing clicks.
  */
-export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, previewHref, onPublish }: BuilderPageState) {
+export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, previewHref, onPublish, onUnpublish }: BuilderPageState) {
   const upToDate = !!ws.publishedAt && !hasUnpublished;
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-end p-4">
@@ -36,11 +36,23 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
         <ReviewChip report={review} isAr={isAr} onSelect={revealFlow} />
         {/* Raw rather than kit Buttons: the kit's disabled fill is surface-2,
             the cluster's own ground, so a disabled Publish lost its shape. */}
+        {/* Only while live: quiet, text-only, and red on hover, because it
+            ends the client's access — the confirm says so before it happens. */}
+        {ws.publishedAt && (
+          <button
+            type="button"
+            onClick={onUnpublish}
+            title={isAr ? "أوقف رابط العميل؛ تبقى المسودة كما هي." : "Stop the client's link; your draft is kept."}
+            className="mk-danger-text h-9 cursor-pointer rounded-lg px-2.5 text-body font-medium text-text-muted"
+          >
+            {isAr ? "إيقاف" : "Take offline"}
+          </button>
+        )}
         <Link
           href={`${previewHref}?preview=1`}
           target="_blank"
           title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
-          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-surface-2 px-3.5 text-[12px] font-semibold text-text"
+          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-surface-2 px-3.5 text-body font-medium text-text"
         >
           <Icon name="eye" size={13} />
           {isAr ? "معاينة" : "Preview"}
@@ -60,7 +72,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
                 ? "انشر التغييرات ليراها العميل."
                 : "Push these changes to the client's site."
           }
-          className="h-9 cursor-pointer rounded-lg bg-accent px-4 text-[12px] font-semibold text-accent-ink disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 cursor-pointer rounded-lg bg-accent px-4 text-body font-medium text-accent-ink disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isAr ? "نشر" : "Publish"}
         </button>

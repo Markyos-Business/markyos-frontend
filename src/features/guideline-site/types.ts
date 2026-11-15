@@ -49,7 +49,6 @@ export interface TemplateProps {
   setDownloadOpen: (v: boolean) => void;
   previewLang: Lang;
   setPreviewLang: (l: Lang) => void;
-  showMarkyosBadge: boolean;
   /** Every custom page beyond Home, for cross-page nav links. */
   pages: GuidePage[];
   /** Set when viewing one of `pages` instead of Home — the template renders

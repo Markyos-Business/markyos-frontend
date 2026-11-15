@@ -31,7 +31,7 @@ type SlugFieldProps = Omit<InputFieldProps, "value" | "defaultValue" | "onChange
   /** Resolves true when the slug is free. Asked once typing pauses. */
   checkAvailability?: (slug: string) => Promise<boolean>;
   debounceMs?: number;
-  strings?: InputFieldProps["strings"] & { available?: string; taken?: string };
+  strings?: InputFieldProps["strings"] & { available?: string; taken?: string; unknown?: string };
 };
 
 /**
@@ -44,10 +44,11 @@ const SlugField = ({ value, onChange, base, from, checkAvailability, debounceMs 
   const [edited, setEdited] = useState(false);
   // The latest answer, for the slug it was about; an older slug's answer is
   // ignored, so the status shown is always for what's in the field.
-  const [answer, setAnswer] = useState<{ slug: string; free: boolean } | null>(null);
+  // `free: null`: the check failed, so neither "available" nor "taken" is known.
+  const [answer, setAnswer] = useState<{ slug: string; free: boolean | null } | null>(null);
   const latest = useRef(0);
   const slug = toSlug(value);
-  const status = !checkAvailability || !slug ? "idle" : answer?.slug !== slug ? "checking" : answer.free ? "available" : "taken";
+  const status = !checkAvailability || !slug ? "idle" : answer?.slug !== slug ? "checking" : answer.free === null ? "unknown" : answer.free ? "available" : "taken";
 
   // Until it's edited by hand, the slug follows the name it's made from.
   useEffect(() => {
@@ -65,8 +66,8 @@ const SlugField = ({ value, onChange, base, from, checkAvailability, debounceMs 
     const timer = window.setTimeout(() => {
       checkAvailability(slug)
         .then((free) => ask === latest.current && setAnswer({ slug, free }))
-        // A failed check says nothing either way; the field simply stops checking.
-        .catch(() => ask === latest.current && setAnswer({ slug, free: true }));
+        // A failed check says nothing either way: never "Available".
+        .catch(() => ask === latest.current && setAnswer({ slug, free: null }));
     }, debounceMs);
     return () => window.clearTimeout(timer);
   }, [slug, checkAvailability, debounceMs]);
@@ -83,6 +84,7 @@ const SlugField = ({ value, onChange, base, from, checkAvailability, debounceMs 
       validating={status === "checking"}
       error={error ?? (status === "taken" ? (strings?.taken ?? t.slugTaken) : undefined)}
       success={success ?? (status === "available" ? (strings?.available ?? t.slugAvailable) : undefined)}
+      warning={rest.warning ?? (status === "unknown" ? (strings?.unknown ?? t.slugUnknown) : undefined)}
       strings={strings}
       onChange={(e) => {
         setEdited(true);

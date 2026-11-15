@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint, Modal } from "@/components/ui";
 import { CompetitorColumn, Lang, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
@@ -15,7 +15,7 @@ import { uid } from "@/lib/utils";
  * because what a category turns on differs by category.
  */
 export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addCompetitor, removeCompetitor, updateCompetitor, setCompetitorColumns } = useApp();
+  const { addCompetitor, removeCompetitor, updateCompetitor, setCompetitorColumns } = useAppActions();
   const { showToast } = useToast();
   const { prompt } = useDialog();
   const [pasteOpen, setPasteOpen] = useState(false);
@@ -264,7 +264,7 @@ function Cell({
  * moved. Tab-separated is what both actually put on the clipboard.
  */
 function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { setCompetitorColumns, addCompetitor, removeCompetitor, uiLang } = useApp();
+  const { setCompetitorColumns, addCompetitor, removeCompetitor, uiLang } = useAppActions();
   const { showToast } = useToast();
   const [text, setText] = useState("");
   const [replace, setReplace] = useState(true);

@@ -16,5 +16,7 @@ describe("account experience", () => {
     expect(accountNavigation("company", true).map(link => link.href)).not.toContain("/studio/board");
     expect(accountNavigation("studio", true).map(link => link.href)).toContain("/forms");
     expect(accountNavigation("freelancer", false).map(link => link.href)).toContain("/studio/board");
+    // Templates was taken out of the account navigation on 15 Nov 2026.
+    expect(accountNavigation("studio", true).map(link => link.href)).not.toContain("/templates");
   });
 });

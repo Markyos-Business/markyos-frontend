@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { IconButton, useDialog, useToast } from "@/components/ui";
 import type { DepartmentView, Workspace } from "@/types";
 
@@ -8,7 +8,7 @@ type DepartmentHeaderProps = { ws: Workspace; view: DepartmentView; isAr: boolea
 
 /** The department's name, with rename and delete. */
 export function DepartmentHeader({ ws, view, isAr }: DepartmentHeaderProps) {
-  const { renameDepartmentView, removeDepartmentView } = useApp();
+  const { renameDepartmentView, removeDepartmentView } = useAppActions();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
 

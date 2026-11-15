@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { EMAIL_RE } from "@/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
@@ -17,7 +17,7 @@ import { useAccountLang } from "../shared/use-account-lang";
  */
 export function useProfileDetails(account: Account) {
   const { t, isAr } = useAccountLang();
-  const { updateAccount, pendingEmailAction } = useApp();
+  const { updateAccount, pendingEmailAction } = useAppActions();
   const { showToast } = useToast();
   const [name, setName] = useState(account.name);
   const [email, setEmail] = useState(account.email);

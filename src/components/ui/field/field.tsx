@@ -178,7 +178,9 @@ const Field = ({
           <span className="sr-only">{strings?.locked ?? t.locked}</span>
         </span>
       )}
-      {action}
+      {/* A 36px button in a 40px field: it overlaps the padding instead of
+          growing the box, so a field with an action is as tall as one without. */}
+      {action && <span className="-my-space-3 flex items-center">{action}</span>}
     </span>
   );
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { TabsGallery } from "./tabs-gallery";
+import { ButtonsGallery } from "./buttons-gallery";
 import { useEffect, useState } from "react";
 import { ActionsDropdown, AppDate, AsyncStateView, Badge, Button, Faq, FilterChip, Icon, IconBadge, IconButton, ModalHeader, Skeleton, SolidBadge, Table, TableEmptyRow, TableErrorRow, TableLoadingRow, TablePagination, TabPanel, Tabs, useTabIds, Tooltip, cellClasses, rowClasses, useToast, type BadgeTone } from "@/components/ui";
 import { ListboxCombobox as Combobox, FileField, FilterSelectField, OtpField, PhoneField, RadioCardGroup, RadioField, RepeaterField, SearchableChecklist, SegmentedToggle, SelectField, SortControl, TextareaField, ToggleCardGroup, ToggleField, type RepeaterRow } from "@/components/ui";
@@ -71,7 +73,8 @@ const UiGallery = () => {
       </header>
 
       <main className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8">
-        <Section title="Buttons">
+        <ButtonsGallery />
+        <Section title="Legacy buttons">
           <div className="flex flex-wrap items-center gap-space-4">
             <Button variant="primary" icon={<Icon name="plus" size={18} />}>
               Save
@@ -140,7 +143,8 @@ const UiGallery = () => {
           </div>
         </Section>
 
-        <Section title="Tabs and accordion">
+        <TabsGallery />
+        <Section title="Legacy tabs and accordion">
           <Tabs
             {...textTabIds}
             label="Gallery tabs"

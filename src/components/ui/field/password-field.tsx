@@ -42,7 +42,8 @@ const PasswordField = ({ strength = false, strings, warning, onKeyDown, onKeyUp,
   const meterId = `${useId()}-meter`;
   const [shown, setShown] = useState(false);
   const [capsLock, setCapsLock] = useState(false);
-  const [typed, setTyped] = useState("");
+  // Uncontrolled, the strength starts from what's already there.
+  const [typed, setTyped] = useState(() => String(rest.defaultValue ?? ""));
   const text = typeof rest.value === "string" ? rest.value : typed;
   const rating = strength && text ? scorePassword(text) : null;
   const levels = strings?.levels ?? t.strength;
@@ -53,6 +54,8 @@ const PasswordField = ({ strength = false, strings, warning, onKeyDown, onKeyUp,
   return (
     <InputField
       autoComplete={strength ? "new-password" : "current-password"}
+      // Says "a password goes here" in any language; a caller can still pass its own.
+      placeholder="************"
       {...rest}
       type={shown ? "text" : "password"}
       // Caps lock is a warning, and only while typing here.

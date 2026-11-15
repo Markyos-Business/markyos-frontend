@@ -4,7 +4,7 @@ import { SidebarMenuButton } from "./sidebar-drawer";
 /**
  * The spec's TopBar (MARKYOS_UI.md §5): 84px and transparent over the canvas,
  * where you are on the start side (an optional breadcrumb over the title),
- * 22px actions and the avatar on the end.
+ * 22px actions and the avatar on the end. No hover tint (`mk-no-hover`).
  */
 export function AppTopBar({
   title,
@@ -22,7 +22,7 @@ export function AppTopBar({
   right?: ReactNode;
 }) {
   return (
-    <header className="flex h-topbar shrink-0 items-center justify-between gap-space-5 px-space-6 sm:px-space-10">
+    <header className="mk-no-hover flex h-topbar shrink-0 items-center justify-between gap-space-5 px-space-6 sm:px-space-10">
       <div className="flex min-w-0 items-center gap-space-3">
         <SidebarMenuButton />
         <div className="min-w-0">

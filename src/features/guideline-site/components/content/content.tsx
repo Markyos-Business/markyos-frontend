@@ -4,7 +4,7 @@ import { ReactNode, useState } from "react";
 import { useToast, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { Asset, DepartmentView, LogoSlot, Persona, SlotKind, VoiceTrait, Workspace } from "@/types";
-import { navMarkSlot } from "../../utils/brand-logo";
+import { lockupSlot, navMarkSlot } from "../../utils/brand-logo";
 import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from "../../utils/guideline-assets";
 import { SectionHeading, SectionNote, useLiveEdit } from "../live/live-edit";
 import { StrategyDocument } from "../documents/strategy-document";
@@ -1053,9 +1053,9 @@ export function FixedSectionBody({
     case "strategy":
       return <StrategySection ws={ws} isAr={isAr} />;
     case "logo": {
-      // The construction drawings need one lockup to demonstrate on; the first
-      // attached slot is the one the rest of the site already treats as primary.
-      const primary = attachedSlots.length > 0 ? ws.logo[attachedSlots[0]] : undefined;
+      // The construction drawings need one lockup to demonstrate on: the one
+      // in the language being read, when the brand has it.
+      const primary = lockupSlot(ws, isAr);
       // The sign-off panel is not part of the layout choice — it is the client's
       // approval of this section, and every layout of it is the same section.
       const signOff = <SignOffPanel ws={ws} section="logo" isAr={isAr} />;
@@ -1090,7 +1090,7 @@ export function FixedSectionBody({
       );
     }
     case "misuse": {
-      const primary = attachedSlots.length > 0 ? ws.logo[attachedSlots[0]] : undefined;
+      const primary = lockupSlot(ws, isAr);
       return primary ? <MisuseGrid slot={primary} onDark={onDark} isAr={isAr} /> : null;
     }
     case "app-icon":

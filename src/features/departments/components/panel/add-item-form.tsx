@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button } from "@/components/ui";
 import { ChipPicker, InputField } from "@/components/ui";
 import type { DepartmentView, DeptItemType, SectionKey, Workspace } from "@/types";
@@ -12,7 +12,7 @@ type AddItemFormProps = { ws: Workspace; view: DepartmentView; isAr: boolean; on
 /** Links a section or a piece of strategy to the department, with why it matters there. */
 export function AddItemForm({ ws, view, isAr, onDone }: AddItemFormProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const { addDeptItem } = useApp();
+  const { addDeptItem } = useAppActions();
   const [type, setType] = useState<DeptItemType>("section");
   const [section, setSection] = useState<SectionKey>("overview");
   const [ref, setRef] = useState("");

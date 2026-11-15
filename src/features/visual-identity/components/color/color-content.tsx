@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
 import { ColorSwatch, SlotKind, Workspace } from "@/types";
 import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
+import { useColorNameTranslations } from "../../hooks/use-color-name-translations";
+import { nameLang } from "@/lib/data/colorNames";
 
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
 export function ColorContent({ ws }: { ws: Workspace }) {
-  const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useApp();
+  const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useAppActions();
+  useColorNameTranslations(ws);
   const { showToast } = useToast();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [showReport, setShowReport] = useState(false);
@@ -286,6 +289,9 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           mode={editor.mode}
           isAr={isAr}
           initialName={editor.mode === "edit" ? editor.color.name : ""}
+          initialTranslation={
+            editor.mode === "edit" && editor.color.nameTranslation?.source === editor.color.name ? editor.color.nameTranslation.text : ""
+          }
           initialHex={editor.mode === "edit" ? editor.color.hex : "#"}
           isPrimary={editor.mode === "edit" && !!editor.color.isPrimary}
           /*
@@ -323,12 +329,17 @@ export function ColorContent({ ws }: { ws: Workspace }) {
               : undefined
           }
           onCancel={() => setEditor(null)}
-          onSave={(data) => {
+          onSave={({ translation, ...data }) => {
+            // A typed translation is kept as current for this name, so the
+            // translator leaves it alone; empty leaves it to the translator.
+            const nameTranslation = translation
+              ? { lang: nameLang(data.name) === "ar" ? ("en" as const) : ("ar" as const), text: translation, source: data.name }
+              : undefined;
             if (editor.mode === "add") {
-              addColor(ws.id, data);
+              addColor(ws.id, { ...data, ...(nameTranslation ? { nameTranslation } : {}) });
               showToast(isAr ? "تمت إضافة اللون." : "Colour added.", "success");
             } else {
-              updateColor(ws.id, editor.color.id, data);
+              updateColor(ws.id, editor.color.id, nameTranslation ? { ...data, nameTranslation } : data);
               showToast(isAr ? "تم تحديث اللون." : "Colour updated.", "success");
             }
             setEditor(null);

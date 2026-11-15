@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { traitIn } from "@/features/guideline-site";
@@ -9,7 +9,7 @@ import { Lang, Workspace } from "@/types";
 import { InlineText, MiniInput } from "../../shared/inputs";
 
 export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useApp();
+  const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useAppActions();
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
   const [traitName, setTraitName] = useState("");

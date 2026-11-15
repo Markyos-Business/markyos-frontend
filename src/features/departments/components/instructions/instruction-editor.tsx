@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon, AutoTextarea, EmptyHint } from "@/components/ui";
 import { DepartmentView, DeptInstructionSection, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
@@ -21,7 +21,7 @@ export function InstructionEditor({
   view: DepartmentView;
   onImport: () => void;
 }) {
-  const { setDeptInstructions, uiLang } = useApp();
+  const { setDeptInstructions, uiLang } = useAppActions();
   const isAr = uiLang(ws) === "ar";
   const sections = view.instructionSections;
 

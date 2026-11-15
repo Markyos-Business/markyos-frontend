@@ -19,6 +19,9 @@ type SliderFieldProps = {
   /** Keep the label for screen readers only, when a heading above already says it. */
   hideLabel?: boolean;
   disabled?: boolean;
+  /** Labelled points under the track: 0%, 50%, 100%. */
+  marks?: { value: number; label: string }[];
+  hint?: string;
 };
 
 /**
@@ -38,6 +41,8 @@ const SliderField = ({
   labelExtra,
   hideLabel = false,
   disabled = false,
+  marks,
+  hint,
 }: SliderFieldProps) => {
   const labelId = useId();
   const shown = valueText ?? value.toFixed(step < 1 ? 2 : 0);
@@ -60,11 +65,30 @@ const SliderField = ({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(parseFloat(e.target.value))}
+        aria-describedby={hint ? `${labelId}-hint` : undefined}
         className="w-full cursor-pointer accent-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
       />
+      {marks && (
+        // Each mark sits under its value; the row mirrors with the slider.
+        <div aria-hidden className="relative h-4 text-ui-2xs text-text-faint">
+          {marks.map((m) => (
+            <span key={m.value} className="absolute -translate-x-1/2 rtl:translate-x-1/2" style={{ insetInlineStart: `${((m.value - min) / (max - min)) * 100}%` }}>
+              {m.label}
+            </span>
+          ))}
+        </div>
+      )}
+      {hint && (
+        <span id={`${labelId}-hint`} className="text-caption text-text-faint">
+          {hint}
+        </span>
+      )}
     </div>
   );
 };
 
-export { SliderField };
+/** Slider, by the UI library's name. */
+const Slider = SliderField;
+
+export { Slider, SliderField };
 export type { SliderFieldProps };

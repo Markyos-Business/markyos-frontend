@@ -1,0 +1,668 @@
+{
+  "checks": [
+    "Compound/data-driven tabs link panels and support automatic arrows, Home/End",
+    "Manual mode moves focus without selection until Enter/Space",
+    "Vertical settings use Up/Down",
+    "Tab re-entry lands on the selected tab",
+    "Disabled reasons stay reachable; names include count, status and position",
+    "Asynchronous unsaved guard can refuse or allow without duplicate dialogs",
+    "Lazy loading, keepMounted form state, empty panel and retryable error render",
+    "Language preset warns about missing Arabic and gives its panel RTL",
+    "Linear campaign steps block ahead until prerequisites complete",
+    "Router tabs use real links and one most-specific current route",
+    "Alt+arrows reorder with selection retained; Delete closes; add creates a tab",
+    "dnd-kit pointer handles reorder tabs",
+    "ResizeObserver moves overflow to More and pins the selected result",
+    "Scroll arrows work and active tabs scroll into view",
+    "Below 640px mobileAs select switches list and selects its panel",
+    "Inherited Arabic direction mirrors automatic arrow navigation",
+    "Reduced motion removes colour and underline transitions",
+    "Selected tab hover avoids the inherited contrast-reducing veil",
+    "Tab text in both themes clears 4.5:1",
+    "390px English and Arabic layouts fit without page overflow",
+    "No browser runtime errors"
+  ],
+  "contrasts": [
+    {
+      "theme": "light",
+      "label": "Details1 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 4",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 4",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 4",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Profile1 of 3",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "label": "Team2 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Billing3 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 4",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Default1 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Hover2 of 12",
+      "ratio": 17.41933128778011
+    },
+    {
+      "theme": "light",
+      "label": "Selected3 of 12",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Focus4 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Disabled5 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Loading6 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Error7 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Warning8 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Completed9 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Unsaved10 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "12 of 12",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights2 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions3 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Comments5 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Approvals6 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Downloads7 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Metadata8 of 8",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Comments5 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Approvals6 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Downloads7 of 8",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Metadata8 of 8",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Social1 of 3",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Artwork2 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Cover3 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Summary1 of 4",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "History42 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Versions3 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Failed4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 2",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights2 of 2",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "EN1 of 2",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "ARNeeds Arabic2 of 2",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "1Brief1 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "2Assets2 of 3",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "3Review3 of 3",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Details1 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Rights22 of 4",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "label": "Versions43 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "light",
+      "label": "Activity4 of 4",
+      "ratio": 5.32921162976606
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 4",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 4",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 4",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Profile1 of 3",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "label": "Team2 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Billing3 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 4",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Default1 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Hover2 of 12",
+      "ratio": 14.587193453215752
+    },
+    {
+      "theme": "dark",
+      "label": "Selected3 of 12",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Focus4 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Disabled5 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Loading6 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Error7 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Warning8 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Completed9 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Unsaved10 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "12 of 12",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights2 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions3 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Comments5 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Approvals6 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Downloads7 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Metadata8 of 8",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Comments5 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Approvals6 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Downloads7 of 8",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Metadata8 of 8",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Social1 of 3",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Artwork2 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Cover3 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Summary1 of 4",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "History42 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Versions3 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Failed4 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 2",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights2 of 2",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "EN1 of 2",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "ARNeeds Arabic2 of 2",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "1Brief1 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "2Assets2 of 3",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "3Review3 of 3",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Details1 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Rights22 of 4",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "label": "Versions43 of 4",
+      "ratio": 10.82649332964988
+    },
+    {
+      "theme": "dark",
+      "label": "Activity4 of 4",
+      "ratio": 10.82649332964988
+    }
+  ],
+  "errors": []
+}

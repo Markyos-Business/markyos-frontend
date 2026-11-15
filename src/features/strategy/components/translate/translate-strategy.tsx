@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, richIsEmpty } from "@/components/ui";
 import { TranslateDirection, translateHtml, translateText } from "../../api/strategy.api";
 import { StrategyTextField, Workspace } from "@/types";
@@ -46,7 +46,7 @@ export function TranslateStrategy({
     updateVoiceTrait,
     updateCoreValue,
     updateCompetitor,
-  } = useApp();
+  } = useAppActions();
   const { showToast } = useToast();
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -227,7 +227,7 @@ export function TranslateStrategy({
  * "review your translations" is something they learn to dismiss.
  */
 export function TranslationNotice({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { setStrategyTranslation } = useApp();
+  const { setStrategyTranslation } = useAppActions();
   const t = ws.strategyTranslation;
   if (t.source !== "machine" || t.unreviewed.length === 0) return null;
 

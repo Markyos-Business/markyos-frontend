@@ -12,6 +12,8 @@ import type { PasswordSetup } from "../../types";
 import { normaliseEmail } from "../../utils/email";
 import { scorePassword } from "../../utils/password";
 import { useAuthLang } from "../shared/use-auth-lang";
+import { captureSignupRef } from "../../utils/signup-ref";
+import { writeGuestLang } from "@/lib/i18n/interfaceLang";
 
 type SignupErrors = {
   accountType?: string;
@@ -29,8 +31,19 @@ export function useSignupForm() {
   const router = useRouter();
   // The website's sign-up buttons say who the account is for (/start?type=studio,
   // forwarded here): that choice arrives already made, and stays changeable.
-  const fromSite = useSearchParams().get("type");
+  const params = useSearchParams();
+  const fromSite = params.get("type");
   const presetType = ACCOUNT_TYPE_KEYS.find((k) => k === fromSite) ?? null;
+
+  // From a Made with Markyos badge: open in the page's language, and keep
+  // where the visitor came from (ref, type) for 30 days.
+  const query = params.toString();
+  useEffect(() => {
+    const p = new URLSearchParams(query);
+    captureSignupRef(p);
+    const lang = p.get("lang");
+    if (lang === "ar" || lang === "en") writeGuestLang(lang);
+  }, [query]);
 
   const [accountType, setAccountType] = useState<AccountType | null>(presetType);
   const [name, setName] = useState("");

@@ -32,7 +32,7 @@ Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never u
 3. **Flat surfaces.** Black canvas `#000`, panels `#111`, raised fills `#1A1A1A`. Use no gradients in chrome, no textures, no photography in chrome.
 4. **Draw borders as inset box-shadows** (`box-shadow: inset 0 0 0 1px …`), not `border`. The only real border is the input underline.
 5. **Depth comes from light, not shadow.** Glow (`--glow-*`) is used for active, focus and highlight only, on about 2% of a layout. `--shadow-raised` is for menus and overlays only.
-6. **Hover and press use one treatment for everything:** a `--ink-35` scrim over the resting fill (`.mk-btn::after`). There is no lift, no scale and no darker hex.
+6. **Hover and press use one treatment for everything:** a `--ink-35` scrim over the resting fill (`.mk-btn::after`). There is no lift, no scale and no darker hex. **Exception:** the app sidebar, the top bar and table grids (`.mk-no-hover`) show no hover tint at all; focus and press still do.
 7. **Focus** is `outline: 2px solid var(--primary); outline-offset: 2px`.
 8. **Motion is calm and fast** (§13): 100 / 150 / 200 / 280ms on three curves (standard, ease-out entering, ease-in leaving; exits ~30% quicker). Pages, cards, overlays and the sidebar animate, using only `transform` and `opacity` (plus collapsible grid rows and the desktop sidebar width). No bounce, spring overshoot or parallax, and nothing over 300ms except a chart drawing itself once.
 9. **The maximum weight is 500** in product UI (`--weight-bold: 500`). Hierarchy comes from size and white opacity, not from bold.

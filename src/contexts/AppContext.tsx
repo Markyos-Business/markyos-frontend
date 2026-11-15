@@ -77,7 +77,7 @@ import {
   defaultCompetitorColumns,
   defaultTypography,
 } from "@/lib/data/mockData";
-import { roleOn } from "@/lib/data/access";
+import { canEdit, roleOn } from "@/lib/data/access";
 import { initialsFor, slugify, uid } from "@/lib/utils";
 // Deep imports, not the feature's index: its components import this file,
 // so going through index.ts would make a cycle.
@@ -283,7 +283,12 @@ interface AppContextValue {
   uiLang: (ws?: Pick<Workspace, "primaryLocale"> | null) => Lang;
   setOverview: (workspaceId: string, html: string) => void;
   addColor: (workspaceId: string, swatch: Omit<ColorSwatch, "id">) => void;
-  updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => void;
+  updateColor: (workspaceId: string, colorId: string, patch: { name: string; hex: string; nameTranslation?: ColorSwatch["nameTranslation"] }) => void;
+  /**
+   * Stores a colour name's machine translation. Not an edit: no undo step,
+   * and ignored if the name changed since, or the reader can't edit the brand.
+   */
+  setColorNameTranslation: (workspaceId: string, colorId: string, translation: NonNullable<ColorSwatch["nameTranslation"]>) => void;
   removeColor: (workspaceId: string, colorId: string) => void;
   /** Moves the primary marker to this swatch, clearing it from the others. */
   setPrimaryColor: (workspaceId: string, colorId: string) => void;
@@ -306,6 +311,8 @@ interface AppContextValue {
   toggleFigmaSync: (workspaceId: string, connected: boolean) => void;
   // v5.0 white-label
   toggleWhiteLabel: (workspaceId: string, on: boolean) => void;
+  /** A paid brand's choice to show the Made with Markyos badge on its public pages. */
+  setBrandingCredit: (workspaceId: string, on: boolean) => void;
   setGuidelineTemplate: (workspaceId: string, template: GuidelineTemplate) => void;
   setStudioStyle: (workspaceId: string, style: StudioStyle) => void;
   // v2.0 sign-off pins
@@ -601,9 +608,10 @@ interface AppContextValue {
   /** Forces the client-facing site's ground light or dark, or back to inferring it. */
   setSiteMode: (workspaceId: string, mode: Workspace["siteMode"]) => void;
   /** Copies the current draft to the live site clients see. */
-  publishGuideline: (workspaceId: string) => void;
+  /** Publishes on the server when signed in; resolves with what happened. */
+  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   /** Takes the live site down; the draft is untouched. */
-  unpublishGuideline: (workspaceId: string) => void;
+  unpublishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   addTemplateBlocks: (workspaceId: string, blocks: Omit<PageBlock, "id" | "order">[], pageId?: string) => void;
   autoFillBlocks: (workspaceId: string) => void;
   // Guidelines editor — custom pages beyond Home, each with its own URL
@@ -625,7 +633,16 @@ interface AppContextValue {
   canRedo: boolean;
 }
 
-const AppContext = createContext<AppContextValue | null>(null);
+/** What changes as the app is used: read by `useApp()` and `useAppState()`. */
+type AppStateValue = Pick<AppContextValue, "state" | "hydrated" | "slugMoves" | "syncNotice" | "myWorkspaces" | "getWorkspace" | "resolveShareLink" | "canUndo" | "canRedo">;
+/** Everything that changes the app. Stable for the provider's lifetime. */
+export type AppActions = Omit<AppContextValue, keyof AppStateValue>;
+
+const AppStateContext = createContext<AppStateValue | null>(null);
+/** Who is signed in. Changes on sign-in, sign-out or a profile edit only. */
+type SessionValue = { session: AppState["session"]; account: Account | null };
+const SessionContext = createContext<SessionValue>({ session: null, account: null });
+const AppActionsContext = createContext<AppActions | null>(null);
 
 /**
  * `state` with `account` signed in, or with nobody signed in when it is null.
@@ -871,9 +888,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         return;
       }
+      // An editor's change to owner-only settings is dropped too, matching
+      // the server, which keeps the stored values on an editor's save.
       const apply =
         role === "editor"
-          ? (ws: Workspace) => ({ ...fn(ws), team: ws.team, billing: ws.billing })
+          ? (ws: Workspace) => ({
+              ...fn(ws),
+              team: ws.team,
+              billing: ws.billing,
+              clientAccess: ws.clientAccess,
+              developer: ws.developer,
+              whiteLabel: ws.whiteLabel,
+              brandingCredit: ws.brandingCredit,
+            })
           : fn;
 
       // Pushed before the change, from the last committed state — an updater
@@ -1076,7 +1103,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // in this browser: its brands, gate passwords and team carry over to
       // whoever opens it next. Not awaited: the person is signed out here the
       // moment they ask, while the last save and the revoke finish behind.
-      void repo.endSession().finally(() => authApi.logout().catch(() => undefined));
+      void authApi.logout(() => repo.endSession());
       setState(defaultState());
       return;
     }
@@ -1517,7 +1544,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateColor = useCallback(
-    (workspaceId: string, colorId: string, patch: { name: string; hex: string }) => {
+    (workspaceId: string, colorId: string, patch: { name: string; hex: string; nameTranslation?: ColorSwatch["nameTranslation"] }) => {
       mutateWorkspace(workspaceId, (ws) =>
         touchWorkspace(ws, {
           colors: ws.colors.map((c) => (c.id === colorId ? { ...c, ...patch } : c)),
@@ -1525,6 +1552,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       );
     },
     [mutateWorkspace, touchWorkspace]
+  );
+
+  const setColorNameTranslation = useCallback(
+    (workspaceId: string, colorId: string, translation: NonNullable<ColorSwatch["nameTranslation"]>) => {
+      const current = stateRef.current;
+      const target = current.workspaces.find((w) => w.id === workspaceId);
+      if (!target || !canEdit(roleOn(target, current.session))) return;
+      setState((prev) => ({
+        ...prev,
+        workspaces: prev.workspaces.map((w) =>
+          w.id !== workspaceId
+            ? w
+            : {
+                ...w,
+                colors: w.colors.map((c) =>
+                  c.id === colorId && c.name === translation.source ? { ...c, nameTranslation: translation } : c
+                ),
+              }
+        ),
+      }));
+    },
+    []
   );
 
   /**
@@ -1638,7 +1687,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (value) {
         const check = validateSubdomain(value);
         if (check) return check;
-        const taken = state.workspaces.some(
+        const taken = stateRef.current.workspaces.some(
           (w) => w.id !== workspaceId && w.clientAccess.subdomain.toLowerCase() === value
         );
         if (taken) return "That subdomain is already used by another brand in your account.";
@@ -1646,7 +1695,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { clientAccess: { ...ws.clientAccess, subdomain: value } }));
       return null;
     },
-    [state.workspaces, mutateWorkspace, touchWorkspace]
+    [mutateWorkspace, touchWorkspace]
   );
 
   const setCustomDomain = useCallback(
@@ -1712,6 +1761,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (workspaceId: string, on: boolean) => {
       mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { whiteLabel: on }));
       logAudit(on ? "Enabled white-label" : "Disabled white-label", workspaceId);
+    },
+    [mutateWorkspace, touchWorkspace, logAudit]
+  );
+
+  const setBrandingCredit = useCallback(
+    (workspaceId: string, on: boolean) => {
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { brandingCredit: on }));
+      logAudit(on ? "Showed the Made with Markyos badge" : "Removed Markyos branding", workspaceId);
     },
     [mutateWorkspace, touchWorkspace, logAudit]
   );
@@ -2131,8 +2188,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const voteMoodboardItem = useCallback(
     (workspaceId: string, boardId: string, itemId: string) => {
-      const who = stateRef.current.session?.name ?? "You";
-      patchMoodboard(workspaceId, boardId, (b) => ({
+      const current = stateRef.current;
+      const who = current.session?.name ?? "You";
+      const toggle = (b: Moodboard) => ({
         ...b,
         zones: b.zones.map((z) => ({
           ...z,
@@ -2142,9 +2200,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               : i,
           ),
         })),
-      }));
+      });
+      // Signed out (the browser-only demo): the vote is part of the brand.
+      if (!current.session || !isApiAdapter(repo)) {
+        patchMoodboard(workspaceId, boardId, toggle);
+        return;
+      }
+
+      // Signed in, a vote is the voter's own record, so viewers can vote too.
+      // It shows at once, then takes the server's answer.
+      const item = current.workspaces
+        .find((w) => w.id === workspaceId)
+        ?.moodboards.find((b) => b.id === boardId)
+        ?.zones.flatMap((z) => z.items)
+        .find((i) => i.id === itemId);
+      if (!item) return;
+      const before = item.votes;
+      const on = !before.includes(who);
+      const setVotes = (votes: string[]) =>
+        setState((prev) => ({
+          ...prev,
+          workspaces: prev.workspaces.map((w) =>
+            w.id !== workspaceId
+              ? w
+              : {
+                  ...w,
+                  moodboards: w.moodboards.map((b) => ({
+                    ...b,
+                    zones: b.zones.map((z) => ({
+                      ...z,
+                      items: z.items.map((i) => (i.id === itemId ? { ...i, votes } : i)),
+                    })),
+                  })),
+                },
+          ),
+        }));
+      setVotes(on ? [...before, who] : before.filter((v) => v !== who));
+      void repo.voteOnCard(workspaceId, itemId, on).then((result) => {
+        if (result.ok) return setVotes(result.votes);
+        setVotes(before);
+        if (result.unsupported) patchMoodboard(workspaceId, boardId, toggle);
+        else setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message: `Your vote wasn't saved: ${result.message}`, tone: "danger" }));
+      });
     },
-    [patchMoodboard]
+    [patchMoodboard, repo]
   );
 
   const addMoodboardZone = useCallback(
@@ -3315,7 +3414,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const publishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
       /*
        * The transition itself lives in `lib/adapters/entityOps.ts`.
        *
@@ -3328,18 +3427,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        *
        * The reasoning for each subtraction moved with the code. Read it there.
        */
+      // Signed in, the server builds the public copy (and refuses a stale
+      // one); this browser's own transition is the demo's and the fallback
+      // for a server that predates the endpoint.
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, true);
+        if (result.ok) logAudit("Published the guideline site", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => publishWorkspace(ws, Date.now()));
       logAudit("Published the guideline site", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const unpublishGuideline = useCallback(
-    (workspaceId: string) => {
+    async (workspaceId: string) => {
+      if (stateRef.current.session && isApiAdapter(repo)) {
+        const result = await repo.publishSite(workspaceId, false);
+        if (result.ok) logAudit("Took the guideline site offline", workspaceId);
+        if (result.ok || !result.unsupported) return result;
+      }
       mutateWorkspace(workspaceId, (ws) => unpublishWorkspace(ws));
       logAudit("Took the guideline site offline", workspaceId);
+      return { ok: true };
     },
-    [mutateWorkspace, logAudit]
+    [mutateWorkspace, logAudit, repo]
   );
 
   const toggleSectionHidden = useCallback(
@@ -3557,335 +3671,387 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace]
   );
 
-  const value = useMemo<AppContextValue>(
+  /*
+   * Two values, not one. The actions (everything that changes the app) never
+   * change identity, so a component that only calls them — `useAppActions()` —
+   * does not re-render when state changes. The state half changes with every
+   * edit; only components that read it pay for that. `useApp()` still returns
+   * both, merged, for the components that need both.
+   */
+  const actions = useMemo<AppActions>(
+    () => ({
+      signup,
+      login,
+      signInWithGoogle,
+      verifyEmail,
+      resendVerification,
+      logout,
+      updateAccount,
+      pendingEmailAction,
+      setServerAccount,
+      confirmEmailChange,
+      setAccountPassword,
+      requestPasswordReset,
+      resetPassword,
+      createWorkspace,
+      setPrimaryLocale,
+      setAdminLang,
+      uiLang,
+      setOverview,
+      setBrandDetails,
+      addColor,
+      updateColor,
+      setColorNameTranslation,
+      removeColor,
+      setPrimaryColor,
+      setTypography,
+      setFontAsset,
+      updateLogoSlot,
+      setLogoUsageNotes,
+      setLogoColorIds,
+      toggleClientPassword,
+      setClientPassword,
+      setCustomDomain,
+      setDomainStatus,
+      setSubdomain,
+      confirmPurchase,
+      setApiKey,
+      setWebhookUrl,
+      toggleFigmaSync,
+      toggleWhiteLabel,
+      setBrandingCredit,
+      setGuidelineTemplate,
+      setStudioStyle,
+      setWorkspaceStage,
+      createMoodboard,
+      renameMoodboard,
+      deleteMoodboard,
+      duplicateMoodboard,
+      addMoodboardZone,
+      patchMoodboardZone,
+      removeMoodboardZone,
+      addMoodboardItems,
+      updateMoodboardItem,
+      moveMoodboardItem,
+      removeMoodboardItem,
+      restoreMoodboardItem,
+      voteMoodboardItem,
+      placeMoodboardItem,
+      placeMoodboardZone,
+      connectMoodboardItems,
+      removeMoodboardEdge,
+      labelMoodboardEdge,
+      setMoodboardView,
+      tidyMoodboard,
+      addDraft,
+      acceptDraft,
+      rejectDraft,
+      addSignOffPin,
+      refreshSignOffPins,
+      resolveSignOffPin,
+      setStrategyText,
+      setStrategyTranslation,
+      markStrategyReviewed,
+      addPersona,
+      updatePersona,
+      removePersona,
+      addVoiceTrait,
+      updateVoiceTrait,
+      removeVoiceTrait,
+      addCoreValue,
+      updateCoreValue,
+      removeCoreValue,
+      addObjective,
+      updateObjective,
+      removeObjective,
+      addPositioningOption,
+      updatePositioningOption,
+      removePositioningOption,
+      choosePositioningOption,
+      addToStrategy,
+      removeFromStrategy,
+      addCompetitor,
+      updateCompetitor,
+      setCompetitorColumns,
+      renameWorkspace,
+      removeCompetitor,
+      addAsset,
+      removeAsset,
+      setAssetTags,
+      setAssetStatus,
+      setAssetType,
+      renameAsset,
+      addAssetVersion,
+      restoreAssetVersion,
+      addDepartmentView,
+      renameDepartmentView,
+      removeDepartmentView,
+      addDeptItem,
+      removeDeptItem,
+      setDeptGuideline,
+      setDeptInstructions,
+      setDeptPublish,
+      addTeamMember,
+      removeTeamMember,
+      setTeamRole,
+      transferOwnership,
+      createShareLink,
+      revokeShareLink,
+      restoreShareLink,
+      proposeApproval,
+      refreshApprovals,
+      resolveApproval,
+      saveVersionSnapshot,
+      restoreVersion,
+      addComplianceCheck,
+      setSso,
+      logAudit,
+      addBlock,
+      updateBlock,
+      removeBlock,
+      duplicateBlock,
+      reorderBlocks,
+      toggleSectionHidden,
+      setSectionOrder,
+      setBlockStyle,
+      setSectionStyle,
+      setSectionOptions,
+      setSectionTitle,
+      setSectionNote,
+      setSiteMode,
+      publishGuideline,
+      unpublishGuideline,
+      addTemplateBlocks,
+      autoFillBlocks,
+      addPage,
+      renamePage,
+      removePage,
+      reorderPages,
+      undo,
+      redo,
+    }),
+    [
+      signup,
+      login,
+      signInWithGoogle,
+      verifyEmail,
+      resendVerification,
+      logout,
+      updateAccount,
+      pendingEmailAction,
+      setServerAccount,
+      confirmEmailChange,
+      setAccountPassword,
+      requestPasswordReset,
+      resetPassword,
+      createWorkspace,
+      setPrimaryLocale,
+      setAdminLang,
+      uiLang,
+      setOverview,
+      setBrandDetails,
+      addColor,
+      updateColor,
+      setColorNameTranslation,
+      removeColor,
+      setPrimaryColor,
+      setTypography,
+      setFontAsset,
+      updateLogoSlot,
+      setLogoUsageNotes,
+      setLogoColorIds,
+      toggleClientPassword,
+      setClientPassword,
+      setCustomDomain,
+      setDomainStatus,
+      setSubdomain,
+      confirmPurchase,
+      setApiKey,
+      setWebhookUrl,
+      toggleFigmaSync,
+      toggleWhiteLabel,
+      setBrandingCredit,
+      setGuidelineTemplate,
+      setStudioStyle,
+      setWorkspaceStage,
+      createMoodboard,
+      renameMoodboard,
+      deleteMoodboard,
+      duplicateMoodboard,
+      addMoodboardZone,
+      patchMoodboardZone,
+      removeMoodboardZone,
+      addMoodboardItems,
+      updateMoodboardItem,
+      moveMoodboardItem,
+      removeMoodboardItem,
+      restoreMoodboardItem,
+      voteMoodboardItem,
+      placeMoodboardItem,
+      placeMoodboardZone,
+      connectMoodboardItems,
+      removeMoodboardEdge,
+      labelMoodboardEdge,
+      setMoodboardView,
+      tidyMoodboard,
+      addDraft,
+      acceptDraft,
+      rejectDraft,
+      addSignOffPin,
+      refreshSignOffPins,
+      resolveSignOffPin,
+      setStrategyText,
+      setStrategyTranslation,
+      markStrategyReviewed,
+      addPersona,
+      updatePersona,
+      removePersona,
+      addVoiceTrait,
+      updateVoiceTrait,
+      removeVoiceTrait,
+      addCoreValue,
+      updateCoreValue,
+      removeCoreValue,
+      addObjective,
+      updateObjective,
+      removeObjective,
+      addPositioningOption,
+      updatePositioningOption,
+      removePositioningOption,
+      choosePositioningOption,
+      addToStrategy,
+      removeFromStrategy,
+      addCompetitor,
+      updateCompetitor,
+      setCompetitorColumns,
+      renameWorkspace,
+      removeCompetitor,
+      addAsset,
+      removeAsset,
+      setAssetTags,
+      setAssetStatus,
+      setAssetType,
+      renameAsset,
+      addAssetVersion,
+      restoreAssetVersion,
+      addDepartmentView,
+      renameDepartmentView,
+      removeDepartmentView,
+      addDeptItem,
+      removeDeptItem,
+      setDeptGuideline,
+      setDeptInstructions,
+      setDeptPublish,
+      addTeamMember,
+      removeTeamMember,
+      setTeamRole,
+      transferOwnership,
+      createShareLink,
+      revokeShareLink,
+      restoreShareLink,
+      proposeApproval,
+      refreshApprovals,
+      resolveApproval,
+      saveVersionSnapshot,
+      restoreVersion,
+      addComplianceCheck,
+      setSso,
+      logAudit,
+      addBlock,
+      updateBlock,
+      removeBlock,
+      duplicateBlock,
+      reorderBlocks,
+      toggleSectionHidden,
+      setSectionOrder,
+      setBlockStyle,
+      setSectionStyle,
+      setSectionOptions,
+      setSectionTitle,
+      setSectionNote,
+      setSiteMode,
+      publishGuideline,
+      unpublishGuideline,
+      addTemplateBlocks,
+      autoFillBlocks,
+      addPage,
+      renamePage,
+      removePage,
+      reorderPages,
+      undo,
+      redo,
+    ]
+  );
+
+  const stateValue = useMemo<AppStateValue>(
     () => ({
       state,
       hydrated,
       slugMoves,
       syncNotice,
-      signup,
-      login,
-      signInWithGoogle,
-      verifyEmail,
-      resendVerification,
-      logout,
-      updateAccount,
-      pendingEmailAction,
-      setServerAccount,
-      confirmEmailChange,
-      setAccountPassword,
-      requestPasswordReset,
-      resetPassword,
       myWorkspaces,
       getWorkspace,
-      createWorkspace,
-      setPrimaryLocale,
-      setAdminLang,
-      uiLang,
-      setOverview,
-      setBrandDetails,
-      addColor,
-      updateColor,
-      removeColor,
-      setPrimaryColor,
-      setTypography,
-      setFontAsset,
-      updateLogoSlot,
-      setLogoUsageNotes,
-      setLogoColorIds,
-      toggleClientPassword,
-      setClientPassword,
-      setCustomDomain,
-      setDomainStatus,
-      setSubdomain,
-      confirmPurchase,
-      setApiKey,
-      setWebhookUrl,
-      toggleFigmaSync,
-      toggleWhiteLabel,
-      setGuidelineTemplate,
-      setStudioStyle,
-      setWorkspaceStage,
-      createMoodboard,
-      renameMoodboard,
-      deleteMoodboard,
-      duplicateMoodboard,
-      addMoodboardZone,
-      patchMoodboardZone,
-      removeMoodboardZone,
-      addMoodboardItems,
-      updateMoodboardItem,
-      moveMoodboardItem,
-      removeMoodboardItem,
-      restoreMoodboardItem,
-      voteMoodboardItem,
-      placeMoodboardItem,
-      placeMoodboardZone,
-      connectMoodboardItems,
-      removeMoodboardEdge,
-      labelMoodboardEdge,
-      setMoodboardView,
-      tidyMoodboard,
-      addDraft,
-      acceptDraft,
-      rejectDraft,
-      addSignOffPin,
-      refreshSignOffPins,
-      resolveSignOffPin,
-      setStrategyText,
-      setStrategyTranslation,
-      markStrategyReviewed,
-      addPersona,
-      updatePersona,
-      removePersona,
-      addVoiceTrait,
-      updateVoiceTrait,
-      removeVoiceTrait,
-      addCoreValue,
-      updateCoreValue,
-      removeCoreValue,
-      addObjective,
-      updateObjective,
-      removeObjective,
-      addPositioningOption,
-      updatePositioningOption,
-      removePositioningOption,
-      choosePositioningOption,
-      addToStrategy,
-      removeFromStrategy,
-      addCompetitor,
-      updateCompetitor,
-      setCompetitorColumns,
-      renameWorkspace,
-      removeCompetitor,
-      addAsset,
-      removeAsset,
-      setAssetTags,
-      setAssetStatus,
-      setAssetType,
-      renameAsset,
-      addAssetVersion,
-      restoreAssetVersion,
-      addDepartmentView,
-      renameDepartmentView,
-      removeDepartmentView,
-      addDeptItem,
-      removeDeptItem,
-      setDeptGuideline,
-      setDeptInstructions,
-      setDeptPublish,
-      addTeamMember,
-      removeTeamMember,
-      setTeamRole,
-      transferOwnership,
-      createShareLink,
-      revokeShareLink,
-      restoreShareLink,
       resolveShareLink,
-      proposeApproval,
-      refreshApprovals,
-      resolveApproval,
-      saveVersionSnapshot,
-      restoreVersion,
-      addComplianceCheck,
-      setSso,
-      logAudit,
-      addBlock,
-      updateBlock,
-      removeBlock,
-      duplicateBlock,
-      reorderBlocks,
-      toggleSectionHidden,
-      setSectionOrder,
-      setBlockStyle,
-      setSectionStyle,
-      setSectionOptions,
-      setSectionTitle,
-      setSectionNote,
-      setSiteMode,
-      publishGuideline,
-      unpublishGuideline,
-      addTemplateBlocks,
-      autoFillBlocks,
-      addPage,
-      renamePage,
-      removePage,
-      reorderPages,
-      undo,
       canUndo: depth.undo > 0,
-      redo,
       canRedo: depth.redo > 0,
     }),
-    [
-      state,
-      hydrated,
-      slugMoves,
-      syncNotice,
-      signup,
-      login,
-      signInWithGoogle,
-      verifyEmail,
-      resendVerification,
-      logout,
-      updateAccount,
-      pendingEmailAction,
-      setServerAccount,
-      confirmEmailChange,
-      setAccountPassword,
-      requestPasswordReset,
-      resetPassword,
-      myWorkspaces,
-      getWorkspace,
-      createWorkspace,
-      setPrimaryLocale,
-      setAdminLang,
-      uiLang,
-      setOverview,
-      setBrandDetails,
-      addColor,
-      updateColor,
-      removeColor,
-      setPrimaryColor,
-      setTypography,
-      setFontAsset,
-      updateLogoSlot,
-      setLogoUsageNotes,
-      setLogoColorIds,
-      toggleClientPassword,
-      setClientPassword,
-      setCustomDomain,
-      setDomainStatus,
-      setSubdomain,
-      confirmPurchase,
-      setApiKey,
-      setWebhookUrl,
-      toggleFigmaSync,
-      toggleWhiteLabel,
-      setGuidelineTemplate,
-      setStudioStyle,
-      setWorkspaceStage,
-      createMoodboard,
-      renameMoodboard,
-      deleteMoodboard,
-      duplicateMoodboard,
-      addMoodboardZone,
-      patchMoodboardZone,
-      removeMoodboardZone,
-      addMoodboardItems,
-      updateMoodboardItem,
-      moveMoodboardItem,
-      removeMoodboardItem,
-      restoreMoodboardItem,
-      voteMoodboardItem,
-      placeMoodboardItem,
-      placeMoodboardZone,
-      connectMoodboardItems,
-      removeMoodboardEdge,
-      labelMoodboardEdge,
-      setMoodboardView,
-      tidyMoodboard,
-      addDraft,
-      acceptDraft,
-      rejectDraft,
-      addSignOffPin,
-      refreshSignOffPins,
-      resolveSignOffPin,
-      setStrategyText,
-      setStrategyTranslation,
-      markStrategyReviewed,
-      addPersona,
-      updatePersona,
-      removePersona,
-      addVoiceTrait,
-      updateVoiceTrait,
-      removeVoiceTrait,
-      addCoreValue,
-      updateCoreValue,
-      removeCoreValue,
-      addObjective,
-      updateObjective,
-      removeObjective,
-      addPositioningOption,
-      updatePositioningOption,
-      removePositioningOption,
-      choosePositioningOption,
-      addToStrategy,
-      removeFromStrategy,
-      addCompetitor,
-      updateCompetitor,
-      setCompetitorColumns,
-      renameWorkspace,
-      removeCompetitor,
-      addAsset,
-      removeAsset,
-      setAssetTags,
-      setAssetStatus,
-      setAssetType,
-      renameAsset,
-      addAssetVersion,
-      restoreAssetVersion,
-      addDepartmentView,
-      renameDepartmentView,
-      removeDepartmentView,
-      addDeptItem,
-      removeDeptItem,
-      setDeptGuideline,
-      setDeptInstructions,
-      setDeptPublish,
-      addTeamMember,
-      removeTeamMember,
-      setTeamRole,
-      transferOwnership,
-      createShareLink,
-      revokeShareLink,
-      restoreShareLink,
-      resolveShareLink,
-      proposeApproval,
-      refreshApprovals,
-      resolveApproval,
-      saveVersionSnapshot,
-      restoreVersion,
-      addComplianceCheck,
-      setSso,
-      logAudit,
-      addBlock,
-      updateBlock,
-      removeBlock,
-      duplicateBlock,
-      reorderBlocks,
-      toggleSectionHidden,
-      setSectionOrder,
-      setBlockStyle,
-      setSectionStyle,
-      setSectionOptions,
-      setSectionTitle,
-      setSectionNote,
-      setSiteMode,
-      publishGuideline,
-      unpublishGuideline,
-      addTemplateBlocks,
-      autoFillBlocks,
-      addPage,
-      renamePage,
-      removePage,
-      reorderPages,
-      undo,
-      redo,
-      depth,
-    ]
+    [state, hydrated, slugMoves, syncNotice, myWorkspaces, getWorkspace, resolveShareLink, depth]
   );
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  // Narrower than the state: a brand edit leaves `accounts` and `session`
+  // untouched, so the account menu and the language hook don't re-render.
+  const currentAccount = useMemo(
+    () => state.accounts.find((a) => a.id === state.session?.accountId) ?? null,
+    [state.accounts, state.session]
+  );
+  const sessionValue = useMemo<SessionValue>(
+    () => ({ session: state.session, account: currentAccount }),
+    [state.session, currentAccount]
+  );
+
+  // Development only: an action whose identity changes defeats the split
+  // above, silently. Say so the moment it happens.
+  const firstActions = useRef(actions);
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && actions !== firstActions.current) {
+      console.warn("AppContext: the actions object changed identity; an action depends on state. Read state through stateRef instead.");
+      firstActions.current = actions;
+    }
+  }, [actions]);
+
+  return (
+    <AppActionsContext.Provider value={actions}>
+      <SessionContext.Provider value={sessionValue}>
+        <AppStateContext.Provider value={stateValue}>{children}</AppStateContext.Provider>
+      </SessionContext.Provider>
+    </AppActionsContext.Provider>
+  );
 }
 
+/** State and actions together. Re-renders on every state change. */
 export function useApp(): AppContextValue {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useApp must be used within AppProvider");
-  return ctx;
+  const state = useContext(AppStateContext);
+  const actions = useContext(AppActionsContext);
+  if (!state || !actions) throw new Error("useApp must be used within AppProvider");
+  return useMemo(() => ({ ...state, ...actions }), [state, actions]);
+}
+
+/**
+ * Only the actions. They never change identity, so a component that needs
+ * nothing else does not re-render when the app's state changes.
+ */
+export function useAppActions(): AppActions {
+  const actions = useContext(AppActionsContext);
+  if (!actions) throw new Error("useAppActions must be used within AppProvider");
+  return actions;
 }
 
 /** The signed-in person's account, or null when signed out. */
 export function useCurrentAccount(): Account | null {
-  const { state } = useApp();
-  return state.accounts.find((a) => a.id === state.session?.accountId) ?? null;
+  return useContext(SessionContext).account;
+}
+
+/** The current session, or null when signed out. Doesn't re-render on brand edits. */
+export function useSession(): AppState["session"] {
+  return useContext(SessionContext).session;
 }

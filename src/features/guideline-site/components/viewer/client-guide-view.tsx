@@ -14,6 +14,7 @@ import { MosaicTemplate } from "../templates/mosaic-template";
 import { StudioTemplate } from "../templates/studio-template";
 import { VaultTemplate } from "../templates/vault-template";
 import { useGuidelineViewer } from "../../hooks/use-guideline-viewer";
+import { withSwatchNamesIn } from "@/lib/data/colorNames";
 
 /**
  * The client guideline at /v/<slug>, or one of its custom pages at
@@ -110,10 +111,10 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   }
 
   const isAr = v.previewLang === "ar";
-  const showMarkyosBadge = ws.billing.plan !== "subscription";
 
   const templateProps = {
-    ws,
+    // Colour names in the language being read (stored translations only).
+    ws: withSwatchNamesIn(ws, isAr ? "ar" : "en"),
     isAr,
     theme,
     sections: v.sections,
@@ -135,7 +136,6 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
     setDownloadOpen: v.setDownloadOpen,
     previewLang: v.previewLang,
     setPreviewLang: v.setPreviewLang,
-    showMarkyosBadge,
     pages: v.pages,
     activePage: v.activePage,
   };

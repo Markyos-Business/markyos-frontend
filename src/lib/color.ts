@@ -69,6 +69,20 @@ export function normalizeHex(text: string): string | null {
   return /^[\da-f]{6}$/i.test(t) ? `#${t.toUpperCase()}` : null;
 }
 
+/**
+ * A colour as someone pastes it: "#0b5d6d", "0B5D6D", "#0bd", or
+ * "rgb(11, 93, 109)" / "rgb(11 93 109 / 50%)" (alpha is dropped). Returns
+ * `#RRGGBB` upper case, or null when it isn't one of those.
+ */
+export function parseColorText(text: string): string | null {
+  const hex = normalizeHex(text);
+  if (hex) return hex;
+  const m = text.trim().match(/^rgba?\(\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})\s*(?:[,/]\s*[\d.]+%?\s*)?\)$/i);
+  if (!m) return null;
+  const [r, g, b] = m.slice(1, 4).map(Number);
+  return r > 255 || g > 255 || b > 255 ? null : rgbToHex({ r, g, b });
+}
+
 /** The channels a notation shows, as whole numbers. HEX is one text value. */
 export function channels(hex: string, notation: Exclude<ColorNotation, "hex">): number[] {
   const rgb = hexToRgb(hex) ?? { r: 0, g: 0, b: 0 };

@@ -25,7 +25,7 @@ a completed feature.
 
 ## Run locally
 
-Use a Node version supported by the installed Next.js and Prisma packages.
+Use Node 22, the version CI runs.
 
 ```sh
 npm ci
@@ -115,14 +115,13 @@ domain name.
 
 ```sh
 npm run test             # Vitest unit tests
-npm run check            # types, lint, Prisma schema, tests and UI audits
+npm run check            # types, lint, tests and UI audits
 npm run e2e              # integrated Playwright scenarios; see setup below
 ```
 
-`check` loads `prisma.config.ts`, which requires `DATABASE_URL` and
-`SHADOW_DATABASE_URL`. Prisma is currently a scaffold, not the platform's live
-persistence layer; Django stores API-backed application data. Do not run Prisma
-migrations against an unrelated database just to satisfy a validation command.
+The frontend has no database of its own: Django stores all API-backed
+application data. The early Prisma data model is kept for reference in
+[docs/archive/prisma-schema.prisma](docs/archive/prisma-schema.prisma).
 
 [E2E setup and scenarios](e2e/README.md) describe the backend Python environment,
 ports, test analysis fake and provider mocks. Browser sweeps are separate
@@ -155,7 +154,7 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `UrlField` | UrlInput | full URL string, `Controller` |
 | `PhoneInput` (or `PhoneField` with code and number apart) | PhoneInput | E.164 string, `Controller` |
 | `SlugField` (`base`, `from`, `checkAvailability`) | SlugInput | slug string, `Controller` |
-| `HexColorField` | HexColorInput | `#RRGGBB`, `Controller` |
+| `HexColorInput` (`picker`, `swatches`); `HexColorField` = with the picker | HexColorInput | `#RRGGBB`, `register` or `Controller` |
 | `BilingualField` (`layout="side" \| "tabs"`, `multiline`) | BilingualInput | `{ en, ar }`, `Controller` |
 | `RichTextField` | RichTextEditor | HTML string, `Controller` |
 | `OtpField` (`length` 4–6) | OtpInput | digits, `Controller` |
@@ -167,6 +166,21 @@ from the kit's strings in English or Arabic, and each can be overridden by a pro
 | `SegmentedControl`, `SegmentedToggle` (two sides) | SegmentedControl | string, `Controller` |
 | `TagInput` (`max`) | TagInput | `string[]`, `Controller` |
 | `ChipSelector` (`multiple`) | ChipSelector | string or `string[]`, `Controller` |
+| `DatePicker` (`weekStart`, `min`, `max`, `isDisabled`, `hijri`, `digits`) | DatePicker | `"YYYY-MM-DD"`, `Controller` |
+| `DateRangePicker` (`presets`) | DateRangePicker | `{ from, to }`, `Controller` |
+| `TimePicker` (`hour12`, `minuteStep`) | TimePicker | `"HH:mm"`, `Controller` |
+| `DateTimePicker` | DateTimePicker | `"YYYY-MM-DDTHH:mm"`, `Controller` |
+| `DurationInput` (`maxHours`) | DurationInput | minutes, `Controller` |
+| `FileDropzone` (`accept`, `maxBytes`, `maxFiles`, `multiple`) | FileDropzone | `onFiles(File[])` |
+| `UploadList` | UploadList | `UploadItem[]` with `onCancel`, `onRetry`, `onRemove` |
+| `ImageUpload` (`aspect`, `outputWidth`), `AvatarUpload` | ImageUpload / AvatarUpload | data URL, `Controller` |
+| `SliderField` (`marks`), `RangeSlider` (`format`, `minGap`) | Slider / RangeSlider | number or `[low, high]`, `Controller` |
+| `ColorPicker` / `ColorField` (`swatches`, `contrastWith`; recent colours built in) | ColorPicker | `#RRGGBB`, `Controller` |
+| `Rating` (`max`, `allowHalf`, `readOnly`, `clearable`) | Rating | number, `Controller` |
+| `LocalePicker`, `MarketPicker` (`multiple`), `CountryPicker`, `TimezonePicker` | LocalePicker / MarketPicker / CountryPicker / TimezonePicker | code(s), `Controller` |
+| `PeoplePicker`, `MentionTextarea` | PeoplePicker | ids, or text with `onMentionsChange` |
+| `AddressFields` (`lineProps` for separate fields) | AddressFields | `Address`, `Controller` or `register` per line |
+| `ConfirmByTyping` (`name`, `actionLabel`, `ignoreCase`, `allowPaste`, `onCancel`) | ConfirmByTyping | `onConfirm` |
 | `Fieldset` (`legend`, `columns`), `FieldGroup` | FieldGroup / Fieldset | — |
 
 Text fields take react-hook-form's `register` directly; its `ref` lands on the
@@ -209,9 +223,201 @@ function CampaignForm() {
 }
 ```
 
+The special inputs, with react-hook-form (`form` from `useForm`):
+
+```tsx
+import { Controller } from "react-hook-form";
+import { AddressFields, ColorField, ConfirmByTyping, HexColorInput, LocalePicker, MarketPicker, Rating, addressIssues } from "@/components/ui";
+
+// A hex is text: register works, and a pasted rgb(11, 93, 109) arrives as "#0B5D6D".
+<HexColorInput label="Brand colour" {...register("brandColour")} error={errors.brandColour?.message} />
+
+// The full picker, checked against white text.
+<Controller name="buttonColour" control={control} render={({ field, fieldState }) => (
+  <ColorField label="Button colour" {...field} contrastWith="#FFFFFF" swatches={[{ hex: "#0B5D6D", name: "Teal" }]} error={fieldState.error?.message} />
+)} />
+
+// Rating a delivered asset, in halves.
+<Controller name="assetRating" control={control} render={({ field }) => <Rating label="Rate the delivered asset" {...field} allowHalf clearable />} />
+
+<Controller name="locale" control={control} render={({ field }) => <LocalePicker value={field.value} onChange={field.onChange} onBlur={field.onBlur} />} />
+<Controller name="markets" control={control} render={({ field }) => <MarketPicker multiple max={4} value={field.value} onChange={field.onChange} />} />
+
+// A Riyadh National Address as one field, the same rules in zod:
+const address = z.object({ country: z.string() /* …lines */ }).superRefine((a, ctx) => {
+  for (const [path, issue] of Object.entries(addressIssues(a))) ctx.addIssue({ code: "custom", path: [path], message: issue.code });
+});
+<Controller name="address" control={control} render={({ field }) => (
+  <AddressFields value={field.value} onChange={field.onChange} onBlur={field.onBlur} errors={{ postalCode: errors.address?.postalCode?.message }} />
+)} />
+// …or each line its own field:
+<AddressFields defaultValue={{ country: "SA" }} lineProps={(k) => register(`address.${k}`)} />
+
+// Inside a Dialog:
+<ConfirmByTyping name="Ramadan 2027" actionLabel="Delete campaign" onConfirm={remove} onCancel={close} autoFocus />
+```
+
 An async check (is this name or slug free?) is `validating` while it runs,
 then `success` or `error` with the answer. The note is a live region, so the
 result is announced; `SlugField` does this for you given `checkAvailability`.
+
+## Form structure
+
+`Form` ([src/components/ui/form/](src/components/ui/form/)) wraps react-hook-form
+with a zod schema, typed from the schema. Fields stay the kit's own (above);
+`FormField` binds one to the form. Gallery: `/design-system/form-structure`.
+
+**Basic form.** Submitting validates; an invalid submit shows the error
+summary at the top (each line links to its field) and focuses the first
+error. While `onSubmit` runs the form is `aria-busy`, its fields are disabled
+and the button spins.
+
+```tsx
+import { z } from "zod";
+import { Form, FormActions, FormField, FormGrid, FormSection, InputField, MarketPicker } from "@/components/ui";
+
+const schema = z.object({
+  brand: z.string().trim().min(1, "Enter the brand's name."),
+  market: z.string().min(1, "Choose a launch market."),
+});
+type Brand = z.input<typeof schema>;
+
+<Form label="New brand" schema={schema} defaultValues={{ brand: "", market: "" }} onSubmit={createBrand} successMessage="Brand created.">
+  <FormSection title="Brand details" variant="card">
+    <FormGrid columns={2}>
+      <FormField<Brand, "brand"> name="brand" label="Brand name" render={({ field, id, error }) => (
+        <InputField label="Brand name" id={id} required {...field} error={error} />
+      )} />
+      <FormField<Brand, "market"> name="market" label="Launch market" render={({ field, id, error }) => (
+        <MarketPicker id={id} label="Launch market" value={field.value} onChange={field.onChange} error={error} />
+      )} />
+    </FormGrid>
+  </FormSection>
+  <FormActions submitLabel="Create brand" />
+</Form>
+```
+
+**Server errors.** Return them from `onSubmit`: the form's line shows in the
+banner, each field's under the field (and in the summary), focus goes to the
+first, and the values stay. A throw shows "Couldn't save. Check your
+connection and try again."
+
+```tsx
+onSubmit={async (values) => {
+  const res = await api.saveWorkspace(values);
+  if (res.status === 409) return { fields: { slug: "markyos.com/nadeen is taken. Try another." } };
+  if (!res.ok) return { form: "Couldn't save. Try again in a minute." };
+}}
+```
+
+**Wizard.** `FormWizard` inside a `Form` (one schema for every step). Each
+step lists its `fields`; Next checks only those, a stepper move forward checks
+the steps it passes, Enter moves on, and `storageKey` keeps a draft in the
+browser until the form is sent. `ReviewStep` ends it with an Edit per step.
+
+```tsx
+<Form label="New campaign" schema={campaignSchema} defaultValues={empty} onSubmit={createCampaign}>
+  <FormWizard
+    submitLabel="Create campaign"
+    storageKey="markyos:new-campaign:draft"
+    steps={[
+      { id: "details", title: "Details", fields: ["title", "markets", "dates"], content: <DetailsStep /> },
+      { id: "budget", title: "Budget and team", fields: ["budget", "reviewers"], content: <BudgetStep /> },
+      { id: "brief", title: "Brief", optional: true, fields: ["tags", "brief"], content: <BriefStep /> },
+      { id: "review", title: "Review", content: <ReviewStep sections={[{ step: "details", items: [{ label: "Name", value: name }] }]} /> },
+    ]}
+  />
+</Form>
+```
+
+**Field array.** Rows of fields bound with `useFieldArray`: add, remove,
+`min`/`max`, an empty state, and reordering by the grip (drag, or Arrow keys).
+Name each row's fields by index.
+
+```tsx
+<FieldArray<Campaign, "reviewers">
+  name="reviewers"
+  legend="Reviewers"
+  rowLabel={(n) => `Reviewer ${n}`}
+  newRow={() => ({ name: "", email: "" })}
+  max={5}
+  addLabel="Add reviewer"
+  empty={{ title: "No reviewers yet.", description: "Add someone to approve posts before they go out." }}
+  renderRow={({ index }) => (
+    <FormField name={`reviewers.${index}.email`} label="Email" render={({ field, id, error }) => (
+      <EmailField label="Email" id={id} {...field} error={error} />
+    )} />
+  )}
+/>
+```
+
+`ConditionalField when={(v) => v.paidMedia} fields={["mediaBudget"]}` shows
+fields only when they apply and unregisters them once hidden.
+`CollapsibleSection title="Advanced options"` hides rarely used fields behind
+"Show advanced options" and opens itself if one of its `fields` has an error.
+For an object value (a bilingual name), FormField's render gets `errors` by
+key: `errors?.en?.message`.
+
+**Dialog and drawer forms.** `DialogForm` (centred) and `DrawerForm` (from
+the end edge) take Form's props plus the shell: `open`, `onClose`, `title`,
+`submitLabel`. Closing with unsaved changes asks "Discard changes?"; a save
+closes with a toast; every opening starts from `defaultValues`.
+
+```tsx
+<DialogForm
+  open={open}
+  onClose={() => setOpen(false)}
+  title="Invite teammate"
+  submitLabel="Send invite"
+  successToast="Invite sent."
+  schema={inviteSchema}
+  defaultValues={{ email: "", role: "" }}
+  onSubmit={async (v) => {
+    const res = await api.invite(v);
+    if (res.status === 409) return { fields: { email: "They're already in this workspace." } };
+  }}
+>
+  <FormField name="email" label="Email" render={({ field, id, error }) => <EmailField label="Email" id={id} {...field} error={error} />} />
+</DialogForm>
+```
+
+**Inline edit.** `InlineEdit` (the upgraded `InlineTextField`) saves on its
+own: return a promise from `onCommit` to get saving, saved and failed states.
+
+```tsx
+<InlineEdit label="Asset name" value={asset.name} onCommit={(name) => api.renameAsset(asset.id, name)} />
+```
+
+**Autosave.** No Save button: a pause in typing saves the changed fields
+once they pass, with "Saving…", "Saved 10m ago" or "Couldn't save." and
+Retry beside it. Offline, changes are kept on the device and sent on
+reconnect.
+
+```tsx
+<Form label="Profile" schema={profileSchema} defaultValues={profile} onSubmit={() => undefined} successMessage={false}>
+  <Autosave storageKey="markyos:profile:draft" savedAt={profile.updatedAt} onSave={(values) => api.saveProfile(values)} />
+  {/* fields */}
+</Form>
+```
+
+**Conflicts.** `useConflictCheck` wraps the save: if the server's version
+moved on since loading, the save stops and the form says "Updated by Lina
+Mansour 5m ago." with Reload and Overwrite.
+
+```tsx
+const conflict = useConflictCheck({ formId: "brand", version: brand.etag, fetchLatest: () => api.brandVersion(id), onReload: refetch });
+<Form id="brand" onSubmit={conflict.guard(save)} …>{conflict.alert}{/* fields */}</Form>
+```
+
+**Filters.** `FilterForm` keeps applied filters in the URL (shareable, Back
+works) and hands them to the list with `onApply`. `AuthLayout` is the
+signed-out frame (AuthShell wraps it).
+
+**Settings pages.** `SettingsLayout` with `SettingsLayout.Section` rows,
+`StickySaveBar` (appears while there are changes: Discard · Save changes) and
+`<LeaveGuard />` (asks before leaving with unsaved changes). `readOnly` starts
+the form as values with an Edit button; `locked` + `lockedReason` changes
+nothing and says why. `FormSkeleton` is the loading shape.
 
 ## Code and supporting references
 
@@ -231,3 +437,130 @@ result is announced; `SlugField` does this for you given `checkAvailability`.
 historical design context, not the runtime application or an instruction to
 rebuild already implemented screens. The sibling `markyos-brand` folder contains
 the supplied originals; runtime assets are in [public/brand](public/brand).
+
+### Button family (wave 2, in review)
+
+All controls are exported from `@/components/ui`. The gallery at
+`/design-system#buttons` is enabled with `NEXT_PUBLIC_UI_GALLERY=1`.
+
+```tsx
+import { Button, ConfirmButton, SplitButton, ToggleGroup, useAsyncButton } from "@/components/ui";
+
+// Inside a client component. Repeated clicks are blocked while saving;
+// success/error is announced for two seconds. `error` retains the failure.
+const save = useAsyncButton(async () => { await saveDocument(); });
+<Button variant="primary" status={save.status} onClick={() => void save.run()}>
+  Save changes
+</Button>
+
+<SplitButton onClick={saveDraft} items={[
+  { label: "Publish changes", icon: "upload", onSelect: publish },
+  { separator: true },
+  { label: "Delete draft", destructive: true, onSelect: deleteDraft },
+]}>Save draft</SplitButton>
+
+<ToggleGroup label="Choose view" type="single" value={view} onValueChange={setView}
+  options={[{ value: "list", label: "List view" }, { value: "grid", label: "Grid view" }]} />
+
+<ConfirmButton mode="dialog" dialogTitle="Delete asset?" onConfirm={deleteAsset}>
+  Delete asset
+</ConfirmButton>
+```
+
+`status` accepts `idle`, `loading`, `success`, or `error`; controlled status remains
+until the caller updates it. `useAsyncButton` resets feedback after two seconds.
+`loadingText`, `successText`, `errorText`, labels and confirmation copy are props.
+`disabledReason` and `lockedReason` keep controls focusable and explain why they
+cannot run. Use `asChild` with a Next `Link` or `LinkButton` for navigation.
+Menus use Radix DropdownMenu; toggle groups use one Tab stop and arrow keys.
+Hold-to-confirm supports pointer, Space and Enter; release, blur or Escape cancels.
+Provider buttons use the bundled Line Awesome brand font, without remote assets.
+
+Assumptions: the current app is Next 16 and uses `app/tailwind.css`, rather than
+the older paths in the request. The existing design-system route hosts the gallery;
+the root login redirect is retained. Existing variant names remain aliases.
+Requested 28/32/36/40px size classes have a 36px minimum hit area (40px for coarse
+pointers). Button colour fades use the requested 120ms override; other motion
+keeps the existing tokens. No new colour tokens were introduced.
+
+For an isolated gallery beside an existing dev server, run
+`NEXT_BUILD_DIR=.next-buttons NEXT_PUBLIC_UI_GALLERY=1 npm run dev -- --webpack --hostname 127.0.0.1 -p 3105`,
+then `npm run test:buttons`. The browser check uses a fresh headless Chrome profile;
+set `BUTTON_CHROME` to a different executable or `BUTTON_GALLERY_URL` to another
+running gallery. Evidence is written to `audit/buttons-2026-11-14/`.
+
+### Tabs family (wave 2, in review)
+
+Import the whole family from `@/components/ui`. Existing
+`<Tabs tabs={...} active={...} onChange={...} {...useTabIds()} />` and external
+`TabPanel` usage remain supported. New panels can live beside their triggers:
+
+```tsx
+<Tabs defaultValue="details" variant="underline" activationMode="automatic">
+  <TabsList label="Asset sections">
+    <TabsTrigger value="details" icon="info-circle">Details</TabsTrigger>
+    <TabsTrigger value="rights" count={2} status="warning">Rights</TabsTrigger>
+  </TabsList>
+  <TabsContent value="details">Asset details</TabsContent>
+  <TabsContent value="rights">Review licences</TabsContent>
+</Tabs>
+```
+
+Use `items={[{ id: "details", label: "Details", content: ... }]}` for the shortcut.
+Variants are `underline`, `segmented`, `boxed` and `vertical`; the old `text`,
+`icon` and `pill` aliases remain. Sizes are `sm`, `md`, `lg`. `fill` shares available
+space. `mobileAs="select"` replaces the list below 640px; `mobileAs="scroll"`
+keeps a scrollable list and adapts vertical settings to horizontal mobile use.
+
+```tsx
+// Router tabs render links in a nav, with one most-specific current page.
+<RouterTabs label="Asset pages" items={[
+  { href: `/assets/${id}`, label: "Details" },
+  { href: `/assets/${id}/rights`, label: "Rights" },
+]} />
+
+// Fetch only after selection. keepMounted preserves child form state after
+// first opening. The loader receives an AbortSignal; failures offer a retry.
+<TabsContent value="versions" keepMounted load={async (signal) => {
+  const response = await fetch(`/api/assets/${id}/versions`, { signal });
+  if (!response.ok) throw new Error("Could not load versions");
+  const versions = await response.json();
+  return <VersionList versions={versions} />;
+}} />
+
+// A refused or failed guard preserves the selected tab. Competing requests
+// cannot commit stale results, and repeated requests share the pending guard.
+<Tabs value={section} onValueChange={setSection}
+  onBeforeChange={async () => !dirty || await confirm({
+    title: "Leave unsaved edits?", confirmLabel: "Leave tab",
+  })}>
+  {/* TabsList, TabsTrigger and TabsContent */}
+</Tabs>
+
+<StepperTabs linear value={step} onValueChange={setStep} steps={[
+  { id: "brief", label: "Brief", completed: briefComplete, content: <BriefForm /> },
+  { id: "assets", label: "Assets", error: assetsHaveErrors, content: <AssetPicker /> },
+  { id: "review", label: "Review", content: <CampaignReview /> },
+]} />
+```
+
+`ScrollableTabs` and `OverflowTabs` live inside a `Tabs` root. The latter takes
+`items` and puts hidden sections in a More menu while retaining an active tab
+trigger. `EditableTabs` takes `items`, `onItemsChange` and optional `onAdd`; its
+handles support pointer dragging, and Alt + arrows reorder the focused tab.
+Delete closes a closable tab. `LanguageTabs` takes `english`, `arabic`, and
+`arabicValue` to show the missing-translation warning. Labels, status descriptions,
+position formatting, confirmation copy and loading/error/empty messages are props.
+
+The full gallery is `/design-system/tabs`, also embedded in `/design-system`.
+Enable it with `NEXT_PUBLIC_UI_GALLERY=1`. For an isolated preview, run
+`NEXT_BUILD_DIR=.next-tabs NEXT_PUBLIC_UI_GALLERY=1 npm run dev -- --webpack --hostname 127.0.0.1 -p 3106`,
+then `npm run test:tabs`. Evidence is in `audit/tabs-2026-11-14/`.
+
+Assumptions: this checkout uses Next 16 and `app/tailwind.css`, so those supersede
+the older paths/version in the brief. The existing gallery and login redirect are
+retained. Active states use existing accent/primary tokens; boxed edges use the
+existing `hairline-strong` role. No new colour tokens were introduced. Explicit
+120ms colour and 180ms underline timing overrides the older motion values for
+this family. Inactive panels unmount by default; `keepMounted` preserves them only
+after first activation, while `forceMount` mounts them immediately but hides them.

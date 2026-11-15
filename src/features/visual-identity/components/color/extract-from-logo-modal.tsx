@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Icon, useToast, Modal } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { extractPalette, ExtractedColor, ExtractResult } from "@/lib/extractPalette";
 import { Asset, SlotKind, Workspace } from "@/types";
 
@@ -31,7 +31,7 @@ interface Source {
  * claim and only the studio knows the second one.
  */
 export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
-  const { addColor, uiLang } = useApp();
+  const { addColor, uiLang } = useAppActions();
   const { showToast } = useToast();
   const { resolved } = useTheme();
   const isAr = uiLang(ws) === "ar";

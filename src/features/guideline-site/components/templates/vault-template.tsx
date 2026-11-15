@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import Link from "next/link";
 import { LangToggle, richToPlainText } from "@/components/ui";
 import { DownloadPanel } from "../documents/download-panel";
@@ -58,7 +59,6 @@ export function VaultTemplate(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -223,7 +223,7 @@ export function VaultTemplate(props: TemplateProps) {
                         style={gBody}
                       />
                       {ws.overviewHtml && (
-                        <div dir="auto" className="bidi-auto vault-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+                        <div dir="auto" className="bidi-auto vault-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
                       )}
                       <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                     </div>
@@ -271,11 +271,6 @@ export function VaultTemplate(props: TemplateProps) {
         </button>
       )}
 
-      {showMarkyosBadge && (
-        <div className="pb-6 pt-2 flex justify-center">
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-        </div>
-      )}
 
       {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 

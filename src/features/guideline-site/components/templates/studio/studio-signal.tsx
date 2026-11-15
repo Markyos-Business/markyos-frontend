@@ -10,6 +10,7 @@
 // chapter (app-icon sizes, social mockups), both rendered in the brand's
 // own theme colors rather than static reference art.
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode, useState } from "react";
 import Link from "next/link";
 import { Icon, LangToggle, richToPlainText } from "@/components/ui";
@@ -166,7 +167,6 @@ export function StudioSignal(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -324,7 +324,7 @@ export function StudioSignal(props: TemplateProps) {
                           style={{ color: "var(--g-text-muted)" }}
                         />
                         {ws.overviewHtml && (
-                          <div dir="auto" className="bidi-auto signal-overview max-w-[640px]" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+                          <div dir="auto" className="bidi-auto signal-overview max-w-[640px]" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
                         )}
                         <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                       </div>
@@ -398,11 +398,6 @@ export function StudioSignal(props: TemplateProps) {
 
       <div className="h-[24vh]" />
 
-      {showMarkyosBadge && (
-        <div className="pb-6 pt-2 flex justify-center">
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-        </div>
-      )}
 
       {attachedSlots.length > 0 && (
         <button

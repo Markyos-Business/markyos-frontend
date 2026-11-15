@@ -1,0 +1,389 @@
+- heading "Buttons" [level=2]
+- button "Use Arabic":
+  - text: Use Arabic
+  - status
+- paragraph: Six variants and ten states. Scroll the matrix to compare.
+- region "Button states":
+  - table "Button state matrix":
+    - caption: Button state matrix
+    - rowgroup:
+      - row "Variant default hover focus pressed disabled loading success error locked skeleton":
+        - columnheader "Variant"
+        - columnheader "default"
+        - columnheader "hover"
+        - columnheader "focus"
+        - columnheader "pressed"
+        - columnheader "disabled"
+        - columnheader "loading"
+        - columnheader "success"
+        - columnheader "error"
+        - columnheader "locked"
+        - columnheader "skeleton"
+    - rowgroup:
+      - row "primary Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "primary"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+      - row "secondary Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "secondary"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+      - row "outline Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "outline"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+      - row "ghost Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "ghost"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+      - row "destructive Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "destructive"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+      - row "link Save file Save file Save file Save file Save file Saving Saved Try again Save file Ask for access":
+        - rowheader "link"
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file":
+            - text: Save file
+            - status
+        - cell "Save file":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+        - cell "Saving":
+          - button "Saving" [disabled]:
+            - text: Saving
+            - status: Saving
+        - cell "Saved":
+          - button "Saved":
+            - text: Saved
+            - status: Saved
+        - cell "Try again":
+          - button "Try again":
+            - text: Try again
+            - status: Try again
+        - cell "Save file Ask for access":
+          - button "Save file" [disabled]:
+            - text: Save file
+            - status
+          - tooltip "Ask for access"
+        - cell:
+          - button [disabled]
+- button "Save changes":
+  - text: Save changes
+  - status
+- group "Asset actions":
+  - button "Add asset":
+    - text: Add asset
+    - status
+  - button "Edit asset":
+    - text: Edit asset
+    - status
+- group "File actions":
+  - button "Open file":
+    - text: Open file
+    - status
+  - button "Export file":
+    - text: Export file
+    - status
+- button "Add asset":
+  - status
+- group "Action options":
+  - button "Save file":
+    - text: Save file
+    - status
+  - button "Open options":
+    - status
+- button "Open actions":
+  - text: Open actions
+  - status
+- button "Export options" [disabled]:
+  - text: Export options
+  - status
+- tooltip "Select an asset first"
+- button "Open more":
+  - status
+- button "Show grid":
+  - text: Show grid
+  - status
+- group "Choose view":
+  - button "List view":
+    - text: List view
+    - status
+  - button "Grid view" [pressed]:
+    - text: Grid view
+    - status
+  - button "Map view" [disabled]:
+    - text: Map view
+    - status
+- group "Choose formatting":
+  - button "Use bold":
+    - text: Use bold
+    - status
+  - button "Use italic":
+    - text: Use italic
+    - status
+- button "Copy link":
+  - text: Copy link
+  - status
+- button "Upload files":
+  - text: Upload files
+  - status
+- button "Delete item":
+  - text: Delete item
+  - status
+- status
+- button "Delete file":
+  - text: Delete file
+  - status
+- status
+- button "Hold to delete":
+  - text: Hold to delete
+  - status
+- button "Continue with Google":
+  - text: Continue with Google
+  - status
+- button "Continue with Microsoft":
+  - text: Continue with Microsoft
+  - status
+- button "Continue with Apple":
+  - text: Continue with Apple
+  - status
+- link "View buttons":
+  - /url: "#buttons"
+  - text: View buttons
+  - status
+- link "Visit website":
+  - /url: https://markyos.com
+  - text: Visit website
+  - status
+- button "Close panel":
+  - status
+- button "Go back":
+  - text: Go back
+  - status
+- button "View reviews 12":
+  - text: View reviews 12
+  - status
+- button "Read messages Unread items":
+  - text: Read messages Unread items
+  - status
+- button "Export asset" [disabled]:
+  - text: Export asset
+  - status
+- tooltip "Select an asset first"
+- button "Add item":
+  - status
+- button "Toggle floating action":
+  - text: Toggle floating action
+  - status
+- button "Add asset · xs":
+  - text: Add asset · xs
+  - status
+- button "Add asset · sm":
+  - text: Add asset · sm
+  - status
+- button "Add asset · md":
+  - text: Add asset · md
+  - status
+- button "Add asset · lg":
+  - text: Add asset · lg
+  - status
+- status: 1 files selected

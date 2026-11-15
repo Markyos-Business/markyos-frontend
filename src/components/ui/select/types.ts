@@ -9,6 +9,10 @@ export type SelectOption = {
   avatar?: { src?: string; initials: string };
   status?: { label: string; tone: BadgeTone };
   disabled?: boolean;
+  /** The label's language when it differs from the page's ("ar" for "العربية"), so it's read in the right voice. */
+  lang?: string;
+  /** A sub-option under the one before it: a city under its country. */
+  indent?: boolean;
 };
 export type SelectLabels = {
   placeholder: string; search: string; noOptions: string; noResults: string;
@@ -24,8 +28,17 @@ export const selectLabels: SelectLabels = {
   create: q => `Create “${q}”`, remove: label => `Remove ${label}`, overflow: n => `+${n}`,
   selected: n => `${n} selected`,
 };
+export const selectLabelsAr: SelectLabels = {
+  placeholder: "اختر خيارًا", search: "ابحث في الخيارات", noOptions: "لا توجد خيارات متاحة.",
+  noResults: "لا توجد خيارات تطابق بحثك.", loading: "جارٍ تحميل الخيارات…", loadError: "تعذّر تحميل الخيارات.",
+  retry: "إعادة المحاولة", success: "حُفظ الاختيار.", maxReached: n => `يمكنك اختيار ${n} خيارات كحد أقصى.`,
+  create: q => `إنشاء «${q}»`, remove: label => `إزالة ${label}`, overflow: n => `+${n}`,
+  selected: n => `${n} مختارة`,
+};
 export type SelectCommonProps = {
   id?: string; name?: string; label?: string; hint?: string; error?: string; success?: boolean;
+  /** Field states shared with every field: a warning note, an async check, locked with a reason, a skeleton. */
+  warning?: string; validating?: boolean; locked?: boolean; lockedReason?: string; loading?: boolean;
   disabled?: boolean; readOnly?: boolean; required?: boolean; dir?: "ltr" | "rtl";
   placeholder?: string; className?: string; labels?: Partial<SelectLabels>;
   "aria-label"?: string; "aria-labelledby"?: string; "aria-describedby"?: string;

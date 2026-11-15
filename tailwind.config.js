@@ -357,6 +357,13 @@ const config = {
     plugin(({ addBase }) => {
       addBase(iconStyles);
       addBase({ ":root": { ...darkTokens, ...specAliases, ...motionTokens }, ':root[data-theme="light"]': lightTokens });
+      // One element in a fixed theme whatever the page's (the Made with
+      // Markyos badge's light or dark version). The aliases are restated so
+      // they resolve against the scoped values, not the page's.
+      addBase({
+        ".mk-theme-dark": { ...darkTokens, ...specAliases, colorScheme: "dark" },
+        ".mk-theme-light": { ...darkTokens, ...lightTokens, ...specAliases, colorScheme: "light" },
+      });
       addBase(baseStyles);
       addBase(motionBase);
     }),

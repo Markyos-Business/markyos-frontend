@@ -74,6 +74,7 @@ const NumberField = ({
   suffix,
   strings,
   onBlur,
+  onFocus,
   onKeyDown,
   disabled,
   readOnly,
@@ -90,9 +91,11 @@ const NumberField = ({
   const round = (n: number) => Number(n.toFixed(decimals));
   const canChange = !disabled && !readOnly && !locked;
 
-  // A value set from outside shows at once; while typing, the text is the person's.
+  // A value set from outside shows at once. While typing, the text is the
+  // person's: it already parses to `value` ("84,5" is 845), so only a value
+  // that doesn't match it (a reset while focused) replaces it.
   useEffect(() => {
-    if (!focused.current) setText(show(value, grouping, decimals));
+    setText((current) => (!focused.current || parseNumber(current) !== value ? show(value, grouping, decimals) : current));
   }, [value, grouping, decimals]);
 
   const set = (n: number | null) => {
@@ -124,7 +127,10 @@ const NumberField = ({
       value={text}
       prefix={prefix}
       suffix={suffix}
-      onFocus={() => (focused.current = true)}
+      onFocus={(e) => {
+        focused.current = true;
+        onFocus?.(e);
+      }}
       onChange={(e) => {
         const el = e.target;
         // Grouping moves the caret; put it back after the same number of digits.
@@ -144,8 +150,12 @@ const NumberField = ({
       }}
       onBlur={(e) => {
         focused.current = false;
-        // On leaving, the number is tidied and kept inside min and max.
-        set(parseNumber(text));
+        // On leaving, the number is tidied and kept inside min and max, but
+        // only in a field that can change, and only if that changes anything.
+        const parsed = parseNumber(text);
+        const tidy = parsed === null ? null : round(clamp(parsed));
+        if (canChange && tidy !== value) set(parsed);
+        else setText(show(value, grouping, decimals));
         onBlur?.(e);
       }}
       onKeyDown={(e) => {

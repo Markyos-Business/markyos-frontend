@@ -1,0 +1,215 @@
+- heading "Tabs" [level=2]
+- button "Use Arabic":
+  - text: Use Arabic
+  - status
+- group "Interface theme":
+  - button "Light" [pressed]
+  - button "Dark"
+- paragraph: Asset sections, settings and campaign steps. Every example is interactive.
+- heading "underline" [level=3]
+- tablist "Asset underline":
+  - tab "Details 1 of 4" [selected]
+  - tab "Rights 2 items Needs attention 2 of 4":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 4
+  - tab "Versions 4 items 3 of 4": Versions 4 3 of 4
+  - tab "Activity Unread 4 of 4":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 4
+- tabpanel "Details 1 of 4": Campaign key visual · SVG · Updated today
+- status
+- heading "segmented" [level=3]
+- tablist "Asset segmented":
+  - tab "Details 1 of 4" [selected]
+  - tab "Rights 2 items Needs attention 2 of 4":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 4
+  - tab "Versions 4 items 3 of 4": Versions 4 3 of 4
+  - tab "Activity Unread 4 of 4":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 4
+- tabpanel "Details 1 of 4": Campaign key visual · SVG · Updated today
+- status
+- heading "boxed" [level=3]
+- tablist "Asset boxed":
+  - tab "Details 1 of 4" [selected]
+  - tab "Rights 2 items Needs attention 2 of 4":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 4
+  - tab "Versions 4 items 3 of 4": Versions 4 3 of 4
+  - tab "Activity Unread 4 of 4":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 4
+- tabpanel "Details 1 of 4": Campaign key visual · SVG · Updated today
+- status
+- heading "vertical" [level=3]
+- tablist "Settings":
+  - tab "Profile 1 of 3" [selected]
+  - tab "Team 2 of 3"
+  - tab "Billing 3 of 3"
+- tabpanel "Profile 1 of 3": Studio profile and identity.
+- status
+- heading "Manual activation" [level=3]
+- tablist "Manual sections":
+  - tab "Details 1 of 4"
+  - tab "Rights 2 items Needs attention 2 of 4":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 4
+  - tab "Versions 4 items 3 of 4" [selected]: Versions 4 3 of 4
+  - tab "Activity Unread 4 of 4":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 4
+- tabpanel "Versions 4 items 3 of 4": Four versions are available.
+- status
+- heading "State matrix" [level=3]
+- tablist "Tab states":
+  - tab "Default 1 of 12"
+  - tab "Hover 2 of 12"
+  - tab "Selected 3 of 12" [selected]
+  - tab "Focus 4 of 12"
+  - tab "Disabled 5 of 12" [disabled]
+  - tooltip "Ask for access"
+  - tab "Loading 6 of 12"
+  - tab "Error Has errors 7 of 12":
+    - text: Error
+    - img "Has errors"
+    - text: 7 of 12
+  - tab "Warning Needs attention 8 of 12":
+    - text: Warning
+    - img "Needs attention"
+    - text: 8 of 12
+  - tab "Completed Completed 9 of 12":
+    - text: Completed
+    - img "Completed"
+    - text: 9 of 12
+  - tab "Unsaved Unsaved changes 10 of 12":
+    - text: Unsaved
+    - img "Unsaved changes"
+    - text: 10 of 12
+  - tab "Skeleton" [disabled]
+  - tab "View image, 12 of 12": 12 of 12
+  - tooltip "View image"
+- tabpanel "Selected 3 of 12": Review the asset before publishing.
+- status
+- heading "Scroll sections" [level=3]
+- button "Previous tabs" [disabled]:
+  - status
+- tablist "Scrollable sections":
+  - tab "Details 1 of 8" [selected]
+  - tab "Rights 2 of 8"
+  - tab "Versions 3 of 8"
+  - tab "Activity 4 of 8"
+  - tab "Comments 5 of 8"
+  - tab "Approvals 6 of 8"
+  - tab "Downloads 7 of 8"
+  - tab "Metadata 8 of 8"
+- button "Next tabs" [disabled]:
+  - status
+- tabpanel "Details 1 of 8": Campaign key visual · SVG · Updated today
+- status
+- heading "Overflow sections" [level=3]
+- tablist "Overflow sections":
+  - tab "Details 1 of 8" [selected]
+  - tab "Rights 2 items Needs attention 2 of 8":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 8
+  - tab "Versions 4 items 3 of 8": Versions 4 3 of 8
+  - tab "Activity Unread 4 of 8":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 8
+  - tab "Comments 5 of 8"
+  - tab "Approvals 6 of 8"
+  - tab "Downloads 7 of 8"
+  - tab "Metadata 8 of 8"
+- tabpanel "Details 1 of 8": Campaign key visual · SVG · Updated today
+- status
+- heading "Open artwork" [level=3]
+- tablist "Open files":
+  - 'button "Drag tab: Social"'
+  - tab "Social 1 of 3" [selected]
+  - 'button "Close tab: Social"'
+  - 'button "Drag tab: Artwork"'
+  - tab "Artwork 2 of 3"
+  - 'button "Close tab: Artwork"'
+  - 'button "Drag tab: Cover"'
+  - tab "Cover 3 of 3"
+  - 'button "Close tab: Cover"'
+- button "Add tab":
+  - status
+- status: Draggable item cover was dropped over droppable area file-1794626756535
+- tabpanel "Social 1 of 3": Social artwork
+- status: Cover moved to 3 of 3
+- status
+- heading "Route sections" [level=3]
+- navigation "Library routes":
+  - link "Library":
+    - /url: /design-system
+  - link "Tabs":
+    - /url: /design-system/tabs
+  - link "Forms":
+    - /url: /design-system/forms
+- heading "Lazy panels" [level=3]
+- tablist "Lazy sections":
+  - tab "Summary 1 of 4" [selected]
+  - tab "History 4 items 2 of 4": History 4 2 of 4
+  - tab "Versions 3 of 4"
+  - tab "Failed 4 of 4"
+- tabpanel "Summary 1 of 4": History loads only when opened.
+- status
+- heading "Unsaved guard" [level=3]
+- tablist "Guarded sections":
+  - tab "Details Unsaved changes 1 of 2":
+    - text: Details
+    - img "Unsaved changes"
+    - text: 1 of 2
+  - tab "Rights 2 of 2" [selected]
+- tabpanel "Rights 2 of 2": Rights review
+- status
+- tablist "Content language":
+  - tab "EN 1 of 2"
+  - tab "AR Needs Arabic Needs Arabic 2 of 2" [selected]:
+    - text: AR Needs Arabic
+    - img "Needs Arabic"
+    - text: 2 of 2
+- tabpanel "AR Needs Arabic Needs Arabic 2 of 2":
+  - text: النص العربي
+  - textbox "النص العربي"
+- status
+- heading "New campaign" [level=3]
+- tablist "Campaign steps":
+  - tab "Brief Completed 1 of 3":
+    - text: Brief
+    - img "Completed"
+    - text: 1 of 3
+  - tab "Assets Has errors 2 of 3" [selected]:
+    - text: Assets
+    - img "Has errors"
+    - text: 2 of 3
+  - tab "Review 3 of 3" [disabled]
+  - tooltip "Complete earlier steps"
+- tabpanel "Assets Has errors 2 of 3": Add approved artwork.
+- status
+- heading "Mobile select" [level=3]
+- tablist "Mobile sections":
+  - tab "Details 1 of 4" [selected]
+  - tab "Rights 2 items Needs attention 2 of 4":
+    - text: Rights 2
+    - img "Needs attention"
+    - text: 2 of 4
+  - tab "Versions 4 items 3 of 4": Versions 4 3 of 4
+  - tab "Activity Unread 4 of 4":
+    - text: Activity
+    - img "Unread"
+    - text: 4 of 4
+- tabpanel "Details 1 of 4": Campaign key visual · SVG · Updated today
+- status

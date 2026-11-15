@@ -16,6 +16,7 @@
 // come from the Mosaic design system in lib/designSystem.ts — so the same
 // layout arrives warm and gold for one brand and cool and teal for the next.
 
+import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
 import { Icon, LangToggle, richToPlainText } from "@/components/ui";
@@ -88,7 +89,6 @@ export function MosaicTemplate(props: TemplateProps) {
     setDownloadOpen,
     previewLang,
     setPreviewLang,
-    showMarkyosBadge,
     pages,
     activePage,
   } = props;
@@ -254,11 +254,6 @@ export function MosaicTemplate(props: TemplateProps) {
         </div>
       </div>
 
-      {showMarkyosBadge && (
-        <div className="pb-6 pt-2 flex justify-center">
-          <span className="text-[11px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "دليل الهوية مقدَّم عبر ماركيوس" : "Guideline delivered with Markyos"}</span>
-        </div>
-      )}
 
       {downloadOpen && <DownloadPanel workspace={ws} isAr={isAr} onClose={() => setDownloadOpen(false)} />}
 
@@ -439,7 +434,7 @@ function BentoHero({
 
       {ws.overviewHtml && (
         <div className="col-span-2 lg:col-span-6 p-6 md:p-7" style={gCard}>
-          <div dir="auto" className="bidi-auto mosaic-overview" dangerouslySetInnerHTML={{ __html: ws.overviewHtml }} />
+          <div dir="auto" className="bidi-auto mosaic-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
         </div>
       )}
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
+import { useColorNameTranslations } from "@/features/visual-identity";
 import { useDialog, useToast } from "@/components/ui";
 import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
@@ -27,6 +28,7 @@ export function useBuilderPage(slug: string) {
     updateBlock,
     addTemplateBlocks,
     publishGuideline,
+    unpublishGuideline,
     autoFillBlocks,
     setGuidelineTemplate,
     setStudioStyle,
@@ -46,6 +48,9 @@ export function useBuilderPage(slug: string) {
   const { confirm, prompt } = useDialog();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
+  // The English and Arabic previews both show colour names; fill in the
+  // missing language while an editor is here.
+  useColorNameTranslations(ws);
   /** A flow id: "block-<id>" for an authored section, or a derived section's own id. */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   /**
@@ -283,8 +288,30 @@ export function useBuilderPage(slug: string) {
       });
       if (!ok) return;
     }
-    publishGuideline(ws!.id);
+    const result = await publishGuideline(ws!.id);
+    if (!result.ok) {
+      showToast(isAr ? "لم يُنشر الدليل. حاول مرة أخرى." : `Not published: ${result.message ?? "try again."}`, "danger");
+      return;
+    }
     showToast(isAr ? "تم نشر الدليل للعملاء." : "Published — clients now see these changes.", "success");
+  }
+
+  async function handleUnpublish() {
+    const ok = await confirm({
+      title: isAr ? "إيقاف موقع الدليل؟" : "Take the guideline site offline?",
+      body: isAr
+        ? "سيتوقف رابط العميل عن العمل فورًا. تبقى مسودتك كما هي، ويمكنك النشر مجددًا في أي وقت."
+        : "The client's link stops working right away. Your draft stays as it is, and you can publish again at any time.",
+      confirmLabel: isAr ? "إيقاف الموقع" : "Take offline",
+      isAr,
+    });
+    if (!ok) return;
+    const result = await unpublishGuideline(ws!.id);
+    if (!result.ok) {
+      showToast(isAr ? "تعذّر إيقاف الموقع. حاول مرة أخرى." : `Still online: ${result.message ?? "try again."}`, "danger");
+      return;
+    }
+    showToast(isAr ? "الموقع غير متاح الآن للعملاء." : "The site is offline. Clients can no longer open it.", "success");
   }
 
   function handleAutoFill() {
@@ -421,6 +448,7 @@ export function useBuilderPage(slug: string) {
     canUndo,
     canRedo,
     onPublish: () => void handlePublish(),
+    onUnpublish: () => void handleUnpublish(),
     onAutoFill: handleAutoFill,
     onAdd: handleAdd,
     onApplyTemplate: handleApplyTemplate,

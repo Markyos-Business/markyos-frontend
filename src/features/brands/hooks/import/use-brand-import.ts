@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../api/brands.api";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
@@ -11,7 +11,7 @@ type ImportStage = "idle" | "extracting" | "review";
 
 /** Reading a guideline file, reviewing what it holds, and creating a brand from the parts kept. */
 export function useBrandImport() {
-  const { createWorkspace, addColor, setTypography, setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait } = useApp();
+  const { createWorkspace, addColor, setTypography, setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait } = useAppActions();
   const { showToast } = useToast();
   const router = useRouter();
   const [stage, setStage] = useState<ImportStage>("idle");

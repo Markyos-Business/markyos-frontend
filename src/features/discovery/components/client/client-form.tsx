@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, usePublicPageLocale } from "@/components/ui";
 import type { Lang } from "@/types";
 import { AnswerError, isEmptyAnswer, textIn, validateAnswer } from "../../utils/question-types";
 import { formPalette, paletteVars } from "../../utils/theme";
@@ -43,7 +43,6 @@ const COPY = {
   doneBody: { en: "The studio has them now and will be in touch.", ar: "أصبحت لدى الاستوديو، وسيتواصل معكم قريبًا." },
   step: { en: "Section", ar: "القسم" },
   of: { en: "of", ar: "من" },
-  madeWith: { en: "Made with Markyos", ar: "صُنع باستخدام ماركيوس" },
 } as const;
 
 /**
@@ -60,6 +59,8 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
   const c = (key: keyof typeof COPY) => COPY[key][lang];
   const { palette } = formPalette(form.theme);
   const isAr = lang === "ar";
+  // On the public page, the Made with Markyos badge reads in the visitor's chosen language.
+  usePublicPageLocale(lang);
 
   const all = useMemo(() => form.sections.flatMap((s) => s.questions), [form]);
   const visible = useMemo(() => evaluateVisibility(all, answers), [all, answers]);
@@ -282,11 +283,6 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
         </div>
       </main>
 
-      {form.theme.showMarkyosBadge && (
-        <footer className="flex justify-center px-space-6 py-space-6">
-          <span className="text-caption text-[var(--f-muted)]">{c("madeWith")}</span>
-        </footer>
-      )}
     </div>
   );
 }

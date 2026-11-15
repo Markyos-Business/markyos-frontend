@@ -32,7 +32,10 @@ function isWebAddress(url: string): boolean {
  */
 const UrlField = ({ value, onChange, protocol: initial = "https://", error, invalidMessage, onBlur, ...rest }: UrlFieldProps) => {
   const { t } = useUiStrings();
-  const [protocol, setProtocol] = useState(() => (value.match(PROTOCOL)?.[1].toLowerCase() as UrlFieldProps["protocol"]) ?? initial);
+  // The scheme the value has, whatever set it (a reset, another record); the
+  // remembered one only while the field is empty.
+  const [chosen, setProtocol] = useState(() => (value.match(PROTOCOL)?.[1].toLowerCase() as UrlFieldProps["protocol"]) ?? initial);
+  const protocol = (value.match(PROTOCOL)?.[1].toLowerCase() as UrlFieldProps["protocol"] | undefined) ?? chosen;
   const [invalid, setInvalid] = useState(false);
   const rest_ = value.replace(PROTOCOL, "");
 

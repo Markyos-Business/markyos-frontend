@@ -31,11 +31,10 @@ provider credentials belong on the backend. Read [client.ts](../../src/lib/api/c
 and [apiAdapter.ts](../../src/lib/data/adapters/apiAdapter.ts), not old comments
 that say brands are not yet stored on the server.
 
-Prisma schema/config/scripts remain in the frontend as a foundation/scaffold.
-No runtime Prisma client usage was found in `src` during this review. Current
-API-backed persistence is Django; do not add a second live write path because a
-Prisma model happens to exist. Its config still requires `DATABASE_URL` and
-`SHADOW_DATABASE_URL` for the frontend's Prisma validation step.
+The frontend has no database layer. The early Prisma scaffold was removed on
+14 November 2026 (never used at runtime); its schema is archived in
+[prisma-schema.prisma](../archive/prisma-schema.prisma) as design reference only.
+API-backed persistence is Django; model new data there.
 
 ## Roles, permissions, and account limits
 
@@ -91,11 +90,11 @@ server enforcement aligned when changing these values.
 | Module | What it does now | Storage / implementation boundary |
 | --- | --- | --- |
 | Auth/account | Signup/setup, password/Google sign-in, email codes, resets, profile/email change, sessions and account controls | Django account/auth models; local demo alternatives in frontend |
-| Brands/overview | Brand creation, summary, team ownership, shared document editing | `Workspace.data` JSON plus owner, slug, version and membership/public-link indexes |
+| Brands/overview | Brand creation, summary, team ownership, shared document editing | `Workspace.data` JSON plus owner, slug, version and membership/public-link indexes; every save is checked against the document schema (`apps/brands/schema.py`: shape, ids, 4 MB cap; unknown fields allowed) |
 | Strategy | Narrative fields, values, audience/personas, competitors, positioning and voice in English/Arabic | Brand document; translation goes directly to MyMemory from browser |
 | Visual identity/type lab | Logo slots, color palettes, typography, assets and specimen work | Brand document plus file storage; frontend analysis/preview tools |
-| Moodboard | Boards, images, canvas organization, comments/votes represented by app state | Brand document and uploaded assets; not a real-time collaboration transport |
-| Builder/guidelines | Templates, pages, authored/derived sections, styles, preview, publish/unpublish | Live document and published snapshot; public viewer reads snapshot |
+| Moodboard | Boards, images, canvas organization and votes (no comments yet) | Boards in the brand document; votes are `MoodboardVote` records per account (any role, viewers included), merged into each card's `votes` on read and ignored on save; not real-time |
+| Builder/guidelines | Templates, pages, authored/derived sections, styles, preview, publish/take offline | Live document; the published snapshot is built by the server on `POST /brands/<id>/publish/` and only changed by that endpoint |
 | Departments | Instructions, imported handbook sections, curated strategy references | Brand document; public department projection limits references |
 | Discovery forms | Library/templates, bilingual typed questions, visibility conditions, sending, answering, reopening, events | Relational discovery models and dedicated API |
 | Call notes | Notes/transcripts, participant/speaker structure, analysis inclusion, deletion/restore | Relational call-note records/events and dedicated API |
@@ -103,7 +102,7 @@ server enforcement aligned when changing these values.
 | Drafts | Proposed strategy/identity content for human acceptance or rejection | Brand document; acceptance can apply selected content |
 | Compliance | Brand/content checks including local copy lint | Frontend checks and document results; not an external legal certification service |
 | Team/reviews | Membership plus approval proposals and client sign-off handling | Membership index; approvals/sign-offs are separate server records |
-| Brand settings | Public access, billing summary/link and developer/domain controls | Mixed: document settings and a link to account-level verified checkout |
+| Brand settings | Public access, design, billing summary/link; subdomain, custom domain and developer settings hidden unless `NEXT_PUBLIC_UNFINISHED_SETTINGS=1` | Document settings; access, branding and developer settings are owner-only on the server; checkout is account-level and verified |
 | Board/people | Cross-brand views derived from the account's visible workspaces | Frontend projections; do not infer separate project-management or contact APIs |
 | Operator admin | User directory/detail, status/type changes, invitations, sessions, activity, bulk actions and brand lookup | Dedicated `/admin/` APIs and admin-action records |
 
@@ -248,9 +247,12 @@ money deduction exists. Do not expose quotes as proof of actual accounting.
 
 ## Publication, sharing, and review records
 
-Publishing copies the live brand into `published`; the public guideline reads
-that snapshot. A later draft edit does not update the public copy until another
-publish. API public site access also checks current verified billing, so an old
+Publishing is a server action: `POST /brands/<id>/publish/` (owner or editor,
+with the version the caller is looking at; 409 if stale) builds `published`
+from the stored brand, emptying moodboards and drafts and keeping only approved
+files. `DELETE` takes the site offline. Ordinary saves keep the stored
+snapshot, and new brands start unpublished. A later draft edit does not update
+the public copy until another publish. API public site access also checks current verified billing, so an old
 snapshot cannot retain a revoked paid entitlement.
 
 Public endpoint families under `/api/v1/`:
@@ -269,8 +271,9 @@ leak. Department links additionally project only the selected department,
 referenced purpose/mission/personas/voice traits, and handbook asset. A React
 visibility check is insufficient if forbidden fields are already in the JSON.
 
-Password unlocking yields a signed token valid for 12 hours or until the
-password changes; the frontend keeps it in tab storage and sends
+The site password is read from the brand's live access settings, not the
+snapshot, so changing or removing it applies at once. Password unlocking
+yields a signed token valid for 12 hours or until the password changes; the frontend keeps it in tab storage and sends
 `X-Brand-Unlock`. This controls the guideline API, not every direct file URL.
 Files are currently public/unguessable URLs, not authorization-checked private
 attachments. Revoking a link or setting a page password does not retract files
@@ -315,9 +318,10 @@ for exact event handling and unresolved operational policies.
 | Anthropic | Backend discovery/brief analysis calls; requires API key; test fakes are not live output. |
 | MyMemory | Browser calls public translation endpoint, including query text; EN↔AR drafts are flagged for human review and subject to rate limits. |
 | Object storage | Local filesystem or configured S3-compatible storage (Spaces/R2/etc.); deployment variables choose the provider. |
-| Custom domains | Domain text and status stored; current UI verification uses a timer/local mutation, not DNS or hosting verification. |
-| Developer API keys | Browser-generated/document values; no matching server credential issuance/authentication system. |
-| Outgoing webhooks | URL setting exists; no delivery/signature/retry event pipeline. |
+| Error monitoring | Sentry, off unless `SENTRY_DSN` (backend) / `NEXT_PUBLIC_SENTRY_DSN` (frontend, loaded on demand) is set; no personal data sent. |
+| Custom domains / subdomain | Hidden in settings. Stored text only; nothing serves the domain or verifies DNS. |
+| Developer API keys | Hidden in settings. Browser-generated values; no server issues or accepts them. |
+| Outgoing webhooks | Hidden in settings. URL only; no delivery/signature/retry pipeline. |
 | Figma | Connection/sync metadata exists; no demonstrated Figma OAuth/data synchronization. |
 | Workspace audit history | Browser state exists; not an authoritative backend workspace-action ledger. Admin actions are a separate real server feature. |
 
@@ -377,7 +381,7 @@ When adding/changing a feature:
 Validation commands:
 
 ```sh
-# Platform repository; Prisma validation needs both configured database URLs.
+# Platform repository.
 npm run check
 # Targeted integrated browser tests; see e2e/README.md for isolated server setup.
 E2E_PYTHON=/absolute/path/to/markyos-backend/venv/bin/python npm run e2e
@@ -405,8 +409,8 @@ Known documentation/implementation discrepancies to resolve deliberately:
 - The old backend translation guide mentions project/beneficiary models outside
   the current main brand API. Strategy translation currently uses MyMemory;
   do not treat that old guide as the strategy contract.
-- Custom domains, developer integrations and credits remain partial as listed
-  above. The website's token-sync default path is stale and waitlist storage is
+- Custom domains, subdomains and developer integrations are hidden until they
+  work; credits remain partial (no ledger). The website's token-sync default path is stale and waitlist storage is
   unimplemented. These are not completed features merely because controls exist.
 
 ## November audit implementation (2026-11-13)

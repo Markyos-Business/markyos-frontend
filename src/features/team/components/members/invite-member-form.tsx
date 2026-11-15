@@ -2,7 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, useToast } from "@/components/ui";
 import { ChipPicker, InputField } from "@/components/ui";
 import type { TeamRole, Workspace } from "@/types";
@@ -21,7 +21,7 @@ type InviteMemberFormProps = {
 export function InviteMemberForm({ ws, isAr, canGovern, editorsFull, editorsFullNote, onDone }: InviteMemberFormProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const copy = useAccountCopy(isAr);
-  const { addTeamMember } = useApp();
+  const { addTeamMember } = useAppActions();
   const { showToast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

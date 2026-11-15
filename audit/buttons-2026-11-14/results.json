@@ -1,0 +1,674 @@
+{
+  "checks": [
+    "Six variants × ten states render",
+    "Async save preserves width, blocks repeat clicks, announces Saved and resets",
+    "Disabled reason remains focusable, described and non-activating",
+    "Locked controls explain access; disabled menu cannot open from keyboard",
+    "Menu Enter, arrows, disabled-item skip, Escape and focus restoration",
+    "Toggle Space/Enter and group roving arrows skip disabled options",
+    "Holding Space confirms once; early release cancels",
+    "Inline confirmation expires after three seconds; second click confirms",
+    "Native confirm dialog names, initial focus, Escape and confirmation",
+    "Copy button writes clipboard, announces Copied and resets",
+    "Async failure announces Try again, resets and permits retry",
+    "Upload picker accepts multiple files and returns selected files",
+    "Slot renders a real Next Link; external link includes noopener",
+    "Three official provider brand glyphs load locally",
+    "All visible matrix text clears 4.5:1 in both themes, including hover scrims",
+    "Arabic group arrows follow RTL",
+    "Touch controls provide at least 40px hit areas",
+    "390px English and Arabic: gallery stays within viewport",
+    "No browser runtime errors"
+  ],
+  "contrast": [
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "default",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "hover",
+      "ratio": 5.700077963401336
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "focus",
+      "ratio": 5.700077963401336
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "pressed",
+      "ratio": 5.7458314701126865
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "loading",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "success",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "error",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "primary",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "default",
+      "ratio": 18.159588039824865
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "hover",
+      "ratio": 17.77134185160317
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "focus",
+      "ratio": 17.77134185160317
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "pressed",
+      "ratio": 17.579153383927526
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "loading",
+      "ratio": 18.159588039824865
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "success",
+      "ratio": 18.159588039824865
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "error",
+      "ratio": 18.159588039824865
+    },
+    {
+      "theme": "light",
+      "variant": "secondary",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "default",
+      "ratio": 17.41933128778011
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "hover",
+      "ratio": 17.048168643126573
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "focus",
+      "ratio": 17.048168643126573
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "pressed",
+      "ratio": 16.86443485675919
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "loading",
+      "ratio": 17.41933128778011
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "success",
+      "ratio": 17.41933128778011
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "error",
+      "ratio": 17.41933128778011
+    },
+    {
+      "theme": "light",
+      "variant": "outline",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "default",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "hover",
+      "ratio": 4.716253349860852
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "focus",
+      "ratio": 4.716253349860852
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "pressed",
+      "ratio": 4.66552746034509
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "loading",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "success",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "error",
+      "ratio": 4.818724660863396
+    },
+    {
+      "theme": "light",
+      "variant": "ghost",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "default",
+      "ratio": 4.7698900124065196
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "hover",
+      "ratio": 4.854151295012231
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "focus",
+      "ratio": 4.854151295012231
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "pressed",
+      "ratio": 4.89697493733229
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "loading",
+      "ratio": 4.7698900124065196
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "success",
+      "ratio": 4.7698900124065196
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "error",
+      "ratio": 4.7698900124065196
+    },
+    {
+      "theme": "light",
+      "variant": "destructive",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "default",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "hover",
+      "ratio": 5.489138102296032
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "focus",
+      "ratio": 5.489138102296032
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "pressed",
+      "ratio": 5.429373250935253
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "disabled",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "loading",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "success",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "error",
+      "ratio": 5.609873621764679
+    },
+    {
+      "theme": "light",
+      "variant": "link",
+      "state": "locked",
+      "ratio": 4.888149081666192
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "default",
+      "ratio": 6.555321193022213
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "hover",
+      "ratio": 6.129174682603547
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "focus",
+      "ratio": 6.129174682603547
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "pressed",
+      "ratio": 5.923422175563586
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "loading",
+      "ratio": 6.555321193022213
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "success",
+      "ratio": 6.555321193022213
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "error",
+      "ratio": 6.555321193022213
+    },
+    {
+      "theme": "dark",
+      "variant": "primary",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "default",
+      "ratio": 17.40432753274219
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "hover",
+      "ratio": 17.565839604909065
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "focus",
+      "ratio": 17.565839604909065
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "pressed",
+      "ratio": 17.645744858190795
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "loading",
+      "ratio": 17.40432753274219
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "success",
+      "ratio": 17.40432753274219
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "error",
+      "ratio": 17.40432753274219
+    },
+    {
+      "theme": "dark",
+      "variant": "secondary",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "default",
+      "ratio": 14.587193453215752
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "hover",
+      "ratio": 14.86581527645247
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "focus",
+      "ratio": 14.86581527645247
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "pressed",
+      "ratio": 15.005161104514707
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "loading",
+      "ratio": 14.587193453215752
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "success",
+      "ratio": 14.587193453215752
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "error",
+      "ratio": 14.587193453215752
+    },
+    {
+      "theme": "dark",
+      "variant": "outline",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "default",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "hover",
+      "ratio": 9.143886227039113
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "focus",
+      "ratio": 9.143886227039113
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "pressed",
+      "ratio": 9.208875382651783
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "loading",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "success",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "error",
+      "ratio": 9.013176759069868
+    },
+    {
+      "theme": "dark",
+      "variant": "ghost",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "default",
+      "ratio": 5.097678465784157
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "hover",
+      "ratio": 4.7750059940207885
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "focus",
+      "ratio": 4.7750059940207885
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "pressed",
+      "ratio": 4.6193417513918344
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "loading",
+      "ratio": 5.097678465784157
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "success",
+      "ratio": 5.097678465784157
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "error",
+      "ratio": 5.097678465784157
+    },
+    {
+      "theme": "dark",
+      "variant": "destructive",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "default",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "hover",
+      "ratio": 8.887531006107865
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "focus",
+      "ratio": 8.887531006107865
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "pressed",
+      "ratio": 8.907597731832526
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "disabled",
+      "ratio": 9.97867010510478
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "loading",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "success",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "error",
+      "ratio": 8.846846222141584
+    },
+    {
+      "theme": "dark",
+      "variant": "link",
+      "state": "locked",
+      "ratio": 9.97867010510478
+    }
+  ],
+  "errors": []
+}

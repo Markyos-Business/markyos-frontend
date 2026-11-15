@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind, Workspace } from "@/types";
 import { formatBytes } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ export function ClearspacePanel({
   selected: SlotKind;
   onDownload: () => void;
 }) {
-  const { updateLogoSlot, uiLang } = useApp();
+  const { updateLogoSlot, uiLang } = useAppActions();
   const slot: LogoSlot = workspace.logo[selected];
   const isAr = uiLang(workspace) === "ar";
   const attachedSlots = (Object.keys(workspace.logo) as SlotKind[]).filter(

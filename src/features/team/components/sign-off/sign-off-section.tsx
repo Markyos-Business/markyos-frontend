@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useEffect, useState } from "react";
 import { API_ENABLED } from "@/lib/api/client";
 import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
@@ -15,7 +15,7 @@ import type { Workspace } from "@/types";
  */
 export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGovern: boolean; isAr: boolean }) {
   const copy = useAccountCopy(isAr);
-  const { resolveSignOffPin, refreshSignOffPins } = useApp();
+  const { resolveSignOffPin, refreshSignOffPins } = useAppActions();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(API_ENABLED);
   const [pending, setPending] = useState<string | null>(null);

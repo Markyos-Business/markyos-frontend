@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, Button, CopyButton } from "@/components/ui";
 import { ShareScope, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
@@ -30,7 +30,7 @@ export function ShareLinksPanel({
   departmentId?: string;
   isAr: boolean;
 }) {
-  const { createShareLink, revokeShareLink, restoreShareLink } = useApp();
+  const { createShareLink, revokeShareLink, restoreShareLink } = useAppActions();
   const { showToast } = useToast();
   const [origin, setOrigin] = useState("");
   const [open, setOpen] = useState(false);

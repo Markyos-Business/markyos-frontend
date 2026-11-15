@@ -134,11 +134,11 @@ export function AppSidebar({
         aria-label={collapsed ? name : undefined}
         className={`group relative flex shrink-0 items-center ${collapsed ? "h-rail-item justify-center" : "h-rail-item-box"} ${extra}`}
       >
-        {/* The tile: the accent tint when active, a raised fill on hover. */}
+        {/* The tile: the accent tint when active. No hover fill: the rail is `mk-no-hover`. */}
         <span
           className={`flex items-center rounded-sm transition-colors ${
             collapsed ? "size-rail-item-box justify-center" : "h-full w-full gap-space-4 px-space-4"
-          } ${active ? "bg-accent-soft text-text" : "text-text-muted group-hover:bg-surface-2 group-hover:text-text"}`}
+          } ${active ? "bg-accent-soft text-text" : "text-text-muted"}`}
         >
           <Icon name={item.icon} size={22} className={`shrink-0 ${active ? "text-accent" : ""}`} />
           {!collapsed && (
@@ -179,7 +179,7 @@ export function AppSidebar({
       data-rail={inDrawer ? undefined : rail}
       data-ready={ready && !inDrawer ? "" : undefined}
       // The 1px separator on the inline-end side is the hairline at 10%.
-      className={`flex shrink-0 flex-col gap-space-8 overflow-hidden py-space-8 ${
+      className={`mk-no-hover flex shrink-0 flex-col gap-space-8 overflow-hidden py-space-8 ${
         inDrawer
           ? "h-full w-72 max-w-full px-space-3"
           : `bg-sidebar shadow-[inset_-1px_0_0_var(--hairline-strong)] rtl:shadow-[inset_1px_0_0_var(--hairline-strong)] ${collapsed ? RAIL : OPEN}`

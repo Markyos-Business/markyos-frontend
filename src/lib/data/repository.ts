@@ -16,7 +16,7 @@ import type { SectionPatch } from "./adapters/entityOps";
  *     exist to repair *this storage format* and nothing else: a browser whose
  *     saved snapshot predates a field has to be repaired on read.
  *
- *   * `ServerAdapter` — the MVP Foundation. Server Actions, Prisma and R2.
+ *   * `ServerAdapter` — the MVP Foundation, now `apiAdapter` over Django.
  *     It needs no backfills at all: the database has the columns because a
  *     migration added them, which is what "hydration backfills become
  *     migrations" means in practice.

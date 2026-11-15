@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { BlockScopeProvider } from "../content/block-renderer";
 import { useGuidelineViewer } from "../../hooks/use-guideline-viewer";
 import { VaultTemplate } from "../templates/vault-template";
@@ -13,6 +13,7 @@ import { MosaicTemplate } from "../templates/mosaic-template";
 import { LiveEditProvider } from "./live-edit";
 import { BrandFonts } from "../shared/brand-fonts";
 import { BlockKind, Lang } from "@/types";
+import { withSwatchNamesIn } from "@/lib/data/colorNames";
 
 /** The block behind a flow id, or null for a derived section. */
 function blockIdOf(flowId: string): string | null {
@@ -72,7 +73,7 @@ export function LiveCanvas({
     setSectionNote,
     setSectionOrder,
     setSectionStyle,
-  } = useApp();
+  } = useAppActions();
 
   const allBlocks = v.allBlocks;
   const wsId = v.ws?.id;
@@ -326,7 +327,8 @@ export function LiveCanvas({
   if (!v.ws || !v.theme) return null;
 
   const templateProps = {
-    ws: v.ws,
+    // Colour names in the preview's language (stored translations only).
+    ws: withSwatchNamesIn(v.ws, previewLang === "ar" ? "ar" : "en"),
     isAr: previewLang === "ar",
     theme: v.theme,
     sections: v.sections,
@@ -350,7 +352,6 @@ export function LiveCanvas({
     setPreviewLang: onLangChange ?? v.setPreviewLang,
     // The badge is a billing artifact of the published site; showing it on the
     // canvas would just be chrome the studio can't act on while editing.
-    showMarkyosBadge: false,
     pages: v.pages,
     activePage: v.activePage,
   };

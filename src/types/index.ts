@@ -45,10 +45,17 @@ export interface LogoSlot {
 
 export interface ColorSwatch {
   id: string;
+  /** As the studio wrote it, in either language. */
   name: string;
   hex: string;
   isPrimary?: boolean;
   locked?: boolean;
+  /**
+   * The name in the other language, machine-translated. `source` is the name
+   * it was made from: once the name is edited they differ, and the
+   * translation is stale until it is redone. See lib/data/colorNames.ts.
+   */
+  nameTranslation?: { lang: Lang; text: string; source: string };
 }
 
 export interface Typography {
@@ -1005,6 +1012,12 @@ export interface Workspace {
   approvals: ApprovalRequest[];
   versionHistory: VersionSnapshot[];
   whiteLabel: boolean;
+  /**
+   * A paid brand switched "Remove Markyos branding" off to give the credit:
+   * its public pages show the Made with Markyos badge. Free brands always do,
+   * whatever this says; the server decides (apps/brands/branding.py).
+   */
+  brandingCredit?: boolean;
   complianceChecks: ComplianceCheck[];
   /**
    * Pending and decided proposals into this brand. Kept on the workspace

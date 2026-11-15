@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { API_ENABLED } from "@/lib/api/client";
 import type { AccountType } from "@/types";
 import { GOOGLE_CLIENT_ID } from "../../constants";
@@ -34,7 +34,7 @@ export function useGoogleSignIn({ accountType = null, remember = true }: Options
   useEffect(() => {
     copy.current = c;
   });
-  const { signInWithGoogle } = useApp();
+  const { signInWithGoogle } = useAppActions();
   const client = useRef<CodeClient | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

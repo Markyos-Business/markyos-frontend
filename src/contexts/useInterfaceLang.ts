@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
-import { useApp, useCurrentAccount } from "./AppContext";
+import { useAppActions, useCurrentAccount, useSession } from "./AppContext";
 import {
   applyDocumentLang,
   readGuestLang,
@@ -21,7 +21,8 @@ import type { Lang } from "@/types/lang";
  */
 export function useInterfaceLang() {
   const account = useCurrentAccount();
-  const { state, setAdminLang } = useApp();
+  const session = useSession();
+  const { setAdminLang } = useAppActions();
   const guest = useSyncExternalStore(subscribeGuestLang, readGuestLang, () => null);
   // False only while hydrating, when the server's default stands in for this
   // browser's choice; nothing should act on the language until it is true.
@@ -31,9 +32,9 @@ export function useInterfaceLang() {
   const setLang = useCallback(
     (next: Lang) => {
       writeGuestLang(next);
-      if (state.session) setAdminLang(next);
+      if (session) setAdminLang(next);
     },
-    [state.session, setAdminLang]
+    [session, setAdminLang]
   );
 
   return { lang, isAr: lang === "ar", setLang, settled } as const;
@@ -60,7 +61,7 @@ export function useDocumentLang(lang: Lang, settled = true) {
  */
 export function useAdoptGuestLang() {
   const account = useCurrentAccount();
-  const { setAdminLang } = useApp();
+  const { setAdminLang } = useAppActions();
   useEffect(() => {
     if (!account) return;
     // The account's own choice is what this browser opens in next time, too.

@@ -1005,12 +1005,12 @@ export const baseStyles = [
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
-    "button:not(:disabled):not(.mk-btn):not(.mk-field):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):not(.mk-field-control):focus-visible, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):focus-visible, summary:focus-visible, a[href]:not(.mk-btn):focus-visible": {
       "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
     },
   },
   {
-    "button:not(:disabled):not(.mk-btn):not(.mk-field):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
+    "button:not(:disabled):not(.mk-btn):not(.mk-field):not(.mk-field-control):active, [role=\"button\"]:not([aria-disabled=\"true\"]):not(.mk-btn):active, a[href]:not(.mk-btn):active": {
       "background-image": "linear-gradient(var(--press-veil), var(--press-veil)) !important",
     },
   },
@@ -1054,6 +1054,28 @@ export const baseStyles = [
   {
     ".mk-btn:not(:disabled):not([aria-disabled=\"true\"]):active::after, .mk-btn:not(:disabled):focus-visible::after, .mk-btn.is-active::after": {
       "opacity": "1",
+    },
+  },
+  /*
+   * Quiet regions: no hover tint inside `.mk-no-hover`.
+   *
+   * The app sidebar, the top bar and table grids are on screen all day, and a
+   * tint chasing the pointer across them read as noise (Adnan, 14 Nov 2026).
+   * Only hover goes: the cursor still says "clickable", keyboard focus keeps
+   * its veil and ring, and a press still shows, so nothing is withheld from
+   * someone tabbing and a click is still acknowledged.
+   *
+   * It outranks the veil and the `.mk-btn` scrim above on specificity, and the
+   * veil's `!important` with its own; it must stay below them in this file.
+   */
+  {
+    "@media (hover: hover) and (pointer: fine)": {
+      ".mk-no-hover :is(button, [role=\"button\"], summary, a[href], label):hover:not(:focus-visible):not(:active)": {
+        "background-image": "none !important",
+      },
+      ".mk-no-hover .mk-btn:hover:not(:focus-visible):not(:active):not(.is-active)::after": {
+        "opacity": "0",
+      },
     },
   },
   /*
@@ -1217,6 +1239,59 @@ export const baseStyles = [
       },
     },
   },
+  /*
+   * Range slider: two real range inputs over one track. The inputs are
+   * transparent and only their thumbs take the pointer, so each thumb is a
+   * standard slider for the keyboard and screen readers.
+   */
+  {
+    ".mk-range": {
+      "position": "absolute",
+      "inset": "0",
+      "width": "100%",
+      "height": "100%",
+      "margin": "0",
+      "background": "transparent",
+      "appearance": "none",
+      "-webkit-appearance": "none",
+      "pointer-events": "none",
+      "outline": "none",
+    },
+    ".mk-range::-webkit-slider-thumb": {
+      "-webkit-appearance": "none",
+      "appearance": "none",
+      "pointer-events": "auto",
+      "width": "18px",
+      "height": "18px",
+      "border-radius": "9999px",
+      "background": "var(--accent)",
+      "box-shadow": "0 0 0 3px var(--surface-1)",
+      "cursor": "grab",
+    },
+    ".mk-range::-moz-range-thumb": {
+      "pointer-events": "auto",
+      "width": "18px",
+      "height": "18px",
+      "border": "0",
+      "border-radius": "9999px",
+      "background": "var(--accent)",
+      "box-shadow": "0 0 0 3px var(--surface-1)",
+      "cursor": "grab",
+    },
+    ".mk-range::-webkit-slider-runnable-track, .mk-range::-moz-range-track": {
+      "background": "transparent",
+    },
+    ".mk-range:focus-visible::-webkit-slider-thumb": {
+      "outline": "2px solid var(--accent)",
+      "outline-offset": "2px",
+    },
+    ".mk-range:focus-visible::-moz-range-thumb": {
+      "outline": "2px solid var(--accent)",
+      "outline-offset": "2px",
+    },
+    ".mk-range:disabled::-webkit-slider-thumb": { "background": "var(--text-disabled)", "cursor": "not-allowed" },
+    ".mk-range:disabled::-moz-range-thumb": { "background": "var(--text-disabled)", "cursor": "not-allowed" },
+  },
   {
     ".mk-field::placeholder": {
       "font-weight": "400",
@@ -1299,6 +1374,26 @@ export const baseStyles = [
       "color": "var(--text-disabled)",
       "cursor": "not-allowed",
     },
+  },
+  {
+    // A Form in view mode (or locked): its fieldset is disabled, so nothing
+    // can change, but each field reads as its value, not as a greyed-out
+    // control: no ground, no underline, the normal ink.
+    "[data-form-view] .mk-field, [data-form-view] .mk-field:disabled, [data-form-view] .mk-field:has(:disabled)": {
+      "background": "transparent",
+      "border-bottom-color": "transparent",
+      "box-shadow": "none",
+      "color": "var(--text)",
+      "cursor": "default",
+      "opacity": "1",
+    },
+    "[data-form-view] .mk-field :disabled, [data-form-view] :disabled.mk-field-control": {
+      "color": "var(--text)",
+      "-webkit-text-fill-color": "var(--text)",
+      "opacity": "1",
+      "cursor": "default",
+    },
+    "[data-form-view] .mk-field ::placeholder": { "color": "transparent" },
   },
   {
     ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible": {

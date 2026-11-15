@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useGuidelineViewer } from "@/features/guideline-site";
 import { buildLayers, LayersPanel } from "./layers-panel";
 import type { Layer } from "./layers-panel";
@@ -32,7 +32,7 @@ export function LayersTab({
   onSelect: (id: string | null) => void;
   isAr: boolean;
 }) {
-  const { reorderBlocks, setSectionOrder, setSectionStyle, setBlockStyle } = useApp();
+  const { reorderBlocks, setSectionOrder, setSectionStyle, setBlockStyle } = useAppActions();
   const v = useGuidelineViewer(ws.slug, pageSlug);
   const pageId = v.activePage?.id;
 

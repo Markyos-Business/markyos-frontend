@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { scorePassword } from "@/lib/passwordStrength";
-import { normalizeHex } from "./hex-color-field";
+import { normalizeHex, parseColorText } from "./hex-color-input";
 import { groupTyped, parseNumber, westernDigits } from "./number-field";
 import { toSlug } from "./slug-field";
 import { isWebAddress } from "./url-field";
@@ -67,5 +67,18 @@ describe("password strength", () => {
 
   it("calls out a common password", () => {
     expect(scorePassword("password123").label).toBe("tooCommon");
+  });
+});
+
+describe("pasted colours", () => {
+  it("turns rgb() and a bare hex into #RRGGBB", () => {
+    expect(parseColorText("rgb(11, 93, 109)")).toBe("#0B5D6D");
+    expect(parseColorText("rgba(11 93 109 / 50%)")).toBe("#0B5D6D");
+    expect(parseColorText("0b5d6d")).toBe("#0B5D6D");
+  });
+
+  it("refuses out-of-range channels and words", () => {
+    expect(parseColorText("rgb(300, 0, 0)")).toBeNull();
+    expect(parseColorText("teal")).toBeNull();
   });
 });

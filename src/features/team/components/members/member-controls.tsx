@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { FilterSelectField } from "@/components/ui";
 import { Badge, Button, Icon, IconButton, useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
@@ -17,7 +17,7 @@ type MemberControlsProps = {
 
 /** A team row's controls: make owner, the role, and remove — or just the role, for someone who can't govern. */
 export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: MemberControlsProps) {
-  const { removeTeamMember, setTeamRole, transferOwnership } = useApp();
+  const { removeTeamMember, setTeamRole, transferOwnership } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const who = m.name || m.email;
@@ -49,7 +49,7 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
       consequences: [
         t("Only the new owner can change roles or approve proposals", "المالك الجديد وحده يغيّر الأدوار ويعتمد المقترحات"),
         t("Only the new owner can transfer ownership again — including back to you", "المالك الجديد وحده ينقل الملكية مجددًا، بما في ذلك إعادتها إليك"),
-        t("Sharing, the guideline link and the subdomain move with it", "تنتقل معها المشاركة ورابط الدليل والنطاق الفرعي"),
+        t("Sharing and the guideline link move with it", "تنتقل معها المشاركة ورابط الدليل"),
       ],
       confirmPhrase: ws.name,
       confirmLabel: t("Transfer", "نقل الملكية"),

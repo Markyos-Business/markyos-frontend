@@ -16,6 +16,8 @@ type ReportDocumentProps = {
   onCitation: (c: Citation) => void;
   /** Above the title, hidden in print: e.g. a Print button. */
   toolbar?: ReactNode;
+  /** The small "Made with Markyos" line at the end. Off on the public page, where the plan-aware badge stands in for it. Default true. */
+  credit?: boolean;
 };
 
 /**
@@ -23,7 +25,7 @@ type ReportDocumentProps = {
  * client reads at a share link, and what the print view turns into a PDF —
  * light, one section after another, nothing interactive in the way.
  */
-export function ReportDocument({ brandName, language, finishedAt, sections, sourceIndex, onCitation, toolbar }: ReportDocumentProps) {
+export function ReportDocument({ brandName, language, finishedAt, sections, sourceIndex, onCitation, toolbar, credit = true }: ReportDocumentProps) {
   const isAr = language === "ar";
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
@@ -49,7 +51,7 @@ export function ReportDocument({ brandName, language, finishedAt, sections, sour
           </section>
         ))}
       </CitationsProvider>
-      <footer className="pt-space-6 text-caption text-text-faint">{t("Made with Markyos", "صُنع باستخدام ماركيوس")}</footer>
+      {credit && <footer className="pt-space-6 text-caption text-text-faint">{t("Made with Markyos", "صُنع بماركيوس")}</footer>}
     </main>
   );
 }

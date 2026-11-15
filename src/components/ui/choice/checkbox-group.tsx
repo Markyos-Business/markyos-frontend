@@ -56,8 +56,10 @@ const CheckboxGroup = ({
   const chosen = new Set(value);
   const enabled = options.filter((o) => !o.disabled);
   const atMax = max !== undefined && chosen.size >= max;
-  const short = min !== undefined && visited && chosen.size < min;
-  const shownError = error ?? (short ? (strings?.chooseAtLeast ?? t.chooseAtLeast)(min!) : undefined);
+  // Required means at least one, unless a higher `min` asks for more.
+  const least = min ?? (required ? 1 : undefined);
+  const short = least !== undefined && visited && chosen.size < least;
+  const shownError = error ?? (short ? (strings?.chooseAtLeast ?? t.chooseAtLeast)(least!) : undefined);
   const note = shownError ?? success ?? (atMax ? (strings?.chooseUpTo ?? t.chooseUpTo)(max!) : hint);
   const allChosen = enabled.length > 0 && enabled.every((o) => chosen.has(o.value));
   // "Select all" can't keep its promise past a maximum, so it isn't offered then.

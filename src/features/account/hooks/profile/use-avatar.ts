@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { removeAvatar, uploadAvatar } from "../../api/account.api";
 import { useAccountLang } from "../shared/use-account-lang";
@@ -12,7 +12,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
 /** The profile photo: choose one (checked here first, then by the server), or remove it. */
 export function useAvatar() {
   const { t } = useAccountLang();
-  const { setServerAccount } = useApp();
+  const { setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [busy, setBusy] = useState(false);
 

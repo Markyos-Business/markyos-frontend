@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
-import { LangToggle, MarkyosLogo } from "@/components/ui";
+import { AuthLayout, LangToggle, MarkyosLogo } from "@/components/ui";
 import { useDocumentLang } from "@/contexts/useInterfaceLang";
 import { useAuthLang } from "../../hooks/shared/use-auth-lang";
 
 /**
- * The frame around every signed-out screen.
+ * The frame around every signed-out screen: the kit's AuthLayout with the
+ * auth pages' logo link and language switch.
  *
  * Login, registration and password reset were three separately-built pages
  * that happened to look similar, which is how the logo ended up a different
@@ -33,25 +34,20 @@ export function AuthShell({
   const { lang, setLang, c, settled } = useAuthLang();
   useDocumentLang(lang, settled);
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center gap-7 px-5 py-10 sm:px-8">
-      {/* Arabic first; the switch is here because these are the screens
-          someone sees before they have an account to keep a choice on. */}
-      <div className="fixed inset-e-5 top-5 z-sticky rounded-lg bg-canvas p-space-1 sm:inset-e-8">
-        <LangToggle value={lang} onChange={setLang} label={c.langSwitch} scope="chrome" />
-      </div>
-      <Link href="/" aria-label={c.home}>
-        <MarkyosLogo variant="lockup" className="w-[190px] max-w-full" isAr={lang === "ar"} />
-      </Link>
-
-      <div className="flex w-full max-w-[440px] flex-col gap-4 rounded-card bg-surface-1 p-6 sm:p-[30px]">
-        <div className="flex flex-col gap-1.5">
-          <h1 className="font-display text-[22px] font-semibold tracking-tight">{title}</h1>
-          {subtitle && <p className="text-[13px] leading-[1.5] text-text-muted">{subtitle}</p>}
-        </div>
-        {children}
-      </div>
-
-      {footer && <div className="flex flex-wrap justify-center gap-2 text-[13px] text-text-muted">{footer}</div>}
-    </main>
+    <AuthLayout
+      title={title}
+      subtitle={subtitle}
+      footer={footer}
+      // Arabic first; the switch is here because these are the screens
+      // someone sees before they have an account to keep a choice on.
+      corner={<LangToggle value={lang} onChange={setLang} label={c.langSwitch} scope="chrome" />}
+      brand={
+        <Link href="/" aria-label={c.home}>
+          <MarkyosLogo variant="lockup" className="w-[190px] max-w-full" isAr={lang === "ar"} />
+        </Link>
+      }
+    >
+      {children}
+    </AuthLayout>
   );
 }

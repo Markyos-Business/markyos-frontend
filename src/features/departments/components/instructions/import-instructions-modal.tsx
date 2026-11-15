@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, Button, Modal } from "@/components/ui";
 import { DepartmentView, Workspace } from "@/types";
 import { extractText, parseDocumentSections } from "@/lib/docParse";
@@ -32,7 +32,7 @@ export function ImportInstructionsModal({
   view: DepartmentView;
   onClose: () => void;
 }) {
-  const { setDeptInstructions, uiLang } = useApp();
+  const { setDeptInstructions, uiLang } = useAppActions();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 

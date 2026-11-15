@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, EditableField, Section, EmptyHint } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { personaIn, strategyText, textKey } from "@/features/guideline-site";
@@ -9,7 +9,7 @@ import { Lang, Workspace } from "@/types";
 import { InlineText, MiniInput } from "../../shared/inputs";
 
 export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { setStrategyText, addPersona, updatePersona, removePersona, uiLang } = useApp();
+  const { setStrategyText, addPersona, updatePersona, removePersona, uiLang } = useAppActions();
   const { showToast } = useToast();
   const [summaryDraft, setSummaryDraft] = useState<string | null>(null);
   const [addingPersona, setAddingPersona] = useState(false);

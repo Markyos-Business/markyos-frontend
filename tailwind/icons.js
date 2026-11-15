@@ -144,6 +144,12 @@ export const iconStyles = [
     },
   },
   {
+    /* Line Awesome's solid star (las), for a chosen rating; "star" is the outline. */
+    ".la-star-solid": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"%23000\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z\"/></svg>')",
+    },
+  },
+  {
     ".la-sitemap": {
       "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"9.5\" y=\"3\" width=\"5\" height=\"4\" rx=\"1\"/><rect x=\"3\" y=\"17\" width=\"5\" height=\"4\" rx=\"1\"/><rect x=\"9.5\" y=\"17\" width=\"5\" height=\"4\" rx=\"1\"/><rect x=\"16\" y=\"17\" width=\"5\" height=\"4\" rx=\"1\"/><path d=\"M12 7v4M5.5 17v-3a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v3M12 13v4\"/></svg>')",
     },
