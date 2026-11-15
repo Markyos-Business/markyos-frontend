@@ -49,7 +49,7 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
       consequences: [
         t("Only the new owner can change roles or approve proposals", "المالك الجديد وحده يغيّر الأدوار ويعتمد المقترحات"),
         t("Only the new owner can transfer ownership again — including back to you", "المالك الجديد وحده ينقل الملكية مجددًا، بما في ذلك إعادتها إليك"),
-        t("Sharing, the guideline link and the subdomain move with it", "تنتقل معها المشاركة ورابط الدليل والنطاق الفرعي"),
+        t("Sharing and the guideline link move with it", "تنتقل معها المشاركة ورابط الدليل"),
       ],
       confirmPhrase: ws.name,
       confirmLabel: t("Transfer", "نقل الملكية"),

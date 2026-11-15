@@ -27,6 +27,7 @@ export function useBuilderPage(slug: string) {
     updateBlock,
     addTemplateBlocks,
     publishGuideline,
+    unpublishGuideline,
     autoFillBlocks,
     setGuidelineTemplate,
     setStudioStyle,
@@ -291,6 +292,24 @@ export function useBuilderPage(slug: string) {
     showToast(isAr ? "تم نشر الدليل للعملاء." : "Published — clients now see these changes.", "success");
   }
 
+  async function handleUnpublish() {
+    const ok = await confirm({
+      title: isAr ? "إيقاف موقع الدليل؟" : "Take the guideline site offline?",
+      body: isAr
+        ? "سيتوقف رابط العميل عن العمل فورًا. تبقى مسودتك كما هي، ويمكنك النشر مجددًا في أي وقت."
+        : "The client's link stops working right away. Your draft stays as it is, and you can publish again at any time.",
+      confirmLabel: isAr ? "إيقاف الموقع" : "Take offline",
+      isAr,
+    });
+    if (!ok) return;
+    const result = await unpublishGuideline(ws!.id);
+    if (!result.ok) {
+      showToast(isAr ? "تعذّر إيقاف الموقع. حاول مرة أخرى." : `Still online: ${result.message ?? "try again."}`, "danger");
+      return;
+    }
+    showToast(isAr ? "الموقع غير متاح الآن للعملاء." : "The site is offline. Clients can no longer open it.", "success");
+  }
+
   function handleAutoFill() {
     autoFillBlocks(ws!.id);
     showToast(isAr ? "تمت المزامنة مع الأصول الحالية." : "Synced sections from your current assets.", "success");
@@ -425,6 +444,7 @@ export function useBuilderPage(slug: string) {
     canUndo,
     canRedo,
     onPublish: () => void handlePublish(),
+    onUnpublish: () => void handleUnpublish(),
     onAutoFill: handleAutoFill,
     onAdd: handleAdd,
     onApplyTemplate: handleApplyTemplate,

@@ -1,5 +1,5 @@
 import { AlertBanner } from "@/components/ui";
-import { PAGE_SECTION } from "../constants";
+import { PAGE_SECTION, SHOW_UNFINISHED_SETTINGS } from "../constants";
 import type { SettingsView as SettingsViewProps } from "../hooks/use-settings-page";
 import { BillingSection } from "./billing/billing-section";
 import { BrandSection } from "./brand/brand-section";
@@ -20,7 +20,9 @@ export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGover
       <div>
         <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
         <p className="text-[14px] text-text-muted">
-          {isAr ? `الوصول للعميل والنطاق الخاص والفوترة والتكاملات لعلامة ${ws.name}.` : `Client access, custom domain, billing and integrations for ${ws.name}.`}
+          {SHOW_UNFINISHED_SETTINGS
+            ? isAr ? `الوصول للعميل والنطاق الخاص والفوترة والتكاملات لعلامة ${ws.name}.` : `Client access, custom domain, billing and integrations for ${ws.name}.`
+            : isAr ? `الوصول للعميل والتصميم والفوترة لعلامة ${ws.name}.` : `Client access, design and billing for ${ws.name}.`}
         </p>
       </div>
       {locked && (
@@ -28,19 +30,19 @@ export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGover
           tone="info"
           message={
             isAr
-              ? "الوصول والنطاق والعلامة التجارية وإعدادات المطوّر يغيّرها مالك العلامة فقط. يمكنك تعديل التصميم والرموز."
-              : "Only the brand's owner can change access, domains, branding and developer settings. You can still change design and tokens."
+              ? "الوصول والعلامة التجارية يغيّرها مالك العلامة فقط. يمكنك تعديل التصميم والرموز."
+              : "Only the brand's owner can change access and branding. You can still change design and tokens."
           }
         />
       )}
       <BrandSection ws={ws} isAr={isAr} />
       <OwnerOnly locked={locked}><ClientAccessSection ws={ws} clientLink={clientLink} isAr={isAr} /></OwnerOnly>
       <GuidelineDesignSection ws={ws} isAr={isAr} />
-      <OwnerOnly locked={locked}><SubdomainSection ws={ws} isAr={isAr} /></OwnerOnly>
-      <OwnerOnly locked={locked}><CustomDomainSection ws={ws} isAr={isAr} /></OwnerOnly>
+      {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><SubdomainSection ws={ws} isAr={isAr} /></OwnerOnly>}
+      {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><CustomDomainSection ws={ws} isAr={isAr} /></OwnerOnly>}
       <BillingSection ws={ws} typeLabel={typeLabel} prices={prices} isAr={isAr} />
       <OwnerOnly locked={locked}><WhiteLabelSection ws={ws} typeLabel={typeLabel} isAr={isAr} /></OwnerOnly>
-      <OwnerOnly locked={locked}><DeveloperSection ws={ws} isAr={isAr} /></OwnerOnly>
+      {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><DeveloperSection ws={ws} isAr={isAr} /></OwnerOnly>}
       <DesignTokensSection ws={ws} isAr={isAr} canGovern={canGovern} />
     </div>
   );

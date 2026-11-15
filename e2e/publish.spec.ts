@@ -32,5 +32,12 @@ test.describe("publishing", () => {
     });
     const after = await call(`/public/sites/${brand.slug}/`);
     expect(after.brand.name).toBe("Sahara Tea");
+
+    // Take offline: asks first, then the client's link stops working.
+    await page.reload();
+    await page.getByRole("button", { name: "Take offline" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Take offline" }).click();
+    await expect(page.getByText("The site is offline. Clients can no longer open it.")).toBeVisible();
+    await expect(call(`/public/sites/${brand.slug}/`)).rejects.toThrow();
   });
 });
