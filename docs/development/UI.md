@@ -284,3 +284,48 @@ checks, but do not demand pointer cursors or hover fills intended for actions.
 Account pages use `AccountHeader`; brand pages use a compact breadcrumb, account menu and a separate wrapping actions row. Keep Team and Settings in the sidebar footer; group identity, strategy, guideline, research and tools. Assets has its own `/w/[slug]/assets` entry. Account navigation follows account type and configured API capability.
 
 Brand identity and strategy tabs use `useUrlTab`, roving keyboard focus and a linked `TabPanel`. Preserve other query parameters and browser history. Shared tab rows must not shrink to zero in constrained flex layouts. Arabic uses Plex after Inter without an Arial metric fallback; check actual platform fonts when changing font configuration.
+
+## Shared popup shell
+
+Use `Popup` from the UI barrel for controlled modal content; it owns focus,
+scroll locking, labels, portals, responsive sizing, sheet layout and dismissal.
+Use `FormDialog` for simple async forms, `DialogForm`/`DrawerForm` for React Hook
+Form, and `useDialog()` for confirmations and prompts. These reuse the same
+shell; feature code should supply content and business actions. Keep `busy`
+true during a save to prevent Escape, backdrop and close-button dismissal.
+
+Portalled form dialogs must keep the native form and its controls together.
+The existing React Hook Form wrappers use the shared form portal and an inline
+Popup surface for this reason. Do not move their inputs into a separate portal.
+Exercise `/design-system/popups` in both themes/languages, and run
+`scripts/sweeps/popups.mjs` plus `popup-forms.mjs` for keyboard, nested-dialog,
+select-portal, error and responsive regressions.
+
+## Responsive filters
+
+Use `FilterBar` with `SearchField`, `FilterSelectField` and `DateRangeButton`.
+Keep search visible on every screen. At 640px and above, advanced controls use
+an equal-width grid (two columns, up to five at 1280px); an odd final control
+spans the last row on smaller grids. Below 640px a Filters button opens the
+shared sheet with visible field labels and full-width controls.
+
+Pass `active` and `onClear` for reset, plus `filterCount` counting non-default
+advanced controls, excluding search and counting a date range once. Pass each
+select's `active` flag to show its selected state. The sheet updates filters
+immediately; Show results closes it. Preserve URL filters and pagination resets
+in the feature's existing state hook. Date ranges remain drafts until Apply.
+Do not put feature-specific fetching in the shared filter components.
+
+Use `/design-system/filters` with `NEXT_PUBLIC_UI_GALLERY=1` to review both
+languages and themes. `scripts/sweeps/filters.mjs` checks selections, counts,
+reset, date drafts, keyboard dismissal and responsive alignment.
+
+## Hover transitions
+
+Shared interactive controls use the `fast` motion token (150ms) with
+`ease-standard` for colour, fill, border, opacity and edge changes. Buttons fade
+their existing scrim; inputs interpolate a background tint. Keep transitions on
+the resting element so both pointer entry and exit ease smoothly. Avoid
+`transition-all`, layout animation, and adding input shadows. Existing quiet
+navigation/table regions retain their hover policy. The global reduced-motion
+rule cancels transitions for users who request it.

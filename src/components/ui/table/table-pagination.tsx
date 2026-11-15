@@ -28,7 +28,7 @@ const linkButton =
   "inline-flex h-control-sm items-center gap-space-3 px-space-3 text-overline uppercase text-text-muted transition-colors not-disabled:hover:text-accent-text disabled:text-text-disabled";
 
 /**
- * "Showing 1 to 25 of 62 users", then the spec's pagination (§6.12): 40px
+ * A compact total ("62 users"), then the spec's pagination (§6.12): 40px
  * cells with a 6px radius, the current one solid accent, between PREV and
  * NEXT. The arrows point the way the pages turn, so they swap sides in Arabic.
  */
@@ -45,8 +45,6 @@ const TablePagination = ({
   // A short last page is the end, whatever the stale total says.
   const total = itemCount < itemsPerPage ? (currentPage - 1) * itemsPerPage + itemCount : totalCount;
   const pages = Math.max(Math.ceil(total / itemsPerPage), 1);
-  const first = (currentPage - 1) * itemsPerPage + 1;
-  const last = (currentPage - 1) * itemsPerPage + itemCount;
   const { t: defaults } = useUiStrings();
   const t = { ...defaults, ...labels };
 
@@ -59,16 +57,7 @@ const TablePagination = ({
         <span />
       ) : (
         <span>
-          {/* Words and numbers alternate; the numbers stand out. */}
-          {t.showing(first, last, total, itemLabel).map((part, i) =>
-            typeof part === "number" ? (
-              <span key={i} className="font-medium text-text-secondary">
-                {part}
-              </span>
-            ) : (
-              part
-            )
-          )}
+          <span className="font-medium text-text-secondary tabular-nums">{total}</span>{" "}{itemLabel}
         </span>
       )}
       <div className="flex items-center gap-space-1">

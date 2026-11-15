@@ -10,3 +10,7 @@ export { FormStructureGallery } from "./components/form-structure-gallery";
 export { BadgeGallery } from "./components/badge-gallery";
 
 export { TabsGalleryPage } from "./components/tabs-gallery";
+
+export { PopupGallery } from "./components/popup-gallery";
+
+export { FilterGallery } from "./components/filter-gallery";

@@ -6,6 +6,7 @@ Galleries: `/design-system/table-select` and `/design-system/forms`, with `NEXT_
 
 | Component | Status | Wave | File | Notes |
 | --- | --- | --- | --- | --- |
+| Popup | in-review | 2 | [source](src/components/ui/popup/popup.tsx) | Controlled popup/sheet shell: portal, labelled content, top-layer Escape, focus restoration/trapping, scroll lock, busy dismissal guard. Modal, FormDialog, form sheets and confirmations reuse it. |
 | TabsRoot | in-review | 2 | [source](src/components/ui/tabs/tabs.tsx) | Radix root shared by compound and specialized tabs; controlled/uncontrolled state and asynchronous guards. |
 | Tabs | in-review | 2 | [source](src/components/ui/tabs/tabs.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
 | TabsList | in-review | 2 | [source](src/components/ui/tabs/tabs-list.tsx) | Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review. |
@@ -54,7 +55,7 @@ Galleries: `/design-system/table-select` and `/design-system/forms`, with `NEXT_
 | SearchField (SearchInput) | in-review | 2 | [source](src/components/ui/field/search-field.tsx) | Upgraded: clear button and Escape to clear, alongside the existing ⌘K hint and debounced search. |
 | OtpField (OtpInput) | in-review | 2 | [source](src/components/ui/field/otp-field.tsx) | Upgraded: digit labels from the kit's words (translatable); 4–6 boxes, paste fills all, auto-advance, Backspace goes back. |
 | SlugField | in-review | 2 | [source](src/components/ui/field/slug-field.tsx) | Fixed base like markyos.com/, slugifies as you type, follows a name until edited, debounced availability check where only the latest answer counts. |
-| RichTextField | in-review | 2 | [source](src/components/ui/field/rich-text-field.tsx) | The kit's editor (bold, italic, headings, lists, quotes, links) inside Field; per-paragraph direction; counts text, not tags. |
+| RichTextField | in-review | 2 | [source](src/components/ui/field/rich-text-field.tsx) | The kit's editor (bold, italic, headings, lists, quotes, links, tables) inside Field; tools="article" adds a second heading level, images (via onInsertImage) and dividers; per-paragraph direction; counts text, not tags. |
 | HexColorInput | in-review | 2 | [source](src/components/ui/field/hex-color-input.tsx) | Swatch preview, value always starts with # and stays LTR; takes 3 or 6 digits and stores #RRGGBB upper case; a pasted rgb(…) or bare hex converts at once; 'Enter a hex code like #0B5D6D.' on leaving otherwise. Controlled, uncontrolled, register or Controller (its own changes arrive as input events). HexColorField = HexColorInput with the picker on its swatch. |
 | BilingualField | in-review | 2 | [source](src/components/ui/field/bilingual-field.tsx) | English + Arabic side by side or tabbed; Arabic always rtl and lang=ar; 'Needs Arabic.' warning when only English is filled. |
 | CheckboxField (Checkbox) | in-review | 2 | [source](src/components/ui/field/checkbox-field.tsx) | Upgraded: indeterminate drawn as a dash (native indeterminate, so read as mixed), error and success rings with a note tied to the box, description line. Dropped an invalid aria-checked on the native input. |

@@ -1,5 +1,6 @@
 /** Public Wave 2 components; status is intentionally in-review until approved. */
 export const componentRegistry = [
+  { name: "Popup", status: "in-review", wave: 2, file: "src/components/ui/popup/popup.tsx", notes: "Controlled popup/sheet shell: portal, labelled content, top-layer Escape, focus restoration/trapping, scroll lock, busy dismissal guard. Modal, FormDialog, form sheets and confirmations reuse it." },
   { name: "TabsRoot", status: "in-review", wave: 2, file: "src/components/ui/tabs/tabs.tsx", notes: "Radix root shared by compound and specialized tabs; controlled/uncontrolled state and asynchronous guards." },
   { name: "Tabs", status: "in-review", wave: 2, file: "src/components/ui/tabs/tabs.tsx", notes: "Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review." },
   { name: "TabsList", status: "in-review", wave: 2, file: "src/components/ui/tabs/tabs-list.tsx", notes: "Radix tabs family: legacy and compound APIs, guards, lazy panels, RTL, responsive lists and keyboard navigation. Awaiting review." },

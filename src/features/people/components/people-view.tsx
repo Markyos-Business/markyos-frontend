@@ -35,6 +35,7 @@ export function PeopleView({ page }: { page: PeoplePage }) {
       {page.people.length > 0 && (
         <FilterBar
           active={page.filtered}
+          filterCount={page.role ? 1 : 0}
           onClear={page.clearFilters}
           search={
             <SearchField
@@ -51,6 +52,7 @@ export function PeopleView({ page }: { page: PeoplePage }) {
             label={c.role}
             hideLabel
             icon="user-shield"
+            active={!!page.role}
             value={page.role}
             onChange={(value) => page.setRole(value as MemberRole | "")}
             options={[{ value: "", label: c.allRoles }, ...MEMBER_ROLES.map((r) => ({ value: r, label: c.roles[r] }))]}

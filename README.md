@@ -564,3 +564,40 @@ existing `hairline-strong` role. No new colour tokens were introduced. Explicit
 120ms colour and 180ms underline timing overrides the older motion values for
 this family. Inactive panels unmount by default; `keepMounted` preserves them only
 after first activation, while `forceMount` mounts them immediately but hides them.
+
+## Shared popups
+
+Import `Popup` from `@/components/ui` for a controlled dialog or sheet:
+
+```tsx
+<Popup
+  open={open}
+  onOpenChange={setOpen}
+  title="Brand details"
+  description="Review the brand before sharing it."
+  size="md"
+  footer={<Button onClick={() => setOpen(false)}>Done</Button>}
+>
+  <BrandDetails />
+</Popup>
+```
+
+Use `variant="sheet"` for an end-side sheet; `dir="rtl"` mirrors it. Sizes are
+`sm`, `md`, `lg` and `xl`. Pass `busy` during work that must prevent dismissal.
+`dismissOnEscape` and `dismissOnOutside` default to true; `closeLabel`,
+`initialFocusRef` and `returnFocusRef` support custom localization and focus.
+Put submit logic in `FormDialog` or `DialogForm`, and use `useDialog()` for
+confirmations/prompts. Those APIs and `Modal` now share Popup. The plain non-modal `Drawer` keeps its existing behavior.
+`Popover` remains the anchored control for a small menu beside its trigger.
+
+The shell portals to the body, labels the dialog, locks page scrolling, traps
+keyboard focus and returns focus to the opener. Nested popups close one layer
+at a time. Existing select portals continue to work inside it. React Hook Form
+dialogs portal their whole native form to preserve submit and field ownership.
+No new design tokens or dependencies are needed. Preview and keyboard-check
+center, sheet, nested, busy and failed-save states at `/design-system/popups`
+with `NEXT_PUBLIC_UI_GALLERY=1`.
+
+The shared responsive filter pattern is documented in
+[UI development guidance](docs/development/UI.md#responsive-filters).
+With `NEXT_PUBLIC_UI_GALLERY=1`, preview it at `/design-system/filters`.

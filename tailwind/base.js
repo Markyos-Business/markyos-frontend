@@ -911,7 +911,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".mk-card:not([style*=\"transition\"])": {
-        "transition": "box-shadow var(--duration-instant) var(--ease-standard) !important",
+        "transition": "color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard) !important",
       },
     },
   },
@@ -929,9 +929,9 @@ export const baseStyles = [
     // Not under reduced motion, where the rule at the end of this file
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
-      "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale !important",
-        "transition-duration": "var(--duration-instant) !important",
+      ":is(button, [role=\"button\"], a, summary, [role=\"option\"], [role=\"tab\"], [role=\"switch\"], [role=\"checkbox\"], [role=\"radio\"], tr, .mk-field, .mk-tap):not([style*=\"transition\"])": {
+        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale, text-decoration-color !important",
+        "transition-duration": "var(--duration-fast) !important",
         "transition-timing-function": "var(--ease-standard) !important",
       },
     },
@@ -1041,7 +1041,7 @@ export const baseStyles = [
       "background": "var(--hover-scrim)",
       "opacity": "0",
       "pointer-events": "none",
-      "transition": "opacity var(--duration-instant) var(--ease-standard)",
+      "transition": "opacity var(--duration-fast) var(--ease-standard)",
     },
   },
   {
@@ -1226,16 +1226,15 @@ export const baseStyles = [
       "font-weight": "500",
       "color": "var(--text)",
       "outline": "none",
-      "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
+      "transition": "color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard)",
     },
   },
   {
-    // The select's hover: the button scrim over the resting ground. An input
-    // can't hold the ::after the buttons use, so the scrim is a background
-    // layer here, and it adapts to the theme through `--hover-scrim`.
+    // Fields tint their background colour so hover interpolates in both
+    // directions. A gradient switched on hover cannot animate smoothly.
     "@media (hover: hover) and (pointer: fine)": {
       ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
-        "background-image": "linear-gradient(var(--hover-scrim), var(--hover-scrim))",
+        "background-color": "color-mix(in srgb, var(--ink-soft), var(--text) 6%)",
       },
     },
   },
@@ -1301,7 +1300,7 @@ export const baseStyles = [
   {
     ".mk-field:focus, .mk-field:focus-within, .mk-field[aria-expanded=\"true\"]": {
       "border-bottom-color": "var(--accent)",
-      "box-shadow": "0 6px 10px -8px var(--accent)",
+      "box-shadow": "none",
     },
   },
   {

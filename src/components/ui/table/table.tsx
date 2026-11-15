@@ -57,7 +57,7 @@ const Table = ({ columns, label, footer, children }: TableProps) => {
   }, []);
 
   return (
-    <div className="mk-surface overflow-hidden rounded-card bg-surface-1">
+    <div className="mk-surface overflow-hidden rounded-card border border-hairline-strong bg-surface-1">
       <div className="relative">
         <div ref={scrollRef} className="overflow-x-auto">
           <table aria-label={label} className="mk-no-hover w-full border-collapse text-start text-body">

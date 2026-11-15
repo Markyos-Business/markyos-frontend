@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Popover } from "../overlay/popover";
 import { Icon } from "../icon";
 import { Button } from "../button/button";
@@ -24,7 +24,7 @@ const parse = (s: string) => new Date(`${s}T00:00:00`);
 
 /** An outlined button showing the range ("1 Oct – 28 Oct"), with a month calendar to pick it. */
 const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButtonProps) => {
-  const { t, lang } = useUiStrings();
+  const { t, lang } = useUiStrings(); const valueId = useId(); const active = !!(value.from || value.to);
   // "12 Sep", never US order (spec §7); Western digits in Arabic too.
   const fmt = { format: (d: Date) => formatDayMonth(d, lang) };
   const [draft, setDraft] = useState<DateRange>(value);
@@ -35,12 +35,17 @@ const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButto
   return (
     <Popover
       label={label ?? t.dateRange}
+      className="min-w-0 w-full"
+      trigger="block"
+      describedBy={active ? valueId : undefined}
+      onOpen={() => setDraft(value)}
       align="start"
       width={300}
       button={
-        <span className="flex h-control-sm items-center gap-space-3 rounded-lg bg-ink-soft px-space-5 text-body font-medium text-text shadow-edge">
-          <Icon name="calendar" size={16} className="text-text-muted" />
-          {text}
+        <span data-filter-control data-active={active || undefined} className={`flex h-control-sm w-full min-w-0 items-center gap-space-3 rounded-lg px-space-5 text-body font-medium ${active ? "bg-accent-soft text-accent-on-soft shadow-[inset_0_0_0_1px_var(--accent-edge)]" : "bg-ink-soft text-text shadow-edge"}`}>
+          <Icon name="calendar" size={16} className="shrink-0 text-text-muted" />
+          <span id={valueId} dir="auto" className="min-w-0 flex-1 truncate text-start">{text}</span>
+          <Icon name="angle-down" size={16} className="shrink-0 text-text-muted" />
         </span>
       }
     >

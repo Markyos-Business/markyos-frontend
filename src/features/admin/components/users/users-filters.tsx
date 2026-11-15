@@ -14,6 +14,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
   return (
     <FilterBar
       active={filtered}
+      filterCount={[values.role, values.status, values.type, values.lang, values.from || values.to].filter(Boolean).length}
       onClear={clearFilters}
       search={
         <SearchField
@@ -31,6 +32,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         label={f.role}
         hideLabel
         icon="user-shield"
+        active={!!values.role}
         value={values.role}
         onChange={(value) => filters.set("role", value)}
         options={[
@@ -44,6 +46,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         label={f.status}
         hideLabel
         icon="filter"
+        active={!!values.status}
         value={values.status}
         onChange={(value) => filters.set("status", value)}
         options={[
@@ -57,6 +60,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         label={f.type}
         hideLabel
         icon="users"
+        active={!!values.type}
         value={values.type}
         onChange={(value) => filters.set("type", value)}
         options={[{ value: "", label: f.allTypes }, ...ACCOUNT_TYPE_KEYS.map((key) => ({ value: key, label: c.types[key] }))]}
@@ -65,6 +69,7 @@ export function UsersFilters({ filters, values, filtered, clearFilters, searchKe
         label={f.language}
         hideLabel
         icon="language"
+        active={!!values.lang}
         value={values.lang}
         onChange={(value) => filters.set("lang", value)}
         options={[

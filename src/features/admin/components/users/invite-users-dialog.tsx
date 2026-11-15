@@ -36,7 +36,7 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
         onChange={(e) => set("email", e.target.value)}
         autoFocus
       />
-      <div className="grid gap-space-5 sm:grid-cols-2">
+      <div className="flex flex-col gap-space-5">
         <SelectField
           label={d.role}
           value={form.role}

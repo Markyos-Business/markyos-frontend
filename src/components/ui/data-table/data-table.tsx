@@ -7,7 +7,6 @@ import { EmptyState } from "../empty-state/empty-state";
 import { Skeleton } from "../skeleton";
 import { Progress } from "../progress";
 import { CheckboxInput } from "../field/checkbox-field";
-import { Select } from "../select/select";
 import { TablePagination } from "../table/table-pagination";
 import { TableToolbar } from "./table-toolbar";
 import { TableRow, columnStyle } from "./table-rows";
@@ -52,7 +51,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
     try { await action.onSelect(model.bulkContext); model.resetSelection(); } catch { setBulkFailed(true); } finally { setBulk(null); }
   }
   return <section dir={props.dir} data-data-table data-density={model.density} aria-label={props.label ?? "Data table"} aria-busy={loading || props.state === "refetching" || pending || !!bulk}
-    className={`min-w-0 overflow-hidden rounded-card bg-surface-1 text-text shadow-edge ${props.className ?? ""}`}>
+    className={`min-w-0 overflow-hidden rounded-card border border-hairline-strong bg-surface-1 text-text ${props.className ?? ""}`}>
     {props.state === "stale" && <p role="status" className="bg-warning-soft p-space-4 text-body text-text">{l.stale}</p>}
     {!denied && <TableToolbar props={props} model={model} />}
     {model.count > 0 && props.selectable && <div role="region" aria-label={l.selected(model.count)} aria-busy={!!bulk} className="flex flex-wrap items-center gap-space-3 bg-accent-soft p-space-4">
@@ -95,10 +94,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
         {props.infinite && !denied && !error && <div ref={sentinel} className="flex justify-center p-space-4"><Button variant="outline" disabled={pending || !more} onClick={load}>{pending ? l.loadingMore : l.loadMore}</Button></div>}
       </div>
     </div>
-    {model.paginated && !error && !denied && !loading && model.total > 0 && (props.paging || model.total > (props.pageSizes?.[0] ?? 20)) && <div className="min-w-0 shadow-rule-t">
-      <div className="flex flex-wrap items-center justify-between gap-space-4 px-space-4 py-space-2"><span className="text-caption text-text-muted" dir="auto">{l.range(model.pagination.pageIndex * model.pagination.pageSize + 1, model.pagination.pageIndex * model.pagination.pageSize + rows.filter(row => !row.getIsGrouped()).length, model.total)}</span>
-        <Select aria-label={l.pageSize} value={String(model.pagination.pageSize)} options={(props.pageSizes ?? [20, 50, 100]).map(size => ({ value: String(size), label: String(size) }))} onValueChange={value => table.setPagination({ pageIndex: 0, pageSize: Number(value) })} />
-      </div>
+    {model.paginated && !error && !denied && !loading && model.total > 0 && (props.paging || model.total > (props.pageSizes?.[0] ?? 20)) && <div className="min-w-0">
       <TablePagination currentPage={model.pagination.pageIndex + 1} itemsPerPage={model.pagination.pageSize} itemCount={Math.min(model.pagination.pageSize, model.total - model.pagination.pageIndex * model.pagination.pageSize)} totalCount={model.total} itemLabel={props.itemLabel ?? "rows"} onPageChange={page => table.setPageIndex(page - 1)} loading={!!props.loading} labels={props.paginationLabels} />
     </div>}
     <span role="status" aria-live="polite" className="sr-only">{denied ? "" : `${props.selectable ? l.selected(model.count) : ""} ${loading ? l.loadingMore : l.results(model.total)}`}</span>
