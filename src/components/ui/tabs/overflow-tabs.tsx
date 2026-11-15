@@ -5,9 +5,12 @@ import { TabsList } from "./tabs-list";
 import { TabsTrigger } from "./tabs-trigger";
 import { fitTabs } from "./tab-layout";
 import { useTabsFamily, type TabData } from "./tabs-context";
+import { useUiStrings } from "../ui-strings";
 export interface OverflowTabsProps { items: readonly TabData[]; label?: string; moreLabel?: string; className?: string; }
 /** Measurements use a separate non-interactive row, so hidden tabs retain their true widths. */
-export const OverflowTabs = forwardRef<HTMLDivElement, OverflowTabsProps>(function OverflowTabs({ items, label = "Sections", moreLabel = "More", className = "" }, ref) {
+export const OverflowTabs = forwardRef<HTMLDivElement, OverflowTabsProps>(function OverflowTabs({ items, label = "Sections", moreLabel: moreLabelProp, className = "" }, ref) {
+  const { t: ui } = useUiStrings();
+  const moreLabel = moreLabelProp ?? ui.tabs.more;
   const family = useTabsFamily();
   const wrapper = useRef<HTMLDivElement>(null);
   const measuring = useRef<HTMLDivElement>(null);

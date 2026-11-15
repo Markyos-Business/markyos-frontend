@@ -11,6 +11,7 @@ import { TabsTrigger } from "./tabs-trigger";
 import { TabsContent } from "./tabs-content";
 import type { TabData } from "./tabs-context";
 import { tabButtonId } from "./tab-navigation";
+import { useUiStrings } from "../ui-strings";
 export interface EditableTabsProps extends Omit<TabsRootProps, "children" | "items"> {
   items: readonly TabData[]; onItemsChange: (items: TabData[]) => void;
   accessibility?: DndContextProps["accessibility"];
@@ -24,7 +25,12 @@ function SortableTab({ item, index, total, close, move, closeLabel, dragLabel }:
     <TabsTrigger value={item.id} icon={item.icon} count={item.count} unsaved={item.unsaved} status={item.status} countLabel={item.countLabel} unreadLabel={item.unreadLabel} unsavedLabel={item.unsavedLabel} errorLabel={item.errorLabel} warningLabel={item.warningLabel} successLabel={item.successLabel} positionLabel={item.positionLabel} disabled={item.disabled} disabledReason={item.disabledReason} closable={item.closable !== false} onClose={close} closeLabel={`${closeLabel}: ${item.label}`} position={index + 1} total={total} onKeyDown={event => move(event, index)}>{item.label}</TabsTrigger>
   </div>;
 }
-export const EditableTabs = forwardRef<HTMLDivElement, EditableTabsProps>(function EditableTabs({ items, onItemsChange, onAdd, accessibility, label = "Open files", addLabel = "Add tab", closeLabel = "Close tab", dragLabel = "Drag tab", reorderedLabel = (name, position, total) => `${name} moved to ${position} of ${total}`, value, defaultValue, onValueChange, ...props }, ref) {
+export const EditableTabs = forwardRef<HTMLDivElement, EditableTabsProps>(function EditableTabs({ items, onItemsChange, onAdd, accessibility, label = "Open files", addLabel: addLabelProp, closeLabel: closeLabelProp, dragLabel: dragLabelProp, reorderedLabel: reorderedLabelProp, value, defaultValue, onValueChange, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const addLabel = addLabelProp ?? ui.tabs.add;
+  const closeLabel = closeLabelProp ?? ui.tabs.close;
+  const dragLabel = dragLabelProp ?? ui.tabs.drag;
+  const reorderedLabel = reorderedLabelProp ?? ui.tabs.moved;
   const generated = useId(); const id = props.id ?? generated;
   const [local, setLocal] = useState(defaultValue ?? items[0]?.id ?? "");
   const selected = value ?? local;

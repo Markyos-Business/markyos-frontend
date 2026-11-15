@@ -3,8 +3,12 @@ import { forwardRef, useLayoutEffect, useRef, useState } from "react";
 import { IconButton } from "../button";
 import { TabsList, type TabsListProps } from "./tabs-list";
 import { useTabsFamily } from "./tabs-context";
+import { useUiStrings } from "../ui-strings";
 export interface ScrollableTabsProps extends TabsListProps { previousLabel?: string; nextLabel?: string; }
-export const ScrollableTabs = forwardRef<HTMLDivElement, ScrollableTabsProps>(function ScrollableTabs({ previousLabel = "Previous tabs", nextLabel = "Next tabs", className = "", children, ...props }, ref) {
+export const ScrollableTabs = forwardRef<HTMLDivElement, ScrollableTabsProps>(function ScrollableTabs({ previousLabel: previousLabelProp, nextLabel: nextLabelProp, className = "", children, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const previousLabel = previousLabelProp ?? ui.tabs.previous;
+  const nextLabel = nextLabelProp ?? ui.tabs.next;
   const family = useTabsFamily();
   const list = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ start: false, end: false });

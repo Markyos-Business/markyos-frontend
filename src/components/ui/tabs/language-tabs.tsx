@@ -6,8 +6,11 @@ import type { TabLabels } from "./tabs-context";
 import { TabsList } from "./tabs-list";
 import { TabsTrigger } from "./tabs-trigger";
 import { TabsContent } from "./tabs-content";
+import { useUiStrings } from "../ui-strings";
 export interface LanguageTabsProps extends Omit<TabsRootProps, "children" | "items"> { english: ReactNode; arabic: ReactNode; arabicValue?: string; label?: string; triggerLabels?: TabLabels; englishLabel?: string; arabicLabel?: string; needsArabicLabel?: string; }
-export const LanguageTabs = forwardRef<HTMLDivElement, LanguageTabsProps>(function LanguageTabs({ english, arabic, arabicValue, label = "Content language", englishLabel = "EN", arabicLabel = "AR", needsArabicLabel = "Needs Arabic", triggerLabels, ...props }, ref) {
+export const LanguageTabs = forwardRef<HTMLDivElement, LanguageTabsProps>(function LanguageTabs({ english, arabic, arabicValue, label = "Content language", englishLabel = "EN", arabicLabel = "AR", needsArabicLabel: needsArabicLabelProp, triggerLabels, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const needsArabicLabel = needsArabicLabelProp ?? ui.tabs.needsArabic;
   const missing = arabicValue !== undefined && !arabicValue.trim();
   return <TabsRoot {...props} ref={ref} defaultValue={props.defaultValue ?? "en"}><TabsList label={label}>
     <TabsTrigger {...triggerLabels} value="en" position={1} total={2}>{englishLabel}</TabsTrigger>

@@ -8,6 +8,7 @@ import { TabsList } from "./tabs-list";
 import { TabsTrigger } from "./tabs-trigger";
 import { TabsContent } from "./tabs-content";
 import { tabButtonId } from "./tab-navigation";
+import { useUiStrings } from "../ui-strings";
 export type { TabData, TabItem, TabsSize, TabsVariant } from "./tabs-context";
 export interface TabsRootProps extends Omit<Primitive.TabsProps, "value" | "defaultValue" | "onValueChange" | "onChange"> {
   tabs?: never;
@@ -35,7 +36,9 @@ export interface LegacyTabsProps<T extends string = string> {
   orientation?: "horizontal" | "vertical";
 }
 export type TabsProps<T extends string = string> = TabsRootProps | LegacyTabsProps<T>;
-export const TabsRoot = forwardRef<HTMLDivElement, TabsRootProps>(function TabsRoot({ value: controlled, defaultValue, onValueChange, onBeforeChange, onChangeError, changeErrorText = "Could not change tab", variant = "underline", size = "md", fill = false, mobileAs, orientation: direction, dir, items, label = "Sections", keepMounted, children, className = "", id: providedId, ...props }, ref) {
+export const TabsRoot = forwardRef<HTMLDivElement, TabsRootProps>(function TabsRoot({ value: controlled, defaultValue, onValueChange, onBeforeChange, onChangeError, changeErrorText: changeErrorTextProp, variant = "underline", size = "md", fill = false, mobileAs, orientation: direction, dir, items, label = "Sections", keepMounted, children, className = "", id: providedId, ...props }, ref) {
+  const { t: ui } = useUiStrings();
+  const changeErrorText = changeErrorTextProp ?? ui.tabs.changeFailed;
   const generated = useId();
   const id = providedId ?? generated;
   const [local, setLocal] = useState(defaultValue ?? items?.find(item => !item.disabled && !item.disabledReason)?.id ?? "");
