@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon, Row, Section, Switch } from "@/components/ui";
 import type { Workspace } from "@/types";
 
@@ -14,7 +14,7 @@ import type { Workspace } from "@/types";
  */
 export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; typeLabel: string; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const { setBrandingCredit } = useApp();
+  const { setBrandingCredit } = useAppActions();
   const paid = ws.billing.plan !== "free";
   const removed = paid && !ws.brandingCredit;
   return (

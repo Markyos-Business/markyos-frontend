@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Asset, AssetType, Workspace } from "@/types";
 import { fileToDataUrl } from "@/lib/utils";
 import {
@@ -170,7 +170,7 @@ function UploadTab({
   multiple: boolean;
   onAdded: (assetId: string) => void;
 }) {
-  const { addAsset } = useApp();
+  const { addAsset } = useAppActions();
   const { showToast } = useToast();
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -245,7 +245,7 @@ function UploadTab({
 }
 
 function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded: (assetId: string) => void }) {
-  const { addAsset } = useApp();
+  const { addAsset } = useAppActions();
   const { showToast } = useToast();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
@@ -320,7 +320,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
 }
 
 function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded: (assetId: string) => void }) {
-  const { addAsset } = useApp();
+  const { addAsset } = useAppActions();
   const { showToast } = useToast();
   const [source, setSource] = useState<StockSource>("openverse");
   const [query, setQuery] = useState("");

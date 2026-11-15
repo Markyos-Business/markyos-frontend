@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { EMAIL_RE } from "../../constants";
 import type { LoginFailure, PendingVerification } from "../../types";
 import { classifyLoginFailure, loginFailureMessage } from "../../utils/login-failure";
@@ -12,7 +12,7 @@ type LoginValidation = { email?: "required" | "invalid"; password?: boolean };
 /** The login form's fields, its checks, and the sign-in itself. */
 export function useLoginForm() {
   const { c } = useAuthLang();
-  const { login } = useApp();
+  const { login } = useAppActions();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);

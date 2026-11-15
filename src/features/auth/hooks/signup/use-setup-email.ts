@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { PasswordSetup } from "../../types";
 import { useAuthLang } from "../shared/use-auth-lang";
@@ -16,7 +16,7 @@ const RESEND_AFTER = 30;
  */
 export function useSetupEmail(setup: PasswordSetup) {
   const { c } = useAuthLang();
-  const { requestPasswordReset } = useApp();
+  const { requestPasswordReset } = useAppActions();
   const { showToast } = useToast();
   const [error, setError] = useState<string | null>(
     setup.emailSent ? null : c.errors.sendFailedBelow

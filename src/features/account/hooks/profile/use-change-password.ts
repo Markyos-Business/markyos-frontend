@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { isPlaintext, scorePassword } from "@/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
@@ -12,7 +12,7 @@ import { useAccountLang } from "../shared/use-account-lang";
 /** The change-password form on the profile tab. */
 export function useChangePassword(account: Account) {
   const { t } = useAccountLang();
-  const { setAccountPassword } = useApp();
+  const { setAccountPassword } = useAppActions();
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState("");

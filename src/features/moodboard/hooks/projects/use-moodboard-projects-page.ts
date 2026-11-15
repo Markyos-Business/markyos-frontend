@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import type { Moodboard } from "@/types";
@@ -24,7 +24,7 @@ export function useMoodboardProjectsPage(slug: string) {
   const ws = page?.workspace;
   const isAr = !!page?.isAr;
   const router = useRouter();
-  const { createMoodboard, renameMoodboard, duplicateMoodboard, deleteMoodboard } = useApp();
+  const { createMoodboard, renameMoodboard, duplicateMoodboard, deleteMoodboard } = useAppActions();
   const { confirm, prompt } = useDialog();
   const { showToast } = useToast();
   const [picking, setPicking] = useState(false);

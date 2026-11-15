@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, CopyButton, Row, Section, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import { triggerBlobDownload } from "@/lib/rasterize";
@@ -11,7 +11,7 @@ import { diffTokens, parseDesignTokens, serializeTokens } from "../../utils/desi
 /** The palette and type as W3C design tokens: out to Figma and back. */
 export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; isAr: boolean; canGovern: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const { addColor, updateColor, setTypography, toggleFigmaSync } = useApp();
+  const { addColor, updateColor, setTypography, toggleFigmaSync } = useAppActions();
   // "Last exchanged" lives in the owner-only developer settings, so only an
   // owner's export or import records it; the server keeps it for anyone else.
   const markSynced = () => { if (canGovern) toggleFigmaSync(ws.id, true); };

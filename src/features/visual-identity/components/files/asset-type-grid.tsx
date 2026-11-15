@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { AssetType, Workspace } from "@/types";
@@ -24,7 +24,7 @@ export function AssetTypeGrid({
   arTitle: string;
   hint: string;
 }) {
-  const { addAsset, removeAsset, uiLang } = useApp();
+  const { addAsset, removeAsset, uiLang } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const inputRef = useRef<HTMLInputElement>(null);

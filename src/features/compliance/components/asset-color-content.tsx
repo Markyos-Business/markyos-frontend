@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon, EmptyHint, EmptyState, Button } from "@/components/ui";
 import { DominantColor, colorDistance, extractDominantColors } from "../utils/color-extract";
 import { formatRelative } from "@/lib/utils";
@@ -10,7 +10,7 @@ import { ColorSwatch, Workspace } from "@/types";
 const MATCH_THRESHOLD = 45;
 
 export function AssetColorContent({ ws }: { ws: Workspace }) {
-  const { addComplianceCheck, uiLang } = useApp();
+  const { addComplianceCheck, uiLang } = useAppActions();
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 

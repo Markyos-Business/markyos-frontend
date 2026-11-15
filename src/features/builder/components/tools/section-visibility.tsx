@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon } from "@/components/ui";
 import { useGuidelineViewer } from "@/features/guideline-site";
 import type { Workspace } from "@/types";
@@ -12,7 +12,7 @@ import type { Workspace } from "@/types";
  * without touching the underlying colors/logos/type themselves.
  */
 export function SectionVisibility({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { toggleSectionHidden, setSectionStyle } = useApp();
+  const { toggleSectionHidden, setSectionStyle } = useAppActions();
   const v = useGuidelineViewer(ws.slug);
 
   if (v.availableFixed.length === 0) return null;

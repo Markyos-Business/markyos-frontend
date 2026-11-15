@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { ContrastReport } from "@/features/guideline-site";
 import type { Workspace } from "@/types";
 import { SITE_MODES } from "../../constants";
@@ -8,7 +8,7 @@ import { Segments } from "../shared/segments";
 
 /** The ground the client's site is set on, with the contrast it produces right underneath. */
 export function SiteTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { setSiteMode } = useApp();
+  const { setSiteMode } = useAppActions();
   return (
     <div className="flex flex-col gap-2.5">
       <p className="px-1 pb-1 text-[11.5px] text-text-faint">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useTheme } from "@/components/ui";
 import { EditableField } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
@@ -12,7 +12,7 @@ import { BrandNameField } from "./brand-name-field";
 
 /** The brand's name, logo, primary colour and the details that edit in place. */
 export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { setBrandDetails } = useApp();
+  const { setBrandDetails } = useAppActions();
   const { resolved } = useTheme();
   const [field, setField] = useState<DetailField | null>(null);
   const [draft, setDraft] = useState("");

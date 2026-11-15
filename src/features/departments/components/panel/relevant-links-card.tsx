@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, EmptyHint, Icon, IconButton } from "@/components/ui";
 import type { DepartmentView, Workspace } from "@/types";
 import { resolveItem, type DeptItem } from "../../utils/resolve-item";
@@ -11,7 +11,7 @@ type RelevantLinksCardProps = { ws: Workspace; view: DepartmentView; isAr: boole
 
 /** The strategy and guideline pieces this department should read, pulled live. */
 export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
-  const { removeDeptItem } = useApp();
+  const { removeDeptItem } = useAppActions();
   const [adding, setAdding] = useState(false);
   return (
     <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">

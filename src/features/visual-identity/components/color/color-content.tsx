@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast, Icon } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
@@ -12,7 +12,7 @@ import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
 export function ColorContent({ ws }: { ws: Workspace }) {
-  const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useApp();
+  const { addColor, updateColor, removeColor, setPrimaryColor, uiLang } = useAppActions();
   const { showToast } = useToast();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [showReport, setShowReport] = useState(false);

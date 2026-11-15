@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { BlockScopeProvider } from "../content/block-renderer";
 import { useGuidelineViewer } from "../../hooks/use-guideline-viewer";
 import { VaultTemplate } from "../templates/vault-template";
@@ -72,7 +72,7 @@ export function LiveCanvas({
     setSectionNote,
     setSectionOrder,
     setSectionStyle,
-  } = useApp();
+  } = useAppActions();
 
   const allBlocks = v.allBlocks;
   const wsId = v.ws?.id;

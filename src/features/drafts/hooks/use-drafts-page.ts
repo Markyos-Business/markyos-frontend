@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import type { Draft } from "@/types";
@@ -23,7 +23,7 @@ export function targetLabel(d: Draft, isAr = false) {
  * is waiting, and a producer should not get to choose whether it is reviewed.
  */
 export function useDraftsPage(slug: string) {
-  const { acceptDraft, rejectDraft } = useApp();
+  const { acceptDraft, rejectDraft } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
   const page = useBrandPage(slug);

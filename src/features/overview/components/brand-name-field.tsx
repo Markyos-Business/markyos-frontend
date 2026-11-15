@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Icon, useToast } from "@/components/ui";
 import type { Workspace } from "@/types";
 
@@ -14,7 +14,7 @@ import type { Workspace } from "@/types";
  * rather than letting someone discover it by breaking a shared link.
  */
 export function BrandNameField({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { renameWorkspace } = useApp();
+  const { renameWorkspace } = useAppActions();
   const { showToast } = useToast();
   const [draft, setDraft] = useState<string | null>(null);
 

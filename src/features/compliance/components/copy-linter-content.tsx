@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Icon, EmptyHint } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
 
 const SEVERITY_TONE: Record<LintSeverity, { bg: string; fg: string; label: string; arLabel: string }> = {
@@ -13,7 +13,7 @@ const SEVERITY_TONE: Record<LintSeverity, { bg: string; fg: string; label: strin
 };
 
 export function CopyLinterContent({ ws }: { ws: Workspace }) {
-  const { uiLang } = useApp();
+  const { uiLang } = useAppActions();
   const isAr = uiLang(ws) === "ar";
   const [en, setEn] = useState("");
   const [ar, setAr] = useState("");

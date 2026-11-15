@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Button, EmptyHint, IconButton, Section, Tag, useToast } from "@/components/ui";
 import { SelectInput } from "@/components/ui";
 import type { Lang, ObjectiveKind, Priority, Workspace } from "@/types";
@@ -13,7 +13,7 @@ import { InlineText, MiniInput } from "../../shared/inputs";
  * Written here, or added from a brief analysis's Goals.
  */
 export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { addObjective, updateObjective, removeObjective } = useApp();
+  const { addObjective, updateObjective, removeObjective } = useAppActions();
   const { showToast } = useToast();
   const isAr = lang === "ar";
   const [adding, setAdding] = useState(false);

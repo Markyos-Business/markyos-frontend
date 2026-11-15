@@ -2,7 +2,7 @@
 
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
@@ -12,7 +12,7 @@ const countWords = (el: HTMLElement) => (el.textContent || "").trim().split(/\s+
 
 /** The overview page: the rich-text editor, its toolbar, and the preview-language switch. */
 export function useOverviewPage(slug: string) {
-  const { setOverview, setPrimaryLocale } = useApp();
+  const { setOverview, setPrimaryLocale } = useAppActions();
   const page = useBrandPage(slug);
   const { showToast } = useToast();
   const { prompt } = useDialog();

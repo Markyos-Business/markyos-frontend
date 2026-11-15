@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import { EMAIL_RE } from "../../constants";
@@ -27,7 +27,7 @@ type ResetErrors = { email?: string; token?: string; password?: string; confirm?
  */
 export function useResetPassword() {
   const { c } = useAuthLang();
-  const { requestPasswordReset, resetPassword } = useApp();
+  const { requestPasswordReset, resetPassword } = useAppActions();
   const { showToast } = useToast();
   const router = useRouter();
   const search = useSearchParams();

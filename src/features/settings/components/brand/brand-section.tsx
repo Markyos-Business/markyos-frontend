@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { LangToggle, Row, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
@@ -12,7 +12,7 @@ import type { Workspace } from "@/types";
  * shortcut and a bad only-route.
  */
 export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const { setPrimaryLocale } = useApp();
+  const { setPrimaryLocale } = useAppActions();
   const { showToast } = useToast();
   return (
     <Section title={isAr ? "العلامة" : "Brand"} icon="shapes">
@@ -67,7 +67,7 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
  */
 function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const { renameWorkspace } = useApp();
+  const { renameWorkspace } = useAppActions();
   const { showToast } = useToast();
   const [draft, setDraft] = useState(ws.name);
 

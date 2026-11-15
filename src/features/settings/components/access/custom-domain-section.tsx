@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { Badge, Button, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
@@ -11,7 +11,7 @@ import type { Workspace } from "@/types";
 export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const copy = useAccountCopy(isAr);
-  const { setCustomDomain, setDomainStatus } = useApp();
+  const { setCustomDomain, setDomainStatus } = useAppActions();
   const { showToast } = useToast();
   const [domain, setDomain] = useState(ws.clientAccess.customDomain);
   const [verifying, setVerifying] = useState(false);

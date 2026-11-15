@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useDialog, useToast } from "@/components/ui";
 import type { MemberRole, Person } from "../../types";
 import { usePeopleLang } from "../use-people-lang";
@@ -14,7 +14,7 @@ export type AccessChoice = MemberRole | "remove";
  * applied on save. Taking someone off a brand asks first.
  */
 export function usePersonAccess(person: Person, onDone: () => void) {
-  const { setTeamRole, removeTeamMember } = useApp();
+  const { setTeamRole, removeTeamMember } = useAppActions();
   const { confirm } = useDialog();
   const { showToast } = useToast();
   const { c, isAr } = usePeopleLang();
@@ -56,7 +56,7 @@ export function usePersonAccess(person: Person, onDone: () => void) {
 
 /** Taking someone off every brand at once, from the row menu. */
 export function useRemoveEverywhere() {
-  const { removeTeamMember } = useApp();
+  const { removeTeamMember } = useAppActions();
   const { confirm } = useDialog();
   const { showToast } = useToast();
   const { c, isAr } = usePeopleLang();

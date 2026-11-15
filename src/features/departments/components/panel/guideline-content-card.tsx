@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { AutoTextarea, Button, Icon, IconButton, useToast } from "@/components/ui";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
 import type { DepartmentView, Workspace } from "@/types";
@@ -10,7 +10,7 @@ type GuidelineContentCardProps = { ws: Workspace; view: DepartmentView; isAr: bo
 
 /** The department's own guideline: an uploaded file, written text, or both. */
 export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardProps) {
-  const { addAsset, setDeptGuideline } = useApp();
+  const { addAsset, setDeptGuideline } = useAppActions();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [textDraft, setTextDraft] = useState<string | null>(null);

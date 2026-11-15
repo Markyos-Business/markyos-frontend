@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { useCurrentAccount, useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { limitsOf } from "@/constants/accountTypes";
 import { EMAIL_RE } from "@/lib/emailList";
@@ -17,7 +17,7 @@ type InviteErrors = { emails?: string; brands?: string; role?: string };
  * invite email and the account type's editor seats work the same.
  */
 export function useInvitePeople(owned: Workspace[]) {
-  const { addTeamMember } = useApp();
+  const { addTeamMember } = useAppActions();
   const account = useCurrentAccount();
   const { showToast } = useToast();
   const { c } = usePeopleLang();

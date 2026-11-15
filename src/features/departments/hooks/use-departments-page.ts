@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog } from "@/components/ui";
 import type { TopBarTab } from "@/features/shell";
@@ -9,7 +9,7 @@ import { PAGE_SECTION, type DepartmentMode } from "../constants";
 
 /** The departments page: which department is open, edit or read, and adding one. */
 export function useDepartmentsPage(slug: string) {
-  const { addDepartmentView } = useApp();
+  const { addDepartmentView } = useAppActions();
   const { prompt } = useDialog();
   const page = useBrandPage(slug);
   const [activeId, setActiveId] = useState<string | null>(null);

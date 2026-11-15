@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { EditableField, Section, richIsEmpty } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { strategyText, textKey } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
 
 export function VisionMissionTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
-  const { setStrategyText, uiLang } = useApp();
+  const { setStrategyText, uiLang } = useAppActions();
   const [visionDraft, setVisionDraft] = useState<string | null>(null);
   const [missionDraft, setMissionDraft] = useState<string | null>(null);
 

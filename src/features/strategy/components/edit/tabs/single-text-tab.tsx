@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useAppActions } from "@/contexts/AppContext";
 import { EditableField, Section, richIsEmpty } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { strategyText, textKey } from "@/features/guideline-site";
@@ -42,7 +42,7 @@ export function SingleTextTab({
   /** Purpose is one sentence and stays plain; everything longer is rich text. */
   rich?: boolean;
 }) {
-  const { setStrategyText, uiLang } = useApp();
+  const { setStrategyText, uiLang } = useAppActions();
   const [draft, setDraft] = useState<string | null>(null);
   const isAr = lang === "ar";
   // No fallback to the other language here: a blank Arabic field has to look
