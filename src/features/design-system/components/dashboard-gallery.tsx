@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, Dashboard, ThemeToggle, UiStringsProvider, type DashboardPeriod } from "@/components/ui";
 const {
   DashboardProvider, DashboardHeader, DashboardCard, MetricCard, BarChartCard, GaugeCard,
-  ProgressCard, CountdownCard, ReminderCard, CardLinkButton, CardFooterStats,
+  ProgressCard, CountdownCard, ReminderCard, WelcomeCard, CardLinkButton, CardFooterStats,
   PeriodSelect, CategoryColumnChart, Sparkline, ActivityHeatmap, PipelineFlow, PipelineBar,
   ChartLegend, TaskList, TaskListItem, PeopleList, PeopleListItem, BreakdownTable, StatusTag,
   QuickActions, WidgetStateView,
@@ -68,6 +68,7 @@ export function DashboardGallery() {
         <DashboardCard title={t("People", "الأشخاص")} actions={<CardLinkButton href="/admin/users" label={t("Open users", "فتح المستخدمين")} />}>
           <PeopleList label={t("Brand team", "فريق العلامة")} count={1}><PeopleListItem name="Nour Haddad" work={t("Reviewing brand assets", "يراجع أصول العلامة")} status="active" statusLabel={t("Active", "نشط")} /></PeopleList>
         </DashboardCard>
+        <WelcomeCard name="Nour Haddad" date="2026-11-16T09:00:00Z" message={t("3 accounts are waiting for setup.", "3 حسابات بانتظار الإعداد.")} actions={[{ label: t("Manage users", "إدارة المستخدمين"), href: "/admin/users", primary: true }, { label: t("Website content", "محتوى الموقع"), href: "/admin/cms" }]} />
         <ProgressCard title={t("Brand setup", "إعداد العلامة")} done={3} total={5} />
         <CountdownCard heading={t("Brand launch", "إطلاق العلامة")} target="2027-01-01T12:00:00Z" now={new Date("2026-11-16T12:00:00Z")} />
         <ReminderCard heading={t("Upcoming review", "المراجعة القادمة")} title={t("Brand guidelines review", "مراجعة إرشادات العلامة")} startsAt="2026-12-01T12:00:00Z" location={t("Design team", "فريق التصميم")} cta={{ label: t("Open preview", "فتح المعاينة"), onClick: () => setNotice(t("Review preview opened.", "تم فتح معاينة المراجعة.")) }} />

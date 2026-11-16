@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, DataTable, EmptyState, FormDialog, Icon, InputField, PageHeader, SelectField, StatusDot } from "@/components/ui";
+import { Button, DashboardProvider, DataTable, EmptyState, FormDialog, Icon, InputField, PageHeader, SelectField, StatusDot } from "@/components/ui";
+import { WelcomeMessage } from "@/features/account";
 import type { DataColumn } from "@/components/ui";
 import { createArticle } from "../../api/content.api";
 import { KINDS, kindLabel } from "../../copy";
@@ -64,6 +65,17 @@ export function ArticlesView() {
           ) : undefined
         }
       />
+      {!kind && (
+        <DashboardProvider lang={lang}>
+          <WelcomeMessage
+            message={c.welcome}
+            actions={[
+              { label: c.nav.media, href: "/admin/cms/media" },
+              ...(me.data?.canPublish ? [{ label: c.nav.traffic, href: "/admin/cms/traffic" }] : []),
+            ]}
+          />
+        </DashboardProvider>
+      )}
       <DataTable
         label={t.label}
         itemLabel={t.itemLabel}

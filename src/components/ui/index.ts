@@ -69,5 +69,6 @@ export * from "./popup";
 // MetricCard and the Dashboard namespace keep widgets distinct from basic UI cards.
 export * as Dashboard from "./dashboard";
 
-export { DashboardHeader, DashboardCard, DashboardProvider, MetricCard, BarChartCard, GaugeCard, PeriodSelect } from "./dashboard";
+export { DashboardHeader, DashboardCard, DashboardProvider, MetricCard, BarChartCard, GaugeCard, PeriodSelect, WelcomeCard } from "./dashboard";
+export type { WelcomeAction } from "./dashboard";
 export type { DashboardPeriod } from "./dashboard";

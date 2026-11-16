@@ -11,6 +11,7 @@ import { RecentActivity } from "./recent-activity";
 import { Breakdown } from "./breakdown";
 import { SignupsChart } from "./signups-chart";
 import { DashboardHeader, DashboardProvider } from "@/components/ui";
+import { WelcomeMessage } from "@/features/account";
 import { DashboardSummary } from "./dashboard-summary";
 
 export function AdminDashboardView() {
@@ -31,6 +32,15 @@ export function AdminDashboardView() {
             {loading || activity.loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
           </Button>
         }
+      />
+
+      <WelcomeMessage
+        message={
+          data && data.users.pending > 0
+            ? t(`${data.users.pending} accounts are waiting for setup.`, `${data.users.pending} حسابات بانتظار الإعداد.`)
+            : t("Accounts, brands and website content, all in one place.", "الحسابات والعلامات ومحتوى الموقع في مكان واحد.")
+        }
+        actions={[{ label: t("Website content", "محتوى الموقع"), href: "/admin/cms" }]}
       />
 
       <AlertBanner message={error} />
