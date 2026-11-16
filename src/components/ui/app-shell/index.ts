@@ -1,4 +1,5 @@
 // Public exports of this component family.
+export * from "./app-footer";
 export * from "./app-sidebar";
 export * from "./app-top-bar";
 export * from "./page-transition";

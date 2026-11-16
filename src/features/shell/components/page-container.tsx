@@ -1,6 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { AppFooter } from "@/components/ui";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { API_ENABLED } from "@/lib/api/client";
 
 type PageWidth = "default" | "wide";
@@ -17,12 +19,18 @@ type PageContainerProps = {
   children: ReactNode;
 };
 
-/** The scrolling body of a page inside `AppLayout`, centred and padded. */
+/**
+ * The scrolling body of a page inside `AppLayout`, centred and padded, with
+ * the app footer at its end. The column is at least the pane's height, so the
+ * footer sits at the bottom of a short page and after the content of a long one.
+ */
 export function PageContainer({ width = "default", offline, children }: PageContainerProps) {
+  const { lang } = useInterfaceLang();
   return (
     <main className="min-h-0 flex-1 overflow-y-auto">
-      <div className={`mx-auto flex w-full flex-col gap-5 px-space-6 pb-space-10 sm:px-space-10 ${widths[width]}`}>
+      <div className={`mx-auto flex min-h-full w-full flex-col gap-5 px-space-6 pb-space-8 sm:px-space-10 ${widths[width]}`}>
         {offline && !API_ENABLED ? offline : children}
+        <AppFooter lang={lang} className="mt-auto" />
       </div>
     </main>
   );

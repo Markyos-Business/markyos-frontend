@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui";
+import { AppFooter, Badge } from "@/components/ui";
 import type { TeamPageView } from "../hooks/use-team-page";
 import { PAGE_SECTION, ROLE_LABELS, ROLE_TONE } from "../constants";
 import { ApprovalSection } from "./approvals/approval-section";
@@ -25,6 +25,7 @@ export function TeamView(view: TeamPageView) {
       <SignOffSection ws={ws} canGovern={canGovern} isAr={isAr} />
       <ApprovalSection ws={ws} canGovern={canGovern} canPropose={canEdit} isAr={isAr} />
       <VersionHistorySection ws={ws} isAr={isAr} actorName={actorName} canEdit={canEdit} />
+      <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
     </div>
   );
 }

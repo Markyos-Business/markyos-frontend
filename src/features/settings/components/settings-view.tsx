@@ -1,4 +1,4 @@
-import { AlertBanner } from "@/components/ui";
+import { AlertBanner, AppFooter } from "@/components/ui";
 import { PAGE_SECTION, SHOW_UNFINISHED_SETTINGS } from "../constants";
 import type { SettingsView as SettingsViewProps } from "../hooks/use-settings-page";
 import { BillingSection } from "./billing/billing-section";
@@ -44,6 +44,7 @@ export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGover
       <OwnerOnly locked={locked}><WhiteLabelSection ws={ws} typeLabel={typeLabel} isAr={isAr} /></OwnerOnly>
       {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><DeveloperSection ws={ws} isAr={isAr} /></OwnerOnly>}
       <DesignTokensSection ws={ws} isAr={isAr} canGovern={canGovern} />
+      <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
     </div>
   );
 }
