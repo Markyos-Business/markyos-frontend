@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandsHeader, BrandsView, useBrandsPage } from "@/features/brands";
+import { BrandsHeader, BrandsView, BrandsWelcome, useBrandsPage } from "@/features/brands";
 
 export default function BrandsPage() {
   const page = useBrandsPage();
@@ -8,6 +8,7 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <BrandsHeader {...page.header} />
+      <BrandsWelcome c={page.view.c} lang={page.view.lang} />
       <BrandsView {...page.view} />
     </div>
   );

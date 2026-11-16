@@ -6,3 +6,6 @@ export { AccountView } from "./components/account-view";
 
 // The avatar menu every top bar shows.
 export { AccountMenu } from "./components/menu/account-menu";
+
+// The greeting at the top of every home screen.
+export { WelcomeMessage } from "./components/welcome/welcome-message";

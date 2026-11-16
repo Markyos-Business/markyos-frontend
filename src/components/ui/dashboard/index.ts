@@ -22,6 +22,7 @@ export { default as PeopleList, PeopleListItem } from "./lists/people-list";
 export { default as BreakdownTable } from "./lists/breakdown-table";
 export { default as StatusTag } from "./shared/status-tag";
 export { default as ReminderCard } from "./cards/reminder-card";
+export { default as WelcomeCard, firstName, type WelcomeAction, type WelcomeCardProps } from "./cards/welcome-card";
 export { default as CountdownCard, countdownParts } from "./cards/countdown-card";
 export { default as ProgressCard } from "./cards/progress-card";
 export { default as WidgetStateView, resolveWidgetState } from "./shared/widget-state-view";

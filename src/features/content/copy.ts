@@ -88,6 +88,7 @@ export const CONTENT_COPY = {
       revokeConfirm: "Remove this person's access to website content?",
     },
     noAccess: "You don't have access to website content.",
+    welcome: "Write, review and publish website content in English and Arabic.",
     list: {
       title: "Website content",
       description: "Articles published on markyos.com, in Arabic and English.",
@@ -237,6 +238,7 @@ export const CONTENT_COPY = {
       revokeConfirm: "إزالة صلاحية هذا الشخص على محتوى الموقع؟",
     },
     noAccess: "ليست لديك صلاحية على محتوى الموقع.",
+    welcome: "اكتب محتوى الموقع وراجعه وانشره بالعربية والإنجليزية.",
     list: {
       title: "محتوى الموقع",
       description: "المقالات المنشورة على markyos.com بالعربية والإنجليزية.",
