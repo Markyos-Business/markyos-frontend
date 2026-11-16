@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import { AppFooter, PageHeader, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { StudioHeader } from "@/features/shell";
 import { ACCOUNT_TABS } from "../constants";
 import { useAccountPage } from "../hooks/use-account-page";
@@ -40,6 +40,7 @@ export function AccountView() {
             </>
           )}
         </TabPanel>
+        <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
       </div>
     </div>
   );

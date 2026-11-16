@@ -1,4 +1,4 @@
-import { Button, EmptyHint } from "@/components/ui";
+import { AppFooter, Button, EmptyHint } from "@/components/ui";
 import { DepartmentDocument } from "@/features/guideline-site";
 import type { DepartmentsPageState } from "../hooks/use-departments-page";
 import { PAGE_SECTION } from "../constants";
@@ -42,6 +42,7 @@ export function DepartmentsView({ ws, isAr, active, mode, onAdd }: DepartmentsPa
       ) : (
         <DepartmentPanel key={active.id} ws={ws} viewId={active.id} />
       )}
+      <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
     </div>
   );
 }

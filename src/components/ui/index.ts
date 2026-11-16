@@ -4,6 +4,7 @@ export * from "./activity-feed";
 export * from "./alert-banner";
 export * from "./app-date";
 export * from "./app-shell";
+export * from "./app-shell/app-footer";
 export * from "./app-shell/app-sidebar";
 export * from "./app-shell/app-top-bar";
 export * from "./app-shell/page-transition";

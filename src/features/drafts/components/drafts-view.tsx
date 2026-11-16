@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyHint, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import { AppFooter, EmptyHint, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import type { Draft } from "@/types";
 import type { DraftsTab } from "../hooks/use-drafts-page";
 import { DraftCard } from "./draft-card";
@@ -58,6 +58,7 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
         </div>
       )}
       </TabPanel>
+      <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
     </div>
   );
 }
