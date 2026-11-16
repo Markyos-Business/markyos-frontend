@@ -27,7 +27,7 @@ export function AccountView() {
           description={t("Your details and sign-in, what this account is paying for, and the organisation-wide controls.", "بياناتك وتسجيل دخولك، وما يدفعه هذا الحساب، وإعدادات المؤسسة.")}
         />
 
-        <Tabs {...tabIds} label={t("Account", "الحساب")} tabs={ACCOUNT_TABS.map((tab) => ({ ...tab, label: isAr ? tab.arLabel : tab.label }))} active={page.tab} onChange={page.onTab} />
+        <Tabs {...tabIds} label={t("Account", "الحساب")} tabs={ACCOUNT_TABS.map(({ key, icon, label, arLabel }) => ({ key, icon, label: isAr ? arLabel : label }))} active={page.tab} onChange={page.onTab} />
 
         <TabPanel key={page.tab} id={tabIds.panelId} tabsId={tabIds.id} active={page.tab} className="flex flex-col gap-5">
           {page.tab === "profile" && <ProfilePanel />}

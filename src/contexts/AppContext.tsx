@@ -305,6 +305,8 @@ interface AppContextValue {
   /** Claims a subdomain. Returns an error message, or null when it was taken. */
   setSubdomain: (workspaceId: string, subdomain: string) => string | null;
   confirmPurchase: (workspaceId: string, sessionId: string) => Promise<{ status: string; billing: Billing }>;
+  /** Applies billing the server verified (PayPal confirm or cancel), keeping unsaved brand edits. */
+  applyServerBilling: (workspaceId: string, billing: Billing) => void;
   // v3.0 developer / Figma
   setApiKey: (workspaceId: string, key: string) => void;
   setWebhookUrl: (workspaceId: string, url: string) => void;
@@ -1731,6 +1733,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+
+  const applyServerBilling = useCallback((workspaceId: string, billing: Billing) => {
+    setState((prev) => withServerBilling(prev, workspaceId, billing));
+  }, []);
 
   const setApiKey = useCallback(
     (workspaceId: string, key: string) => {
@@ -3715,6 +3721,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDomainStatus,
       setSubdomain,
       confirmPurchase,
+      applyServerBilling,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,
@@ -3866,6 +3873,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDomainStatus,
       setSubdomain,
       confirmPurchase,
+      applyServerBilling,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,

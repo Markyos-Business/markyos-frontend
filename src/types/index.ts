@@ -88,9 +88,16 @@ export type PlanKind = "free" | "pass" | "subscription";
 
 export interface Billing {
   plan: PlanKind;
+  /** The latest subscription's status, as its provider reports it (lower case). */
   subscriptionStatus?: string;
   purchasedAt?: number;
   stripeSessionId?: string;
+  /** "paypal" for a PayPal subscription; absent for Stripe ones. */
+  provider?: "paypal";
+  /** Paid up to here (ms): the next billing date, or when a cancelled plan ends. */
+  currentPeriodEnd?: number;
+  /** A renewal failed at this time (ms) and PayPal is retrying it. */
+  paymentFailedAt?: number;
 }
 
 // ---- v2.0 ----
