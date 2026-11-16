@@ -47,7 +47,7 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         ) : (
           <Row
             label={t("No subscription", "لا يوجد اشتراك")}
-            hint={t("Choose a Project Pass or a monthly brand plan above.", "اختر تصريح مشروع أو خطة شهرية للعلامة من الخيارات أعلاه.")}
+            hint={t("Subscribe a brand to its monthly plan above, with PayPal.", "اشترك لعلامة في خطتها الشهرية أعلاه عبر PayPal.")}
             right={<Badge tone="neutral">{t("None", "لا شيء")}</Badge>}
           />
         )}
@@ -94,12 +94,12 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         )}
         {/* Receipts live with the processor that issued them. Reprinting them
             here would mean inventing them, since this build has no record of
-            what Stripe actually charged. */}
+            what PayPal actually charged. */}
         <p className="text-caption flex items-start gap-space-3 text-text-faint">
           <Icon name="info-circle" size={16} className="shrink-0" />
           {t(
-            "Receipts and invoices are issued by Stripe and sent to your email — this page shows what each brand is on, not a copy of those documents.",
-            "تصدر Stripe الإيصالات والفواتير وترسلها إلى بريدك. هذه الصفحة تعرض خطة كل علامة، لا نسخة من تلك المستندات."
+            "PayPal sends a receipt to your email for every payment. This page shows what each brand is on, not a copy of those receipts.",
+            "يرسل PayPal إيصالًا إلى بريدك عن كل دفعة. تعرض هذه الصفحة خطة كل علامة، لا نسخة من تلك الإيصالات."
           )}
         </p>
       </Section>
