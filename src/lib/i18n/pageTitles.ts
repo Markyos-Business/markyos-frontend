@@ -10,6 +10,7 @@ const pages: Record<string, Name> = {
   "/notifications": ["Notifications", "الإشعارات"],
   "/people": ["People", "الأشخاص"], "/forms": ["Questionnaires", "الاستبيانات"], "/forms/new": ["New questionnaire", "استبيان جديد"],
   "/templates": ["Templates", "القوالب"], "/design-system": ["UI gallery", "معرض الواجهة"],
+  "/design-system/dashboard": ["Dashboard widgets", "مكونات لوحة المعلومات"],
   "/design-system/filters": ["Filter gallery", "معرض عوامل التصفية"],
   "/design-system/popups": ["Popup gallery", "معرض النوافذ"],
   "/design-system/tabs": ["Tabs gallery", "معرض التبويبات"],

@@ -2,7 +2,8 @@
 
 import { useId, useState } from "react";
 import Link from "next/link";
-import { Button, ContentCard, Icon, Skeleton } from "@/components/ui";
+import { Button, Icon, Skeleton } from "@/components/ui";
+import { DashboardCard } from "@/components/ui";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { DashboardActivity } from "../../types";
 import { describeActivity } from "../../utils/activity";
@@ -23,7 +24,7 @@ export function RecentActivity({ items, error, loading, onRetry }: {
   const visible = expanded ? items : items?.slice(0, PREVIEW_COUNT);
 
   return (
-    <ContentCard
+    <DashboardCard
       title={t("Recent activity", "النشاط الأخير")}
       footer={items && items.length > PREVIEW_COUNT ? (
         <div className="flex flex-wrap items-center justify-between gap-space-3">
@@ -75,6 +76,6 @@ export function RecentActivity({ items, error, loading, onRetry }: {
           })}
         </ol>
       )}
-    </ContentCard>
+    </DashboardCard>
   );
 }

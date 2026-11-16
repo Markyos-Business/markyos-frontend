@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { ContentCard, Icon, Skeleton } from "@/components/ui";
+import { Dashboard, DashboardCard } from "@/components/ui";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { AdminStats } from "../../types";
+
+const { TaskList, TaskListItem, CardLinkButton } = Dashboard;
 
 export function NeedsAttention({ stats, loading }: { stats: AdminStats | null; loading: boolean }) {
   const { isAr } = useAdminLang();
@@ -14,30 +15,25 @@ export function NeedsAttention({ stats, loading }: { stats: AdminStats | null; l
   ] : [];
 
   return (
-    <ContentCard title={t("Account follow-up", "متابعة الحسابات")}>
-      {!stats ? loading ? (
-        <div aria-busy="true" className="flex flex-col gap-space-4">
-          <Skeleton className="h-16 w-full rounded-lg" />
-          <Skeleton className="h-16 w-full rounded-lg" />
-        </div>
-      ) : <p className="text-caption text-text-muted">{t("Counts are unavailable. Use Refresh to try again.", "الأعداد غير متاحة. استخدم التحديث لإعادة المحاولة.")}</p> : (
-        <ul className="flex flex-col gap-space-3">
-          {rows.map((item) => {
-            const content = <>
-              <div className="min-w-0 flex-1">
-                <p className="text-body font-medium text-text">{item.title}</p>
-                <p className="mt-space-1 text-caption text-text-muted">{item.body}</p>
-              </div>
-              <span className="text-title-sm font-medium tabular-nums text-text">{item.count.toLocaleString("en-US")}</span>
-              {item.count > 0 && <Icon name="arrow-right" size={16} className="shrink-0 text-text-muted rtl:rotate-180" />}
-            </>;
-            const className = "flex items-center gap-space-4 rounded-widget border border-hairline px-space-4 py-space-3";
-            return <li key={item.status}>{item.count > 0 ? (
-              <Link href={`/admin/users?status=${item.status}`} className={`${className} mk-btn hover:bg-surface-2`} aria-label={`${t("Review", "مراجعة")} ${item.title}: ${item.count}`}>{content}</Link>
-            ) : <div className={className}>{content}</div>}</li>;
-          })}
-        </ul>
-      )}
-    </ContentCard>
+    <DashboardCard title={t("Account follow-up", "متابعة الحسابات")} state={!stats && loading ? "loading" : "ready"} skeleton="list">
+      {stats ? (
+        <TaskList label={t("Account statuses", "حالات الحسابات")} count={rows.length}>
+          {rows.map(item => (
+            <TaskListItem
+              key={item.status}
+              title={item.title}
+              meta={item.body}
+              action={<div className="flex items-center gap-space-3">
+                <span className="text-body font-medium tabular-nums text-text">{item.count.toLocaleString("en-US")}</span>
+                {item.count > 0 && <CardLinkButton
+                  href={`/admin/users?status=${item.status}`}
+                  label={`${t("Review", "مراجعة")} ${item.title}: ${item.count}`}
+                />}
+              </div>}
+            />
+          ))}
+        </TaskList>
+      ) : <p className="text-caption text-text-muted">{t("Counts are unavailable. Use Refresh to try again.", "الأعداد غير متاحة. استخدم التحديث لإعادة المحاولة.")}</p>}
+    </DashboardCard>
   );
 }

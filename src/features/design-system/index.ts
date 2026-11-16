@@ -14,3 +14,5 @@ export { TabsGalleryPage } from "./components/tabs-gallery";
 export { PopupGallery } from "./components/popup-gallery";
 
 export { FilterGallery } from "./components/filter-gallery";
+
+export { DashboardGallery } from "./components/dashboard-gallery";

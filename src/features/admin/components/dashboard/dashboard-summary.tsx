@@ -1,4 +1,4 @@
-import { Stagger, StatCard } from "@/components/ui";
+import { MetricCard, Stagger } from "@/components/ui";
 import type { AdminStats } from "../../types";
 
 /** The four platform totals; activation and team counts explain their scope. */
@@ -34,7 +34,7 @@ export function DashboardSummary({ stats, loading, isAr }: {
   return (
     <section aria-label={t("Platform overview", "نظرة عامة على المنصة")} aria-busy={loading}>
       <Stagger className="grid grid-cols-2 gap-space-3 xl:grid-cols-4">
-        {cards.map((card) => <StatCard key={card.label} label={card.label} value={card.value} footnote={card.note} loading={loading && !stats} />)}
+        {cards.map((card) => <MetricCard key={card.label} label={card.label} value={card.value} caption={card.note} state={loading && !stats ? "loading" : "ready"} />)}
       </Stagger>
     </section>
   );
