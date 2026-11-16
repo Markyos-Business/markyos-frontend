@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { homePath } from "@/lib/data/access";
+import { safeNextPath } from "../../utils/safe-next";
 import { LoginForm } from "./login-form";
 
 /**
@@ -16,7 +17,7 @@ export function LoginView() {
   const { state, hydrated } = useApp();
   const account = useCurrentAccount();
   const router = useRouter();
-  const next = useSearchParams().get("next");
+  const next = safeNextPath(useSearchParams().get("next"));
   const home = homePath(account);
   useEffect(() => {
     if (hydrated && state.session) router.replace(next || home);

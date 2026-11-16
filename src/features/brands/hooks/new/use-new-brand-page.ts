@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { API_ENABLED } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useStudioPage } from "@/contexts/pageGuards";
@@ -19,7 +20,9 @@ export function useNewBrandPage() {
   const [mode, setMode] = useState<StartMode>("scratch");
   const [name, setName] = useState("");
   const { isAr } = useInterfaceLang();
-  if (!ready) return null;
+  const needsType = API_ENABLED && !!account && !account.isAdmin && !account.accountType;
+  useEffect(()=>{if(ready&&needsType)router.replace("/account?tab=profile");},[ready,needsType,router]);
+  if (!ready || needsType) return null;
 
   const type = ACCOUNT_TYPES[accountTypeOf(account)];
   // Reachable by URL even at the limit, so it says so here too; the server

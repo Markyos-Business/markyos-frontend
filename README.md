@@ -605,3 +605,7 @@ With `NEXT_PUBLIC_UI_GALLERY=1`, preview it at `/design-system/filters`.
 The persistent notification bell and inbox are described in
 [Notification inbox](docs/features/notifications.md), including events, API,
 recipient permissions and migration/deployment steps.
+
+## User lifecycle
+
+[User lifecycle](docs/features/user-lifecycle.md) covers signup, invitations, recovery, email confirmation and administrator-approved account-type changes.

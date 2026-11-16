@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertBanner, Button, PageHeader, Skeleton, Stagger, StatTile } from "@/components/ui";
+import { AlertBanner, Button, PageHeader, Skeleton } from "@/components/ui";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import { useAdminStats } from "../../hooks/shared/use-admin-stats";
@@ -10,6 +10,7 @@ import { NeedsAttention } from "./needs-attention";
 import { RecentActivity } from "./recent-activity";
 import { Breakdown } from "./breakdown";
 import { SignupsChart } from "./signups-chart";
+import { DashboardSummary } from "./dashboard-summary";
 
 export function AdminDashboardView() {
   const { data, error, loading, reload } = useAdminStats();
@@ -22,8 +23,9 @@ export function AdminDashboardView() {
     <>
       <PageHeader
         title={t("Dashboard", "لوحة المعلومات")}
-        description={t("Everyone on Markyos, and what they're building.", "كل من على ماركيوس، وما يبنونه.")}
-        actions={
+        description={t("Account growth, brand activity and follow-up in one place.", "نمو الحسابات ونشاط العلامات والمتابعة في مكان واحد.")}
+        actions={<Button href="/admin/users" variant="primary" size="sm">{t("Manage users", "إدارة المستخدمين")}</Button>}
+        secondaryActions={
           <Button variant="outline" size="sm" onClick={refresh} disabled={loading || activity.loading}>
             {loading || activity.loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
           </Button>
@@ -32,42 +34,26 @@ export function AdminDashboardView() {
 
       <AlertBanner message={error} />
 
-      {data && (
-          <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-            <StatTile value={data.users.total} label={t("Registered accounts", "الحسابات المسجلة")} />
-            <StatTile value={data.users.pending} label={t("Waiting to join", "بانتظار الانضمام")} />
-            <StatTile value={data.users.activeLast30d} label={t("Signed in · 30 days", "سجّلوا الدخول · 30 يومًا")} />
-            <StatTile value={data.users.new7d} label={t("New this week", "جديدة هذا الأسبوع")} />
-            <StatTile value={data.brands.total} label={t("Brands", "العلامات")} />
-            <StatTile value={data.brands.shared} label={t("Brands with a team", "علامات لها فريق")} />
-            <StatTile value={data.members.people} label={t("People on teams", "أشخاص في الفرق")} />
-          </Stagger>
-      )}
-      {loading && !data && <div aria-busy="true" className="grid grid-cols-2 gap-space-3 sm:grid-cols-4">{[0,1,2,3].map(i=><Skeleton key={i} className="h-24 w-full rounded-lg"/>)}</div>}
-      <div className="grid grid-cols-1 gap-space-5 lg:grid-cols-2">
-        <NeedsAttention stats={data} loading={loading}/>
-        <RecentActivity items={activity.data} error={activity.error} loading={activity.loading} onRetry={activity.reload}/>
-      </div>
+      <DashboardSummary stats={data} loading={loading} isAr={isAr} />
 
-      {data && (
-        <>
-
-
-          <SignupsChart signups={data.signups} lang={lang} />
-
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-space-5 xl:grid-cols-3">
+        <div className="min-w-0 xl:col-span-2">
+          {data ? <SignupsChart signups={data.signups} lang={lang} /> : loading ? (
+            <Skeleton className="h-64 w-full rounded-card" />
+          ) : null}
+        </div>
+        <NeedsAttention stats={data} loading={loading} />
+        <div className="min-w-0 xl:col-start-3 xl:row-start-2">
+          <RecentActivity items={activity.data} error={activity.error} loading={activity.loading} onRetry={activity.reload} />
+        </div>
+        {data && (
+          <div className="grid min-w-0 grid-cols-1 items-start gap-space-5 sm:grid-cols-3 xl:col-span-2 xl:col-start-1 xl:row-start-2">
             <Breakdown title={t("Accounts by type", "الحسابات حسب النوع")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.users.byType} labels={isAr ? AR_ACCOUNT_TYPE_LABELS : ACCOUNT_TYPE_LABELS} order={["studio", "freelancer", "company", "none"]} />
             <Breakdown title={t("Brands by stage", "العلامات حسب المرحلة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byStage} labels={isAr ? AR_STAGE_LABELS : STAGE_LABELS} order={STAGE_ORDER} />
             <Breakdown title={t("Brands by plan", "العلامات حسب الخطة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byPlan} labels={isAr ? AR_PLAN_LABELS : PLAN_LABELS} />
           </div>
-
-          <p className="text-caption text-text-faint">
-            {isAr
-              ? `${data.users.active} من ${data.users.total} حسابات نشطة · ${data.users.admins} مسؤول · ${data.users.new30d} انضموا خلال آخر 30 يومًا`
-              : `${data.users.active} of ${data.users.total} accounts are active · ${data.users.admins} admin${data.users.admins === 1 ? "" : "s"} · ${data.users.new30d} joined in the last 30 days`}
-          </p>
-        </>
-      )}
+        )}
+      </div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import type { AccountType } from "@/types";
 import { useState } from "react";
 import { useDialog, useToast } from "@/components/ui";
 import {
@@ -24,6 +25,7 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
   const { c, isAr } = useAdminLang();
   // The account whose role dialog is open.
   const [roleFor, setRoleFor] = useState<AdminUser | null>(null);
+  const [typeFor, setTypeFor] = useState<AdminUser | null>(null);
 
   async function run(work: () => Promise<AdminUser | null>, done: string) {
     try {
@@ -63,6 +65,13 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
     } catch (err) {
       return message(err);
     }
+  }
+
+  async function changeType(user: AdminUser, accountType: AccountType): Promise<string | void> {
+    try {
+      onChanged(await updateUser(user.id, { accountType }));
+      showToast(isAr ? "تم تحديث نوع الحساب. لم تتغير الاشتراكات الحالية." : "Account type updated. Existing subscriptions are unchanged.", "success");
+    } catch (err) { return message(err); }
   }
 
   async function remove(user: AdminUser) {
@@ -107,7 +116,7 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
     }, c.toasts.signedOut);
   }
 
-  return { roleFor, setRoleFor, changeRole, deactivate, reactivate, remove, resend, signOutEverywhere };
+  return { typeFor, setTypeFor, changeType, roleFor, setRoleFor, changeRole, deactivate, reactivate, remove, resend, signOutEverywhere };
 }
 
 export type UserActions = ReturnType<typeof useUserActions>;

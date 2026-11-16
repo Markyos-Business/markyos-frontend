@@ -22,7 +22,7 @@ const en = {
   stats: {
     total: "Total users",
     active: "Active",
-    pending: "Pending invites",
+    pending: "Awaiting setup",
     deactivated: "Deactivated",
     vsLastMonth: "vs last month",
     trend: (direction: "up" | "down" | "neutral", value: string) =>
@@ -45,7 +45,7 @@ const en = {
   },
 
   roles: { admin: "Admin", member: "Member", content: "Content manager" },
-  statuses: { active: "Active", deactivated: "Deactivated", waiting: "Waiting to join" },
+  statuses: { active: "Active", deactivated: "Deactivated", waiting: "Awaiting setup" },
   types: { studio: "Studio", freelancer: "Freelancer", company: "Company", none: "No type" },
   locales: { en: "en-US", ar: "ar-SA" },
   stages: {
@@ -259,7 +259,7 @@ const ar: UsersCopy = {
   stats: {
     total: "إجمالي المستخدمين",
     active: "نشط",
-    pending: "دعوات معلّقة",
+    pending: "بانتظار الإعداد",
     deactivated: "معطّل",
     vsLastMonth: "مقارنة بالشهر الماضي",
     trend: (direction, value) =>
@@ -282,7 +282,7 @@ const ar: UsersCopy = {
   },
 
   roles: { admin: "مسؤول", member: "عضو", content: "مدير المحتوى" },
-  statuses: { active: "نشط", deactivated: "معطّل", waiting: "بانتظار الانضمام" },
+  statuses: { active: "نشط", deactivated: "معطّل", waiting: "بانتظار الإعداد" },
   types: { studio: "استوديو", freelancer: "مستقل", company: "شركة", none: "بلا نوع" },
   locales: { en: "en-US", ar: "ar-SA" },
   stages: {

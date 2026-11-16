@@ -2,14 +2,14 @@ import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { BadgeTone } from "@/components/ui";
 import type { AdminUserStatus } from "./types";
 
-/** Account types, as the dashboard breakdown names them; admins have none. */
+/** Account types, as the dashboard breakdown names them; admins and untyped collaborators may have none. */
 export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].label])),
-  none: "No type (admins)",
+  none: "No type selected",
 };
 export const AR_ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].arLabel])),
-  none: "بلا نوع (المسؤولون)",
+  none: "لم يُحدّد النوع",
 };
 
 /** A role's tag: admins in the accent, content managers in indigo, members plain. */

@@ -28,6 +28,7 @@ export function rulesFor(target: AdminUser, viewer: Viewer, activeAdmins: number
     protectedSuperuser ? no("superuser") : self ? no("self") : lastAdmin ? no("lastAdmin") : yes;
 
   return {
+    changeType: protectedSuperuser ? no("superuser") : yes,
     changeRole: target.isAdmin ? losingAccess() : protectedSuperuser ? no("superuser") : yes,
     deactivate: losingAccess(),
     reactivate: protectedSuperuser ? no("superuser") : yes,

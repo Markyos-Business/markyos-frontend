@@ -1,75 +1,50 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useAppActions } from "@/contexts/AppContext";
-import { useToast } from "@/components/ui";
-import { isPlaintext, scorePassword } from "@/features/auth";
+import { useEffect, useRef, useState } from "react";
+import { requestPasswordReset } from "@/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
-import type { PasswordErrors } from "../../types";
 import { useAccountLang } from "../shared/use-account-lang";
 
-/** The change-password form on the profile tab. */
+/** Change passwords through the existing single-use emailed reset link. */
 export function useChangePassword(account: Account) {
   const { t } = useAccountLang();
-  const { setAccountPassword } = useAppActions();
-  const { showToast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const sending = useRef(false);
   const [busy, setBusy] = useState(false);
-  const [errors, setErrors] = useState<PasswordErrors>({});
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
 
-  // Every account has one now — registration requires it. What varies is
-  // whether it is still stored in the readable form an older build wrote.
-  // With a backend the server holds it, so there is nothing local to judge.
-  const readable = !API_ENABLED && isPlaintext(account.password);
+  useEffect(() => {
+    if (!cooldown) return;
+    const timer = window.setTimeout(() => setCooldown((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [cooldown]);
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    if (busy) return;
-    const errs: PasswordErrors = {};
-    if (!current) errs.current = t("Enter your current password.", "أدخل كلمة المرور الحالية.");
-    if (next.length < 8) errs.next = t("Use at least 8 characters.", "استخدم 8 أحرف على الأقل.");
-    else if (scorePassword(next).score === 0) errs.next = t("That one is too easy to guess.", "سهلة التخمين جدًا.");
-    if (next !== confirm) errs.confirm = t("These don't match.", "كلمتا المرور غير متطابقتين.");
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-
+  async function sendLink() {
+    if (!API_ENABLED || sending.current || cooldown > 0) return;
+    sending.current = true;
     setBusy(true);
-    const failed = await setAccountPassword(next, current);
-    setBusy(false);
-    if (failed) {
-      setErrors({ current: failed });
-      return;
+    setError(null);
+    const email = account.email;
+    try {
+      await requestPasswordReset(email);
+      setSentTo(email);
+      // Matches the backend's per-address email cooldown; server throttles
+      // still apply across tabs/devices and failures remain visible.
+      setCooldown(30);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t(
+        "Could not send the password link. Try again.",
+        "تعذر إرسال رابط كلمة المرور. أعد المحاولة.",
+      ));
+    } finally {
+      sending.current = false;
+      setBusy(false);
     }
-    setOpen(false);
-    setCurrent("");
-    setNext("");
-    setConfirm("");
-    showToast(
-      API_ENABLED
-        ? t("Password changed. Other devices are signed out.", "تم تغيير كلمة المرور، وسُجّل الخروج من الأجهزة الأخرى.")
-        : t("Password changed — it's checked the next time you sign in.", "تم تغيير كلمة المرور، وستُطلب في تسجيل الدخول القادم."),
-      "success"
-    );
   }
 
-  return {
-    readable,
-    open,
-    toggle: () => setOpen((v) => !v),
-    current,
-    setCurrent,
-    next,
-    setNext,
-    confirm,
-    setConfirm,
-    busy,
-    errors,
-    submit,
-  };
+  return { busy, sentTo, error, cooldown, sendLink };
 }
 
 export type ChangePasswordState = ReturnType<typeof useChangePassword>;

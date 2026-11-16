@@ -17,6 +17,7 @@ Django's `/admin/`. They use it to:
 - invite someone (an account that waits for its emailed set-password link);
 - change a role, deactivate or reactivate, remove, resend an invite, and sign
   an account out of one browser or everywhere;
+- approve account-type changes without changing existing Stripe subscriptions;
 - answer "what happened to this account?" from its history.
 
 Studio owners never see this. A member who opens `/admin` is sent to `/brands`,
@@ -638,3 +639,13 @@ arbitrary action detail fields are excluded from this dashboard payload.
 Refresh reloads both stats and activity. Each section handles unavailable data;
 activity has its own Retry, empty state and stale-data notice. Ship the backend
 endpoint with the frontend change. No database migration is required.
+
+## Account-type approval
+
+The detail header includes Change account type. It uses the shared FormDialog and RadioField with English/Arabic labels. Existing brands/editors remain stored; new additions follow the chosen limits. Existing Stripe subscriptions and prices remain unchanged. An untyped verified collaborator may make a first choice in Account → Profile; subsequent changes require administrator approval. See [user lifecycle](user-lifecycle.md).
+
+## Dashboard layout
+
+The dashboard starts with four platform metrics: all accounts (including awaiting setup), unique accounts signed in during 30 days, brands, and unique people on teams. Supporting counts explain setup and team scope. The signup chart and compact Account follow-up card precede breakdowns and recent activity. Cards size to their content instead of stretching to the feed height. On phones, follow-up and recent activity precede the detailed breakdowns.
+
+Recent activity initially shows five events. Show more expands the loaded events; Show less restores the preview. This is not an all-history endpoint: each person's complete recorded history remains linked from their name. Expansion preserves deleted-account labels, timestamps, actor details, independent error/retry feedback, and empty/loading states.

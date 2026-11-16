@@ -49,6 +49,9 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
         >
           {c.actions.changeRole}
         </Button>
+        <Button variant="outline" size="sm" disabledReason={reason(rules.changeType)} onClick={() => actions.setTypeFor(user)}>
+          {isAr ? "تغيير نوع الحساب" : "Change account type"}
+        </Button>
         {user.isActive ? (
           <Button
             variant="outline"

@@ -1,5 +1,6 @@
 "use client";
 
+import { requestEmailChange } from "../../api/account.api";
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
@@ -11,16 +12,17 @@ import { useAccountLang } from "../shared/use-account-lang";
 /**
  * Name and email, edited in place.
  *
- * Both commit on blur rather than per keystroke — the same reason the brand
- * name does: a store write per character fills the history with half-typed
- * values.
+ * Name saves on blur. In API mode, changing email opens a password
+ * confirmation before requesting verification from the new inbox.
  */
 export function useProfileDetails(account: Account) {
   const { t, isAr } = useAccountLang();
-  const { updateAccount, pendingEmailAction } = useAppActions();
+  const { updateAccount, pendingEmailAction, setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [name, setName] = useState(account.name);
   const [email, setEmail] = useState(account.email);
+  const [emailChangeOpen, setEmailChangeOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [emailError, setEmailError] = useState<string | undefined>();
 
   async function commitName() {
@@ -48,6 +50,12 @@ export function useProfileDetails(account: Account) {
       setEmailError(t("Enter a valid email address.", "أدخل بريدًا إلكترونيًا صحيحًا."));
       return;
     }
+    if (API_ENABLED) {
+      setEmailError(undefined);
+      setCurrentPassword("");
+      setEmailChangeOpen(true);
+      return;
+    }
     // The store rejects an email another account already uses — otherwise the
     // two would collide at sign-in and the second person would be locked out.
     const failed = await updateAccount({ email: value });
@@ -56,14 +64,27 @@ export function useProfileDetails(account: Account) {
       return;
     }
     setEmailError(undefined);
-    if (API_ENABLED) {
-      // Not switched yet: the new inbox confirms it first, and the field
-      // goes back to the email that still signs in.
-      setEmail(account.email);
-      showToast(isAr ? `تحقّق من ${value} لتجد رابط تأكيد التغيير.` : `Check ${value} for a link to confirm the change.`, "success");
-      return;
-    }
     showToast(t("Email updated — you'll sign in with this from now on.", "تم تحديث البريد، وستسجّل الدخول به من الآن."), "success");
+  }
+
+  function cancelEmailChange() {
+    setEmailChangeOpen(false);
+    setCurrentPassword("");
+    setEmail(account.email);
+  }
+
+  async function confirmEmailChange(): Promise<string | void> {
+    try {
+      setServerAccount(await requestEmailChange(email.trim(), currentPassword));
+      showToast(t(
+        "Check the new inbox to confirm your email change.",
+        "تحقق من البريد الجديد لتأكيد تغيير بريدك.",
+      ), "success");
+    } catch (err) {
+      return err instanceof Error ? err.message : t(
+        "Could not request the change.", "تعذر طلب التغيير.",
+      );
+    }
   }
 
   async function resendPending() {
@@ -77,6 +98,11 @@ export function useProfileDetails(account: Account) {
   }
 
   return {
+    emailChangeOpen,
+    currentPassword,
+    setCurrentPassword,
+    cancelEmailChange,
+    confirmEmailChange,
     name,
     setName,
     commitName,
