@@ -611,3 +611,5 @@ recipient permissions and migration/deployment steps.
 [User lifecycle](docs/features/user-lifecycle.md) covers signup, invitations, recovery, email confirmation and administrator-approved account-type changes.
 
 The [dashboard widget guide](docs/components/dashboard.md) covers the reusable branded widgets and the gated `/design-system/dashboard` preview.
+
+[User dashboard guide](docs/features/user-dashboard.md): portfolio metrics, brand cards and the per-brand setup overview.

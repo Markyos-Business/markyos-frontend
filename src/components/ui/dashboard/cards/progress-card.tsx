@@ -10,11 +10,13 @@ export interface ProgressCardProps extends Omit<WidgetStateProps, "emptyMessage"
   total: number;
   stepLabel?: string;
   description?: ReactNode;
+  /** Optional checklist or other progress detail below the summary. */
+  children?: ReactNode;
   action?: ReactNode;
   tone?: ProgressTone;
   className?: string;
 }
-export default function ProgressCard({ title, done, total, stepLabel, description, action, tone, state = "ready", errorMessage, onRetry, className }: ProgressCardProps) {
+export default function ProgressCard({ title, done, total, stepLabel, description, children, action, tone, state = "ready", errorMessage, onRetry, className }: ProgressCardProps) {
   const { t } = useDashboardLocale();
   const safeTotal = Number.isFinite(total) ? Math.max(0, total) : 0;
   const safeDone = Number.isFinite(done) ? Math.min(safeTotal, Math.max(0, done)) : 0;
@@ -23,5 +25,6 @@ export default function ProgressCard({ title, done, total, stepLabel, descriptio
     <p className="mb-space-3 text-caption tabular-nums text-text-muted">{label}</p>
     <Progress value={safeTotal ? (safeDone / safeTotal) * 100 : 0} label={label} size="md" tone={tone ?? (safeTotal > 0 && safeDone === safeTotal ? "success" : "accent")} />
     {description && <p className="mt-space-3 text-caption text-text-muted">{description}</p>}
+    {children && <div className="mt-space-4">{children}</div>}
   </DashboardCard>;
 }

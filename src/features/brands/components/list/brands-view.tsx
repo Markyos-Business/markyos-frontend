@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { SortControl } from "@/components/ui";
-import { Button, Icon, PageHeader, Stagger } from "@/components/ui";
+import { Button, DashboardHeader, DashboardProvider, Icon, Stagger } from "@/components/ui";
 import type { Workspace } from "@/types";
 import type { BrandSort } from "../../constants";
 import type { BRANDS_COPY } from "../../copy";
 import type { Lang } from "@/types/lang";
+import { PortfolioSummary, type PortfolioCounts } from "./portfolio-summary";
 import { WorkspaceCard } from "./workspace-card";
 
 type BrandsViewProps = {
+  summary: PortfolioCounts;
   title: string;
   description: string;
   sort: BrandSort;
@@ -23,22 +25,20 @@ type BrandsViewProps = {
 };
 
 /** The brands as cards, the way to make a new one (or the limit that stops it), and the Shared legend. */
-export function BrandsView({ title, description, sort, onSort, onNew, brands, atLimit, limitNote, c, lang }: BrandsViewProps) {
+export function BrandsView({ summary, title, description, sort, onSort, onNew, brands, atLimit, limitNote, c, lang }: BrandsViewProps) {
   return (
-    <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
-      <PageHeader
+    <DashboardProvider lang={lang}><div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
+      <DashboardHeader
         title={title}
-        description={description}
-        actions={
-          <>
-            <SortControl label={lang === "ar" ? "ترتيب العلامات" : "Sort brands"} value={sort === "updated" ? "" : sort} defaultLabel={c.lastEdited}
-              options={[{value:"name",label:c.nameAz}]} onChange={value => onSort(value === "name" ? "name" : "updated")} />
-            <Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
+        subtitle={description}
+        secondaryActions={<SortControl label={lang === "ar" ? "ترتيب العلامات" : "Sort brands"} value={sort === "updated" ? "" : sort} defaultLabel={c.lastEdited}
+              options={[{value:"name",label:c.nameAz}]} onChange={value => onSort(value === "name" ? "name" : "updated")} />}
+        primaryAction={<Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
               {atLimit ? c.reviewPlans : c.newWorkspace}
-            </Button>
-          </>
-        }
+            </Button>}
       />
+
+      <PortfolioSummary counts={summary} lang={lang} />
 
       <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {brands.map(({ workspace, role }) => (
@@ -71,6 +71,6 @@ export function BrandsView({ title, description, sort, onSort, onNew, brands, at
       <div className="mt-auto text-caption text-text-faint">
         {c.sharedLegendBefore} <span className="text-success">{c.shared}</span> {c.sharedLegendAfter}
       </div>
-    </div>
+    </div></DashboardProvider>
   );
 }

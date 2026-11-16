@@ -52,3 +52,7 @@ Tests use the repository's Vitest setup. Numeric boundaries, state resolution, t
 Widget source files use kebab-case, matching the rest of the UI kit. The imported StatCard is now MetricCard (distinct from the basic StatCard); DeltaPill is MetricDelta; PillBarChart is TimeSeriesBarChart; WidgetStatus is WidgetStateView. Imports, types, tests and the gallery use these names directly, without aliases for the unreleased copied API.
 
 On `/admin`, the four totals use MetricCard; signup periods use BarChartCard with TimeSeriesBarChart and CardFooterStats; follow-up rows use TaskList/TaskListItem and CardLinkButton; all three category summaries use BreakdownTable inside DashboardCard. The growth column appears only when growth data is supplied, so count-only summaries do not invent comparisons. Recent activity continues to use DashboardCard with its existing real event feed.
+
+## User dashboard integration
+
+The [user dashboard guide](../features/user-dashboard.md) documents the `/brands` portfolio metrics/cards and per-brand overview. ProgressCard now accepts optional children for its real setup checklist. The user views consume the existing account-scoped workspace state and existing edit actions rather than querying platform-wide statistics.

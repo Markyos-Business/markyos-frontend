@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useTheme } from "@/components/ui";
+import { DashboardCard, useTheme } from "@/components/ui";
 import { EditableField } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { navLogo } from "@/features/guideline-site";
@@ -33,7 +33,8 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
   }
 
   return (
-    <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
+    <DashboardCard title={isAr ? "تفاصيل العلامة" : "Brand details"}>
+      <div className="flex flex-col gap-space-4">
       <div className="flex items-center justify-between gap-3">
         <BrandNameField ws={ws} isAr={isAr} />
         <div className="flex items-center gap-2">
@@ -67,6 +68,7 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
           />
         ))}
       </div>
-    </div>
+      </div>
+    </DashboardCard>
   );
 }

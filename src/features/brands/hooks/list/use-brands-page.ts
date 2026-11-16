@@ -48,6 +48,12 @@ export function useBrandsPage() {
     view: {
       title: account?.isAdmin ? c.yourBrands : home.title,
       description: c.summary(myWorkspaces.length, sharedCount, owned, brandLimit),
+      summary: {
+        total: myWorkspaces.length,
+        owned,
+        invited: myWorkspaces.filter(w => w.ownerAccountId !== state.session?.accountId).length,
+        published: myWorkspaces.filter(w => !!w.published).length,
+      },
       sort,
       c,
       lang,
