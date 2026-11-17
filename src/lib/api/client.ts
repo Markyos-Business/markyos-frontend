@@ -118,13 +118,17 @@ export function refreshSession(): Promise<boolean> {
         })
       );
       if (!res.ok) {
-        accessToken = null;
-        return false;
+        if (res.status === 401 || res.status === 403) {
+          accessToken = null;
+          return false;
+        }
+        throw toApiError(res.status, await res.json().catch(() => null), res.headers.get("Retry-After"));
       }
       accessToken = ((await res.json()) as { access: string }).access;
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError("Can't reach the Markyos server. Check your connection and try again.", 0);
     } finally {
       refreshing = null;
     }
@@ -169,7 +173,8 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
       if (await refreshSession()) res = await send();
       else onSessionExpired?.();
     }
-  } catch {
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
     throw new ApiError("Can't reach the Markyos server. Check your connection and try again.", 0);
   }
 

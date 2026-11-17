@@ -789,7 +789,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // With a backend, who is signed in is the server's answer, not whatever
       // session this browser last saved: the refresh cookie either still
       // works or it does not.
-      const account = API_ENABLED ? await restoreServerSession() : null;
+      let account: Account | null;
+      try {
+        account = API_ENABLED ? await restoreServerSession() : null;
+      } catch {
+        // A temporary outage is not evidence that the saved session expired.
+        if (!cancelled) {
+          if (loaded) setState(loaded);
+          setHydrated(true);
+        }
+        return;
+      }
       const server =
         account && isApiAdapter(repo) ? await repo.pullWorkspaces(loaded ?? defaultState()) : null;
       if (cancelled) return;
