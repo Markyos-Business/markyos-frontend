@@ -1,5 +1,6 @@
 "use client";
 
+import { initialsFor } from "@/lib/utils";
 import Link from "next/link";
 import { NotificationBell } from "@/features/notifications";
 import { memo, useState, type ReactNode } from "react";
@@ -41,7 +42,8 @@ export const AccountMenu = memo(function AccountMenu({
   const account = useCurrentAccount();
   const router = useRouter();
   const session = useSession();
-  const initials = session ? session.name.slice(0, 2).toUpperCase() : "ND";
+  // One letter of the signed-in name (or email); never a made-up stand-in.
+  const initials = initialsFor(account?.name || session?.name || session?.email || "");
 
   const items: MenuLink[] = [
     { href: "/account?tab=profile", label: "Profile", arLabel: "الملف الشخصي", icon: "user" },

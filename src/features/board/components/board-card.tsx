@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, IconButton } from "@/components/ui";
+import { AssetThumb, Avatar, IconButton } from "@/components/ui";
 import type { Workspace } from "@/types";
-import { formatRelative } from "@/lib/utils";
+import { formatRelative, initialsFor } from "@/lib/utils";
+import { brandMarkUrl } from "@/lib/data/brandSetup";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type BoardCardProps = {
@@ -16,6 +17,7 @@ type BoardCardProps = {
 
 /** One brand on the board: its name, what's waiting, and the arrows that move it. */
 export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: BoardCardProps) {
+  const mark = brandMarkUrl(ws);
   const pendingDrafts = ws.drafts.filter((d) => d.status === "pending").length;
   const { isAr } = useInterfaceLang();
 
@@ -30,7 +32,9 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
           19px target, and the mark and the name are one identity, so they
           should be one object to point at. */}
       <Link href={`/w/${ws.slug}/overview`} className="-m-1 flex min-h-[34px] min-w-0 items-center gap-2.5 rounded-lg p-1 text-text">
-        <Avatar initials={ws.initials} size={26} />
+        {mark
+          ? <span className="grid size-[26px] shrink-0 place-items-center overflow-hidden rounded-full bg-surface-2"><AssetThumb src={mark} alt="" ground="--surface-2" style={{ height: 16, width: "auto" }} /></span>
+          : <Avatar initials={initialsFor(ws.name)} size={26} />}
         <span dir="auto" className="bidi-auto truncate text-[12.5px] font-semibold">
           {ws.name}
         </span>

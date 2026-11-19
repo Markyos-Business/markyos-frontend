@@ -196,7 +196,10 @@ export function AppSidebar({
         >
           <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />
           {!collapsed && (
-            <span className="flex-1 truncate text-h5 font-medium">{title}</span>
+            // The name sets its own direction, so a Latin name in an Arabic sidebar
+            // is cut at its end ("Nadeen Stu…") rather than its start; match-parent
+            // keeps a name that fits aligned with the sidebar.
+            <span dir="auto" className="flex-1 truncate text-h5 font-medium [text-align:match-parent]">{title}</span>
           )}
           {/* The tag rides with the title, not the mark: a collapsed rail has room for the mark alone. */}
           {!collapsed && MARKYOS_BETA && <BetaTag isAr={isAr} />}
