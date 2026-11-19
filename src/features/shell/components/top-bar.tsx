@@ -2,7 +2,7 @@
 
 import { Breadcrumb, TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
-import { AccountMenu } from "@/features/account";
+import { NotificationBell } from "@/features/notifications";
 import { SidebarMenuButton } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import type { Workspace } from "@/types";
@@ -38,7 +38,8 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
           { label: workspace.name, href: `/w/${workspace.slug}/overview` },
           { label: isAr && arSection ? arSection : section },
         ]} />
-        <AccountMenu isAr={isAr} />
+        {/* The account sits at the bottom of the brand sidebar; the bell stays here. */}
+        <NotificationBell isAr={isAr} />
       </header>
       {right && <div className="flex flex-wrap items-center gap-space-4 px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
       {!!tabs?.length && <div className="flex flex-wrap items-start gap-space-3 px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">

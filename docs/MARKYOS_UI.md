@@ -337,7 +337,7 @@ Design width 1680×1020. One SurfaceCard per view.
 
 - **Rail:** 84px wide, sticky and full height, with a 1px white-10% separator on the inline-end side. The logo mark sits at the top and the avatar at the bottom.
   - The active item is a 48px rounded square in `--primary-10`, plus a 2px `--primary` bar (with glow) on the rail's inline-end edge.
-  - `expanded` turns it into a 240px sidebar with labels, counts and section headings.
+  - `expanded` turns it into a 300px sidebar (layout of 20 Nov 2026): the brand's mark, name and plan with a switch-brand control; a card for its guideline site; 40px rows with 28px icon tiles (the active one solid accent); groups split by a rule, not a heading; and a bottom bar with the signed-in person (opens the account menu) and help.
 - **TopBar:** 84px tall and transparent, holding the breadcrumb and title, a search field with a ⌘K hint, 22px icon actions and an initials avatar chip.
 - **Responsive:** below about 1024px the secondary panel collapses. Below about 720px the rail becomes a bottom bar or drawer, toolbars wrap, and wide tables scroll inside an `overflow-x:auto` box.
 
