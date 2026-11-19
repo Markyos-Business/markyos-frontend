@@ -9,6 +9,7 @@ import { AccountMenu } from "@/features/account";
 import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
 import { marketingHref } from "@/lib/marketing";
 import { SiteCard } from "./site-card";
+import { BrandSwitcher } from "./brand-switcher";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 import { roleOn } from "@/lib/data/access";
 import { API_ENABLED } from "@/lib/api/client";
@@ -57,6 +58,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       isAr={uiLang(workspace) === "ar"}
       role={role}
       slug={workspace.slug}
+      id={workspace.id}
       name={workspace.name}
       reviewHref={role === "client" ? publishedGuidelineHref(workspace) : null}
       logo={brandMarkUrl(workspace)}
@@ -73,6 +75,7 @@ type BrandSidebarProps = {
   isAr: boolean;
   role: TeamRole | null;
   slug: string;
+  id: string;
   name: string;
   reviewHref: string | null;
   logo: string | null;
@@ -82,7 +85,7 @@ type BrandSidebarProps = {
   pendingDrafts: number;
 };
 
-const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, name, reviewHref, logo, paid, live, assetCount, pendingDrafts }: BrandSidebarProps) {
+const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, id, name, reviewHref, logo, paid, live, assetCount, pendingDrafts }: BrandSidebarProps) {
   const isClient = role === "client";
   const base = `/w/${slug}`;
   const toItem = (item: Item): SidebarItem => ({
@@ -100,7 +103,7 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, na
     // eslint-disable-next-line @next/next/no-img-element -- a stored brand file, any origin
     avatar={logo ? <img src={logo} alt="" className="size-full object-contain p-1" /> : brandInitials(name)}
     subtitle={isClient ? (isAr ? "مراجعة" : "Review") : paid ? (isAr ? "خطة مدفوعة" : "Paid plan") : (isAr ? "خطة مجانية" : "Free plan")}
-    switcher={{ href: "/brands", label: isAr ? "كل العلامات" : "All brands" }}
+    switcher={<BrandSwitcher currentId={id} isAr={isAr} />}
     card={isClient ? undefined : <SiteCard slug={slug} live={live} isAr={isAr} />}
     account={(collapsed) => <AccountMenu variant="row" compact={collapsed} isAr={isAr} />}
     help={{ href: marketingHref("/help", isAr ? "ar" : "en"), label: isAr ? "مركز المساعدة" : "Help centre" }}

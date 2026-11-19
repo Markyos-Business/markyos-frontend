@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Icon, TabPanel, useTabIds } from "@/components/ui";
 import { TOOL_TABS } from "../../constants";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
@@ -13,29 +12,14 @@ import { TemplateTab } from "./template-tab";
 export function ToolsPanel(b: BuilderPageState) {
   const tabIds = useTabIds();
   const { ws, isAr, tab, activePage, sortedPages } = b;
-  const back = isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`;
   const hide = isAr ? "إخفاء لوحة الأدوات" : "Hide the tools panel";
   const pageChip = (on: boolean) =>
     `h-8 cursor-pointer rounded-full px-3 text-[12px] font-semibold ${on ? "bg-accent-soft text-accent-on-soft" : "bg-surface-1 text-text-muted"}`;
 
   return (
     <div className="motion-safe:animate-fade-in flex w-[240px] shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto p-4 shadow-[inset_-1px_0_0_var(--hairline)]">
-      {/* The way back out. The studio's own navigation is not rendered on this
-          route, so the editor carries its own exit and names the brand you are
-          inside: a full-screen mode with no visible way out is a trap. */}
-      <div className="-mt-1 flex shrink-0 items-center gap-2">
-        <Link
-          href={`/w/${ws.slug}/overview`}
-          aria-label={back}
-          title={back}
-          className="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-lg bg-surface-1 text-text-muted"
-        >
-          <Icon name="angle-left" size={13} />
-        </Link>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-[12.5px] leading-tight font-semibold">{ws.name}</span>
-          <span className="truncate text-[10.5px] text-text-faint">{isAr ? "محرر الدليل" : "Guidelines editor"}</span>
-        </div>
+      {/* The way out lives in the editor's top bar; this row only hides the panel. */}
+      <div className="-mt-1 flex shrink-0 items-center justify-end">
         <button
           type="button"
           onClick={() => b.setLeftOpen(false)}
