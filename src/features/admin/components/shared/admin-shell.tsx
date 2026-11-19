@@ -5,12 +5,11 @@ import { useDocumentLang, useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { usePathname, useRouter } from "next/navigation";
 import { API_ENABLED } from "@/lib/api/client";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
-import { ThemeToggle } from "@/components/ui";
 import { AccountMenu } from "@/features/account";
 import { CMS_HOME, useCmsNav } from "@/features/content";
 import { AppLayout, PageContainer } from "@/features/shell";
 import { AppSidebar, AppTopBar } from "@/components/ui";
-import { LangToggle, UiStringsProvider } from "@/components/ui";
+import { UiStringsProvider } from "@/components/ui";
 import { ADMIN_NAV, SHELL_COPY } from "../../constants";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 
@@ -39,7 +38,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
 }
 
 function AdminFrame({ children }: { children: ReactNode }) {
-  const { setAdminLang } = useApp();
   const account = useCurrentAccount();
   const router = useRouter();
   const pathname = usePathname();
@@ -96,16 +94,8 @@ function AdminFrame({ children }: { children: ReactNode }) {
       topbar={
         <AppTopBar
           title={current?.label}
-          right={
-            <>
-              <LangToggle value={lang} onChange={(next) => setAdminLang(next)} label={copy.language} scope="chrome" />
-              {/* On a phone the theme toggle moves into the account menu. */}
-              <div className="hidden sm:block">
-                <ThemeToggle />
-              </div>
-              <AccountMenu />
-            </>
-          }
+          // Mode and language live in the account menu, as on every other page.
+          right={<AccountMenu />}
         />
       }
     >
