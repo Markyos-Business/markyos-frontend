@@ -2,7 +2,7 @@ import { call, djangoShell, expect, newBrand, newStudio, signIn, test } from "./
 
 async function publishedBrand(password = "") {
   const studio = await newStudio();
-  const brand = await newBrand(studio);
+  const brand = await newBrand(studio, undefined, { publishable: true });
   // The payment itself is outside this test; seed a verified entitlement.
   djangoShell(`from apps.brands.models import Checkout, Workspace; from django.utils import timezone; w=Workspace.objects.get(pk=${JSON.stringify(brand.id)}); Checkout.objects.create(workspace=w, buyer=w.owner, plan="pass", amount=1900, status="paid", paid_at=timezone.now(), session_id=${JSON.stringify(`cs_${brand.id}`)})`);
   const stored = await call(`/brands/${brand.id}/`, { token: studio.token });

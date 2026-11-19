@@ -28,7 +28,7 @@ All work is on `release/staging-v1` in markyos-frontend, merged locally, not pus
 | H5 English and RTL | Done for errors and kit; per-screen copy in Phase 6 | `errorText()` words every failure in the reader's language (52 screens); DataTable and other kit strings in Arabic; breadcrumb and avatars bidi-isolated; `<html>` lang/dir now set on the brands home. | `lib/api/errorText.ts`, `components/ui/data-table/labels.ts`, `shell/components/account-header.tsx` |
 | Translation architecture | Foundation done | `plural()` (Arabic zero/one/two/few/many), number/percent/money formatting, kit Breadcrumb, `react/jsx-no-literals` on the kit (folder list grows per screen), RTL audit scans all of `src`. Keyed catalogues: screen by screen with the copy guide. | `lib/i18n/*`, `eslint.config.mjs`, `scripts/rtl-audit.mjs` |
 | Beta messaging / M1 | Done | One dismissible notice at the top (beta in the app, demo in the demo build), remembered per browser; developer wording replaced. | `shell/components/beta-notice.tsx` |
-| M2 Pre-publish | Done in the app | Reviews every page plus brand setup; "Must fix" vs "Worth checking", each linking to the fix; matching EN/AR status. Publishing still only confirms (see C). | `builder/components/review/*`, `builder/utils/page-review.ts` |
+| M2 Pre-publish | Done | Reviews every page plus brand setup; "Must fix" vs "Worth checking", each linking to the fix; matching EN/AR status. Must fix blocks publishing in the editor and on the server (`publish_blocked`, decided 20 Nov); copy findings moved to Worth checking. | `builder/utils/site-review.ts`, `builder/hooks/use-builder-page.ts`, backend `apps/brands/publish_check.py` |
 | M3 Publishing bar | Existing (13 Nov) | Space reserved under the canvas; verified in the builder. | `builder/components/shared/ship-cluster.tsx` |
 | M4 Translation editor | Done | Arabic first in the Arabic UI; every field carries its own dir and lang. | `builder/components/inspector/block-inspector.tsx` |
 | M5 Buttons | Done in the kit | One variant per job (secondary/destructive/light duplicates removed); Brand files upload on the kit Button. Remaining hand-made buttons are mostly custom controls (canvas, chips) and were left. | `components/ui/button/*` |
@@ -52,7 +52,6 @@ All work is on `release/staging-v1` in markyos-frontend, merged locally, not pus
 
 **Blocked or awaiting a decision**
 - **UX copy (Phase 6):** the copy guide "دليل نصوص الواجهة" is not in any repo. Screen-by-screen copy and keyed catalogues wait for it. Arabic added in this round is a draft to align with the guide.
-- **Publishing gate:** should the backend refuse to publish when essentials are missing? The app now separates "Must fix" from "Worth checking" but still allows publishing after confirmation.
 - **Upgrade modal and plan comparison (H7):** paused with the PayPal work.
 - **Google sign-in in production:** the backend's Google client id and secret are empty in `.env.prod`; either set them or keep the button off in the prod build.
 

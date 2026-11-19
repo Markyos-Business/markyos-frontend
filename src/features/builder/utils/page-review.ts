@@ -314,7 +314,7 @@ function copy(block: PageBlock, add: Add, traits: VoiceTrait[]) {
     if (!has(value)) continue;
     for (const f of lintCopy(value!, traits, detectScript(value!))) {
       if (f.severity !== "error") continue;
-      add(`copy-${key}-${f.start}`, "error", `${f.rule}: "${f.excerpt.trim()}"`, `${f.arRule}: "${f.excerpt.trim()}"`);
+      add(`copy-${key}-${f.start}`, "warning", `${f.rule}: "${f.excerpt.trim()}"`, `${f.arRule}: "${f.excerpt.trim()}"`);
     }
   }
 }

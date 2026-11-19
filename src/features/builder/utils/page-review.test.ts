@@ -204,3 +204,15 @@ describe("the report as a whole", () => {
     expect(reviewPage({ blocks: [block({ id: "xyz", kind: "quote" })] }).findings[0].flowId).toBe("block-xyz");
   });
 });
+
+describe("what blocks publishing", () => {
+  it("never blocks on a copy finding: those are worth checking, not must fix", () => {
+    // Tatweel is an error in the copy linter, but it doesn't break the page.
+    const report = reviewPage({
+      blocks: [block({ kind: "text", title: "About", arTitle: "عن العلامــــة", text: "Hi", arText: "مرحبا" })],
+      brand: FULL_BRAND,
+    });
+    expect(report.findings.some((f) => f.id.includes(":copy-"))).toBe(true);
+    expect(report.errors).toBe(0);
+  });
+});

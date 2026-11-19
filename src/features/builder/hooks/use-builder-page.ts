@@ -263,35 +263,56 @@ export function useBuilderPage(slug: string) {
   const hasUnpublished = !ws.publishedAt || ws.updatedAt > ws.publishedAt;
 
   /**
-   * Publishing asks once when the review found something broken.
+   * Publishing stops at Must fix and asks once about Worth checking.
    *
-   * It asks rather than refuses. A studio sending a client a half-finished page
-   * to look at is a normal thing to do, and a builder that decides for them
-   * which pages are allowed out would be wrong about that regularly. What it can
-   * do is make sure nobody publishes an empty section without having been told
-   * it was empty.
+   * Must fix is what would put an empty section, a dead link or a missing logo
+   * in front of the public (product decision, 20 Nov 2026), so it blocks, here
+   * and on the server. Worth checking (copy, translations, fonts, purpose) has
+   * fallbacks, so it only asks: a half-finished page is still a page a studio
+   * may want a client to see.
    */
+  async function showWhatToFix() {
+    const count = isAr
+      ? plural("ar", review.errors, { one: "بند واحد", two: "بندان", few: "{n} بنود", many: "{n} بندًا", other: "{n} بند" })
+      : plural("en", review.errors, { one: "{n} item", other: "{n} items" });
+    const show = await confirm({
+      title: isAr ? "لا يمكن النشر بعد" : "This guideline can't be published yet",
+      body: isAr
+        ? `${count} في قائمة «يجب إصلاحه» يترك أقسامًا فارغة أو روابط لا تعمل في الدليل المنشور. أصلحها ثم انشر.`
+        : `${count} under Must fix would leave empty sections or broken links on the published guideline. Fix them, then publish.`,
+      confirmLabel: isAr ? "عرض ما يجب إصلاحه" : "Show what to fix",
+      cancelLabel: isAr ? "إغلاق" : "Close",
+      isAr,
+    });
+    const first = review.findings.find(f => f.severity === "error");
+    if (show && first) revealFinding(first);
+  }
+
   async function handlePublish() {
+    // Must fix stops here, and the server refuses the same list if this is skipped.
+    if (review.errors > 0) return showWhatToFix();
     const incomplete = brandSetup(ws!).filter(step => step.key !== "publish" && !step.done);
-    if (review.errors > 0 || incomplete.length > 0) {
+    if (review.warnings > 0 || incomplete.length > 0) {
       const ok = await confirm({
-        title: isAr
-          ? "الدليل يحتاج إلى مراجعة — أتريد النشر؟"
-          : "This guideline needs a review. Publish anyway?",
+        title: isAr ? "أتريد النشر الآن؟" : "Publish now?",
         body: [
-          review.errors > 0
+          review.warnings > 0
             ? isAr
-              ? `${plural("ar", review.errors, { one: "مشكلة واحدة", two: "مشكلتان", few: "{n} مشكلات", many: "{n} مشكلة", other: "{n} مشكلة" })} في الدليل يجب إصلاحها. راجع القائمة بجوار زر النشر.`
-              : `${plural("en", review.errors, { one: "{n} problem", other: "{n} problems" })} in the guideline must be fixed. Review the list beside Publish.`
+              ? `${plural("ar", review.warnings, { one: "بند واحد", two: "بندان", few: "{n} بنود", many: "{n} بندًا", other: "{n} بند" })} في قائمة «يستحق المراجعة». يمكنك النشر الآن أو مراجعتها أولًا.`
+              : `${plural("en", review.warnings, { one: "{n} item", other: "{n} items" })} under Worth checking. You can publish now or review them first.`
             : "",
-          incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}. يمكنك المتابعة أو إكمالها أولًا.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}. You can continue or finish these first.`) : "",
+          incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}.`) : "",
         ].filter(Boolean).join("\n\n"),
-        confirmLabel: isAr ? "انشر على أي حال" : "Publish anyway",
+        confirmLabel: isAr ? "نشر" : "Publish",
         isAr,
       });
       if (!ok) return;
     }
     const result = await publishGuideline(ws!.id);
+    if (!result.ok && result.blocked) {
+      showToast(isAr ? "لم يُنشر الدليل: ما زالت هناك بنود يجب إصلاحها." : "Not published: some Must fix items remain.", "danger");
+      return;
+    }
     if (!result.ok) {
       showToast(isAr ? "لم يُنشر الدليل. حاول مرة أخرى." : `Not published: ${result.message ?? "try again."}`, "danger");
       return;
