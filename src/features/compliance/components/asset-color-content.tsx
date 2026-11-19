@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, EmptyHint, EmptyState, Button } from "@/components/ui";
+import { useToast, Icon, EmptyHint, EmptyState, Button, PageHeader } from "@/components/ui";
 import { DominantColor, colorDistance, extractDominantColors } from "../utils/color-extract";
 import { formatRelative } from "@/lib/utils";
 import { ColorSwatch, Workspace } from "@/types";
@@ -60,10 +60,21 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
     }
   }
 
+  // One header for both states, so adding the first colour doesn't make the heading jump.
+  const header = (
+    <PageHeader
+      title={t("Asset colors", "ألوان الأصول")}
+      description={t(
+        "Upload a finished asset and check its dominant colors against this workspace's approved palette — catches drift before it ships, not after.",
+        "ارفع أصلًا جاهزًا وافحص ألوانه الغالبة مقابل الألوان المعتمدة لهذه المساحة، لتكتشف الانحراف قبل النشر لا بعده."
+      )}
+    />
+  );
+
   if (ws.colors.length === 0) return (
     // The same frame as the checker below, so the empty page doesn't shift.
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto max-w-[820px]">
-      <h1 className="text-h3 font-medium">{t("Asset colors", "ألوان الأصول")}</h1>
+      {header}
       <EmptyState icon="palette" title={t("Add your brand colours first", "أضف ألوان علامتك أولًا")}
         description={t("The checker needs your palette before it can compare an image.", "يحتاج الفاحص إلى ألوان علامتك قبل مقارنة صورة بها.")}
         action={<Button href={`/w/${ws.slug}/visual-identity?tab=color`}>{t("Add colours", "أضف الألوان")}</Button>} />
@@ -72,17 +83,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto max-w-[820px]">
-      <div>
-        <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-          {isAr ? "ألوان الأصول" : "Asset colors"}
-        </h1>
-        <p className="text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-          {t(
-            "Upload a finished asset and check its dominant colors against this workspace's approved palette — catches drift before it ships, not after.",
-            "ارفع أصلًا جاهزًا وافحص ألوانه الغالبة مقابل الألوان المعتمدة لهذه المساحة، لتكتشف الانحراف قبل النشر لا بعده."
-          )}
-        </p>
-      </div>
+      {header}
 
       <input
         ref={inputRef}

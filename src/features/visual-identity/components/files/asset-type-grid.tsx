@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint, PageHeader } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { AssetType, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
@@ -91,16 +91,10 @@ export function AssetTypeGrid({
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-            {isAr ? arTitle : title}
-          </h1>
-          <p className="text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-            {hint}
-          </p>
-        </div>
+      <PageHeader
+        title={isAr ? arTitle : title}
+        description={hint}
+        actions={<>
         <input
           ref={inputRef}
           type="file"
@@ -120,7 +114,8 @@ export function AssetTypeGrid({
         >
           {isAr ? "رفع ملف" : "Upload"}
         </button>
-      </div>
+        </>}
+      />
 
       {selected.size > 0 && (
         <BulkBar
