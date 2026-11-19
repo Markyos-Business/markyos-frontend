@@ -244,6 +244,7 @@ const config = {
         "status-tag": "28px",
         badge: "24px",
         rail: "84px", // nav rail width
+        sidebar: "300px", // nav sidebar width, open
         "rail-item": "64px",
         "rail-item-box": "48px",
         topbar: "84px",

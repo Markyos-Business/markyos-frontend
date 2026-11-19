@@ -5,6 +5,10 @@ import { usePathname } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import type { TeamRole, Workspace } from "@/types";
 import { AppSidebar, type SidebarItem } from "@/components/ui";
+import { AccountMenu } from "@/features/account";
+import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
+import { marketingHref } from "@/lib/marketing";
+import { SiteCard } from "./site-card";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 import { roleOn } from "@/lib/data/access";
 import { API_ENABLED } from "@/lib/api/client";
@@ -55,6 +59,9 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       slug={workspace.slug}
       name={workspace.name}
       reviewHref={role === "client" ? publishedGuidelineHref(workspace) : null}
+      logo={brandMarkUrl(workspace)}
+      paid={workspace.billing.plan !== "free"}
+      live={!!workspace.publishedAt}
       assetCount={workspace.assets.length}
       pendingDrafts={workspace.drafts.filter((draft) => draft.status === "pending").length}
     />
@@ -68,11 +75,14 @@ type BrandSidebarProps = {
   slug: string;
   name: string;
   reviewHref: string | null;
+  logo: string | null;
+  paid: boolean;
+  live: boolean;
   assetCount: number;
   pendingDrafts: number;
 };
 
-const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, name, reviewHref, assetCount, pendingDrafts }: BrandSidebarProps) {
+const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, name, reviewHref, logo, paid, live, assetCount, pendingDrafts }: BrandSidebarProps) {
   const isClient = role === "client";
   const base = `/w/${slug}`;
   const toItem = (item: Item): SidebarItem => ({
@@ -87,6 +97,13 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, na
     title={name} titleHref="/brands" storageKey={SIDEBAR_RAILS.studio} isAr={isAr}
     collapseLabels={isAr ? {collapse:"طيّ القائمة",expand:"توسيع القائمة"} : {collapse:"Collapse sidebar",expand:"Expand sidebar"}}
     rootProps={{"data-studio-nav":""}} sections={sections}
+    // eslint-disable-next-line @next/next/no-img-element -- a stored brand file, any origin
+    avatar={logo ? <img src={logo} alt="" className="size-full object-contain p-1" /> : brandInitials(name)}
+    subtitle={isClient ? (isAr ? "مراجعة" : "Review") : paid ? (isAr ? "خطة مدفوعة" : "Paid plan") : (isAr ? "خطة مجانية" : "Free plan")}
+    switcher={{ href: "/brands", label: isAr ? "كل العلامات" : "All brands" }}
+    card={isClient ? undefined : <SiteCard slug={slug} live={live} isAr={isAr} />}
+    account={(collapsed) => <AccountMenu variant="row" compact={collapsed} isAr={isAr} />}
+    help={{ href: marketingHref("/help", isAr ? "ar" : "en"), label: isAr ? "مركز المساعدة" : "Help centre" }}
     footerSlot={isClient && !reviewHref ? <p className="px-space-2 text-caption text-text-muted">{isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}</p> : undefined}
     footer={[
       ...(API_ENABLED ? [{key:"notifications",label:isAr?"الإشعارات":"Notifications",icon:"bell",href:"/notifications"}] : []),

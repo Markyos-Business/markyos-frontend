@@ -25,11 +25,20 @@ import type { MenuLink } from "../../types";
 export const AccountMenu = memo(function AccountMenu({
   isAr: isArProp,
   phoneLinks = [],
+  variant = "avatar",
+  compact = false,
 }: {
   /** The page's language; the person's own interface language when not given. */
   isAr?: boolean;
   /** Account navigation available in the menu at every viewport. */
   phoneLinks?: MenuLink[];
+  /**
+   * `avatar` (top bar): the bell, then the avatar. `row` (sidebar bottom bar):
+   * avatar, name and an ellipsis, without the bell, which stays in the top bar.
+   */
+  variant?: "avatar" | "row";
+  /** In the collapsed rail the row is the avatar alone. */
+  compact?: boolean;
 }) {
   const { logout } = useAppActions();
   const interfaceLang = useInterfaceLang();
@@ -66,7 +75,20 @@ export const AccountMenu = memo(function AccountMenu({
   }
 
   return (
-    <div className="flex items-center gap-space-3"><NotificationBell isAr={isAr}/><Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250} onOpen={checkContentAccess}>
+    <div className="flex items-center gap-space-3">{variant === "avatar" && <NotificationBell isAr={isAr}/>}<Popover
+      label={isAr ? "الحساب" : "Account"}
+      width={250}
+      onOpen={checkContentAccess}
+      trigger={variant === "row" && !compact ? "block" : "plain"}
+      align={variant === "row" ? "start" : "end"}
+      button={variant === "row" && !compact ? (
+        <span className="flex min-w-0 items-center gap-space-4 rounded-lg py-space-2 text-start">
+          <Avatar initials={initials} src={account?.avatarUrl} size={28} />
+          <span dir="auto" className="min-w-0 flex-1 truncate text-body font-medium text-text [text-align:match-parent]">{session?.name || session?.email}</span>
+          <Icon name="ellipsis-h" size={16} className="shrink-0 text-text-muted" />
+        </span>
+      ) : <Avatar initials={initials} src={account?.avatarUrl} size={variant === "row" ? 28 : 40} />}
+    >
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">
