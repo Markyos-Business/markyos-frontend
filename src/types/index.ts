@@ -1020,7 +1020,7 @@ export interface Workspace {
   versionHistory: VersionSnapshot[];
   whiteLabel: boolean;
   /**
-   * A paid brand switched "Remove Markyos branding" off to give the credit:
+   * A paid brand switched "Hide the badge" off to give the credit:
    * its public pages show the Made with Markyos badge. Free brands always do,
    * whatever this says; the server decides (apps/brands/branding.py).
    */

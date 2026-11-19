@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { usePublicPageLocale } from "@/components/ui";
+import { useDocumentLang } from "@/contexts/useInterfaceLang";
 import type { Lang } from "@/types";
 import { useShareLink } from "./use-share-link";
 
@@ -12,8 +14,13 @@ import { useShareLink } from "./use-share-link";
  */
 export function useSharePage(token: string) {
   const { loaded, found } = useShareLink(token);
-  const [lang, setLang] = useState<Lang>("en");
+  // The brand's own language until the reader picks one; the page, the
+  // document's lang/dir and the badge all follow that one choice.
+  const [chosen, setLang] = useState<Lang | null>(null);
+  const lang: Lang = chosen ?? found?.ws.primaryLocale ?? "en";
   const isAr = lang === "ar";
+  useDocumentLang(lang, loaded);
+  usePublicPageLocale(lang);
 
   if (!loaded) return null;
   if (!found) return { state: "missing" as const, isAr };
