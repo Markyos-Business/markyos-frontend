@@ -1,5 +1,7 @@
 "use client";
 
+import { reviewSite, type SiteFinding } from "../utils/site-review";
+import { plural } from "@/lib/i18n/plural";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { brandSetup } from "@/lib/data/brandSetup";
@@ -11,7 +13,6 @@ import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import type { BlockKind, BlockStyle, GuidelineTemplate, Lang, StudioStyle } from "@/types";
-import { reviewPage } from "../utils/page-review";
 import { PANEL_W, type ToolTab } from "../constants";
 import { STUDIO_STYLE_META, STYLE_META, type Template } from "../templates";
 import { useBuilderPanels } from "./use-builder-panels";
@@ -120,6 +121,21 @@ export function useBuilderPage(slug: string) {
     });
   }, [ws, router]);
 
+  /** Puts the editor on a review finding: its setup screen, or its page and section. */
+  const revealFinding = useCallback((finding: SiteFinding) => {
+    if (finding.href) {
+      router.push(finding.href);
+      return;
+    }
+    if (finding.pageId !== activePageId) {
+      setActivePageId(finding.pageId);
+      // The page's sections mount on the next render; select once they exist.
+      requestAnimationFrame(() => revealFlow(finding.flowId));
+      return;
+    }
+    revealFlow(finding.flowId);
+  }, [activePageId, revealFlow, router]);
+
   /**
    * The review of whichever page is on the canvas.
    *
@@ -129,27 +145,10 @@ export function useBuilderPage(slug: string) {
    * would put a regex sweep in the typing path. `ws` is rebuilt by each edit, so
    * this still re-runs exactly when the page changes.
    */
-  const review = useMemo(() => {
-    if (!ws) return { findings: [], errors: 0, warnings: 0, checked: 0 };
-    const page = activePageId ? ws.pages.find((p) => p.id === activePageId) : undefined;
-    const report = reviewPage({
-      blocks: page ? page.blocks : ws.customBlocks,
-      traits: ws.strategy.voiceTraits,
-      // Only the three the renderer has an empty state for — see
-      // `BrandDataPresence`.
-      brand: {
-        logoSlotsFilled: Object.values(ws.logo).filter((s) => s.phase === "attached").length,
-        colorCount: ws.colors.length,
-        iconAssetCount: ws.assets.filter((a) => a.type === "icon").length,
-      },
-    });
-    const setup = brandSetup(ws).filter(step => step.key !== "publish" && !step.done).map(step => ({
-      id: `setup:${step.key}`, flowId: `setup:${step.key}`, label: step.label, arLabel: step.arLabel,
-      severity: "warning" as const, message: "Brand essentials are missing. Open this setup step before publishing.",
-      arMessage: "أحد أساسيات العلامة غير مكتمل. افتح هذه الخطوة قبل النشر.",
-    }));
-    return { ...report, findings: [...setup, ...report.findings], warnings: report.warnings + setup.length };
-  }, [ws, activePageId]);
+  const review = useMemo(
+    () => (ws ? reviewSite(ws) : { findings: [], errors: 0, warnings: 0, checked: 0, pages: 0 }),
+    [ws],
+  );
 
   /**
    * Keyboard control for the canvas.
@@ -280,7 +279,11 @@ export function useBuilderPage(slug: string) {
           ? "الدليل يحتاج إلى مراجعة — أتريد النشر؟"
           : "This guideline needs a review. Publish anyway?",
         body: [
-          review.errors > 0 ? (isAr ? `${review.errors} عناصر في هذه الصفحة تحتاج إلى إصلاح. راجع القائمة بجوار زر النشر.` : `${review.errors} thing${review.errors === 1 ? "" : "s"} on this page look${review.errors === 1 ? "s" : ""} broken. Review the list beside Publish.`) : "",
+          review.errors > 0
+            ? isAr
+              ? `${plural("ar", review.errors, { one: "مشكلة واحدة", two: "مشكلتان", few: "{n} مشكلات", many: "{n} مشكلة", other: "{n} مشكلة" })} في الدليل يجب إصلاحها. راجع القائمة بجوار زر النشر.`
+              : `${plural("en", review.errors, { one: "{n} problem", other: "{n} problems" })} in the guideline must be fixed. Review the list beside Publish.`
+            : "",
           incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}. يمكنك المتابعة أو إكمالها أولًا.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}. You can continue or finish these first.`) : "",
         ].filter(Boolean).join("\n\n"),
         confirmLabel: isAr ? "انشر على أي حال" : "Publish anyway",
@@ -422,6 +425,7 @@ export function useBuilderPage(slug: string) {
     selectedId,
     onSelect: setSelectedId,
     revealFlow,
+    revealFinding,
     selected,
     selectedFixedId,
     selectedStyle,

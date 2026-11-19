@@ -12,7 +12,7 @@ import { ReviewChip } from "../review/review-panel";
  * `pointer-events-none` on the rail and `auto` on the cluster: the rail spans
  * the canvas so the cluster can sit in its corner without swallowing clicks.
  */
-export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, previewHref, onPublish, onUnpublish }: BuilderPageState) {
+export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFinding, previewHref, onPublish, onUnpublish }: BuilderPageState) {
   const upToDate = !!ws.publishedAt && !hasUnpublished;
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-end p-4">
@@ -33,7 +33,7 @@ export function ShipCluster({ ws, isAr, hasUnpublished, review, revealFlow, prev
                 ? `نُشر ${formatRelative(ws.publishedAt)}`
                 : `Published ${formatRelative(ws.publishedAt)}`}
         </span>
-        <ReviewChip report={review} isAr={isAr} onSelect={revealFlow} />
+        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} />
         {/* Raw rather than kit Buttons: the kit's disabled fill is surface-2,
             the cluster's own ground, so a disabled Publish lost its shape. */}
         {/* Only while live: quiet, text-only, and red on hover, because it
