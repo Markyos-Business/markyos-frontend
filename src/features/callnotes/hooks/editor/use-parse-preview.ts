@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { previewText } from "../../api/call-notes.api";
 import type { NoteKind, ParsePreview } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 const DELAY_MS = 500;
 
@@ -10,9 +11,10 @@ const DELAY_MS = 500;
  * How the server will read `text`, refreshed shortly after typing stops. The
  * parser lives on the server only, so the preview and the save always agree.
  */
-export function useParsePreview(text: string, kind?: NoteKind) {
+export function useParsePreview(text: string, kind: NoteKind | undefined, isAr: boolean) {
   const [preview, setPreview] = useState<ParsePreview | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // The failure itself; it becomes words at render, in the reader's language.
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     if (!text.trim()) return;
@@ -24,7 +26,7 @@ export function useParsePreview(text: string, kind?: NoteKind) {
           setPreview(p);
           setError(null);
         },
-        (err: unknown) => live && setError(err instanceof Error ? err.message : "Couldn't read the text.")
+        (err: unknown) => live && setError(err ?? new Error())
       );
     }, DELAY_MS);
     return () => {
@@ -33,5 +35,6 @@ export function useParsePreview(text: string, kind?: NoteKind) {
     };
   }, [text, kind]);
 
-  return { preview: text.trim() ? preview : null, error };
+  const message = error === null ? null : errorText(error, isAr ? "ar" : "en", { en: "Couldn't read the text.", ar: "تعذّرت قراءة النص." });
+  return { preview: text.trim() ? preview : null, error: message };
 }

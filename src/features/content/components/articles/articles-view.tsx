@@ -11,6 +11,7 @@ import { useArticles } from "../../hooks/use-articles";
 import { useContentLang } from "../../hooks/use-content-lang";
 import { useContentMe } from "../../hooks/use-content-me";
 import type { ArticleRow, ContentKind } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /** Lowercase Latin letters, digits and dashes, from an English title. */
 const slugify = (text: string) =>
@@ -133,7 +134,7 @@ function CreateArticleDialog({
           const doc = await createArticle(kind, shownSlug || `article-${Date.now()}`, { en: titleEn, ar: titleAr });
           onCreated(doc.id);
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >

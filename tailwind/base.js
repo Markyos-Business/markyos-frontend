@@ -37,10 +37,13 @@ export const baseStyles = [
       "letter-spacing": "normal",
     },
   },
-  // The utility half has to beat `tracking-tight` itself, as it did before
-  // this moved here; an inline style on the element still wins.
+  // Every other tracking source too: `tracking-*` utilities on overline labels
+  // and inline `letter-spacing` from guideline-site themes. `:dir(rtl)` follows
+  // the element's resolved direction, so Latin set with `dir="ltr"` or
+  // `dir="auto"` (codes, Latin specimens) keeps its tracking. `!important` is
+  // what lets a stylesheet beat an inline style.
   {
-    "[dir=\"rtl\"] .tracking-tight:not([style*=\"letter-spacing\"])": {
+    ":is([class*=\"tracking-\"], [style*=\"letter-spacing\"]):dir(rtl)": {
       "letter-spacing": "normal !important",
     },
   },

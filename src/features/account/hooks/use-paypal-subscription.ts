@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { API_ENABLED, api } from "@/lib/api/client";
 import type { Billing, Workspace } from "@/types";
+import { errorText } from "@/lib/api/errorText";
 
 type BillingAnswer = { status: string; billing: Billing };
 
@@ -24,8 +25,8 @@ export function usePayPalSubscription(ws: Workspace, isAr: boolean) {
   const { applyServerBilling } = useAppActions();
   const [busy, setBusy] = useState<"confirming" | "cancelling" | null>(null);
   const t = (en: string, ar: string) => (isAr ? ar : en);
-  const fail = (error: unknown, fallback: string) =>
-    showToast(error instanceof Error && error.message ? error.message : fallback, "danger");
+  const fail = (error: unknown, fallback: { en: string; ar: string }) =>
+    showToast(errorText(error, isAr ? "ar" : "en", fallback), "danger");
 
   async function start() {
     return api<{ planId: string; customId: string }>("/billing/paypal/start/", {
@@ -49,7 +50,7 @@ export function usePayPalSubscription(ws: Workspace, isAr: boolean) {
         "success",
       );
     } catch (error) {
-      fail(error, t("Couldn't confirm the subscription. Try again.", "تعذّر تأكيد الاشتراك. حاول مرة أخرى."));
+      fail(error, { en: "Couldn't confirm the subscription. Try again.", ar: "تعذّر تأكيد الاشتراك. حاول مرة أخرى." });
     } finally {
       setBusy(null);
     }
@@ -65,7 +66,7 @@ export function usePayPalSubscription(ws: Workspace, isAr: boolean) {
       applyServerBilling(ws.id, result.billing);
       showToast(t("Subscription cancelled.", "أُلغي الاشتراك."), "success");
     } catch (error) {
-      fail(error, t("Couldn't cancel the subscription. Try again.", "تعذّر إلغاء الاشتراك. حاول مرة أخرى."));
+      fail(error, { en: "Couldn't cancel the subscription. Try again.", ar: "تعذّر إلغاء الاشتراك. حاول مرة أخرى." });
     } finally {
       setBusy(null);
     }
@@ -77,6 +78,6 @@ export function usePayPalSubscription(ws: Workspace, isAr: boolean) {
     start,
     confirm: (id: string) => void confirm(id),
     cancel: () => void cancel(),
-    failed: (error: unknown) => fail(error, t("PayPal couldn't start the subscription.", "تعذّر على PayPal بدء الاشتراك.")),
+    failed: (error: unknown) => fail(error, { en: "PayPal couldn't start the subscription.", ar: "تعذّر على PayPal بدء الاشتراك." }),
   };
 }

@@ -8,6 +8,7 @@ import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { useToast } from "@/components/ui";
 import { PAGE_SECTION } from "../constants";
+import { errorText } from "@/lib/api/errorText";
 
 /** The settings page: the client link, and finishing a return from checkout. */
 export function useSettingsPage(slug: string) {
@@ -53,7 +54,7 @@ export function useSettingsPage(slug: string) {
         }
         router.replace(`/w/${ws.slug}/settings`);
       }).catch((error: unknown) => {
-        if (!canceled) showToast(error instanceof Error ? error.message : "Payment could not be verified. Refresh to try again.", "danger");
+        if (!canceled) showToast(errorText(error, page.isAr ? "ar" : "en", { en: "Payment could not be verified. Refresh to try again.", ar: "تعذّر التحقق من الدفع. حدّث الصفحة وحاول مرة أخرى." }), "danger");
       });
       return () => { canceled = true; };
     } else if (checkout === "cancelled") {

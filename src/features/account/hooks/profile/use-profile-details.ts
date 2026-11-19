@@ -8,6 +8,7 @@ import { EMAIL_RE } from "@/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
 import { useAccountLang } from "../shared/use-account-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Name and email, edited in place.
@@ -16,7 +17,7 @@ import { useAccountLang } from "../shared/use-account-lang";
  * confirmation before requesting verification from the new inbox.
  */
 export function useProfileDetails(account: Account) {
-  const { t, isAr } = useAccountLang();
+  const { t, isAr, lang } = useAccountLang();
   const { updateAccount, pendingEmailAction, setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [name, setName] = useState(account.name);
@@ -81,9 +82,7 @@ export function useProfileDetails(account: Account) {
         "تحقق من البريد الجديد لتأكيد تغيير بريدك.",
       ), "success");
     } catch (err) {
-      return err instanceof Error ? err.message : t(
-        "Could not request the change.", "تعذر طلب التغيير.",
-      );
+      return errorText(err, lang, { en: "Could not request the change.", ar: "تعذر طلب التغيير." });
     }
   }
 

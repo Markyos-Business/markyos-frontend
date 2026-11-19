@@ -24,8 +24,8 @@ export const darkTokens = {
    * Grotesque is the brand face, for the wordmark and marketing only, never
    * product chrome; it is `--font-brand`. `--font-display` stays as a name
    * because a hundred headings use it, and now means the product heading
-   * stack. Arabic falls through to IBM Plex Sans Arabic: the spec names
-   * Thmanya Sans, whose files are not in the repo yet.
+   * stack. Arabic falls through to IBM Plex Sans Arabic, the product's
+   * Arabic face (chosen 2026-11-19 over the spec's original Thmanya Sans).
    */
   "--font-display": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",
   "--font-sans": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",

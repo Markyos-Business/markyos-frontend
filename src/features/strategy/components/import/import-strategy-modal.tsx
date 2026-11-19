@@ -13,6 +13,7 @@ import {
   ParsedVoiceTrait,
   SingleStrategyKey,
 } from "@/lib/docParse";
+import { errorText } from "@/lib/api/errorText";
 
 const SINGLE_LABELS: Record<SingleStrategyKey, string> = {
   purpose: "Purpose",
@@ -103,7 +104,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
       load(parseStrategyDocument(text));
       setStep("review");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't read that file.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Couldn't read that file.", ar: "تعذّرت قراءة الملف." }));
       setStep("pick");
     }
   }

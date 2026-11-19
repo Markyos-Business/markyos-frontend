@@ -101,11 +101,9 @@ const SearchableChecklist = ({
       </div>
 
       {items.length === 0 ? (
-        <p className="px-space-6 py-space-8 text-center text-body text-text-muted">No {itemNoun} to choose from.</p>
+        <p className="px-space-6 py-space-8 text-center text-body text-text-muted">{t.nothingToChoose(itemNoun)}</p>
       ) : shown.length === 0 ? (
-        <p className="px-space-6 py-space-8 text-center text-body text-text-muted">
-          No {itemNoun} match{search.trim() ? ` “${search.trim()}”` : ""}.
-        </p>
+        <p className="px-space-6 py-space-8 text-center text-body text-text-muted">{t.noMatchesFor(itemNoun, search.trim())}</p>
       ) : layout === "chips" ? (
         <div role="group" aria-label={groupLabel} className="flex flex-wrap gap-space-3 p-space-6">
           {shown.map((item) => {

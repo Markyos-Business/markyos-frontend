@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
+import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /**
  * Shows what the server refused as a toast.
@@ -14,9 +15,10 @@ import { useToast } from "@/components/ui";
 export function SyncNotices() {
   const { syncNotice } = useApp();
   const { showToast } = useToast();
+  const { lang } = useInterfaceLang();
 
   useEffect(() => {
-    if (syncNotice) showToast(syncNotice.message, syncNotice.tone);
+    if (syncNotice) showToast(syncNotice.message[lang], syncNotice.tone);
     // Keyed on the id: a new notice, not a re-render, is what shows a toast.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syncNotice?.id]);

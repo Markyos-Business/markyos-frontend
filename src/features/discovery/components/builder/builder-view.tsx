@@ -49,7 +49,7 @@ const flatten = (form: DiscoveryForm): Placed[] => {
 export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
   const tabIds = useTabIds();
   const sectionTabIds = useTabIds();
-  const editor = useFormEditor(formId);
+  const editor = useFormEditor(formId, isAr);
   const { form, run } = editor;
   const { confirm } = useDialog();
   const [sectionId, setSectionId] = useState<string | null>(null);

@@ -12,6 +12,7 @@ import { deleteNote, restoreNote, setIncluded } from "../../api/call-notes.api";
 import type { CallNote } from "../../types";
 import { callDay, formatMinutes, initials } from "../../utils/format";
 import { NoteParagraphs, OriginalText, TurnList } from "./note-body";
+import { errorText } from "@/lib/api/errorText";
 
 type CallNoteDetailProps = {
   noteId: string;
@@ -49,7 +50,7 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
     try {
       setNote(await setIncluded(current.id, !current.includeInAnalysis));
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't change.", "لم يتغيّر ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't change.", ar: "لم يتغيّر ذلك." }), "danger");
     }
   };
 
@@ -74,7 +75,7 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
       });
       router.push(backHref);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't delete.", "لم يُحذف ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't delete.", ar: "لم يُحذف ذلك." }), "danger");
     }
   };
 

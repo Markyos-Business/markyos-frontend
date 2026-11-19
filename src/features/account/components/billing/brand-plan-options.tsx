@@ -38,7 +38,7 @@ const STATUS: Record<string, { en: string; ar: string; tone: BadgeTone }> = {
 export function BrandPlanOptions({ ws, typeLabel, prices, isAr }: BrandPlanOptionsProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const planName = isAr ? `خطة ${typeLabel}` : `${typeLabel} plan`;
-  const { managing, manageSubscription } = useCheckout(ws);
+  const { managing, manageSubscription } = useCheckout(ws, isAr);
   const paypal = usePayPalSubscription(ws, isAr);
   const { plan, purchasedAt, provider, subscriptionStatus, currentPeriodEnd, paymentFailedAt } = ws.billing;
   const onPayPal = provider === "paypal" && Boolean(subscriptionStatus);

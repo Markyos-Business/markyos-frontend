@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui";
 import { deleteArticle, getArticle, publishArticle, saveArticle, unpublishArticle, restoreVersion } from "../api/content.api";
 import type { ArticleDoc, ArticleDraft, ContentLocale, TranslationDraft } from "../types";
 import { useContentLang } from "./use-content-lang";
+import { errorText } from "@/lib/api/errorText";
 
 const emptyTranslation = (): TranslationDraft => ({
   title: "", excerpt: "", bodyHtml: "", seoTitle: "", seoDescription: "", heroCaption: "", heroImage: null,
@@ -41,13 +42,14 @@ export function toDraft(doc: ArticleDoc): ArticleDraft {
  * else saved in between, their copy is loaded and the person is told.
  */
 export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug: string) => number | null; tagIdsBySlugs: (slugs: string[]) => number[] }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const { showToast } = useToast();
   const [doc, setDoc] = useState<ArticleDoc | null>(null);
   const [draft, setDraft] = useState<ArticleDraft | null>(null);
   // The draft as last loaded or saved: what "unsaved changes" compares to.
   const [saved, setSaved] = useState<ArticleDraft | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // The load failure itself; it becomes words at render, in the reader's language.
+  const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState<null | "save" | "publish" | "unpublish" | "delete" | "restore">(null);
 
   const adopt = useCallback(
@@ -68,7 +70,7 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
     let live = true;
     getArticle(id)
       .then((next) => live && adopt(next))
-      .catch((e: unknown) => live && setError(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => live && setError(e ?? new Error()));
     return () => {
       live = false;
     };
@@ -90,14 +92,14 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
           adopt(current);
           showToast(c.editor.conflict, "danger");
         } else {
-          showToast(e instanceof Error ? e.message : String(e), "danger");
+          showToast(errorText(e, lang), "danger");
         }
         return false;
       } finally {
         setBusy(null);
       }
     },
-    [adopt, c.editor.conflict, showToast],
+    [adopt, c.editor.conflict, lang, showToast],
   );
 
   const save = () => (doc && draft ? handle("save", () => saveArticle(doc.id, draft, doc.version), c.editor.saved) : Promise.resolve(false));
@@ -122,5 +124,5 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
     setDraft((d) => (d ? { ...d, translations: { ...d.translations, [locale]: { ...d.translations[locale], ...patch } } } : d));
   const patch = (next: Partial<ArticleDraft>) => setDraft((d) => (d ? { ...d, ...next } : d));
 
-  return { doc, draft, error, busy, dirty, restore: (number:number) => doc ? handle("restore", () => restoreVersion(id, number, doc.version)) : Promise.resolve(false), save, publish, unpublish, remove, setTranslation, patch };
+  return { doc, draft, error: error === null ? null : errorText(error, lang), busy, dirty, restore: (number:number) => doc ? handle("restore", () => restoreVersion(id, number, doc.version)) : Promise.resolve(false), save, publish, unpublish, remove, setTranslation, patch };
 }

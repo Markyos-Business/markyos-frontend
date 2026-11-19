@@ -13,6 +13,7 @@ import { StudioReport } from "./report/studio-report";
 import { ShareWithClient } from "./share/share-with-client";
 import { RunningView } from "./run/running-view";
 import { RunPanel } from "./run/run-panel";
+import { errorText } from "@/lib/api/errorText";
 
 type AnalysisViewProps = { brandId: string; brandSlug: string; isAr: boolean; workspace: Workspace };
 
@@ -29,7 +30,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
   const [starting, setStarting] = useState(false);
   const versions = overview.data?.versions ?? [];
   const selectedId = chosen ?? versions[0]?.id ?? null;
-  const { analysis, error, replaceSection } = useBriefAnalysis(selectedId);
+  const { analysis, error, replaceSection } = useBriefAnalysis(selectedId, isAr);
   const running = !!analysis && (analysis.status === "queued" || analysis.status === "running");
 
   // Finished while open: say so, and refresh the versions.
@@ -61,7 +62,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
         overview.reload();
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't start.", "لم يبدأ ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't start.", ar: "لم يبدأ ذلك." }), "danger");
     }
     setStarting(false);
   };

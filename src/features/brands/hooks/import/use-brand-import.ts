@@ -6,6 +6,7 @@ import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../api/brands.api";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
+import { errorText } from "@/lib/api/errorText";
 
 type ImportStage = "idle" | "extracting" | "review";
 
@@ -41,7 +42,7 @@ export function useBrandImport() {
       setArabicFont(result.fonts.find((f) => f.script === "arabic")?.name ?? "");
       setStage("review");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("Couldn't read that file.", "تعذّرت قراءة الملف."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "Couldn't read that file.", ar: "تعذّرت قراءة الملف." }), "danger");
       setStage("idle");
     }
   }

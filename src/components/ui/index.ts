@@ -10,6 +10,7 @@ export * from "./app-shell/app-top-bar";
 export * from "./app-shell/page-transition";
 export * from "./app-shell/sidebar-drawer";
 export * from "./async-state-view";
+export * from "./breadcrumb";
 export * from "./auto-textarea";
 export * from "./avatar";
 export * from "./avatar/avatar";

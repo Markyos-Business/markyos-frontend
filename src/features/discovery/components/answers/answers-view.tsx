@@ -11,6 +11,7 @@ import { reopenForm } from "../../api/discovery.api";
 import type { FormEventType, ResponsesView, UploadedFile } from "../../types";
 import { formatDayTime, formatDuration } from "../../utils/format";
 import { TYPE_RESULTS } from "./type-results";
+import { errorText } from "@/lib/api/errorText";
 
 type AnswersViewProps = {
   formId: string;
@@ -72,7 +73,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
       showToast(t("Reopened", "أُعيد فتحه"), "success");
       reload();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't work.", "لم ينجح ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." }), "danger");
     }
   };
 

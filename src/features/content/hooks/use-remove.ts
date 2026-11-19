@@ -2,10 +2,11 @@
 
 import { useDialog, useToast } from "@/components/ui";
 import { useContentLang } from "./use-content-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /** Confirms, runs a removal, reports it, and reloads the list it came from. */
 export function useRemove() {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const { confirm } = useDialog();
   const { showToast } = useToast();
   return async (run: () => Promise<unknown>, reload: () => void, title: string = c.common.confirmRemove) => {
@@ -16,7 +17,7 @@ export function useRemove() {
       showToast(c.common.removed, "success");
       reload();
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : String(e), "danger");
+      showToast(errorText(e, lang), "danger");
     }
   };
 }

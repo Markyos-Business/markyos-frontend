@@ -5,13 +5,14 @@ import { useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import { removeAvatar, uploadAvatar } from "../../api/account.api";
 import { useAccountLang } from "../shared/use-account-lang";
+import { errorText } from "@/lib/api/errorText";
 
 const TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 const MAX_BYTES = 5 * 1024 * 1024;
 
 /** The profile photo: choose one (checked here first, then by the server), or remove it. */
 export function useAvatar() {
-  const { t } = useAccountLang();
+  const { t, lang } = useAccountLang();
   const { setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [busy, setBusy] = useState(false);
@@ -22,7 +23,7 @@ export function useAvatar() {
       setServerAccount(await work());
       showToast(done, "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, lang), "danger");
     } finally {
       setBusy(false);
     }

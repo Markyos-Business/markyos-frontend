@@ -6,6 +6,7 @@ import { useToast, Icon, richIsEmpty } from "@/components/ui";
 import { TranslateDirection, translateHtml, translateText } from "../../api/strategy.api";
 import { StrategyTextField, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Fills one language copy of the strategy from the other.
@@ -178,7 +179,7 @@ export function TranslateStrategy({
           unreviewed: [...t.unreviewed, ...written],
         });
       }
-      const reason = err instanceof Error ? err.message : isAr ? "تعذّرت الترجمة." : "Translation failed.";
+      const reason = errorText(err, isAr ? "ar" : "en", { en: "Translation failed.", ar: "تعذّرت الترجمة." });
       const salvaged =
         written.length === 0
           ? ""

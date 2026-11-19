@@ -4,7 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 
 export interface RequestState<T> {
   data: T | null;
+  /** The server's own words; English only. Show `failure` through `errorText` instead. */
   error: string | null;
+  /** The failure itself, for `errorText(failure, lang)` from "@/lib/api/errorText". */
+  failure: unknown;
   loading: boolean;
   /** Fetch again, keeping the current data on screen until it arrives. */
   reload: () => void;
@@ -19,6 +22,7 @@ export interface RequestState<T> {
 export function useRequest<T>(load: () => Promise<T>, key: string): RequestState<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);
 
@@ -31,11 +35,13 @@ export function useRequest<T>(load: () => Promise<T>, key: string): RequestState
         if (!live) return;
         setData(value);
         setError(null);
+        setFailure(null);
         setLoading(false);
       },
       (err: unknown) => {
         if (!live) return;
         setError(err instanceof Error ? err.message : "Something went wrong.");
+        setFailure(err ?? new Error());
         setLoading(false);
       }
     );
@@ -47,5 +53,5 @@ export function useRequest<T>(load: () => Promise<T>, key: string): RequestState
   }, [key, tick]);
 
   const reload = useCallback(() => setTick((t) => t + 1), []);
-  return { data, error, loading, reload };
+  return { data, error, failure, loading, reload };
 }

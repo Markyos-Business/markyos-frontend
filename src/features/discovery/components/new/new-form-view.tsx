@@ -8,6 +8,7 @@ import { useTemplates } from "../../hooks/use-templates";
 import { createForm } from "../../api/discovery.api";
 import { textIn } from "../../utils/question-types";
 import type { DiscoveryForm } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 type Brand = { id: string; name: string };
 
@@ -56,7 +57,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
       });
       onCreated(form);
     } catch (err) {
-      setErrors({ form: err instanceof Error ? err.message : "That didn't save." });
+      setErrors({ form: errorText(err, lang, { en: "That didn't save.", ar: "لم يُحفظ ذلك." }) });
       setBusy(false);
     }
   }

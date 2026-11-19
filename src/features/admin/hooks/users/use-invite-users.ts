@@ -6,6 +6,7 @@ import type { AccountRole, AccountType } from "@/types";
 import { inviteUser } from "../../api/admin.api";
 import { EMAIL_RE } from "@/lib/emailList";
 import { useAdminLang } from "../shared/use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 
 type InviteForm = { email: string; role: AccountRole; accountType: AccountType | ""; language: "en" | "ar" | "" };
 
@@ -14,7 +15,7 @@ const EMPTY: InviteForm = { email: "", role: "member", accountType: "studio", la
 /** The invite dialog: one email, one account waiting for its emailed link. */
 export function useInviteUsers(onInvited: () => void) {
   const { showToast } = useToast();
-  const { c } = useAdminLang();
+  const { c, lang } = useAdminLang();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<InviteForm>(EMPTY);
   const [emailError, setEmailError] = useState<string | undefined>();
@@ -46,7 +47,7 @@ export function useInviteUsers(onInvited: () => void) {
         language: form.language || null,
       });
     } catch (e) {
-      return e instanceof Error ? e.message : String(e);
+      return errorText(e, lang);
     }
     showToast(c.inviteDialog.sent(email), "success");
     onInvited();

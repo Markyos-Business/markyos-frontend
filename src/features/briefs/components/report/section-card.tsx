@@ -8,6 +8,7 @@ import { regenerateSection } from "../../api/briefs.api";
 import type { Section } from "../../types";
 import { costLine, withCostConfirm } from "../../utils/cost";
 import { SectionBody, type ItemAction } from "./sections/section-body";
+import { errorText } from "@/lib/api/errorText";
 
 type SectionCardProps = {
   analysisId: string;
@@ -75,7 +76,7 @@ export function SectionCard({ analysisId, section, canEdit, isAr, onChange, acti
       );
       if (updated) onChange(updated);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't work.", "لم ينجح ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." }), "danger");
     }
   };
 
