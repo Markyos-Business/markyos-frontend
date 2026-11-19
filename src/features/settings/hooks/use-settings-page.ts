@@ -33,24 +33,25 @@ export function useSettingsPage(slug: string) {
 
   useEffect(() => {
     if (!ws) return;
+    const t = (en: string, ar: string) => (page?.isAr ? ar : en);
     const checkout = searchParams.get("checkout");
     if (checkout === "success") {
       const sessionId = searchParams.get("session_id");
       if (!sessionId) {
-        showToast("Payment could not be verified: the checkout reference is missing.", "danger");
+        showToast(t("Payment couldn't be verified: the checkout reference is missing.", "تعذّر التحقق من الدفع: مرجع الدفع مفقود."), "danger");
         return;
       }
       let canceled = false;
       void confirmPurchase(ws.id, sessionId).then(({ status, billing }) => {
         if (canceled) return;
         if (status === "paid" || status === "active") {
-          showToast(billing.plan === "pass" ? "Payment verified — Project Pass active." : "Payment verified — monthly plan active.", "success");
+          showToast(billing.plan === "pass" ? t("Payment verified. Project Pass active.", "تم التحقق من الدفع. تصريح المشروع مفعّل.") : t("Payment verified. Monthly plan active.", "تم التحقق من الدفع. الخطة الشهرية مفعّلة."), "success");
         } else if (status === "refunded") {
-          showToast("This payment was refunded. No plan was activated.");
+          showToast(t("This payment was refunded. No plan was activated.", "استُرد هذا المبلغ، ولم تُفعَّل أي خطة."));
         } else if (billing.subscriptionStatus) {
-          showToast("The subscription is not active. Use Manage subscription to review billing.");
+          showToast(t("The subscription isn't active. Use Manage subscription to review billing.", "الاشتراك غير مفعّل. استخدم «إدارة الاشتراك» لمراجعة الفوترة."));
         } else {
-          showToast("Your payment has not activated a plan yet. Check this page again shortly.");
+          showToast(t("Your payment hasn't activated a plan yet. Check this page again shortly.", "لم يُفعّل دفعك خطة بعد. تحقّق من هذه الصفحة بعد قليل."));
         }
         router.replace(`/w/${ws.slug}/settings`);
       }).catch((error: unknown) => {
@@ -58,7 +59,7 @@ export function useSettingsPage(slug: string) {
       });
       return () => { canceled = true; };
     } else if (checkout === "cancelled") {
-      showToast("Checkout cancelled — nothing was charged.");
+      showToast(t("Checkout cancelled. Nothing was charged.", "أُلغي الدفع، ولم يُخصم أي مبلغ."));
       router.replace(`/w/${ws.slug}/settings`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
