@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiStrings } from "../ui-strings";
 import { Button } from "../button/button";
 import { IconButton } from "../button/icon-button";
 import { Icon } from "../icon";
@@ -57,7 +58,8 @@ const RepeaterField = ({
   const add = () => onChange(insertAt === "end" ? [...rows, blank()] : [blank(), ...rows]);
   const remove = (i: number) => rows.length > minRows && onChange(rows.filter((_, j) => j !== i));
   const set = (i: number, key: string, value: string) => onChange(rows.map((r, j) => (j === i ? { ...r, [key]: value } : r)));
-  const addLabel = `Add ${rowLabel}`;
+  const { t } = useUiStrings();
+  const addLabel = t.addRow(rowLabel);
 
   return (
     <fieldset className="flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 shadow-edge">
@@ -69,7 +71,7 @@ const RepeaterField = ({
       </div>
       {rows.length === 0 && (
         <p className="rounded-lg border border-dashed border-line-strong py-space-8 text-center text-body text-text-muted">
-          No entries yet. Use “{addLabel}” to add one.
+          {t.noRowsYet(addLabel)}
         </p>
       )}
       {rows.map((row, i) => (
