@@ -1,4 +1,4 @@
-import { Button, Icon } from "@/components/ui";
+import { Button, Icon, PageHeader } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { STRATEGY_LABELS } from "../../constants";
 import type { ImportReviewProps } from "../../hooks/import/use-brand-import";
@@ -27,17 +27,12 @@ export function ImportReview({
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="mb-space-2 text-h2 font-medium">{t("Here's what's actually in the file", "هذا ما في الملف فعلًا")}</h1>
-        <p className="text-body text-text-muted">
-          {analysis.fileName}
+      <PageHeader title={t("Here's what's actually in the file", "هذا ما في الملف فعلًا")} description={<>{analysis.fileName}
           {analysis.pageCount > 0 &&
             (isAr
               ? ` · ${analysis.pageCount} صفحات، أُخذت عينات الألوان من ${analysis.pagesRendered}`
               : ` · ${analysis.pageCount} pages, ${analysis.pagesRendered} sampled for colour`)}
-          . {t("Nothing is saved until you confirm.", "لا يُحفظ شيء حتى تؤكد.")}
-        </p>
-      </div>
+          . {t("Nothing is saved until you confirm.", "لا يُحفظ شيء حتى تؤكد.")}</>} />
 
       {analysis.notes.length > 0 && (
         <div className="flex flex-col gap-1.5">

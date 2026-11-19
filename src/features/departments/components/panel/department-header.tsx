@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppActions } from "@/contexts/AppContext";
-import { IconButton, useDialog, useToast } from "@/components/ui";
+import { IconButton, useDialog, useToast, PageHeader } from "@/components/ui";
 import type { DepartmentView, Workspace } from "@/types";
 
 type DepartmentHeaderProps = { ws: Workspace; view: DepartmentView; isAr: boolean };
@@ -41,8 +41,9 @@ export function DepartmentHeader({ ws, view, isAr }: DepartmentHeaderProps) {
   }
 
   return (
-    <div className="flex items-center justify-between">
-      <h1 className="font-display text-[26px] font-semibold tracking-tight">{view.name}</h1>
+    <PageHeader
+      title={view.name}
+      actions={<>
       {/*
        * The delete is a named bin, set apart from the rename by a rule, and it
        * turns the warning colour under the pointer: the most destructive
@@ -65,6 +66,7 @@ export function DepartmentHeader({ ws, view, isAr }: DepartmentHeaderProps) {
           className="mk-danger-hover cursor-pointer text-text-faint"
         />
       </div>
-    </div>
+      </>}
+    />
   );
 }

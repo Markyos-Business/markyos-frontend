@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Icon } from "@/components/ui";
+import { Button, Icon, PageHeader } from "@/components/ui";
 import { StrategyContents, StrategyDocument, StrategyProgress } from "@/features/guideline-site";
 import type { Lang, Workspace } from "@/types";
 import { WorkingMaterial } from "./working-material";
@@ -26,15 +26,11 @@ export function StrategyReadView({ ws, isAr, lang }: { ws: Workspace; isAr: bool
       <div className="min-h-0 flex-1 overflow-auto px-7 py-8">
         <article className="mx-auto flex max-w-[760px] flex-col gap-9">
           <header className="flex flex-col gap-2">
-            <span className="text-[11px] font-semibold uppercase tracking-[.12em] text-text-faint">{isAr ? "استراتيجية العلامة" : "Brand strategy"}</span>
-            <h1 dir="auto" className="bidi-auto font-display text-[38px] font-semibold leading-[1.15] tracking-tight">
-              {ws.name}
-            </h1>
-            {ws.tagline && (
-              <p dir="auto" className="bidi-auto text-[15px] text-text-muted">
-                {ws.tagline}
-              </p>
-            )}
+            <PageHeader
+              eyebrow={isAr ? "استراتيجية العلامة" : "Brand strategy"}
+              title={ws.name}
+              description={ws.tagline ? <bdi>{ws.tagline}</bdi> : undefined}
+            />
             <div className="mt-2 lg:hidden">
               <StrategyProgress ws={ws} isAr={isAr} />
             </div>

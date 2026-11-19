@@ -1,4 +1,4 @@
-import { AlertBanner, AppFooter } from "@/components/ui";
+import { AlertBanner, AppFooter, PageHeader } from "@/components/ui";
 import { PAGE_SECTION, SHOW_UNFINISHED_SETTINGS } from "../constants";
 import type { SettingsView as SettingsViewProps } from "../hooks/use-settings-page";
 import { BillingSection } from "./billing/billing-section";
@@ -17,14 +17,9 @@ export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGover
   const locked = !canGovern;
   return (
     <div key={ws.id} className="flex min-h-0 max-w-[720px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
-      <div>
-        <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
-        <p className="text-[14px] text-text-muted">
-          {SHOW_UNFINISHED_SETTINGS
+      <PageHeader title={isAr ? PAGE_SECTION.ar : PAGE_SECTION.en} description={SHOW_UNFINISHED_SETTINGS
             ? isAr ? `الوصول للعميل والنطاق الخاص والفوترة والتكاملات لعلامة ${ws.name}.` : `Client access, custom domain, billing and integrations for ${ws.name}.`
-            : isAr ? `الوصول للعميل والتصميم والفوترة لعلامة ${ws.name}.` : `Client access, design and billing for ${ws.name}.`}
-        </p>
-      </div>
+            : isAr ? `الوصول للعميل والتصميم والفوترة لعلامة ${ws.name}.` : `Client access, design and billing for ${ws.name}.`} />
       {locked && (
         <AlertBanner
           tone="info"

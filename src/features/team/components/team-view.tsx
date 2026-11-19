@@ -1,4 +1,4 @@
-import { AppFooter, Badge } from "@/components/ui";
+import { AppFooter, Badge, PageHeader } from "@/components/ui";
 import type { TeamPageView } from "../hooks/use-team-page";
 import { PAGE_SECTION, ROLE_LABELS, ROLE_TONE } from "../constants";
 import { ApprovalSection } from "./approvals/approval-section";
@@ -11,16 +11,10 @@ export function TeamView(view: TeamPageView) {
   const { ws, isAr, myRole, canGovern, canEdit, actorName } = view;
   return (
     <div className="flex min-h-0 max-w-[820px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
-      <div>
-        <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
-        <p className="text-[14px] text-text-muted">
-          {isAr
+      <PageHeader title={isAr ? PAGE_SECTION.ar : PAGE_SECTION.en} description={<>{isAr
             ? "من يستطيع تغيير ماذا، ومن اعتمده، وكيف تتراجع عن خطأ. دورك في هذه العلامة:"
             : "Who can change what, who approved it, and how to undo a mistake. You're signed in on this brand as"}{" "}
-          <Badge tone={ROLE_TONE[myRole]}>{ROLE_LABELS[myRole][isAr ? "ar" : "en"]}</Badge>
-        </p>
-
-      </div>
+          <Badge tone={ROLE_TONE[myRole]}>{ROLE_LABELS[myRole][isAr ? "ar" : "en"]}</Badge></>} />
       <TeamSection {...view} />
       <SignOffSection ws={ws} canGovern={canGovern} isAr={isAr} />
       <ApprovalSection ws={ws} canGovern={canGovern} canPropose={canEdit} isAr={isAr} />

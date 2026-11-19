@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
+import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, useToast, PageHeader } from "@/components/ui";
 import { SearchField } from "@/components/ui";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { formatDay } from "@/features/discovery";
@@ -83,11 +83,9 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
 
   return (
     <div className="flex flex-col gap-5">
-      <header className="flex flex-wrap items-start gap-space-5">
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-space-3">
-          <h1 className="bidi-plain text-h3 font-medium">
-            {current.title}
-          </h1>
+      <PageHeader
+        title={current.title}
+        description={<div className="mt-space-3 flex flex-col items-start gap-space-3">
           <div className="flex flex-wrap items-center gap-space-4 text-caption text-text-muted">
             <span>{formatDay(callDay(current.callDate), isAr)}</span>
             {formatMinutes(current.durationMinutes, isAr) && <span>· {formatMinutes(current.durationMinutes, isAr)}</span>}
@@ -113,7 +111,8 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
               ))}
             </ul>
           )}
-        </div>
+        </div>}
+        actions={<>
         <div className="flex flex-wrap items-center gap-space-4">
           <label className="flex items-center gap-space-3 text-body text-text-secondary">
             {t("Included in analysis", "مُضمَّنة في التحليل")}
@@ -130,7 +129,8 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
             </>
           )}
         </div>
-      </header>
+        </>}
+      />
 
       <section className="mk-surface flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 sm:p-space-10">
         <div className="flex flex-wrap items-center justify-between gap-space-5">

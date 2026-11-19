@@ -1,7 +1,7 @@
 "use client";
 
 import type { Workspace } from "@/types";
-import { Button, EmptyState } from "@/components/ui";
+import { Button, EmptyState, PageHeader } from "@/components/ui";
 import { publishedGuidelineHref } from "@/lib/data/brandNavigation";
 import { PageShell } from "./page-shell";
 
@@ -11,7 +11,7 @@ export function BrandAccessNotice({ workspace, isAr }: { workspace: Workspace; i
   return (
     <PageShell workspace={workspace} section="Client review" arSection="مراجعة العميل">
       <div className="flex flex-col gap-space-6" data-client-access-notice="">
-        <h1 className="text-h1 font-medium text-text">{isAr ? "مراجعة العميل" : "Client review"}</h1>
+        <PageHeader title={isAr ? "مراجعة العميل" : "Client review"} />
         <EmptyState
           icon="lock"
           title={isAr ? "هذه صفحة داخلية لفريق العلامة." : "This is an internal team page."}
