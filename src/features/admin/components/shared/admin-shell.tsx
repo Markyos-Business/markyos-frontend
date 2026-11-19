@@ -103,7 +103,7 @@ function AdminFrame({ children }: { children: ReactNode }) {
               <div className="hidden sm:block">
                 <ThemeToggle />
               </div>
-              <AccountMenu controls={<ThemeToggle />} />
+              <AccountMenu />
             </>
           }
         />

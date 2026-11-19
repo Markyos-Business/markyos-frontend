@@ -3,7 +3,7 @@
 import { initialsFor } from "@/lib/utils";
 import Link from "next/link";
 import { NotificationBell } from "@/features/notifications";
-import { memo, useState, type ReactNode } from "react";
+import { memo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
 import { useAppActions, useCurrentAccount, useSession } from "@/contexts/AppContext";
@@ -24,15 +24,10 @@ import type { MenuLink } from "../../types";
  */
 export const AccountMenu = memo(function AccountMenu({
   isAr: isArProp,
-  controls,
   phoneLinks = [],
 }: {
   /** The page's language; the person's own interface language when not given. */
   isAr?: boolean;
-  /**
-   * Optional replacement controls for the shared theme and language row.
-   */
-  controls?: ReactNode;
   /** Account navigation available in the menu at every viewport. */
   phoneLinks?: MenuLink[];
 }) {
@@ -81,16 +76,17 @@ export const AccountMenu = memo(function AccountMenu({
             </span>
           </div>
 
-          {controls ? (
-            <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b">{controls}</div>
-          ) : (
-            // Pages with no language switch of their own (the brands gallery,
-            // People, Forms, Account) change it here.
-            <div className="flex flex-wrap items-center justify-between gap-space-4 px-space-6 py-space-4 shadow-rule-b">
+          {/* Mode and language, each named, on every page: the same place to change them everywhere. */}
+          <div className="flex flex-col gap-space-3 px-space-6 py-space-4 shadow-rule-b">
+            <div className="flex items-center justify-between gap-space-4">
+              <span className="text-body text-text-muted">{isAr ? "الوضع" : "Mode"}</span>
               <ThemeToggle isAr={isAr} />
+            </div>
+            <div className="flex items-center justify-between gap-space-4">
+              <span className="text-body text-text-muted">{isAr ? "اللغة" : "Language"}</span>
               <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" size="sm" />
             </div>
-          )}
+          </div>
 
           {phoneLinks.map((item) => (
             <Link
