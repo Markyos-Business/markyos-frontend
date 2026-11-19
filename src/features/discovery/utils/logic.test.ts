@@ -67,7 +67,11 @@ describe("status", () => {
  * The cases are copied from the backend; when both repos sit side by side
  * (as they do in the monorepo checkout), fail if the copies have drifted.
  */
-const BACKEND = resolve(__dirname, "../../../../../../markyos-backend/apps/discovery/fixtures");
+// The backend sits beside the frontend: one level up from the main checkout,
+// two from a worktree under .worktrees/. Take whichever exists.
+const BACKEND = ["../../../../../markyos-backend", "../../../../../../markyos-backend"]
+  .map((up) => resolve(__dirname, up, "apps/discovery/fixtures"))
+  .find(existsSync) ?? "";
 describe.skipIf(!existsSync(BACKEND))("fixtures match the backend's", () => {
   it.each(["question_type_cases.json", "visibility_cases.json"])("%s", (name) => {
     const ours = readFileSync(resolve(__dirname, "fixtures", name), "utf8");
