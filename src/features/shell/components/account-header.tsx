@@ -1,6 +1,6 @@
 "use client";
 
-import { DemoNotice } from "./demo-notice";
+import { BetaNotice } from "./beta-notice";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -26,5 +26,5 @@ export function AccountHeader({ search }: { search?: ReactNode }) {
     </nav>
     {search && <div className="ms-auto w-36 sm:w-48">{search}</div>}
     <div className={search ? "" : "ms-auto"}><AccountMenu phoneLinks={links} /></div>
-  </header><DemoNotice /></>;
+  </header><BetaNotice /></>;
 }

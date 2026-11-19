@@ -1,5 +1,5 @@
 import { API_ENABLED } from "@/lib/api/client";
-import { DemoNotice } from "./demo-notice";
+import { BetaNotice } from "./beta-notice";
 import type { CSSProperties, ReactNode, Ref } from "react";
 import { MobileSidebar, SidebarDrawerProvider } from "@/components/ui";
 
@@ -46,7 +46,7 @@ export function AppLayout({
             page gets the whole screen. */}
         {hasSidebar && <div className="hidden md:flex">{sidebar}</div>}
         <div ref={paneRef} className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <DemoNotice />
+          <BetaNotice />
           {topbar}
           {children}
         </div>
