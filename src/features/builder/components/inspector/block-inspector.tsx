@@ -5,6 +5,17 @@ import type { PageBlock, SocialLink, Workspace } from "@/types";
 import { FILE_ASSET_TYPES } from "../../templates";
 import { ImagePicker } from "./image-picker";
 import { Segments } from "../shared/segments";
+import { Children, type ReactNode } from "react";
+
+/**
+ * An English field and its Arabic twin, in the reader's order: Arabic first in
+ * the Arabic interface. Each field carries its own dir and lang, so English
+ * stays left-to-right inside an Arabic panel and the other way round.
+ */
+function LangPair({ isAr, children }: { isAr: boolean; children: ReactNode }) {
+  const [en, ar] = Children.toArray(children);
+  return <>{isAr ? [ar, en] : [en, ar]}</>;
+}
 
 /** The content settings of an authored block, by kind. Design settings are the `DesignInspector`'s. */
 export function BlockInspector({
@@ -34,8 +45,10 @@ export function BlockInspector({
 
       {(block.kind === "brandLogo" || block.kind === "brandColors" || block.kind === "brandType" || block.kind === "brandIcons") && (
         <>
-          <InputField size="sm" label={isAr ? "عنوان القسم (إنجليزي)" : "Section title (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "عنوان القسم (عربي)" : "Section title (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "عنوان القسم (إنجليزي)" : "Section title (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "عنوان القسم (عربي)" : "Section title (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
           <span className="text-[11px] text-text-faint">
             {isAr
               ? "هذا عرض حي — لا يوجد محتوى لتعديله هنا. غيّر الشعار أو الألوان أو الخطوط أو الأيقونات من صفحاتها الخاصة وسيتحدث هذا القسم تلقائيًا."
@@ -46,7 +59,7 @@ export function BlockInspector({
 
       {block.kind === "files" && (
         <>
-          <InputField size="sm" label={isAr ? "عنوان القسم (اختياري)" : "Section title (optional)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
+          <InputField size="sm" label={isAr ? "عنوان القسم (اختياري)" : "Section title (optional)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="auto" />
           <span className="text-[11px] text-text-faint">
             {isAr ? "اختر الملفات القابلة للتحميل" : "Pick downloadable files"}
           </span>
@@ -78,25 +91,33 @@ export function BlockInspector({
 
       {block.kind === "text" && (
         <>
-          <InputField size="sm" label={isAr ? "العنوان (إنجليزي)" : "Title (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "العنوان (عربي)" : "Title (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
-          <TextareaField size="sm" label={isAr ? "النص (إنجليزي)" : "Body (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={4} />
-          <TextareaField size="sm" label={isAr ? "النص (عربي)" : "Body (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" rows={4} />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "العنوان (إنجليزي)" : "Title (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "العنوان (عربي)" : "Title (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
+          <LangPair isAr={isAr}>
+            <TextareaField size="sm" label={isAr ? "النص (إنجليزي)" : "Body (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={4} dir="ltr" lang="en" />
+            <TextareaField size="sm" label={isAr ? "النص (عربي)" : "Body (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" lang="ar" rows={4} />
+          </LangPair>
         </>
       )}
 
       {block.kind === "quote" && (
         <>
-          <TextareaField size="sm" label={isAr ? "الاقتباس (إنجليزي)" : "Quote (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={3} />
-          <TextareaField size="sm" label={isAr ? "الاقتباس (عربي)" : "Quote (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" rows={3} />
-          <InputField size="sm" label={isAr ? "المصدر" : "Attribution"} value={block.attribution || ""} onChange={(e) => onChange({ attribution: e.target.value })} />
+          <LangPair isAr={isAr}>
+            <TextareaField size="sm" label={isAr ? "الاقتباس (إنجليزي)" : "Quote (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={3} dir="ltr" lang="en" />
+            <TextareaField size="sm" label={isAr ? "الاقتباس (عربي)" : "Quote (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" lang="ar" rows={3} />
+          </LangPair>
+          <InputField size="sm" label={isAr ? "المصدر" : "Attribution"} value={block.attribution || ""} onChange={(e) => onChange({ attribution: e.target.value })} dir="auto" />
         </>
       )}
 
       {(block.kind === "image" || block.kind === "gallery") && (
         <>
-          <InputField size="sm" label={isAr ? "تسمية (إنجليزي)" : "Caption (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "تسمية (عربي)" : "Caption (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "تسمية (إنجليزي)" : "Caption (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "تسمية (عربي)" : "Caption (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
           <ImagePicker
             ws={ws}
             isAr={isAr}
@@ -116,7 +137,7 @@ export function BlockInspector({
             dir="ltr"
             placeholder="https://youtube.com/watch?v=..."
           />
-          <InputField size="sm" label={isAr ? "العنوان (اختياري)" : "Heading (optional)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
+          <InputField size="sm" label={isAr ? "العنوان (اختياري)" : "Heading (optional)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="auto" />
           <span className="text-[11px] text-text-faint">
             {isAr ? "يدعم روابط YouTube وVimeo." : "Supports YouTube and Vimeo links."}
           </span>
@@ -125,27 +146,37 @@ export function BlockInspector({
 
       {block.kind === "button" && (
         <>
-          <InputField size="sm" label={isAr ? "التسمية (إنجليزي)" : "Label (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "التسمية (عربي)" : "Label (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "التسمية (إنجليزي)" : "Label (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "التسمية (عربي)" : "Label (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
           <InputField size="sm" label={isAr ? "الرابط" : "Link URL"} value={block.linkUrl || ""} onChange={(e) => onChange({ linkUrl: e.target.value })} dir="ltr" placeholder="https://" />
         </>
       )}
 
       {block.kind === "stat" && (
         <>
-          <InputField size="sm" label={isAr ? "الرقم (إنجليزي)" : "Value (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "الرقم (عربي)" : "Value (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
-          <InputField size="sm" label={isAr ? "الوصف (إنجليزي)" : "Caption (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} />
-          <InputField size="sm" label={isAr ? "الوصف (عربي)" : "Caption (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "الرقم (إنجليزي)" : "Value (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "الرقم (عربي)" : "Value (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "الوصف (إنجليزي)" : "Caption (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "الوصف (عربي)" : "Caption (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
         </>
       )}
 
       {block.kind === "faq" && (
         <>
-          <InputField size="sm" label={isAr ? "السؤال (إنجليزي)" : "Question (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "السؤال (عربي)" : "Question (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
-          <TextareaField size="sm" label={isAr ? "الإجابة (إنجليزي)" : "Answer (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={3} />
-          <TextareaField size="sm" label={isAr ? "الإجابة (عربي)" : "Answer (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" rows={3} />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "السؤال (إنجليزي)" : "Question (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "السؤال (عربي)" : "Question (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
+          <LangPair isAr={isAr}>
+            <TextareaField size="sm" label={isAr ? "الإجابة (إنجليزي)" : "Answer (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} rows={3} dir="ltr" lang="en" />
+            <TextareaField size="sm" label={isAr ? "الإجابة (عربي)" : "Answer (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" lang="ar" rows={3} />
+          </LangPair>
         </>
       )}
 
@@ -186,10 +217,14 @@ export function BlockInspector({
 
       {block.kind === "form" && (
         <>
-          <InputField size="sm" label={isAr ? "العنوان (إنجليزي)" : "Heading (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} />
-          <InputField size="sm" label={isAr ? "العنوان (عربي)" : "Heading (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" />
-          <InputField size="sm" label={isAr ? "الوصف (إنجليزي)" : "Description (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} />
-          <InputField size="sm" label={isAr ? "الوصف (عربي)" : "Description (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" />
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "العنوان (إنجليزي)" : "Heading (English)"} value={block.title || ""} onChange={(e) => onChange({ title: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "العنوان (عربي)" : "Heading (Arabic)"} value={block.arTitle || ""} onChange={(e) => onChange({ arTitle: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
+          <LangPair isAr={isAr}>
+            <InputField size="sm" label={isAr ? "الوصف (إنجليزي)" : "Description (English)"} value={block.text || ""} onChange={(e) => onChange({ text: e.target.value })} dir="ltr" lang="en" />
+            <InputField size="sm" label={isAr ? "الوصف (عربي)" : "Description (Arabic)"} value={block.arText || ""} onChange={(e) => onChange({ arText: e.target.value })} dir="rtl" lang="ar" />
+          </LangPair>
           <InputField size="sm"
             label={isAr ? "البريد المستقبِل" : "Receiving email"}
             value={block.linkUrl || ""}
