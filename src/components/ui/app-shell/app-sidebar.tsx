@@ -76,8 +76,8 @@ export function AppSidebar({
   subtitle?: string;
   /** In place of the Markyos mark: the brand's logo or its letter. */
   avatar?: ReactNode;
-  /** A way to another brand or area, beside the title. */
-  switcher?: { href: string; label: string };
+  /** A way to another brand or area, beside the title, e.g. a brand switcher dropdown. */
+  switcher?: ReactNode;
   /** Under the title: a card such as the brand's public site. Hidden on the rail. */
   card?: ReactNode;
   /** The bottom bar's person: given whether the rail is collapsed. */
@@ -211,11 +211,7 @@ export function AppSidebar({
             </span>
           )}
         </Link>
-        {!collapsed && switcher && (
-          <Link href={switcher.href} aria-label={switcher.label} title={switcher.label} className="grid size-7 shrink-0 place-items-center rounded-lg text-text-muted">
-            <Icon name="sort" size={16} />
-          </Link>
-        )}
+        {!collapsed && switcher && <span className="shrink-0">{switcher}</span>}
         {/* No expand control while the viewport is what's forcing the rail — a button that does nothing is worse than none. */}
         {!inDrawer && !(collapsed && narrow) && (
           <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(!collapsed)} />

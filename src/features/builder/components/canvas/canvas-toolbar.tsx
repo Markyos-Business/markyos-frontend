@@ -1,15 +1,14 @@
 import { Button, Icon, IconButton, Kbd } from "@/components/ui";
 import { BLOCK_META } from "@/features/guideline-site";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
-import { ViewSwitcher } from "./view-switcher";
 
-/** The bar over the canvas: the page and its address, the shortcut hint, undo and redo, the view, and auto-fill. */
+/** The bar over the canvas: the page and its address, the shortcut hint, undo and redo, and auto-fill. The view moved to the top bar. */
 export function CanvasToolbar(b: BuilderPageState) {
   const { ws, isAr, activePage, selectedId, selected, autoFillCount } = b;
   const roundIcon = "grid h-8 w-8 cursor-pointer place-items-center rounded-full text-text-muted disabled:cursor-not-allowed disabled:opacity-30";
   return (
     <div className="flex h-12 shrink-0 items-center gap-2 px-5 shadow-rule-b">
-      <h1 className="text-[13px] font-semibold"><span className="sr-only">{isAr ? "محرر الدليل: " : "Guideline editor: "}</span>{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h1>
+      <h2 className="text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h2>
       {activePage && (
         <>
           <IconButton icon="pen" label={isAr ? "أعد تسمية الصفحة" : "Rename page"} onClick={b.onRenamePage} className="cursor-pointer text-text-faint" />
@@ -75,7 +74,6 @@ export function CanvasToolbar(b: BuilderPageState) {
             <Icon name="undo" size={13} className="-scale-x-100" />
           </button>
         </span>
-        <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />
         {!activePage && (
           <Button
             variant="soft"

@@ -35,7 +35,9 @@ test.describe("publishing", () => {
 
     // Take offline: asks first, then the client's link stops working.
     await page.reload();
-    await page.getByRole("button", { name: "Take offline" }).click();
+    // In the top bar's More menu, beside Update.
+    await page.getByRole("button", { name: "More" }).click();
+    await page.getByRole("menuitem", { name: "Take offline" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Take offline" }).click();
     await expect(page.getByText("The site is offline. Clients can no longer open it.")).toBeVisible();
     await expect(call(`/public/sites/${brand.slug}/`)).rejects.toThrow();
