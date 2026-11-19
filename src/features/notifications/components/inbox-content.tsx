@@ -1,14 +1,18 @@
 "use client";
 import { AppDate, Button, Icon, Skeleton } from "@/components/ui";
+import { useMinBusy } from "@/hooks/useMinBusy";
 import { notificationText } from "../copy";
 import type { NotificationItem } from "../types";
 import type { useNotifications } from "../hooks/use-notifications";
 export function InboxContent({n,isAr,unread,setUnread,onOpenItem}:{n:ReturnType<typeof useNotifications>;isAr:boolean;unread:boolean;setUnread:(value:boolean)=>void;onOpenItem:(item:NotificationItem)=>Promise<void>}){
   const t=(en:string,ar:string)=>isAr?ar:en;
+  const refreshing=useMinBusy(n.refreshing);
+  // While `loading`, the Button is already blocked through aria-disabled; leaving native
+  // `disabled` off keeps keyboard focus on it. Other loads (load more, filters, marking) only disable it.
   return <>
       <div className="flex flex-wrap items-center justify-between gap-space-3">
         <div role="group" aria-label={t("Notification view","عرض الإشعارات")} className="flex gap-space-2">{[false,true].map(value=><Button key={String(value)} size="sm" variant={unread===value?"soft":"outline"} aria-pressed={unread===value} onClick={()=>setUnread(value)} disabled={n.busy}>{value?t("Unread","غير المقروءة"):t("All","الكل")}</Button>)}</div>
-        <div className="flex flex-wrap gap-space-3"><Button size="sm" variant="outline" disabled={n.loading||n.busy} onClick={()=>void n.reload()}>{t("Refresh","تحديث")}</Button><Button size="sm" variant="link" onClick={()=>void n.markAll()} disabled={n.loading||n.busy||!n.count}>{t("Mark all as read","تحديد الكل كمقروء")}</Button></div>
+        <div className="flex flex-wrap gap-space-3"><Button size="sm" variant="outline" icon={<Icon name="sync" size={18}/>} disabled={(n.busy||n.loading)&&!refreshing} loading={refreshing} loadingText={t("Refreshing…","جارٍ التحديث…")} onClick={()=>void n.reload()}>{t("Refresh","تحديث")}</Button><Button size="sm" variant="link" onClick={()=>void n.markAll()} disabled={n.loading||n.busy||!n.count}>{t("Mark all as read","تحديد الكل كمقروء")}</Button></div>
       </div>
       {(n.error||n.actionError)&&<div role="alert" className="flex flex-wrap items-center justify-between gap-space-3 rounded-lg bg-danger-soft p-space-4 text-caption text-danger"><span>{n.actionError?t("Could not save your change. Try again.","تعذر حفظ التغيير. حاول مرة أخرى."):t("Could not load notifications. Try again.","تعذر تحميل الإشعارات. حاول مرة أخرى.")}</span>{n.error&&<Button size="sm" variant="outline" disabled={n.loading||n.busy} onClick={()=>void n.reload()}>{t("Retry","إعادة المحاولة")}</Button>}</div>}
       {n.loading&&!n.items?<div aria-busy="true" className="flex flex-col gap-space-4">{[0,1,2].map(i=><Skeleton key={i} className="h-20 w-full rounded-lg"/>)}</div>:n.items?.length===0?<div role="status" className="py-space-10 text-center"><Icon name="bell" size={22} className="mb-space-3 text-text-muted"/><h3 className="text-body font-medium">{unread?t("You're all caught up","لا توجد إشعارات غير مقروءة"):t("No notifications yet","لا توجد إشعارات بعد")}</h3><p className="mt-space-2 text-caption text-text-muted">{t("New account and form updates will appear here.","ستظهر تحديثات الحساب والنماذج الجديدة هنا.")}</p></div>:<ul className="flex flex-col gap-space-3">{n.items?.map(item=>{

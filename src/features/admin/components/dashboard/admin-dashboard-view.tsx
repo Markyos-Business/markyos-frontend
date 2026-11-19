@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertBanner, Button, Skeleton } from "@/components/ui";
+import { AlertBanner, Button, Icon, Skeleton } from "@/components/ui";
+import { useMinBusy } from "@/hooks/useMinBusy";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import { useAdminStats } from "../../hooks/shared/use-admin-stats";
@@ -18,6 +19,8 @@ export function AdminDashboardView() {
   const { data, error, loading, reload } = useAdminStats();
   const activity = useRequest(getDashboardActivity, "dashboard-activity");
   const refresh = () => { reload(); activity.reload(); };
+  // A reload has data on screen already; the first load is the skeleton's job, so the button only disables.
+  const refreshing = useMinBusy((loading && data !== null) || (activity.loading && activity.data !== null));
   const { isAr, lang } = useAdminLang();
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
@@ -28,8 +31,8 @@ export function AdminDashboardView() {
         subtitle={t("Account growth, brand activity and follow-up in one place.", "نمو الحسابات ونشاط العلامات والمتابعة في مكان واحد.")}
         primaryAction={<Button href="/admin/users" variant="primary" size="sm">{t("Manage users", "إدارة المستخدمين")}</Button>}
         secondaryActions={
-          <Button variant="outline" size="sm" onClick={refresh} disabled={loading || activity.loading}>
-            {loading || activity.loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
+          <Button variant="outline" size="sm" icon={<Icon name="sync" size={18} />} onClick={refresh} disabled={(loading || activity.loading) && !refreshing} loading={refreshing} loadingText={t("Refreshing…", "جارٍ التحديث…")}>
+            {t("Refresh", "تحديث")}
           </Button>
         }
       />

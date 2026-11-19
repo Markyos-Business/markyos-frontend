@@ -11,6 +11,8 @@ export function useNotifications(open: boolean, unreadOnly: boolean) {
   const [count, setCount] = useState<number | null>(null);
   const [list, setList] = useState<ListState>({ items: null, loading: true, error: false, page: 1, more: false });
   const [busy, setBusy] = useState(false);
+  /** Only a Refresh the user asked for; load more, filters and mutations load too. */
+  const [refreshing, setRefreshing] = useState(false);
   const [actionError, setActionError] = useState(false);
   const alive = useRef(true);
   const sequence = useRef(0);
@@ -99,9 +101,14 @@ export function useNotifications(open: boolean, unreadOnly: boolean) {
     }
   };
 
+  const reload = async () => {
+    setRefreshing(true);
+    try { await load(); } finally { if (alive.current) setRefreshing(false); }
+  };
+
   return {
-    count, ...list, busy, actionError,
-    reload: () => load(), loadMore: () => load(list.page + 1),
+    count, ...list, busy, refreshing, actionError,
+    reload, loadMore: () => load(list.page + 1),
     mark: (item: NotificationItem) => mutate(() => setNotificationRead(item.id, !item.readAt)),
     markAll: () => mutate(readAllNotifications),
     markOpened: (item: NotificationItem) => item.readAt ? Promise.resolve(true) : mutate(() => setNotificationRead(item.id, true)),
