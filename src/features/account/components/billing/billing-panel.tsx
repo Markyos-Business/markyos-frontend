@@ -1,5 +1,6 @@
 "use client";
 
+import { plural } from "@/lib/i18n/plural";
 import { BrandPlanOptions } from "./brand-plan-options";
 import Link from "next/link";
 import { Icon, StatTile, Section, Row, Badge, EmptyHint, Stagger } from "@/components/ui";
@@ -52,10 +53,15 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
           />
         )}
 
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
+        {/* Passes are no longer sold; the tile stays only for brands that already hold one. */}
+        <Stagger className={`grid grid-cols-1 gap-space-4 ${passes.length ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           <StatTile value={`$${monthly}`} label={t("Recurring, per month", "متكرر شهريًا")} />
-          <StatTile value={`$${oneTimeTotal}`} label={isAr ? `لمرة واحدة، ${passes.length} تصريح` : `One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
-          <StatTile value={String(paid.length)} label={isAr ? `مدفوعة من ${workspaces.length} علامات` : `Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
+          {passes.length > 0 && <StatTile value={`$${oneTimeTotal}`} label={isAr
+            ? plural("ar", passes.length, { one: "لمرة واحدة، تصريح واحد", two: "لمرة واحدة، تصريحان", few: "لمرة واحدة، {n} تصاريح", other: "لمرة واحدة، {n} تصريح" })
+            : plural("en", passes.length, { one: "One-time, {n} pass", other: "One-time, {n} passes" })} />}
+          <StatTile value={String(paid.length)} label={isAr
+            ? plural("ar", workspaces.length, { one: "مدفوعة من علامة واحدة", two: "مدفوعة من علامتين", few: "مدفوعة من {n} علامات", other: "مدفوعة من {n} علامة" })
+            : plural("en", workspaces.length, { one: "Paid of {n} brand", other: "Paid of {n} brands" })} />
         </Stagger>
       </Section>
 
