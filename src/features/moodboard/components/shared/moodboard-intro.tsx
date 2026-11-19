@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/ui";
 import { PAGE_SECTION } from "../../constants";
 
 /**
@@ -6,10 +7,20 @@ import { PAGE_SECTION } from "../../constants";
  * whenever there is no board yet, which is when it is being read.
  */
 export function MoodboardIntro({ isAr, compact, hidden }: { isAr: boolean; compact: boolean; hidden: boolean }) {
+  const title = isAr ? PAGE_SECTION.ar : PAGE_SECTION.en;
+  const description = <MoodboardIntroText isAr={isAr} />;
   return (
+    // Compact sits above an open board, whose own title is the page's h1, so
+    // here it is a label rather than a second heading.
     <div className={`max-w-[860px] shrink-0 ${hidden ? "hidden" : ""}`}>
-      <h1 className={`font-display font-semibold tracking-tight ${compact ? "text-[20px]" : "mb-1.5 text-[30px]"}`}>{isAr ? PAGE_SECTION.ar : PAGE_SECTION.en}</h1>
-      <p className={`text-[14px] text-text-muted ${compact ? "hidden" : ""}`}>
+      {compact ? <div className="text-h4 font-medium text-text">{title}</div> : <PageHeader title={title} description={description} />}
+    </div>
+  );
+}
+
+function MoodboardIntroText({ isAr }: { isAr: boolean }) {
+  return (
+    <>
         {isAr ? (
           <>
             اجمع المراجع، واتفق على اتجاه، ثم اقترح ما استقرّ عليه الفريق. كل ما هنا مُعلَّم <strong className="text-text-secondary">استكشافًا</strong> — لا يصل
@@ -21,7 +32,6 @@ export function MoodboardIntro({ isAr, compact, hidden }: { isAr: boolean; compa
             <strong className="text-text-secondary">exploration</strong> — it never reaches the published guideline, an export, or a share link.
           </>
         )}
-      </p>
-    </div>
+    </>
   );
 }

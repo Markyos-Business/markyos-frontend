@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDialog, useToast, PageHeader } from "@/components/ui";
 import { translateText } from "@/features/strategy";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { STATUS_META } from "../../constants";
@@ -79,9 +79,9 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
 
   return (
     <div className="flex flex-col gap-5 print:gap-space-6">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
+      <PageHeader
+        title={form.name}
+        description={<>
           <div className="flex flex-wrap items-center gap-space-4 text-caption text-text-muted">
             <Badge tone={status.tone} dot>
               {status[lang]}
@@ -90,7 +90,8 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               {form.recipientName || t("No client named", "لم يُحدَّد العميل")} · {form.workspaceName}
             </span>
           </div>
-        </div>
+        </>}
+        actions={<>
         <div className="flex flex-wrap gap-space-3 print:hidden">
           <Button variant="outline" size="sm" href={builderHref}>
             {t("Questions", "الأسئلة")}
@@ -112,7 +113,8 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
           </Button>
           {analysis}
         </div>
-      </div>
+        </>}
+      />
 
       <AlertBanner message={error} />
 

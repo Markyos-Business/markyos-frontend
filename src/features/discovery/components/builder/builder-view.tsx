@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type DragEvent } from "react";
-import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, TabPanel, Tabs, useTabIds, tabButtonId, useDialog } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, TabPanel, Tabs, useTabIds, tabButtonId, useDialog, PageHeader } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/use-form-editor";
@@ -157,16 +157,17 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
+      <PageHeader
+        title={form.name}
+        description={<>
           <div className="flex flex-wrap items-center gap-space-4">
             <Badge tone={status.tone} dot>
               {status[isAr ? "ar" : "en"]}
             </Badge>
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
-        </div>
+        </>}
+        actions={<>
         {both && (
           <Tabs {...tabIds}
             label={t("Edit in", "التحرير بـ")}
@@ -182,7 +183,8 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         <Button variant="primary" href={sendHref} icon={<Icon name="arrow-right" size={18} />}>
           {form.status === "draft" ? t("Theme and send", "التصميم والإرسال") : t("Theme and link", "التصميم والرابط")}
         </Button>
-      </div>
+        </>}
+      />
 
       <div id={tabIds.panelId} role={both ? "tabpanel" : undefined} aria-labelledby={both ? tabButtonId(tabIds.id, mode) : undefined} tabIndex={both ? 0 : undefined} className="flex min-w-0 flex-col gap-5">
       <AlertBanner message={editor.error} />

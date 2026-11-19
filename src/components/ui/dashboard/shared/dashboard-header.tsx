@@ -17,7 +17,13 @@ export interface DashboardHeaderProps {
   className?: string;
 }
 
-/** Top of a dashboard (brief §5): heading-xl title, one line of context, actions on the end side (wrap on mobile). */
+/**
+ * Top of a dashboard (brief §5): heading-xl title, one line of context, actions on the end side (wrap on mobile).
+ *
+ * Kept beside PageHeader rather than folded into it: the dashboard family
+ * takes a rich title, can hide it when the navbar already shows one, and
+ * steps the title down to h2 size on a phone. Every other page uses PageHeader.
+ */
 export default function DashboardHeader({ title, hideTitle = false, subtitle, primaryAction, secondaryActions, as: Heading = "h1", className }: DashboardHeaderProps) {
   return (
     <header className={clsx("flex flex-col gap-4 md:flex-row md:items-end md:justify-between", className)}>

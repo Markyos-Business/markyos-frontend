@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
+import { useToast, Icon, PageHeader } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
@@ -44,21 +44,12 @@ export function ColorContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الألوان" : "Color"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? "الألوان" : "Color"}
+        description={isAr
               ? `${ws.colors.length} لون · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
               : `${ws.colors.length} colors · click a code to copy it, or the pencil to edit.`}
-          </p>
-        </div>
+        actions={<>
         <div className="flex gap-2">
           <button
             type="button"
@@ -88,7 +79,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             {isAr ? "أضف لونًا" : "Add color"}
           </button>
         </div>
-      </div>
+        </>}
+      />
 
       {/* Contrast sits next to the palette because that is where the fix is —
           a failing ratio is a swatch to change, not a report to file. */}

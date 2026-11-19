@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { SearchField, SortControl } from "@/components/ui";
+import { PageHeader, SearchField, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
@@ -89,7 +89,11 @@ interface Row {
   asset?: Asset;
 }
 
-export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManageLogo: () => void }) {
+/**
+ * `title` follows where the library is opened: "Assets" from the sidebar's
+ * Assets page, "Brand files" as the Visual identity tab of the same name.
+ */
+export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files", ar: "ملفات الهوية" } }: { ws: Workspace; onManageLogo: () => void; title?: { en: string; ar: string } }) {
   const { addAsset, removeAsset, setAssetTags, uiLang } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -311,20 +315,12 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
           </span>
         </div>
       )}
-      {/* Wraps on a narrow window. Fixed side by side, the paragraph was
-          squeezed to about 150px on a phone — three words a line — while the
-          Upload button sat beside it holding the rest. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-            {isAr ? "ملفات الهوية" : "Brand files"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? title.ar : title.en}
+        description={isAr
               ? "شعاراتك وخطوطك وصورك في مكتبة واحدة. أعد استخدام الملفات نفسها في أنحاء هوية علامتك."
               : "Keep your logos, fonts and images in one library. Reuse the same files throughout your brand identity."}
-          </p>
-        </div>
+        actions={<>
         <input
           ref={inputRef}
           type="file"
@@ -343,7 +339,8 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
         >
           {isAr ? "رفع ملف" : "Upload asset"}
         </button>
-      </div>
+        </>}
+      />
 
       <div className="flex items-center gap-2.5 flex-wrap">
         <SearchField

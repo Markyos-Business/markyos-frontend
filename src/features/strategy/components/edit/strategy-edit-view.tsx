@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/ui";
 import { SINGLE_TEXT_TABS } from "../../constants";
 import type { StrategyPageState } from "../../hooks/use-strategy-page";
 import { AudienceTab } from "./tabs/audience-tab";
@@ -20,14 +21,9 @@ export function StrategyEditView({ ws, isAr, lang, tab, onTab, emptyTabs }: Stra
     <div className="flex min-h-0 max-w-[820px] flex-1 flex-col gap-5 overflow-auto px-7 py-6.5">
       {/* The page's own heading: without it the screen announced itself as an
           unlabelled region containing eight unlabelled boxes. */}
-      <div className="flex flex-col gap-1.5">
-        <h1 className="font-display text-[26px] font-semibold tracking-tight">{isAr ? "الاستراتيجية" : "Strategy"}</h1>
-        <p className="max-w-[64ch] text-[13.5px] text-text-muted">
-          {isAr
+      <PageHeader title={isAr ? "الاستراتيجية" : "Strategy"} description={isAr
             ? "الطبقة التي تعلو الملفات: لماذا توجد العلامة، ولمن، وبأي صوت. كل قسم في تبويب أعلاه."
-            : "The layer above the files: why this brand exists, who it is for, and how it sounds. Each section is a tab above."}
-        </p>
-      </div>
+            : "The layer above the files: why this brand exists, who it is for, and how it sounds. Each section is a tab above."} />
       <TranslationNotice ws={ws} isAr={isAr} />
       <div key={`${tab}-${lang}`} className="flex flex-col gap-5">
         {single && <SingleTextTab ws={ws} lang={lang} {...single} />}

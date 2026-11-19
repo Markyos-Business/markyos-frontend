@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon, EmptyHint } from "@/components/ui";
+import { Icon, EmptyHint, PageHeader } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
 import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -58,16 +58,12 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      <div>
-        <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-          {isAr ? "مدقّق النصوص" : "Copy linter"}
-        </h1>
-        <p className="text-[14px] max-w-[70ch]" style={{ color: "var(--text-muted)" }}>
-          {isAr
+      <PageHeader
+        title={isAr ? "مدقّق النصوص" : "Copy linter"}
+        description={isAr
             ? "الصق النسختين الإنجليزية والعربية قبل النشر. يفحص المدقّق النص مقابل مصفوفة النبرة الخاصة بهذه الهوية، ثم يفحص الأخطاء التي لا يراها مدقّق لاتيني: الترقيم العربي، التطويل، خلط الأرقام، وترتيب الاتجاهين."
             : "Paste the English and Arabic before it ships. Every line is checked against this brand's own voice matrix, then against the mistakes a Latin-only linter can't see — Arabic punctuation, tatweel, mixed digits, and bidi ordering."}
-        </p>
-      </div>
+      />
 
       {ws.strategy.voiceTraits.length === 0 ? (
         <div

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
+import { useToast, Icon, PageHeader } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/features/guideline-site";
 import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "../../utils/font-file";
@@ -203,22 +203,12 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
           plain tag for exactly this (see BrandFonts); this now matches it. */}
       <style>{fontFaceCss}</style>
 
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الخطوط" : "Typography"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? "الخطوط" : "Typography"}
+        description={isAr
               ? "كتابتان، مقياس واحد. العربية تُصفّ بمقاييسها لا بمقاييس اللاتينية منقولة إليها. أفلِت ملفات خطوطك هنا أو استورد عائلة من Google Fonts أدناه؛ وما تطبّقه هنا يسري على موقع الدليل كله بالكتابتين."
               : "Two scripts, one scale. Arabic is set natively — never a transliteration of the Latin metrics. Drop in your own font files or import a family from Google Fonts below; whatever you apply here sets the whole guideline site, in both scripts."}
-          </p>
-        </div>
-      </div>
+      />
 
       <div dir={rowDir} className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
         <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Icon } from "@/components/ui";
+import { Icon, PageHeader } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { LogoSlotCard } from "./logo-slot-card";
 import { ClearspacePanel } from "./clearspace-panel";
@@ -69,21 +69,12 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الشعار" : "Logo system"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? "الشعار" : "Logo system"}
+        description={isAr
               ? "ثلاث خانات. الشعار العربي واللاتيني قفلان منفصلان، والرمز مشترك بينهما. ولكل خانة نسخة فاتحة خاصة بها للخلفيات الداكنة."
               : "Three slots. Arabic and Latin are separate lockups — the mark is shared. Each one can carry its own light version for dark backgrounds."}
-          </p>
-        </div>
+        actions={<>
         <button
           type="button"
           onClick={() => setShowDownload(true)}
@@ -94,7 +85,8 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         >
           {isAr ? "تنزيل الملفات" : "Download assets"}
         </button>
-      </div>
+        </>}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
         {SLOT_ORDER.map((meta) => (

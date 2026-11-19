@@ -1,6 +1,6 @@
 "use client";
 
-import { AppFooter, EmptyHint, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import { AppFooter, EmptyHint, TabPanel, Tabs, useTabIds, PageHeader } from "@/components/ui";
 import type { Draft } from "@/types";
 import type { DraftsTab } from "../hooks/use-drafts-page";
 import { DraftCard } from "./draft-card";
@@ -22,15 +22,10 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
     <div className="flex min-h-0 max-w-[860px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
-      <div>
-        <h1 className="mb-1.5 font-display text-[30px] font-semibold tracking-tight">{isAr ? "المسودات" : "Drafts"}</h1>
-        <p className="text-[14px] text-text-muted">
-          {t(
+      <PageHeader title={isAr ? "المسودات" : "Drafts"} description={t(
             "Everything a discovery questionnaire, an import or a palette read has proposed. Nothing here has changed the brand — it changes when you accept it.",
             "كل ما اقترحه استبيان استكشاف أو استيراد أو قراءة ألوان. لا شيء هنا غيّر العلامة بعد، فالتغيير يحدث عند قبولك."
-          )}
-        </p>
-      </div>
+          )} />
 
       <Tabs {...tabIds}
         variant="pill"

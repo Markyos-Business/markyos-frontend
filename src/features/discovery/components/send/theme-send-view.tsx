@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast, PageHeader } from "@/components/ui";
 import { InputField, SegmentedToggle, SelectInput } from "@/components/ui";
 import type { Lang } from "@/types";
 import { STATUS_META } from "../../constants";
@@ -89,16 +89,17 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
+      <PageHeader
+        title={form.name}
+        description={<>
           <div className="flex flex-wrap items-center gap-space-4">
             <Badge tone={status.tone} dot>
               {status[isAr ? "ar" : "en"]}
             </Badge>
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
-        </div>
+        </>}
+        actions={<>
         <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
@@ -107,7 +108,8 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             {t("Answers", "الإجابات")}
           </Button>
         )}
-      </div>
+        </>}
+      />
 
       <AlertBanner message={editor.error} />
 
