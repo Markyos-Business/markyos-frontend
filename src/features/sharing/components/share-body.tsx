@@ -31,8 +31,8 @@ export function ShareBody({ share }: { share: ReadyShare }) {
         <Icon name="eye" size={12} className="mt-[10px]" />
         <span className="mt-[10px]">
           {isAr
-            ? "رابط للقراءة فقط. يعرض أحدث نسخة، ويمكن للاستوديو إيقافه في أي وقت."
-            : "A read-only link. It shows the current version, and the studio can switch it off at any time."}
+            ? "رابط للقراءة فقط. يعرض أحدث نسخة، ويمكن لمن شاركه إيقافه في أي وقت."
+            : "A read-only link. It shows the current version, and whoever shared it can switch it off at any time."}
         </span>
       </div>
     </main>

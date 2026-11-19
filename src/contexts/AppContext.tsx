@@ -1173,7 +1173,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = useCallback(
     async (body: GoogleSignInBody): Promise<{ error?: string; pending?: GooglePendingSignup }> => {
       // There is no Google in the browser-only build: no server to check the code.
-      if (!API_ENABLED) return { error: "Google sign-in needs the Markyos server." };
+      if (!API_ENABLED) return { error: langOf(stateRef.current) === "ar" ? "تسجيل الدخول عبر Google غير متاح في العرض التجريبي." : "Google sign-in isn't available in the demo." };
       try {
         const res = await authApi.googleSignIn(body);
         if (res.kind === "needsAccountType") {
@@ -1755,7 +1755,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const confirmPurchase = useCallback(
     async (workspaceId: string, sessionId: string) => {
-      if (!API_ENABLED) throw new Error("Payment verification needs the Markyos server.");
+      if (!API_ENABLED) throw new Error("Payments aren't available in the demo.");
       const result = await api<{ status: string; billing: Billing }>("/billing/confirm/", {
         method: "POST", body: { brandId: workspaceId, sessionId },
       });

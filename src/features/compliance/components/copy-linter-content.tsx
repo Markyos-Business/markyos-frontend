@@ -131,8 +131,8 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
       <p className="text-[11.5px] max-w-[70ch]" style={{ color: "var(--text-faint)" }}>
         {isAr
-          ? "كل قاعدة هنا حرفية وقابلة للتفسير — تطابقت عبارة أو لم تتطابق. لا يُرسل النص إلى أي خادم أو نموذج؛ الفحص يجري في متصفحك، وما تكتبه هنا لا يُحفظ."
-          : "Every rule here is literal and explainable — a phrase matched or it didn't. Nothing is sent to a server or a model; the check runs in your browser, and what you type here isn't saved."}
+          ? "كل قاعدة هنا واضحة: إما أن تتطابق العبارة أو لا. يجري الفحص على جهازك، ولا يُرسل ما تكتبه ولا يُحفظ."
+          : "Every rule here is plain: a phrase matches or it doesn't. The check runs on your device, and what you type isn't sent or saved."}
       </p>
     </div>
   );

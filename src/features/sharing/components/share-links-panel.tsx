@@ -174,8 +174,8 @@ export function ShareLinksPanel({
                   sharing that browser. */}
               <p className="text-[11px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
                 {isAr
-                  ? "تُحفظ بيانات هذا الإصدار في هذا المتصفح، لذا يفتح الرابط من هذا المتصفح فقط."
-                  : "This build keeps its data in this browser, so a link opens for anyone using this browser — not yet across devices."}
+                  ? "في العرض التجريبي، يفتح الرابط في هذا المتصفح فقط."
+                  : "In the demo, a link only opens in this browser."}
               </p>
             </div>
           )}

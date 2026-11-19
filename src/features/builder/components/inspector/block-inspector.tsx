@@ -199,8 +199,8 @@ export function BlockInspector({
           />
           <span className="text-[11px] text-text-faint">
             {isAr
-              ? "عند الإرسال، يفتح الزائر تطبيق البريد الخاص به — لا يوجد خادم خلفي."
-              : "On submit, this opens the visitor's own email client — there's no backend involved."}
+              ? "عند الإرسال، يفتح تطبيق البريد لدى الزائر والرسالة جاهزة للإرسال."
+              : "On submit, this opens the visitor's email app with the message ready to send."}
           </span>
         </>
       )}

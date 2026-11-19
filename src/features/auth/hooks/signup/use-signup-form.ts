@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
+import { accountCapabilities } from "@/lib/data/accountExperience";
 import { useToast } from "@/components/ui";
 import type { AccountType } from "@/types";
 import { ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
@@ -153,7 +154,7 @@ export function useSignupForm() {
       return;
     }
     showToast(
-      accountType === "company" ? c.signup.createdCompany : c.signup.created,
+      accountType && accountCapabilities(accountType).audience === "team" ? c.signup.createdCompany : c.signup.created,
       "success"
     );
     router.push("/brands/new");

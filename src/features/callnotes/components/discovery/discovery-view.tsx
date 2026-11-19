@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -32,6 +33,7 @@ const formHref = (slug: string, form: FeedForm) => `/w/${slug}/forms/${form.id}/
 export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) {
   const tabIds = useTabIds();
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const { data, error, loading, reload } = useDiscoveryFeed(brandId);
   const router = useRouter();
   const pathname = usePathname();
@@ -68,10 +70,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("Discovery", "الاستكشاف")}
-        description={t(
-          "What the client told you: their answers to the questionnaire, and your notes from calls. The analysis reads both.",
-          "ما قاله العميل: إجاباته على الاستبيان، وملاحظاتك من المكالمات. يقرأ التحليل كليهما."
-        )}
+        description={copy.discoveryIntro}
       />
 
       <AlertBanner message={error} />
@@ -110,10 +109,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
               <EmptyState
                 icon="clipboard-list"
                 title={t("No questionnaire yet.", "لا يوجد استبيان بعد.")}
-                description={t(
-                  "Write a questionnaire, then copy its link and send it to your client. Their answers appear here.",
-                  "أنشئ استبيانًا، ثم انسخ رابطه وأرسله إلى عميلك. ستظهر إجاباته هنا."
-                )}
+                description={copy.questionnaireEmpty}
                 action={newFormButton || undefined}
               />
             </div>
@@ -172,6 +168,7 @@ type FormRowProps = { form: FeedForm; slug: string; isAr: boolean; canEdit: bool
 function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
   const lang = isAr ? "ar" : "en";
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const router = useRouter();
   const { showToast } = useToast();
   const [busy, setBusy] = useState(false);
@@ -188,7 +185,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
       if (sent.publicToken) {
         try {
           await navigator.clipboard.writeText(publicUrl(sent.publicToken));
-          showToast(t("Link ready and copied. Send it to your client.", "الرابط جاهز ونُسخ. أرسله إلى عميلك."), "success");
+          showToast(copy.linkReady, "success");
         } catch {
           showToast(t("Link ready. Copy it from the row.", "الرابط جاهز. انسخه من السطر."), "success");
         }
@@ -227,7 +224,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
           text={link}
           label={t("Copy link", "نسخ الرابط")}
           copiedLabel={t("Copied", "نُسخ")}
-          copiedMessage={t("Link copied. Send it to your client.", "نُسخ الرابط. أرسله إلى عميلك.")}
+          copiedMessage={copy.linkCopied}
           failedMessage={t("Couldn't copy. Open the questionnaire's link page to copy it.", "تعذّر النسخ. افتح صفحة رابط الاستبيان لنسخه.")}
         />
       ) : (
@@ -252,7 +249,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
           isDraft
             ? { label: t("Edit questions", "تعديل الأسئلة"), icon: "pen", onSelect: () => router.push(formHref(slug, form)) }
             : { label: t("Open answers", "فتح الإجابات"), icon: "eye", onSelect: () => router.push(formHref(slug, form)) },
-          ...(link ? [{ label: t("Open the client's page", "فتح صفحة العميل"), icon: "external-link-alt", onSelect: () => window.open(link, "_blank", "noopener") }] : []),
+          ...(link ? [{ label: copy.openAnswerPage, icon: "external-link-alt", onSelect: () => window.open(link, "_blank", "noopener") }] : []),
           { label: t("Theme, link and sending", "التصميم والرابط والإرسال"), icon: "share-alt", tone: "info" as const, onSelect: () => router.push(`/w/${slug}/forms/${form.id}/send`) },
         ]}
       />

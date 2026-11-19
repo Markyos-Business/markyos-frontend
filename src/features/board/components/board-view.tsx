@@ -14,7 +14,7 @@ export function BoardView({ board }: { board: BoardState }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-5 px-5 py-7 sm:px-10">
       <div className="max-w-[720px]">
-        <h1 className="mb-1.5 font-display text-[28px] font-semibold tracking-tight">{t("Studio board", "لوحة الاستوديو")}</h1>
+        <h1 className="mb-1.5 font-display text-[28px] font-semibold tracking-tight">{t("Brand board", "لوحة العلامات")}</h1>
         <p className="text-[14px] text-text-muted">
           {t(
             "Every brand you own, by where it has got to. Drag a card, or use the arrows — this is a lifecycle board, not a CRM, so nothing here tracks a deal.",

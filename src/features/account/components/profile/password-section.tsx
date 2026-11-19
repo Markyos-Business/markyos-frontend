@@ -17,8 +17,8 @@ export function PasswordSection({ account, password }: { account: Account; passw
           `We'll email a secure link to ${account.email}. Open it to choose a new password.`,
           `سنرسل رابطًا آمنًا إلى ${account.email}. افتحه لاختيار كلمة مرور جديدة.`,
         ) : t(
-          "Email delivery is unavailable in this browser-only demo.",
-          "إرسال البريد غير متاح في هذا العرض التجريبي المحلي.",
+          "Password emails aren't sent in the demo.",
+          "لا تُرسل رسائل كلمة المرور في العرض التجريبي.",
         )}
         right={
           <Button variant="outline" size="sm" onClick={password.sendLink} disabled={!API_ENABLED || password.busy || password.cooldown > 0}>
