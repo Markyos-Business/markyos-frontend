@@ -12,8 +12,8 @@ import { reviewPage, type ReviewFinding, type ReviewReport } from "./page-review
  * Blocking vs warning: a missing logo or palette leaves sections of the
  * published site empty, so those are errors alongside broken sections and
  * links. Fonts and purpose have sensible fallbacks, so they are warnings.
- * Publishing still only asks (see `handlePublish`); whether the server should
- * refuse is a product decision that hasn't been made.
+ * Errors block publishing: the builder stops at them, and the server refuses
+ * the same list (`apps/brands/publish_check.py`). Keep the two in step.
  */
 export interface SiteFinding extends ReviewFinding {
   /** The page the finding is on; null for the home page and for brand setup. */

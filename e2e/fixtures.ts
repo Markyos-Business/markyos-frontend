@@ -70,7 +70,11 @@ export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
 export type Brand = { id: string; slug: string; clientEmail: string };
 
 /** A brand with Omar Aziz on its team as the client. */
-export async function newBrand(studio: Studio, name = "Wadi Rum Coffee"): Promise<Brand> {
+/**
+ * `publishable` adds what the server requires before it publishes (an attached
+ * logo and one colour); without it the brand is as bare as a new one.
+ */
+export async function newBrand(studio: Studio, name = "Wadi Rum Coffee", { publishable = false } = {}): Promise<Brand> {
   const s = stamp();
   const brand = { id: `b-${s}`, slug: `wadi-rum-${s}`, clientEmail: `omar-${s}@client.sa` };
   await call("/brands/", {
@@ -83,7 +87,8 @@ export async function newBrand(studio: Studio, name = "Wadi Rum Coffee"): Promis
         name,
         stage: "discovery",
         primaryLocale: "en",
-        colors: [],
+        colors: publishable ? [{ id: "c1", name: "Sand", hex: "#C2A878" }] : [],
+        ...(publishable ? { logo: { symbol: { phase: "attached", url: "/media/e2e-mark.svg" } } } : {}),
         team: [{ id: "omar", name: "Omar Aziz", email: brand.clientEmail, role: "client" }],
       },
     },
