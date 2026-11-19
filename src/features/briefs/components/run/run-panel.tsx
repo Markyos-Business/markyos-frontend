@@ -43,7 +43,7 @@ export function RunPanel({ overview, isAr, running, onRun }: RunPanelProps) {
         </ul>
       )}
       {!overview.configured ? (
-        <p className="text-caption text-text-muted">{t("The analysis isn't set up on this server.", "التحليل غير مُعدّ على هذا الخادم.")}</p>
+        <p className="text-caption text-text-muted">{t("The analysis isn't available right now. Try again later.", "التحليل غير متاح الآن. حاول مرة أخرى لاحقًا.")}</p>
       ) : (
         overview.canEdit && (
           <div className="flex flex-wrap items-end justify-center gap-space-4">

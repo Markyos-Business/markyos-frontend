@@ -107,7 +107,7 @@ const en = {
     submit: "Create account",
     back: "Back",
     localNote:
-      "This build keeps your account and your brands in this browser. Nothing is sent to a server, which also means clearing site data erases them and there is no inbox to recover a password from — the reset code appears on screen instead.",
+      "This demo keeps your account and brands in this browser only. Clearing site data erases them, and password reset codes appear on screen instead of by email.",
     created: "Account created. Let's add your first client brand.",
     createdCompany: "Account created. Let's set up your brand.",
   },
@@ -156,7 +156,7 @@ const en = {
     emailLink: "Email me a reset link",
     getCode: "Get a reset code",
     localNote:
-      "There is no mail server in this build, so the code appears on the next screen instead of arriving by email. It is good for 30 minutes and works once.",
+      "In the demo, the code appears on the next screen instead of by email. It works once, for 30 minutes.",
     sentTitle: "Check your inbox",
     sentSubtitle: "If an account exists for that email, a link to reset its password is on its way. It works once, for 60 minutes.",
     wrong: "Wrong address?",
@@ -290,7 +290,7 @@ const ar: AuthCopy = {
     submit: "إنشاء الحساب",
     back: "رجوع",
     localNote:
-      "تحفظ هذه النسخة حسابك وعلاماتك في هذا المتصفح فقط ولا يُرسل شيء إلى خادم. لذلك يحذفها مسح بيانات الموقع، ولا يوجد بريد لاستعادة كلمة المرور، بل يظهر رمز إعادة التعيين على الشاشة.",
+      "يحفظ هذا العرض التجريبي حسابك وعلاماتك في هذا المتصفح فقط. مسح بيانات الموقع يحذفها، ويظهر رمز إعادة تعيين كلمة المرور على الشاشة بدل البريد.",
     created: "تم إنشاء الحساب. لنضف أول علامة لعميلك.",
     createdCompany: "تم إنشاء الحساب. لنجهّز علامتك.",
   },
@@ -338,7 +338,7 @@ const ar: AuthCopy = {
     sending: "جارٍ الإرسال…",
     emailLink: "أرسل لي رابط إعادة التعيين",
     getCode: "احصل على رمز إعادة التعيين",
-    localNote: "لا يوجد خادم بريد في هذه النسخة، لذلك يظهر الرمز في الشاشة التالية بدل وصوله بالبريد. صالح لمدة 30 دقيقة ولمرة واحدة.",
+    localNote: "في العرض التجريبي، يظهر الرمز في الشاشة التالية بدل البريد. صالح لمرة واحدة ولمدة 30 دقيقة.",
     sentTitle: "تحقّق من بريدك",
     sentSubtitle: "إن كان هناك حساب بهذا البريد، فرابط إعادة تعيين كلمة المرور في الطريق إليه. يعمل مرة واحدة ولمدة 60 دقيقة.",
     wrong: "العنوان خاطئ؟",
