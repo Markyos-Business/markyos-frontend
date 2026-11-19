@@ -84,7 +84,7 @@ export const AccountMenu = memo(function AccountMenu({
             </div>
             <div className="flex items-center justify-between gap-space-4">
               <span className="text-body text-text-muted">{isAr ? "اللغة" : "Language"}</span>
-              <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" size="sm" />
+              <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" shape="pill" />
             </div>
           </div>
 
