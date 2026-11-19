@@ -1,6 +1,6 @@
 "use client";
 
-import { TabIndicator, tabButtonId } from "@/components/ui";
+import { Breadcrumb, TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { AccountMenu } from "@/features/account";
 import { SidebarMenuButton } from "@/components/ui";
@@ -30,11 +30,10 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
     <div className="flex shrink-0 flex-col">
       <header className="mk-no-hover flex min-h-topbar items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
         <SidebarMenuButton />
-        <nav aria-label={isAr ? "مسار الصفحة" : "Breadcrumb"} className="flex min-w-0 flex-1 items-center gap-space-3 text-body text-text-muted">
-          <span className="truncate">{workspace.name}</span>
-          <span aria-hidden>/</span>
-          <span className="truncate text-text">{isAr && arSection ? arSection : section}</span>
-        </nav>
+        <Breadcrumb className="flex-1" label={isAr ? "مسار الصفحة" : "Breadcrumb"} items={[
+          { label: workspace.name, href: `/w/${workspace.slug}/overview` },
+          { label: isAr && arSection ? arSection : section },
+        ]} />
         <AccountMenu isAr={isAr} />
       </header>
       {right && <div className="flex flex-wrap items-center gap-space-4 px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
