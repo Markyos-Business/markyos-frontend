@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { PageHeader, SearchField, SortControl } from "@/components/ui";
+import { Button, PageHeader, SearchField, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
@@ -331,14 +331,9 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+        <Button variant="primary" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()} className="shrink-0">
           {isAr ? "رفع ملف" : "Upload asset"}
-        </button>
+        </Button>
         </>}
       />
 

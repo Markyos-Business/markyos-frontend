@@ -13,7 +13,7 @@ import { canOpenBrandPage, publishedGuidelineHref } from "@/lib/data/brandNaviga
 type Item = { key: string; label: string; arLabel: string; icon: string; path: string; api?: boolean };
 const groups = [
   { key: "identity", label: "Brand identity", arLabel: "هوية العلامة", items: [
-    { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", path: "overview" },
+    { key: "overview", label: "Overview", arLabel: "نظرة عامة", icon: "th-large", path: "overview" },
     { key: "assets", label: "Assets", arLabel: "الأصول", icon: "file-alt", path: "assets" },
     { key: "visual-identity", label: "Visual identity", arLabel: "الهوية البصرية", icon: "shapes", path: "visual-identity" },
   ] },
