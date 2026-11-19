@@ -180,7 +180,7 @@ export function MosaicTemplate(props: TemplateProps) {
         </nav>
 
         <div className="flex items-center gap-2.5 shrink-0 ms-auto md:ms-0">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <button
               type="button"

@@ -1,5 +1,5 @@
 "use client";
-import { AppDate, Button, Icon, Skeleton } from "@/components/ui";
+import { AppDate, Button, Icon, SegmentedToggle, Skeleton } from "@/components/ui";
 import { useMinBusy } from "@/hooks/useMinBusy";
 import { notificationText } from "../copy";
 import type { NotificationItem } from "../types";
@@ -11,7 +11,7 @@ export function InboxContent({n,isAr,unread,setUnread,onOpenItem}:{n:ReturnType<
   // `disabled` off keeps keyboard focus on it. Other loads (load more, filters, marking) only disable it.
   return <>
       <div className="flex flex-wrap items-center justify-between gap-space-3">
-        <div role="group" aria-label={t("Notification view","عرض الإشعارات")} className="flex gap-space-2">{[false,true].map(value=><Button key={String(value)} size="sm" variant={unread===value?"soft":"outline"} aria-pressed={unread===value} onClick={()=>setUnread(value)} disabled={n.busy}>{value?t("Unread","غير المقروءة"):t("All","الكل")}</Button>)}</div>
+        <SegmentedToggle label={t("Notification view","عرض الإشعارات")} off={{label:t("All","الكل")}} on={{label:t("Unread","غير المقروءة")}} value={unread} onChange={setUnread} disabled={n.busy}/>
         <div className="flex flex-wrap gap-space-3"><Button size="sm" variant="outline" icon={<Icon name="sync" size={18}/>} disabled={(n.busy||n.loading)&&!refreshing} loading={refreshing} loadingText={t("Refreshing…","جارٍ التحديث…")} onClick={()=>void n.reload()}>{t("Refresh","تحديث")}</Button><Button size="sm" variant="link" onClick={()=>void n.markAll()} disabled={n.loading||n.busy||!n.count}>{t("Mark all as read","تحديد الكل كمقروء")}</Button></div>
       </div>
       {(n.error||n.actionError)&&<div role="alert" className="flex flex-wrap items-center justify-between gap-space-3 rounded-lg bg-danger-soft p-space-4 text-caption text-danger"><span>{n.actionError?t("Could not save your change. Try again.","تعذر حفظ التغيير. حاول مرة أخرى."):t("Could not load notifications. Try again.","تعذر تحميل الإشعارات. حاول مرة أخرى.")}</span>{n.error&&<Button size="sm" variant="outline" disabled={n.loading||n.busy} onClick={()=>void n.reload()}>{t("Retry","إعادة المحاولة")}</Button>}</div>}

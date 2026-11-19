@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Button, PageHeader, SearchField, SortControl } from "@/components/ui";
+import { Button, PageHeader, SearchField, SegmentedControl, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
@@ -684,12 +684,11 @@ function AssetDetailModal({
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
           {isAr ? "الحالة" : "Status"}
         </span>
-        <div className="flex flex-wrap gap-1.5">
-          {(Object.keys(STATUS_META) as AssetStatus[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => {
+        <SegmentedControl
+          label={isAr ? "الحالة" : "Status"}
+          options={(Object.keys(STATUS_META) as AssetStatus[]).map((s) => ({ value: s, label: isAr ? STATUS_META[s].arLabel : STATUS_META[s].label }))}
+          value={asset.status}
+          onChange={(s) => {
                 if (s === asset.status) return;
                 setAssetStatus(workspaceId, asset.id, s);
                 onStatusChange(s);
@@ -703,18 +702,8 @@ function AssetDetailModal({
                       : `Moved to ${STATUS_META[s].label.toLowerCase()} — it won't be published.`,
                   s === "approved" ? "success" : undefined,
                 );
-              }}
-              aria-pressed={asset.status === s}
-              className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer"
-              style={{
-                background: asset.status === s ? "var(--accent-soft)" : "var(--surface-2)",
-                color: asset.status === s ? "var(--accent-on-soft)" : "var(--text-muted)",
-              }}
-            >
-              {isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
-            </button>
-          ))}
-        </div>
+          }}
+        />
         <span dir="auto" className="bidi-auto text-[11px]" style={{ color: "var(--text-faint)" }}>
           {asset.status === "approved"
             ? isAr

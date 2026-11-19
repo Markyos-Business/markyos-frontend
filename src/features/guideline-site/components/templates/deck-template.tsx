@@ -1092,7 +1092,7 @@ function DeckChrome({
           () => onStep(1),
           "next"
         )}
-        <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+        <LangToggle value={previewLang} onChange={setPreviewLang} />
         {canDownload &&
           pill(
             <>

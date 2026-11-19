@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Row, Section, Switch } from "@/components/ui";
+import { Row, SegmentedControl, Section, Switch } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { SSO_PROVIDERS } from "../../constants";
 import type { AccountPageState } from "../../hooks/use-account-page";
@@ -20,13 +20,7 @@ export function SsoSection({ enabled, provider, domain, onToggle, onProvider, on
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-6">
           <div className="flex flex-col gap-space-2">
             <span className="text-caption text-text-muted">{t("Provider", "المزوّد")}</span>
-            <div className="flex gap-space-3">
-              {SSO_PROVIDERS.map((p) => (
-                <Button key={p} size="sm" variant={provider === p ? "ghost" : "outline"} aria-pressed={provider === p} onClick={() => onProvider(p)}>
-                  {p}
-                </Button>
-              ))}
-            </div>
+            <SegmentedControl label={t("Provider", "المزوّد")} options={SSO_PROVIDERS.map((p) => ({ value: p, label: p }))} value={provider} onChange={onProvider} />
           </div>
           <InputField label={t("Company domain", "نطاق الشركة")} dir="ltr" value={domain} onChange={(e) => onDomain(e.target.value)} placeholder="yourcompany.com" />
         </div>
