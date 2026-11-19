@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { FilterSelectField, SearchField } from "@/components/ui";
+import { SearchField, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
@@ -62,10 +62,10 @@ const STATUS_META: Record<AssetStatus, { label: string; arLabel: string; tone: "
 type SortKey = "newest" | "oldest" | "name" | "largest";
 
 const SORT_META: Record<SortKey, { label: string; arLabel: string }> = {
-  newest: { label: "Newest", arLabel: "الأحدث" },
-  oldest: { label: "Oldest", arLabel: "الأقدم" },
-  name: { label: "Name", arLabel: "الاسم" },
-  largest: { label: "Largest", arLabel: "الأكبر حجمًا" },
+  newest: { label: "Newest first", arLabel: "الأحدث أولًا" },
+  oldest: { label: "Oldest first", arLabel: "الأقدم أولًا" },
+  name: { label: "Name A–Z", arLabel: "الاسم (أ–ي)" },
+  largest: { label: "Largest first", arLabel: "الأكبر حجمًا أولًا" },
 };
 
 const SORTERS: Record<SortKey, (a: Row, b: Row) => number> = {
@@ -352,13 +352,13 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
           onChange={(e) => setQuery(e.target.value)}
           placeholder={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
         />
-        <FilterSelectField
+        <SortControl
           label={isAr ? "ترتيب الملفات" : "Sort files"}
           hideLabel
-          icon="sort"
-          value={sort}
-          onChange={(value) => setSort(value as SortKey)}
-          options={(Object.keys(SORT_META) as SortKey[]).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
+          defaultLabel={isAr ? SORT_META.newest.arLabel : SORT_META.newest.label}
+          value={sort === "newest" ? "" : sort}
+          onChange={(value) => setSort((value || "newest") as SortKey)}
+          options={(["oldest", "name", "largest"] as const).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
         />
         <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
         {/* Only the types this workspace actually has — plus whichever one is
