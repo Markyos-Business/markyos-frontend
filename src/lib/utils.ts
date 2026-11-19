@@ -31,11 +31,14 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+/**
+ * The one character an avatar shows for a name: its first letter, in either
+ * script. One letter, not two, so "Markyos" isn't "MA" and an Arabic name
+ * isn't two disconnected letters. `Array.from` keeps a surrogate pair whole.
+ */
 export function initialsFor(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[1][0]).toUpperCase();
+  const first = Array.from(name.trim().replace(/^[^\p{L}\p{N}]+/u, ""))[0];
+  return first ? first.toLocaleUpperCase() : "?";
 }
 
 /** The page's own language, from <html lang>; English before there is a page. */

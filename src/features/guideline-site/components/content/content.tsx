@@ -9,7 +9,7 @@ import { brandSocialLinks, graphicAssets, handleFromUrl, patternAssets } from ".
 import { SectionHeading, SectionNote, useLiveEdit } from "../live/live-edit";
 import { StrategyDocument } from "../documents/strategy-document";
 import { DepartmentDocument } from "../documents/department-document";
-import { colorFormats } from "@/lib/utils";
+import { colorFormats, initialsFor } from "@/lib/utils";
 import { gCard, gInset, gPlate, gPlateSm } from "../shared/surface";
 import { ARABIC_SAMPLE, LATIN_SAMPLE, TYPE_SCALE, photoTile, sampleAt, swatchEdge } from "./section-shared";
 import {
@@ -286,7 +286,7 @@ export function AppIconGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
               {slot ? (
                 <BrandMark src={slot.url} lightSrc={slot.lightUrl} alt="" onDark={onAccent} style={{ width: s * 0.58, height: s * 0.58 }} fallbackSize={Math.round(s * 0.4)} />
               ) : (
-                <span className="font-semibold" style={{ fontSize: s * 0.36, color: "var(--g-accent-ink)" }}>{ws.initials}</span>
+                <span className="font-semibold" style={{ fontSize: s * 0.36, color: "var(--g-accent-ink)" }}>{initialsFor(ws.name)}</span>
               )}
             </div>
             <span className="text-[10px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)" }}>
@@ -403,7 +403,7 @@ export function SocialProfiles({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
                 {slot ? (
                   <BrandMark src={slot.url} lightSrc={slot.lightUrl} alt="" onDark={onInvert} style={{ width: 24, height: 24 }} fallbackSize={14} />
                 ) : (
-                  <span className="text-[13px] font-semibold" style={{ color: "var(--g-accent-ink)" }}>{ws.initials}</span>
+                  <span className="text-[13px] font-semibold" style={{ color: "var(--g-accent-ink)" }}>{initialsFor(ws.name)}</span>
                 )}
               </span>
               <span dir="auto" className="bidi-auto font-semibold text-[14px] mt-1.5 truncate">{ws.name}</span>

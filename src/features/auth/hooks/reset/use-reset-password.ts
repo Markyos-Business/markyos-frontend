@@ -54,8 +54,9 @@ export function useResetPassword() {
   async function request(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
-    if (!EMAIL_RE.test(email.trim())) {
-      setErrors({ email: c.errors.email });
+    if (!email.trim() || !EMAIL_RE.test(email.trim())) {
+      // Empty and malformed are different problems, and say so.
+      setErrors({ email: email.trim() ? c.errors.email : c.errors.emailRequired });
       return;
     }
     setErrors({});
