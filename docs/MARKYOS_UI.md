@@ -18,7 +18,7 @@ There are two visual layers. Keep them separate:
 
 | Layer | Use for | Token prefix | Fonts |
 |---|---|---|---|
-| **Product UI** (dark) | The app: dashboards, asset library, review, billing | `--primary`, `--text-*`, `--space-*`… | Inter (+ Thmanya Sans for Arabic) |
+| **Product UI** (dark) | The app: dashboards, asset library, review, billing | `--primary`, `--text-*`, `--space-*`… | Inter (+ IBM Plex Sans Arabic for Arabic) |
 | **Markyos Light** (marketing identity) | Website, social, campaigns, decks | `--mk-*` | Inter display / Bricolage Grotesque for brand; Thmanya Sans for Arabic |
 
 Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never use it in product chrome.
@@ -290,7 +290,7 @@ Tailwind's `xl`/`2xl`/`3xl` and arbitrary `rounded-[…]` values are refused by 
 
 ## 3. Typography
 
-- **Product UI** uses **Inter** with `font-feature-settings: "cv01","cv05","cv09","cv11"`. Arabic falls through to **Thmanya Sans**.
+- **Product UI** uses **Inter** with `font-feature-settings: "cv01","cv05","cv09","cv11"`. Arabic falls through to **IBM Plex Sans Arabic** (decided 2026-11-19; it replaces Thmanya Sans in the product, loaded with `next/font` in `src/app/fonts.ts`). The `--font-*` values in §2 still show the original export; `tailwind/tokens.js` holds the live stacks.
 - Weights are **400** for body and secondary text and **500** for every heading, value, label and button. Nothing heavier.
 - The scale is fixed: **32 / 26 / 20 / 18 / 16** for headings, **14** for body and **12** for secondary, with the hard-coded line heights from §2.
 - **Overline** (`--type-overline` + `text-transform: uppercase`) is the only place caps appear: tab labels (`LIST`, `GRID`), `SORT:`, `PREV`, `NEXT` and `VIEW ALL`. **Never type copy in caps.**
