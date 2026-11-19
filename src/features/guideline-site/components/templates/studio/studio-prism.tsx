@@ -176,7 +176,7 @@ export function StudioPrism(props: TemplateProps) {
           );
         })}
         <span className="ps-1">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
         </span>
       </nav>
 

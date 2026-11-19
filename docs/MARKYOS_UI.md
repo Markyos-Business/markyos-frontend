@@ -283,7 +283,7 @@ Widget rows and sunken areas use `--surface-sunken` (white at 4%).
 | 12px oval (`rounded-badge`) | badge |
 
 **In code** every corner is one of the named utilities: `rounded-sm` (4), `rounded-md` (6), `rounded-lg` (8), `rounded-card` (15), `rounded-badge`, `rounded-switch`, `rounded-spark`, `rounded-full`.
-The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, round icon buttons, switches, radios): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label).
+The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, round icon buttons, switches, radios): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label). **One exception (decided 2026-11-20):** every "choose one" control — mode, language, Edit/Read, canvas width, All/Unread, weights, status — is a pill: a round track with round segments, the chosen one raised on `--surface-0` in the accent. They all draw from `src/components/ui/choice/pill-segments.ts` (`SegmentedToggle`, `SegmentedControl`, `LangToggle`, `ThemeToggle`); never style one by hand.
 Tailwind's `xl`/`2xl`/`3xl` and arbitrary `rounded-[…]` values are refused by `scripts/radius-audit.mjs` (in `npm run check`). The guideline-site templates are exempt: they follow the client brand's own `--g-radius-*` theme.
 
 ---
@@ -443,6 +443,7 @@ The track is 6px standalone and 4px inside counter cards, on `--ink-10`. The ton
 Props: `value 0–100`, `tone?`, `height?`
 
 ### 6.11 Tabs
+- Tabs that navigate are tabs (below). A control that picks one value is a "choose one" pill (§2.5), not a tab.
 - `text`: the active tab is a `--bg-light` pill with an `--inset-outline`.
 - `icon`: the active tab is solid `--primary` with an uppercase overline label.
 - Tabs are 40px tall.

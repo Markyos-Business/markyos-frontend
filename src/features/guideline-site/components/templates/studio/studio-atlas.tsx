@@ -215,7 +215,7 @@ export function StudioAtlas(props: TemplateProps) {
         )}
 
         <div className="mt-auto flex flex-col gap-3">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <button
               type="button"

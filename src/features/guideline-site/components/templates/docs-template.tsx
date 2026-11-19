@@ -191,7 +191,7 @@ export function DocsTemplate(props: TemplateProps) {
         )}
 
         <div className="mt-auto flex flex-col gap-3">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <Button variant="outline" size="sm" onClick={() => setDownloadOpen(true)} className="w-full">
               {/* An Icon, not a "↗" character: the guideline site ships with an

@@ -1,27 +1,20 @@
 "use client";
 
-import { MONO, WEIGHTS } from "../constants";
+import { SegmentedControl } from "@/components/ui";
+import { WEIGHTS } from "../constants";
 
-/** The five weights to try, the chosen one in solid ink. */
+/** The five weights to try, as one "choose one" control. */
 export function WeightPicker({ weight, onWeight, label }: { weight: number; onWeight: (w: number) => void; label: string }) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[12px] font-medium text-text-muted">{label}</span>
-      <div className="flex gap-1.5">
-        {WEIGHTS.map((w) => (
-          <button
-            key={w}
-            type="button"
-            aria-pressed={weight === w}
-            onClick={() => onWeight(w)}
-            className={`h-8 flex-1 cursor-pointer rounded-md text-[12px] font-medium ${MONO} ${
-              weight === w ? "bg-solid text-solid-ink" : "bg-surface-2 text-text-muted"
-            }`}
-          >
-            {w}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        label={label}
+        fullWidth
+        options={WEIGHTS.map((w) => ({ value: String(w), label: String(w) }))}
+        value={String(weight)}
+        onChange={(w) => onWeight(Number(w))}
+      />
     </div>
   );
 }

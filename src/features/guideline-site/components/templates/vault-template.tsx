@@ -141,7 +141,7 @@ export function VaultTemplate(props: TemplateProps) {
           </nav>
         )}
         <div className="flex items-center gap-3 shrink-0">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
         </div>
       </div>
 

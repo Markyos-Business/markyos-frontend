@@ -21,7 +21,7 @@ export function ShareHeader({ share }: { share: ReadyShare }) {
         </div>
       </div>
       <div className="ms-auto flex shrink-0 items-center gap-3">
-        <LangToggle value={lang} onChange={setLang} size="sm" />
+        <LangToggle value={lang} onChange={setLang} />
       </div>
     </header>
   );
