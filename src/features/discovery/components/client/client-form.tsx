@@ -79,7 +79,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
         try {
           validateAnswer(q.type, q.config, value);
         } catch (err) {
-          if (err instanceof AnswerError) found[q.id] = err.message;
+          if (err instanceof AnswerError) found[q.id] = err.in(lang);
         }
       }
     }
@@ -119,7 +119,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
       try {
         validateAnswer(q.type, q.config, value);
       } catch (err) {
-        if (err instanceof AnswerError) return setErrors((e) => ({ ...e, [q.id]: err.message }));
+        if (err instanceof AnswerError) return setErrors((e) => ({ ...e, [q.id]: err.in(lang) }));
       }
     }
     setErrors((e) => {
