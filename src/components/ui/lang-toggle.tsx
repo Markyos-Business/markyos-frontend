@@ -22,6 +22,15 @@ const segmentSizes: Record<LangToggleSize, string> = {
 const segmentBase = "mk-tap justify-center rounded-md font-medium transition-[background-color,color,box-shadow] cursor-pointer";
 const segmentState = (on: boolean) => (on ? "bg-surface-2 text-text shadow-edge" : "bg-transparent text-text-muted");
 
+// `pill`: drawn like ThemeToggle, so the two sit side by side as one family
+// (round track, round 28px segments, the chosen one raised in the accent).
+// Colours inline, as ThemeToggle sets them, so nothing in the button base
+// styles can repaint one segment differently from the other toggle.
+const pillGroup = "inline-flex shrink-0 rounded-full p-0.5";
+const pillGroupStyle = { background: "var(--surface-2)" };
+const pillSegment = "grid size-7 cursor-pointer place-items-center rounded-full text-ui-3xs font-medium transition-[background-color,color]";
+const pillSegmentStyle = (on: boolean) => ({ background: on ? "var(--surface-0)" : "transparent", color: on ? "var(--accent)" : "var(--text-faint)" });
+
 type LangToggleProps = {
   value: Lang;
   onChange: (lang: Lang) => void;
@@ -41,9 +50,11 @@ type LangToggleProps = {
    * "preview" the one belonging to a guideline template.
    */
   scope?: string;
+  /** `pill` matches ThemeToggle; `segmented` (default) is the text-tab look. */
+  shape?: "segmented" | "pill";
 };
 
-const LangToggle = ({ value, onChange, size = "md", label = "Preview language", scope = "preview" }: LangToggleProps) => {
+const LangToggle = ({ value, onChange, size = "md", label = "Preview language", scope = "preview", shape = "segmented" }: LangToggleProps) => {
   /*
    * Each segment carries the group's name in its tooltip.
    *
@@ -60,7 +71,8 @@ const LangToggle = ({ value, onChange, size = "md", label = "Preview language", 
       role="radiogroup"
       aria-label={label}
       data-lang-toggle={scope}
-      className={`inline-flex rounded-lg bg-surface-sunken shadow-edge-soft ${groupPadding[size]}`}
+      className={shape === "pill" ? pillGroup : `inline-flex rounded-lg bg-surface-sunken shadow-edge-soft ${groupPadding[size]}`}
+      style={shape === "pill" ? pillGroupStyle : undefined}
     >
       <button
         type="button"
@@ -69,7 +81,8 @@ const LangToggle = ({ value, onChange, size = "md", label = "Preview language", 
         aria-label={title("English")}
         title={title("English")}
         onClick={() => onChange("en")}
-        className={`${segmentBase} ${segmentSizes[size]} font-sans ${segmentState(value === "en")}`}
+        className={shape === "pill" ? `${pillSegment} font-sans` : `${segmentBase} ${segmentSizes[size]} font-sans ${segmentState(value === "en")}`}
+        style={shape === "pill" ? pillSegmentStyle(value === "en") : undefined}
       >
         EN
       </button>
@@ -80,7 +93,8 @@ const LangToggle = ({ value, onChange, size = "md", label = "Preview language", 
         aria-label={title("العربية")}
         title={title("العربية")}
         onClick={() => onChange("ar")}
-        className={`${segmentBase} ${segmentSizes[size]} font-arabic ${segmentState(value === "ar")}`}
+        className={shape === "pill" ? `${pillSegment} font-arabic` : `${segmentBase} ${segmentSizes[size]} font-arabic ${segmentState(value === "ar")}`}
+        style={shape === "pill" ? pillSegmentStyle(value === "ar") : undefined}
       >
         ع
       </button>
