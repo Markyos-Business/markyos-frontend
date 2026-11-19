@@ -48,6 +48,8 @@ const documentLang = (): "en" | "ar" =>
 /** "5m ago" / "قبل 5 د", in the page's language unless one is given. */
 export function formatRelative(ts: number, now: number = Date.now(), lang: "en" | "ar" = documentLang()): string {
   const ar = lang === "ar";
+  // An unknown time says nothing rather than "NaN years ago".
+  if (!Number.isFinite(ts)) return "";
   const diffMs = now - ts;
   const sec = Math.round(diffMs / 1000);
   if (sec < 60) return ar ? "الآن" : ltr("just now");

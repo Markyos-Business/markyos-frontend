@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCurrentAccount } from "@/contexts/AppContext";
-import { useInterfaceLang } from "@/contexts/useInterfaceLang";
+import { useDocumentLang, useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { accountTypeOf } from "@/constants/accountTypes";
 import { accountNavigation } from "@/lib/data/accountNavigation";
 import { API_ENABLED } from "@/lib/api/client";
@@ -14,7 +14,10 @@ import { MarkyosLogo } from "@/components/ui";
 
 /** The same location and way back on every account-level page. */
 export function AccountHeader({ search }: { search?: ReactNode }) {
-  const { isAr } = useInterfaceLang();
+  const { isAr, lang, settled } = useInterfaceLang();
+  // Every account-level page has this header, so <html> follows the reader's
+  // language here; the brands home had no other guard that set it.
+  useDocumentLang(lang, settled);
   const account = useCurrentAccount();
   const pathname = usePathname();
   const links = accountNavigation(accountTypeOf(account), API_ENABLED);

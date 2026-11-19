@@ -128,7 +128,11 @@ export function createApiAdapter(options: {
   /** A server brand as the app holds it: files inline, repairs applied. */
   async function fromServer(brands: ServerBrand[], state: AppState): Promise<Workspace[]> {
     const inlined: Workspace[] = [];
-    for (const brand of brands) inlined.push(await inlineFiles(brand.data, brand.fileBase));
+    for (const brand of brands) {
+      // A brand made outside the app (API, import) may carry no edit time of its own; the server's row has one.
+      const updatedAt = Number.isFinite(brand.data.updatedAt) ? brand.data.updatedAt : Date.parse(brand.updatedAt) || Date.now();
+      inlined.push(await inlineFiles({ ...brand.data, updatedAt }, brand.fileBase));
+    }
     return local.repairWorkspaces(await local.fromPortable(inlined), state);
   }
 

@@ -9,6 +9,15 @@ import { djangoShell, expect, newStudio, PASSWORD, signIn, test } from "./fixtur
 const fitsTheScreen = async (page: import("@playwright/test").Page) =>
   page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight);
 
+/** A scrolling page whose document ends where its footer does: no strip below it. */
+const endsAtItsFooter = async (page: import("@playwright/test").Page) =>
+  page.evaluate(() => {
+    const footer = [...document.querySelectorAll("footer")].pop();
+    if (!footer) return false;
+    const bottom = footer.getBoundingClientRect().bottom + window.scrollY;
+    return document.documentElement.scrollHeight - bottom <= 64;
+  });
+
 test("the admin dashboard and the brands home never scroll the document", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 760 });
   const admin = await newStudio("Abdullah");
@@ -26,6 +35,9 @@ test("the admin dashboard and the brands home never scroll the document", async 
   const member = await context.newPage();
   await signIn(member, studio);
   await expect(member.getByText(/Welcome (back|to Markyos)/)).toBeVisible();
-  expect(await fitsTheScreen(member)).toBe(true);
+  // The brands home has no sidebar frame: it is an ordinary page that scrolls
+  // to its footer (since the footer and welcome card, it is taller than a
+  // laptop screen). What must hold is that nothing paints below that footer.
+  expect(await endsAtItsFooter(member)).toBe(true);
   await context.close();
 });
