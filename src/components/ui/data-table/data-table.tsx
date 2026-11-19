@@ -95,7 +95,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
       </div>
     </div>
     {model.paginated && !error && !denied && !loading && model.total > 0 && (props.paging || model.total > (props.pageSizes?.[0] ?? 20)) && <div className="min-w-0">
-      <TablePagination currentPage={model.pagination.pageIndex + 1} itemsPerPage={model.pagination.pageSize} itemCount={Math.min(model.pagination.pageSize, model.total - model.pagination.pageIndex * model.pagination.pageSize)} totalCount={model.total} itemLabel={props.itemLabel ?? "rows"} onPageChange={page => table.setPageIndex(page - 1)} loading={!!props.loading} labels={props.paginationLabels} />
+      <TablePagination currentPage={model.pagination.pageIndex + 1} itemsPerPage={model.pagination.pageSize} itemCount={Math.min(model.pagination.pageSize, model.total - model.pagination.pageIndex * model.pagination.pageSize)} totalCount={model.total} itemLabel={props.itemLabel ?? l.rows} onPageChange={page => table.setPageIndex(page - 1)} loading={!!props.loading} labels={props.paginationLabels} />
     </div>}
     <span role="status" aria-live="polite" className="sr-only">{denied ? "" : `${props.selectable ? l.selected(model.count) : ""} ${loading ? l.loadingMore : l.results(model.total)}`}</span>
   </section>;
