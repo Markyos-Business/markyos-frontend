@@ -10,6 +10,7 @@ import { KINDS, kindLabel } from "../../copy";
 import { useContentLang } from "../../hooks/use-content-lang";
 import { useRemove } from "../../hooks/use-remove";
 import type { ContentKind } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /** Who can work on website content, and on which sections. Content admins only. */
 export function PeopleView() {
@@ -47,7 +48,7 @@ export function PeopleView() {
         getRowId={(p) => String(p.id)}
         getRowLabel={(p) => p.name || p.email}
         loading={people.loading}
-        error={people.error}
+        error={people.failure ? errorText(people.failure, lang) : null}
         onRetry={people.reload}
         empty={<EmptyState icon="users" title={t.empty} description="" />}
         rowActions={(p) =>
@@ -92,7 +93,7 @@ function PersonDialog({ person, onClose, onSaved }: { person: Partial<Person>; o
           else await grantAccess({ email, role, sections, notes });
           onSaved();
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >

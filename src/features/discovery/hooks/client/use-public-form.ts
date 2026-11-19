@@ -8,6 +8,7 @@ import { evaluateVisibility } from "../../utils/visibility";
 import { getPublicForm, savePublicAnswers, submitPublicForm, uploadPublicFile } from "../../api/public-form.api";
 import type { AnswerValue, PublicForm, UploadedFile } from "../../types";
 import type { SaveState } from "../../components/client/client-form";
+import { errorText } from "@/lib/api/errorText";
 
 /** Why the form can't be filled in, when it can't. */
 export type PublicFormProblem = "missing" | "revoked" | "closed" | "offline" | "error";
@@ -196,7 +197,7 @@ export function usePublicForm(token: string) {
         return ar ? "بعض الأسئلة المطلوبة لم يُجَب عنها بعد." : "Some required questions aren't answered yet.";
       }
       if (err instanceof ApiError && err.status === 0) return ar ? "لم تُرسَل الإجابات. تحقّق من الاتصال وحاول مجددًا." : "Your answers didn't send. Check your connection and try again.";
-      return err instanceof Error ? err.message : ar ? "لم ينجح ذلك." : "That didn't work.";
+      return errorText(err, ar ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." });
     }
   }, [token, flush]);
 

@@ -8,6 +8,7 @@ import { brandFontStacks, familyFiles } from "@/features/guideline-site";
 import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "../../utils/font-file";
 import { importGoogleFont, SUGGESTED_FONTS } from "../../api/visual-identity.api";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 const WEIGHTS = ["300", "400", "500", "600", "700"];
 
@@ -82,7 +83,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         "success"
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "Couldn't import that font.", "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "Couldn't import that font.", ar: "تعذّر استيراد الخط." }), "danger");
     } finally {
       setImporting(null);
     }

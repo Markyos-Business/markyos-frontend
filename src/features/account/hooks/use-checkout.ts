@@ -4,9 +4,11 @@ import { useState } from "react";
 import { API_ENABLED, api } from "@/lib/api/client";
 import { useToast } from "@/components/ui";
 import type { PlanKind, Workspace } from "@/types";
+import { errorText } from "@/lib/api/errorText";
 
 /** Sends the studio to Stripe checkout for a plan, and which plan is on its way there. */
-export function useCheckout(ws: Workspace) {
+export function useCheckout(ws: Workspace, isAr: boolean) {
+  const lang = isAr ? "ar" : "en";
   const { showToast } = useToast();
   const [loading, setLoading] = useState<PlanKind | null>(null);
   const [managing, setManaging] = useState(false);
@@ -14,7 +16,7 @@ export function useCheckout(ws: Workspace) {
   async function checkout(plan: PlanKind) {
     if (plan === "free") return;
     if (!API_ENABLED) {
-      showToast("Payments need a connection to the Markyos server.", "danger");
+      showToast(isAr ? "الدفع غير متاح الآن. حاول مرة أخرى لاحقًا." : "Payments aren't available right now. Try again later.", "danger");
       return;
     }
     setLoading(plan);
@@ -24,14 +26,14 @@ export function useCheckout(ws: Workspace) {
       });
       window.location.href = data.url;
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Couldn't reach checkout — try again.", "danger");
+      showToast(errorText(error, lang, { en: "Couldn't reach checkout. Try again.", ar: "تعذّر الوصول إلى صفحة الدفع. حاول مرة أخرى." }), "danger");
       setLoading(null);
     }
   }
 
   async function manageSubscription() {
     if (!API_ENABLED) {
-      showToast("Billing management needs a connection to the Markyos server.", "danger");
+      showToast(isAr ? "إدارة الفوترة غير متاحة الآن. حاول مرة أخرى لاحقًا." : "Billing management isn't available right now. Try again later.", "danger");
       return;
     }
     setManaging(true);
@@ -41,7 +43,7 @@ export function useCheckout(ws: Workspace) {
       });
       window.location.href = url;
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Couldn't open billing management.", "danger");
+      showToast(errorText(error, lang, { en: "Couldn't open billing management.", ar: "تعذّر فتح إدارة الفوترة." }), "danger");
       setManaging(false);
     }
   }

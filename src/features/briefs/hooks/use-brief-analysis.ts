@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getAnalysis } from "../api/briefs.api";
 import type { BriefAnalysis, Section } from "../types";
+import { errorText } from "@/lib/api/errorText";
 
 const POLL_MS = 2000;
 
@@ -12,9 +13,10 @@ const busy = (a: BriefAnalysis) => a.status === "queued" || a.status === "runnin
  * One analysis, kept fresh: polled every couple of seconds while it runs or
  * a section is being rewritten, then left alone.
  */
-export function useBriefAnalysis(id: string | null) {
+export function useBriefAnalysis(id: string | null, isAr: boolean) {
   const [analysis, setAnalysis] = useState<BriefAnalysis | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // The failure itself; it becomes words at render, in the reader's language.
+  const [error, setError] = useState<unknown>(null);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export function useBriefAnalysis(id: string | null) {
         setError(null);
         if (busy(fresh)) timer = setTimeout(() => setTick((n) => n + 1), POLL_MS);
       },
-      (err: unknown) => live && setError(err instanceof Error ? err.message : "Couldn't load the analysis.")
+      (err: unknown) => live && setError(err ?? new Error())
     );
     return () => {
       live = false;
@@ -44,5 +46,6 @@ export function useBriefAnalysis(id: string | null) {
     if (section.status === "regenerating") setTimeout(() => setTick((n) => n + 1), POLL_MS);
   }, []);
 
-  return { analysis: id && analysis?.id === id ? analysis : analysis && !id ? null : analysis, error, reload, replaceSection };
+  const message = error === null ? null : errorText(error, isAr ? "ar" : "en", { en: "Couldn't load the analysis.", ar: "تعذّر تحميل التحليل." });
+  return { analysis: id && analysis?.id === id ? analysis : analysis && !id ? null : analysis, error: message, reload, replaceSection };
 }

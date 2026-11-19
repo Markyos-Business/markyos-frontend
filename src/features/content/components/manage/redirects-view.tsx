@@ -7,10 +7,11 @@ import { useRequest } from "@/hooks/useRequest";
 import { deleteRedirect, listRedirects, saveRedirect, type Redirect } from "../../api/content.api";
 import { useContentLang } from "../../hooks/use-content-lang";
 import { useRemove } from "../../hooks/use-remove";
+import { errorText } from "@/lib/api/errorText";
 
 /** Old website addresses and where they now go. Content admins only. */
 export function RedirectsView() {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.redirects;
   const redirects = useRequest(listRedirects, "content-redirects");
   const remove = useRemove();
@@ -30,7 +31,7 @@ export function RedirectsView() {
         getRowId={(r) => String(r.id)}
         getRowLabel={(r) => r.fromPath}
         loading={redirects.loading}
-        error={redirects.error}
+        error={redirects.failure ? errorText(redirects.failure, lang) : null}
         onRetry={redirects.reload}
         empty={<EmptyState icon="external-link-alt" title={t.empty} description="" />}
         rowActions={(r) => [
@@ -53,7 +54,7 @@ export function RedirectsView() {
 }
 
 function RedirectDialog({ redirect, onClose, onSaved }: { redirect: Partial<Redirect>; onClose: () => void; onSaved: () => void }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.redirects;
   const [fromPath, setFrom] = useState(redirect.fromPath ?? "/");
   const [toPath, setTo] = useState(redirect.toPath ?? "/");
@@ -69,7 +70,7 @@ function RedirectDialog({ redirect, onClose, onSaved }: { redirect: Partial<Redi
           await saveRedirect({ id: redirect.id, fromPath, toPath, statusCode });
           onSaved();
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >

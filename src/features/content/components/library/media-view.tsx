@@ -8,6 +8,7 @@ import { useContentLang } from "../../hooks/use-content-lang";
 import { useContentMe } from "../../hooks/use-content-me";
 import { useRemove } from "../../hooks/use-remove";
 import type { MediaItem } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /** Every file the website uses, with the descriptions images need. */
 export function MediaView() {
@@ -25,7 +26,7 @@ export function MediaView() {
       for (const file of files) await uploadMedia(file);
       media.reload();
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : String(e), "danger");
+      showToast(errorText(e, lang), "danger");
     } finally {
       setUploading(false);
     }
@@ -86,7 +87,7 @@ export function MediaView() {
 }
 
 function EditMediaDialog({ item, canEdit, canDelete, onClose, onChanged }: { item: MediaItem; canEdit: boolean; canDelete: boolean; onClose: () => void; onChanged: () => void }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.media;
   const remove = useRemove();
   const [altEn, setAltEn] = useState(item.altEn);
@@ -104,7 +105,7 @@ function EditMediaDialog({ item, canEdit, canDelete, onClose, onChanged }: { ite
           await updateMedia(item.id, { altEn, altAr, credit });
           onChanged();
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >

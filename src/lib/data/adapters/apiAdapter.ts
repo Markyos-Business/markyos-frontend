@@ -93,7 +93,8 @@ export function createApiAdapter(options: {
    * A save the server refused, and why. The server's copy has already been
    * loaded over this one, so the screen shows what is actually stored.
    */
-  onRefused: (workspace: Workspace, message: string) => void;
+  /** The error, not its text: the store words the notice in the reader's language. */
+  onRefused: (workspace: Workspace, err: ApiError) => void;
   /** A brand this account can no longer open: taken off its team. */
   onLost: (workspace: Workspace) => void;
   /** Entitlements may change through Stripe without changing brand content. */
@@ -223,7 +224,7 @@ export function createApiAdapter(options: {
           const current = await api<ServerBrand>(`/brands/${encodeURIComponent(ws.id)}/`).catch(() => null);
           if (current) await adopt(current, ws.slug);
           else synced.set(ws.id, { json, version: known.version });
-          options.onRefused(ws, err.message);
+          options.onRefused(ws, err);
         } else if (known && err.status === 404 && role !== "owner") {
           synced.delete(ws.id);
           options.onLost(ws);
@@ -234,7 +235,7 @@ export function createApiAdapter(options: {
           console.error(`Markyos: could not save "${ws.name}": ${err.message}`);
           if (known) synced.set(ws.id, { json, version: known.version });
           else refusedCreates.set(ws.id, json);
-          options.onRefused(ws, err.message);
+          options.onRefused(ws, err);
         }
       }
     }

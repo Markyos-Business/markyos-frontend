@@ -6,13 +6,14 @@ import { useToast } from "@/components/ui";
 import type { Account } from "@/types";
 import { setTwoFactor } from "../../api/account.api";
 import { useAccountLang } from "../shared/use-account-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Two-step sign-in: turning it on or off asks for the password first, in a
  * dialog, so someone at an unlocked laptop can't quietly switch it off.
  */
 export function useTwoFactor(account: Account) {
-  const { t } = useAccountLang();
+  const { t, lang } = useAccountLang();
   const { setServerAccount } = useAppActions();
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export function useTwoFactor(account: Account) {
       setPassword("");
       showToast(enabled ? t("Two-step sign-in is off.", "أُوقف التحقق بخطوتين.") : t("Two-step sign-in is on.", "فُعّل التحقق بخطوتين."), "success");
     } catch (err) {
-      return err instanceof Error ? err.message : String(err);
+      return errorText(err, lang);
     }
   }
 

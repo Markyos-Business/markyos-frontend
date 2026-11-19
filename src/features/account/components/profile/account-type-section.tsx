@@ -7,6 +7,7 @@ import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { Account, AccountType } from "@/types";
 import { chooseInitialAccountType } from "../../api/account.api";
 import { useAccountLang } from "../../hooks/shared/use-account-lang";
+import { errorText } from "@/lib/api/errorText";
 
 export function AccountTypeSection({ account }: { account: Account }) {
   const { t, isAr } = useAccountLang();
@@ -37,7 +38,7 @@ export function AccountTypeSection({ account }: { account: Account }) {
           try {
             setServerAccount(await chooseInitialAccountType(choice));
           } catch (err) {
-            setError(err instanceof Error ? err.message : t("Could not save your account type.", "تعذر حفظ نوع الحساب."));
+            setError(errorText(err, isAr ? "ar" : "en", { en: "Could not save your account type.", ar: "تعذر حفظ نوع الحساب." }));
           } finally {
             setBusy(false);
           }

@@ -5,6 +5,7 @@ import { FormDialog, UploadButton, useToast } from "@/components/ui";
 import { listMedia, uploadMedia } from "../../api/content.api";
 import { useContentLang } from "../../hooks/use-content-lang";
 import type { MediaItem } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Choosing an image from the media library, or uploading a new one.
@@ -25,7 +26,7 @@ export function useMediaPicker() {
 }
 
 function MediaPickerDialog({ onDone }: { onDone: (item: MediaItem | null) => void }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.picker;
   const { showToast } = useToast();
   const [items, setItems] = useState<MediaItem[] | null>(null);
@@ -48,7 +49,7 @@ function MediaPickerDialog({ onDone }: { onDone: (item: MediaItem | null) => voi
       setItems((current) => [item, ...(current ?? [])]);
       setChosen(item.id);
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : String(e), "danger");
+      showToast(errorText(e, lang), "danger");
     } finally {
       setUploading(false);
     }

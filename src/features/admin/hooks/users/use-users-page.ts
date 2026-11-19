@@ -10,6 +10,7 @@ import { usersCsv } from "../../utils/csv";
 import { useAdminLang } from "../shared/use-admin-lang";
 import { useAdminStats } from "../shared/use-admin-stats";
 import { useAdminUsers } from "./use-admin-users";
+import { errorText } from "@/lib/api/errorText";
 
 const FILTERS = { q: "", role: "", status: "", type: "", lang: "", from: "", to: "" } as const;
 const DEFAULTS = { ...FILTERS, sort: "-created_at", size: "20" };
@@ -32,7 +33,7 @@ const SORT_FIELDS: Record<string, string> = {
 export function useUsersPage() {
   const filters = useUrlFilters(DEFAULTS);
   const { values, page } = filters;
-  const { c } = useAdminLang();
+  const { c, lang } = useAdminLang();
   const { showToast } = useToast();
   const stats = useAdminStats();
   const [selected, setSelected] = useState<string[]>([]);
@@ -102,7 +103,7 @@ export function useUsersPage() {
       URL.revokeObjectURL(url);
       showToast(c.exported(rows.length), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, lang), "danger");
     } finally {
       setExporting(false);
     }

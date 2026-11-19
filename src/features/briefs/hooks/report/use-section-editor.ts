@@ -6,6 +6,7 @@ import { editSection, resetSection } from "../../api/briefs.api";
 import type { BriefAnalysis, Section, SectionKey } from "../../types";
 import { setAt } from "../../utils/editor";
 import type { Path } from "../../utils/editor";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Editing one section at a time: a draft of its current content, saved as the
@@ -41,7 +42,7 @@ export function useSectionEditor(analysis: BriefAnalysis, onSection: (s: Section
       showToast(isAr ? "حُفظ القسم." : "Section saved.", "success");
       cancel();
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(errorText(err, isAr ? "ar" : "en"));
     } finally {
       setSaving(false);
     }
@@ -61,7 +62,7 @@ export function useSectionEditor(analysis: BriefAnalysis, onSection: (s: Section
       onSection(await resetSection(analysis.id, section.key));
       showToast(isAr ? "عاد القسم إلى نسخة التحليل." : "Back to the analysis's version.", "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en"), "danger");
     }
   }
 

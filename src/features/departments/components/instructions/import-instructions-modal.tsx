@@ -6,6 +6,7 @@ import { useToast, Icon, Button, Modal } from "@/components/ui";
 import { DepartmentView, Workspace } from "@/types";
 import { extractText, parseDocumentSections } from "@/lib/docParse";
 import { uid } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 interface Row {
   heading: string;
@@ -71,7 +72,7 @@ export function ImportInstructionsModal({
       );
       setStep("review");
     } catch (e) {
-      setError(e instanceof Error ? e.message : isAr ? "تعذّرت قراءة الملف." : "Couldn't read that file.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Couldn't read that file.", ar: "تعذّرت قراءة الملف." }));
       setStep("pick");
     }
   }

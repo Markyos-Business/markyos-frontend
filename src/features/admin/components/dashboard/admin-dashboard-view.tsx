@@ -4,6 +4,7 @@ import { AlertBanner, Button, Icon, Skeleton } from "@/components/ui";
 import { useMinBusy } from "@/hooks/useMinBusy";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 import { useAdminStats } from "../../hooks/shared/use-admin-stats";
 import { useRequest } from "@/hooks/useRequest";
 import { getDashboardActivity } from "../../api/admin.api";
@@ -16,7 +17,7 @@ import { WelcomeMessage } from "@/features/account";
 import { DashboardSummary } from "./dashboard-summary";
 
 export function AdminDashboardView() {
-  const { data, error, loading, reload } = useAdminStats();
+  const { data, failure, loading, reload } = useAdminStats();
   const activity = useRequest(getDashboardActivity, "dashboard-activity");
   const refresh = () => { reload(); activity.reload(); };
   // A reload has data on screen already; the first load is the skeleton's job, so the button only disables.
@@ -46,7 +47,7 @@ export function AdminDashboardView() {
         actions={[{ label: t("Website content", "محتوى الموقع"), href: "/admin/cms" }]}
       />
 
-      <AlertBanner message={error} />
+      <AlertBanner message={failure ? errorText(failure, lang) : null} />
 
       <DashboardSummary stats={data} loading={loading} isAr={isAr} />
 
@@ -68,7 +69,7 @@ export function AdminDashboardView() {
         <div className="contents xl:flex xl:min-w-0 xl:flex-col xl:gap-space-5">
           <div className="order-2 min-w-0"><NeedsAttention stats={data} loading={loading} /></div>
           <div className="order-3 min-w-0">
-            <RecentActivity items={activity.data} error={activity.error} loading={activity.loading} onRetry={activity.reload} />
+            <RecentActivity items={activity.data} error={activity.failure ? errorText(activity.failure, lang) : null} loading={activity.loading} onRetry={activity.reload} />
           </div>
         </div>
       </div>

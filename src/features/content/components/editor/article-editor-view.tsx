@@ -31,6 +31,7 @@ import { useTaxonomy } from "../../hooks/use-taxonomy";
 import type { ArticleDraft, ContentLocale, MediaRef, TranslationDraft } from "../../types";
 import { VersionHistory } from "./version-history";
 import { useMediaPicker } from "./media-picker";
+import { errorText } from "@/lib/api/errorText";
 
 const toRef = (m: { id: string; url: string; altEn: string; altAr: string; width: number | null; height: number | null }): MediaRef => ({
   id: m.id, url: m.url, altEn: m.altEn, altAr: m.altAr, width: m.width, height: m.height,
@@ -244,7 +245,7 @@ function GuideFields({
   onChange: (patch: Partial<ArticleDraft>) => void;
   onUploadError: (message: string) => void;
 }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const f = c.editor.fields;
   const types = c.editor.guideTypes;
   return (
@@ -269,7 +270,7 @@ function GuideFields({
             size="sm"
             onFiles={(files) => {
               const file = files[0];
-              if (file) void uploadMedia(file).then((m) => onChange({ downloadFile: toRef(m) })).catch((e: unknown) => onUploadError(e instanceof Error ? e.message : String(e)));
+              if (file) void uploadMedia(file).then((m) => onChange({ downloadFile: toRef(m) })).catch((e: unknown) => onUploadError(errorText(e, lang)));
             }}
           >
             {c.editor.chooseFile}

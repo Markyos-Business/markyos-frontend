@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getForm } from "../../api/discovery.api";
 import type { DiscoveryForm } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * The form being edited, and every change to it.
@@ -12,10 +13,11 @@ import type { DiscoveryForm } from "../../types";
  * holds, and "Saved" means saved. Calls run one at a time, in order, so two
  * quick edits can't land the wrong way round.
  */
-export function useFormEditor(formId: string) {
+export function useFormEditor(formId: string, isAr: boolean) {
   const [form, setForm] = useState<DiscoveryForm | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Failures themselves; they become words at render, in the reader's language.
+  const [loadError, setLoadError] = useState<unknown>(null);
+  const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(0);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
@@ -24,7 +26,7 @@ export function useFormEditor(formId: string) {
     let live = true;
     getForm(formId).then(
       (f) => live && setForm(f),
-      (err: unknown) => live && setLoadError(err instanceof Error ? err.message : "Couldn't open this questionnaire.")
+      (err: unknown) => live && setLoadError(err ?? new Error())
     );
     return () => {
       live = false;
@@ -41,7 +43,7 @@ export function useFormEditor(formId: string) {
         setError(null);
         return true;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "That didn't save.");
+        setError(err ?? new Error());
         return false;
       } finally {
         setSaving((n) => n - 1);
@@ -51,5 +53,15 @@ export function useFormEditor(formId: string) {
     return next;
   }, []);
 
-  return { form, setForm, loadError, error, setError, saving: saving > 0, savedAt, run };
+  const lang = isAr ? "ar" : "en";
+  return {
+    form,
+    setForm,
+    loadError: loadError === null ? null : errorText(loadError, lang, { en: "Couldn't open this questionnaire.", ar: "تعذّر فتح الاستبيان." }),
+    error: error === null ? null : errorText(error, lang, { en: "That didn't save.", ar: "لم يُحفظ ذلك." }),
+    clearError: () => setError(null),
+    saving: saving > 0,
+    savedAt,
+    run,
+  };
 }

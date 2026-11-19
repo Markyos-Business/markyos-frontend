@@ -11,8 +11,8 @@ import {
 } from "../../api/admin.api";
 import type { AdminUser } from "../../types";
 import { useAdminLang } from "./use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 
-const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 /**
  * What an admin does to one account, from a table row or the account's own
@@ -22,7 +22,8 @@ const message = (err: unknown) => (err instanceof Error ? err.message : String(e
 export function useUserActions(onChanged: (user: AdminUser | null) => void) {
   const { confirm } = useDialog();
   const { showToast } = useToast();
-  const { c, isAr } = useAdminLang();
+  const { c, isAr, lang } = useAdminLang();
+  const message = (err: unknown) => errorText(err, lang);
   // The account whose role dialog is open.
   const [roleFor, setRoleFor] = useState<AdminUser | null>(null);
   const [typeFor, setTypeFor] = useState<AdminUser | null>(null);

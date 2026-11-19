@@ -18,6 +18,7 @@ import {
   setUnsplashKey,
   stockFileName,
 } from "../../api/builder.api";
+import { errorText } from "@/lib/api/errorText";
 
 const PICKABLE_TYPES: AssetType[] = ["photo", "icon", "mockup", "export", "pattern", "graphic", "illustration"];
 
@@ -369,7 +370,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
       if (controller.signal.aborted) return;
       setResults([]);
       setStatus("error");
-      setError(e instanceof Error ? e.message : "Search failed.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Search failed.", ar: "تعذّر البحث." }));
     }
   }
 

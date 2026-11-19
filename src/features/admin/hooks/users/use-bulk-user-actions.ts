@@ -5,6 +5,7 @@ import { useDialog, useToast } from "@/components/ui";
 import { bulkUpdate } from "../../api/admin.api";
 import type { AdminBulkAction, AdminUser } from "../../types";
 import { useAdminLang } from "../shared/use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * The selection bar's actions. The server applies each account in turn with
@@ -13,7 +14,7 @@ import { useAdminLang } from "../shared/use-admin-lang";
 export function useBulkUserActions(onDone: () => void) {
   const { confirm } = useDialog();
   const { showToast } = useToast();
-  const { c, isAr } = useAdminLang();
+  const { c, isAr, lang } = useAdminLang();
   // The selection the role dialog is open for.
   const [roleFor, setRoleFor] = useState<{ ids: string[]; clear: () => void } | null>(null);
 
@@ -25,7 +26,7 @@ export function useBulkUserActions(onDone: () => void) {
       clear();
       onDone();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, lang), "danger");
     }
   }
 

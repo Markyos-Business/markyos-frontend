@@ -46,7 +46,7 @@ const asPublic = (form: DiscoveryForm, logos: LogoChoice[], studioName: string):
 
 /** Theme the client form with the studio's brand, then send the link. */
 export function ThemeSendView({ formId, logos, swatches, studioName, answersHref, builderHref, isAr }: ThemeSendViewProps) {
-  const editor = useFormEditor(formId);
+  const editor = useFormEditor(formId, isAr);
   const { form, run } = editor;
   const { showToast } = useToast();
   const { confirm } = useDialog();

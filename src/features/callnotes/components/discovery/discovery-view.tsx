@@ -10,6 +10,7 @@ import { useDiscoveryFeed } from "../../hooks/discovery/use-discovery-feed";
 import { deleteNote, setIncluded } from "../../api/call-notes.api";
 import type { FeedCall, FeedForm } from "../../types";
 import { callDay, initials } from "../../utils/format";
+import { errorText } from "@/lib/api/errorText";
 
 type Section = "questionnaires" | "calls";
 
@@ -194,7 +195,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
       }
       onChanged();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't work.", "لم ينجح ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." }), "danger");
     } finally {
       setBusy(false);
     }
@@ -275,7 +276,7 @@ function CallRow({ call, slug, canEdit, isAr, onChanged }: CallRowProps) {
       showToast(done, "success");
       onChanged();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't work.", "لم ينجح ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." }), "danger");
     }
   };
 

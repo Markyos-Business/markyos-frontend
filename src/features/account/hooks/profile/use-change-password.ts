@@ -5,10 +5,11 @@ import { requestPasswordReset } from "@/features/auth";
 import { API_ENABLED } from "@/lib/api/client";
 import type { Account } from "@/types";
 import { useAccountLang } from "../shared/use-account-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /** Change passwords through the existing single-use emailed reset link. */
 export function useChangePassword(account: Account) {
-  const { t } = useAccountLang();
+  const { lang } = useAccountLang();
   const sending = useRef(false);
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
@@ -34,10 +35,7 @@ export function useChangePassword(account: Account) {
       // still apply across tabs/devices and failures remain visible.
       setCooldown(30);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t(
-        "Could not send the password link. Try again.",
-        "تعذر إرسال رابط كلمة المرور. أعد المحاولة.",
-      ));
+      setError(errorText(err, lang, { en: "Could not send the password link. Try again.", ar: "تعذر إرسال رابط كلمة المرور. أعد المحاولة." }));
     } finally {
       sending.current = false;
       setBusy(false);

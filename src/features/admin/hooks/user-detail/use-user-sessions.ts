@@ -5,13 +5,14 @@ import { useRequest } from "@/hooks/useRequest";
 import { endUserSession, listUserSessions } from "../../api/admin.api";
 import type { AdminSession } from "../../types";
 import { useAdminLang } from "../shared/use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 
 /** Where an account is signed in, and signing one browser out. */
 export function useUserSessions(userId: string, version: number, onChanged: () => void) {
   const sessions = useRequest(() => listUserSessions(userId), `sessions:${userId}:${version}`);
   const { confirm } = useDialog();
   const { showToast } = useToast();
-  const { c, isAr } = useAdminLang();
+  const { c, isAr, lang } = useAdminLang();
 
   const deviceName = (s: AdminSession) =>
     s.browser && s.os ? c.sessions.on(s.browser, s.os) : s.browser ?? s.os ?? c.sessions.unknown;
@@ -30,7 +31,7 @@ export function useUserSessions(userId: string, version: number, onChanged: () =
       showToast(c.toasts.sessionEnded, "success");
       onChanged();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, lang), "danger");
     }
   }
 

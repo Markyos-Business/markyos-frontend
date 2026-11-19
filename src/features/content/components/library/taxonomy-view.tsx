@@ -10,6 +10,7 @@ import { useContentLang } from "../../hooks/use-content-lang";
 import { useContentMe } from "../../hooks/use-content-me";
 import { useRemove } from "../../hooks/use-remove";
 import type { Author, Category } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 const TABS = ["authors", "categories", "tags"] as const;
 type TabKey = (typeof TABS)[number];
@@ -61,7 +62,7 @@ function AuthorsTable() {
         getRowId={(a) => String(a.id)}
         getRowLabel={(a) => a.name}
         loading={authors.loading}
-        error={authors.error}
+        error={authors.failure ? errorText(authors.failure, lang) : null}
         onRetry={authors.reload}
         empty={<EmptyState icon="users" title={t.empty} description="" />}
         rowActions={canEdit || me.data?.canPublish ? actions : undefined}
@@ -81,7 +82,7 @@ function AuthorsTable() {
 }
 
 function AuthorDialog({ author, onClose, onSaved }: { author: Partial<Author>; onClose: () => void; onSaved: () => void }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.taxonomy;
   const [name, setName] = useState(author.name ?? "");
   const [roleEn, setRoleEn] = useState(author.roleEn ?? "");
@@ -97,7 +98,7 @@ function AuthorDialog({ author, onClose, onSaved }: { author: Partial<Author>; o
           await saveAuthor({ id: author.id, name, roleEn, roleAr, bioEn: author.bioEn ?? "", bioAr: author.bioAr ?? "", avatarId: author.avatarId ?? null });
           onSaved();
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >
@@ -135,7 +136,7 @@ function LabelsTable({ kind }: { kind: "categories" | "tags" }) {
         getRowId={(x) => String(x.id)}
         getRowLabel={(x) => x.labelEn}
         loading={items.loading}
-        error={items.error}
+        error={items.failure ? errorText(items.failure, lang) : null}
         onRetry={items.reload}
         empty={<EmptyState icon="layer-group" title={t.empty} description="" />}
         rowActions={
@@ -163,7 +164,7 @@ function LabelsTable({ kind }: { kind: "categories" | "tags" }) {
 }
 
 function LabelDialog({ kind, item, onClose, onSaved }: { kind: "categories" | "tags"; item: Partial<Category>; onClose: () => void; onSaved: () => void }) {
-  const { c } = useContentLang();
+  const { c, lang } = useContentLang();
   const t = c.taxonomy;
   const [labelEn, setLabelEn] = useState(item.labelEn ?? "");
   const [labelAr, setLabelAr] = useState(item.labelAr ?? "");
@@ -180,7 +181,7 @@ function LabelDialog({ kind, item, onClose, onSaved }: { kind: "categories" | "t
           await saveLabel(kind, { id: item.id, slug: key, labelEn, labelAr });
           onSaved();
         } catch (e: unknown) {
-          return e instanceof Error ? e.message : String(e);
+          return errorText(e, lang);
         }
       }}
     >
