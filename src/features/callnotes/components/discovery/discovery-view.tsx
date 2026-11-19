@@ -45,7 +45,10 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
   const newFormHref = `/w/${brandSlug}/forms/new`;
 
   // Kept in the address, so a link or a refresh opens the same part.
-  const choose = (next: Section) => router.replace(next === "calls" ? `${pathname}?tab=calls` : pathname, { scroll: false });
+  // push, not replace: Back steps through the tabs like any other page change.
+  const choose = (next: Section) => {
+    if (next !== section) router.push(next === "calls" ? `${pathname}?tab=calls` : pathname, { scroll: false });
+  };
 
   const addCallButton = canEdit && (
     <Button variant="primary" href={`${base(brandSlug)}/calls/new`} icon={<Icon name="plus" size={18} />}>

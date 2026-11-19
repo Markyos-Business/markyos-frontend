@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog, useToast } from "@/components/ui";
 import type { Draft } from "@/types";
 import { AR_FIELD_LABEL, FIELD_LABEL, PAGE_SECTION } from "../constants";
 
-export type DraftsTab = "pending" | "decided";
+const DRAFTS_TABS = ["pending", "decided"] as const;
+export type DraftsTab = (typeof DRAFTS_TABS)[number];
 
 export function targetLabel(d: Draft, isAr = false) {
   if (d.targetType === "strategyField") return (isAr ? AR_FIELD_LABEL : FIELD_LABEL)[d.targetRef] ?? d.targetRef;
@@ -28,7 +30,7 @@ export function useDraftsPage(slug: string) {
   const { confirm } = useDialog();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
-  const [tab, setTab] = useState<DraftsTab>("pending");
+  const [tab, setTab] = useUrlTab(DRAFTS_TABS, "pending");
 
   const { pending, decided } = useMemo(() => {
     const all = ws?.drafts ?? [];
