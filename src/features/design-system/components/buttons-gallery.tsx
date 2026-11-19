@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BackButton, BadgeButton, Button, ButtonGroup, CloseButton, ConfirmButton, CopyButton, Fab, HoldToConfirmButton, Icon, IconButton, LinkButton, MenuButton, ProviderButton, SplitButton, ToggleButton, ToggleGroup, UploadButton, useAsyncButton, type ButtonVariant } from "@/components/ui";
-const variants: ButtonVariant[] = ["primary", "secondary", "outline", "ghost", "destructive", "link"];
+const variants: ButtonVariant[] = ["primary", "outline", "ghost", "link", "soft", "danger"];
 const states = ["default", "hover", "focus", "pressed", "disabled", "loading", "success", "error", "locked", "skeleton"] as const;
 /** The matrix simulates visual states; the examples below it are interactive. */
 export function ButtonsGallery() {

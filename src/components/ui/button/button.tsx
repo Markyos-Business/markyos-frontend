@@ -7,7 +7,14 @@ import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import { Icon } from "../icon";
 import { Tooltip } from "../tooltip";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "destructive" | "link" | "soft" | "success-soft" | "danger-soft" | "danger" | "light" | "solid";
+/**
+ * One variant per job. Primary: the page's main action. Outline: secondary
+ * actions. Link and soft: tertiary. Danger: destructive, after confirmation.
+ * Ghost (accent tint), the soft status tints and solid cover the rest.
+ * `secondary`, `destructive` and `light` were duplicates of soft, danger and
+ * solid and are gone.
+ */
+export type ButtonVariant = "primary" | "outline" | "ghost" | "link" | "soft" | "success-soft" | "danger-soft" | "danger" | "solid";
 export type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon";
 export type ButtonStatus = "idle" | "loading" | "success" | "error";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -40,16 +47,13 @@ const sizes: Record<ButtonSize, string> = {
 };
 const variants: Record<ButtonVariant, string> = {
   primary: "bg-accent text-accent-ink",
-  secondary: "bg-surface-2 text-text",
   outline: "bg-ink-soft text-text shadow-edge",
   ghost: "bg-accent-soft text-accent-on-soft",
-  destructive: "bg-danger-fill text-danger-ink",
   link: "bg-transparent text-accent-text hover:underline underline-offset-2",
   soft: "bg-surface-2 text-text",
   "success-soft": "bg-success-soft text-success",
   "danger-soft": "bg-danger-soft text-danger",
   danger: "bg-danger-fill text-danger-ink",
-  light: "bg-solid text-solid-ink",
   solid: "bg-solid text-solid-ink",
 };
 
