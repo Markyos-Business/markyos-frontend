@@ -20,6 +20,11 @@ Fixed on release/staging-v1, merged locally (not deployed):
 | UX-08 SSO developer note | Disabled switch with customer copy | 1164f7d |
 | UX-09 stock 404 | Branded, bilingual, theme-aware not-found page | 68ae232 |
 | UX-12 Arabic leftovers | Dates, analysis labels, citation chips, LTR values, terms | 614ef7a |
+| UX-13 three builder statuses | A clean review says "No issues" when nothing is unpublished | 74dfe4e |
+| UX-28 new brand has no way back | All brands link, visible Brand name label, client-brand placeholder | ebdcef1 |
+| UX-38 sign-in footer links | Footer links on the text baseline; "Forgot password?" | 899ce0f |
+
+Not changed: UX-31 (dark text on primary buttons) is deliberate. `tailwind/tokens.js` documents that white on #0099FF is 3.0:1, below the spec's own 4.5:1 rule for text, so the label stays dark.
 
 Notes: the desktop moodboard opening crop (part of UX-05) is a documented decision in `canvas.tsx` (open legible, "Fit" shows all) and was left as is. From UX-12, the fact labels on Analysis and the "Discovery form —" line on Drafts are generated content, and the raw keys on Drafts came only from seeded demo data.
 
