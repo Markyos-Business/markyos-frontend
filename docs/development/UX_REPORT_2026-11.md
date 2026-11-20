@@ -6,7 +6,7 @@ Shareable version with screenshots: https://claude.ai/artifact/MjPBm5qXGQzwVyxHR
 
 ## Status (21 Nov 2026): every finding closed or decided
 
-Merged locally on release/staging-v1, not deployed. 33 fixed, 7 closed without a change (reasons below).
+Merged locally on release/staging-v1, not deployed. 34 fixed or corrected, 6 closed without a change (reasons below).
 
 | Finding | Outcome | Commit |
 |---|---|---|
