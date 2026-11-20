@@ -63,7 +63,7 @@ Other sizes, 4G (open → images → reopen):
 | 10 images | 1,507 / 1,518 / 1,454 ms, 4.13 MB | 451 / 549 / 400 ms, 0.68 MB |
 | 25 images | 2,581 / 2,595 / 2,526 ms, 9.40 MB | 456 / 730 / 403 ms, 0.78 MB |
 
-Localhost (no network shaping), open → images: 50 images 454 / 466 ms before, 122 / 152 ms after (10: 156→153 ms, 25: 269→106 ms). The localhost "after" figures come from the first after-run, on the same image pipeline but before the upload tray and save indicator were added; later localhost runs were blocked by the sign-in issue below.
+Localhost (no network shaping), open → images, final build: 10 images 156 / 171 → 190 / 203 ms, 25 images 269 / 284 → 123 / 143 ms, 50 images 454 / 466 → 120 / 164 ms (localhost has no latency, so small boards are already at the floor).
 
 Target check (set after the baseline): open < 1.5 s ✔ (0.45 s), reopen < 1 s ✔ (0.4 s), bytes < 3 MB ✔ (0.94), decode ratio < 6× ✔ (1.8×), heap < 35 MB ✔ (35), drag 60 fps ✔.
 
@@ -79,7 +79,7 @@ The ~950 React commits during a throttled open are Next.js streaming the page in
 
 ## E. Outstanding issues
 
-1. **Sign-in race (not moodboard; needs a decision).** Every full page load rotates the refresh token, and the old one is blacklisted. If that request is cut short (navigating away mid-load, closing a tab), the browser never stores the new token and the person is signed out. It reproduces reliably in the benchmark now that pages load faster. Recommended fix: a short reuse window (e.g. 30 s) for a just-rotated refresh token on the server. Security-relevant, so not changed without approval.
+1. **Sign-in race: fixed (approved 20 Nov).** A refresh whose answer never reached the browser used to sign the person out. The server now remembers each rotation for 30 seconds and answers the old token with the same new one (`apps/authentication/refresh_reuse.py`); signed-out sessions are never revived. The benchmark runs that failed every attempt now pass.
 2. **Thumbnail backfill**: run `python manage.py make_thumbnails` on staging after deploying, or older images keep loading the full file (they still display; the client falls back).
 3. **Cloud storage**: thumbnails are written through `default_storage`, so they work with cloud storage too; the `immutable` cache header is set only where Django serves media (the CDN would need its own).
 4. **Concurrent edits**: a save that loses a 409 race adopts the other copy ("theirs wins"); edits from the losing tab are dropped. Unchanged; needs a merge strategy to fix properly.

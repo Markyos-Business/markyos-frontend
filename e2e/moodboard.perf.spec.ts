@@ -73,9 +73,9 @@ for (const n of SIZES) {
       await cdp.send("Network.emulateNetworkConditions", { offline: false, latency: 60, downloadThroughput: 1_600_000, uploadThroughput: 750_000 });
     }
     await signIn(page, studio);
-    // Let the home page finish loading the brand before leaving it. Navigating
-    // away mid-load can drop a rotated refresh cookie and sign the session out
-    // (an auth race recorded separately); the benchmark measures the board.
+    // Let the home page settle before leaving it, so the open is measured from
+    // a quiet page. (Leaving mid-refresh used to sign the session out; the
+    // server's refresh reuse window fixed that.)
     await page.waitForLoadState("networkidle");
     const cards = page.locator("[data-mood-item]");
 
