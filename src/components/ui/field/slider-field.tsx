@@ -53,7 +53,7 @@ const SliderField = ({
           {label}
           {labelExtra}
         </span>
-        <span className={`font-mono text-caption ${valueActive ? "text-accent-text" : "text-text-faint"}`}>{shown}</span>
+        <span dir="ltr" className={`font-mono text-caption ${valueActive ? "text-accent-text" : "text-text-faint"}`}>{shown}</span>
       </div>
       <input
         type="range"

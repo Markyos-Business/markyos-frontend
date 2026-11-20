@@ -110,12 +110,14 @@ export const AccountMenu = memo(function AccountMenu({
             </div>
           </div>
 
+          {/* The header shows these as a nav bar from tablet width up; only a
+              phone, where that bar is hidden, needs them here. */}
           {phoneLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
+              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body md:hidden"
               style={{ color: "var(--text-secondary)" }}
             >
               <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />

@@ -35,7 +35,7 @@ export function AccountView() {
           {page.tab === "organisation" && (
             <>
               <UsageSection {...page.usage} />
-              <SsoSection {...page.sso} />
+              <SsoSection />
               <AuditLogSection {...page.audit} />
             </>
           )}

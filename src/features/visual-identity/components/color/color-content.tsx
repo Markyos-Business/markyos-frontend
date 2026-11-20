@@ -10,6 +10,7 @@ import { ColorSwatch, SlotKind, Workspace } from "@/types";
 import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
 import { useColorNameTranslations } from "../../hooks/use-color-name-translations";
 import { nameLang } from "@/lib/data/colorNames";
+import { plural } from "@/lib/i18n/plural";
 
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
@@ -47,8 +48,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
       <PageHeader
         title={isAr ? "الألوان" : "Color"}
         description={isAr
-              ? `${ws.colors.length} لون · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
-              : `${ws.colors.length} colors · click a code to copy it, or the pencil to edit.`}
+              ? `${plural("ar", ws.colors.length, { zero: "لا ألوان", one: "لون واحد", two: "لونان", few: "{n} ألوان", many: "{n} لونًا", other: "{n} لون" })} · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
+              : `${plural("en", ws.colors.length, { one: "{n} color", other: "{n} colors" })} · click a code to copy it, or the pencil to edit.`}
         actions={<>
         <div className="flex gap-2">
           <button

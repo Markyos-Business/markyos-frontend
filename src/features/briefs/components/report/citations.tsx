@@ -20,6 +20,17 @@ export const CitationsProvider = ({ value, children }: { value: CitationsContext
   <CitationsContext.Provider value={value}>{children}</CitationsContext.Provider>
 );
 
+/**
+ * A source's short name in the reader's language. The server writes it in
+ * English ("Form · Q12", "Call · 14 Oct · Omar Aziz"); the rest of the label
+ * is a date and a name, which read the same in Arabic.
+ */
+export function sourceLabel(source: SourceRef, isAr: boolean): string {
+  if (!isAr) return source.label;
+  if (source.ref.type === "form") return `استبيان · س${source.ref.number}`;
+  return source.label.replace(/^Call\b/, "مكالمة");
+}
+
 /** "Form · Q12", "Call · 14 Oct · Omar Aziz": each opens its source beside the report. */
 export function CitationChips({ citations }: { citations: Citation[] }) {
   const { index, open, isAr } = useContext(CitationsContext);
@@ -38,7 +49,7 @@ export function CitationChips({ citations }: { citations: Citation[] }) {
               className="mk-btn inline-flex h-badge items-center gap-space-1 rounded-md bg-surface-2 px-space-3 text-caption font-medium text-text-muted hover:text-accent-text disabled:cursor-default"
             >
               <Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />
-              <span className="bidi-plain">{source?.label ?? c.sourceId}</span>
+              <span className="bidi-plain">{source ? sourceLabel(source, isAr) : c.sourceId}</span>
             </button>
           </li>
         );
@@ -102,7 +113,7 @@ function CallSource({ source, citation, slug, isAr }: { source: Extract<SourceRe
     <div className="flex flex-col gap-space-5">
       <div className="flex flex-col gap-space-1">
         <span className="bidi-plain text-body font-medium text-text">{note.title}</span>
-        <span className="text-caption text-text-muted">{source.label}</span>
+        <span className="text-caption text-text-muted">{sourceLabel(source, isAr)}</span>
       </div>
       <ol className="flex flex-col gap-space-2">
         {window_.map((line, i) => {
@@ -138,7 +149,7 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
     <div className="flex flex-col gap-space-5">
       <div className="flex flex-col gap-space-1">
         <span className="bidi-plain text-body font-medium text-text">{source.ref.formName}</span>
-        <span className="text-caption text-text-muted">{source.label}</span>
+        <span className="text-caption text-text-muted">{sourceLabel(source, isAr)}</span>
       </div>
       <div ref={targetRef} className={lit}>
         <h3 dir="auto" className="text-body font-medium text-text-secondary">

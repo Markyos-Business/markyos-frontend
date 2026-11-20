@@ -1,30 +1,24 @@
 "use client";
 
-import { Row, SegmentedControl, Section, Switch } from "@/components/ui";
-import { InputField } from "@/components/ui";
-import { SSO_PROVIDERS } from "../../constants";
-import type { AccountPageState } from "../../hooks/use-account-page";
+import { Row, Section, Switch } from "@/components/ui";
 import { useAccountLang } from "../../hooks/shared/use-account-lang";
 
-/** Requiring single sign-on, and which provider and domain. */
-export function SsoSection({ enabled, provider, domain, onToggle, onProvider, onDomain }: AccountPageState["sso"]) {
+/**
+ * Single sign-on. No identity provider is connected yet, so the switch stays
+ * off and disabled and the card says how to get it, rather than offering a
+ * setting that would do nothing. The provider and domain fields come back
+ * once SSO is real.
+ */
+export function SsoSection() {
   const { t } = useAccountLang();
+  const label = t("Require SSO for this account", "فرض الدخول الموحّد لهذا الحساب");
   return (
     <Section title={t("Single sign-on", "الدخول الموحّد")} icon="id-badge">
       <Row
-        label={t("Require SSO for this account", "فرض الدخول الموحّد لهذا الحساب")}
-        hint={t("Blocks email/password login once a real identity provider is connected. Enterprise procurement checkbox — needs WorkOS or Auth0 wired up for real.", "يمنع الدخول بالبريد وكلمة المرور عند ربط مزوّد هوية فعلي. متطلب للمؤسسات، ويحتاج ربط WorkOS أو Auth0 فعليًا.")}
-        right={<Switch label={t("Require SSO for this account", "فرض الدخول الموحّد لهذا الحساب")} checked={enabled} onToggle={onToggle} />}
+        label={label}
+        hint={t("Available on Enterprise. Contact us to set it up.", "متاح في باقة المؤسسات. تواصل معنا لتفعيله.")}
+        right={<Switch label={label} checked={false} onToggle={() => {}} disabled />}
       />
-      {enabled && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-6">
-          <div className="flex flex-col gap-space-2">
-            <span className="text-caption text-text-muted">{t("Provider", "المزوّد")}</span>
-            <SegmentedControl label={t("Provider", "المزوّد")} options={SSO_PROVIDERS.map((p) => ({ value: p, label: p }))} value={provider} onChange={onProvider} />
-          </div>
-          <InputField label={t("Company domain", "نطاق الشركة")} dir="ltr" value={domain} onChange={(e) => onDomain(e.target.value)} placeholder="yourcompany.com" />
-        </div>
-      )}
     </Section>
   );
 }

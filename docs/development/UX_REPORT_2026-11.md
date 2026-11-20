@@ -4,6 +4,10 @@
 
 Shareable version with screenshots: https://claude.ai/artifact/MjPBm5qXGQzwVyxHRragbE (private until shared).
 
+## Status (21 Nov 2026)
+
+Fixed on release/staging-v1 (fix/ux-week1): UX-01 client role (a7c1fb4), UX-08 SSO card (1164f7d), UX-09 not-found page (68ae232), UX-12 Arabic leftovers (614ef7a). UX-02 was wrong: the studio links are in the avatar menu on phone. The real issue was that the menu repeated them on desktop, fixed in f927fbb. Not changed from UX-12: the fact labels on Analysis and the "Discovery form —" line on Drafts are generated content, not interface text, and the raw keys on Drafts came only from the seeded demo data.
+
 ## Summary
 
 - **Overall score: 5.5 / 10.** 46 screens × 4 variants (English light and Arabic dark, at 1440px and 390px) = 208 screenshots, across 5 roles: public, studio, company, client and admin.
@@ -35,10 +39,10 @@ Accessibility scan: 8 (axe WCAG 2.1 AA: contrast on an 11px tab count on Assets 
 
 ### P1
 
-**UX-02 · The studio shell has no navigation on phone** (Phone; Brands, People, Board, Account, Questionnaires)
+**UX-02 · ~~The studio shell has no navigation on phone~~ (corrected)** (Phone; Brands, People, Board, Account, Questionnaires)
 
-- What: Below desktop width the top-bar links (Brands, People, Notifications, Questionnaires, Board) disappear and nothing replaces them, so Board can't be reached at all. The admin and in-brand shells do get a hamburger menu.
-- Fix: Give the studio shell the same hamburger drawer the brand shell uses.
+- What: On checking, the links are in the avatar menu on phone. The real problem was the reverse: the menu also listed them on desktop, duplicating the top bar.
+- Fix: Done in f927fbb (menu links on phone only). A visible menu label on phone could still help people find them.
 - Evidence: `studio__people__en-light-phone.png`
 
 **UX-03 · Discovery questionnaire rows break on phone** (Phone; /w/…/discovery)

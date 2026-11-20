@@ -111,7 +111,7 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, id
     footer={[
       ...(API_ENABLED ? [{key:"notifications",label:isAr?"الإشعارات":"Notifications",icon:"bell",href:"/notifications"}] : []),
       ...(reviewHref ? [{key:"review-guideline",label:isAr?"مراجعة الدليل":"Review guideline",icon:"eye",href:reviewHref}] : []),
-      toItem({key:"team",label:"Team & history",arLabel:"الفريق والإصدارات",icon:"users",path:"team"}),
+      toItem({key:"team",label:"Team & history",arLabel:"الفريق والسجل",icon:"users",path:"team"}),
       toItem({key:"settings",label:"Settings",arLabel:"الإعدادات",icon:"cog",path:"settings"}),
     ]} />;
 });
