@@ -163,7 +163,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
   );
 }
 
-const rowClass = "flex min-h-widget-row items-center gap-space-5 px-space-8 py-space-4 shadow-rule-t first:shadow-none";
+const rowClass = "flex min-h-widget-row flex-wrap items-center gap-x-space-5 gap-y-space-3 px-space-6 py-space-4 shadow-rule-t first:shadow-none sm:px-space-8";
 
 type FormRowProps = { form: FeedForm; slug: string; isAr: boolean; canEdit: boolean; onChanged: () => void };
 
@@ -203,59 +203,67 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
 
   return (
     <li className={rowClass}>
-      <IconBadge icon="clipboard-list" tone="info" />
-      <div className="flex min-w-0 flex-1 flex-col items-start gap-space-1">
-        <Link href={formHref(slug, form)} className="bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text">
-          {form.title}
-        </Link>
-        <span className="flex flex-wrap items-center gap-space-3 text-caption text-text-muted">
-          <span>{form.date ? formatDay(callDay(form.date), isAr) : "—"}</span>
-          {form.recipientName && <span className="bidi-plain">· {form.recipientName}</span>}
-          <span className="tabular-nums">
-            ·{" "}
-            {isDraft
-              ? t(`${form.questions} questions`, `${form.questions} سؤال`)
-              : t(`${form.answered}/${form.total} answered`, `${form.answered}/${form.total} إجابة`)}
+      {/* On a phone the title and its details take the first line and the
+          status and actions the second, so nothing is squeezed or clipped. */}
+      <div className="flex min-w-0 flex-1 basis-full items-center gap-space-5 sm:basis-0">
+        <IconBadge icon="clipboard-list" tone="info" />
+        <div className="flex min-w-0 flex-1 flex-col items-start gap-space-1">
+          <Link href={formHref(slug, form)} className="bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text">
+            {form.title}
+          </Link>
+          <span className="flex flex-wrap items-center gap-space-3 text-caption text-text-muted">
+            <span>{form.date ? formatDay(callDay(form.date), isAr) : "—"}</span>
+            {form.recipientName && <span className="bidi-plain">· {form.recipientName}</span>}
+            <span className="tabular-nums">
+              ·{" "}
+              {isDraft
+                ? t(`${form.questions} questions`, `${form.questions} سؤال`)
+                : t(`${form.answered}/${form.total} answered`, `${form.answered}/${form.total} إجابة`)}
+            </span>
           </span>
-        </span>
+        </div>
       </div>
-      <Badge tone={status.tone} dot>
-        {status[lang]}
-      </Badge>
-      {link ? (
-        <CopyButton
-          text={link}
-          label={t("Copy link", "نسخ الرابط")}
-          copiedLabel={t("Copied", "نُسخ")}
-          copiedMessage={copy.linkCopied}
-          failedMessage={t("Couldn't copy. Open the questionnaire's link page to copy it.", "تعذّر النسخ. افتح صفحة رابط الاستبيان لنسخه.")}
-        />
-      ) : (
-        isDraft &&
-        canEdit && (
-          <Button
-            variant="soft"
-            size="sm"
-            icon={<Icon name="link" size={16} />}
-            disabled={busy || form.questions === 0}
-            title={form.questions === 0 ? t("Add a question first.", "أضف سؤالًا أولًا.") : undefined}
-            onClick={() => void getLink()}
-          >
-            {busy ? t("Getting link…", "جارٍ إنشاء الرابط…") : t("Get share link", "إنشاء رابط المشاركة")}
-          </Button>
-        )
-      )}
-      <ActionsDropdown
-        label={t("Actions", "إجراءات")}
-        title={t(`${form.title} actions`, `إجراءات ${form.title}`)}
-        items={[
-          isDraft
-            ? { label: t("Edit questions", "تعديل الأسئلة"), icon: "pen", onSelect: () => router.push(formHref(slug, form)) }
-            : { label: t("Open answers", "فتح الإجابات"), icon: "eye", onSelect: () => router.push(formHref(slug, form)) },
-          ...(link ? [{ label: copy.openAnswerPage, icon: "external-link-alt", onSelect: () => window.open(link, "_blank", "noopener") }] : []),
-          { label: t("Theme, link and sending", "التصميم والرابط والإرسال"), icon: "share-alt", tone: "info" as const, onSelect: () => router.push(`/w/${slug}/forms/${form.id}/send`) },
-        ]}
-      />
+      <div className="flex w-full items-center gap-space-3 sm:w-auto">
+        <Badge tone={status.tone} dot>
+          {status[lang]}
+        </Badge>
+        <div className="ms-auto flex items-center gap-space-3">
+          {link ? (
+            <CopyButton
+              text={link}
+              label={t("Copy link", "نسخ الرابط")}
+              copiedLabel={t("Copied", "نُسخ")}
+              copiedMessage={copy.linkCopied}
+              failedMessage={t("Couldn't copy. Open the questionnaire's link page to copy it.", "تعذّر النسخ. افتح صفحة رابط الاستبيان لنسخه.")}
+            />
+          ) : (
+            isDraft &&
+            canEdit && (
+              <Button
+                variant="soft"
+                size="sm"
+                icon={<Icon name="link" size={16} />}
+                disabled={busy || form.questions === 0}
+                title={form.questions === 0 ? t("Add a question first.", "أضف سؤالًا أولًا.") : undefined}
+                onClick={() => void getLink()}
+              >
+                {busy ? t("Getting link…", "جارٍ إنشاء الرابط…") : t("Get share link", "إنشاء رابط المشاركة")}
+              </Button>
+            )
+          )}
+          <ActionsDropdown
+            label={t("Actions", "إجراءات")}
+            title={t(`${form.title} actions`, `إجراءات ${form.title}`)}
+            items={[
+              isDraft
+                ? { label: t("Edit questions", "تعديل الأسئلة"), icon: "pen", onSelect: () => router.push(formHref(slug, form)) }
+                : { label: t("Open answers", "فتح الإجابات"), icon: "eye", onSelect: () => router.push(formHref(slug, form)) },
+              ...(link ? [{ label: copy.openAnswerPage, icon: "external-link-alt", onSelect: () => window.open(link, "_blank", "noopener") }] : []),
+              { label: t("Theme, link and sending", "التصميم والرابط والإرسال"), icon: "share-alt", tone: "info" as const, onSelect: () => router.push(`/w/${slug}/forms/${form.id}/send`) },
+            ]}
+          />
+        </div>
+      </div>
     </li>
   );
 }
