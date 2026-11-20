@@ -23,14 +23,18 @@ type SectionCardProps = {
   itemAction?: ItemAction;
 };
 
-/** Ready, Edited, Added, Failed: what state a section is in, at a glance. */
-export function sectionTag(section: Section, isAr: boolean): { label: string; tone: "success" | "info" | "accent" | "danger" | "neutral" } {
+/**
+ * Edited, Added, Failed, Writing: what state a section is in, at a glance.
+ * Plain ready is the norm and gets no chip (null): ten identical green chips
+ * hid the one section that had changed.
+ */
+export function sectionTag(section: Section, isAr: boolean): { label: string; tone: "success" | "info" | "accent" | "danger" | "neutral" } | null {
   if (section.status === "failed") return { label: isAr ? "تعذّر" : "Failed", tone: "danger" };
   if (section.status === "regenerating") return { label: isAr ? "تُعاد كتابته" : "Rewriting", tone: "neutral" };
   if (section.status === "pending") return { label: isAr ? "قيد الكتابة" : "Writing", tone: "neutral" };
   if (section.addedToStrategyAt) return { label: isAr ? "أُضيف" : "Added", tone: "accent" };
   if (section.editedByUser) return { label: isAr ? "مُعدَّل" : "Edited", tone: "info" };
-  return { label: isAr ? "جاهز" : "Ready", tone: "success" };
+  return null;
 }
 
 /** One section of the report, as a card: its content, status and actions. */
@@ -95,9 +99,11 @@ export function SectionCard({ analysisId, section, canEdit, isAr, onChange, acti
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-space-3">
-          <Badge tone={tag.tone} dot>
-            {tag.label}
-          </Badge>
+          {tag && (
+            <Badge tone={tag.tone} dot>
+              {tag.label}
+            </Badge>
+          )}
           {section.addedToStrategyAt && (
             <span className="text-caption text-text-muted">
               {t("Added to Strategy", "أُضيف إلى الاستراتيجية")} · {formatDay(section.addedToStrategyAt, isAr)}
