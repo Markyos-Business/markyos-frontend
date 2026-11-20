@@ -199,21 +199,21 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
                 <Icon name="check" size={22} />
               </span>
               {/* Which questionnaire, and who has it now: a client may answer more than one. */}
-              <span dir="auto" className="text-caption text-[var(--f-muted)] [text-align:match-parent]">{form.name}</span>
+              <span dir="auto" style={{ textAlign: isAr ? "right" : "left" }} className="self-stretch text-caption text-[var(--f-muted)]">{form.name}</span>
               <Heading className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{c("doneTitle")}</Heading>
               <p className={`text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>
-                {isAr ? `أصبحت لدى ${form.studioName}، وسيتواصل معك قريبًا.` : `${form.studioName} has them now and will be in touch.`}
+                {isAr ? <>أصبحت لدى <bdi>{form.studioName}</bdi>، وسيتواصل معك قريبًا.</> : <><bdi>{form.studioName}</bdi> has them now and will be in touch.</>}
               </p>
             </div>
           ) : step === 0 ? (
             <div className="flex flex-col gap-space-6 rounded-card bg-[var(--f-surface)] p-space-10 shadow-[inset_0_0_0_1px_var(--f-line)]">
               {/* The studio writes the title in one language; it keeps its own
                   direction inside the other without moving the layout. */}
-              <Heading dir="auto" className={`text-h2 font-medium [text-align:match-parent] ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</Heading>
+              <Heading dir="auto" style={{ textAlign: isAr ? "right" : "left" }} className={`text-h2 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</Heading>
               <p className="text-caption text-[var(--f-muted)]">
                 {isAr
-                  ? `${plural("ar", all.length, { one: "سؤال واحد", two: "سؤالان", few: "{n} أسئلة", many: "{n} سؤالًا", other: "{n} سؤال" })} من ${form.studioName}`
-                  : `${plural("en", all.length, { one: "{n} question", other: "{n} questions" })} from ${form.studioName}`}
+                  ? <>{plural("ar", all.length, { one: "سؤال واحد", two: "سؤالان", few: "{n} أسئلة", many: "{n} سؤالًا", other: "{n} سؤال" })} من <bdi>{form.studioName}</bdi></>
+                  : <>{plural("en", all.length, { one: "{n} question", other: "{n} questions" })} from <bdi>{form.studioName}</bdi></>}
               </p>
               {textIn(form.theme.welcome, lang) && (
                 <p className={`whitespace-pre-line text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>{textIn(form.theme.welcome, lang)}</p>
