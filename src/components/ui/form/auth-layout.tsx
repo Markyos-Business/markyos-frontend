@@ -34,7 +34,7 @@ const AuthLayout = ({ title, subtitle, brand, corner, footer, fill = true, child
       </div>
       {children}
     </div>
-    {footer && <div className="flex flex-wrap justify-center gap-2 text-[13px] text-text-muted">{footer}</div>}
+    {footer && <div className="flex flex-wrap items-baseline justify-center gap-2 text-[13px] text-text-muted">{footer}</div>}
   </main>
 );
 
