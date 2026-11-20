@@ -78,16 +78,16 @@ export function CanvasToolbar(b: BuilderPageState) {
           <Button
             variant="soft"
             size="xs"
-            disabled={autoFillCount === 0}
             onClick={b.onAutoFill}
+            // The kit's reason tooltip, not a `title`: a disabled button's
+            // title never shows, so it just looked broken.
+            disabledReason={autoFillCount === 0 ? (isAr ? "أضف نماذج تطبيقية أو ملفات تصدير في الأصول أولًا." : "Add mockups or exports in Assets first.") : undefined}
             title={
               autoFillCount > 0
                 ? isAr
-                  ? `يضيف أقسامًا جاهزة من مدير الأصول (${autoFillCount} ملفًا).`
-                  : `Adds ready-made sections from your Assets Manager (${autoFillCount} file${autoFillCount === 1 ? "" : "s"}).`
-                : isAr
-                  ? "لا توجد نماذج تطبيقية أو ملفات تصدير بعد."
-                  : "No mockups or exports in Assets yet."
+                  ? `يضيف أقسامًا جاهزة من الأصول (${autoFillCount} ملف).`
+                  : `Adds ready-made sections from your assets (${autoFillCount} file${autoFillCount === 1 ? "" : "s"}).`
+                : undefined
             }
             className="shrink-0"
           >
