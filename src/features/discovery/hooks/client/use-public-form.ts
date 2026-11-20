@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
 import type { Lang } from "@/types";
-import { LANG_STORAGE_KEY } from "@/lib/i18n/interfaceLang";
+import { LANG_STORAGE_KEY, readLinkLang } from "@/lib/i18n/interfaceLang";
 import { validateAnswer } from "../../utils/question-types";
 import { evaluateVisibility } from "../../utils/visibility";
 import { getPublicForm, savePublicAnswers, submitPublicForm, uploadPublicFile } from "../../api/public-form.api";
@@ -54,7 +54,7 @@ const problemOf = (err: unknown): PublicFormProblem => {
  * that are shown and valid. A link half-typed stays pending until it is a
  * link, rather than holding back every other answer in the same save.
  */
-/** The visitor's language: the link's ?lang, then their saved choice, then the browser's. */
+/** With no form to take a language from: the link's, the saved one, then the browser's. */
 function readerLang(): Lang {
   const asked = new URLSearchParams(window.location.search).get("lang");
   if (asked === "ar" || asked === "en") return asked;
@@ -88,14 +88,16 @@ export function usePublicForm(token: string) {
     getPublicForm(token, readResume(token)).then(
       ({ form, response }) => {
         if (!live) return;
-        // A started answer keeps its language. A fresh visitor gets theirs when
-        // the form offers it, and the form's own language otherwise.
-        const reader = readerLang();
+        // A started answer keeps its language. Otherwise the studio's choice
+        // for this client wins, unless the link itself asks for the other
+        // (?lang=). A browser's leftover preference is not a reason to
+        // override the studio; the EN | ع switch is one tap away.
+        const asked = readLinkLang();
         const language =
           response && form.languages.includes(response.language)
             ? response.language
-            : form.languages.includes(reader)
-              ? reader
+            : asked && form.languages.includes(asked)
+              ? asked
               : form.primaryLanguage;
         resume.current = response?.resumeToken ?? null;
         latest.current = { form, answers: response?.answers ?? {}, lang: language };

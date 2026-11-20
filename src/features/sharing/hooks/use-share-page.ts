@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { usePublicPageLocale } from "@/components/ui";
 import { useDocumentLang } from "@/contexts/useInterfaceLang";
 import type { Lang } from "@/types";
-import { readGuestLang, subscribeGuestLang } from "@/lib/i18n/interfaceLang";
+import { readLinkLang } from "@/lib/i18n/interfaceLang";
 import { useShareLink } from "./use-share-link";
 
 /**
@@ -15,12 +15,12 @@ import { useShareLink } from "./use-share-link";
  */
 export function useSharePage(token: string) {
   const { loaded, found } = useShareLink(token);
-  // The reader's language when they have one (the link's ?lang, or what they
-  // chose before), else the brand's own; the toggle overrides both. The page,
-  // the document's lang/dir and the badge all follow that one choice.
+  // The brand's own language unless the link names one (?lang=); the toggle
+  // overrides both. The page, the document's lang/dir and the badge all
+  // follow that one choice. Read after load, so the server pass agrees.
   const [chosen, setLang] = useState<Lang | null>(null);
-  const reader = useSyncExternalStore(subscribeGuestLang, readGuestLang, () => null);
-  const lang: Lang = chosen ?? reader ?? found?.ws.primaryLocale ?? "en";
+  const asked = loaded ? readLinkLang() : null;
+  const lang: Lang = chosen ?? asked ?? found?.ws.primaryLocale ?? "en";
   const isAr = lang === "ar";
   useDocumentLang(lang, loaded);
   usePublicPageLocale(lang);

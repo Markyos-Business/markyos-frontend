@@ -82,11 +82,6 @@ export function ArticlesView() {
             icon="globe"
             title={t.empty}
             description={lang === "ar" ? "ما تكتبه هنا يظهر على موقع ماركيوس بعد نشره." : "What you write here appears on the Markyos website once published."}
-            action={writable.length > 0 ? (
-              <Button variant="primary" icon={<Icon name="plus" size={18} />} onClick={() => setCreating(true)}>
-                {t.newArticle}
-              </Button>
-            ) : undefined}
           />
         }
         onRowClick={(a) => router.push(`/admin/cms/articles/${a.id}`)}

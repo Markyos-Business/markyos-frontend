@@ -5,7 +5,7 @@ import { BrandMark, Icon, Button, LangToggle } from "@/components/ui";
 import { PasswordField } from "@/components/ui";
 import type { Workspace } from "@/types";
 import { navLogo } from "../../utils/brand-logo";
-import { readGuestLang } from "@/lib/i18n/interfaceLang";
+import { readLinkLang } from "@/lib/i18n/interfaceLang";
 import { getBrandTheme, themeCssVars } from "../../utils/theme";
 
 /** Wrong guesses allowed before the form stops answering. */
@@ -44,9 +44,9 @@ export function PasswordGate({
 }) {
   const { name, slug } = ws;
   // EN | ع here too, the same control the guideline itself carries.
-  // The visitor's own choice when they have one (the link's ?lang, or a saved
-  // one), else the brand's language.
-  const [lang, setLang] = useState<"en" | "ar">(() => readGuestLang() ?? (brandAr ? "ar" : "en"));
+  // The brand's language, which the studio chose for this client, unless the
+  // link names one (?lang=).
+  const [lang, setLang] = useState<"en" | "ar">(() => readLinkLang() ?? (brandAr ? "ar" : "en"));
   const isAr = lang === "ar";
   const logo = navLogo(ws, isAr);
   const [value, setValue] = useState("");
