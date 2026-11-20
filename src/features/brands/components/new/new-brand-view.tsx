@@ -1,6 +1,7 @@
 "use client";
 
-import { MarkyosLogo, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import Link from "next/link";
+import { Icon, MarkyosLogo, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { START_TABS } from "../../constants";
 import type { NewBrandView as NewBrandViewProps } from "../../hooks/new/use-new-brand-page";
 import { ImportDropZone } from "../import/import-drop-zone";
@@ -17,7 +18,14 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
-        <MarkyosLogo variant="mark" className="h-5" isAr={isAr} />
+        {/* A way back that isn't logging out. */}
+        <div className="flex items-center gap-space-5">
+          <MarkyosLogo variant="mark" className="h-5" isAr={isAr} />
+          <Link href="/brands" className="mk-tap flex items-center gap-space-2 text-caption text-text-muted">
+            <Icon name="arrow-left" size={16} />
+            {t("All brands", "كل العلامات")}
+          </Link>
+        </div>
         <button type="button" onClick={onLogout} className="mk-tap cursor-pointer text-caption text-text-faint">
           {t("Log out", "تسجيل الخروج")}
         </button>

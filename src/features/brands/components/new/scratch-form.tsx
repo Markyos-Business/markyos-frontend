@@ -21,10 +21,12 @@ export function ScratchForm({ title, description, name, onName, onSubmit }: Scra
       <PageHeader title={title} description={description} className="mb-[26px]" />
       <div className="mb-[26px]">
         <InputField
-          // The <h1> asks for it, but a heading is not a label — this is
-          // the only field on the screen and it still needs a name.
-          aria-label={t("Brand name", "اسم العلامة")}
-          placeholder={t("Nadeen Studio", "استوديو نادين")}
+          // A visible label, not only an aria-label: the heading asks for a
+          // brand, but the field itself should say what goes in it.
+          label={t("Brand name", "اسم العلامة")}
+          // A client's brand, which is what a studio makes here, not the
+          // studio's own name.
+          placeholder={t("Wadi Rum Coffee", "قهوة وادي رم")}
           dir="auto"
           value={name}
           onChange={(e) => onName(e.target.value)}

@@ -34,7 +34,8 @@ export function SignupForm({ form }: { form: SignupFormState }) {
       footer={
         <>
           {c.signup.haveAccount}
-          <Button variant="link" href="/login">
+          {/* No button height or padding: it reads as the end of the sentence. */}
+          <Button variant="link" href="/login" className="h-auto px-0">
             {c.signup.login}
           </Button>
         </>

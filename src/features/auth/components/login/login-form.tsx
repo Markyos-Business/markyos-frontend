@@ -30,7 +30,8 @@ export function LoginForm() {
       footer={
         <>
           {c.login.newHere}
-          <Button variant="link" href="/signup">
+          {/* No button height or padding: it reads as the end of the sentence. */}
+          <Button variant="link" href="/signup" className="h-auto px-0">
             {c.login.create}
           </Button>
         </>
@@ -62,7 +63,7 @@ export function LoginForm() {
             autoComplete="current-password"
           />
 
-          <Button variant="link" href={form.resetHref} className="self-end text-caption font-medium">
+          <Button variant="link" href={form.resetHref} className="h-auto self-end px-0 text-caption font-medium">
             {c.login.forgot}
           </Button>
 

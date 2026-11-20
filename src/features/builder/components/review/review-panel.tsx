@@ -38,12 +38,15 @@ export function ReviewChip({
   isAr,
   onSelect,
   compact = false,
+  upToDate = false,
 }: {
   report: SiteReport;
   isAr: boolean;
   onSelect: (finding: SiteFinding) => void;
   /** Icon and count only (a phone's top bar); the words stay for screen readers. */
   compact?: boolean;
+  /** Live with nothing new to publish: a clean review then says so, not "Ready to publish". */
+  upToDate?: boolean;
 }) {
   const { errors, warnings, checked, pages } = report;
   const total = errors + warnings;
@@ -63,7 +66,9 @@ export function ReviewChip({
       ? isAr ? `${errors} للإصلاح` : `${errors} to fix`
       : warnings > 0
         ? isAr ? `${warnings} للمراجعة` : `${warnings} to review`
-        : isAr ? "جاهز للنشر" : "Ready to publish";
+        : upToDate
+          ? isAr ? "لا ملاحظات" : "No issues"
+          : isAr ? "جاهز للنشر" : "Ready to publish";
 
   const errorRows = rowsOf(report.findings.filter((f) => f.severity === "error"));
   const warningRows = rowsOf(report.findings.filter((f) => f.severity === "warning"));
