@@ -32,3 +32,15 @@ export function capabilitiesOn(ws: Workspace, session: Session | null) {
   const role = roleOn(ws, session);
   return { role, canEdit: canEdit(role), canGovern: role === "owner" };
 }
+
+/**
+ * Someone who only reviews: on at least one brand, and a client on every one.
+ *
+ * Read from roles rather than the account type, which older studio accounts
+ * also leave empty. A reviewer's home lists what was shared with them, with no
+ * way to create a brand and no studio pages.
+ */
+export function isReviewerOnly(workspaces: Workspace[], session: Session | null): boolean {
+  const roles = workspaces.map((ws) => roleOn(ws, session));
+  return roles.length > 0 && roles.every((role) => role === "client");
+}

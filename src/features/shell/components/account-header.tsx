@@ -4,7 +4,8 @@ import { BetaNotice } from "./beta-notice";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { useCurrentAccount } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { isReviewerOnly } from "@/lib/data/access";
 import { useDocumentLang, useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { accountTypeOf } from "@/constants/accountTypes";
 import { accountNavigation } from "@/lib/data/accountNavigation";
@@ -20,7 +21,8 @@ export function AccountHeader({ search }: { search?: ReactNode }) {
   useDocumentLang(lang, settled);
   const account = useCurrentAccount();
   const pathname = usePathname();
-  const links = accountNavigation(accountTypeOf(account), API_ENABLED);
+  const { state, myWorkspaces } = useApp();
+  const links = accountNavigation(accountTypeOf(account), API_ENABLED, isReviewerOnly(myWorkspaces, state.session));
   return <><header className="mk-no-hover flex min-h-topbar shrink-0 flex-wrap items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
     <Link href="/brands" aria-label={isAr ? "العلامات" : "Brands"} className="mk-tap shrink-0"><MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} /></Link>
     <nav aria-label={isAr ? "تنقل الحساب" : "Account navigation"} className="hidden min-w-0 flex-1 flex-wrap items-center gap-space-4 md:flex">

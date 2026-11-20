@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildInitialWorkspaces } from "./mockData";
 import type { Session, TeamMember, TeamRole, Workspace } from "../../types";
-import { canEdit, capabilitiesOn, roleOn } from "./access";
+import { canEdit, capabilitiesOn, isReviewerOnly, roleOn } from "./access";
 
 const session = (accountId: string, email: string): Session =>
   ({ accountId, email, name: "", startedAt: 0, remember: true }) as Session;
@@ -69,5 +69,18 @@ describe("brand capabilities", () => {
 
   it("offers no write actions when signed out", () => {
     expect(capabilitiesOn(brand([]), null)).toEqual({ role: null, canEdit: false, canGovern: false });
+  });
+});
+
+describe("isReviewerOnly", () => {
+  const me = session("acc-9", "omar@almarai.sa");
+  const asClient = { ...brand([{ email: "omar@almarai.sa", role: "client" }]) };
+  it("is true when every brand has them as a client", () => {
+    expect(isReviewerOnly([asClient, { ...asClient, id: "b2" }], me)).toBe(true);
+  });
+  it("is false with no brands, an owned brand, or any other role", () => {
+    expect(isReviewerOnly([], me)).toBe(false);
+    expect(isReviewerOnly([asClient, { ...brand([]), ownerAccountId: "acc-9" }], me)).toBe(false);
+    expect(isReviewerOnly([brand([{ email: "omar@almarai.sa", role: "viewer" }])], me)).toBe(false);
   });
 });
