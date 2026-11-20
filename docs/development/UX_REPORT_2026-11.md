@@ -6,7 +6,22 @@ Shareable version with screenshots: https://claude.ai/artifact/MjPBm5qXGQzwVyxHR
 
 ## Status (21 Nov 2026)
 
-Fixed on release/staging-v1 (fix/ux-week1): UX-01 client role (a7c1fb4), UX-08 SSO card (1164f7d), UX-09 not-found page (68ae232), UX-12 Arabic leftovers (614ef7a). UX-02 was wrong: the studio links are in the avatar menu on phone. The real issue was that the menu repeated them on desktop, fixed in f927fbb. Not changed from UX-12: the fact labels on Analysis and the "Discovery form —" line on Drafts are generated content, not interface text, and the raw keys on Drafts came only from the seeded demo data.
+Fixed on release/staging-v1, merged locally (not deployed):
+
+| Finding | Fix | Commit |
+|---|---|---|
+| UX-01 clients can't see their brand | App keeps the role the server reports | a7c1fb4 |
+| UX-02 (corrected) | Links were in the avatar menu on phone; desktop duplicate removed | f927fbb |
+| UX-03 Discovery rows on phone | Rows stack: title line, then status and actions | 4bc7bad |
+| UX-03 Copy link stretched on desktop | Copy buttons keep a one-word label; sentences go to a toast | dccf670 |
+| UX-04 builder top bar on phone | View switcher and View/Copy move into More; compact review chip; preview fits | 0690c0b |
+| UX-05 moodboard on phone | Opens as a list on phone; Delete board behind More | 3fd4a7b |
+| UX-06 Team roles on phone | Kit Row drops its control to a new line when narrow | b9f19bd |
+| UX-08 SSO developer note | Disabled switch with customer copy | 1164f7d |
+| UX-09 stock 404 | Branded, bilingual, theme-aware not-found page | 68ae232 |
+| UX-12 Arabic leftovers | Dates, analysis labels, citation chips, LTR values, terms | 614ef7a |
+
+Notes: the desktop moodboard opening crop (part of UX-05) is a documented decision in `canvas.tsx` (open legible, "Fit" shows all) and was left as is. From UX-12, the fact labels on Analysis and the "Discovery form —" line on Drafts are generated content, and the raw keys on Drafts came only from seeded demo data.
 
 ## Summary
 
