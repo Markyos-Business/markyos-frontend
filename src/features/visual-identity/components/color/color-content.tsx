@@ -83,14 +83,6 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         </>}
       />
 
-      {/* Contrast sits next to the palette because that is where the fix is —
-          a failing ratio is a swatch to change, not a report to file. */}
-      {ws.colors.length > 0 && (
-        <div className="rounded-card p-5" style={{ background: "var(--surface-1)" }}>
-          <ContrastReport ws={ws} isAr={isAr} />
-        </div>
-      )}
-
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {ws.colors.map((c) => {
           const rgb = hexToRgb(c.hex);
@@ -178,6 +170,15 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           <span className="text-[13px] font-medium">{isAr ? "أضف لونًا" : "Add colour"}</span>
         </button>
       </div>
+
+      {/* Contrast sits right under the palette because that is where the fix
+          is: a failing ratio is a swatch to change. Under it, not above it, so
+          the colours themselves are the first thing on the page. */}
+      {ws.colors.length > 0 && (
+        <div className="mk-surface rounded-card bg-surface-1 p-5">
+          <ContrastReport ws={ws} isAr={isAr} />
+        </div>
+      )}
 
       {ratio !== null && (
         <div className="flex flex-col gap-2.5">

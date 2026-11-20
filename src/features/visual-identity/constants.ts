@@ -1,11 +1,12 @@
 import type { AssetType } from "@/types";
 
-export type VisualIdentityTab = "files" | "logo" | "color" | "typography" | "patterns" | "graphics" | "illustrations" | "icons";
+// The file library lives on Assets alone: a "Brand files" tab here showed the
+// same library a second time under another name.
+export type VisualIdentityTab = "logo" | "color" | "typography" | "patterns" | "graphics" | "illustrations" | "icons";
 
 export const PAGE_SECTION = { en: "Visual identity", ar: "الهوية البصرية" } as const;
 
 export const TABS: { key: VisualIdentityTab; label: string; arLabel: string }[] = [
-  { key: "files", label: "Brand files", arLabel: "ملفات الهوية" },
   { key: "logo", label: "Logo system", arLabel: "الشعار" },
   { key: "color", label: "Color", arLabel: "الألوان" },
   { key: "typography", label: "Typography", arLabel: "الخطوط" },
