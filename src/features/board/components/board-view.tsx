@@ -14,8 +14,8 @@ export function BoardView({ board }: { board: BoardState }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-5 px-5 py-7 sm:px-10">
       <PageHeader title={t("Brand board", "لوحة العلامات")} description={t(
-            "Every brand you own, by where it has got to. Drag a card, or use the arrows — this is a lifecycle board, not a CRM, so nothing here tracks a deal.",
-            "كل علامة تملكها، حسب المرحلة التي وصلت إليها. اسحب البطاقة أو استخدم الأسهم. هذه لوحة لدورة حياة العلامة وليست نظام إدارة عملاء، فلا تتبّع صفقات هنا."
+            "Every brand you own, by stage. Drag a card or use its arrows to move it.",
+            "كل علامة تملكها حسب مرحلتها. اسحب البطاقة أو استخدم أسهمها لنقلها."
           )} />
 
       {empty ? (
@@ -30,7 +30,9 @@ export function BoardView({ board }: { board: BoardState }) {
         // Horizontal scroll is correct for a board: six columns can't be made
         // legible at 390px by stacking them.
         <div className="min-h-0 flex-1 overflow-x-auto">
-          <Stagger className="flex min-w-max items-start gap-3.5 pb-4">
+          {/* From 1280px the six columns share the width, so the last stage
+              isn't cut off at the edge; narrower, the board scrolls. */}
+          <Stagger className="flex min-w-max items-start gap-3.5 pb-4 xl:min-w-0">
             {columns.map((column) => (
               <BoardColumn key={column.stage.key} {...column} {...handlers} />
             ))}
