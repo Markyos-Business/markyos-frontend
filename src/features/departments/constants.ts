@@ -5,7 +5,7 @@ export const PAGE_SECTION = { en: "Company departments", ar: "أقسام الش�
 export const SECTION_META: Record<SectionKey, { label: string; arLabel: string; icon: string; href: string }> = {
   overview: { label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", href: "overview" },
   logo: { label: "Logo system", arLabel: "نظام الشعار", icon: "shapes", href: "visual-identity" },
-  color: { label: "Color", arLabel: "الألوان", icon: "palette", href: "visual-identity" },
+  color: { label: "Colour", arLabel: "الألوان", icon: "palette", href: "visual-identity" },
   typography: { label: "Typography", arLabel: "الخطوط", icon: "font", href: "visual-identity" },
 };
 

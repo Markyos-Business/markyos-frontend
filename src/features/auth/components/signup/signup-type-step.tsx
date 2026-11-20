@@ -35,7 +35,8 @@ export function SignupTypeStep({ form, google }: { form: SignupFormState; google
             error={form.errors.accountType}
           />
         </div>
-        <Button type="submit" variant="primary" className="mt-1 w-full">
+        {/* Waits for a choice, so the cards read as the thing to do first. */}
+        <Button type="submit" variant="primary" className="mt-1 w-full" disabled={!form.accountType}>
           {c.signup.continue}
         </Button>
       </form>

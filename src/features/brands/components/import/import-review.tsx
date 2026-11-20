@@ -123,7 +123,7 @@ export function ImportReview({
           {t("Start over", "البدء من جديد")}
         </Button>
         <Button variant="primary" onClick={onConfirm}>
-          {t("Create workspace from this", "إنشاء مساحة عمل من هذا")}
+          {t("Create brand from this", "إنشاء علامة من هذا")}
         </Button>
       </div>
     </div>

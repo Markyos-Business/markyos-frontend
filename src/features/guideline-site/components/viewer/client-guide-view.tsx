@@ -79,8 +79,7 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   if (ws.clientAccess.passwordEnabled && !v.unlocked) {
     return (
       <PasswordGate
-        name={ws.name}
-        slug={ws.slug}
+        ws={ws}
         verify={v.verifyPassword}
         isAr={ws.primaryLocale === "ar"}
         theme={theme}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { type ReactNode, useMemo, useRef, useState } from "react";
 import { Button, PageHeader, SearchField, SegmentedControl, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
@@ -352,42 +352,50 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
           onChange={(value) => setSort((value || "newest") as SortKey)}
           options={(["oldest", "name", "largest"] as const).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
         />
-        <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
-        {/* Only the types this workspace actually has — plus whichever one is
-            selected, so pressing a chip can never make it vanish under the
-            pointer. */}
-        {(Object.keys(TYPE_META) as (AssetType | "logo")[])
-          .filter((t) => (facets.byType.get(t) ?? 0) > 0 || typeFilter === t)
-          .map((t) => (
-            <Chip
-              key={t}
-              label={isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
-              count={facets.byType.get(t) ?? 0}
-              active={typeFilter === t}
-              onClick={() => setTypeFilter(typeFilter === t ? "all" : t)}
-            />
-          ))}
+      </div>
+
+      {/* Type, status and tags each on a labelled row: run together, a status
+          chip read like one more file type. On a phone each row scrolls
+          sideways instead of stacking five rows of chips above the files. */}
+      <div className="flex flex-col gap-space-3">
+        <FilterRow label={isAr ? "النوع" : "Type"}>
+          <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
+          {/* Only the types this workspace actually has — plus whichever one is
+              selected, so pressing a chip can never make it vanish under the
+              pointer. */}
+          {(Object.keys(TYPE_META) as (AssetType | "logo")[])
+            .filter((t) => (facets.byType.get(t) ?? 0) > 0 || typeFilter === t)
+            .map((t) => (
+              <Chip
+                key={t}
+                label={isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
+                count={facets.byType.get(t) ?? 0}
+                active={typeFilter === t}
+                onClick={() => setTypeFilter(typeFilter === t ? "all" : t)}
+              />
+            ))}
+        </FilterRow>
         {(Object.keys(STATUS_META) as AssetStatus[]).some((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s) && (
-          <span className="w-px h-5" style={{ background: "var(--hairline-strong)" }} />
+          <FilterRow label={isAr ? "الحالة" : "Status"}>
+            {(Object.keys(STATUS_META) as AssetStatus[])
+              .filter((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s)
+              .map((s) => (
+                <Chip
+                  key={s}
+                  label={isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
+                  count={facets.byStatus.get(s) ?? 0}
+                  active={statusFilter === s}
+                  onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
+                />
+              ))}
+          </FilterRow>
         )}
-        {(Object.keys(STATUS_META) as AssetStatus[])
-          .filter((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s)
-          .map((s) => (
-            <Chip
-              key={s}
-              label={isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
-              count={facets.byStatus.get(s) ?? 0}
-              active={statusFilter === s}
-              onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
-            />
-          ))}
         {allTags.length > 0 && (
-          <>
-            <span className="w-px h-5" style={{ background: "var(--hairline-strong)" }} />
+          <FilterRow label={isAr ? "الوسوم" : "Tags"}>
             {allTags.map((tag) => (
               <Chip key={tag} label={`#${tag}`} active={tagFilter === tag} onClick={() => setTagFilter(tagFilter === tag ? null : tag)} />
             ))}
-          </>
+          </FilterRow>
         )}
       </div>
 
@@ -476,17 +484,17 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                 <button
                   type="button"
                   onClick={() => toggleSelect(r.key)}
-                  aria-label={`Select ${r.fileName}`}
+                  aria-label={isAr ? `تحديد ${r.fileName}` : `Select ${r.fileName}`}
                   aria-pressed={selected.has(r.key)}
                   className="absolute top-[5px] start-[5px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
                 >
                   <span
                     className="w-[18px] h-[18px] rounded-sm grid place-items-center"
                     style={{
-                      background: selected.has(r.key) ? "var(--accent)" : "var(--scrim)",
-                      boxShadow: selected.has(r.key)
-                        ? "none"
-                        : "inset 0 0 0 1px color-mix(in srgb, var(--scrim-ink) 55%, transparent)",
+                      // Unticked is an empty box on the card colour: the dark
+                      // scrim it used to sit on read as already ticked.
+                      background: selected.has(r.key) ? "var(--accent)" : "var(--surface-1)",
+                      boxShadow: selected.has(r.key) ? "none" : "inset 0 0 0 1.5px var(--hairline-strong)",
                     }}
                   >
                     {selected.has(r.key) && <Icon name="check" size={12} style={{ color: "var(--accent-ink)" }} />}
@@ -577,6 +585,16 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
  * a chip that says "Pattern 4" is an answer. `aria-pressed` because these are
  * toggles, which a screen reader could not otherwise tell from links.
  */
+/** One labelled row of filter chips; scrolls sideways on a phone. */
+function FilterRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div role="group" aria-label={label} className="flex items-center gap-space-4">
+      <span className="w-14 shrink-0 text-caption text-text-muted">{label}</span>
+      <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto sm:flex-wrap sm:overflow-visible">{children}</div>
+    </div>
+  );
+}
+
 function Chip({
   label,
   count,

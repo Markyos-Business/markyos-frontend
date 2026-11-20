@@ -8,12 +8,12 @@ const en = {
   searchPlaceholder: "Search brands…",
   yourBrands: "Your brands",
   summary: (count: number, shared: number, owned: number, limit: number | null) =>
-    `${count} workspace${count === 1 ? "" : "s"} · ${shared} shared with clients${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
+    `${count} brand${count === 1 ? "" : "s"} · ${shared} published${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
   limitNote: (type: string, limit: number | null, noun: string) => `${type} accounts own up to ${limit} ${noun}. Per-brand plans do not increase this account limit.`,
   reviewPlans: "Review plans & limits",
   lastEdited: "Last edited",
   nameAz: "Name A–Z",
-  newWorkspace: "New workspace",
+  newWorkspace: "New brand",
   welcome: "Pick up where you left off, or start a new brand.",
   welcomeForms: "Questionnaires",
   welcomePeople: "People",
@@ -33,12 +33,12 @@ const ar: typeof en = {
   searchPlaceholder: "ابحث في العلامات…",
   yourBrands: "علاماتك",
   summary: (count, shared, owned, limit) =>
-    `${count} ${count === 1 ? "مساحة عمل" : "مساحات عمل"} · ${shared} مشاركة مع العملاء${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`,
+    `${count} ${count === 1 ? "علامة" : "علامات"} · ${shared} منشورة${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`,
   limitNote: (type, limit, noun) => `حسابات ${type} تملك حتى ${limit} ${noun}. خطط العلامات المدفوعة لا تزيد حد هذا الحساب.`,
   reviewPlans: "مراجعة الخطط والحدود",
   lastEdited: "آخر تعديل",
   nameAz: "الاسم أ–ي",
-  newWorkspace: "مساحة عمل جديدة",
+  newWorkspace: "علامة جديدة",
   welcome: "تابع من حيث توقفت، أو ابدأ علامة جديدة.",
   welcomeForms: "الاستبيانات",
   welcomePeople: "الأشخاص",
@@ -60,7 +60,7 @@ export function brandsCopyFor(type: AccountType, lang: Lang): typeof en {
   const copy = BRANDS_COPY[lang];
   const experience = accountExperience(type, lang);
   return { ...copy, summary: (count, shared, owned, limit) => lang === "ar"
-    ? `${count} مساحة عمل · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`
-    : `${count} workspace${count === 1 ? "" : "s"} · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
+    ? `${count} ${count === 1 ? "علامة" : "علامات"} · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} من ${limit} مستخدمة` : ""}`
+    : `${count} brand${count === 1 ? "" : "s"} · ${shared} ${experience.sharedAudience}${limit !== null ? ` · ${owned} of ${limit} used` : ""}`,
   };
 }

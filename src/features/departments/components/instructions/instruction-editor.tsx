@@ -43,8 +43,10 @@ export function InstructionEditor({
 
   return (
     <div className="mk-surface rounded-card p-5 flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex flex-col">
+      {/* Wraps on a phone: the actions drop under the heading instead of
+          squeezing it into a narrow column. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 basis-56 flex-col">
           <span className="font-semibold text-[15px]">{isAr ? "صفحة التعليمات" : "Instruction page"}</span>
           <span className="text-[12px] mt-0.5" style={{ color: "var(--text-faint)" }}>
             {isAr

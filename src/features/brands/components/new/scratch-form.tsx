@@ -34,7 +34,7 @@ export function ScratchForm({ title, description, name, onName, onSubmit }: Scra
         />
       </div>
       <Button type="submit" variant="primary" disabled={!name.trim()}>
-        {t("Create workspace", "إنشاء مساحة العمل")}
+        {t("Create brand", "إنشاء العلامة")}
       </Button>
     </form>
   );

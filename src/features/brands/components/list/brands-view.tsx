@@ -7,11 +7,9 @@ import type { Workspace } from "@/types";
 import type { BrandSort } from "../../constants";
 import type { BRANDS_COPY } from "../../copy";
 import type { Lang } from "@/types/lang";
-import { PortfolioSummary, type PortfolioCounts } from "./portfolio-summary";
 import { WorkspaceCard } from "./workspace-card";
 
 type BrandsViewProps = {
-  summary: PortfolioCounts;
   title: string;
   description: string;
   sort: BrandSort;
@@ -22,10 +20,12 @@ type BrandsViewProps = {
   limitNote: string;
   c: (typeof BRANDS_COPY)["en"];
   lang: Lang;
+  /** A client reviewer: no create actions, no studio legend. */
+  reviewer?: boolean;
 };
 
 /** The brands as cards, the way to make a new one (or the limit that stops it), and the Shared legend. */
-export function BrandsView({ summary, title, description, sort, onSort, onNew, brands, atLimit, limitNote, c, lang }: BrandsViewProps) {
+export function BrandsView({ title, description, sort, onSort, onNew, brands, atLimit, limitNote, c, lang, reviewer = false }: BrandsViewProps) {
   return (
     <DashboardProvider lang={lang}><div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-[1240px] w-full mx-auto">
       <DashboardHeader
@@ -33,12 +33,13 @@ export function BrandsView({ summary, title, description, sort, onSort, onNew, b
         subtitle={description}
         secondaryActions={<SortControl label={lang === "ar" ? "ترتيب العلامات" : "Sort brands"} value={sort === "updated" ? "" : sort} defaultLabel={c.lastEdited}
               options={[{value:"name",label:c.nameAz}]} onChange={value => onSort(value === "name" ? "name" : "updated")} />}
-        primaryAction={<Button variant="primary" size="sm" icon={<Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
+        primaryAction={reviewer ? undefined : <Button variant="primary" size="sm" icon={atLimit ? undefined : <Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
               {atLimit ? c.reviewPlans : c.newWorkspace}
             </Button>}
       />
 
-      <PortfolioSummary counts={summary} lang={lang} />
+      {/* The four count tiles that sat here repeated each other and the line
+          under the title, and pushed the brands below the fold on a phone. */}
 
       <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {brands.map(({ workspace, role }) => (
@@ -47,7 +48,7 @@ export function BrandsView({ summary, title, description, sort, onSort, onNew, b
             <WorkspaceCard workspace={workspace} role={role} c={c} lang={lang} />
           </div>
         ))}
-        {atLimit ? (
+        {reviewer ? null : atLimit ? (
           // Said where the "new" tile would be, so the limit is found
           // before anyone goes looking for a way round it.
           <Link href="/account?tab=billing" className="mk-card rounded-card min-h-54 flex flex-col items-center justify-center gap-space-3 border border-dashed border-line-strong px-space-10 text-center text-text-muted">
@@ -68,9 +69,11 @@ export function BrandsView({ summary, title, description, sort, onSort, onNew, b
 
       {/* The one fact on this screen with a consequence outside the studio,
           and the legend for a badge that is otherwise left to be inferred. */}
-      <div className="mt-auto text-caption text-text-faint">
-        {c.sharedLegendBefore} <span className="text-success">{c.shared}</span> {c.sharedLegendAfter}
-      </div>
+      {!reviewer && (
+        <div className="mt-auto text-caption text-text-faint">
+          {c.sharedLegendBefore} <span className="text-success">{c.shared}</span> {c.sharedLegendAfter}
+        </div>
+      )}
     </div></DashboardProvider>
   );
 }

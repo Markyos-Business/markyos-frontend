@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, DashboardProvider, DataTable, EmptyState, FormDialog, Icon, InputField, PageHeader, SelectField, StatusDot } from "@/components/ui";
-import { WelcomeMessage } from "@/features/account";
+import { Button, DataTable, EmptyState, FormDialog, Icon, InputField, PageHeader, SelectField, StatusDot } from "@/components/ui";
 import type { DataColumn } from "@/components/ui";
 import { createArticle } from "../../api/content.api";
 import { KINDS, kindLabel } from "../../copy";
@@ -60,23 +59,14 @@ export function ArticlesView() {
         description={t.description}
         actions={
           writable.length > 0 ? (
-            <Button icon={<Icon name="plus" size={18} />} onClick={() => setCreating(true)}>
+            <Button variant="primary" icon={<Icon name="plus" size={18} />} onClick={() => setCreating(true)}>
               {t.newArticle}
             </Button>
           ) : undefined
         }
       />
-      {!kind && (
-        <DashboardProvider lang={lang}>
-          <WelcomeMessage
-            message={c.welcome}
-            actions={[
-              { label: c.nav.media, href: "/admin/cms/media" },
-              ...(me.data?.canPublish ? [{ label: c.nav.traffic, href: "/admin/cms/traffic" }] : []),
-            ]}
-          />
-        </DashboardProvider>
-      )}
+      {/* The welcome card lives on the admin dashboard; repeating it here
+          pushed the content list down for no new information. */}
       <DataTable
         label={t.label}
         itemLabel={t.itemLabel}
@@ -87,7 +77,13 @@ export function ArticlesView() {
         loading={articles.loading}
         error={articles.error}
         onRetry={articles.reload}
-        empty={<EmptyState icon="globe" title={t.empty} description="" />}
+        empty={
+          <EmptyState
+            icon="globe"
+            title={t.empty}
+            description={lang === "ar" ? "ما تكتبه هنا يظهر على موقع ماركيوس بعد نشره." : "What you write here appears on the Markyos website once published."}
+          />
+        }
         onRowClick={(a) => router.push(`/admin/cms/articles/${a.id}`)}
       />
       {creating && (

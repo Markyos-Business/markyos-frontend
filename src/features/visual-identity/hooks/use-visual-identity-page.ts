@@ -10,7 +10,7 @@ const TAB_KEYS = TABS.map(tab => tab.key);
 
 export function useVisualIdentityPage(slug: string) {
   const page = useBrandPage(slug);
-  const [tab, setTab] = useUrlTab<VisualIdentityTab>(TAB_KEYS, "files");
+  const [tab, setTab] = useUrlTab<VisualIdentityTab>(TAB_KEYS, "logo");
   if (!page) return null;
   const ws = page.workspace;
 
@@ -24,7 +24,6 @@ export function useVisualIdentityPage(slug: string) {
    */
   const countOf = (type: string) => ws.assets.filter((a) => a.type === type).length;
   const emptyTabs: Record<VisualIdentityTab, boolean> = {
-    files: ws.assets.length === 0,
     logo: Object.values(ws.logo).every((s) => s.phase !== "attached"),
     color: ws.colors.length === 0,
     typography: !ws.typography.latinFamily && !ws.typography.arabicFamily,
@@ -45,6 +44,6 @@ export function useVisualIdentityPage(slug: string) {
 
   return {
     shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, tabs, width: "full" as const },
-    view: { ws, tab, onTab: setTab },
+    view: { ws, tab },
   };
 }

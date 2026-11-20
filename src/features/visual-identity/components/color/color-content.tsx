@@ -46,10 +46,10 @@ export function ColorContent({ ws }: { ws: Workspace }) {
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
       <PageHeader
-        title={isAr ? "الألوان" : "Color"}
+        title={isAr ? "الألوان" : "Colour"}
         description={isAr
               ? `${plural("ar", ws.colors.length, { zero: "لا ألوان", one: "لون واحد", two: "لونان", few: "{n} ألوان", many: "{n} لونًا", other: "{n} لون" })} · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
-              : `${plural("en", ws.colors.length, { one: "{n} color", other: "{n} colors" })} · click a code to copy it, or the pencil to edit.`}
+              : `${plural("en", ws.colors.length, { one: "{n} colour", other: "{n} colours" })} · click a code to copy it, or the pencil to edit.`}
         actions={<>
         <div className="flex gap-2">
           <button
@@ -77,19 +77,11 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
-            {isAr ? "أضف لونًا" : "Add color"}
+            {isAr ? "أضف لونًا" : "Add colour"}
           </button>
         </div>
         </>}
       />
-
-      {/* Contrast sits next to the palette because that is where the fix is —
-          a failing ratio is a swatch to change, not a report to file. */}
-      {ws.colors.length > 0 && (
-        <div className="rounded-card p-5" style={{ background: "var(--surface-1)" }}>
-          <ContrastReport ws={ws} isAr={isAr} />
-        </div>
-      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {ws.colors.map((c) => {
@@ -178,6 +170,15 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           <span className="text-[13px] font-medium">{isAr ? "أضف لونًا" : "Add colour"}</span>
         </button>
       </div>
+
+      {/* Contrast sits right under the palette because that is where the fix
+          is: a failing ratio is a swatch to change. Under it, not above it, so
+          the colours themselves are the first thing on the page. */}
+      {ws.colors.length > 0 && (
+        <div className="mk-surface rounded-card bg-surface-1 p-5">
+          <ContrastReport ws={ws} isAr={isAr} />
+        </div>
+      )}
 
       {ratio !== null && (
         <div className="flex flex-col gap-2.5">

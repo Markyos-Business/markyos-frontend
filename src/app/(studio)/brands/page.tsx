@@ -9,7 +9,7 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <BrandsHeader {...page.header} />
-      <BrandsWelcome c={page.view.c} lang={page.view.lang} />
+      <BrandsWelcome c={page.view.c} lang={page.view.lang} reviewer={page.view.reviewer} />
       <BrandsView {...page.view} />
       <AppFooter lang={page.view.lang} className="mx-auto w-full max-w-[1240px] px-space-6 pb-space-8 sm:px-space-10" />
     </div>

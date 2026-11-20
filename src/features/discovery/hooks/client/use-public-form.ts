@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
 import type { Lang } from "@/types";
+import { LANG_STORAGE_KEY, readLinkLang } from "@/lib/i18n/interfaceLang";
 import { validateAnswer } from "../../utils/question-types";
 import { evaluateVisibility } from "../../utils/visibility";
 import { getPublicForm, savePublicAnswers, submitPublicForm, uploadPublicFile } from "../../api/public-form.api";
@@ -53,6 +54,19 @@ const problemOf = (err: unknown): PublicFormProblem => {
  * that are shown and valid. A link half-typed stays pending until it is a
  * link, rather than holding back every other answer in the same save.
  */
+/** With no form to take a language from: the link's, the saved one, then the browser's. */
+function readerLang(): Lang {
+  const asked = new URLSearchParams(window.location.search).get("lang");
+  if (asked === "ar" || asked === "en") return asked;
+  try {
+    const saved = window.localStorage.getItem(LANG_STORAGE_KEY);
+    if (saved === "ar" || saved === "en") return saved;
+  } catch {
+    // Storage blocked: fall through to the browser.
+  }
+  return navigator.language?.toLowerCase().startsWith("ar") ? "ar" : "en";
+}
+
 export function usePublicForm(token: string) {
   const [form, setForm] = useState<PublicForm | null>(null);
   const [problem, setProblem] = useState<PublicFormProblem | null>(API_ENABLED ? null : "offline");
@@ -74,7 +88,17 @@ export function usePublicForm(token: string) {
     getPublicForm(token, readResume(token)).then(
       ({ form, response }) => {
         if (!live) return;
-        const language = response && form.languages.includes(response.language) ? response.language : form.primaryLanguage;
+        // A started answer keeps its language. Otherwise the studio's choice
+        // for this client wins, unless the link itself asks for the other
+        // (?lang=). A browser's leftover preference is not a reason to
+        // override the studio; the EN | ع switch is one tap away.
+        const asked = readLinkLang();
+        const language =
+          response && form.languages.includes(response.language)
+            ? response.language
+            : asked && form.languages.includes(asked)
+              ? asked
+              : form.primaryLanguage;
         resume.current = response?.resumeToken ?? null;
         latest.current = { form, answers: response?.answers ?? {}, lang: language };
         setForm(form);
@@ -87,7 +111,7 @@ export function usePublicForm(token: string) {
       (err: unknown) => {
         if (!live) return;
         // No form, so no language of its own: say why in the browser's.
-        setLang(navigator.language?.toLowerCase().startsWith("ar") ? "ar" : "en");
+        setLang(readerLang());
         setProblem(problemOf(err));
       }
     );

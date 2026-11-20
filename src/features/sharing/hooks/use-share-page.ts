@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePublicPageLocale } from "@/components/ui";
 import { useDocumentLang } from "@/contexts/useInterfaceLang";
 import type { Lang } from "@/types";
+import { readLinkLang } from "@/lib/i18n/interfaceLang";
 import { useShareLink } from "./use-share-link";
 
 /**
@@ -14,10 +15,12 @@ import { useShareLink } from "./use-share-link";
  */
 export function useSharePage(token: string) {
   const { loaded, found } = useShareLink(token);
-  // The brand's own language until the reader picks one; the page, the
-  // document's lang/dir and the badge all follow that one choice.
+  // The brand's own language unless the link names one (?lang=); the toggle
+  // overrides both. The page, the document's lang/dir and the badge all
+  // follow that one choice. Read after load, so the server pass agrees.
   const [chosen, setLang] = useState<Lang | null>(null);
-  const lang: Lang = chosen ?? found?.ws.primaryLocale ?? "en";
+  const asked = loaded ? readLinkLang() : null;
+  const lang: Lang = chosen ?? asked ?? found?.ws.primaryLocale ?? "en";
   const isAr = lang === "ar";
   useDocumentLang(lang, loaded);
   usePublicPageLocale(lang);

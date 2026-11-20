@@ -314,8 +314,9 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
           style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
         >
           <span className="font-semibold text-[13px]">{isAr ? "مقياس الخط" : "Type scale"}</span>
-          <span className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
-            {isAr ? "٤ مستويات بنسبة ثابتة ١٫٢٥" : "4 steps · locked to 1.25 ratio"}
+          {/* Western digits, as everywhere else on the page; mono only for the Latin label. */}
+          <span className="text-[11px]" style={{ fontFamily: isAr ? undefined : "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
+            {isAr ? "4 مستويات بنسبة ثابتة 1.25" : "4 steps · locked to 1.25 ratio"}
           </span>
         </div>
         <div dir={rowDir} className="flex-1 min-h-0 flex flex-col">
@@ -698,10 +699,9 @@ function WeightChips({ suffix, weights }: { suffix: string; weights?: number[] }
           {w}
         </span>
       ))}
-      <span
-        className="text-[11px] px-2.5 py-1.5 rounded-md"
-        style={{ fontFamily: "ui-monospace, Menlo, monospace", background: "var(--surface-2)", color: "var(--text-faint)" }}
-      >
+      {/* A sentence, in either language: the interface face, not the mono
+          the weight numbers use. Mono set Arabic letter by letter. */}
+      <span className="text-[11px] px-2.5 py-1.5 rounded-md" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
         {suffix}
       </span>
     </div>
