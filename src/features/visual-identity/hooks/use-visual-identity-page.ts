@@ -44,6 +44,6 @@ export function useVisualIdentityPage(slug: string) {
 
   return {
     shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, tabs, width: "full" as const },
-    view: { ws, tab, onTab: setTab },
+    view: { ws, tab },
   };
 }

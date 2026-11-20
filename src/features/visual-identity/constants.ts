@@ -8,7 +8,7 @@ export const PAGE_SECTION = { en: "Visual identity", ar: "الهوية البص�
 
 export const TABS: { key: VisualIdentityTab; label: string; arLabel: string }[] = [
   { key: "logo", label: "Logo system", arLabel: "الشعار" },
-  { key: "color", label: "Color", arLabel: "الألوان" },
+  { key: "color", label: "Colour", arLabel: "الألوان" },
   { key: "typography", label: "Typography", arLabel: "الخطوط" },
   { key: "patterns", label: "Patterns", arLabel: "الأنماط" },
   { key: "graphics", label: "Graphics", arLabel: "الرسومات" },

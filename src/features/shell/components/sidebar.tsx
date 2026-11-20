@@ -36,7 +36,7 @@ const groups = [
   ] },
   { key: "tools", label: "Tools", arLabel: "الأدوات", items: [
     { key: "drafts", label: "Drafts", arLabel: "المسودات", icon: "inbox", path: "drafts" },
-    { key: "type-lab", label: "Type sandbox", arLabel: "مختبر الخطوط", icon: "sliders", path: "type-lab" },
+    { key: "type-lab", label: "Type lab", arLabel: "مختبر الخطوط", icon: "sliders", path: "type-lab" },
     { key: "compliance", label: "Compliance", arLabel: "المطابقة", icon: "shield-alt", path: "compliance" },
   ] },
 ] satisfies { key: string; label: string; arLabel: string; items: Item[] }[];

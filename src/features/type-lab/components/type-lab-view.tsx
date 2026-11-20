@@ -13,7 +13,7 @@ export function TypeLabView({ isAr, fontCss, anyUploaded, latin, arabic }: TypeL
           the sandbox was tuning the interface font while claiming to be
           tuning the brand's. See the same note in TypographyContent. */}
       <style>{fontCss}</style>
-      <PageHeader title={isAr ? "مختبر الخطوط" : "Type sandbox"} description={t(
+      <PageHeader title={isAr ? "مختبر الخطوط" : "Type lab"} description={t(
             "Live-test line-height and tracking against real bilingual copy before it ships — Arabic baseline and Latin x-height behave differently, so tuning them side by side catches what a static export can't.",
             "جرّب ارتفاع السطر والتباعد على نص ثنائي اللغة حقيقي قبل الاعتماد. خط الأساس العربي وارتفاع الحروف اللاتينية يتصرفان بشكل مختلف، والضبط جنبًا إلى جنب يكشف ما لا يكشفه ملف ثابت."
           )} />

@@ -7,10 +7,10 @@ import { ColorContent } from "./color/color-content";
 import { LogoSystemContent } from "./logo/logo-system-content";
 import { TypographyContent } from "./typography/typography-content";
 
-type VisualIdentityViewProps = { ws: Workspace; tab: VisualIdentityTab; onTab: (tab: VisualIdentityTab) => void };
+type VisualIdentityViewProps = { ws: Workspace; tab: VisualIdentityTab };
 
 /** The open tab's content. */
-export function VisualIdentityView({ ws, tab, onTab }: VisualIdentityViewProps) {
+export function VisualIdentityView({ ws, tab }: VisualIdentityViewProps) {
   if (tab === "logo") return <LogoSystemContent ws={ws} />;
   if (tab === "color") return <ColorContent ws={ws} />;
   if (tab === "typography") return <TypographyContent ws={ws} />;

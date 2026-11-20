@@ -46,10 +46,10 @@ export function ColorContent({ ws }: { ws: Workspace }) {
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
       <PageHeader
-        title={isAr ? "الألوان" : "Color"}
+        title={isAr ? "الألوان" : "Colour"}
         description={isAr
               ? `${plural("ar", ws.colors.length, { zero: "لا ألوان", one: "لون واحد", two: "لونان", few: "{n} ألوان", many: "{n} لونًا", other: "{n} لون" })} · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
-              : `${plural("en", ws.colors.length, { one: "{n} color", other: "{n} colors" })} · click a code to copy it, or the pencil to edit.`}
+              : `${plural("en", ws.colors.length, { one: "{n} colour", other: "{n} colours" })} · click a code to copy it, or the pencil to edit.`}
         actions={<>
         <div className="flex gap-2">
           <button
@@ -77,7 +77,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
             style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
-            {isAr ? "أضف لونًا" : "Add color"}
+            {isAr ? "أضف لونًا" : "Add colour"}
           </button>
         </div>
         </>}
