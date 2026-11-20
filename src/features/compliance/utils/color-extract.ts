@@ -10,6 +10,8 @@ import { hexToRgb } from "@/lib/utils";
 function loadImageEl(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    // Brand files live on the API's media host; without CORS mode reading the pixels throws.
+    if (!/^(data|blob):/.test(url)) img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Couldn't load ${url}`));
     img.src = url;

@@ -9,3 +9,4 @@ export * from "./components/page-shell";
 export * from "./components/sidebar";
 export * from "./components/top-bar";
 export * from "./components/studio-header";
+export * from "./components/brand-loading";

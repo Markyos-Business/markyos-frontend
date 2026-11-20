@@ -1,5 +1,6 @@
 "use client";
 
+import { MoodImage } from "./mood-image";
 import { useState } from "react";
 import { ColorPopover, FilterSelectField } from "@/components/ui";
 import { Icon } from "@/components/ui";
@@ -54,6 +55,8 @@ export function CardBody(props: {
   onSampleColor?: (hex: string) => void;
   /** Fill the frame rather than sitting at the image's natural height. */
   fill?: boolean;
+  /** The card's drawn width in board units, so its image is fetched at that size. */
+  width?: number;
 }) {
   return <Body {...props} />;
 }
@@ -97,6 +100,7 @@ function Body({
   onEdit,
   onSampleColor,
   fill,
+  width,
 }: {
   item: MoodboardItem;
   asset?: Asset;
@@ -104,6 +108,7 @@ function Body({
   onEdit: (patch: Partial<MoodboardItem>) => void;
   onSampleColor?: (hex: string) => void;
   fill?: boolean;
+  width?: number;
 }) {
   switch (item.kind) {
     case "asset":
@@ -131,12 +136,10 @@ function Body({
             silently dropped one frame later, with no error and nothing stored.
             The card's own drag is the figure's, in both views.
           */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={asset.url}
+          <MoodImage
+            url={asset.url}
             alt={asset.fileName}
-            loading="lazy"
-            draggable={false}
+            width={width}
             style={
               fill
                 ? { width: "100%", height: "100%", objectFit: "cover", display: "block" }
@@ -316,17 +319,7 @@ function LinkCard({
           <Icon name="external-link-alt" size={10} />
         </a>
       )}
-      {asset?.url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={asset.url}
-          alt=""
-          loading="lazy"
-          draggable={false}
-          className="rounded-lg"
-          style={{ width: "100%", display: "block" }}
-        />
-      )}
+      {asset?.url && <MoodImage url={asset.url} alt="" className="rounded-lg" style={{ width: "100%", display: "block" }} />}
       <span className="flex items-center gap-1.5 text-[10.5px]" style={{ color: "var(--text-faint)" }}>
         <Icon name="link" size={10} />
         <span dir="ltr" className="bidi-auto truncate">{host}</span>

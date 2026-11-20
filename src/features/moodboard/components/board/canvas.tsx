@@ -282,6 +282,8 @@ export function Canvas(props: CanvasProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [view, setView] = useState({ x: 40, y: 40, zoom: 0.8 });
   const [gesture, setGesture] = useState<Gesture>({ kind: "none" });
+  /** Image files are being dragged over the board: show where they will land. */
+  const [filesOver, setFilesOver] = useState(false);
   const [tool, setTool] = useState<Tool>("select");
   const fitted = useRef(false);
 
@@ -1063,14 +1065,30 @@ export function Canvas(props: CanvasProps) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!filesOver && e.dataTransfer.types.includes("Files")) setFilesOver(true);
+        }}
+        onDragLeave={(e) => {
+          // Only when the drag leaves the board, not when it crosses a card inside it.
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFilesOver(false);
+        }}
         onDrop={(e) => {
+          setFilesOver(false);
           if (!e.dataTransfer.files?.length) return;
           e.preventDefault();
           const at = toBoard(e.clientX, e.clientY);
           props.onDropFiles(e.dataTransfer.files, zoneAtPoint(at.x, at.y)?.id ?? null);
         }}
       >
+        {filesOver && (
+          <div aria-hidden className="pointer-events-none absolute inset-space-4 z-30 grid place-items-center rounded-card border-2 border-dashed border-accent bg-accent-soft">
+            <span className="flex items-center gap-space-3 rounded-lg bg-surface-1 px-space-5 py-space-3 text-body font-medium text-text shadow-raised">
+              <Icon name="upload" size={18} className="text-accent" />
+              {isAr ? "أفلت الصور لإضافتها" : "Drop images to add them"}
+            </span>
+          </div>
+        )}
         {/*
           The board's coordinate space, which is physical in both languages.
 
@@ -1954,6 +1972,7 @@ function CardOnCanvasBase({
           // Only a photograph carries a colour worth lifting off it.
           onSampleColor={item.kind === "asset" ? onSampleColor : undefined}
           fill
+          width={box.w}
         />
       </div>
 

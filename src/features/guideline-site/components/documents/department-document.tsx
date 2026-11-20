@@ -1,5 +1,6 @@
 "use client";
 
+import { downloadOnClick } from "@/lib/download";
 import { Icon, richToPlainText } from "@/components/ui";
 import { DepartmentView, SectionKey, Workspace } from "@/types";
 import { DocSurface, docTokens } from "./strategy-document";
@@ -219,6 +220,7 @@ export function DepartmentDocument({
         <a
           href={file.url}
           download={file.fileName}
+          onClick={downloadOnClick(file.url, file.fileName)}
           className="flex items-center gap-2.5 rounded-card px-4 py-3 self-start"
           style={{ background: t.surface1, color: t.text }}
         >

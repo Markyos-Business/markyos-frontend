@@ -1,4 +1,5 @@
 import { Button, Icon, IconButton } from "@/components/ui";
+import { MoodboardSaveIndicator } from "./save-indicator";
 import type { Moodboard } from "@/types";
 import { VIEW_TABS } from "../../constants";
 
@@ -23,6 +24,7 @@ export function BoardToolbar({ board, view, isAr, hidden, shortlistOnly, onView,
         {board.title}
       </h2>
       <IconButton icon="pen" label={isAr ? "أعد تسمية اللوح" : "Rename board"} onClick={onRename} className="cursor-pointer text-text-faint" />
+      <MoodboardSaveIndicator isAr={isAr} />
 
       {/* Two ways to work the same board, not two features. The canvas is
           where arranging happens and it is a pointer instrument; the list is
