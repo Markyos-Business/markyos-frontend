@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
+import { usePhoneViewport } from "@/hooks/useNarrowViewport";
 import { PAGE_SECTION } from "../../constants";
 import { boardHref } from "../projects/use-moodboard-projects-page";
 import { useMoodboardFullscreen } from "./use-moodboard-fullscreen";
@@ -14,6 +17,12 @@ export function useMoodboardPage(slug: string, boardId: string) {
   const page = useBrandPage(slug);
   const router = useRouter();
   const { fullscreen, applyFullscreen } = useMoodboardFullscreen();
+  const { setMoodboardView } = useAppActions();
+  // On a phone the canvas opened at desktop zoom with most zones off-screen.
+  // There the list is the default, and switching views is this session's
+  // choice: the board's saved view is shared with everyone on it.
+  const phone = usePhoneViewport();
+  const [phoneView, setPhoneView] = useState<"canvas" | "columns" | null>(null);
   const ws = page?.workspace;
 
   if (!page || !ws) return null;
@@ -21,7 +30,7 @@ export function useMoodboardPage(slug: string, boardId: string) {
   const allBoards = `/w/${ws.slug}/moodboard`;
   // A board made before the canvas existed has no `view`. The canvas is what a
   // moodboard is, so that is the default rather than the fallback.
-  const view = board?.view ?? "canvas";
+  const view = phone ? phoneView ?? "columns" : board?.view ?? "canvas";
   /** The canvas is showing, so the page chrome gets out of its way. */
   const compact = !!board && view === "canvas";
   /** Full screen only means anything while the canvas is the thing on screen. */
@@ -36,6 +45,10 @@ export function useMoodboardPage(slug: string, boardId: string) {
       isAr: page.isAr,
       board,
       view,
+      onView: (next: "canvas" | "columns") => {
+        if (phone) setPhoneView(next);
+        else if (board) setMoodboardView(ws.id, board.id, next);
+      },
       compact,
       immersive,
       allBoards,

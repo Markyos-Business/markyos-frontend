@@ -1,4 +1,4 @@
-import { Button, Icon, IconButton } from "@/components/ui";
+import { ActionsDropdown, Button, Icon, IconButton } from "@/components/ui";
 import { MoodboardSaveIndicator } from "./save-indicator";
 import type { Moodboard } from "@/types";
 import { VIEW_TABS } from "../../constants";
@@ -59,13 +59,17 @@ export function BoardToolbar({ board, view, isAr, hidden, shortlistOnly, onView,
       <Button variant="link" onClick={onAddZone} className="text-[12px] font-semibold">
         {isAr ? "+ قسم" : "+ Zone"}
       </Button>
-      {/* A rule between adding a zone and deleting the whole board: "make
-          something" and "destroy everything" must not be told apart only by
-          reading the label. */}
-      <span aria-hidden className="mx-1.5 h-4 w-px bg-hairline-strong" />
-      <button type="button" onClick={onDelete} className="mk-tap mk-danger-text cursor-pointer text-[12px] text-text-faint">
-        {isAr ? "حذف اللوح" : "Delete board"}
-      </button>
+      {/* Deleting the whole board sits behind More, apart from "+ Zone":
+          "make something" and "destroy everything" are never neighbours. On a
+          phone it also stopped being a stray line of text under the toolbar. */}
+      <ActionsDropdown
+        iconOnly
+        label={isAr ? "المزيد" : "More"}
+        items={[
+          { label: isAr ? "إعادة تسمية اللوح" : "Rename board", icon: "pen", onSelect: onRename },
+          { label: isAr ? "حذف اللوح" : "Delete board", icon: "trash", tone: "danger", onSelect: onDelete },
+        ]}
+      />
     </div>
   );
 }

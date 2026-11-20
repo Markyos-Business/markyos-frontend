@@ -28,7 +28,7 @@ import { Zone } from "./zone";
  * is typed it can turn its cards into a proposal. A palette zone knows its
  * cards are colours, so it can offer them to Visual Identity as a Draft.
  */
-export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBoards, onBoardMade, onBoardGone, fullscreen, onFullscreen }: MoodboardPageView) {
+export function MoodboardView({ ws, isAr, board, view, onView, compact, immersive, allBoards, onBoardMade, onBoardGone, fullscreen, onFullscreen }: MoodboardPageView) {
   const {
     patchMoodboardZone,
     updateMoodboardItem,
@@ -38,7 +38,6 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBo
     placeMoodboardZone,
     connectMoodboardItems,
     removeMoodboardEdge,
-    setMoodboardView,
   } = useAppActions();
   const fileRef = useRef<HTMLInputElement>(null);
   const actions = useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone, fileRef });
@@ -106,7 +105,7 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBo
             isAr={isAr}
             hidden={immersive}
             shortlistOnly={shortlistOnly}
-            onView={(v) => setMoodboardView(ws.id, board.id, v)}
+            onView={onView}
             onShortlistOnly={setShortlistOnly}
             onRename={actions.renameBoard}
             onAddZone={actions.addZone}
