@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { VIEWPORT_WIDTH } from "@/lib/doc/core/types";
 import type { Breakpoint } from "@/lib/doc/core/types";
+import { useNarrowViewport } from "@/hooks/useNarrowViewport";
 
 /**
  * The canvas, framed at a real viewport width.
@@ -93,6 +94,10 @@ export function CanvasFrame({
   const hostRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const width = VIEWPORT_WIDTH[breakpoint];
+  // On a phone or narrow tablet nobody is rewriting a line of a 1200px page:
+  // they are checking it. The whole page fits instead of a cropped corner.
+  const narrow = useNarrowViewport();
+  const minScale = narrow ? 0 : MIN_SCALE;
 
   useEffect(() => {
     const host = hostRef.current;
@@ -100,20 +105,22 @@ export function CanvasFrame({
 
     function fit() {
       if (!host) return;
-      const available = host.clientWidth + reserved;
+      // A narrow window opens its panels one at a time and starts with both
+      // shut; holding back a panel's width there left the page a sliver.
+      const available = host.clientWidth + (narrow ? 0 : reserved);
       if (available <= 0) return;
       // Never scale *up*. A phone frame blown up to fill a 27-inch display
       // would be a picture of nothing anyone owns, and the type would be
       // unreadably large next to the app's own. And never below MIN_SCALE:
       // past that the canvas scrolls rather than shrinking further.
-      setScale(Math.min(1, Math.max(MIN_SCALE, available / width)));
+      setScale(Math.min(1, Math.max(minScale, available / width)));
     }
 
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(host);
     return () => observer.disconnect();
-  }, [width, reserved]);
+  }, [width, reserved, minScale, narrow]);
 
   const label =
     breakpoint === "desktop"

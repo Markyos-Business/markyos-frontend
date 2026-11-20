@@ -37,10 +37,13 @@ export function ReviewChip({
   report,
   isAr,
   onSelect,
+  compact = false,
 }: {
   report: SiteReport;
   isAr: boolean;
   onSelect: (finding: SiteFinding) => void;
+  /** Icon and count only (a phone's top bar); the words stay for screen readers. */
+  compact?: boolean;
 }) {
   const { errors, warnings, checked, pages } = report;
   const total = errors + warnings;
@@ -117,7 +120,14 @@ export function ReviewChip({
       button={
         <span className={`contents ${tone.fg}`}>
           <Icon name={tone.icon} size={16} />
-          {summary}
+          {compact ? (
+            <>
+              {total > 0 && <span className="tabular-nums">{total}</span>}
+              <span className="sr-only">{summary}</span>
+            </>
+          ) : (
+            summary
+          )}
         </span>
       }
     >
