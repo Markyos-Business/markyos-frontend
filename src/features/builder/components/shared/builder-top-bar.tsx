@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ActionsDropdown, Badge, Button, Icon, IconButton, useToast } from "@/components/ui";
+import { useNarrowViewport, usePhoneViewport } from "@/hooks/useNarrowViewport";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { ViewSwitcher } from "../canvas/view-switcher";
 import { ReviewChip } from "../review/review-panel";
@@ -18,6 +19,10 @@ import { ReviewChip } from "../review/review-panel";
 export function BuilderTopBar(b: BuilderPageState) {
   const { ws, isAr, hasUnpublished, review, revealFinding, previewHref, onPublish, onUnpublish } = b;
   const { showToast } = useToast();
+  // Below 900px the three-part bar overlapped itself: the view switcher and
+  // the View/Copy pair move into More, and the status keeps only its dot.
+  const narrow = useNarrowViewport();
+  const phone = usePhoneViewport();
   const live = !!ws.publishedAt;
   const upToDate = live && !hasUnpublished;
   const back = isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`;
@@ -37,9 +42,9 @@ export function BuilderTopBar(b: BuilderPageState) {
   }
 
   return (
-    <header className="mk-no-hover grid h-14 shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-space-4 bg-surface-1 px-space-5 shadow-rule-b">
+    <header className={`mk-no-hover h-14 shrink-0 items-center gap-space-4 bg-surface-1 px-space-5 shadow-rule-b ${narrow ? "flex" : "grid grid-cols-[1fr_auto_1fr]"}`}>
       {/* The way out, and what you're editing: the studio's own navigation is not on this route. */}
-      <div className="flex min-w-0 items-center gap-space-3">
+      <div className="flex min-w-0 flex-1 items-center gap-space-3">
         <Link href={`/w/${ws.slug}/overview`} aria-label={back} title={back} className="grid size-8 shrink-0 place-items-center rounded-lg text-text-muted">
           <Icon name="arrow-left" size={18} />
         </Link>
@@ -47,14 +52,18 @@ export function BuilderTopBar(b: BuilderPageState) {
           <span className="sr-only">{isAr ? "محرر الدليل: " : "Guideline editor: "}</span>
           <span dir="auto" className="block truncate text-body font-medium text-text [text-align:match-parent]">{ws.name}</span>
         </h1>
-        <Badge tone={status.tone} dot>{status.text}</Badge>
+        {narrow ? (
+          <span title={status.text} className="shrink-0"><Badge tone={status.tone} dot><span className="sr-only">{status.text}</span></Badge></span>
+        ) : (
+          <Badge tone={status.tone} dot>{status.text}</Badge>
+        )}
       </div>
 
-      <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />
+      {!narrow && <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />}
 
-      <div className="flex min-w-0 items-center justify-end gap-space-3">
-        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} />
-        <span className="flex items-center rounded-lg shadow-edge">
+      <div className="flex min-w-0 shrink-0 items-center justify-end gap-space-3">
+        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={phone} />
+        {!narrow && <span className="flex items-center rounded-lg shadow-edge">
           <Link
             href={`${previewHref}?preview=1`}
             target="_blank"
@@ -66,12 +75,20 @@ export function BuilderTopBar(b: BuilderPageState) {
           </Link>
           <span aria-hidden className="h-5 w-px bg-hairline-strong" />
           <IconButton icon="copy" label={isAr ? "نسخ رابط الدليل" : "Copy the guideline link"} onClick={() => void copyLink()} disabled={!live} className="size-8" />
-        </span>
-        {live && (
+        </span>}
+        {(live || narrow) && (
           <ActionsDropdown
             iconOnly
             label={isAr ? "المزيد" : "More"}
-            items={[{ label: isAr ? "إيقاف الموقع" : "Take offline", icon: "eye-slash", tone: "danger", onSelect: onUnpublish }]}
+            items={[
+              ...(narrow
+                ? [
+                    { label: isAr ? "عرض الموقع" : "View the site", icon: "external-link-alt", onSelect: () => window.open(`${previewHref}?preview=1`, "_blank", "noopener") },
+                    ...(live ? [{ label: isAr ? "نسخ رابط الدليل" : "Copy the guideline link", icon: "copy", onSelect: () => void copyLink() }] : []),
+                  ]
+                : []),
+              ...(live ? [{ label: isAr ? "إيقاف الموقع" : "Take offline", icon: "eye-slash", tone: "danger" as const, onSelect: onUnpublish }] : []),
+            ]}
           />
         )}
         <Button

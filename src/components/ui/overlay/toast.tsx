@@ -160,5 +160,8 @@ const useToast = (): ToastContextValue => {
   return ctx;
 };
 
-export { ToastProvider, useToast };
+/** The toast API when a provider is mounted, or null (a gallery, a test). */
+const useOptionalToast = (): ToastContextValue | null => useContext(ToastContext);
+
+export { ToastProvider, useOptionalToast, useToast };
 export type { ToastAction, ToastContextValue, ToastProviderProps, ToastVariant };
