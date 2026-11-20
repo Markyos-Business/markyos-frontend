@@ -52,8 +52,8 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     prices: { pass: 19, subscription: 29 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
-    newBrand: { title: "Add a client brand", description: "One workspace per client brand. You can rename it later." },
-    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، ويمكنك إعادة تسميتها لاحقًا." },
+    newBrand: { title: "Add a client brand", description: "One per client brand. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "واحدة لكل علامة عميل، ويمكنك إعادة تسميتها لاحقًا." },
   },
   freelancer: {
     label: "Freelancer",
@@ -65,8 +65,8 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     prices: { pass: 15, subscription: 19 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
-    newBrand: { title: "Add a client brand", description: "One workspace per client brand, up to 3. You can rename it later." },
-    arNewBrand: { title: "أضف علامة عميل", description: "مساحة عمل لكل علامة عميل، حتى 3 علامات، ويمكنك إعادة تسميتها لاحقًا." },
+    newBrand: { title: "Add a client brand", description: "One per client brand, up to 3. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "واحدة لكل علامة عميل، حتى 3 علامات، ويمكنك إعادة تسميتها لاحقًا." },
   },
   company: {
     label: "Company",
@@ -80,11 +80,11 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     arHome: { title: "علامتك", noun: "علامة", nounPlural: "علامات" },
     newBrand: {
       title: "Name your brand",
-      description: "Its guideline, departments and governance live in one workspace. You can rename it later.",
+      description: "Its guideline, departments and governance live in one place. You can rename it later.",
     },
     arNewBrand: {
       title: "سمِّ علامتك",
-      description: "دليلها وأقسامها وحوكمتها في مساحة عمل واحدة، ويمكنك إعادة تسميتها لاحقًا.",
+      description: "دليلها وأقسامها وحوكمتها في مكان واحد، ويمكنك إعادة تسميتها لاحقًا.",
     },
   },
 };

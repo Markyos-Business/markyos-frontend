@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
-import { roleOn } from "@/lib/data/access";
+import { isReviewerOnly, roleOn } from "@/lib/data/access";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../../constants";
 import { brandsCopyFor } from "../../copy";
@@ -42,18 +42,17 @@ export function useBrandsPage() {
   const limitNote = c.limitNote(lang === "ar" ? type.arLabel : type.label, brandLimit, brandLimit === 1 ? home.noun : home.nounPlural);
 
   if (!hydrated || !state.session) return null;
+  // A client reviewer's home is what was shared with them, nothing to create.
+  const reviewer = isReviewerOnly(myWorkspaces, state.session);
 
   return {
     header: { query, onQuery: setQuery, c },
     view: {
-      title: account?.isAdmin ? c.yourBrands : home.title,
-      description: c.summary(myWorkspaces.length, sharedCount, owned, brandLimit),
-      summary: {
-        total: myWorkspaces.length,
-        owned,
-        invited: myWorkspaces.filter(w => w.ownerAccountId !== state.session?.accountId).length,
-        published: myWorkspaces.filter(w => !!w.published).length,
-      },
+      title: reviewer ? (lang === "ar" ? "العلامات المشاركة معك" : "Brands shared with you") : account?.isAdmin ? c.yourBrands : home.title,
+      description: reviewer
+        ? lang === "ar" ? "افتح علامة لمراجعة دليلها." : "Open a brand to review its guideline."
+        : c.summary(myWorkspaces.length, sharedCount, owned, brandLimit),
+      reviewer,
       sort,
       c,
       lang,

@@ -58,7 +58,7 @@ export function BrandSwitcher({ currentId, isAr }: { currentId: string; isAr: bo
             </Link>
             <Link href="/brands/new" onClick={close} className="mk-nav-item flex items-center gap-space-4 px-space-5 py-space-3 text-body text-text">
               <Icon name="plus" size={16} />
-              {isAr ? "مساحة عمل جديدة" : "New workspace"}
+              {isAr ? "علامة جديدة" : "New brand"}
             </Link>
           </div>
         </div>
