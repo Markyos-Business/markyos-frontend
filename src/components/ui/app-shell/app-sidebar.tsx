@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
@@ -120,6 +120,17 @@ export function AppSidebar({
   }, []);
 
   /**
+   * The page you are on is always in view. On a laptop-height window the list
+   * runs under the bottom bar, and Team or Settings could be the active item
+   * while sitting out of sight.
+   */
+  const listRef = useRef<HTMLDivElement>(null);
+  const activeKey = [...sections.flatMap((s) => s.items), ...footer].find((item) => item.active)?.key;
+  useEffect(() => {
+    listRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: "nearest" });
+  }, [activeKey]);
+
+  /**
    * `[` collapses and expands the rail.
    *
    * The shortcut is skipped while a field has focus — typing a bracket into a
@@ -220,7 +231,8 @@ export function AppSidebar({
 
       {card && !collapsed && <div className="shrink-0 pb-space-6">{card}</div>}
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      {/* The bottom fade says the list goes on when it runs under the bar. */}
+      <div ref={listRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-space-6 [mask-image:linear-gradient(to_bottom,black_calc(100%-24px),transparent)]">
         {sections.map((section, i) => (
           <div key={section.key} role="group" aria-label={section.label} className="flex flex-col gap-space-1">
             {i > 0 && rule}
