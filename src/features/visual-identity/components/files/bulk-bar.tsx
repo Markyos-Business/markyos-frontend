@@ -1,5 +1,6 @@
 "use client";
 
+import { saveFile } from "@/lib/download";
 import { Icon } from "@/components/ui";
 
 /**
@@ -77,14 +78,8 @@ export function BulkBar({
 /** Triggers a real browser download for each file, in order. */
 export function downloadFiles(files: { url?: string; fileName: string }[]): number {
   const targets = files.filter((f) => !!f.url);
-  for (const f of targets) {
-    const a = document.createElement("a");
-    a.href = f.url!;
-    a.download = f.fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
+  // Fetched and saved, so a file on the media host downloads rather than opening in a tab.
+  for (const f of targets) void saveFile(f.url!, f.fileName);
   return targets.length;
 }
 

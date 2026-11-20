@@ -1,5 +1,6 @@
 "use client";
 
+import { MoodboardUploadTray } from "./upload-tray";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { EmptyState, Icon } from "@/components/ui";
@@ -178,6 +179,7 @@ export function MoodboardView({ ws, isAr, board, view, compact, immersive, allBo
           <MoodboardFootnote slug={ws.slug} isAr={isAr} hidden={immersive} />
         </>
       )}
+      <MoodboardUploadTray rows={actions.uploads.rows} isAr={isAr} onRetry={actions.uploads.retry} onDismiss={actions.uploads.dismiss} />
     </div>
   );
 }

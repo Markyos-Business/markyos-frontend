@@ -3,7 +3,8 @@ import type { BrandRepository, SaveResult } from "../repository";
 import type { AppState, Workspace } from "../../../types";
 import { canEdit, roleOn } from "../access";
 import { createLocalAdapter } from "./localAdapter";
-import { inlineFiles, withFileUrls } from "./serverFiles";
+import { withFileUrls } from "./serverFiles";
+import { syncStatus } from "../syncStatus";
 
 /**
  * Brands on the server, with this browser as the cache.
@@ -108,6 +109,8 @@ export function createApiAdapter(options: {
   let timer: ReturnType<typeof setTimeout> | null = null;
   let running = false;
   let again = false;
+  /** A brand was refused (400/403) during the current sync. */
+  let refusedThisRun = false;
 
   // Feedback has its own API. A refreshed client note must not trigger a
   // whole-brand save or conflict with someone editing the guideline.
@@ -126,15 +129,24 @@ export function createApiAdapter(options: {
       return local.toPortable(dataUrl);
     });
 
-  /** A server brand as the app holds it: files inline, repairs applied. */
+  /**
+   * A server brand as the app holds it: repairs applied, stored files left as
+   * their URLs.
+   *
+   * Files used to be downloaded one by one and held as `data:` URLs before
+   * the brand could render: a 50-image moodboard took 4.2s to open on a 4G
+   * connection, re-downloaded everything on every page load, and kept ~9MB of
+   * base64 in memory. As URLs the browser loads only what is on screen, caches
+   * it, and decodes it off the main thread. New uploads are still `data:` URLs
+   * until the next sync swaps them for their URL (`withFileUrls`).
+   */
   async function fromServer(brands: ServerBrand[], state: AppState): Promise<Workspace[]> {
-    const inlined: Workspace[] = [];
-    for (const brand of brands) {
+    const loaded = brands.map((brand) => {
       // A brand made outside the app (API, import) may carry no edit time of its own; the server's row has one.
       const updatedAt = Number.isFinite(brand.data.updatedAt) ? brand.data.updatedAt : Date.parse(brand.updatedAt) || Date.now();
-      inlined.push(await inlineFiles({ ...brand.data, updatedAt }, brand.fileBase));
-    }
-    return local.repairWorkspaces(await local.fromPortable(inlined), state);
+      return { ...brand.data, updatedAt };
+    });
+    return local.repairWorkspaces(await local.fromPortable(loaded), state);
   }
 
   /** Take the server's copy: resolve its files, remember it, hand it over. */
@@ -150,7 +162,9 @@ export function createApiAdapter(options: {
   function schedule(delay = SYNC_DELAY_MS) {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => void sync(), delay);
+    if (syncStatus.get() !== "failed") syncStatus.set("pending");
   }
+  syncStatus.onRetry(() => schedule(0));
 
   async function sync() {
     timer = null;
@@ -161,15 +175,25 @@ export function createApiAdapter(options: {
     }
     running = true;
     let retry = false;
+    refusedThisRun = false;
+    syncStatus.set("saving");
     try {
       retry = await syncOnce();
+    } catch (err) {
+      syncStatus.set("failed");
+      throw err;
     } finally {
       running = false;
       if (again) {
         again = false;
         schedule(0);
       } else if (retry) {
+        // Offline or server trouble: say so, and try again on our own shortly.
+        syncStatus.set("failed");
         schedule(RETRY_DELAY_MS);
+      } else if (syncStatus.get() === "saving") {
+        // A refused change was rolled back to the server's copy: not "saved".
+        syncStatus.set(refusedThisRun ? "failed" : "saved");
       }
     }
   }
@@ -229,6 +253,7 @@ export function createApiAdapter(options: {
           const current = await api<ServerBrand>(`/brands/${encodeURIComponent(ws.id)}/`).catch(() => null);
           if (current) await adopt(current, ws.slug);
           else synced.set(ws.id, { json, version: known.version });
+          refusedThisRun = true;
           options.onRefused(ws, err);
         } else if (known && err.status === 404 && role !== "owner") {
           synced.delete(ws.id);
@@ -240,6 +265,7 @@ export function createApiAdapter(options: {
           console.error(`Markyos: could not save "${ws.name}": ${err.message}`);
           if (known) synced.set(ws.id, { json, version: known.version });
           else refusedCreates.set(ws.id, json);
+          refusedThisRun = true;
           options.onRefused(ws, err);
         }
       }
