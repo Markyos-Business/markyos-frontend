@@ -62,7 +62,7 @@ export function BuilderTopBar(b: BuilderPageState) {
       {!narrow && <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />}
 
       <div className="flex min-w-0 shrink-0 items-center justify-end gap-space-3">
-        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={phone} />
+        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={phone} upToDate={upToDate} />
         {!narrow && <span className="flex items-center rounded-lg shadow-edge">
           <Link
             href={`${previewHref}?preview=1`}
