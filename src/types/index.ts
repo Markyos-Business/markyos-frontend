@@ -969,6 +969,12 @@ export interface Workspace {
    * point of those is that someone with no account at all can open them.
    */
   ownerAccountId: string;
+  /**
+   * The signed-in reader's role as the server reported it when the brand was
+   * loaded. A client is sent only the brand's metadata, with no team list, so
+   * this is the only way the app knows they belong. Never sent back.
+   */
+  viewerRole?: TeamRole | null;
   slug: string;
   name: string;
   initials: string;

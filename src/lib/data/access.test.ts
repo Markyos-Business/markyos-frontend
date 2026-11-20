@@ -27,6 +27,18 @@ describe("roleOn", () => {
     expect(roleOn(ws, session("acc-3", "x@else.com"))).toBeNull();
     expect(roleOn(ws, null)).toBeNull();
   });
+
+  it("uses the role the server reported when the team isn't sent (a client)", () => {
+    // A client is sent the brand's metadata only: no team list at all.
+    const ws = { ...brand([]), team: undefined as unknown as TeamMember[], viewerRole: "client" as TeamRole };
+    expect(roleOn(ws, session("acc-4", "omar@almarai.sa"))).toBe("client");
+  });
+
+  it("prefers the team over the reported role, and the owner over both", () => {
+    const ws = { ...brand([{ email: "ed@studio.com", role: "viewer" }]), viewerRole: "editor" as TeamRole };
+    expect(roleOn(ws, session("acc-2", "ed@studio.com"))).toBe("viewer");
+    expect(roleOn(ws, session("owner-1", "x@studio.com"))).toBe("owner");
+  });
 });
 
 describe("canEdit", () => {

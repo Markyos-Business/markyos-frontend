@@ -1,6 +1,6 @@
 import { ApiError, api } from "@/lib/api/client";
 import type { BrandRepository, SaveResult } from "../repository";
-import type { AppState, Workspace } from "../../../types";
+import type { AppState, TeamRole, Workspace } from "../../../types";
 import { canEdit, roleOn } from "../access";
 import { createLocalAdapter } from "./localAdapter";
 import { withFileUrls } from "./serverFiles";
@@ -37,6 +37,8 @@ interface ServerBrand {
   /** Every uploaded file's URL starts with this. */
   fileBase: string;
   data: Workspace;
+  /** The reader's own role on this brand. */
+  role?: TeamRole | null;
 }
 
 interface Synced {
@@ -116,13 +118,13 @@ export function createApiAdapter(options: {
   // whole-brand save or conflict with someone editing the guideline.
   // Moodboard votes too: they are records per account (`voteOnCard`).
   const portableJson = (ws: Workspace) => JSON.stringify(local.toPortable({
-    ...ws, signOffPins: [], approvals: [], moodboards: withoutVotes(ws.moodboards),
+    ...ws, viewerRole: undefined, signOffPins: [], approvals: [], moodboards: withoutVotes(ws.moodboards),
     published: ws.published ? { ...ws.published, signOffPins: [], approvals: [] } : ws.published,
   }));
 
   /** `ws` with every inline file uploaded and swapped for its URL. */
   const uploadFiles = (ws: Workspace) =>
-    withFileUrls(ws, (dataUrl, err) => {
+    withFileUrls({ ...ws, viewerRole: undefined }, (dataUrl, err) => {
       // Too big or a refused type: keep it in this browser only, under the
       // reference the local adapter stores it by.
       console.warn(`Markyos: a file in "${ws.name}" stays on this device: ${err.message}`);
@@ -144,7 +146,7 @@ export function createApiAdapter(options: {
     const loaded = brands.map((brand) => {
       // A brand made outside the app (API, import) may carry no edit time of its own; the server's row has one.
       const updatedAt = Number.isFinite(brand.data.updatedAt) ? brand.data.updatedAt : Date.parse(brand.updatedAt) || Date.now();
-      return { ...brand.data, updatedAt };
+      return { ...brand.data, updatedAt, viewerRole: brand.role ?? null };
     });
     return local.repairWorkspaces(await local.fromPortable(loaded), state);
   }
