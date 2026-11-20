@@ -81,6 +81,18 @@ describe("formatRelative", () => {
     expect(at(400 * DAY)).toBe("1y ago");
   });
 
+  it("writes Arabic out in full, with the dual and plurals", () => {
+    const ar = (ms: number) => formatRelative(now - ms, now, "ar");
+    expect(ar(1 * MIN)).toBe("قبل دقيقة");
+    expect(ar(5 * MIN)).toBe("قبل 5 دقائق");
+    expect(ar(2 * HOUR)).toBe("قبل ساعتين");
+    expect(ar(1 * DAY)).toBe("قبل يوم");
+    expect(ar(2 * DAY)).toBe("قبل يومين");
+    expect(ar(3 * DAY)).toBe("قبل 3 أيام");
+    expect(ar(14 * DAY)).toBe("قبل أسبوعين");
+    expect(ar(400 * DAY)).toBe("قبل سنة");
+  });
+
   it("is bidi-safe at every step", () => {
     for (const ms of [0, 5 * MIN, 3 * HOUR, 2 * DAY, 14 * DAY, 60 * DAY, 400 * DAY]) {
       expect(formatRelative(now - ms, now).startsWith(LRM)).toBe(true);

@@ -15,7 +15,7 @@ export function CanvasToolbar(b: BuilderPageState) {
           <IconButton icon="times" label={isAr ? "احذف الصفحة" : "Delete page"} title={isAr ? "احذف هذه الصفحة" : "Delete this page"} onClick={b.onDeletePage} className="mk-danger-hover cursor-pointer text-text-faint" />
         </>
       )}
-      <span className="truncate text-[11.5px] text-text-faint">{activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}</span>
+      <span dir="ltr" className="truncate text-[11.5px] text-text-faint">{activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}</span>
       {/*
         The hint takes all the slack, outside the control group. It says
         something different depending on the selection, and different widths

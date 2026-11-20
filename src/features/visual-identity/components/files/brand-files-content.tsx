@@ -530,7 +530,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded-sm" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
-                    {TYPE_META[r.type].label.toUpperCase()}
+                    {isAr ? TYPE_META[r.type].arLabel : TYPE_META[r.type].label}
                   </span>
                   <span className="text-[10px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
                     {formatBytes(r.sizeKB)}

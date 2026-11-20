@@ -2,7 +2,7 @@ import type { TeamRole } from "@/types";
 
 export const PAGE_SECTION = {
   en: "Team & history",
-  ar: "الفريق والإصدارات",
+  ar: "الفريق والسجل",
 } as const;
 
 export const ROLES: TeamRole[] = ["owner", "editor", "viewer", "client"];

@@ -88,8 +88,17 @@ export function ClearspacePanel({
           <span>1×</span>
         </div>
         <p className="mt-3.5 text-[12px] leading-[1.55]" style={{ color: "var(--text-muted)" }}>
-          Measured from the file&apos;s bounding box ({Math.round(height)} px tall). Guide is{" "}
-          <span style={{ color: "var(--text-secondary)" }}>{csPx} px</span> at native size.
+          {isAr ? (
+            <>
+              مقيس من حدود الملف (بارتفاع <bdi dir="ltr">{Math.round(height)} px</bdi>). الهامش{" "}
+              <bdi dir="ltr" style={{ color: "var(--text-secondary)" }}>{csPx} px</bdi> بالحجم الأصلي.
+            </>
+          ) : (
+            <>
+              Measured from the file&apos;s bounding box ({Math.round(height)} px tall). Guide is{" "}
+              <span style={{ color: "var(--text-secondary)" }}>{csPx} px</span> at native size.
+            </>
+          )}
         </p>
       </div>
 
