@@ -75,14 +75,15 @@ export const AccountMenu = memo(function AccountMenu({
   }
 
   return (
-    <div className="flex items-center gap-space-3">{variant === "avatar" && <NotificationBell isAr={isAr}/>}<Popover
+    <div className="flex min-w-0 items-center gap-space-3">{variant === "avatar" && <NotificationBell isAr={isAr}/>}<Popover
+      className={variant === "row" ? "min-w-0 flex-1" : undefined}
       label={isAr ? "الحساب" : "Account"}
       width={250}
       onOpen={checkContentAccess}
       trigger={variant === "row" && !compact ? "block" : "plain"}
       align={variant === "row" ? "start" : "end"}
       button={variant === "row" && !compact ? (
-        <span className="flex min-w-0 items-center gap-space-4 rounded-lg py-space-2 text-start">
+        <span className="flex min-w-0 flex-1 items-center gap-space-4 rounded-lg py-space-2 text-start">
           <Avatar initials={initials} src={account?.avatarUrl} size={28} />
           <span dir="auto" className="min-w-0 flex-1 truncate text-body font-medium text-text [text-align:match-parent]">{session?.name || session?.email}</span>
           <Icon name="ellipsis-h" size={16} className="shrink-0 text-text-muted" />

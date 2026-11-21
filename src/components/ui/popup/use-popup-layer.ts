@@ -5,6 +5,22 @@ let bodyOverflow = "";
 const hidden = new Map<HTMLElement, { count: number; previous: string | null }>();
 const controls = 'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex]:not([tabindex="-1"])';
 const portal = '[data-popup-portal],[data-radix-popper-content-wrapper]';
+/**
+ * The last few elements that held focus. A field with autoFocus takes focus as
+ * the popup mounts, before the layer runs, so the opener is the most recent
+ * element outside the popup, not whatever is focused by then.
+ */
+const recent: HTMLElement[] = [];
+if (typeof document !== "undefined") document.addEventListener("focusin", (event) => {
+  if (!(event.target instanceof HTMLElement)) return;
+  recent.push(event.target); if (recent.length > 8) recent.shift();
+}, true);
+function openerOutside(root: HTMLElement) {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && active !== document.body && !root.contains(active)) return active;
+  for (let i = recent.length - 1; i >= 0; i--) { const el = recent[i]; if (el.isConnected && !root.contains(el)) return el; }
+  return null;
+}
 function visible(element: HTMLElement) { return element.getClientRects().length > 0 && !element.closest('[inert],[hidden],[aria-hidden="true"]'); }
 
 /** One active keyboard layer, one scroll lock, and restoration to the actual opener. */
@@ -17,7 +33,7 @@ export function usePopupLayer({ open, panel, root, onClose, dismissOnEscape, ini
   useEffect(() => {
     if (!open || !panel.current || !root.current) return;
     const token = Symbol("popup"); const element = panel.current;
-    const opener = returnFocusRef?.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    const opener = returnFocusRef?.current ?? openerOutside(root.current);
     if (!layers.length) { bodyOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; }
     layers.push(token);
     const top = () => layers.at(-1) === token;
