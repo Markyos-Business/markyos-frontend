@@ -24,8 +24,8 @@ export function AdminUsersView() {
 
   return (
     <>
+      {/* No "Admin" overline: the top bar already says where this is. */}
       <PageHeader
-        breadcrumb={c.breadcrumb}
         title={c.title}
         description={c.description}
         secondaryActions={

@@ -95,10 +95,11 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
                 <Button variant="outline" href={`/w/${brandSlug}/forms`} icon={<Icon name="clipboard-list" size={18} />}>
                   {t("All questionnaires", "كل الاستبيانات")}
                 </Button>
-                {newFormButton}
+                {/* With none yet, the empty state below carries the one button. */}
+                {forms.length > 0 && newFormButton}
               </>
             ) : (
-              addCallButton
+              calls.length > 0 && addCallButton
             )}
           </div>
         </div>

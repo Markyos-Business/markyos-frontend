@@ -65,7 +65,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       paid={workspace.billing.plan !== "free"}
       live={!!workspace.publishedAt}
       // The same set the library lists: uploaded files plus the attached logo files.
-      assetCount={workspace.assets.length + Object.values(workspace.logo).filter((slot) => slot.phase === "attached").length}
+      assetCount={workspace.assets.length + Object.values(workspace.logo).filter((slot) => slot?.phase === "attached").length}
       pendingDrafts={workspace.drafts.filter((draft) => draft.status === "pending").length}
     />
   );

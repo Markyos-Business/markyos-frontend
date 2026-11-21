@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, EmptyHint, Row, Section } from "@/components/ui";
+import { Button, EmptyHint, Icon, Row, Section } from "@/components/ui";
 import type { TeamPageView } from "../../hooks/use-team-page";
 import { InviteMemberForm } from "./invite-member-form";
 import { MemberControls } from "./member-controls";
@@ -15,8 +15,8 @@ export function TeamSection({ ws, isAr, canGovern, editorsFull, editorsFullNote 
       title={t("Team", "الفريق")}
       icon="users"
       right={
-        canGovern && <Button variant="link" onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
-          {adding ? t("Cancel", "إلغاء") : t("+ Invite", "+ دعوة")}
+        canGovern && <Button variant="link" icon={adding ? undefined : <Icon name="plus" size={16} />} onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
+          {adding ? t("Cancel", "إلغاء") : t("Invite", "دعوة")}
         </Button>
       }
     >

@@ -6,7 +6,7 @@ Shareable version with screenshots: https://claude.ai/artifact/MjPBm5qXGQzwVyxHR
 
 ## Status (21 Nov 2026): every finding closed or decided
 
-Merged locally on release/staging-v1, not deployed. 34 fixed or corrected, 6 closed without a change (reasons below).
+Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 closed without a change (reasons below). A final pass (fix/ux-final) also closed the smaller points left inside fixed findings.
 
 | Finding | Outcome | Commit |
 |---|---|---|
@@ -31,9 +31,9 @@ Merged locally on release/staging-v1, not deployed. 34 fixed or corrected, 6 clo
 | UX-19 brands home buries brands | Fixed: count tiles and duplicate welcome buttons removed | e11ce1b |
 | UX-20 several names for one thing | Fixed: brand (not workspace), Type lab, Colour, مُرسَل, الفريق والسجل. Moodboard "قسم" is used consistently and kept. Rest waits for the Phase 6 copy guide | 614ef7a, e11ce1b, a505a2b |
 | UX-21 empty brand gives no next step | Fixed: steps are links, the next says Next; Auto-fill explains itself | 0e6cdb6, cd2b3ed |
-| UX-22 blank logo pair | Not confirmed: the tiles render whenever a lockup is attached; in the audit they sat at the fold | — |
+| UX-22 blank logo pair | Fixed, confirmed with a real upload: the tiles stretched to the tall column beside them and the logos sat at the bottom of the window. Fixed height now; the dark-tile caption no longer claims "auto-reversed" for coloured marks | final pass |
 | UX-23 secondary panels first | Fixed: palette before contrast; finished checklist collapses | cf76ac9, 0e6cdb6 |
-| UX-24 light mode loses surfaces | Fixed where reported: sign-in card, contrast card | d383288, cf76ac9 |
+| UX-24 light mode loses surfaces | Fixed: sign-in card, contrast card, logo and typography cards, in-app strategy documents (share links) | d383288, cf76ac9, final pass |
 | UX-25 asset filters | Fixed: labelled Type/Status/Tags rows, sideways on phone; counts match; empty boxes read empty | cf76ac9, a3d019c |
 | UX-26 analysis chips and phone | Fixed: chips only when a section differs; section strip on phone | 6dd1c9a |
 | UX-27 billing contradicts itself | No change now: billing UI is paused with PayPal (your 19 Nov call) | — |
@@ -44,9 +44,9 @@ Merged locally on release/staging-v1, not deployed. 34 fixed or corrected, 6 clo
 | UX-32 Arabic in tracked mono | Fixed: interface font for Arabic meta, Western digits | cf76ac9 |
 | UX-33 answered questionnaire lacks context | Fixed: names the form and studio, singular address | 821065e |
 | UX-34 departments switch and phone | Fixed phone header; switch knob is the same contrast decision as UX-31 | cd2b3ed |
-| UX-35 notifications loud | Fixed: unread by surface, weight and dot (spec §6.14) | 885795b |
-| UX-36 admin repeats itself | Fixed in the CMS: no repeated welcome, primary New article, helpful empty state | 4adf4f5 |
-| UX-37 button weight | Fixed on Drafts (Accept primary) | 04ae4bd |
+| UX-35 notifications loud | Fixed: unread by surface, weight and dot (spec §6.14); questionnaire wording; a nameless client translated | 885795b, final pass |
+| UX-36 admin repeats itself | Fixed: CMS drops the repeated welcome and gets a primary New article; Users loses its repeated Admin overline | 4adf4f5, final pass |
+| UX-37 button weight | Fixed: Accept primary on Drafts; one primary on Discovery; plus icons instead of typed + | 04ae4bd, final pass |
 | UX-38 sign-in footer links | Fixed: on the baseline; Forgot password? | 899ce0f |
 | UX-39 tab dots unexplained | No change: the dots already carry "Nothing here yet" as label and tooltip | — |
 | UX-40 share link language | Fixed: ?lang is respected; otherwise the brand language the studio chose (Settings says so) | 2725068 |
