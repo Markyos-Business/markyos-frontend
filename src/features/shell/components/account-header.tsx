@@ -29,7 +29,8 @@ export function AccountHeader({ search }: { search?: ReactNode }) {
       {links.map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}
         className={`mk-tap text-body ${pathname === link.href ? "font-medium text-accent-text" : "text-text-muted"}`}>{isAr ? link.arLabel : link.label}</Link>)}
     </nav>
-    {search && <div className="ms-auto w-36 sm:w-48">{search}</div>}
+    {/* Shrinks on a phone instead of pushing the bell and avatar to a second row (it did in Arabic). */}
+    {search && <div className="ms-auto min-w-0 max-w-48 flex-1 sm:w-48 sm:flex-none">{search}</div>}
     <div className={search ? "" : "ms-auto"}><AccountMenu phoneLinks={links} /></div>
   </header><BetaNotice /></>;
 }
