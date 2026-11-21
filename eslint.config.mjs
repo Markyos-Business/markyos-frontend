@@ -81,7 +81,8 @@ const boundaries = [
  * Props are not checked (labels arrive through them by design); symbols that
  * read the same in both languages are allowed.
  */
-const copyManaged = ["src/components/ui/**/*.tsx"];
+// The Help Center is held to translation keys from the start (HC-EPIC-001).
+const copyManaged = ["src/components/ui/**/*.tsx", "src/features/helpcenter/**/*.tsx"];
 const noHardcodedCopy = [
   {
     files: copyManaged,

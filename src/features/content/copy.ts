@@ -21,7 +21,7 @@ export const CONTENT_COPY = {
     // Matches the page heading and the account menu link.
     allContent: "Website content",
     retry: "Try again",
-    nav: { cms: "CMS", library: "CMS library", media: "Media", taxonomy: "Authors and labels", manage: "Manage", cmsManage: "CMS settings", redirects: "Redirects", traffic: "Website traffic", people: "CMS people" },
+    nav: { cms: "CMS", library: "CMS library", media: "Media", taxonomy: "Authors and labels", manage: "Manage", cmsManage: "CMS settings", redirects: "Redirects", traffic: "Website traffic", people: "CMS people", helpCenter: "Help Center", helpCategories: "Help categories" },
     common: { save: "Save", add: "Add", remove: "Remove", cancel: "Cancel", edit: "Edit", confirmRemove: "Remove this?", saved: "Saved.", removed: "Removed." },
     media: {
       title: "Media",
@@ -171,7 +171,7 @@ export const CONTENT_COPY = {
     language: "لغة الواجهة",
     allContent: "محتوى الموقع",
     retry: "إعادة المحاولة",
-    nav: { cms: "نظام المحتوى", library: "مكتبة المحتوى", media: "الوسائط", taxonomy: "الكُتّاب والتصنيفات", manage: "الإدارة", cmsManage: "إعدادات المحتوى", redirects: "إعادة التوجيه", traffic: "زيارات الموقع", people: "فريق المحتوى" },
+    nav: { cms: "نظام المحتوى", library: "مكتبة المحتوى", media: "الوسائط", taxonomy: "الكُتّاب والتصنيفات", manage: "الإدارة", cmsManage: "إعدادات المحتوى", redirects: "إعادة التوجيه", traffic: "زيارات الموقع", people: "فريق المحتوى", helpCenter: "مركز المساعدة", helpCategories: "تصنيفات المساعدة" },
     common: { save: "حفظ", add: "إضافة", remove: "إزالة", cancel: "إلغاء", edit: "تعديل", confirmRemove: "إزالة هذا العنصر؟", saved: "تم الحفظ.", removed: "تمت الإزالة." },
     media: {
       title: "الوسائط",

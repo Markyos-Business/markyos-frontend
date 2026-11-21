@@ -47,6 +47,10 @@ export function useCmsNav(): { loading: boolean; role: string | null; sections: 
         })),
       ],
     },
+    // The Help Center's own screens, for anyone with the help section (HC-EPIC-001).
+    ...(data.sections.includes("help")
+      ? [{ key: "cms-help", label: c.nav.helpCenter, items: [page("help/categories", c.nav.helpCategories, "layer-group")] }]
+      : []),
     {
       key: "cms-library",
       label: c.nav.library,

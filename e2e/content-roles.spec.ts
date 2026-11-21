@@ -81,8 +81,8 @@ test("a content manager runs the CMS and nothing else of the admin area", async 
   // Their home is the CMS.
   await cms.waitForURL(/\/admin\/cms$/);
   const nav = cms.getByRole("navigation", { name: "Admin" });
-  for (const name of ["Blog", "Guides", "Help", "Media", "Redirects", "Website traffic", "CMS people"]) {
-    await expect(nav.getByRole("link", { name })).toBeVisible();
+  for (const name of ["Blog", "Guides", "Help centre", "Help categories", "Media", "Redirects", "Website traffic", "CMS people"]) {
+    await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
   }
   await expect(nav.getByRole("link", { name: "Users" })).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Dashboard" })).toHaveCount(0);
