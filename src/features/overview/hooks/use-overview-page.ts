@@ -116,7 +116,7 @@ export function useOverviewPage(slug: string) {
     view: {
       ws,
       isAr,
-      editor: { editorRef, isAr, wordCount, savedLabel, onInput: handleInput, onTool: runTool },
+      editor: { editorRef, isAr, contentAr: ws.primaryLocale === "ar", wordCount, savedLabel, onInput: handleInput, onTool: runTool },
     },
   };
 }
