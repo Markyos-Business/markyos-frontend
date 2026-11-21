@@ -394,6 +394,8 @@ Props: `padding?: number|string`
 ### 6.2 Button
 46px tall with an 8px radius and a 14px label at weight 500. The icon is optional, 18px, and placed before the label.
 
+> **Sizes (2026-11-21, §2.6):** 46px is the `lg` size. Buttons share their heights with fields — xs 28, sm 32, md 40, lg 46 (sm and md 44 on touch) — and the variant table below stays as the fills.
+
 | variant | Fill | Label |
 |---|---|---|
 | `primary` | `--primary` | `--on-accent` |
@@ -449,6 +451,8 @@ Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSi
 Placeholders use the real ellipsis character: `Start typing…`
 
 The compact size (`size="sm"`) keeps the underline with a 12.5px value, for inspectors and dense rows.
+
+> **Since 2026-11-21 (§2.6):** the underline is `--control-border` (3:1), the field takes the 8px control corner on its top edge, focus is a 2px accent underline, and the control heights are 40 (md) and 32 (sm).
 
 **Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
 
