@@ -211,7 +211,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
       />
 
       <div dir={rowDir} className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
-        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="mk-surface rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               isAr={isAr}
@@ -254,7 +254,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
             onUpload={(files) => handleUploadFont("latin", files)}
           />
         </div>
-        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="mk-surface rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               isAr={isAr}
@@ -308,7 +308,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
           : "Family names are read from the file name and are this workspace's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
       </p>
 
-      <div className="flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
+      <div className="mk-surface flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
         <div
           className="shrink-0 flex items-center justify-between px-5 py-3.5"
           style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
