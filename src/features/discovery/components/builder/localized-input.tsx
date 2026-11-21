@@ -71,10 +71,11 @@ export function LocalizedInput({ label, value, onCommit, mode, languages, multil
               value={draft[lang] ?? ""}
               placeholder={placeholder?.[lang]}
               disabled={disabled}
-              rows={multiline ? 2 : undefined}
+              // Three rows: two cut the welcome text's placeholder mid-word.
+              rows={multiline ? 3 : undefined}
               onChange={(e) => change(lang, e.target.value)}
               onBlur={() => commit(draft)}
-              className={`mk-field w-full ${multiline ? "resize-y" : ""} ${lang === "ar" ? "leading-[1.7]" : ""}`}
+              className={`mk-field w-full ${multiline ? "resize-y leading-[1.7]" : lang === "ar" ? "leading-[1.7]" : ""}`}
             />
           </label>
         );

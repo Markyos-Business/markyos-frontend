@@ -113,7 +113,7 @@ function FieldArray<V extends FieldValues, N extends ArrayPath<V>>({ name, legen
                     }}
                     onDragEnd={() => setDragging(null)}
                     onKeyDown={(e) => onGripKey(e, index)}
-                    className="mt-space-8 grid size-8 shrink-0 cursor-grab place-items-center rounded-md text-text-muted hover:text-text active:cursor-grabbing"
+                    className="mt-space-8 grid size-ctl-sm shrink-0 cursor-grab place-items-center rounded-md text-text-muted hover:text-text active:cursor-grabbing"
                   >
                     <Icon name="grip-vertical" size={18} />
                   </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type DragEvent } from "react";
-import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, TabPanel, Tabs, useTabIds, tabButtonId, useDialog, PageHeader } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, SegmentedControl, Skeleton, TabPanel, useTabIds, tabButtonId, useDialog, PageHeader } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/use-form-editor";
@@ -47,7 +47,6 @@ const flatten = (form: DiscoveryForm): Placed[] => {
  * refuse.
  */
 export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
-  const tabIds = useTabIds();
   const sectionTabIds = useTabIds();
   const editor = useFormEditor(formId, isAr);
   const { form, run } = editor;
@@ -169,14 +168,16 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </>}
         actions={<>
         {both && (
-          <Tabs {...tabIds}
+          // Which language to edit in is a "choose one" (MARKYOS_UI §2.5), the
+          // kit pill like every language switch, not a row of tabs.
+          <SegmentedControl
             label={t("Edit in", "التحرير بـ")}
-            tabs={[
-              { key: "en", label: "English" },
-              { key: "ar", label: "العربية" },
-              { key: "both", label: t("Both", "كلتاهما") },
+            options={[
+              { value: "en", label: "English" },
+              { value: "ar", label: "العربية" },
+              { value: "both", label: t("Both", "كلتاهما") },
             ]}
-            active={mode}
+            value={mode}
             onChange={setModeChoice}
           />
         )}
@@ -186,7 +187,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </>}
       />
 
-      <div id={tabIds.panelId} role={both ? "tabpanel" : undefined} aria-labelledby={both ? tabButtonId(tabIds.id, mode) : undefined} tabIndex={both ? 0 : undefined} className="flex min-w-0 flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-5">
       <AlertBanner message={editor.error} />
       {readOnly ? (
         <AlertBanner message={t("This questionnaire was submitted. Reopen it from its answers to change questions.", "سُلِّم هذا الاستبيان. أعد فتحه من صفحة الإجابات لتعديل الأسئلة.")} />

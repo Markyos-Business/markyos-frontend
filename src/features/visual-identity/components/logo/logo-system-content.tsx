@@ -278,11 +278,11 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
 
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-            {isAr ? "ألوان الشعار الأساسية" : "Main logo colors"}
+            {isAr ? "ألوان الشعار الأساسية" : "Main logo colours"}
           </span>
           {ws.colors.length === 0 ? (
             <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-              {isAr ? "أضف الألوان من تبويب الألوان أولًا." : "Add colors on the Color tab first."}
+              {isAr ? "أضف الألوان من تبويب الألوان أولًا." : "Add colours on the Colour tab first."}
             </span>
           ) : (
             <div className="flex gap-ctl-row flex-wrap">

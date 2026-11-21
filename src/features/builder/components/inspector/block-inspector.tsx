@@ -51,7 +51,7 @@ export function BlockInspector({
           <span className="text-[11px] text-text-faint">
             {isAr
               ? "هذا عرض حي — لا يوجد محتوى لتعديله هنا. غيّر الشعار أو الألوان أو الخطوط أو الأيقونات من صفحاتها الخاصة وسيتحدث هذا القسم تلقائيًا."
-              : "This is a live view — there's no content to edit here. Change the logo, colors, typography, or icons from their own pages and this section updates automatically."}
+              : "This is a live view — there's no content to edit here. Change the logo, colours, typography, or icons from their own pages and this section updates automatically."}
           </span>
         </>
       )}

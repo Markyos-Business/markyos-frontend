@@ -48,6 +48,9 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
       key: "device",
       header: t("Device", "الجهاز"),
       sortable: false,
+      // Widths that fit the card: left to defaults, the row ran wider than it
+      // and pushed each session's Sign out off the edge.
+      width: 220,
       cell: (s) => (
         <div className="flex flex-wrap items-center gap-space-4">
           <Icon name={s.mobile ? "mobile" : "laptop"} size={18} className="text-text-muted" />
@@ -56,18 +59,21 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
         </div>
       ),
     },
-    { key: "ip", header: t("IP address", "عنوان IP"), sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell" },
+    { key: "ip", header: t("IP address", "عنوان IP"), sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell", width: 130 },
     {
       key: "lastSeen",
       header: t("Last active", "آخر نشاط"),
       sortable: false,
-      cell: (s) => <span className="text-text-muted">{s.current ? t("Now", "الآن") : formatRelative(Date.parse(s.lastSeenAt))}</span>,
+      width: 120,
+      // One wording for every row: this browser said "Now", the others "just now".
+      cell: (s) => <span className="text-text-muted">{formatRelative(s.current ? Date.now() : Date.parse(s.lastSeenAt))}</span>,
     },
     {
       key: "action",
       header: t("Sign out", "تسجيل الخروج"),
       hideHeader: true,
       sortable: false,
+      width: 110,
       className: "text-end",
       cell: (s) => (
         <Button variant="outline" size="xs" onClick={() => (s.current ? signOutHere() : sessions.signOut(s))}>
