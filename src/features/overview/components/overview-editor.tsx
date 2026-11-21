@@ -8,12 +8,14 @@ type OverviewEditorProps = {
   editorRef: RefObject<HTMLDivElement | null>;
   isAr: boolean;
   wordCount: number;
+  /** "Saved 10h ago": shown beside the word count, on the text it is about. */
+  savedLabel?: string;
   onInput: () => void;
   onTool: (action: ToolbarAction) => void;
 };
 
 /** The brand overview's rich-text editor and its toolbar. Block styles live in tailwind/base.js. */
-export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: OverviewEditorProps) {
+export function OverviewEditor({ editorRef, isAr, wordCount, savedLabel, onInput, onTool }: OverviewEditorProps) {
   return (
     <div className="mk-surface flex min-h-64 flex-1 flex-col overflow-hidden rounded-card bg-surface-1">
       <div className="flex shrink-0 items-center gap-ctl-row px-4 py-2.5 text-text-muted shadow-rule-b">
@@ -30,7 +32,10 @@ export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: 
             className="h-9 cursor-pointer p-1.5 hover:text-text"
           />
         ))}
-        <span dir="auto" className="ms-auto text-caption tabular-nums text-text-muted">{isAr ? `${wordCount} كلمة` : `${wordCount} words`}</span>
+        <span dir="auto" className="ms-auto text-caption tabular-nums text-text-muted">
+          {isAr ? `${wordCount} كلمة` : `${wordCount} words`}
+          {savedLabel && <span className="text-text-faint"> · {savedLabel}</span>}
+        </span>
       </div>
       <div
         ref={editorRef}

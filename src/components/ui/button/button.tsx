@@ -6,6 +6,7 @@ import { cloneElement, forwardRef, isValidElement, useEffect } from "react";
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import { Icon } from "../icon";
 import { Tooltip } from "../tooltip";
+import { useUiStrings } from "../ui-strings";
 
 /**
  * One variant per job. Primary: the page's main action. Outline: secondary
@@ -64,11 +65,22 @@ const variants: Record<ButtonVariant, string> = {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   variant = "outline", size = "md", icon, iconEnd, active, block, href, asChild,
-  loading, loadingText = "Saving", successText = "Saved", errorText = "Try again",
-  status = "idle", disabledReason, locked, lockedReason = "Ask for access", skeleton,
+  loading, loadingText: loadingTextProp, successText: successTextProp, errorText: errorTextProp,
+  status: statusProp, disabledReason, locked, lockedReason: lockedReasonProp, skeleton,
   disabled, children, className = "", type = "button", onClick, onClickCapture,
   "aria-label": ariaLabel, ...props
 }, ref) {
+  // In the interface's language unless the caller names them.
+  const { t: ui } = useUiStrings();
+  const loadingText = loadingTextProp ?? ui.saving;
+  const successText = successTextProp ?? ui.buttonSaved;
+  const errorText = errorTextProp ?? ui.buttonFailed;
+  const lockedReason = lockedReasonProp ?? ui.buttonLocked;
+  const status = statusProp ?? "idle";
+  // Only a button that can show a state reserves room for its longest state
+  // label, so the width doesn't jump when "Saving…" replaces "Save". One that
+  // never does was being sized for "Try again" too: a 4-letter "Pick" at 99px.
+  const showsStates = loading !== undefined || statusProp !== undefined;
   const busy = loading || status === "loading";
   const reason = locked ? lockedReason : disabledReason;
   const blocked = disabled || !!reason || busy || skeleton;
@@ -82,7 +94,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-[inherit] ${stateText ? "invisible" : ""}`} aria-hidden={!!stateText || undefined}>
       {locked ? <Icon name="lock" size={18} /> : icon}{original}{iconEnd}
     </span>
-    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-ctl-icon"><span className="w-[18px] shrink-0" />{text}</span>)}
+    {original && showsStates && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-ctl-icon"><span className="w-[18px] shrink-0" />{text}</span>)}
     </span>
     {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-ctl-icon">
       <Icon name={busy ? "clock" : status === "success" ? "check" : "exclamation-circle"} size={18} />{original && stateText}

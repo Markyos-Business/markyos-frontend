@@ -589,9 +589,11 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
 /** One labelled row of filter chips; scrolls sideways on a phone. */
 function FilterRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div role="group" aria-label={label} className="flex items-center gap-space-4">
-      <span className="w-14 shrink-0 text-caption text-text-muted">{label}</span>
-      <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto sm:flex-wrap sm:overflow-visible">{children}</div>
+    // Wraps at every width: a phone used to scroll each row sideways with
+    // nothing saying there was more ("Icon", "#mono…" cut at the edge).
+    <div role="group" aria-label={label} className="flex items-start gap-space-4">
+      <span className="flex h-ctl-sm w-14 shrink-0 items-center text-caption text-text-muted">{label}</span>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-ctl-row">{children}</div>
     </div>
   );
 }

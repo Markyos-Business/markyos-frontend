@@ -1,3 +1,4 @@
+import { formatRelative as appRelative } from "@/lib/utils";
 /** Every display format `AppDate` supports. */
 type DateFormat = "month" | "month-year" | "short" | "long" | "datetime" | "relative";
 
@@ -12,8 +13,14 @@ const parseDate = (value: string | Date | null | undefined): Date | null => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-/** "5 minutes ago", "yesterday", "in 3 weeks", in the given locale. */
+/**
+ * Past times in the app's one short style — "just now", "5m ago", "9h ago",
+ * "3d ago" (spec §7, and what brand cards and lists already say), so a
+ * notification doesn't read "19 seconds ago" beside a card's "9h ago".
+ * Future times ("in 3 weeks") keep the locale's own wording.
+ */
 const formatRelative = (date: Date, locale: string, now = Date.now()): string => {
+  if (date.getTime() <= now) return appRelative(date.getTime(), now, locale.startsWith("ar") ? "ar" : "en");
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const diff = date.getTime() - now;
   const abs = Math.abs(diff);

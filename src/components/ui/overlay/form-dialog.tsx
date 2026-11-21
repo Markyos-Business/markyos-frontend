@@ -32,7 +32,7 @@ export function FormDialog({ open, title, description, submitLabel, cancelLabel,
     finally { if (current === session.current) { pending.current = false; if (alive.current) setBusy(false); } }
   }
   return <Popup open={open} onOpenChange={next => { if (!next) onClose(); }} title={title} description={description} size="sm" variant={variant === "sheet" ? "sheet" : "center"} dir={isAr ? "rtl" : "ltr"} busy={busy}
-    footer={<><Button type="button" variant="outline" onClick={onClose} disabled={busy}>{cancelLabel ?? t.cancel}</Button><Button type="submit" form={formId} disabled={busy}>{busy ? t.saving : submitLabel}</Button></>}>
+    footer={<><Button type="button" variant="outline" onClick={onClose} disabled={busy}>{cancelLabel ?? t.cancel}</Button><Button type="submit" variant="primary" form={formId} disabled={busy}>{busy ? t.saving : submitLabel}</Button></>}>
     <form id={formId} noValidate onSubmit={submit} className="flex min-w-0 flex-col gap-space-5"><AlertBanner message={error} />{children}</form>
   </Popup>;
 }
