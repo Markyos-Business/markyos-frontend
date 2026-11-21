@@ -14,7 +14,11 @@
 .mk-family-button::after { transition: opacity 120ms; }
 .mk-family-button:focus-visible, .mk-family-button[data-state="focus"] { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .mk-family-button[data-state="hover"]::after, .mk-family-button[data-state="pressed"]::after { opacity: 1; }
-.mk-family-button[aria-disabled="true"]:not([data-status="loading"]), .mk-family-button:disabled { background: var(--surface-2); color: var(--text-muted); box-shadow: none; }
+/* Disabled reads as disabled: the disabled ink (it was the resting muted ink, so a
+   disabled arrow looked live), and a text-only link button keeps no fill (it
+   grew a grey box). */
+.mk-family-button[aria-disabled="true"]:not([data-status="loading"]), .mk-family-button:disabled { background: var(--surface-2); color: var(--text-disabled); box-shadow: none; }
+.mk-family-button[data-variant="link"][aria-disabled="true"]:not([data-status="loading"]), .mk-family-button[data-variant="link"]:disabled { background: transparent; }
 .mk-family-button[data-skeleton="true"] > * { visibility: hidden; }
 .mk-button-group > :not(:first-child), .mk-button-group > :not(:first-child) > .mk-family-button { border-start-start-radius: 0; border-end-start-radius: 0; }
 .mk-button-group > :not(:last-child), .mk-button-group > :not(:last-child) > .mk-family-button { border-start-end-radius: 0; border-end-end-radius: 0; }

@@ -111,6 +111,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     data-status={busy ? "loading" : status} data-skeleton={skeleton || undefined}
     data-active={active || undefined}
     data-size={size}
+    data-variant={variant}
     className={`mk-btn mk-family-button relative inline-flex shrink-0 items-center justify-center rounded-control font-medium leading-none whitespace-nowrap ${sizes[size]} ${variants[variant]} ${active ? "is-active" : ""} ${block ? "w-full" : ""} ${blocked ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
     onClickCapture={(event) => {
       if (blocked) { event.preventDefault(); event.stopPropagation(); return; }
