@@ -1364,6 +1364,13 @@ export const baseStyles = [
     ".mk-field-row > :not(:has(.mk-field))": {
       "margin-top": "calc(1.25rem + var(--field-label-gap))",
     },
+    // A phone has no room for a field and two buttons on one line (the input
+    // shrank to ~100px): the field takes the row and its actions sit under it.
+    "@media (max-width: 639px)": {
+      ".mk-field-row": { "flex-wrap": "wrap" },
+      ".mk-field-row > :has(.mk-field)": { "flex": "1 1 100%", "min-width": "0" },
+      ".mk-field-row > :not(:has(.mk-field))": { "margin-top": "0" },
+    },
   },
   {
     // Gallery-only (/dev/controls): a field drawn in its hover or focus state

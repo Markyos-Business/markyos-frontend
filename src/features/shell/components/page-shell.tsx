@@ -26,7 +26,10 @@ type PageShellProps = {
 export function PageShell({ workspace, section, arSection, right, tabs, tabsRight, width = "default", offline, topBar = true, children }: PageShellProps) {
   const ids = useTabIds();
   const active = tabs?.find(tab => tab.active)?.key ?? tabs?.[0]?.key;
-  const content = width === "full" ? children : <PageContainer width={width} offline={offline}>{children}</PageContainer>;
+  // Room under the top bar, so a contained page's title sits where a full-width
+  // page's does (Analysis and Discovery sat 25px higher than Overview). A tab
+  // bar already gives that room.
+  const content = width === "full" ? children : <PageContainer width={width} offline={offline} spaced={!tabs}>{children}</PageContainer>;
   return (
     <>
       {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} tabsId={ids.id} panelId={ids.panelId} />}

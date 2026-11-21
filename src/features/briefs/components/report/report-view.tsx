@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Badge } from "@/components/ui";
 import { SECTION_META } from "../../constants";
 import type { BriefAnalysis, Citation, Section } from "../../types";
@@ -24,6 +24,22 @@ type ReportViewProps = {
 
 /** The 10-part report: a sticky nav of the sections, and the sections as cards. */
 export function ReportView({ analysis, slug, canEdit, isAr, onSection, header, sectionActions, sectionBody, itemAction, onRerun }: ReportViewProps) {
+  // On a phone the section nav is one scrolling row; fade its far edge while
+  // there is more to scroll to, like the kit's tab rows (tabs-list.tsx).
+  const navRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const mark = () => {
+      const more = nav.scrollWidth - nav.clientWidth - Math.abs(nav.scrollLeft) > 1;
+      nav.dataset.overflow = more ? "1" : "";
+    };
+    mark();
+    const observer = new ResizeObserver(mark);
+    observer.observe(nav);
+    nav.addEventListener("scroll", mark, { passive: true });
+    return () => { observer.disconnect(); nav.removeEventListener("scroll", mark); };
+  }, []);
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const lang = isAr ? "ar" : "en";
   const [citation, setCitation] = useState<Citation | null>(null);
@@ -59,7 +75,7 @@ export function ReportView({ analysis, slug, canEdit, isAr, onSection, header, s
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[240px_minmax(0,1fr)]">
           {/* A strip that scrolls sideways under lg, so on a phone the first
               screen shows the analysis rather than ten rows of navigation. */}
-          <nav aria-label={t("Sections", "الأقسام")} className="mk-surface flex gap-space-1 overflow-x-auto rounded-card bg-surface-1 p-space-3 lg:sticky lg:top-0 lg:flex-col lg:overflow-visible">
+          <nav ref={navRef} aria-label={t("Sections", "الأقسام")} className="mk-surface flex gap-space-1 overflow-x-auto rounded-card bg-surface-1 p-space-3 data-[overflow=1]:ltr:[mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)] data-[overflow=1]:rtl:[mask-image:linear-gradient(to_left,black_calc(100%-32px),transparent)] lg:sticky lg:top-0 lg:flex-col lg:overflow-visible lg:data-[overflow=1]:[mask-image:none]">
             {analysis.sections.map((section) => {
               const tag = sectionTag(section, isAr);
               return (
