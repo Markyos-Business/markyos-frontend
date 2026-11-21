@@ -42,6 +42,7 @@ export * from "./filter/filter-chip";
 export * from "./filter/sort-control";
 export * from "./icon";
 export * from "./kbd";
+export * from "./skip-link";
 export * from "./key-value-list";
 export * from "./lang-toggle";
 export * from "./listbox";

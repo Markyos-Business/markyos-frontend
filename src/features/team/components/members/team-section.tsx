@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, EmptyHint, Icon, Row, Section } from "@/components/ui";
+import { Button, EmptyHint, Icon, Section } from "@/components/ui";
 import type { TeamPageView } from "../../hooks/use-team-page";
 import { InviteMemberForm } from "./invite-member-form";
-import { MemberControls } from "./member-controls";
+import { TeamTable } from "./team-table";
 
 /** The brand's people and their roles, with the invite form. */
 export function TeamSection({ ws, isAr, canGovern, editorsFull, editorsFullNote }: TeamPageView) {
@@ -25,16 +25,7 @@ export function TeamSection({ ws, isAr, canGovern, editorsFull, editorsFullNote 
       {ws.team.length === 0 ? (
         <EmptyHint>{canGovern ? t("Just you so far. Invite editors to collaborate or reviewers to read and leave feedback.", "أنت وحدك حتى الآن. ادعُ محرّرين للعمل معك أو مراجعين للقراءة وإبداء الملاحظات.") : t("No team members yet.", "لا يوجد أعضاء في الفريق بعد.")}</EmptyHint>
       ) : (
-        <div className="flex flex-col gap-2">
-          {ws.team.map((m) => (
-            <Row
-              key={m.id}
-              label={m.name}
-              hint={m.email}
-              right={<MemberControls ws={ws} member={m} isAr={isAr} canGovern={canGovern} editorsFull={editorsFull} />}
-            />
-          ))}
-        </div>
+        <TeamTable ws={ws} isAr={isAr} canGovern={canGovern} editorsFull={editorsFull} />
       )}
     </Section>
   );

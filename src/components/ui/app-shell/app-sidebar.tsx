@@ -1,5 +1,6 @@
 "use client";
 
+import { revealInScroller } from "@/lib/scroll";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge, Icon } from "@/components/ui";
@@ -127,7 +128,7 @@ export function AppSidebar({
   const listRef = useRef<HTMLDivElement>(null);
   const activeKey = [...sections.flatMap((s) => s.items), ...footer].find((item) => item.active)?.key;
   useEffect(() => {
-    listRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: "nearest" });
+    revealInScroller(listRef.current, listRef.current?.querySelector<HTMLElement>('[aria-current="page"]'));
   }, [activeKey]);
 
   /**

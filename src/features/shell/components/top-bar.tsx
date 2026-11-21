@@ -1,5 +1,6 @@
 "use client";
 
+import { revealInScroller } from "@/lib/scroll";
 import { Breadcrumb, TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { NotificationBell } from "@/features/notifications";
@@ -28,7 +29,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
   const { row, tabProps } = useTabNavigation({ tabs: tabs ?? [], active, onChange: key => tabs?.find(tab => tab.key === key)?.onSelect() });
   // Below lg the tabs are one scrolling row; keep the open one in sight (a deep link to the tenth tab).
   useEffect(() => {
-    row.current?.querySelector<HTMLElement>(`[data-tab-key="${CSS.escape(active)}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    revealInScroller(row.current, row.current?.querySelector<HTMLElement>(`[data-tab-key="${CSS.escape(active)}"]`));
   }, [active, row]);
   return (
     // One banner for the breadcrumb, the page actions and the section tabs, so
