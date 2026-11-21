@@ -53,6 +53,15 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 12 (21 Nov 2026): Overview, and the console sweep
+
+- Overview: Brand details now ends with the brand at a glance (Assets, Drafts, People), each a link to its page. The setup card lists only the steps left, with the finished ones in one line, so a nearly set-up brand no longer has a column of ticks twice the height of the card beside it. "Start with a template" shows only before any step is done.
+- Overview editor: it followed the interface language, so an English overview in an Arabic interface ran right-to-left at the far edge. It now reads in the brand's own language, on its own side.
+- Console sweep in dev mode, 29 routes as studio and editor: no React errors. The one warning on every page was ours: the AppContext check flagged `uiLang`, which changes on purpose when the language preference loads. The check now names the action and skips that one. The brand font (Bricolage, ~180 KB) was preloaded on every page and used on none of the studio pages; it now loads only where a template uses it.
+- Not ours: the "unique key" warning in `OuterLayoutRouter` on Overview appears only under Turbopack's dev server (`next dev`), not with webpack or in a production build. It comes from Next's own segment markup.
+
+All 769 unit tests and the 30 e2e tests pass.
+
 ## Round 11 (21 Nov 2026): keyboard, dialogs, long names, and the team table
 
 A keyboard walk through 21 screens, a focus check on every dialog that opens from a page button, and a stress test with long English and Arabic brand and person names at 1440 and 390px.
