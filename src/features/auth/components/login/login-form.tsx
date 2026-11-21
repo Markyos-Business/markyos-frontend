@@ -37,9 +37,9 @@ export function LoginForm() {
         </>
       }
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-field-stack">
         <SocialSignIn google={google} />
-        <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
+        <form onSubmit={form.submit} className="flex flex-col gap-field-stack" noValidate>
           <AlertBanner message={form.errors.form} />
 
           <InputField

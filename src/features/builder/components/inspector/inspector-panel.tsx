@@ -1,4 +1,4 @@
-import { Icon } from "@/components/ui";
+import { IconButton } from "@/components/ui";
 import { resolveOptions } from "@/features/guideline-site";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { BlockInspector } from "./block-inspector";
@@ -10,17 +10,9 @@ export function InspectorPanel(b: BuilderPageState) {
   const hide = isAr ? "إخفاء لوحة التصميم" : "Hide the design panel";
   return (
     <div className="animate-fade-in flex w-[300px] shrink-0 flex-col gap-5 overflow-y-auto p-4 shadow-[inset_1px_0_0_var(--hairline)]">
-      <div className="-mb-1 flex shrink-0 items-center justify-between gap-2">
+      <div className="-mb-1 flex shrink-0 items-center justify-between gap-ctl-row">
         <span className="text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase">{isAr ? "التصميم" : "Design"}</span>
-        <button
-          type="button"
-          onClick={() => b.setRightOpen(false)}
-          aria-label={hide}
-          title={hide}
-          className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-text-faint"
-        >
-          <Icon name="angle-double-right" size={12} />
-        </button>
+        <IconButton icon="angle-double-right" iconSize={16} size="xs" label={hide} title={hide} onClick={() => b.setRightOpen(false)} className="text-text-faint" />
       </div>
 
       {selected ? (

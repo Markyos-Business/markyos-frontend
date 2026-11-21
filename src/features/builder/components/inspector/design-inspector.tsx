@@ -283,7 +283,7 @@ export function DesignInspector({
       <Group label={isAr ? "الحجم" : "Size"}>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+            <span className="flex items-center gap-ctl-row text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
               {isAr ? "المقياس" : "Scale"}
               <OverrideDot isAr={isAr} {...overrideProps("scale")} />
             </span>
@@ -361,7 +361,7 @@ export function DesignInspector({
 
       {active === "layout" && (
       <Group label={isAr ? "الظهور" : "Visibility"}>
-        <label className="flex items-center gap-2.5 cursor-pointer">
+        <label className="flex items-center gap-ctl-icon cursor-pointer">
           <input
             type="checkbox"
             checked={resolved.hidden === true}
@@ -564,7 +564,7 @@ function OptionsPanel({
                 <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
                   {isAr ? "صيغ القيم" : "Value formats"}
                 </span>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-ctl-row">
                   {COLOR_FORMATS.map((f) => {
                     const picked = on.includes(f);
                     return (
@@ -657,7 +657,7 @@ function OptionsPanel({
           case "sampleTextAr": {
             const ar = key === "sampleTextAr";
             return (
-              <label key={key} className="flex flex-col gap-1.5">
+              <label key={key} className="flex flex-col gap-field-stack-compact">
                 <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
                   {ar ? (isAr ? "نص العيّنة (عربي)" : "Sample sentence (Arabic)") : isAr ? "نص العيّنة" : "Sample sentence"}
                 </span>
@@ -688,7 +688,7 @@ function OptionsPanel({
             if (!label) return null;
             const checked = options[key] !== false;
             return (
-              <label key={key} className="flex items-center gap-2.5 cursor-pointer">
+              <label key={key} className="flex items-center gap-ctl-icon cursor-pointer">
                 <input
                   type="checkbox"
                   checked={checked}
@@ -799,11 +799,11 @@ function Choice<T extends string | number>({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+      <span className="flex items-center gap-ctl-row text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
         {label}
         <OverrideDot scopes={scopes} activeScope={activeScope} onReset={onReset} isAr={isAr} />
       </span>
-      <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "var(--surface-1)" }}>
+      <div className="flex rounded-full p-0.5 gap-ctl-row" style={{ background: "var(--surface-1)" }}>
         <button
           type="button"
           onClick={() => onChange(undefined)}
@@ -859,7 +859,7 @@ function PaletteColor({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>{label}</span>
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center gap-ctl-row flex-wrap">
         <button
           type="button"
           onClick={() => onChange(undefined)}

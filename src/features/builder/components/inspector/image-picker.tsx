@@ -291,7 +291,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-field-stack-compact">
       <input
         dir="ltr"
         value={url}
@@ -416,7 +416,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
       </div>
 
       {needsKey ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-field-stack-compact">
           <span className="text-[11px] leading-[1.6]" style={{ color: "var(--text-faint)" }}>
             {isAr
               ? "يحتاج بحث Unsplash إلى مفتاح وصول مجاني خاص بك. أنشئه من unsplash.com/developers والصقه هنا — يُحفظ في هذا المتصفح فقط."

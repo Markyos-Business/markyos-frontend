@@ -42,7 +42,7 @@ export function PreviewPanel({ preview, error, kind, language, participants, onK
         <EmptyHint>{t("Paste notes or a transcript, and how it will be read shows here.", "الصق الملاحظات أو النص المفرّغ، وستظهر هنا طريقة قراءته.")}</EmptyHint>
       ) : (
         <>
-          <div className="flex flex-col gap-space-4">
+          <div className="flex flex-col gap-field-stack-compact">
             <SelectField
               label={t("Kind", "النوع")}
               value={kind ?? preview.kind}
@@ -73,8 +73,8 @@ export function PreviewPanel({ preview, error, kind, language, participants, onK
                   {preview.speakers.map((s) => {
                     const mapped = participants.find((p) => p.label === s.label);
                     return (
-                      <li key={s.label} className="flex flex-col gap-space-2">
-                        <span className="flex items-center gap-space-3 text-caption text-text-muted">
+                      <li key={s.label} className="flex flex-col gap-field-stack-compact">
+                        <span className="flex items-center gap-ctl-row text-caption text-text-muted">
                           <span className="bidi-plain font-medium text-text-secondary">
                             {s.label}
                           </span>

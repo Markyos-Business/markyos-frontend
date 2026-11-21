@@ -36,7 +36,7 @@ export function RunPanel({ overview, isAr, running, onRun }: RunPanelProps) {
         </p>
       </div>
       {sources.warnings.length > 0 && (
-        <ul className="flex max-w-120 flex-col gap-space-2 rounded-lg bg-warning-soft px-space-6 py-space-4 text-start text-body text-warning">
+        <ul className="flex max-w-120 flex-col gap-field-stack-compact rounded-lg bg-warning-soft px-space-6 py-space-4 text-start text-body text-warning">
           {sources.warnings.map((w) => (
             <li key={w}>{WARNING_META[w][isAr ? "ar" : "en"]}</li>
           ))}
@@ -46,7 +46,7 @@ export function RunPanel({ overview, isAr, running, onRun }: RunPanelProps) {
         <p className="text-caption text-text-muted">{t("The analysis isn't available right now. Try again later.", "التحليل غير متاح الآن. حاول مرة أخرى لاحقًا.")}</p>
       ) : (
         overview.canEdit && (
-          <div className="flex flex-wrap items-end justify-center gap-space-4">
+          <div className="mk-field-row flex-wrap justify-center">
             <div className="w-44 text-start">
               <SelectField
                 label={t("Write it in", "اكتبه بـ")}

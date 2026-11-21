@@ -38,7 +38,7 @@ export function BlockInspector({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-field-stack">
       <span className="text-[11px] font-medium tracking-[.08em] text-text-faint uppercase">
         {isAr ? "إعدادات العنصر" : "Block settings"}
       </span>
@@ -182,9 +182,9 @@ export function BlockInspector({
 
       {block.kind === "socialLinks" && (
         <>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-field-stack-compact">
             {links.map((l) => (
-              <div key={l.id} className="flex items-center gap-1.5">
+              <div key={l.id} className="flex items-center gap-ctl-row">
                 <InputField
                   size="sm"
                   value={l.platform}
@@ -201,6 +201,7 @@ export function BlockInspector({
                   className="min-w-0 flex-1"
                 />
                 <IconButton
+                  size="sm"
                   icon="times"
                   label={isAr ? "أزل الرابط" : "Remove link"}
                   onClick={() => onChange({ socialLinks: links.filter((x) => x.id !== l.id) })}

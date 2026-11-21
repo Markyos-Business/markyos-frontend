@@ -55,8 +55,8 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
 
   return (
     <Section title={t("Subdomain", "النطاق الفرعي")} icon="link">
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-end gap-2.5">
+      <div className="flex flex-col gap-field-stack-compact">
+        <div className="mk-field-row">
           <InputField
             label={t("Subdomain", "النطاق الفرعي")}
             value={draft}

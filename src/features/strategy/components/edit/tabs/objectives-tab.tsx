@@ -46,13 +46,13 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       }
     >
       {adding && (
-        <form onSubmit={submit} className="flex flex-col gap-space-4 rounded-widget bg-surface-2 p-space-6">
+        <form onSubmit={submit} className="flex flex-col gap-field-stack-compact rounded-widget bg-surface-2 p-space-6">
           <MiniInput
             value={text}
             onChange={setText}
             placeholder={isAr ? "الهدف — مثلًا: ضاعف المبيعات عبر الإنترنت في الرياض" : "Objective — e.g. Double online sales in Riyadh"}
           />
-          <div className="flex flex-wrap gap-space-4">
+          <div className="flex flex-wrap gap-ctl-row">
             <SelectInput aria-label={isAr ? "النوع" : "Kind"} value={kind} onChange={(value) => setKind(value as ObjectiveKind)} options={kindOptions} />
             <SelectInput
               aria-label={isAr ? "الأولوية" : "Priority"}

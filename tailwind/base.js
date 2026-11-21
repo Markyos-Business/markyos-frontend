@@ -1349,6 +1349,21 @@ export const baseStyles = [
   {
     // Read-only and locked: the value is shown, not offered. A dashed rule
     // and muted ink say "you can't change this" before anyone tries.
+    // A labelled field with its actions beside it (Copy, Generate, Connect).
+    // A labelled field reserves room for its note below, so aligning to the
+    // row's bottom put the buttons under the input; instead the row aligns
+    // to the top and each action drops by the label's height, landing level
+    // with the input whether or not a hint or an error shows.
+    ".mk-field-row": {
+      "display": "flex",
+      "align-items": "flex-start",
+      "gap": "var(--control-row-gap)",
+    },
+    ".mk-field-row > :not(:has(.mk-field))": {
+      "margin-top": "calc(1.25rem + var(--field-label-gap))",
+    },
+  },
+  {
     // A filter that is narrowing the list says so with the accent: its tint
     // and an accent underline, the field shape otherwise unchanged.
     "[data-filter-control][data-active] .mk-field": {

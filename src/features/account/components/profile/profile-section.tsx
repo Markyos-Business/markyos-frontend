@@ -19,7 +19,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
   const { t } = useAccountLang();
   return (
     <Section title={t("Profile", "الملف الشخصي")} icon="user">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-ctl-row">
         <Avatar initials={initialsFor(account.name || account.email)} src={account.avatarUrl} size={56} tone="accent" />
         <div className="min-w-0 flex-1">
           <div dir="auto" className="bidi-auto text-h5 font-medium truncate">{account.name}</div>
@@ -27,7 +27,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
         </div>
         {/* A photo needs somewhere to keep it: the server. */}
         {API_ENABLED && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-ctl-row">
             <input
               ref={fileInput}
               type="file"
@@ -45,7 +45,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
               {account.avatarUrl ? t("Change photo", "تغيير الصورة") : t("Upload photo", "رفع صورة")}
             </Button>
             {account.avatarUrl && (
-              <Button variant="link" onClick={avatar.remove} disabled={avatar.busy}>
+              <Button variant="link" size="sm" onClick={avatar.remove} disabled={avatar.busy}>
                 {t("Remove", "إزالة")}
               </Button>
             )}
@@ -88,7 +88,7 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
       </div>
 
       {details.pendingEmail && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-widget bg-surface-sunken px-space-6 py-space-4 shadow-edge-soft">
+        <div className="flex flex-wrap items-center justify-between gap-ctl-row rounded-widget bg-surface-sunken px-space-6 py-space-4 shadow-edge-soft">
           <p className="text-caption text-text-muted">
             {t("Waiting for confirmation:", "بانتظار التأكيد:")}{" "}
             <span dir="ltr" className="font-medium text-text">
@@ -96,11 +96,11 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
             </span>
             . {t("Until then you sign in with", "حتى ذلك الحين تسجّل الدخول بـ")} <span dir="ltr">{account.email}</span>.
           </p>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-ctl-row">
             <Button type="button" variant="outline" size="sm" onClick={details.resendPending}>
               {t("Resend", "إعادة الإرسال")}
             </Button>
-            <Button type="button" variant="link" onClick={details.cancelPending}>
+            <Button type="button" variant="link" size="sm" onClick={details.cancelPending}>
               {t("Cancel", "إلغاء")}
             </Button>
           </div>

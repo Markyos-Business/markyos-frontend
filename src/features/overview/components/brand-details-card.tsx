@@ -34,8 +34,8 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
 
   return (
     <DashboardCard title={isAr ? "تفاصيل العلامة" : "Brand details"}>
-      <div className="flex flex-col gap-space-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-field-stack-compact">
+      <div className="flex items-center justify-between gap-ctl-row">
         <BrandNameField ws={ws} isAr={isAr} />
         <div className="flex items-center gap-2">
           {/* Plated: this snapshot is app chrome, and a coloured symbol beside a

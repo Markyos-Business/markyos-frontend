@@ -2,7 +2,7 @@
 
 import { MoodImage } from "./mood-image";
 import { useState } from "react";
-import { ColorPopover, FilterSelectField } from "@/components/ui";
+import { ColorPopover, FilterSelectField, Button } from "@/components/ui";
 import { Icon } from "@/components/ui";
 import { contrastRatio } from "@/lib/contrast";
 import type { Asset, MoodboardItem } from "@/types";
@@ -389,8 +389,7 @@ function Footer({
         <Icon name="grip-vertical" size={11} />
       </span>
 
-      <button
-        type="button"
+      <Button
         onClick={onVote}
         aria-pressed={mine}
         aria-label={
@@ -399,15 +398,13 @@ function Footer({
             : isAr ? `اختر ${label}` : `Pick ${label}`
         }
         title={count > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-        className="mk-tap h-6 px-2 rounded-md text-[11px] font-semibold cursor-pointer flex items-center gap-1 shrink-0"
-        style={{
-          background: mine ? "var(--accent-soft)" : "transparent",
-          color: mine ? "var(--accent-on-soft)" : "var(--text-faint)",
-        }}
+        variant={mine ? "ghost" : "link"}
+        size="xs"
+        className={mine ? "" : "text-text-faint"}
+        icon={<Icon name="check" size={16} />}
       >
-        <Icon name="check" size={10} />
         {count > 0 ? count : isAr ? "اختر" : "Pick"}
-      </button>
+      </Button>
 
       <span className="ms-auto flex items-center shrink-0">
         <FilterSelectField

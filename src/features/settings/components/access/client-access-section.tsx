@@ -21,7 +21,7 @@ export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; c
         right={<Switch label={t("Password-protect this guideline", "حماية الدليل بكلمة مرور")} checked={passwordEnabled} onToggle={() => toggleClientPassword(ws.id, !passwordEnabled)} />}
       />
       {passwordEnabled && (
-        <div className="flex items-end gap-2.5">
+        <div className="mk-field-row">
           <InputField label={t("Password", "كلمة المرور")} value={password} onChange={(e) => setClientPassword(ws.id, e.target.value)} placeholder={t("Set a password", "عيّن كلمة مرور")} />
           {/* Shown in the clear on purpose — the studio reads it out to a
               client — so it gets a Copy, like the client link below. */}

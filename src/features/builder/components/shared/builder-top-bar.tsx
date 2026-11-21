@@ -61,20 +61,20 @@ export function BuilderTopBar(b: BuilderPageState) {
 
       {!narrow && <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />}
 
-      <div className="flex min-w-0 shrink-0 items-center justify-end gap-space-3">
+      <div className="flex min-w-0 shrink-0 items-center justify-end gap-ctl-row">
         <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={phone} upToDate={upToDate} />
         {!narrow && <span className="flex items-center rounded-lg shadow-edge">
           <Link
             href={`${previewHref}?preview=1`}
             target="_blank"
             title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
-            className="flex h-8 items-center gap-space-2 px-space-4 text-caption font-medium text-text"
+            className="flex h-8 items-center gap-ctl-icon px-space-4 text-caption font-medium text-text"
           >
             {isAr ? "عرض" : "View"}
             <Icon name="external-link-alt" size={16} className="text-text-muted" />
           </Link>
           <span aria-hidden className="h-5 w-px bg-hairline-strong" />
-          <IconButton icon="copy" label={isAr ? "نسخ رابط الدليل" : "Copy the guideline link"} onClick={() => void copyLink()} disabled={!live} className="size-8" />
+          <IconButton size="sm" icon="copy" label={isAr ? "نسخ رابط الدليل" : "Copy the guideline link"} onClick={() => void copyLink()} disabled={!live} className="size-8" />
         </span>}
         {(live || narrow) && (
           <ActionsDropdown

@@ -28,19 +28,21 @@ type ActionsDropdownProps = {
   align?: "start" | "end";
   /** Just the ⋯ glyph, square, with `label` as its accessible name: a table row's menu. Default false. */
   iconOnly?: boolean;
+  /** The trigger's control size, to match the buttons beside it. Default md. */
+  size?: "sm" | "md";
   /** The phone action sheet's heading, e.g. "Nour Haddad actions". Defaults to `label`. */
   title?: string;
 };
 
 /** What opens the menu: the ⋯ square for a row, or a labelled outline button. */
-const TriggerLook = ({ label, iconOnly }: { label: string; iconOnly: boolean }) =>
+const TriggerLook = ({ label, iconOnly, size = "md" }: { label: string; iconOnly: boolean; size?: "sm" | "md" }) =>
   iconOnly ? (
-    <span className="flex size-ctl-md items-center justify-center rounded-control text-text-muted hover:bg-ink-soft hover:text-text">
+    <span className={`flex ${size === "sm" ? "size-ctl-sm" : "size-ctl-md"} items-center justify-center rounded-control text-text-muted hover:bg-ink-soft hover:text-text`}>
       <Icon name="ellipsis-h" size={18} />
     </span>
   ) : (
-    // The outline button's look, at the compact control height.
-    <span className="flex h-ctl-md items-center gap-space-3 rounded-control bg-ink-soft px-ctl-px-md text-body font-medium text-text shadow-edge">
+    // The outline button's look, at the control height of its size.
+    <span className={`flex items-center gap-ctl-icon rounded-control bg-ink-soft font-medium text-text shadow-edge ${size === "sm" ? "h-ctl-sm px-ctl-px-sm text-caption" : "h-ctl-md px-ctl-px-md text-body"}`}>
       {label}
       <Icon name="ellipsis-h" size={18} />
     </span>
@@ -54,7 +56,7 @@ const TriggerLook = ({ label, iconOnly }: { label: string; iconOnly: boolean }) 
  * Escape, returns focus to the trigger, and hangs off the same edge of it on
  * either side of the page.
  */
-const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = false, title }: ActionsDropdownProps) => {
+const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = false, size = "md", title }: ActionsDropdownProps) => {
   const phone = usePhoneViewport();
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -70,7 +72,7 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = f
           onClick={() => setSheetOpen(true)}
           className="flex cursor-pointer items-center"
         >
-          <TriggerLook label={label} iconOnly={iconOnly} />
+          <TriggerLook label={label} iconOnly={iconOnly} size={size} />
         </button>
         <ActionSheet open={sheetOpen} title={title ?? label} items={items} onClose={() => setSheetOpen(false)} />
       </>
@@ -78,7 +80,7 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = f
   }
 
   return (
-    <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} />}>
+    <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} size={size} />}>
       {(close) => (
         <div role="menu" aria-label={label} className="flex flex-col p-space-2">
           {items.map((item) => (

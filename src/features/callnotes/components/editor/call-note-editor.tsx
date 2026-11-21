@@ -134,7 +134,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
           "الصق ملاحظاتك أو النص المفرّغ. تُحفظ بجانب إجابات الاستبيان، ويقرأ التحليل كليهما."
         )}
         actions={
-          <div className="flex items-center gap-space-4">
+          <div className="flex items-center gap-ctl-row">
             {(savedAt || saving || error) && (
               <SaveStatus saving={saving} savedAt={savedAt} error={error} isAr={isAr} />
             )}
@@ -163,7 +163,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
       )}
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="flex min-w-0 flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-field-stack">
           <Card title={t("The call", "المكالمة")}>
             <InputField
               label={t("Title", "العنوان")}

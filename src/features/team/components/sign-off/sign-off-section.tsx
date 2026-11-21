@@ -59,7 +59,7 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
             <div key={p.id} className="flex items-start gap-3 rounded-card bg-surface-2 p-3.5 shadow-edge">
               <Icon name={p.resolved ? "check-circle" : "map-marker"} size={14} className={`mt-0.5 shrink-0 ${p.resolved ? "text-success" : "text-warning"}`} />
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-ctl-row">
                   <span dir="auto" className="bidi-auto text-[13px] font-semibold">
                     {p.authorName}
                   </span>

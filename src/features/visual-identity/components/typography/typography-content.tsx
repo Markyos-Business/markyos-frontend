@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, PageHeader } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/features/guideline-site";
 import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "../../utils/font-file";
@@ -402,7 +402,7 @@ function FontFilePicker({
   }
 
   return (
-    <div className="flex gap-1.5 flex-wrap items-center">
+    <div className="flex gap-ctl-row flex-wrap items-center">
       {[...families.entries()].map(([key, files]) => {
         const sorted = [...files].sort((a, b) => (a.font?.weight ?? 400) - (b.font?.weight ?? 400));
         const applyTarget = sorted.find((f) => f.font?.weight === 400) ?? sorted[0];
@@ -471,7 +471,7 @@ function FontSources({
 
   return (
     <div
-      className="flex flex-col gap-2.5 rounded-card transition-colors"
+      className="flex flex-col gap-field-stack-compact rounded-card transition-colors"
       onDragOver={(e) => {
         e.preventDefault();
         if (!dragOver) setDragOver(true);
@@ -496,7 +496,7 @@ function FontSources({
           e.target.value = "";
         }}
       />
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-ctl-row flex-wrap">
         <button
           type="button"
           disabled={busy}
@@ -562,8 +562,8 @@ function GoogleFontImport({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-1.5">
+    <div className="flex flex-col gap-field-stack-compact">
+      <div className="flex items-center gap-ctl-row">
         <input
           dir="ltr"
           autoFocus
@@ -577,15 +577,14 @@ function GoogleFontImport({
           placeholder={script === "arabic" ? "Cairo" : "Inter"}
           className="mk-field mk-field-sm flex-1 min-w-0"
         />
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="sm"
           disabled={busy || !value.trim()}
           onClick={() => onImport(value.trim())}
-          className="h-8 px-3 rounded-md text-[11.5px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-          style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
         >
           {busy ? (isAr ? "جارٍ الاستيراد…" : "Importing…") : isAr ? "استيراد" : "Import"}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -596,7 +595,7 @@ function GoogleFontImport({
           <Icon name="times" size={12} />
         </button>
       </div>
-      <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-ctl-row flex-wrap">
         {SUGGESTED_FONTS[script].map((family) => (
           <button
             key={family}
@@ -650,8 +649,7 @@ function FamilyName({
         onKeyDown={(e) => {
           if (e.key === "Enter") onCommit();
         }}
-        className="font-semibold text-[13px] outline-none rounded-md px-2 py-1 -mx-2 -my-1"
-        style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--accent-edge)", color: "var(--text)" }}
+        className="mk-field mk-field-sm font-medium"
       />
     );
   }

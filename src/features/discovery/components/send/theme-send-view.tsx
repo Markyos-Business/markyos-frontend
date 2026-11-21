@@ -92,7 +92,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
       <PageHeader
         title={form.name}
         description={<>
-          <div className="flex flex-wrap items-center gap-space-4">
+          <div className="flex flex-wrap items-center gap-ctl-row">
             <Badge tone={status.tone} dot>
               {status[isAr ? "ar" : "en"]}
             </Badge>
@@ -114,9 +114,9 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
       <AlertBanner message={editor.error} />
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-field-stack">
           <Section title={t("Theme", "التصميم")} icon="palette">
-            <div className="flex flex-col gap-space-3">
+            <div className="flex flex-col gap-field-stack-compact">
               <span className="text-caption text-text-muted">{t("Logo", "الشعار")}</span>
               <SelectInput
                 aria-label={t("Logo", "الشعار")}
@@ -128,7 +128,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
 
             <div className="flex flex-col gap-space-3">
               <span className="text-caption text-text-muted">{t("Accent colour", "لون التمييز")}</span>
-              <div className="flex flex-wrap items-center gap-space-3">
+              <div className="flex flex-wrap items-center gap-ctl-row">
                 {swatches.slice(0, 8).map((s) => (
                   <button
                     key={s.hex}
@@ -218,7 +218,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             {link ? (
               <div className="flex flex-col gap-space-3">
                 <span className="text-caption text-text-muted">{t("Client link", "رابط العميل")}</span>
-                <div className="flex flex-wrap items-center gap-space-3">
+                <div className="flex flex-wrap items-center gap-ctl-row">
                   <code dir="ltr" className="min-w-0 flex-1 truncate rounded-md bg-surface-2 px-space-4 py-space-3 text-caption text-text-secondary">
                     {link}
                   </code>
@@ -230,7 +230,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                     failedMessage={t("Couldn't copy. Select the link and copy it.", "تعذّر النسخ. حدّد الرابط وانسخه.")}
                   />
                 </div>
-                <div className="flex flex-wrap gap-space-4">
+                <div className="flex flex-wrap gap-ctl-row">
                   <Button variant="link" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
                     {t("New link", "رابط جديد")}
                   </Button>
@@ -256,7 +256,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             )}
 
             <div className="grid grid-cols-1 gap-space-6 sm:grid-cols-2">
-              <label className="flex flex-col gap-space-2">
+              <label className="flex flex-col gap-field-stack-compact">
                 <span className="text-caption text-text-muted">{t("Link closes", "يُغلق الرابط")}</span>
                 <input
                   type="date"
@@ -267,7 +267,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                 />
                 <span className="text-caption text-text-faint">{closes ? formatDay(form.settings.closesAt, isAr) : t("Stays open", "يبقى مفتوحًا")}</span>
               </label>
-              <label className="flex flex-col gap-space-2">
+              <label className="flex flex-col gap-field-stack-compact">
                 <span className="text-caption text-text-muted">{t("Remind after", "تذكير بعد")}</span>
                 <SelectInput
                   aria-label={t("Remind after", "تذكير بعد")}

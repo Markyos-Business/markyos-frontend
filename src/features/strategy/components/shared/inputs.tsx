@@ -44,8 +44,10 @@ export function InlineText({
       value: draft,
       onBlur: commit,
       placeholder,
-      className: `w-full outline-none rounded-md px-1.5 py-1 -mx-1.5 bidi-auto ${className}`,
-      style: { background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--accent-edge)", ...style },
+      // The kit's compact field while editing (MARKYOS_UI §2.6), like
+      // InlineTextField: the same underline and corner as every other field.
+      className: `mk-field mk-field-sm w-full bidi-auto ${className}`,
+      style,
     };
     return multiline ? (
       <AutoTextarea {...shared} onChange={setDraft} autoFocus />

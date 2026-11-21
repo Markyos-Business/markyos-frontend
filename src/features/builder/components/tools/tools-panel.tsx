@@ -1,4 +1,4 @@
-import { Icon, TabPanel, useTabIds } from "@/components/ui";
+import { TabPanel, useTabIds, IconButton } from "@/components/ui";
 import { TOOL_TABS } from "../../constants";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { LayersTab } from "../layers/layers-tab";
@@ -20,20 +20,12 @@ export function ToolsPanel(b: BuilderPageState) {
     <div className="motion-safe:animate-fade-in flex w-[240px] shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto p-4 shadow-[inset_-1px_0_0_var(--hairline)]">
       {/* The way out lives in the editor's top bar; this row only hides the panel. */}
       <div className="-mt-1 flex shrink-0 items-center justify-end">
-        <button
-          type="button"
-          onClick={() => b.setLeftOpen(false)}
-          aria-label={hide}
-          title={hide}
-          className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-text-faint"
-        >
-          <Icon name="angle-double-left" size={12} />
-        </button>
+        <IconButton icon="angle-double-left" iconSize={16} size="xs" label={hide} title={hide} onClick={() => b.setLeftOpen(false)} className="text-text-faint" />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <span lang={isAr ? "ar" : "en"} className={`px-1 text-[10.5px] font-semibold ${isAr ? "tracking-normal" : "tracking-[0.08em]"} text-text-faint uppercase`}>{isAr ? "الصفحات" : "Pages"}</span>
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           <button type="button" onClick={() => b.onPage(null)} className={pageChip(!activePage)}>
             {isAr ? "الرئيسية" : "Home"}
           </button>
@@ -42,14 +34,7 @@ export function ToolsPanel(b: BuilderPageState) {
               {isAr ? p.arName : p.name}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={b.onAddPage}
-            aria-label={isAr ? "إضافة صفحة" : "Add page"}
-            className="grid h-8 w-8 cursor-pointer place-items-center rounded-full bg-surface-1 text-text-faint"
-          >
-            <Icon name="plus" size={12} />
-          </button>
+          <IconButton icon="plus" iconSize={16} variant="soft" size="sm" shape="round" label={isAr ? "إضافة صفحة" : "Add page"} onClick={b.onAddPage} />
         </div>
       </div>
 

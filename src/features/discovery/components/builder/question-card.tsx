@@ -46,7 +46,7 @@ export function QuestionCard(props: QuestionCardProps) {
       aria-label={isAr ? `السؤال ${number}` : `Question ${number}`}
       className={`flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 transition-shadow ${selected ? "shadow-edge-primary" : "shadow-edge"}`}
     >
-      <div className="flex items-center gap-space-4">
+      <div className="flex items-center gap-ctl-row">
         <button
           type="button"
           {...props.dragProps}
@@ -57,13 +57,13 @@ export function QuestionCard(props: QuestionCardProps) {
           <Icon name="grip-vertical" size={16} />
         </button>
         <span className="text-caption font-medium tabular-nums text-text-muted">{number}</span>
-        <span className="inline-flex items-center gap-space-2 text-caption text-text-muted">
+        <span className="inline-flex items-center gap-ctl-row text-caption text-text-muted">
           <Icon name={type.icon} size={16} />
           {type[isAr ? "ar" : "en"]}
         </span>
         {question.required && <Badge tone="accent">{isAr ? "مطلوب" : "Required"}</Badge>}
         {conditional && <Badge tone="info">{isAr ? "مشروط" : "Conditional"}</Badge>}
-        <div className="ms-auto flex items-center gap-space-1">
+        <div className="ms-auto flex items-center gap-ctl-row">
           {/* Keyboard twins of dragging. */}
           <IconButton icon="angle-up" label={isAr ? "تحريك للأعلى" : "Move up"} disabled={locked || !props.canMoveUp} onClick={() => props.onMove(-1)} className="text-text-muted disabled:text-text-disabled" />
           <IconButton icon="angle-down" label={isAr ? "تحريك للأسفل" : "Move down"} disabled={locked || !props.canMoveDown} onClick={() => props.onMove(1)} className="text-text-muted disabled:text-text-disabled" />

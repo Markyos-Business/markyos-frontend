@@ -77,12 +77,12 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
   if (!canGovern) return <Badge tone={ROLE_TONE[m.role]}>{roleName(m.role)}</Badge>;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-ctl-row">
       {/* Always rendered, disabled on the person who already owns the brand:
           hiding it on that row shifted every other row's controls sideways. */}
       <Button
         variant="soft"
-        size="xs"
+        size="sm"
         disabled={m.role === "owner"}
         onClick={() => void transfer()}
         title={
@@ -108,6 +108,7 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
         options={ROLES.map((r) => ({ value: r, label: roleName(r), disabled: r === "editor" && editorsFull && m.role !== "editor" }))}
       />
       <IconButton
+        size="sm"
         icon="times"
         label={isAr ? `إزالة ${m.name}` : `Remove ${m.name}`}
         title={isAr ? `إزالة ${who} من هذه العلامة` : `Remove ${who} from this brand`}

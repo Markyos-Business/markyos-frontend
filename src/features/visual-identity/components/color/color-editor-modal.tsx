@@ -88,7 +88,7 @@ export function ColorEditorModal({
 
       {mode === "edit" && (
         <div className="flex flex-col gap-space-3">
-          <div className="flex flex-wrap items-center gap-space-3">
+          <div className="flex flex-wrap items-center gap-ctl-row">
             <Button
               type="button"
               variant={isPrimary ? "ghost" : "outline"}

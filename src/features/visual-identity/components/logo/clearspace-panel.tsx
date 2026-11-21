@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "@/components/ui";
+import { Icon, Button } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind, Workspace } from "@/types";
 import { formatBytes } from "@/lib/utils";
@@ -49,7 +49,7 @@ export function ClearspacePanel({
   const minPrintMm = Math.round(((minDigital / 72) * 25.4) * 10) / 10;
 
   return (
-    <div className="w-[308px] shrink-0 flex flex-col gap-3.5">
+    <div className="w-[308px] shrink-0 flex flex-col gap-field-stack">
       <div className="mk-surface rounded-card p-[18px]" style={{ background: "var(--surface-1)" }}>
         <div className="flex items-baseline justify-between mb-3.5">
           <span className="font-semibold text-[13px]">
@@ -147,16 +147,10 @@ export function ClearspacePanel({
         )}
       </div>
 
-      <div className="mt-auto flex flex-col gap-2.5">
-        <button
-          type="button"
-          onClick={onDownload}
-          disabled={attachedSlots.length === 0}
-          className="h-11 rounded-full font-semibold text-[14px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+      <div className="mt-auto flex flex-col gap-ctl-row">
+        <Button variant="solid" size="lg" block onClick={onDownload} disabled={attachedSlots.length === 0}>
           {isAr ? "تنزيل الملفات" : "Download assets"}
-        </button>
+        </Button>
       </div>
     </div>
   );

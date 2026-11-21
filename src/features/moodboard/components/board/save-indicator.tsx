@@ -14,7 +14,7 @@ export function MoodboardSaveIndicator({ isAr }: { isAr: boolean }) {
   if (status === "idle") return null;
   if (status === "failed") {
     return (
-      <span role="status" className="flex items-center gap-space-2 text-caption text-danger">
+      <span role="status" className="flex items-center gap-ctl-row text-caption text-danger">
         <Icon name="exclamation-circle" size={16} />
         {isAr ? "تعذّر الحفظ" : "Couldn't save"}
         <Button size="xs" variant="link" onClick={retry}>{isAr ? "إعادة المحاولة" : "Retry"}</Button>

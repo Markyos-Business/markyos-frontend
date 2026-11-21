@@ -27,14 +27,14 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
           <div dir="ltr" className="truncate text-start text-caption text-text-muted">
             {user.email}
           </div>
-          <div className="flex flex-wrap items-center gap-space-5 pt-space-2">
+          <div className="flex flex-wrap items-center gap-ctl-row pt-space-2">
             <Tag tone={roleTone(user)}>{c.roles[user.role]}</Tag>
             <StatusDot tone={STATUS_TONE[user.status]} label={c.statuses[user.status]} />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-space-4">
+      <div className="flex flex-wrap items-center gap-ctl-row">
         {user.status === "waiting" && (
           <Button variant="outline" size="sm" icon={<Icon name="envelope" size={16} />} onClick={() => actions.resend(user)}>
             {c.actions.resend}

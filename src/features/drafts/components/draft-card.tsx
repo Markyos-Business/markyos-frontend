@@ -54,7 +54,7 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
       </div>
 
       {d.status === "pending" && (
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-ctl-row pt-1">
           <Button size="sm" variant="primary" onClick={() => void onAccept(d)}>
             {t("Accept", "قبول")}
           </Button>

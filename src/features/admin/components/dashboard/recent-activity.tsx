@@ -27,7 +27,7 @@ export function RecentActivity({ items, error, loading, onRetry }: {
     <DashboardCard
       title={t("Recent activity", "النشاط الأخير")}
       footer={items && items.length > PREVIEW_COUNT ? (
-        <div className="flex flex-wrap items-center justify-between gap-space-3">
+        <div className="flex flex-wrap items-center justify-between gap-ctl-row">
           <span className="text-caption text-text-muted">{t(
             `${visible?.length} of ${items.length} latest events`,
             `${visible?.length} من أحدث ${items.length} حدثًا`,
@@ -38,7 +38,7 @@ export function RecentActivity({ items, error, loading, onRetry }: {
         </div>
       ) : undefined}
     >
-      {error && <div role="alert" className="mb-space-4 flex flex-wrap items-center justify-between gap-space-3 text-caption text-danger">
+      {error && <div role="alert" className="mb-space-4 flex flex-wrap items-center justify-between gap-ctl-row text-caption text-danger">
         <span>{items ? t("Could not refresh. Showing previous activity.", "تعذر التحديث. يظهر النشاط السابق.") : t("Activity could not be loaded.", "تعذر تحميل النشاط.")}</span>
         <Button size="sm" variant="outline" onClick={onRetry} disabled={loading}>{t("Retry", "إعادة المحاولة")}</Button>
       </div>}

@@ -77,7 +77,7 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-field-stack-compact">
       <InputField
         label={t("Brand name", "اسم العلامة")}
         value={draft}

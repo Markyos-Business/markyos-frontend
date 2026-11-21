@@ -98,7 +98,7 @@ export function SectionCard({ analysisId, section, canEdit, isAr, onChange, acti
             <p className="text-caption text-text-muted">{meta.hint[lang]}</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-space-3">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           {tag && (
             <Badge tone={tag.tone} dot>
               {tag.label}

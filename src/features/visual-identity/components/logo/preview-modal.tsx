@@ -129,13 +129,13 @@ export function PreviewModal({
               </span>
             </div>
           )}
-          <div className="mt-auto flex items-center gap-2 text-[12px]" style={{ color: "var(--text-muted)" }}>
+          <div className="mt-auto flex items-center gap-ctl-row text-[12px]" style={{ color: "var(--text-muted)" }}>
             <Icon name="lock" size={15} style={{ color: "var(--accent-text)" }} />
             {isAr ? "لا يُرفع شيء قبل أن ترفقه." : "Nothing is uploaded until you attach."}
           </div>
         </div>
       </div>
-      <div className="flex justify-end gap-space-3">
+      <div className="flex justify-end gap-ctl-row">
       <Button variant="outline" onClick={onCancel}>
         {isAr ? "اختر ملفًا آخر" : "Choose another file"}
       </Button>
