@@ -116,7 +116,7 @@ export function useOverviewPage(slug: string) {
     view: {
       ws,
       isAr,
-      editor: { editorRef, isAr, wordCount, onInput: handleInput, onTool: runTool },
+      editor: { editorRef, isAr, wordCount, savedLabel, onInput: handleInput, onTool: runTool },
     },
   };
 }

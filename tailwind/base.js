@@ -1380,7 +1380,7 @@ export const baseStyles = [
   {
     // A filter that is narrowing the list says so with the accent: its tint
     // and an accent underline, the field shape otherwise unchanged.
-    "[data-filter-control][data-active] .mk-field": {
+    "[data-filter-control][data-active] .mk-field, .mk-field[data-filter-control][data-active]": {
       "background": "var(--accent-soft)",
       "border-bottom-color": "var(--control-border-focus)",
     },

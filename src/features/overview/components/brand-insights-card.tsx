@@ -11,7 +11,7 @@ export function BrandInsightsCard({ ws, isAr }: { ws: Workspace; isAr: boolean }
   const next = steps.find(step => !step.done);
   // Finished: the bar says so, and the five ticked rows stop taking half the screen.
   if (!next) {
-    return <Dashboard.ProgressCard title={t("Brand set up", "اكتمل إعداد العلامة")} done={completed} total={steps.length}>
+    return <Dashboard.ProgressCard title={t("Brand setup", "إعداد العلامة")} done={completed} total={steps.length}>
       <p className="text-body text-text-muted">{t("Every step is done. Keep the guideline current from the editor.", "اكتملت كل الخطوات. حدّث الدليل من المحرر عند الحاجة.")}</p>
     </Dashboard.ProgressCard>;
   }
