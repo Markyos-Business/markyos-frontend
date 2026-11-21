@@ -48,7 +48,8 @@ export function TableRow<T>({ row, props, model, measure, index }: { row: Row<T>
       {(props.rowActions || props.rowHoverActions) && <td className={`${padding} bg-surface-1 ${props.stickyColumns?.actions ? "sticky end-0 z-10" : ""}`}>
         {!row.getIsGrouped() && <div className="flex items-center justify-end gap-space-2" aria-disabled={disabled || undefined} inert={disabled}>
           {props.rowHoverActions && <div className="opacity-100 transition-opacity duration-[120ms] min-[720px]:opacity-0 min-[720px]:group-hover:opacity-100 min-[720px]:group-focus-within:opacity-100">{props.rowHoverActions(row.original)}</div>}
-          {props.rowActions && <ActionsDropdown iconOnly label={l.actions(name)} items={props.rowActions(row.original)} />}
+          {/* A row with nothing to do keeps the empty cell (columns stay aligned) but shows no ⋯. */}
+          {props.rowActions && props.rowActions(row.original).length > 0 && <ActionsDropdown iconOnly label={l.actions(name)} items={props.rowActions(row.original)} />}
         </div>}
       </td>}
     </tr>

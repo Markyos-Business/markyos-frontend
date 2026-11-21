@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint, Modal, Button, IconButton } from "@/components/ui";
+import { useToast, useDialog, ActionsDropdown, AutoTextarea, Section, EmptyHint, Modal, Button } from "@/components/ui";
 import { CompetitorColumn, Lang, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ import { uid } from "@/lib/utils";
 export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   const { addCompetitor, removeCompetitor, updateCompetitor, setCompetitorColumns } = useAppActions();
   const { showToast } = useToast();
-  const { prompt } = useDialog();
+  const { prompt, confirm } = useDialog();
   const [pasteOpen, setPasteOpen] = useState(false);
 
   // `isAr` here means "the Arabic copy is open", not "the interface is Arabic":
@@ -74,13 +74,32 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
     );
   }
 
-  function removeColumn(col: CompetitorColumn) {
+  async function removeColumn(col: CompetitorColumn) {
+    const ok = await confirm({
+      title: isAr ? `إزالة عمود ${columnLabel(col)}؟` : `Remove the ${columnLabel(col)} column?`,
+      body: isAr ? "تبقى القيم المكتوبة فيه محفوظة إن أعدت إضافته." : "What was written in it is kept, in case you add it back.",
+      confirmLabel: isAr ? "إزالة" : "Remove",
+      tone: "danger",
+      isAr,
+    });
+    if (!ok) return;
     setCompetitorColumns(ws.id, columns.filter((c) => c.id !== col.id));
     showToast(
       isAr
         ? `أُزيل عمود ${columnLabel(col)}. القيم المكتوبة فيه لم تُحذف.`
         : `Removed the ${columnLabel(col)} column. What was written in it is kept, in case you add it back.`
     );
+  }
+
+  async function removeRow(id: string, name: string) {
+    const ok = await confirm({
+      title: isAr ? `إزالة ${name}؟` : `Remove ${name}?`,
+      body: isAr ? "يُحذف صفه وكل ما كُتب فيه." : "Its row and everything written in it are deleted.",
+      confirmLabel: isAr ? "إزالة" : "Remove",
+      tone: "danger",
+      isAr,
+    });
+    if (ok) removeCompetitor(ws.id, id);
   }
 
   function moveColumn(index: number, delta: number) {
@@ -138,31 +157,28 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                 </th>
                 {columns.map((col, i) => (
                   <th key={col.id} className="text-start p-0" style={{ minWidth: 160 }}>
-                    <div className="flex items-center gap-ctl-row px-2.5 py-2 group">
-                      <button
-                        type="button"
-                        onClick={() => void renameColumn(col)}
-                        title={isAr ? "إعادة تسمية" : "Rename this column"}
-                        className="mk-tap text-[11px] font-semibold uppercase cursor-pointer text-start truncate"
-                        style={{ letterSpacing: ".06em", color: "var(--text-faint)" }}
-                      >
+                    <div className="flex items-center gap-ctl-row px-2.5 py-2">
+                      <span className="truncate text-[11px] font-semibold uppercase" style={{ letterSpacing: ".06em", color: "var(--text-faint)" }}>
                         {columnLabel(col)}
-                      </button>
-                      <span className="flex items-center ms-auto shrink-0">
-                        <button type="button" onClick={() => moveColumn(i, -1)} disabled={i === 0} aria-label={isAr ? "انقل العمود لليسار" : "Move column left"} className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
-                          <Icon name="angle-left" size={11} />
-                        </button>
-                        <button type="button" onClick={() => moveColumn(i, 1)} disabled={i === columns.length - 1} aria-label={isAr ? "انقل العمود لليمين" : "Move column right"} className="mk-icon-btn cursor-pointer disabled:opacity-20 disabled:cursor-default" style={{ color: "var(--text-faint)" }}>
-                          <Icon name="angle-right" size={11} />
-                        </button>
-                        <button type="button" onClick={() => removeColumn(col)} aria-label={`Remove ${columnLabel(col)} column`} className="mk-icon-btn cursor-pointer" style={{ color: "var(--text-faint)" }}>
-                          <Icon name="times" size={10} />
-                        </button>
+                      </span>
+                      {/* One ⋯ per column, like a row's: no buttons in the header cells. */}
+                      <span className="ms-auto shrink-0">
+                        <ActionsDropdown
+                          iconOnly
+                          size="sm"
+                          label={isAr ? `إجراءات عمود ${columnLabel(col)}` : `${columnLabel(col)} column actions`}
+                          items={[
+                            { label: isAr ? "إعادة التسمية" : "Rename", icon: "pen", onSelect: () => void renameColumn(col) },
+                            { label: isAr ? "نقل إلى الأمام" : "Move earlier", icon: "angle-left", disabled: i === 0, onSelect: () => moveColumn(i, -1) },
+                            { label: isAr ? "نقل إلى الخلف" : "Move later", icon: "angle-right", disabled: i === columns.length - 1, onSelect: () => moveColumn(i, 1) },
+                            { label: isAr ? "إزالة العمود" : "Remove column", icon: "trash", tone: "danger", onSelect: () => void removeColumn(col) },
+                          ]}
+                        />
                       </span>
                     </div>
                   </th>
                 ))}
-                <th style={{ width: 34 }} />
+                <th style={{ width: 40 }} />
               </tr>
             </thead>
             <tbody>
@@ -188,7 +204,12 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     </td>
                   ))}
                   <td className="align-top p-1">
-                    <IconButton icon="times" iconSize={16} size="xs" label={`Remove ${c.name}`} title={`Remove ${c.name}`} onClick={() => removeCompetitor(ws.id, c.id)} className="text-text-faint mk-danger-hover" />
+                    <ActionsDropdown
+                      iconOnly
+                      size="sm"
+                      label={isAr ? `إجراءات ${c.nameAr || c.name || "المنافس"}` : `${c.name || "Competitor"} actions`}
+                      items={[{ label: isAr ? "إزالة المنافس" : "Remove competitor", icon: "trash", tone: "danger", onSelect: () => void removeRow(c.id, (isAr ? c.nameAr : c.name) || (isAr ? "هذا المنافس" : "this competitor")) }]}
+                    />
                   </td>
                 </tr>
               ))}

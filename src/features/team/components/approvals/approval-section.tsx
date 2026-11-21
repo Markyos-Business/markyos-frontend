@@ -2,7 +2,7 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
+import { ActionsDropdown, Badge, Button, EmptyHint, Icon, Section, useDialog, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { API_ENABLED, ApiError } from "@/lib/api/client";
 import { formatRelative } from "@/lib/utils";
@@ -17,6 +17,7 @@ type Props = { ws: Workspace; canGovern: boolean; canPropose: boolean; isAr: boo
 export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
   const { proposeApproval, resolveApproval, refreshApprovals } = useAppActions();
   const { showToast } = useToast();
+  const { confirm } = useDialog();
   const [text, setText] = useState("");
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(API_ENABLED);
@@ -56,6 +57,17 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
 
   async function decide(id: string, status: Exclude<ApprovalStatus, "pending">) {
     if (!canGovern || inFlight.current) return;
+    // Rejecting can't be taken back, so it asks first; approving is the queue's everyday job.
+    if (status === "rejected") {
+      const ok = await confirm({
+        title: isAr ? "رفض هذا المقترح؟" : "Reject this proposal?",
+        body: isAr ? "يُغلق المقترح ولا يمكن اعتماده بعد ذلك." : "It's closed and can't be approved afterwards.",
+        confirmLabel: isAr ? "رفض" : "Reject",
+        tone: "danger",
+        isAr,
+      });
+      if (!ok) return;
+    }
     inFlight.current = true;
     setBusy(id);
     setError(null);
@@ -99,12 +111,20 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
               <InputField size="sm" dir="auto" value={notes[approval.id] ?? ""} onChange={(event) => setNotes((previous) => ({ ...previous, [approval.id]: event.target.value }))} maxLength={2000} disabled={loading || busy !== null}
                 aria-label={`${isAr ? "ملاحظة المراجعة: " : "Review note for "}${approval.summary}`}
                 placeholder={isAr ? "ملاحظة مراجعة اختيارية" : "Optional review note"} />
-              <div className="flex gap-ctl-row">
-                <Button variant="success-soft" size="sm" disabled={loading || busy !== null} onClick={() => void decide(approval.id, "approved")}>{busy === approval.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "اعتماد" : "Approve")}</Button>
-                <Button variant="danger-soft" size="sm" disabled={loading || busy !== null} onClick={() => void decide(approval.id, "rejected")}>{isAr ? "رفض" : "Reject"}</Button>
-              </div>
             </div>}
           </div>
+          {/* Approve and Reject in the row's ⋯ menu, at the end of the row like every list. */}
+          {approval.status === "pending" && canGovern && (
+            <ActionsDropdown
+              iconOnly
+              size="sm"
+              label={isAr ? `إجراءات ${approval.summary}` : `${approval.summary} actions`}
+              items={[
+                { label: busy === approval.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "اعتماد" : "Approve"), icon: "check", tone: "success", disabled: loading || busy !== null, onSelect: () => void decide(approval.id, "approved") },
+                { label: isAr ? "رفض" : "Reject", icon: "times", tone: "danger", disabled: loading || busy !== null, onSelect: () => void decide(approval.id, "rejected") },
+              ]}
+            />
+          )}
         </div>
       ))}</div>}
     </Section>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { usePhoneViewport } from "@/hooks/useNarrowViewport";
 import { SOFT_VARIANT_CLASSES } from "../badge/variants";
 import { ActionSheet } from "../overlay/action-sheet";
 import { Popover } from "../overlay/popover";
 import { Icon } from "../icon";
+import { useUiStrings } from "../ui-strings";
 
 type ActionTone = "accent" | "info" | "success" | "warning" | "danger";
 
@@ -56,7 +57,22 @@ const TriggerLook = ({ label, iconOnly, size = "md" }: { label: string; iconOnly
  * Escape, returns focus to the trigger, and hangs off the same edge of it on
  * either side of the page.
  */
-const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = false, size = "md", title }: ActionsDropdownProps) => {
+/** Arrow keys, Home and End move between a menu's items, as a menu should; Tab still leaves it. */
+function moveInMenu(e: KeyboardEvent<HTMLDivElement>) {
+  const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+  if (!keys.includes(e.key)) return;
+  const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')];
+  if (!items.length) return;
+  e.preventDefault();
+  const at = items.indexOf(document.activeElement as HTMLButtonElement);
+  const next =
+    e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : e.key === "ArrowDown" ? (at + 1) % items.length : (at - 1 + items.length) % items.length;
+  items[next].focus();
+}
+
+const ActionsDropdown = ({ items, label: labelProp, align = "end", iconOnly = false, size = "md", title }: ActionsDropdownProps) => {
+  const { t } = useUiStrings();
+  const label = labelProp ?? t.actions;
   const phone = usePhoneViewport();
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -82,7 +98,7 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = f
   return (
     <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} size={size} />}>
       {(close) => (
-        <div role="menu" aria-label={label} className="flex flex-col p-space-2">
+        <div role="menu" aria-label={label} onKeyDown={moveInMenu} className="flex flex-col p-space-2">
           {items.map((item) => (
             <button
               key={item.label}

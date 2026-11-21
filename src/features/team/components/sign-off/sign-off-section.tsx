@@ -4,7 +4,7 @@ import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useAppActions } from "@/contexts/AppContext";
 import { useEffect, useState } from "react";
 import { API_ENABLED } from "@/lib/api/client";
-import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
+import { ActionsDropdown, Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
 
@@ -71,14 +71,12 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
                 </p>
               </div>
               {!p.resolved && canGovern && (
-                <Button
+                <ActionsDropdown
+                  iconOnly
                   size="sm"
-                  variant="outline"
-                  disabled={pending !== null}
-                  onClick={() => void resolve(p.id)}
-                >
-                  {pending === p.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "تمت المعالجة" : "Mark handled")}
-                </Button>
+                  label={isAr ? `إجراءات ملاحظة ${p.authorName}` : `${p.authorName}'s note actions`}
+                  items={[{ label: pending === p.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "تمت المعالجة" : "Mark handled"), icon: "check", tone: "success", disabled: pending !== null, onSelect: () => void resolve(p.id) }]}
+                />
               )}
             </div>
           ))}

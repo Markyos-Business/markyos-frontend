@@ -4,7 +4,7 @@ import { useAccountCopy } from "@/contexts/useAccountCopy";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay, publicUrl, sendForm } from "@/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../../constants";
 import { useDiscoveryFeed } from "../../hooks/discovery/use-discovery-feed";
@@ -25,6 +25,9 @@ type DiscoveryViewProps = {
 
 const base = (slug: string) => `/w/${slug}/discovery`;
 export const callHref = (slug: string, id: string) => `${base(slug)}/calls/${id}`;
+/** The title link covers its row; the ⋯ menu sits above it so it stays its own target. */
+const stretched = "after:absolute after:inset-0 after:content-['']";
+
 const formHref = (slug: string, form: FeedForm) => `/w/${slug}/forms/${form.id}/${form.status === "draft" ? "edit" : "answers"}`;
 
 /**
@@ -132,7 +135,8 @@ export function DiscoveryView({ brandId, brandSlug, isAr, section }: DiscoveryVi
   );
 }
 
-const rowClass = "flex min-h-widget-row flex-wrap items-center gap-x-space-5 gap-y-space-3 px-space-6 py-space-4 shadow-rule-t first:shadow-none sm:px-space-8";
+// `relative` so each row's title link can stretch over the row: a click anywhere opens it.
+const rowClass = "relative flex min-h-widget-row flex-wrap items-center gap-x-space-5 gap-y-space-3 px-space-6 py-space-4 shadow-rule-t first:shadow-none sm:px-space-8";
 
 type FormRowProps = { form: FeedForm; slug: string; isAr: boolean; canEdit: boolean; onChanged: () => void };
 
@@ -148,6 +152,15 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
   const link = form.publicToken ? publicUrl(form.publicToken) : null;
   const isDraft = form.status === "draft";
 
+  const copyLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(copy.linkCopied, "success");
+    } catch {
+      showToast(t("Couldn't copy. Open the questionnaire's link page to copy it.", "تعذّر النسخ. افتح صفحة رابط الاستبيان لنسخه."), "danger");
+    }
+  };
+
   // A draft has no link yet. Getting one publishes it without emailing anyone,
   // the same as "Mark as sent", and copies the link straight away.
   const getLink = async () => {
@@ -159,7 +172,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
           await navigator.clipboard.writeText(publicUrl(sent.publicToken));
           showToast(copy.linkReady, "success");
         } catch {
-          showToast(t("Link ready. Copy it from the row.", "الرابط جاهز. انسخه من السطر."), "success");
+          showToast(t("Link ready. Copy it from the row's menu.", "الرابط جاهز. انسخه من قائمة السطر."), "success");
         }
       }
       onChanged();
@@ -177,7 +190,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
       <div className="flex min-w-0 flex-1 basis-full items-center gap-space-5 sm:basis-0">
         <IconBadge icon="clipboard-list" tone="info" />
         <div className="flex min-w-0 flex-1 flex-col items-start gap-space-1">
-          <Link href={formHref(slug, form)} className="bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text">
+          <Link href={formHref(slug, form)} className={`bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text ${stretched}`}>
             {form.title}
           </Link>
           <span className="flex flex-wrap items-center gap-space-3 text-caption text-text-muted">
@@ -196,37 +209,25 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
         <Badge tone={status.tone} dot>
           {status[lang]}
         </Badge>
-        <div className="ms-auto flex items-center gap-ctl-row">
-          {link ? (
-            <CopyButton
-              text={link}
-              label={t("Copy link", "نسخ الرابط")}
-              copiedLabel={t("Copied", "نُسخ")}
-              copiedMessage={copy.linkCopied}
-              failedMessage={t("Couldn't copy. Open the questionnaire's link page to copy it.", "تعذّر النسخ. افتح صفحة رابط الاستبيان لنسخه.")}
-            />
-          ) : (
-            isDraft &&
-            canEdit && (
-              <Button
-                variant="soft"
-                size="sm"
-                icon={<Icon name="link" size={16} />}
-                disabled={busy || form.questions === 0}
-                title={form.questions === 0 ? t("Add a question first.", "أضف سؤالًا أولًا.") : undefined}
-                onClick={() => void getLink()}
-              >
-                {busy ? t("Getting link…", "جارٍ إنشاء الرابط…") : t("Get share link", "إنشاء رابط المشاركة")}
-              </Button>
-            )
-          )}
+        {/* Copy link, Get share link and the rest live in the row's ⋯ menu: no buttons in a row. */}
+        <div className="relative z-10 ms-auto">
           <ActionsDropdown
-            label={t("Actions", "إجراءات")}
-            title={t(`${form.title} actions`, `إجراءات ${form.title}`)}
+            iconOnly
+            label={t(`${form.title} actions`, `إجراءات ${form.title}`)}
             items={[
               isDraft
                 ? { label: t("Edit questions", "تعديل الأسئلة"), icon: "pen", onSelect: () => router.push(formHref(slug, form)) }
                 : { label: t("Open answers", "فتح الإجابات"), icon: "eye", onSelect: () => router.push(formHref(slug, form)) },
+              ...(link ? [{ label: t("Copy link", "نسخ الرابط"), icon: "copy", onSelect: () => void copyLink(link) }] : []),
+              ...(!link && isDraft && canEdit
+                ? [{
+                    label: busy ? t("Getting link…", "جارٍ إنشاء الرابط…") : t("Get share link", "إنشاء رابط المشاركة"),
+                    icon: "link",
+                    disabled: busy || form.questions === 0,
+                    reason: form.questions === 0 ? t("Add a question first.", "أضف سؤالًا أولًا.") : undefined,
+                    onSelect: () => void getLink(),
+                  }]
+                : []),
               ...(link ? [{ label: copy.openAnswerPage, icon: "external-link-alt", onSelect: () => window.open(link, "_blank", "noopener") }] : []),
               { label: t("Theme, link and sending", "التصميم والرابط والإرسال"), icon: "share-alt", tone: "info" as const, onSelect: () => router.push(`/w/${slug}/forms/${form.id}/send`) },
             ]}
@@ -272,7 +273,7 @@ function CallRow({ call, slug, canEdit, isAr, onChanged }: CallRowProps) {
     <li className={rowClass}>
       <IconBadge icon="phone" tone="accent" />
       <div className="flex min-w-0 flex-1 flex-col items-start gap-space-1">
-        <Link href={href} className="bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text">
+        <Link href={href} className={`bidi-plain max-w-full truncate text-body font-medium text-text hover:text-accent-text ${stretched}`}>
           {call.title}
         </Link>
         <span className="flex flex-wrap items-center gap-space-3 text-caption text-text-muted">
@@ -294,10 +295,12 @@ function CallRow({ call, slug, canEdit, isAr, onChanged }: CallRowProps) {
       <Badge tone={call.includeInAnalysis ? "success" : "neutral"} dot>
         {call.includeInAnalysis ? t("In analysis", "في التحليل") : t("Left out", "مستبعدة")}
       </Badge>
-      {canEdit ? (
+      {/* Someone who can't edit opens the notes from the row itself; there is nothing else to do. */}
+      {canEdit && (
+        <div className="relative z-10">
         <ActionsDropdown
-          label={t("Actions", "إجراءات")}
-          title={t(`${call.title} actions`, `إجراءات ${call.title}`)}
+          iconOnly
+          label={t(`${call.title} actions`, `إجراءات ${call.title}`)}
           items={[
             { label: t("Open", "فتح"), icon: "eye", onSelect: () => router.push(href) },
             { label: t("Edit", "تعديل"), icon: "pen", onSelect: () => router.push(`${href}/edit`) },
@@ -316,10 +319,7 @@ function CallRow({ call, slug, canEdit, isAr, onChanged }: CallRowProps) {
             { label: t("Delete", "حذف"), icon: "trash", tone: "danger" as const, onSelect: () => void remove() },
           ]}
         />
-      ) : (
-        <Button variant="outline" size="sm" href={href}>
-          {t("Open", "فتح")}
-        </Button>
+        </div>
       )}
     </li>
   );

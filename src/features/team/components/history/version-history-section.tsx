@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
@@ -73,9 +73,14 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
               label={v.label}
               hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colours"}`}
               right={
-                canEdit && <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
-                  {t("Restore", "استعادة")}
-                </Button>
+                canEdit && (
+                  <ActionsDropdown
+                    iconOnly
+                    size="sm"
+                    label={t(`${v.label} actions`, `إجراءات ${v.label}`)}
+                    items={[{ label: t("Restore", "استعادة"), icon: "history", tone: "warning", onSelect: () => void restore(v) }]}
+                  />
+                )
               }
             />
           ))}
