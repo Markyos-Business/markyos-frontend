@@ -25,9 +25,9 @@ const brandPages: Record<string, Name> = {
   "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], assets: ["Assets", "الأصول"], builder: ["Guideline editor", "محرر الدليل"],
   strategy: ["Strategy", "الاستراتيجية"], "visual-identity": ["Visual identity", "الهوية البصرية"],
   moodboard: ["Moodboards", "الألواح الإلهامية"], brief: ["Brand brief", "ملخص العلامة"], team: ["Team", "الفريق"],
-  compliance: ["Brand checks", "فحوص العلامة"], departments: ["Departments", "الأقسام"], discovery: ["Discovery", "الاكتشاف"],
-  forms: ["Questionnaires", "الاستبيانات"], analysis: ["Analysis", "التحليل"], drafts: ["Drafts", "المسودات"],
-  settings: ["Settings", "الإعدادات"], "type-lab": ["Type lab", "مختبر الخطوط"],
+  compliance: ["Check", "التدقيق"], departments: ["Departments", "الأقسام"], discovery: ["Discovery", "الاكتشاف"],
+  forms: ["Questionnaires", "الاستبيانات"], drafts: ["Drafts", "المسودات"],
+  settings: ["Settings", "الإعدادات"],
 };
 
 /** No record IDs, tokens, question text or private public-share content in titles. */

@@ -18,20 +18,29 @@ export interface SidebarItem {
   active?: boolean;
   /** A count or short note beside the label; a dot once the rail collapses. */
   badge?: string | number;
+  /** A status dot beside the label, e.g. a site that is live. `label` says it in words. */
+  status?: { tone: "success"; label: string };
+  /**
+   * A second, small link at the row's end, e.g. opening the live site while
+   * the row itself opens the editor. A sibling of the row's link, never inside it.
+   */
+  external?: { href: string; label: string };
 }
 
 export interface SidebarSection {
   key: string;
-  /** Omit for a group with no heading. */
+  /** Names the group for assistive tech; shown above it when the sidebar has `headings`. */
   label?: string;
+  /** Keep the name for assistive tech only, e.g. a top group that needs no heading. */
+  hideHeading?: boolean;
   items: SidebarItem[];
 }
 
 /*
- * The nav (MARKYOS_UI.md §5), laid out after the 20 Nov 2026 reference: 300px
- * open, 84px as a rail. On top, the brand (mark, name, plan) and a card for
- * its public site; then 40px rows, each icon on a 28px tile, groups split by a
- * rule rather than a heading; at the bottom, the person and help.
+ * The nav (MARKYOS_UI.md §5): 300px open, 84px as a rail. On top, the brand
+ * (mark, name, plan); then 36px rows, each icon on a 28px tile, in groups that
+ * either carry a small heading (`headings`) or are split by a rule; at the
+ * bottom, the person and a few icon links (notifications, team, settings, help).
  */
 const OPEN = "w-sidebar px-space-4";
 const RAIL = "w-rail px-space-3";
@@ -51,6 +60,8 @@ export function AppSidebar({
   sections,
   footer = [],
   footerSlot,
+  footerIcons = [],
+  headings = false,
   subtitle,
   avatar,
   switcher,
@@ -73,6 +84,10 @@ export function AppSidebar({
   footer?: SidebarItem[];
   /** Under the footer links, e.g. a note for a reviewer. Hidden on the collapsed rail. */
   footerSlot?: ReactNode;
+  /** Icon links in the bottom bar beside the person: places you visit now and then, not the work itself. */
+  footerIcons?: SidebarItem[];
+  /** Show each labelled group's name above it, instead of a bare rule between groups. */
+  headings?: boolean;
   /** Under the title, e.g. the brand's plan. */
   subtitle?: string;
   /** In place of the Markyos mark: the brand's logo or its letter. */
@@ -151,8 +166,9 @@ export function AppSidebar({
   }, [collapsed, toggle, inDrawer]);
 
   function renderItem(item: SidebarItem) {
-    const { active, badge, label: name } = item;
-    return (
+    const { active, badge, label: name, status, external } = item;
+    const extra = !collapsed && external;
+    const link = (
       <Link
         key={item.key}
         href={item.href}
@@ -160,10 +176,10 @@ export function AppSidebar({
         // The title is the only thing naming this item once the rail is
         // collapsed, so it carries the badge too — otherwise "3 pending
         // approvals" becomes an unexplained dot.
-        title={badge !== undefined ? `${name} — ${badge}` : name}
-        aria-label={collapsed ? name : undefined}
-        className={`relative flex h-10 shrink-0 items-center rounded-lg transition-colors ${
-          collapsed ? "mx-auto w-10 justify-center" : "gap-space-4 px-space-3"
+        title={badge !== undefined ? `${name} — ${badge}` : status ? `${name} — ${status.label}` : name}
+        aria-label={collapsed ? (status ? `${name}, ${status.label}` : name) : undefined}
+        className={`relative flex h-9 shrink-0 items-center rounded-lg transition-colors ${
+          collapsed ? "mx-auto w-10 justify-center" : `gap-space-4 px-space-3 ${extra ? "pe-11" : ""}`
         } ${active ? "bg-ink-soft text-text" : "text-text-muted"}`}
       >
         {/* The tile: the accent when this is the page, a quiet fill otherwise. No hover tint: the rail is `mk-no-hover`. */}
@@ -179,16 +195,59 @@ export function AppSidebar({
                 <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>
               </span>
             )}
+            {status && (
+              <>
+                <span aria-hidden className="size-2 shrink-0 rounded-full bg-success" />
+                <span className="sr-only">{status.label}</span>
+              </>
+            )}
           </>
         )}
+        {collapsed && status && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-success shadow-ring-status" />}
         {/* A count can't be read in the rail, so it becomes a presence marker. The title says what. */}
         {collapsed && badge !== undefined && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-accent shadow-ring-status" />}
       </Link>
     );
+    if (!extra) return link;
+    return (
+      <div key={item.key} className="relative shrink-0">
+        {link}
+        <a
+          href={external.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={external.label}
+          title={external.label}
+          className="absolute end-1 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-text-muted"
+        >
+          <Icon name="external-link-alt" size={16} />
+        </a>
+      </div>
+    );
   }
 
-  /** The groups have no headings on screen, only a rule between them; the heading still names the group. */
+  /** A bottom-bar icon link: the same item, just its glyph; the title and label name it. */
+  function renderIcon(item: SidebarItem) {
+    return (
+      <Link
+        key={item.key}
+        href={item.href}
+        aria-current={item.active ? "page" : undefined}
+        aria-label={item.badge !== undefined ? `${item.label} — ${item.badge}` : item.label}
+        title={item.label}
+        className={`relative grid size-9 shrink-0 place-items-center rounded-lg ${item.active ? "bg-ink-soft text-text" : "text-text-muted"}`}
+      >
+        <Icon name={item.icon} size={18} />
+        {item.badge !== undefined && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-accent shadow-ring-status" />}
+      </Link>
+    );
+  }
+
+  /** Between groups: a rule, or with `headings` the group's name (the rail has no room for words, so it keeps the rule). */
   const rule = <div aria-hidden className="mx-space-3 my-space-3 h-px shrink-0 bg-hairline-strong" />;
+  const heading = (text: string) => (
+    <div aria-hidden className="truncate px-space-3 pb-space-2 pt-space-5 text-caption text-text-muted">{text}</div>
+  );
 
   return (
     <nav
@@ -236,7 +295,7 @@ export function AppSidebar({
       <div ref={listRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-space-6 [mask-image:linear-gradient(to_bottom,black_calc(100%-24px),transparent)]">
         {sections.map((section, i) => (
           <div key={section.key} role="group" aria-label={section.label} className="flex flex-col gap-space-1">
-            {i > 0 && rule}
+            {headings && !collapsed ? section.label && !section.hideHeading && heading(section.label) : i > 0 && rule}
             {section.items.map((item) => renderItem(item))}
           </div>
         ))}
@@ -250,12 +309,13 @@ export function AppSidebar({
       </div>
 
       {/* The person and help, on their own bar at the bottom. */}
-      {(account || help) && (
-        <div className={`flex shrink-0 items-center gap-space-3 py-space-5 shadow-rule-t ${collapsed ? "flex-col" : ""}`}>
+      {(account || help || footerIcons.length > 0) && (
+        <div className={`flex shrink-0 items-center gap-space-2 py-space-5 shadow-rule-t ${collapsed ? "flex-col" : ""}`}>
           {account && <div className="min-w-0 flex-1">{account(collapsed)}</div>}
+          {footerIcons.map((item) => renderIcon(item))}
           {help && (
             <a href={help.href} target="_blank" rel="noopener noreferrer" aria-label={help.label} title={help.label}
-              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted shadow-edge">
+              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
               <Icon name="question-circle" size={18} />
             </a>
           )}

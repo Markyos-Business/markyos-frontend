@@ -86,7 +86,6 @@ export const AccountMenu = memo(function AccountMenu({
         <span className="flex min-w-0 flex-1 items-center gap-space-4 rounded-lg py-space-2 text-start">
           <Avatar initials={initials} src={account?.avatarUrl} size={28} />
           <span dir="auto" className="min-w-0 flex-1 truncate text-body font-medium text-text [text-align:match-parent]">{session?.name || session?.email}</span>
-          <Icon name="ellipsis-h" size={16} className="shrink-0 text-text-muted" />
         </span>
       ) : <Avatar initials={initials} src={account?.avatarUrl} size={variant === "row" ? 28 : 40} />}
     >
