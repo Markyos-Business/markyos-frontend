@@ -23,6 +23,7 @@ export function toDraft(doc: HelpArticleDoc): HelpArticleDraft {
     type: doc.type,
     audience: doc.audience,
     visibility: doc.visibility,
+    gettingStarted: doc.gettingStarted,
     authorId: doc.authorId,
     tagIds: doc.tagIds,
     relatedIds: doc.relatedIds,

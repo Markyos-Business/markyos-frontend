@@ -54,6 +54,8 @@ export type HelpArticleDoc = {
   type: HelpArticleType;
   audience: HelpAudience;
   visibility: HelpVisibility;
+  /** Listed under "Getting started" on the Help Center home. */
+  gettingStarted: boolean;
   authorId: number | null;
   tagIds: number[];
   relatedIds: string[];
@@ -83,7 +85,7 @@ export type HelpPreview = {
 
 /** What the editor sends: the doc's editable fields; a language left empty is dropped. */
 export type HelpTranslationDraft = Pick<HelpTranslation, "title" | "slug" | "summary" | "bodyHtml" | "seoTitle" | "seoDescription" | "ogImage">;
-export type HelpArticleDraft = Pick<HelpArticleDoc, "categoryId" | "type" | "audience" | "visibility" | "authorId" | "tagIds" | "relatedIds" | "lastReviewed"> & {
+export type HelpArticleDraft = Pick<HelpArticleDoc, "categoryId" | "type" | "audience" | "visibility" | "gettingStarted" | "authorId" | "tagIds" | "relatedIds" | "lastReviewed"> & {
   translations: Record<HelpLocale, HelpTranslationDraft>;
 };
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, DatePicker, EmptyState, Icon, InputField, LanguageTabs, MultiSelect, PageHeader, RichTextField, SelectField, Skeleton, TextareaField, useDialog, useToast } from "@/components/ui";
+import { Button, CheckboxField, DatePicker, EmptyState, Icon, InputField, LanguageTabs, MultiSelect, PageHeader, RichTextField, SelectField, Skeleton, TextareaField, useDialog, useToast } from "@/components/ui";
 import { useRequest } from "@/hooks/useRequest";
 import { errorText } from "@/lib/api/errorText";
 import { useContentMe, useMediaPicker, useTaxonomy } from "@/features/content";
@@ -155,6 +155,13 @@ export function HelpArticleEditor({ id }: { id: string }) {
             disabled={readOnly}
             onChange={(visibility) => !readOnly && editor.patch({ visibility })}
             options={[{ value: "public", label: h.categories.visibility.public }, { value: "signed_in", label: h.categories.visibility.signed_in }]}
+          />
+          <CheckboxField
+            label={f.gettingStarted}
+            description={f.gettingStartedHint}
+            checked={draft.gettingStarted}
+            disabled={readOnly}
+            onChange={(e) => editor.patch({ gettingStarted: e.target.checked })}
           />
           <SelectField
             label={f.author}
