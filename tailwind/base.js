@@ -1001,7 +1001,9 @@ export const baseStyles = [
     // and md control sizes grow to 44. Inputs, selects and buttons all read
     // `--control-height-*`, so a row of them still lines up.
     "@media (pointer: coarse)": {
-      ":root": { "--control-height-sm": "44px", "--control-height-md": "44px" },
+      // `html` raises it above the token blocks, which also sit on :root and
+      // on the theme-scoped panels (.mk-theme-*) and are emitted after this.
+      "html:root, html .mk-theme-dark, html .mk-theme-light": { "--control-height-sm": "44px", "--control-height-md": "44px" },
       // The dense 28px size keeps its look and gets a 44px target around it.
       ".mk-btn[data-size=\"xs\"]::before": {
         "content": "\"\"",
@@ -1361,6 +1363,18 @@ export const baseStyles = [
     },
     ".mk-field-row > :not(:has(.mk-field))": {
       "margin-top": "calc(1.25rem + var(--field-label-gap))",
+    },
+  },
+  {
+    // Gallery-only (/dev/controls): a field drawn in its hover or focus state
+    // without a pointer, so the states can be compared side by side.
+    ".mk-field[data-preview=\"hover\"]": {
+      "background-color": "var(--control-bg-hover)",
+      "border-bottom-color": "var(--control-border-hover)",
+    },
+    ".mk-field[data-preview=\"focus\"]": {
+      "border-bottom-color": "var(--control-border-focus)",
+      "box-shadow": "inset 0 calc(-1 * (var(--control-border-width-focus) - var(--control-border-width))) 0 var(--control-border-focus)",
     },
   },
   {
