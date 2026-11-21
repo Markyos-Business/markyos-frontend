@@ -23,6 +23,9 @@ export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsL
         if (delta) { list.scrollBy({ left: delta, behavior: "instant" }); inner = item.getBoundingClientRect(); }
       }
       setIndicator({ start: (rtl ? outer.right - inner.right : inner.left - outer.left) + Math.abs(list.scrollLeft), width: inner.width });
+      // Says the row goes on: a phone cut "Organisation" to "Organisat" with
+      // nothing to show there was more to scroll to.
+      list.dataset.overflow = family.orientation === "horizontal" && list.scrollWidth > list.clientWidth + 1 ? "1" : "";
     };
     place();
     const observer = new ResizeObserver(place);
@@ -37,7 +40,7 @@ export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsL
   const needsSelect = family.mobileAs === "select";
   return <div className={`min-w-0 ${vertical ? "shrink-0" : ""}`}>
     {needsSelect && <select aria-label={label} value={family.value} onChange={event => void family.request(event.target.value)} className="mk-tabs-mobile-select mb-2 min-h-10 w-full rounded-lg bg-surface-2 px-3 text-body text-text shadow-edge sm:hidden">{family.tabs.map(tab => <option key={tab.value} value={tab.value} disabled={tab.disabled}>{tab.label}</option>)}</select>}
-    <Primitive.List {...props} ref={(node) => { row.current = node; if (typeof ref === "function") ref(node); else if (ref) ref.current = node; }} aria-label={label} data-tabs-variant={family.variant} className={`mk-tabs mk-family-tablist relative flex min-w-0 gap-1 p-1 ${vertical ? "flex-col items-stretch" : "items-stretch overflow-x-auto"} ${needsSelect ? "hidden sm:flex" : ""} ${family.fill ? "w-full" : ""} ${className}`}>
+    <Primitive.List {...props} ref={(node) => { row.current = node; if (typeof ref === "function") ref(node); else if (ref) ref.current = node; }} aria-label={label} data-tabs-variant={family.variant} className={`mk-tabs mk-family-tablist relative flex min-w-0 gap-1 p-1 ${vertical ? "flex-col items-stretch" : "items-stretch overflow-x-auto data-[overflow=1]:ltr:[mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)] data-[overflow=1]:rtl:[mask-image:linear-gradient(to_left,black_calc(100%-32px),transparent)]"} ${needsSelect ? "hidden sm:flex" : ""} ${family.fill ? "w-full" : ""} ${className}`}>
       {children}
       {family.variant === "underline" && indicator && <span aria-hidden="true" className="mk-tabs-underline pointer-events-none absolute bottom-0 h-0.5 rounded-full bg-accent" style={{ insetInlineStart: indicator.start, width: indicator.width }} />}
     </Primitive.List>
