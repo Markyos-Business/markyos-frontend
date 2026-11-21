@@ -22,6 +22,8 @@ type PageContainerProps = {
    * beta notice with no top bar of their own, and their h1 touched it.
    */
   spaced?: boolean;
+  /** False when the page around it already is the main landmark (a tabbed page wraps its panel in one). */
+  landmark?: boolean;
 };
 
 /**
@@ -29,14 +31,15 @@ type PageContainerProps = {
  * the app footer at its end. The column is at least the pane's height, so the
  * footer sits at the bottom of a short page and after the content of a long one.
  */
-export function PageContainer({ width = "default", offline, children, spaced = false }: PageContainerProps) {
+export function PageContainer({ width = "default", offline, children, spaced = false, landmark = true }: PageContainerProps) {
   const { lang } = useInterfaceLang();
+  const Body = landmark ? "main" : "div";
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto">
+    <Body className="min-h-0 flex-1 overflow-y-auto">
       <div className={`mx-auto flex min-h-full w-full flex-col gap-5 px-space-6 pb-space-8 sm:px-space-10 ${spaced ? "pt-space-8" : ""} ${widths[width]}`}>
         {offline && !API_ENABLED ? offline : children}
         <AppFooter lang={lang} className="mt-auto" />
       </div>
-    </main>
+    </Body>
   );
 }

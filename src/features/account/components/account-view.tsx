@@ -21,7 +21,7 @@ export function AccountView() {
     <div className="min-h-screen flex flex-col">
       <StudioHeader isAr={isAr} />
 
-      <div className="flex-1 px-space-6 sm:px-space-10 pt-space-8 pb-space-10 flex flex-col gap-5 max-w-190 w-full mx-auto">
+      <main className="flex-1 px-space-6 sm:px-space-10 pt-space-8 pb-space-10 flex flex-col gap-5 max-w-190 w-full mx-auto">
         <PageHeader
           title={t("Account", "الحساب")}
           description={t("Your details and sign-in, what this account is paying for, and the organisation-wide controls.", "بياناتك وتسجيل دخولك، وما يدفعه هذا الحساب، وإعدادات المؤسسة.")}
@@ -41,7 +41,7 @@ export function AccountView() {
           )}
         </TabPanel>
         <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
-      </div>
+      </main>
     </div>
   );
 }

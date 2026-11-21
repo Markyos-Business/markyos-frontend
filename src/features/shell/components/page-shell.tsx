@@ -29,11 +29,19 @@ export function PageShell({ workspace, section, arSection, right, tabs, tabsRigh
   // Room under the top bar, so a contained page's title sits where a full-width
   // page's does (Analysis and Discovery sat 25px higher than Overview). A tab
   // bar already gives that room.
-  const content = width === "full" ? children : <PageContainer width={width} offline={offline} spaced={!tabs}>{children}</PageContainer>;
+  // A full-width page still needs its main landmark (PageContainer has one):
+  // without it a screen reader could not jump to the content.
+  // One main landmark per page: the tab panel's when there are tabs, otherwise
+  // the container's (or a plain one for a full-width page).
+  const content = width === "full" ? children : <PageContainer width={width} offline={offline} spaced={!tabs} landmark={!active}>{children}</PageContainer>;
   return (
     <>
       {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} tabsId={ids.id} panelId={ids.panelId} />}
-      {active ? <TabPanel id={ids.panelId} tabsId={ids.id} active={active} tabIndex={-1} className="flex min-h-0 flex-1 flex-col overflow-hidden">{content}</TabPanel> : content}
+      {active ? (
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <TabPanel id={ids.panelId} tabsId={ids.id} active={active} tabIndex={-1} className="flex min-h-0 flex-1 flex-col overflow-hidden">{content}</TabPanel>
+        </main>
+      ) : width === "full" ? <main className="flex min-h-0 flex-1 flex-col">{content}</main> : content}
     </>
   );
 }
