@@ -3,6 +3,7 @@
 export * from "./components/account-header";
 export * from "./components/app-layout";
 export * from "./components/brand-access-notice";
+export * from "./components/client-brand-home";
 export * from "./components/beta-notice";
 export * from "./components/page-container";
 export * from "./components/page-shell";
