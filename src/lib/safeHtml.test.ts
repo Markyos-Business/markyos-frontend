@@ -31,3 +31,27 @@ describe("sanitizeRichHtml media", () => {
     }
   });
 });
+
+describe("sanitizeRichHtml help mode", () => {
+  const html =
+    '<aside class="callout-warning"><p>Careful</p></aside><aside class="evil">x</aside>' +
+    "<pre><code>npm run check</code></pre>" +
+    '<p><a class="video-embed" href="https://youtu.be/abc">v</a><a class="other" href="https://x.test">x</a></p>' +
+    '<iframe src="https://evil.test"></iframe>';
+
+  it("keeps callouts, code and the video marker, and nothing else", () => {
+    const out = sanitizeRichHtml(html, { help: true });
+    expect(out).toContain('<aside class="callout-warning">');
+    expect(out).toContain("<pre><code>npm run check</code></pre>");
+    expect(out).toContain('class="video-embed"');
+    expect(out).not.toContain("evil");
+    expect(out).not.toContain('class="other"');
+    expect(out).not.toContain("iframe");
+  });
+
+  it("leaves them out everywhere else", () => {
+    const out = sanitizeRichHtml(html, { media: true });
+    expect(out).not.toContain("<aside");
+    expect(out).not.toContain("video-embed");
+  });
+});

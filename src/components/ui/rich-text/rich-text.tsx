@@ -24,7 +24,7 @@ import { useDialog } from "../overlay/dialog";
 
 /** Detects whether a stored value is already an HTML fragment. */
 function isHtml(value: string): boolean {
-  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a|figure|img|hr)\b/i.test(value);
+  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a|figure|img|hr|pre|aside)\b/i.test(value);
 }
 
 function escapeHtml(s: string): string {
@@ -39,9 +39,9 @@ function escapeHtml(s: string): string {
  * lines into paragraphs, so old data keeps rendering correctly with no
  * migration step and no risk of a half-converted field.
  */
-const toRichHtml = (value: string, { media = false }: { media?: boolean } = {}): string => {
+const toRichHtml = (value: string, { media = false, help = false }: { media?: boolean; help?: boolean } = {}): string => {
   if (!value.trim()) return "";
-  if (isHtml(value)) return sanitizeRichHtml(value, { media });
+  if (isHtml(value)) return sanitizeRichHtml(value, { media, help });
   return value
     .split(/\n{2,}/)
     .map((p) => `<p>${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`)
@@ -86,7 +86,11 @@ type ToolAction =
   | "link"
   | "table"
   | "row"
-  | "clear";
+  | "clear"
+  | "code"
+  | "note"
+  | "warning"
+  | "video";
 
 /**
  * Declared once at module scope rather than rebuilt per render. Building the
@@ -120,6 +124,22 @@ const ARTICLE_TOOLS: typeof TOOLS = [
   ...TOOLS.filter((t) => ["table", "row", "clear"].includes(t.action)),
 ];
 
+/**
+ * The Help Center set: the article tools plus code blocks, two kinds of
+ * callout and a video link (YouTube or Vimeo; the website embeds it).
+ */
+const HELP_TOOLS: typeof TOOLS = [
+  ...ARTICLE_TOOLS.filter((t) => !["table", "row", "clear"].includes(t.action)),
+  { action: "code", icon: "file-code", en: "Code block", ar: "كتلة شيفرة" },
+  { action: "note", icon: "info-circle", en: "Note callout", ar: "تنبيه ملاحظة" },
+  { action: "warning", icon: "exclamation-circle", en: "Warning callout", ar: "تنبيه تحذير" },
+  { action: "video", icon: "play", en: "Video", ar: "فيديو" },
+  ...ARTICLE_TOOLS.filter((t) => ["table", "row", "clear"].includes(t.action)),
+];
+
+/** A video link the website can embed: YouTube or Vimeo, https only. */
+const VIDEO_HOST = /^https:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\//i;
+
 const escapeAttr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 type RichTextEditorProps = {
@@ -140,7 +160,7 @@ type RichTextEditorProps = {
    * `article` adds a second heading level, images and dividers, for website
    * content. Brand copy keeps the standard set, which has no images.
    */
-  tools?: "standard" | "article";
+  tools?: "standard" | "article" | "help";
   /** With `article` tools: asks for an image (a media picker); null cancels. */
   onInsertImage?: () => Promise<{ url: string; alt: string } | null>;
   /** Ids and states for the editable area, from a Field around it. */
@@ -168,8 +188,10 @@ const RichTextEditor = ({
   onInsertImage,
   editorProps,
 }: RichTextEditorProps) => {
-  const article = tools === "article";
-  const toolbar = article ? ARTICLE_TOOLS.filter((t) => t.action !== "image" || onInsertImage) : TOOLS;
+  const help = tools === "help";
+  // The Help set is a superset of the article set (two heading levels, images, dividers).
+  const article = tools === "article" || help;
+  const toolbar = (help ? HELP_TOOLS : article ? ARTICLE_TOOLS : TOOLS).filter((t) => t.action !== "image" || onInsertImage);
   const ref = useRef<HTMLDivElement | null>(null);
   // The HTML this editor last sent: when `value` comes back as that, it's our
   // own typing and the DOM already shows it; anything else came from outside.
@@ -189,10 +211,10 @@ const RichTextEditor = ({
   useEffect(() => {
     const el = ref.current;
     if (!el || value === sent.current) return;
-    const html = toRichHtml(value, { media: article });
+    const html = toRichHtml(value, { media: article, help });
     if (el.innerHTML !== html) el.innerHTML = html;
     sent.current = value;
-  }, [value, article]);
+  }, [value, article, help]);
 
   // maxLength counts text, not tags, so it's checked before each insertion.
   useEffect(() => {
@@ -218,7 +240,7 @@ const RichTextEditor = ({
     (el: HTMLDivElement | null) => {
       ref.current = el;
       if (!el) return;
-      el.innerHTML = toRichHtml(value, { media: article });
+      el.innerHTML = toRichHtml(value, { media: article, help });
       sent.current = value;
       if (autoFocus) {
         el.focus();
@@ -232,7 +254,7 @@ const RichTextEditor = ({
     },
     // Intentionally not re-running on `value`: see the comment above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [autoFocus, article]
+    [autoFocus, article, help]
   );
 
   const run = useCallback(
@@ -308,6 +330,35 @@ const RichTextEditor = ({
           return exec("formatBlock", "blockquote");
         case "clear":
           return exec("removeFormat");
+        case "code":
+          return exec("formatBlock", "pre");
+        case "note":
+        case "warning": {
+          const text = window.getSelection()?.toString().trim() || (isAr ? "اكتب التنبيه هنا." : "Write the callout here.");
+          return exec("insertHTML", `<aside class="callout-${action}"><p>${escapeAttr(text)}</p></aside><p><br></p>`);
+        }
+        case "video": {
+          void (async () => {
+            const url = await askKeepingSelection(() =>
+              prompt({
+                title: isAr ? "إضافة فيديو" : "Add a video",
+                label: isAr ? "رابط يوتيوب أو فيميو" : "YouTube or Vimeo link",
+                placeholder: "https://www.youtube.com/watch?v=…",
+                confirmLabel: isAr ? "إضافة" : "Add",
+                isAr,
+              })
+            );
+            if (!url) return;
+            if (!VIDEO_HOST.test(url.trim())) {
+              // Any other address stays a plain link; only these two are embedded.
+              exec("createLink", url.trim());
+              return;
+            }
+            const safe = escapeAttr(url.trim());
+            exec("insertHTML", `<p><a class="video-embed" href="${safe}">${safe}</a></p><p><br></p>`);
+          })();
+          return;
+        }
         case "link": {
           void (async () => {
             const url = await askKeepingSelection(() =>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { FormDialog, InputField, SegmentedControl, SelectField, TextareaField } from "@/components/ui";
+import { FormDialog, InputField, SelectField, TextareaField } from "@/components/ui";
+import { LabelledChoice } from "../shared/labelled-choice";
 import { saveHelpCategory } from "../../api/help.api";
 import { CATEGORY_ICONS } from "../../copy";
 import { useHelpCopy } from "../../hooks/use-help-copy";
@@ -67,13 +68,13 @@ export function CategoryDialog({ category, all, onClose, onSaved }: CategoryDial
         onChange={(value) => set({ parent: value ? Number(value) : null })}
         options={[{ value: "", label: t.form.parentNone }, ...parents.map((c) => ({ value: String(c.id), label: name(c) }))]}
       />
-      <SegmentedControl<HelpVisibility>
+      <LabelledChoice<HelpVisibility>
         label={t.form.visibility}
         value={draft.visibility ?? "public"}
         onChange={(visibility) => set({ visibility })}
         options={[{ value: "public", label: t.visibility.public }, { value: "signed_in", label: t.visibility.signed_in }]}
       />
-      <SegmentedControl<HelpCategoryStatus>
+      <LabelledChoice<HelpCategoryStatus>
         label={t.form.status}
         value={draft.status ?? "active"}
         onChange={(status) => set({ status })}

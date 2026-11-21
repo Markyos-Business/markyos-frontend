@@ -204,6 +204,51 @@ export const baseStyles = [
       "text-decoration": "underline",
     },
   },
+  /* Help Center blocks (HC-EPIC-001): callouts and code (a video stays a link
+  here; the website embeds it),
+  styled the same in the editor and on the page so a writer sees what a reader will. */
+  {
+    ".rich-text aside": {
+      "margin": "0 0 12px",
+      "padding": "12px 16px",
+      "border-radius": "8px",
+      "line-height": "1.7",
+    },
+  },
+  {
+    ".rich-text aside.callout-note": {
+      "background": "var(--accent-soft)",
+      "box-shadow": "inset 2px 0 0 var(--accent)",
+    },
+  },
+  {
+    ".rich-text aside.callout-warning": {
+      "background": "var(--warning-soft)",
+      "box-shadow": "inset 2px 0 0 var(--warning)",
+    },
+  },
+  {
+    "[dir=rtl] .rich-text aside.callout-note, .rich-text[dir=rtl] aside.callout-note": { "box-shadow": "inset -2px 0 0 var(--accent)" },
+  },
+  {
+    "[dir=rtl] .rich-text aside.callout-warning, .rich-text[dir=rtl] aside.callout-warning": { "box-shadow": "inset -2px 0 0 var(--warning)" },
+  },
+  {
+    ".rich-text pre": {
+      "margin": "0 0 12px",
+      "padding": "12px 16px",
+      "border-radius": "8px",
+      "background": "var(--surface-2)",
+      "box-shadow": "inset 0 0 0 1px var(--hairline)",
+      "font-family": "var(--font-mono, ui-monospace, monospace)",
+      "font-size": "13px",
+      "line-height": "1.6",
+      "white-space": "pre-wrap",
+      // Code reads left to right in an Arabic article too.
+      "direction": "ltr",
+      "text-align": "left", // physical-ok: code is always left to right, in an Arabic article too
+    },
+  },
   {
     ".rich-text strong": {
       "font-weight": "600",
