@@ -1,6 +1,7 @@
 "use client";
 
 import { revealInScroller } from "@/lib/scroll";
+import { HelpButton, type HelpScreen } from "@/features/helpcenter";
 import { Breadcrumb, TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { NotificationBell } from "@/features/notifications";
@@ -19,8 +20,10 @@ export interface TopBarTab {
 }
 
 /** Brand breadcrumb, one global account menu, then page actions and sections. */
-export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, tabsId, panelId }: {
+export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, tabsId, panelId, help }: {
   workspace: Workspace; section: string; arSection?: string; right?: ReactNode;
+  /** The screen's ? button: opens the Help panel on its article (helpcenter help-map). */
+  help?: HelpScreen;
   tabs?: TopBarTab[]; tabsRight?: ReactNode; tabsId: string; panelId: string;
 }) {
   const { uiLang } = useAppActions();
@@ -42,6 +45,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
           { label: isAr && arSection ? arSection : section },
         ]} />
         {/* The account sits at the bottom of the brand sidebar; the bell stays here. */}
+        {help && <HelpButton screen={help} />}
         <NotificationBell isAr={isAr} />
       </div>
       {right && <div className="flex flex-wrap items-center gap-ctl-row px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}

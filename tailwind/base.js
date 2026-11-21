@@ -184,6 +184,18 @@ export const baseStyles = [
       "margin-bottom": "4px",
     },
   },
+  // Tailwind's reset takes list markers off; a list in written content needs
+  // them back (fixed 21 Nov 2026: numbered steps showed no numbers).
+  {
+    ".rich-text ul": {
+      "list-style": "disc",
+    },
+  },
+  {
+    ".rich-text ol": {
+      "list-style": "decimal",
+    },
+  },
   {
     ".rich-text blockquote": {
       "margin": "0 0 12px",

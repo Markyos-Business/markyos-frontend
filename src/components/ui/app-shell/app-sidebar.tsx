@@ -98,8 +98,9 @@ export function AppSidebar({
   card?: ReactNode;
   /** The bottom bar's person: given whether the rail is collapsed. */
   account?: (collapsed: boolean) => ReactNode;
-  /** The bottom bar's help link. */
-  help?: { href: string; label: string };
+  /** The bottom bar's help item: a link, or (with `onOpen`) a button that
+   *  opens the app's help panel, the link kept as its fallback. */
+  help?: { href: string; label: string; onOpen?: () => void };
   /** Where the collapsed preference is remembered, per sidebar. */
   storageKey: string;
   isAr?: boolean;
@@ -313,7 +314,13 @@ export function AppSidebar({
         <div className={`flex shrink-0 items-center gap-space-2 py-space-5 shadow-rule-t ${collapsed ? "flex-col" : ""}`}>
           {account && <div className="min-w-0 flex-1">{account(collapsed)}</div>}
           {footerIcons.map((item) => renderIcon(item))}
-          {help && (
+          {help?.onOpen && (
+            <button type="button" onClick={help.onOpen} aria-label={help.label} title={help.label}
+              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
+              <Icon name="question-circle" size={18} />
+            </button>
+          )}
+          {help && !help.onOpen && (
             <a href={help.href} target="_blank" rel="noopener noreferrer" aria-label={help.label} title={help.label}
               className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
               <Icon name="question-circle" size={18} />

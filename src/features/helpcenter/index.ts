@@ -6,3 +6,7 @@ export { HelpArticleEditor } from "./components/articles/help-article-editor";
 export { HelpPreviewView } from "./components/preview/help-preview-view";
 export { HelpFeedbackView } from "./components/feedback/help-feedback-view";
 export { HelpAnalyticsView } from "./components/analytics/help-analytics-view";
+export { HelpPanelProvider, useHelpPanel } from "./components/panel/help-panel-provider";
+export { HelpButton } from "./components/panel/help-button";
+export { HELP_SCREENS } from "./help-map";
+export type { HelpScreen } from "./help-map";

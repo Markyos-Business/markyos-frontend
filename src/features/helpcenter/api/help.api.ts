@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { HelpAnalytics, HelpFeedbackList, HelpFeedbackRow, HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
+import type { HelpFeedbackReason, HelpAppArticle, HelpCardItem, HelpAnalytics, HelpFeedbackList, HelpFeedbackRow, HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
 
 export const listHelpCategories = () => api<HelpCategory[]>("/help/admin/categories/");
 
@@ -70,3 +70,23 @@ export const resolveHelpFeedback = (id: number, resolved: boolean) =>
 /** The dashboard for `from`–`to` (YYYY-MM-DD, Help timezone days, both included). */
 export const getHelpAnalytics = (from: string, to: string) =>
   api<HelpAnalytics>(`/help/admin/analytics/?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+
+// ── The in-app help panel ──
+
+/** By its slug in either language; answered in `locale` when it can be. */
+export const getAppHelpArticle = (slug: string, locale: HelpLocale) =>
+  api<HelpAppArticle>(`/help/app/articles/${encodeURIComponent(slug)}/?locale=${locale}`);
+
+export const searchAppHelp = (q: string, locale: HelpLocale, log = false) =>
+  api<{ total: number; results: (HelpCardItem & { snippet: string })[]; queryId?: number }>(
+    `/help/app/search/?${new URLSearchParams({ q, locale, ...(log ? { log: "1" } : {}) })}`,
+  );
+
+export const logAppHelpClick = (queryId: number, articleId: string) =>
+  api<void>("/help/public/search/click/", { method: "POST", body: { queryId, articleId } });
+
+export const getHelpFront = (locale: HelpLocale) =>
+  api<{ popular: HelpCardItem[]; gettingStarted: HelpCardItem[] }>(`/help/public/home/?locale=${locale}`);
+
+export const sendAppHelpFeedback = (articleId: string, body: { locale: HelpLocale; helpful: boolean; reasons?: HelpFeedbackReason[]; comment?: string }) =>
+  api<{ helpful: boolean }>(`/help/app/articles/${articleId}/feedback/`, { method: "POST", body });

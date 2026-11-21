@@ -9,7 +9,7 @@ export default function SettingsPage() {
   const page = useSettingsPage(slug);
   if (!page) return null;
   return (
-    <PageShell {...page.shell}>
+    <PageShell {...page.shell} help="brand.settings">
       <SettingsView {...page.view} />
     </PageShell>
   );

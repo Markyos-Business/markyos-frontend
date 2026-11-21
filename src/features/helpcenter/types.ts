@@ -133,6 +133,21 @@ export type HelpAnalytics = {
 export type HelpAnalyticsArticle = { id: string; titleEn: string; titleAr: string; categoryId: number | null; views: number; helpful: number; notHelpful: number; helpfulPct: number | null };
 export type HelpAnalyticsSearch = { term: string; locale: HelpLocale; searches: number; clicks: number; ctr: number };
 
+/** A card in the help panel's lists. */
+export type HelpCardItem = { id: string; title: string; slug: string; summary: string; type: HelpArticleType; categorySlug: string; categoryTitle: string };
+
+/** One article as the in-app help panel reads it. */
+export type HelpAppArticle = HelpCardItem & {
+  locale: HelpLocale;
+  bodyHtml: string;
+  publishedAt: string | null;
+  related: HelpCardItem[];
+  /** False: shown in the language it has, because it isn't published in the reader's. */
+  inLocale: boolean;
+  /** Also on the public website (not signed-in-only). */
+  onWebsite: boolean;
+};
+
 export type HelpArticleRow = {
   id: string;
   titleEn: string;
