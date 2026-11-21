@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchField } from "@/components/ui";
+import { SearchField, SegmentedControl } from "@/components/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
@@ -66,22 +66,13 @@ export function ImagePicker({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex rounded-full p-0.5" style={{ background: "var(--surface-1)" }}>
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setTab(t.key)}
-            className="flex-1 h-8 rounded-full text-[11px] font-semibold cursor-pointer"
-            style={{
-              background: tab === t.key ? "var(--surface-2)" : "transparent",
-              color: tab === t.key ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {isAr ? t.arLabel : t.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "مصدر الصورة" : "Image source"}
+        options={tabs.map((t) => ({ value: t.key, label: isAr ? t.arLabel : t.label }))}
+        value={tab}
+        onChange={setTab}
+      />
 
       {tab === "library" && (
         <LibraryTab ws={ws} isAr={isAr} multiple={multiple} selectedIds={selectedIds} onChange={onChange} />
@@ -398,22 +389,13 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
 
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex rounded-full p-0.5" style={{ background: "var(--surface-1)" }}>
-        {(["openverse", "unsplash"] as StockSource[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => switchSource(s)}
-            className="flex-1 h-7 rounded-full text-[11px] font-semibold cursor-pointer capitalize"
-            style={{
-              background: source === s ? "var(--surface-2)" : "transparent",
-              color: source === s ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "مكتبة الصور" : "Photo library"}
+        options={(["openverse", "unsplash"] as StockSource[]).map((src) => ({ value: src, label: src === "openverse" ? "Openverse" : "Unsplash" }))}
+        value={source}
+        onChange={switchSource}
+      />
 
       {needsKey ? (
         <div className="flex flex-col gap-field-stack-compact">

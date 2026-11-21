@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, SegmentedControl } from "@/components/ui";
 import { ColorPopover } from "@/components/ui";
 import {
   backgroundInkWarning,
@@ -178,24 +178,13 @@ export function DesignInspector({
        * the per-part options to be real controls with labels rather than a row of
        * unexplained toggles.
        */}
-      <div className="flex rounded-full p-0.5 shrink-0" style={{ background: "var(--surface-1)" }} role="tablist">
-        {TABS.filter((t) => t !== "content" || hasContentTab).map((t) => (
-          <button
-            key={t}
-            type="button"
-            role="tab"
-            aria-selected={active === t}
-            onClick={() => setTab(t)}
-            className="flex-1 h-7 rounded-full text-[10.5px] font-semibold cursor-pointer"
-            style={{
-              background: active === t ? "var(--surface-2)" : "transparent",
-              color: active === t ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {TAB_LABEL[t][isAr ? "ar" : "en"]}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "أقسام الإعدادات" : "Settings sections"}
+        options={TABS.filter((t) => t !== "content" || hasContentTab).map((t) => ({ value: t, label: TAB_LABEL[t][isAr ? "ar" : "en"] }))}
+        value={active}
+        onChange={setTab}
+      />
 
       {active === "content" && sectionId && (
         <>
@@ -803,34 +792,15 @@ function Choice<T extends string | number>({
         {label}
         <OverrideDot scopes={scopes} activeScope={activeScope} onReset={onReset} isAr={isAr} />
       </span>
-      <div className="flex rounded-full p-0.5 gap-ctl-row" style={{ background: "var(--surface-1)" }}>
-        <button
-          type="button"
-          onClick={() => onChange(undefined)}
-          title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-8 px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0"
-          style={{
-            background: value === undefined ? "var(--surface-2)" : "transparent",
-            color: value === undefined ? "var(--text)" : "var(--text-faint)",
-          }}
-        >
-          {isAr ? "تلقائي" : "Auto"}
-        </button>
-        {options.map((o) => (
-          <button
-            key={String(o.value)}
-            type="button"
-            onClick={() => onChange(o.value)}
-            className="flex-1 h-8 rounded-full text-[11px] font-semibold cursor-pointer"
-            style={{
-              background: value === o.value ? "var(--accent-soft)" : "transparent",
-              color: value === o.value ? "var(--accent-on-soft)" : "var(--text-faint)",
-            }}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={label}
+        // "Auto" leaves the template's own choice; the rest are indexed so any
+        // option value (a number, a word) can ride the kit's string values.
+        options={[{ value: "auto", label: isAr ? "تلقائي" : "Auto" }, ...options.map((o, i) => ({ value: String(i), label: o.label }))]}
+        value={value === undefined ? "auto" : String(Math.max(0, options.findIndex((o) => o.value === value)))}
+        onChange={(v) => onChange(v === "auto" ? undefined : options[Number(v)].value)}
+      />
     </div>
   );
 }
