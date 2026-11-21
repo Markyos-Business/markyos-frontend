@@ -53,6 +53,18 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 11 (21 Nov 2026): keyboard, dialogs, long names, and the team table
+
+A keyboard walk through 21 screens, a focus check on every dialog that opens from a page button, and a stress test with long English and Arabic brand and person names at 1440 and 390px.
+
+- No skip link: the first Tab went into the sidebar on every page. A new kit `SkipLink` is now the first stop ("Skip to content" / "انتقل إلى المحتوى") and moves focus into the page's main area.
+- On brand pages the first Tab skipped even that and landed after the active sidebar item. Chrome moves the keyboard's starting point to whatever `scrollIntoView` reveals, and the sidebar and top bar used it to bring the active item into view. Both now scroll their own row only (`lib/scroll.ts`).
+- Closing Invite people dropped focus on the page body. A field that autofocuses took focus before the popup recorded its opener; every popup now returns focus to the button that opened it.
+- A long name ran under the help button and out of the sidebar's account row; it now ends in "…". Brand names already truncated everywhere they appear.
+- Team: the brand's people are a table (person, role) on the kit `DataTable`, like People. Owners change the role in the row and find Make owner and Remove in the row's menu, disabled with a reason on the owner. On a phone each person is a card.
+
+All 771 unit tests and the 30 e2e tests pass.
+
 ## Round 10 (21 Nov 2026): accessibility audit
 
 An automated axe-core audit of about 30 screens (studio in English light and Arabic dark, admin, client and public pages). Against WCAG 2.1 A and AA the app already passed with no violations. With axe's best-practice rules added it found 96 structural issues, now 0:
