@@ -20,7 +20,7 @@ export function BrandAccessNotice({ workspace, isAr }: { workspace: Workspace; i
             : "Reviewers see discovery forms and analysis through shared links from the brand owner. Ask the owner for a link, or return to the brand content available to you."}
           action={
             <div className="flex flex-wrap justify-center gap-ctl-row">
-              {reviewHref && <Button href={reviewHref} variant="solid">{isAr ? "مراجعة الدليل" : "Review guideline"}</Button>}
+              {reviewHref && <Button href={reviewHref} variant="primary">{isAr ? "مراجعة الدليل" : "Review guideline"}</Button>}
               <Button href={`/w/${workspace.slug}/overview`} variant="outline">{isAr ? "العودة إلى نظرة عامة" : "Back to overview"}</Button>
             </div>
           }
