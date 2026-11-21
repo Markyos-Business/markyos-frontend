@@ -198,7 +198,7 @@ const ColorPicker = ({ value, onChange, swatches, recent, defaultNotation = "hex
         >
           <span className={`${THUMB} top-1/2`} style={{ ...THUMB_RING, left: `${(hsv.h / 360) * 100}%`, background: hueColor }} />
         </div>
-        {canDrop && <IconButton icon="eye-dropper" label={t.eyedropper} variant="soft" onClick={pickFromScreen} />}
+        {canDrop && <IconButton icon="eye-dropper" label={t.eyedropper} variant="secondary" onClick={pickFromScreen} />}
       </div>
 
       <div className="flex items-center justify-between gap-space-3">

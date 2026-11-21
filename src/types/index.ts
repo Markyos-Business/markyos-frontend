@@ -1114,6 +1114,13 @@ export interface Workspace {
   /** The last published copy, or null if this guideline has never gone live. */
   published: PublishedSnapshot | null;
   publishedAt: number | null;
+  /**
+   * The server's answer, on read only: whether /v/<slug> serves the published
+   * site right now, and whether this brand may go live at all (a paid plan).
+   * Absent in the offline demo, where publishing is local.
+   */
+  live?: boolean;
+  canGoLive?: boolean;
 }
 
 /**
@@ -1122,7 +1129,7 @@ export interface Workspace {
  * live brand book without anything reaching its client until it says so.
  * Omitting the publish fields keeps the snapshot from nesting into itself.
  */
-export type PublishedSnapshot = Omit<Workspace, "published" | "publishedAt">;
+export type PublishedSnapshot = Omit<Workspace, "published" | "publishedAt" | "live" | "canGoLive">;
 
 export interface Session {
   /** Which account this session belongs to — the join back to `accounts`. */

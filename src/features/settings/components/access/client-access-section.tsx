@@ -26,7 +26,7 @@ export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; c
           {/* Shown in the clear on purpose — the studio reads it out to a
               client — so it gets a Copy, like the client link below. */}
           <CopyButton
-            variant="soft"
+            variant="secondary"
             size="md"
             text={password}
             disabled={!password}
@@ -36,7 +36,7 @@ export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; c
             failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             className="shrink-0"
           />
-          <Button variant="soft" onClick={() => setClientPassword(ws.id, randomPassword())} title={t("Replace it with a new random one", "استبدلها بأخرى عشوائية")} className="shrink-0 shadow-edge">
+          <Button variant="secondary" onClick={() => setClientPassword(ws.id, randomPassword())} title={t("Replace it with a new random one", "استبدلها بأخرى عشوائية")} className="shrink-0 shadow-edge">
             {t("Generate", "توليد")}
           </Button>
         </div>
@@ -53,7 +53,7 @@ export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; c
           {clientLink}
         </span>
         <CopyButton
-          variant="link"
+          variant="ghost"
           text={clientLink}
           label={t("Copy", "نسخ")}
           copiedLabel={t("Copied", "تم النسخ")}

@@ -61,7 +61,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
       title={isAr ? "خيارات التموضع" : "Positioning options"}
       icon="bullseye"
       right={
-        <Button variant="link" onClick={() => setAdding((v) => !v)}>
+        <Button variant="ghost" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
         </Button>
       }
@@ -69,7 +69,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
       {adding && (
         <form onSubmit={submit} className="flex flex-col gap-field-stack-compact rounded-widget bg-surface-2 p-space-6">
           <MiniInput value={name} onChange={setName} placeholder={isAr ? "اسم الخيار — مثلًا: قهوة الصحراء" : "Option name — e.g. Desert roast"} />
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة خيار" : "Add option"}
           </Button>
         </form>
@@ -143,7 +143,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
                   <AddNote isAr={isAr} onAdd={(note) => setNotes(o, [...notes, note])} />
                 </Field>
                 {!inUse && text(o, "positioning").trim() && (
-                  <Button variant="outline" size="sm" className="self-start" icon={<Icon name="check" size={16} />} onClick={() => void choose(o)}>
+                  <Button variant="secondary" size="sm" className="self-start" icon={<Icon name="check" size={16} />} onClick={() => void choose(o)}>
                     {isAr ? "استخدام كتموضع للعلامة" : "Use as the brand's positioning"}
                   </Button>
                 )}

@@ -129,7 +129,7 @@ function LibraryTab({
       {assets.map((a) => {
         const active = selectedIds.includes(a.id);
         return (
-          <button /* ctl-audit-ignore: an image tile in the picker grid */
+          <button /* ctl-audit-ignore: an image tile in the picker grid */ /* button-audit-ignore: an image tile, the whole thumbnail is the control */
             key={a.id}
             type="button"
             title={a.fileName}
@@ -215,7 +215,7 @@ function UploadTab({
         hidden
         onChange={(e) => void handleFiles(e.target.files)}
       />
-      <button /* ctl-audit-ignore: the upload drop tile in the picker grid */
+      <button /* ctl-audit-ignore: the upload drop tile in the picker grid */ /* button-audit-ignore: a dashed upload drop tile */
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
@@ -293,7 +293,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
         placeholder="https://…/photo.jpg"
         className="mk-field mk-field-sm"
       />
-      <Button variant="soft" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
+      <Button variant="secondary" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
         {busy ? (isAr ? "جارٍ الجلب…" : "Fetching…") : isAr ? "إضافة الصورة" : "Add image"}
       </Button>
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
@@ -406,7 +406,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
             className="mk-field mk-field-sm"
           />
           <Button
-            variant="soft"
+            variant="secondary"
             size="sm"
             block
             disabled={!keyDraft.trim()}
@@ -450,7 +450,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
           {results.length > 0 && (
             <div className="grid grid-cols-2 gap-2">
               {results.map((r) => (
-                <button /* ctl-audit-ignore: an image tile in the stock results grid */
+                <button /* ctl-audit-ignore: an image tile in the stock results grid */ /* button-audit-ignore: a stock image tile, the whole thumbnail is the control */
                   key={r.id}
                   type="button"
                   disabled={!!importing}

@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint, Button } from "@/components/ui";
+import { useToast, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { valueIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -39,14 +39,9 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "القيم الجوهرية" : "Core values"}
       icon="bullseye"
       right={
-        <button
-          type="button"
-          onClick={() => setAdding((v) => !v)}
-          className="mk-tap text-[12px] font-semibold cursor-pointer"
-          style={{ color: "var(--accent-text)" }}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-        </button>
+        </Button>
       }
     >
       {adding && (
@@ -61,7 +56,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setDescription}
             placeholder={isAr ? "ماذا تعني هذه القيمة عمليًا؟" : "What does this actually mean in practice?"}
           />
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة قيمة" : "Add value"}
           </Button>
         </form>
@@ -91,16 +86,16 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     className="font-semibold text-[13px] flex-1 min-w-0"
                     onCommit={(next) => updateCoreValue(ws.id, v.id, isAr ? { titleAr: next } : { title: next })}
                   />
-                  <button
-                    type="button"
+                  <IconButton
+                    icon="times"
+                    iconSize={16}
+                    size="xs"
                     onClick={() => removeCoreValue(ws.id, v.id)}
-                    aria-label={
+                    label={
                       isAr ? `حذف ${shown.title || "القيمة"}` : `Remove ${shown.title || "value"}`
                     }
-                    className="mk-icon-btn cursor-pointer shrink-0 transition-opacity opacity-50 hover:opacity-100"
-                  >
-                    <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                  </button>
+                    className="shrink-0"
+                  />
                 </div>
                 <InlineText
                   value={shown.description}

@@ -16,7 +16,7 @@ export interface ToggleGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "
   onValueChange?: (value: string | string[]) => void;
   orientation?: "horizontal" | "vertical";
 }
-export const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>(function ToggleGroup({ label = "Choose view", type = "single", options, value, defaultValue, onValueChange, orientation = "horizontal", size = "sm", variant = "outline", onKeyDown, className = "", ...props }, ref) {
+export const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>(function ToggleGroup({ label = "Choose view", type = "single", options, value, defaultValue, onValueChange, orientation = "horizontal", size = "sm", variant = "secondary", onKeyDown, className = "", ...props }, ref) {
   const [local, setLocal] = useState<string | string[]>(defaultValue ?? (type === "single" ? "" : []));
   const [focused, setFocused] = useState<string | null>(null);
   const selection = value ?? local;

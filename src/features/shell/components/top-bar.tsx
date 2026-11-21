@@ -52,7 +52,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
       {!!tabs?.length && <div className="flex flex-wrap items-start gap-ctl-row px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
         {/* One row that scrolls on phones and tablets (Strategy has ten tabs); wraps from lg up. */}
         <div ref={row} id={tabsId} role="tablist" aria-label={isAr && arSection ? arSection : section} aria-orientation="horizontal" className="mk-tabs mk-no-hover flex min-w-0 flex-1 items-center gap-ctl-row overflow-x-auto pb-space-1 lg:flex-wrap lg:overflow-visible lg:pb-0">
-          {tabs.map(tab => <button key={tab.key} type="button" role="tab" id={tabButtonId(tabsId, tab.key)}
+          {tabs.map(tab => <button /* button-audit-ignore: a tab in the page's tablist */ key={tab.key} type="button" role="tab" id={tabButtonId(tabsId, tab.key)}
             aria-selected={tab.active} aria-controls={panelId} data-tab-key={tab.key} {...tabProps(tab.key)} onClick={tab.onSelect}
             className={`relative isolate flex h-control-sm shrink-0 cursor-pointer items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body font-medium transition-colors ${tab.active ? "text-text" : "text-text-muted"}`}>
             {tab.active && <TabIndicator />}

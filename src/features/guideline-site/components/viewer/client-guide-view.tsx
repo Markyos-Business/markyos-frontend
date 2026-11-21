@@ -62,19 +62,11 @@ export function ClientGuideView({ slug, page }: { slug: string; page?: string })
   const { ws, theme } = v;
   if (!theme) return null;
 
-  if (ws.billing.plan === "free") {
-    return (
-      <CenteredMessage
-        icon="clock"
-        title="Not available yet"
-        arTitle="غير متاح بعد"
-        body="This brand guideline isn't available yet. Check back once its owner publishes it."
-        arBody="هذا الدليل غير متاح بعد. يمكنك العودة إليه بعد أن ينشره مالك العلامة."
-        isAr={ws.primaryLocale === "ar"}
-        theme={theme}
-      />
-    );
-  }
+  // No plan check here (review, 21 Nov 2026). The server decides what goes
+  // live: it doesn't serve a published site that can't go live, and it
+  // refuses to publish one. A second check in the browser read the snapshot's
+  // `billing`, so it also blocked the owner's own preview (?preview=1) and a
+  // staging brand the server allowed.
 
   if (ws.clientAccess.passwordEnabled && !v.unlocked) {
     return (

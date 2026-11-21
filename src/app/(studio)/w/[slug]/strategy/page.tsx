@@ -1,17 +1,20 @@
-"use client";
+import { redirect } from "next/navigation";
+import { isStrategyTab, strategySectionHref } from "@/features/strategy";
 
-import { useParams } from "next/navigation";
-import { PageShell } from "@/features/shell";
-import { ImportStrategyModal, StrategyActions, StrategyEditView, StrategyReadView, useStrategyPage } from "@/features/strategy";
-
-export default function StrategyPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const page = useStrategyPage(slug);
-  if (!page) return null;
-  return (
-    <PageShell {...page.shell} right={<StrategyActions {...page.actions} />}>
-      {page.importOpen && <ImportStrategyModal ws={page.ws} onClose={page.onCloseImport} />}
-      {page.mode === "read" ? <StrategyReadView ws={page.ws} isAr={page.isAr} lang={page.lang} /> : <StrategyEditView {...page.edit} />}
-    </PageShell>
-  );
+/**
+ * Every Strategy section has its own address since 22 Nov 2026
+ * (/w/<slug>/strategy/<section>). The bare page, and the old `?tab=` links,
+ * land on the section they meant, or on the first one.
+ */
+export default async function StrategyRedirect({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string | string[] }>;
+}) {
+  const { slug } = await params;
+  const { tab } = await searchParams;
+  const wanted = Array.isArray(tab) ? tab[0] : tab;
+  redirect(strategySectionHref(slug, isStrategyTab(wanted) ? wanted : "purpose"));
 }

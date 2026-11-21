@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Icon, PageHeader, Button } from "@/components/ui";
+import { Icon, PageHeader, Button, ToggleButton } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { LogoSlotCard } from "./logo-slot-card";
 import { ClearspacePanel } from "./clearspace-panel";
@@ -262,7 +262,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
             className="mk-field resize-none"
           />
         ) : (
-          <button
+          <button /* button-audit-ignore: click-to-edit notes, drawn as the text it opens for editing */
             type="button"
             onClick={() => setNotesDraft(ws.logoUsageNotes)}
             className="bg-surface-2 text-start rounded-lg px-3 py-2.5 text-[14px] cursor-pointer"
@@ -288,16 +288,16 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               {ws.colors.map((c) => {
                 const active = ws.logoColorIds.includes(c.id);
                 return (
-                  <button
+                  <ToggleButton
                     key={c.id}
-                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    pressed={active}
                     onClick={() => toggleLogoColor(c.id)}
-                    className="flex h-ctl-sm cursor-pointer items-center gap-ctl-icon rounded-control ps-space-3 pe-ctl-px-sm text-caption font-medium"
-                    style={{ background: active ? "var(--accent-soft)" : "var(--surface-2)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
                   >
                     <span className="w-4 h-4 rounded-full shrink-0" style={{ background: c.hex, boxShadow: "inset 0 0 0 1px var(--chip-edge)" }} />
                     {c.name}
-                  </button>
+                  </ToggleButton>
                 );
               })}
             </div>

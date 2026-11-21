@@ -82,7 +82,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr, section }: DiscoveryVi
           <div className="flex flex-wrap items-center gap-ctl-row">
             {section === "questionnaires" ? (
               <>
-                <Button variant="outline" href={`/w/${brandSlug}/forms`} icon={<Icon name="clipboard-list" size={18} />}>
+                <Button variant="secondary" href={`/w/${brandSlug}/forms`} icon={<Icon name="clipboard-list" size={18} />}>
                   {t("All questionnaires", "كل الاستبيانات")}
                 </Button>
                 {/* With none yet, the empty state below carries the one button. */}

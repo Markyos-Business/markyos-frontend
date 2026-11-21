@@ -26,7 +26,7 @@ export function SocialSignIn({ google }: { google: GoogleSignInState }) {
       <AlertBanner message={google.error} />
       <Button
         type="button"
-        variant="outline"
+        variant="secondary"
         className="w-full"
         disabled={google.busy}
         onClick={google.start}

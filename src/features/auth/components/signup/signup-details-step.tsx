@@ -17,7 +17,7 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
       {type && (
         <p className="flex items-center justify-between gap-ctl-row px-space-4 text-caption text-text-muted">
           <span className="font-medium text-text">{c.signup.typeLine(lang === "ar" ? type.arLabel : type.label)}</span>
-          <Button type="button" variant="link" onClick={form.toType} className="text-caption">
+          <Button type="button" variant="ghost" onClick={form.toType} className="text-caption">
             {c.signup.change}
           </Button>
         </p>

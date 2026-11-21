@@ -36,12 +36,12 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
 
       <div className="flex flex-wrap items-center gap-ctl-row">
         {user.status === "waiting" && (
-          <Button variant="outline" size="sm" icon={<Icon name="envelope" size={16} />} onClick={() => actions.resend(user)}>
+          <Button variant="secondary" size="sm" icon={<Icon name="envelope" size={16} />} onClick={() => actions.resend(user)}>
             {c.actions.resend}
           </Button>
         )}
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           icon={<Icon name="user-shield" size={16} />}
           disabledReason={reason(rules.changeRole)}
@@ -49,12 +49,12 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
         >
           {c.actions.changeRole}
         </Button>
-        <Button variant="outline" size="sm" disabledReason={reason(rules.changeType)} onClick={() => actions.setTypeFor(user)}>
+        <Button variant="secondary" size="sm" disabledReason={reason(rules.changeType)} onClick={() => actions.setTypeFor(user)}>
           {isAr ? "تغيير نوع الحساب" : "Change account type"}
         </Button>
         {user.isActive ? (
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user-slash" size={16} />}
             disabledReason={reason(rules.deactivate)}
@@ -64,7 +64,7 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
           </Button>
         ) : (
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user-check" size={16} />}
             disabledReason={reason(rules.reactivate)}

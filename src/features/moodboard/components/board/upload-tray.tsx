@@ -29,7 +29,7 @@ export function MoodboardUploadTray({ rows, isAr, onRetry, onDismiss }: { rows: 
             <span dir="auto" className="min-w-0 flex-1 truncate text-caption text-text [text-align:match-parent]">{r.name}</span>
             {r.status === "failed" && (
               <>
-                <Button size="xs" variant="outline" onClick={() => onRetry(r.id)}>{isAr ? "إعادة المحاولة" : "Retry"}</Button>
+                <Button size="sm" variant="secondary" onClick={() => onRetry(r.id)}>{isAr ? "إعادة المحاولة" : "Retry"}</Button>
                 <IconButton size="xs" icon="times" label={isAr ? "إزالة" : "Remove"} onClick={() => onDismiss(r.id)} />
               </>
             )}

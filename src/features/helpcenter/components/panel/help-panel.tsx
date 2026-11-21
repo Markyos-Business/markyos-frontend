@@ -105,7 +105,7 @@ function CardList({ cards, onOpen }: { cards: HelpCardItem[]; onOpen: (card: Hel
     <ul className="flex flex-col gap-space-3">
       {cards.map((card) => (
         <li key={card.id}>
-          <button type="button" onClick={() => onOpen(card)} className="mk-btn flex w-full flex-col items-start gap-space-1 rounded-card bg-surface-2 p-space-6 text-start shadow-edge">
+          <button /* button-audit-ignore: an article card that opens the article */ type="button" onClick={() => onOpen(card)} className="mk-btn flex w-full flex-col items-start gap-space-1 rounded-card bg-surface-2 p-space-6 text-start shadow-edge">
             <span dir="auto" className="text-body font-medium text-text">{card.title}</span>
             {card.categoryTitle && <span dir="auto" className="text-caption text-text-muted">{card.categoryTitle}</span>}
           </button>
@@ -123,7 +123,7 @@ function ArticleView({ slug, onBack, onOpen }: { slug: string; onBack: () => voi
 
   return (
     <div className="flex flex-col gap-space-6">
-      <Button variant="link" size="sm" icon={<Icon name="arrow-left" size={16} />} onClick={onBack} className="self-start">
+      <Button variant="ghost" size="sm" icon={<Icon name="arrow-left" size={16} />} onClick={onBack} className="self-start">
         {p.back}
       </Button>
       {article.loading && !a && <Skeleton className="h-64 rounded-card" />}
@@ -198,8 +198,8 @@ function PanelFeedback({ articleId, locale }: { articleId: string; locale: "en" 
       </h4>
       {step === "ask" && (
         <div className="flex gap-space-4">
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => void send(true)}>{f.yes}</Button>
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => setStep("why")}>{f.no}</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => void send(true)}>{f.yes}</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => setStep("why")}>{f.no}</Button>
         </div>
       )}
       {step === "why" && (

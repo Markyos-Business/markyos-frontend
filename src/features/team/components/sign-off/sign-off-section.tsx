@@ -48,7 +48,7 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
     <Section
       title={copy.reviewTitle}
       icon="map-marker"
-      right={<div className="flex items-center gap-2">{openPins.length > 0 && <span className="text-[12px] text-text-muted">{openPins.length} {isAr ? "مفتوحة" : "open"}</span>}{API_ENABLED && <Button variant="link" size="sm" disabled={loading} onClick={() => { setLoading(true); setRefresh((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الملاحظات" : "Refresh notes")}</Button>}</div>}
+      right={<div className="flex items-center gap-2">{openPins.length > 0 && <span className="text-[12px] text-text-muted">{openPins.length} {isAr ? "مفتوحة" : "open"}</span>}{API_ENABLED && <Button variant="ghost" size="sm" disabled={loading} onClick={() => { setLoading(true); setRefresh((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الملاحظات" : "Refresh notes")}</Button>}</div>}
     >
       {error && <p role="alert" className="text-[13px] text-danger">{error}</p>}
       {pins.length === 0 ? (

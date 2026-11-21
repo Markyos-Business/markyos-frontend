@@ -42,13 +42,13 @@ export function ParticipantsEditor({ participants, onChange, team, isAr }: Parti
         </div>
       ))}
       <div className="flex flex-wrap items-center gap-ctl-row">
-        <Button variant="outline" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => add({ name: "", role: "client" })}>
+        <Button variant="secondary" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => add({ name: "", role: "client" })}>
           {t("Add person", "إضافة شخص")}
         </Button>
         {suggestions.slice(0, 6).map((m) => (
           <Button
             key={m.id}
-            variant="ghost"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user" size={16} />}
             onClick={() => add({ name: m.name, role: m.role === "client" ? "client" : "studio" })}

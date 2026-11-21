@@ -93,7 +93,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
       <div className="flex flex-wrap items-center gap-ctl-row">
         {analysis.status === "ready" && (
           <Button
-            variant="outline"
+            variant="secondary"
             icon={<Icon name="file-export" size={18} />}
             onClick={() => window.open(`/print/analysis/${analysis.id}`, "_blank", "noopener")}
           >
@@ -102,7 +102,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
         )}
         {data.canEdit && analysis.status === "ready" && <ShareWithClient analysis={analysis} isAr={isAr} />}
         {data.canEdit && data.configured && (
-          <Button variant="outline" onClick={() => void run(analysis.language)} disabled={starting || running} icon={<Icon name="history" size={18} />}>
+          <Button variant="secondary" onClick={() => void run(analysis.language)} disabled={starting || running} icon={<Icon name="history" size={18} />}>
             {t("Run again", "تشغيل مجددًا")}
           </Button>
         )}

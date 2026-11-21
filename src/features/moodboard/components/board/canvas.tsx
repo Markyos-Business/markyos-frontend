@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Icon } from "@/components/ui";
+import { Button, Icon, IconButton } from "@/components/ui";
 import { CardBody } from "./card";
 import { zoneSpecFor } from "../../utils/templates";
 import {
@@ -1383,12 +1383,17 @@ const BoardToolbar = memo(function BoardToolbar({
     const active = tool === spec.key;
     const label = isAr ? spec.arLabel : spec.label;
     return (
-      <button
+      <IconButton
         key={spec.key}
-        type="button"
+        // The chosen tool keeps the accent fill it always had; the rest are
+        // the toolbar's quiet icon buttons.
+        variant={active ? "primary" : "ghost"}
+        size="sm"
+        icon={spec.icon}
+        iconSize={16}
         onClick={() => onTool(active && spec.key !== "select" ? "select" : spec.key)}
         aria-pressed={active}
-        aria-label={label}
+        label={label}
         // `aria-keyshortcuts` rather than the key inside the name: the name is
         // what a screen reader reads every time the button is reached, and
         // "Colour S" is not what this control is called.
@@ -1397,14 +1402,7 @@ const BoardToolbar = memo(function BoardToolbar({
         // does the same thing — the one moment somebody is already looking at
         // this control and ready to learn the faster way to reach it.
         title={`${label} (${spec.shortcut.toUpperCase()}) — ${isAr ? spec.arHint : spec.hint}`}
-        className="mk-icon-btn cursor-pointer"
-        style={{
-          background: active ? "var(--accent)" : "transparent",
-          color: active ? "var(--accent-ink)" : "var(--text-muted)",
-        }}
-      >
-        <Icon name={spec.icon} size={13} />
-      </button>
+      />
     );
   }
 
@@ -1432,73 +1430,70 @@ const BoardToolbar = memo(function BoardToolbar({
       {PLACE_SPECS.map(toolButton)}
       <Separator />
 
-      <button
-        type="button"
+      <IconButton
+        size="sm"
+        icon="minus"
+        iconSize={16}
         onClick={() => onZoom(zoom / 1.25)}
-        aria-label={isAr ? "تصغير" : "Zoom out"}
-        title={isAr ? "تصغير" : "Zoom out"}
-        className="mk-icon-btn cursor-pointer"
-        style={{ color: "var(--text-muted)" }}
-      >
-        <Icon name="minus" size={13} />
-      </button>
-      <button
-        type="button"
+        label={isAr ? "تصغير" : "Zoom out"}
+      />
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => onZoom(1)}
         title={isAr ? "الحجم الأصلي" : "Back to actual size"}
-        className="mk-tap px-1 text-[11px] font-semibold tabular-nums cursor-pointer justify-center"
-        style={{ color: "var(--text-muted)", minWidth: 42 }}
+        // A fixed floor and even digits, so the toolbar doesn't shift as the
+        // percentage changes length.
+        className="min-w-12 tabular-nums"
       >
         {Math.round(zoom * 100)}%
-      </button>
-      <button
-        type="button"
+      </Button>
+      <IconButton
+        size="sm"
+        icon="plus"
+        iconSize={16}
         onClick={() => onZoom(zoom * 1.25)}
-        aria-label={isAr ? "تكبير" : "Zoom in"}
-        title={isAr ? "تكبير" : "Zoom in"}
-        className="mk-icon-btn cursor-pointer"
-        style={{ color: "var(--text-muted)" }}
-      >
-        <Icon name="plus" size={13} />
-      </button>
-      <button
-        type="button"
+        label={isAr ? "تكبير" : "Zoom in"}
+      />
+      <IconButton
+        size="sm"
+        icon="crosshairs"
+        iconSize={16}
         // Wrapped, not passed: `onFit` takes an optional zoom floor, and the
         // click event would arrive as one.
         onClick={() => onFit()}
         // Named for the sweeps, which drive this board in both languages and
         // cannot select it by a label that changes with the language.
         data-board-fit
-        aria-label={isAr ? "إظهار اللوح كاملًا" : "Fit the whole board"}
+        label={isAr ? "إظهار اللوح كاملًا" : "Fit the whole board"}
         aria-keyshortcuts="F"
         title={isAr ? "إظهار اللوح كاملًا (F)" : "Fit the whole board on screen (F)"}
-        className="mk-icon-btn cursor-pointer"
-        style={{ color: "var(--text-muted)" }}
-      >
-        <Icon name="crosshairs" size={13} />
-      </button>
+      />
 
       <Separator />
 
-      <button
-        type="button"
+      <IconButton
+        size="sm"
+        icon="th-large"
+        iconSize={16}
         onClick={onTidy}
-        aria-label={isAr ? "ترتيب اللوح" : "Tidy the board"}
+        label={isAr ? "ترتيب اللوح" : "Tidy the board"}
         title={
           isAr
             ? "ترتيب — تعود كل البطاقات إلى ترتيبها التلقائي"
             : "Tidy up — every card goes back to its automatic place"
         }
-        className="mk-icon-btn cursor-pointer"
-        style={{ color: "var(--text-muted)" }}
-      >
-        <Icon name="th-large" size={13} />
-      </button>
-      <button
-        type="button"
+      />
+      <IconButton
+        // Pressed reads as the soft secondary fill, apart from the chosen
+        // tool's accent: it is a view state, not a tool.
+        variant={fullscreen ? "secondary" : "ghost"}
+        size="sm"
+        icon={fullscreen ? "compress" : "expand-arrows-alt"}
+        iconSize={16}
         onClick={() => onFullscreen(!fullscreen)}
         aria-pressed={fullscreen}
-        aria-label={isAr ? (fullscreen ? "إنهاء ملء الشاشة" : "ملء الشاشة") : fullscreen ? "Exit full screen" : "Full screen"}
+        label={isAr ? (fullscreen ? "إنهاء ملء الشاشة" : "ملء الشاشة") : fullscreen ? "Exit full screen" : "Full screen"}
         title={
           isAr
             ? fullscreen
@@ -1508,14 +1503,7 @@ const BoardToolbar = memo(function BoardToolbar({
               ? "Exit full screen — Esc"
               : "Full screen — hides the page chrome and shrinks the sidebar"
         }
-        className="mk-icon-btn cursor-pointer"
-        style={{
-          background: fullscreen ? "var(--accent-soft)" : "transparent",
-          color: fullscreen ? "var(--accent-on-soft)" : "var(--text-muted)",
-        }}
-      >
-        <Icon name={fullscreen ? "compress" : "expand-arrows-alt"} size={13} />
-      </button>
+      />
     </div>
   );
 });
@@ -1603,7 +1591,7 @@ function FrameBase({
           onPointerDown={(e) => e.stopPropagation()}
         >
           {action && (
-            <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
+            <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */ /* button-audit-ignore: zone header control on the canvas, scales with the board zoom */
               type="button"
               onClick={action.run}
               disabled={action.busy || empty}
@@ -1622,7 +1610,7 @@ function FrameBase({
             </button>
           )}
           <AddMenu zone={zone} isAr={isAr} onAdd={(kind) => onAdd(zone, kind)} />
-          <button
+          <button /* button-audit-ignore: zone header control on the canvas, scales with the board zoom */
             type="button"
             onClick={() => onRename(zone)}
             aria-label={isAr ? `أعد تسمية ${title}` : `Rename ${title}`}
@@ -1631,7 +1619,7 @@ function FrameBase({
             <Icon name="pen" size={10} style={{ color: "var(--text-faint)" }} />
           </button>
           {zone.kind !== "unsorted" && (
-            <button
+            <button /* button-audit-ignore: zone header control on the canvas, scales with the board zoom */
               type="button"
               onClick={() => onRemove(zone)}
               aria-label={isAr ? `احذف قسم ${title}` : `Delete the ${title} zone`}
@@ -1682,7 +1670,7 @@ function FrameBase({
         const g = zone.ghostBoxes[i];
         if (!g) return null;
         return (
-          <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
+          <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */ /* button-audit-ignore: ghost placeholder tile on the canvas, not a button to look at */
             key={i}
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -1803,7 +1791,7 @@ function AddMenu({
 
   return (
     <span className="relative">
-      <button
+      <button /* button-audit-ignore: zone header control on the canvas, scales with the board zoom */
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -1826,7 +1814,7 @@ function AddMenu({
             }}
           >
             {ordered.map((k) => (
-              <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
+              <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */ /* button-audit-ignore: menu row in the add-card popover on the canvas */
                 key={k.kind}
                 type="button"
                 onClick={() => {
@@ -1997,7 +1985,7 @@ function CardOnCanvasBase({
         style={{ insetInlineEnd: 4 }}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */ /* button-audit-ignore: hover overlay on a canvas card, scales with the board zoom */
           type="button"
           onClick={() => onVote(item.id)}
           aria-pressed={mine}
@@ -2016,7 +2004,7 @@ function CardOnCanvasBase({
           <Icon name="check" size={9} />
           {item.votes.length || ""}
         </button>
-        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */ /* button-audit-ignore: hover overlay on a canvas card, scales with the board zoom */
           type="button"
           onClick={() => onRemove(item.id)}
           aria-label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}

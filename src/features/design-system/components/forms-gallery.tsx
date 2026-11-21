@@ -327,7 +327,7 @@ export function FormsGallery() {
             <div>
               {/* A form reset from outside: the phone and the story must show the saved values again. */}
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => {
                   setPhone("+966501234567");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Badge } from "@/components/ui";
+import { Badge, Button } from "@/components/ui";
 import { SECTION_META } from "../../constants";
 import type { BriefAnalysis, Citation, Section } from "../../types";
 import { CitationPanel, CitationsProvider } from "./citations";
@@ -55,9 +55,9 @@ export function ReportView({ analysis, slug, canEdit, isAr, onSection, header, s
           <div role="status" className="flex flex-wrap items-center justify-between gap-ctl-row rounded-lg bg-info-soft px-space-6 py-space-4 text-body text-info">
             {t("Sources changed since this analysis.", "تغيّرت المصادر منذ هذا التحليل.")}
             {onRerun && canEdit && (
-              <button type="button" onClick={onRerun} className="mk-linkbtn font-medium underline-offset-4 hover:underline">
+              <Button size="sm" onClick={onRerun}>
                 {t("Run it again", "شغّله مجددًا")}
-              </button>
+              </Button>
             )}
           </div>
         )}

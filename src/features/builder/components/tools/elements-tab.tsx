@@ -56,7 +56,7 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
               {kinds.map((kind) => {
                 const meta = BLOCK_META[kind];
                 return (
-                  <button
+                  <button /* button-audit-ignore: a block insert tile (draggable card) */
                     key={kind}
                     type="button"
                     onClick={() => onAdd(kind)}

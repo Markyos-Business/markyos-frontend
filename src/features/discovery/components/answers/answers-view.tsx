@@ -93,22 +93,22 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
         </>}
         actions={<>
         <div className="flex flex-wrap gap-ctl-row print:hidden">
-          <Button variant="outline" size="sm" href={builderHref}>
+          <Button variant="secondary" size="sm" href={builderHref}>
             {t("Questions", "الأسئلة")}
           </Button>
-          <Button variant="outline" size="sm" href={sendHref}>
+          <Button variant="secondary" size="sm" href={sendHref}>
             {t("Theme and link", "التصميم والرابط")}
           </Button>
           {form.status === "submitted" && (
-            <Button variant="outline" size="sm" onClick={() => void reopen()} icon={<Icon name="undo" size={16} />}>
+            <Button variant="secondary" size="sm" onClick={() => void reopen()} icon={<Icon name="undo" size={16} />}>
               {t("Reopen", "إعادة الفتح")}
             </Button>
           )}
           {/* The browser's print-to-PDF keeps Arabic shaping and direction intact. */}
-          <Button variant="outline" size="sm" onClick={() => window.print()} icon={<Icon name="download" size={16} />}>
+          <Button variant="secondary" size="sm" onClick={() => window.print()} icon={<Icon name="download" size={16} />}>
             {t("Export PDF", "تصدير PDF")}
           </Button>
-          <Button variant="outline" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
+          <Button variant="secondary" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
             {t("Open in Strategy", "فتح في الاستراتيجية")}
           </Button>
           {analysis}
@@ -128,7 +128,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
         <div className="flex flex-col gap-5 lg:sticky lg:top-0 print:hidden">
           <nav aria-label={t("Sections", "الأقسام")} className="mk-surface flex flex-col rounded-card bg-surface-1 p-space-3">
-            <button
+            <button /* button-audit-ignore: an item in the sections side navigation */
               type="button"
               aria-current={!sectionId ? "true" : undefined}
               onClick={() => setSectionId(null)}
@@ -140,7 +140,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               const answered = s.questions.filter((q) => q.answer).length;
               const visible = s.questions.filter((q) => q.visible).length;
               return (
-                <button
+                <button /* button-audit-ignore: an item in the sections side navigation */
                   key={s.id}
                   type="button"
                   aria-current={sectionId === s.id ? "true" : undefined}
@@ -255,7 +255,7 @@ function AnswerRow({ question, lang, isAr, files }: { question: Row; lang: "en" 
           </div>
           {foreign && (
             <div className="flex flex-col gap-space-2 print:hidden">
-              <Button variant="link" onClick={() => void translate()} disabled={translating}>
+              <Button variant="ghost" onClick={() => void translate()} disabled={translating}>
                 <Icon name="language" size={16} />
                 {translating ? t("Translating…", "جارٍ الترجمة…") : translation ? t("Hide translation", "إخفاء الترجمة") : t("Show machine translation", "عرض ترجمة آلية")}
               </Button>

@@ -47,6 +47,7 @@ export function routePageName(pathname: string): Name {
     const rest = brand[1] ?? "";
     if (brandPages[rest]) return brandPages[rest];
     if (/^moodboard\/[^/]+$/.test(rest)) return ["Moodboard", "لوح إلهامي"];
+    if (/^strategy\/[^/]+$/.test(rest)) return brandPages.strategy;
     if (rest === "forms/new") return ["New questionnaire", "استبيان جديد"];
     if (/^forms\/[^/]+\/edit$/.test(rest)) return ["Edit questionnaire", "تحرير الاستبيان"];
     if (/^forms\/[^/]+\/send$/.test(rest)) return ["Questionnaire theme and link", "تصميم الاستبيان ورابطه"];

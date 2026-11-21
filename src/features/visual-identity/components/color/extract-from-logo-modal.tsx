@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Icon, useToast, Modal, Button } from "@/components/ui";
+import { Icon, useToast, Modal, Button, ToggleButton } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
@@ -123,18 +123,16 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
               {sources.map((s) => {
                 const active = s.key === sourceKey;
                 return (
-                  <button
+                  <ToggleButton
                     key={s.key}
-                    type="button"
-                    onClick={() => setSourceKey(s.key)}
-                    className="h-ctl-sm px-ctl-px-sm rounded-control text-caption font-medium cursor-pointer max-w-[220px] truncate"
-                    style={{
-                      background: active ? "var(--accent-soft)" : "var(--surface-2)",
-                      color: active ? "var(--accent)" : "var(--text-muted)",
-                    }}
+                    variant="secondary"
+                    size="sm"
+                    pressed={active}
+                    onPressedChange={() => setSourceKey(s.key)}
+                    className="max-w-[220px] overflow-hidden"
                   >
                     {s.label}
-                  </button>
+                  </ToggleButton>
                 );
               })}
             </div>
@@ -172,7 +170,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                     className="flex items-center gap-ctl-row rounded-card p-2.5"
                     style={{ background: "var(--surface-2)", opacity: already ? 0.55 : 1 }}
                   >
-                    <button /* ctl-audit-ignore: a 20px tick box on a colour swatch */
+                    <button /* ctl-audit-ignore: a 20px tick box on a colour swatch */ /* button-audit-ignore: a 20px tick box on a colour swatch */
                       type="button"
                       disabled={already}
                       onClick={() =>
@@ -231,7 +229,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
           )}
 
           <div className="flex items-center justify-end gap-ctl-row pt-1">
-            <Button variant="outline" size="md" onClick={onClose}>
+            <Button variant="secondary" size="md" onClick={onClose}>
               {isAr ? "إلغاء" : "Cancel"}
             </Button>
             <Button variant="primary" size="md" onClick={commit} disabled={chosen.length === 0}>

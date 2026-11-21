@@ -138,7 +138,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
             {(savedAt || saving || error) && (
               <SaveStatus saving={saving} savedAt={savedAt} error={error} isAr={isAr} />
             )}
-            <Button variant="outline" onClick={() => void cancel()}>
+            <Button variant="secondary" onClick={() => void cancel()}>
               {t("Cancel", "إلغاء")}
             </Button>
             <Button variant="primary" onClick={() => void save()} disabled={submitting || reading} icon={<Icon name="check" size={18} />}>

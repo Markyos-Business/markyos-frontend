@@ -111,7 +111,7 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
           })}
           <div>
             <Button
-              variant="link"
+              variant="ghost"
               disabled={disabled}
               onClick={() => {
                 const c = firstCondition();

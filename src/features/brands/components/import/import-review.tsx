@@ -58,7 +58,7 @@ export function ImportReview({
             {analysis.colors.map((c) => {
               const on = pickedColors.has(c.hex);
               return (
-                <button
+                <button /* button-audit-ignore: a colour swatch tile picked for import */
                   key={c.hex}
                   type="button"
                   onClick={() => onToggleColor(c.hex)}
@@ -119,7 +119,7 @@ export function ImportReview({
       </ImportGroup>
 
       <div className="mt-1 flex gap-ctl-row">
-        <Button variant="outline" onClick={onReset}>
+        <Button variant="secondary" onClick={onReset}>
           {t("Start over", "البدء من جديد")}
         </Button>
         <Button variant="primary" onClick={onConfirm}>

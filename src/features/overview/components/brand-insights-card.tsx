@@ -21,7 +21,7 @@ export function BrandInsightsCard({ ws, isAr }: { ws: Workspace; isAr: boolean }
   return <Dashboard.ProgressCard title={t("Set up your brand", "أكمل إعداد علامتك")} done={completed} total={steps.length}>
     <Dashboard.TaskList label={t("Steps left", "الخطوات المتبقية")} count={open.length}>
       {open.map(step => <Dashboard.TaskListItem key={step.key} title={
-        <Link href={step.href} className="mk-tap flex min-h-10 items-center gap-space-3 rounded-lg px-space-2 hover:bg-surface-2">
+        <Link /* button-audit-ignore: a task-list row that opens the step */ href={step.href} className="mk-tap flex min-h-10 items-center gap-space-3 rounded-lg px-space-2 hover:bg-surface-2">
           <Icon name="minus-circle" size={18} className="shrink-0 text-text-muted" />
           <span className="min-w-0 flex-1">{isAr ? step.arLabel : step.label}</span>
           {/* Each open step is a way in, and the next one says so. */}

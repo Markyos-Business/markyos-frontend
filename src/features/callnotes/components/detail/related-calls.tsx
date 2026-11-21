@@ -41,7 +41,7 @@ export function RelatedCalls({ brandId, brandSlug, formId, isAr }: RelatedCallsP
           ))}
         </ul>
       )}
-      <Button variant="link" href={`/w/${brandSlug}/discovery/calls/new`}>
+      <Button variant="ghost" href={`/w/${brandSlug}/discovery/calls/new`}>
         <Icon name="plus" size={16} />
         {t("Add call notes", "إضافة ملاحظات مكالمة")}
       </Button>

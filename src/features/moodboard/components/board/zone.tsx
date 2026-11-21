@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon, Button } from "@/components/ui";
+import { Icon, Button, IconButton } from "@/components/ui";
 import { Card } from "./card";
 import { zoneSpecFor } from "../../utils/templates";
 import type { Asset, MoodboardItem, MoodboardZone } from "@/types";
@@ -117,8 +117,8 @@ export function Zone({
         <span className="ms-auto flex items-center gap-ctl-row">
           {action && (
             <Button
-              variant="ghost"
-              size="xs"
+              variant="secondary"
+              size="sm"
               onClick={action.run}
               disabled={action.busy || items.length === 0}
               icon={<Icon name={action.icon} size={16} />}
@@ -127,26 +127,24 @@ export function Zone({
             </Button>
           )}
           <AddMenu zone={zone} isAr={isAr} onAdd={onAdd} />
-          <button
-            type="button"
+          <IconButton
+            size="xs"
+            icon="pen"
+            iconSize={16}
             onClick={onRename}
-            aria-label={isAr ? `أعد تسمية ${title}` : `Rename ${title}`}
-            className="mk-icon-btn cursor-pointer"
-          >
-            <Icon name="pen" size={11} style={{ color: "var(--text-faint)" }} />
-          </button>
+            label={isAr ? `أعد تسمية ${title}` : `Rename ${title}`}
+          />
           {/* The tray is not a zone anyone should be able to delete: it is
               where a card goes when its zone is removed, so removing it would
               leave the next deletion with nowhere to put things. */}
           {zone.kind !== "unsorted" && (
-            <button
-              type="button"
+            <IconButton
+              size="xs"
+              icon="trash"
+              iconSize={16}
               onClick={onRemoveZone}
-              aria-label={isAr ? `احذف قسم ${title}` : `Delete the ${title} zone`}
-              className="mk-icon-btn mk-danger-hover cursor-pointer"
-            >
-              <Icon name="trash" size={11} style={{ color: "var(--text-faint)" }} />
-            </button>
+              label={isAr ? `احذف قسم ${title}` : `Delete the ${title} zone`}
+            />
           )}
         </span>
       </header>
@@ -160,14 +158,14 @@ export function Zone({
           <p dir="auto" className="bidi-auto flex-1 text-[12px] leading-[1.5]" style={{ color: "var(--text-muted)" }}>
             {instructions}
           </p>
-          <button
-            type="button"
+          <IconButton
+            size="xs"
+            icon="times"
+            iconSize={16}
             onClick={onDismissInstructions}
-            aria-label={isAr ? "أخفِ هذه الإرشادات" : "Hide these instructions"}
-            className="mk-icon-btn cursor-pointer shrink-0"
-          >
-            <Icon name="times" size={11} style={{ color: "var(--text-faint)" }} />
-          </button>
+            label={isAr ? "أخفِ هذه الإرشادات" : "Hide these instructions"}
+            className="shrink-0"
+          />
         </div>
       )}
 
@@ -214,7 +212,7 @@ export function Zone({
         ))}
 
         {placeholders.map((ghost, i) => (
-          <button
+          <button /* button-audit-ignore: placeholder tile in the grid that adds a card, not a button to look at */
             key={i}
             type="button"
             onClick={() => onAdd(zone, ghost.kind)}
@@ -273,15 +271,14 @@ function AddMenu({
 
   return (
     <span className="relative">
-      <button
-        type="button"
+      <IconButton
+        size="xs"
+        icon="plus"
+        iconSize={16}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-label={isAr ? "أضف بطاقة" : "Add a card"}
-        className="mk-icon-btn cursor-pointer"
-      >
-        <Icon name="plus" size={12} style={{ color: "var(--text-faint)" }} />
-      </button>
+        label={isAr ? "أضف بطاقة" : "Add a card"}
+      />
       {open && (
         <>
           {/* A click anywhere else closes it. Without this the menu stays open
@@ -301,7 +298,7 @@ function AddMenu({
             }}
           >
             {ordered.map((k) => (
-              <button
+              <button /* button-audit-ignore: menu row in the add-card popover */
                 key={k.kind}
                 type="button"
                 onClick={() => {

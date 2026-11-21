@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Icon, MarkyosLogo, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import { Button, Icon, MarkyosLogo, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { START_TABS } from "../../constants";
 import type { NewBrandView as NewBrandViewProps } from "../../hooks/new/use-new-brand-page";
 import { ImportDropZone } from "../import/import-drop-zone";
@@ -21,14 +20,13 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
         {/* A way back that isn't logging out. */}
         <div className="flex items-center gap-ctl-row">
           <MarkyosLogo variant="mark" className="h-5" isAr={isAr} />
-          <Link href="/brands" className="mk-tap flex items-center gap-ctl-icon text-caption text-text-muted">
-            <Icon name="arrow-left" size={16} />
+          <Button href="/brands" variant="ghost" size="sm" icon={<Icon name="arrow-left" size={16} />}>
             {t("All brands", "كل العلامات")}
-          </Link>
+          </Button>
         </div>
-        <button type="button" onClick={onLogout} className="mk-tap cursor-pointer text-caption text-text-faint">
+        <Button variant="ghost" size="sm" onClick={onLogout}>
           {t("Log out", "تسجيل الخروج")}
-        </button>
+        </Button>
       </div>
 
       <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col justify-center px-6 sm:px-[72px] py-10">

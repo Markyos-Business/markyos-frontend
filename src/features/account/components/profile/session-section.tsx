@@ -35,7 +35,7 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
               : `Since this browser last authenticated${account.createdAt ? ` · account created ${formatRelative(account.createdAt)}` : ""}.`
           }
           right={
-            <Button variant="outline" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={signOutHere}>
+            <Button variant="secondary" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={signOutHere}>
               {t("Sign out", "تسجيل الخروج")}
             </Button>
           }
@@ -87,7 +87,7 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
       icon="lock"
       right={
         sessions.others > 0 ? (
-          <Button variant="danger-soft" size="sm" onClick={sessions.signOutOthers}>
+          <Button variant="danger" size="sm" onClick={sessions.signOutOthers}>
             {t("Sign out of other browsers", "تسجيل الخروج من المتصفحات الأخرى")}
           </Button>
         ) : undefined

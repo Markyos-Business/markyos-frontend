@@ -148,7 +148,7 @@ export function ClearspacePanel({
       </div>
 
       <div className="mt-auto flex flex-col gap-ctl-row">
-        <Button variant="solid" size="lg" block onClick={onDownload} disabled={attachedSlots.length === 0}>
+        <Button variant="primary" size="lg" block onClick={onDownload} disabled={attachedSlots.length === 0}>
           {isAr ? "تنزيل الملفات" : "Download assets"}
         </Button>
       </div>

@@ -49,7 +49,7 @@ export function SectionVisibility({ ws, isAr }: { ws: Workspace; isAr: boolean }
         {v.availableFixed.map((s) => {
           const hidden = isParked(s.id);
           return (
-            <button /* ctl-audit-ignore: a row in the section list, not a button control */
+            <button /* ctl-audit-ignore: a row in the section list, not a button control */ /* button-audit-ignore: a show/hide row in the section list */
               key={s.id}
               type="button"
               onClick={() => setParked(s.id, !hidden)}

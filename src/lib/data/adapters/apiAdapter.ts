@@ -74,8 +74,11 @@ export type VoteOutcome =
   | { ok: true; votes: string[] }
   | { ok: false; unsupported?: boolean; message: string };
 
-/** `blocked`: the server refused because Must fix items remain (`publish_blocked`). */
-export type PublishOutcome = { ok: true } | { ok: false; unsupported?: boolean; blocked?: boolean; message: string };
+/**
+ * `blocked`: the server refused because Must fix items remain (`publish_blocked`).
+ * `planRequired`: going live needs a paid plan (`plan_required`, 402).
+ */
+export type PublishOutcome = { ok: true } | { ok: false; unsupported?: boolean; blocked?: boolean; planRequired?: boolean; message: string };
 
 const withoutVotes = (boards: Workspace["moodboards"]) =>
   boards.map((b) => ({ ...b, zones: b.zones.map((z) => ({ ...z, items: z.items.map((i) => ({ ...i, votes: [] })) })) }));
@@ -343,6 +346,9 @@ export function createApiAdapter(options: {
         if (err.status === 409 && body?.current) {
           await adopt(body.current, ws.slug);
           return { ok: false, message: "Someone saved changes just now. Check them, then publish again." };
+        }
+        if (err.status === 402 && (err.data as { code?: string } | null)?.code === "plan_required") {
+          return { ok: false, planRequired: true, message: err.message };
         }
         if (err.status === 400 && (err.data as { code?: string } | null)?.code === "publish_blocked") {
           return { ok: false, blocked: true, message: err.message };

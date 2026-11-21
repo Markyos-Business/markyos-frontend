@@ -41,16 +41,15 @@ export function CitationChips({ citations }: { citations: Citation[] }) {
         const source = index[c.sourceId];
         return (
           <li key={`${c.sourceId}-${i}`}>
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => open(c)}
               disabled={!source}
               title={c.quote}
-              className="mk-btn inline-flex h-badge items-center gap-space-1 rounded-md bg-surface-2 px-space-3 text-caption font-medium text-text-muted hover:text-accent-text disabled:cursor-default"
+              icon={<Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />}
             >
-              <Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />
               <span className="bidi-plain">{source ? sourceLabel(source, isAr) : c.sourceId}</span>
-            </button>
+            </Button>
           </li>
         );
       })}
@@ -129,7 +128,7 @@ function CallSource({ source, citation, slug, isAr }: { source: Extract<SourceRe
           );
         })}
       </ol>
-      <Button variant="link" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
+      <Button variant="ghost" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
         <Icon name="phone" size={16} />
         {isAr ? "فتح المكالمة" : "Open the call"}
       </Button>
@@ -159,7 +158,7 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
           {question.answer ? answerText(question.answer.value) : isAr ? "لا إجابة" : "Not answered"}
         </p>
       </div>
-      <Button variant="link" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
+      <Button variant="ghost" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
         <Icon name="clipboard-list" size={16} />
         {isAr ? "فتح الإجابات" : "Open the answers"}
       </Button>

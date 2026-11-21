@@ -69,7 +69,7 @@ export function BlockInspector({
               {pickableFiles.map((a) => {
                 const active = ids.includes(a.id);
                 return (
-                  <button
+                  <button /* button-audit-ignore: a selectable file row (name + size), the whole row is the control */
                     key={a.id}
                     type="button"
                     onClick={() => onChange({ assetIds: active ? ids.filter((x) => x !== a.id) : [...ids, a.id] })}
@@ -209,7 +209,7 @@ export function BlockInspector({
               </div>
             ))}
           </div>
-          <Button variant="link" onClick={() => onChange({ socialLinks: [...links, { id: uid(), platform: "", url: "" }] })} className="self-start text-[12px] font-semibold">
+          <Button variant="ghost" onClick={() => onChange({ socialLinks: [...links, { id: uid(), platform: "", url: "" }] })} className="self-start text-[12px] font-semibold">
             {isAr ? "+ إضافة رابط" : "+ Add link"}
           </Button>
         </>

@@ -104,7 +104,7 @@ export function UsersTable({ page, viewer, activeAdmins, actions, bulk, onInvite
       title={c.empty.noMatchTitle(page.values.q)}
       description={c.empty.noMatchBody}
       action={
-        <Button variant="outline" size="sm" onClick={page.clearFilters}>
+        <Button variant="secondary" size="sm" onClick={page.clearFilters}>
           {c.empty.clear}
         </Button>
       }
@@ -141,13 +141,13 @@ export function UsersTable({ page, viewer, activeAdmins, actions, bulk, onInvite
       onSelectedChange={page.setSelected}
       bulkActions={(ids, clear) => (
         <>
-          <Button size="sm" variant="outline" icon={<Icon name="user-shield" size={16} />} onClick={() => bulk.setRoleFor({ ids, clear })}>
+          <Button size="sm" variant="secondary" icon={<Icon name="user-shield" size={16} />} onClick={() => bulk.setRoleFor({ ids, clear })}>
             {c.actions.changeRole}
           </Button>
-          <Button size="sm" variant="outline" icon={<Icon name="user-check" size={16} />} onClick={() => bulk.reactivate(ids, clear)}>
+          <Button size="sm" variant="secondary" icon={<Icon name="user-check" size={16} />} onClick={() => bulk.reactivate(ids, clear)}>
             {c.actions.reactivate}
           </Button>
-          <Button size="sm" variant="outline" icon={<Icon name="user-slash" size={16} />} onClick={() => bulk.deactivate(ids, clear)}>
+          <Button size="sm" variant="secondary" icon={<Icon name="user-slash" size={16} />} onClick={() => bulk.deactivate(ids, clear)}>
             {c.actions.deactivate}
           </Button>
           <Button size="sm" variant="danger" icon={<Icon name="trash" size={16} />} onClick={() => bulk.remove(ids, clear)}>

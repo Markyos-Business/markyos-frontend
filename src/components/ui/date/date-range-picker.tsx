@@ -203,7 +203,7 @@ const DateRangePicker = ({
                 />
                 <div className="flex justify-end gap-space-3">
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="ghost"
                     onClick={() => {
                       setDraft({});
@@ -214,7 +214,7 @@ const DateRangePicker = ({
                     {t.clear}
                   </Button>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="primary"
                     disabled={!valid}
                     onClick={() => {

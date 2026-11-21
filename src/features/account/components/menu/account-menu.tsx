@@ -138,7 +138,7 @@ export const AccountMenu = memo(function AccountMenu({
             </Link>
           ))}
 
-          <button
+          <button /* button-audit-ignore: a menu item in the account menu, drawn like its neighbours */
             type="button"
             onClick={() => {
               close();

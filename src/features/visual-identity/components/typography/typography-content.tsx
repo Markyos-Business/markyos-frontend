@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, PageHeader, Button } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button, IconButton, ToggleButton } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/features/guideline-site";
 import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "../../utils/font-file";
@@ -411,31 +411,26 @@ function FontFilePicker({
         const weights = sorted.map((f) => f.font?.weight).filter(Boolean);
         const totalKB = sorted.reduce((sum, f) => sum + f.sizeKB, 0);
         return (
-          <button
+          <ToggleButton
             key={key}
-            type="button"
+            variant="secondary"
+            size="sm"
+            pressed={active}
             onClick={() => onApply(applyTarget.id)}
             title={`${label}${weights.length > 1 ? ` · ${weights.join(", ")}` : ""} · ${formatBytes(totalKB)}`}
-            className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer truncate max-w-[190px]"
-            style={{
-              fontFamily: "ui-monospace, Menlo, monospace",
-              background: active ? "var(--accent-soft)" : "var(--surface-2)",
-              // The accent is a fill; as small text on its own tint it lands
-              // under the 7:1 bar that type this size carries.
-              color: active ? "var(--accent-on-soft)" : "var(--text-muted)",
-            }}
+            className="max-w-[190px] overflow-hidden"
           >
             {label}
             {weights.length > 1 && (
               <span style={{ opacity: 0.6 }}> · {weights.length} {isAr ? "وزن" : "wt"}</span>
             )}
-          </button>
+          </ToggleButton>
         );
       })}
       {activeId && (
-        <button type="button" onClick={onClear} className="text-[11px] px-2 py-1.5 cursor-pointer" style={{ color: "var(--text-faint)" }}>
+        <Button variant="ghost" size="sm" onClick={onClear}>
           {isAr ? "إلغاء التطبيق" : "Clear"}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -497,20 +492,19 @@ function FontSources({
         }}
       />
       <div className="flex items-center gap-ctl-row flex-wrap">
-        <button
-          type="button"
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="mk-tap gap-1.5 text-[11.5px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ color: "var(--accent-text)" }}
+          icon={<Icon name={uploading ? "sync" : "upload"} size={16} className={uploading ? "animate-spin-quick origin-center" : undefined} />}
         >
-          <Icon name={uploading ? "sync" : "upload"} size={12} className={uploading ? "animate-spin-quick origin-center" : undefined} />
           {uploading
             ? isAr ? "جارٍ التطبيق…" : "Applying…"
             : dragOver
               ? isAr ? "أفلِت للتطبيق" : "Drop to apply"
               : isAr ? "ارفع ملف خط" : "Upload a font file"}
-        </button>
+        </Button>
         <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
           {dragOver ? "" : isAr ? "أو" : "or"}
         </span>
@@ -549,15 +543,9 @@ function GoogleFontImport({
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="mk-tap gap-1.5 text-[11.5px] font-semibold cursor-pointer self-start"
-        style={{ color: "var(--accent-text)" }}
-      >
-        <Icon name="download" size={12} />
+      <Button variant="secondary" size="sm" onClick={() => setOpen(true)} icon={<Icon name="download" size={16} />} className="self-start">
         {isAr ? "استيراد من Google Fonts" : "Import from Google Fonts"}
-      </button>
+      </Button>
     );
   }
 
@@ -585,31 +573,22 @@ function GoogleFontImport({
         >
           {busy ? (isAr ? "جارٍ الاستيراد…" : "Importing…") : isAr ? "استيراد" : "Import"}
         </Button>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-label={isAr ? "إلغاء" : "Cancel"}
-          className="h-ctl-sm w-8 grid place-items-center cursor-pointer shrink-0"
-          style={{ color: "var(--text-faint)" }}
-        >
-          <Icon name="times" size={12} />
-        </button>
+        <IconButton icon="times" iconSize={16} size="sm" onClick={() => setOpen(false)} label={isAr ? "إلغاء" : "Cancel"} />
       </div>
       <div className="flex gap-ctl-row flex-wrap">
         {SUGGESTED_FONTS[script].map((family) => (
-          <button
+          <Button
             key={family}
-            type="button"
+            variant="secondary"
+            size="sm"
             disabled={busy}
             onClick={() => {
               setValue(family);
               onImport(family);
             }}
-            className="text-[11px] px-2 py-1 rounded-md cursor-pointer disabled:opacity-40 bg-surface-2 text-text-muted"
-            
           >
             {family}
-          </button>
+          </Button>
         ))}
       </div>
       <span className="text-[10.5px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
@@ -654,7 +633,7 @@ function FamilyName({
     );
   }
   return (
-    <button
+    <button /* button-audit-ignore: click-to-edit family name, drawn as the heading it renames */
       type="button"
       onClick={onStart}
       title={`Rename ${value}`}

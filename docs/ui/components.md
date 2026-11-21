@@ -16,14 +16,14 @@ and shown live at `/dev/components`.
 
 ```tsx
 <Button variant="primary" onClick={save}>Save</Button>
-<Button variant="outline" size="sm" icon={<Icon name="plus" size={16} />}>Add asset</Button>
-<Button variant="link" href="/reset">Forgot?</Button>
+<Button variant="secondary" size="sm" icon={<Icon name="plus" size={16} />}>Add asset</Button>
+<Button variant="ghost" href="/reset">Forgot?</Button>
 ```
 
 | Prop | Type | Default |
 | --- | --- | --- |
-| `variant` | `"primary" \| "outline" \| "soft" \| "ghost" \| "link" \| "solid" \| "danger" \| "danger-soft" \| "success-soft"` | `"outline"` |
-| `size` | `"xs" \| "sm" \| "md" \| "lg" \| "icon"` — see the sizes table under Form controls | `"md"` |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` (docs/MARKYOS_COMPONENTS.md) | `"secondary"` |
+| `size` | `"sm" \| "md" \| "lg"` for labelled buttons; `"xs"` only for icon-only buttons — see the sizes table under Form controls | `"md"` |
 | `icon` / `iconEnd` | `ReactNode`, an `Icon` before / after the label (16 at xs and sm, 18 at md and lg) | |
 | `active` | keeps the hover scrim on, for the current choice | |
 | `block` | fills the width | |
@@ -32,14 +32,16 @@ and shown live at `/dev/components`.
 | `disabledReason` / `locked` | disables it and says why in a tooltip | |
 | `className` | adds layout classes; never a height, corner or fill (the control audit refuses them) | |
 
-One variant per job: `primary` the page's main action (accent fill),
-`outline` secondary (control ground with a hairline), `soft` and `link`
-tertiary, `ghost` the accent tint, `solid` the ink fill, `danger` a
-destructive confirm, `danger-soft` / `success-soft` the status tints. Corner
-`--control-radius`, height and side padding from the control size, an 8px
-gap between icon and label. Hover and press are the `mk-btn` scrim; focus is
-the 2px accent ring (it never changes the corner); disabled keeps the fill
-and drops to the disabled ink. Plus every native `<button>` attribute.
+Four variants, one job each (22 Nov 2026; the full rules are in
+`docs/MARKYOS_COMPONENTS.md`): `primary` the area's one main action (accent
+fill), `secondary` every other action (control ground with a hairline),
+`ghost` quiet actions (transparent until hovered), `danger` a destructive
+confirm. Corner `--control-radius`, height and side padding from the control
+size, an 8px gap between icon and label. Hover and press are the `mk-btn`
+scrim (ghost also takes a soft fill); focus is the 2px accent ring (it never
+changes the corner); disabled keeps its variant's look at 45% opacity, so it
+is never mistaken for an enabled button. Plus every native `<button>`
+attribute.
 
 ### `IconButton`
 

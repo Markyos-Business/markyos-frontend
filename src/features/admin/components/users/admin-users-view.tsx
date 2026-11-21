@@ -29,7 +29,7 @@ export function AdminUsersView() {
         title={c.title}
         description={c.description}
         secondaryActions={
-          <Button variant="outline" icon={<Icon name="file-export" size={18} />} onClick={page.exportCsv} disabled={page.exporting}>
+          <Button variant="secondary" icon={<Icon name="file-export" size={18} />} onClick={page.exportCsv} disabled={page.exporting}>
             {c.export}
           </Button>
         }

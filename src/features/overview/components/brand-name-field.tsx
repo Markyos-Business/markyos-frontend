@@ -45,7 +45,7 @@ export function BrandNameField({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   }
 
   return (
-    <button
+    <button /* button-audit-ignore: the brand name itself, click to rename in place */
       type="button"
       onClick={() => setDraft(ws.name)}
       title={isAr ? "إعادة تسمية العلامة" : "Rename this brand — the client link stays the same"}

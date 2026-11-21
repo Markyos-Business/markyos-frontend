@@ -126,7 +126,7 @@ export function ImportInstructionsModal({
               if (file) handleFile(file);
             }}
           />
-          <button
+          <button /* button-audit-ignore: a file drop zone that opens the file picker */
             type="button"
             onClick={() => inputRef.current?.click()}
             className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"
@@ -207,7 +207,7 @@ export function ImportInstructionsModal({
                 : `${rows.length} section${rows.length === 1 ? "" : "s"} found in ${fileName}`}
             </span>
             <div className="flex items-center gap-ctl-row">
-              <Button variant="outline" size="md" onClick={onClose}>
+              <Button variant="secondary" size="md" onClick={onClose}>
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button variant="primary" size="md" onClick={apply} disabled={selected.length === 0}>

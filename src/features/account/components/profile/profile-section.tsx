@@ -41,11 +41,11 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
                 e.target.value = "";
               }}
             />
-            <Button variant="outline" size="sm" icon={<Icon name="upload" size={16} />} onClick={() => fileInput.current?.click()} disabled={avatar.busy}>
+            <Button variant="secondary" size="sm" icon={<Icon name="upload" size={16} />} onClick={() => fileInput.current?.click()} disabled={avatar.busy}>
               {account.avatarUrl ? t("Change photo", "تغيير الصورة") : t("Upload photo", "رفع صورة")}
             </Button>
             {account.avatarUrl && (
-              <Button variant="link" size="sm" onClick={avatar.remove} disabled={avatar.busy}>
+              <Button variant="ghost" size="sm" onClick={avatar.remove} disabled={avatar.busy}>
                 {t("Remove", "إزالة")}
               </Button>
             )}
@@ -97,10 +97,10 @@ export function ProfileSection({ account, details, avatar }: ProfileSectionProps
             . {t("Until then you sign in with", "حتى ذلك الحين تسجّل الدخول بـ")} <span dir="ltr">{account.email}</span>.
           </p>
           <div className="flex shrink-0 items-center gap-ctl-row">
-            <Button type="button" variant="outline" size="sm" onClick={details.resendPending}>
+            <Button type="button" variant="secondary" size="sm" onClick={details.resendPending}>
               {t("Resend", "إعادة الإرسال")}
             </Button>
-            <Button type="button" variant="link" size="sm" onClick={details.cancelPending}>
+            <Button type="button" variant="ghost" size="sm" onClick={details.cancelPending}>
               {t("Cancel", "إلغاء")}
             </Button>
           </div>

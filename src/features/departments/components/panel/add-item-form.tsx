@@ -75,7 +75,7 @@ export function AddItemForm({ ws, view, isAr, onDone }: AddItemFormProps) {
         aria-label={t("Why this matters for this department", "لماذا يهم هذا القسم")}
         placeholder={t("Why this matters for this department (optional)", "لماذا يهم هذا القسم (اختياري)")}
       />
-      <Button variant="solid" size="sm" onClick={submit} className="self-start">
+      <Button variant="primary" size="sm" onClick={submit} className="self-start">
         {isAr ? `إضافة إلى ${view.name}` : `Add to ${view.name}`}
       </Button>
     </div>

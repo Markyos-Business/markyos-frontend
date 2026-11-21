@@ -54,7 +54,7 @@ const AsyncStateView = ({
         description={errorMessage || t.tryAgain}
         action={
           onRetry && (
-            <Button variant="outline" size="sm" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
+            <Button variant="secondary" size="sm" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
               {t.retry}
             </Button>
           )

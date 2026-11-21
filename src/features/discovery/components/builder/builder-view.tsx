@@ -213,7 +213,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
               {form.sections.map((s, i) => {
                 const on = s.id === section.id;
                 return (
-                  <button
+                  <button /* button-audit-ignore: a tab in the sections tablist */
                     key={s.id}
                     type="button"
                     role="tab"
@@ -236,7 +236,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
               })}
             </div>
             <Button
-              variant="link"
+              variant="ghost"
               disabled={!canAdd}
               onClick={() =>
                 run(async () => {

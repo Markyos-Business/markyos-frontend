@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, PageHeader, Button } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button, IconButton } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
@@ -53,7 +53,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         actions={<>
         <div className="flex gap-ctl-row">
           <Button
-            variant="outline"
+            variant="secondary"
             size="md"
             onClick={() => setExtracting(true)}
             title={hasArtwork ? (isAr ? "اقرأ الألوان الموجودة فعليًا في الشعار" : "Read the colours actually present in your logo") : undefined}
@@ -97,16 +97,15 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                         {isAr ? "أساسي" : "PRIMARY"}
                       </span>
                     )}
-                    <button
-                      type="button"
+                    <IconButton
+                      icon="pen"
+                      iconSize={16}
+                      size="xs"
+                      shape="round"
                       onClick={() => setEditor({ mode: "edit", color: c })}
-                      aria-label={`Edit ${c.name}`}
+                      label={`Edit ${c.name}`}
                       title={`Edit, set primary, or delete ${c.name}`}
-                      className="h-ctl-xs w-7 grid place-items-center rounded-full cursor-pointer bg-surface-2 text-text-muted"
-                      
-                    >
-                      <Icon name="pen" size={13} />
-                    </button>
+                    />
                   </div>
                 </div>
                 <div
@@ -114,7 +113,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   className="flex flex-col text-[11px]"
                   style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-muted)" }}
                 >
-                  <button
+                  <button /* button-audit-ignore: the colour value itself, clicked to copy */
                     type="button"
                     onClick={() => copyValue("HEX", c.hex.toUpperCase())}
                     title={isAr ? `نسخ قيمة HEX للون ${c.name}` : `Copy the HEX value for ${c.name}`}
@@ -122,7 +121,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   >
                     {c.hex.toUpperCase()}
                   </button>
-                  <button
+                  <button /* button-audit-ignore: the colour value itself, clicked to copy */
                     type="button"
                     disabled={!rgb}
                     onClick={() => rgb && copyValue("RGB", `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}
@@ -131,7 +130,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   >
                     {rgb ? `${rgb.r} · ${rgb.g} · ${rgb.b}` : "—"}
                   </button>
-                  <button
+                  <button /* button-audit-ignore: the colour value itself, clicked to copy */
                     type="button"
                     disabled={!cmyk}
                     onClick={() =>
@@ -147,7 +146,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             </div>
           );
         })}
-        <button
+        <button /* button-audit-ignore: the add tile at the end of the swatch grid, a card not a button */
           type="button"
           onClick={() => setEditor({ mode: "add" })}
           className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer shadow-edge text-text-muted min-h-55"
@@ -169,7 +168,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
 
       {ratio !== null && (
         <div className="flex flex-col gap-2.5">
-          <button
+          <button /* button-audit-ignore: a full-width summary row that opens the contrast matrix */
             type="button"
             onClick={() => setShowReport((v) => !v)}
             className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start bg-surface-1"

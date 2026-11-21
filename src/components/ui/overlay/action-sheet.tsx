@@ -95,7 +95,7 @@ const ActionSheet = ({ open, title, items, onClose }: ActionSheetProps) => {
           })}
         </div>
         <div className="px-space-8 pt-space-8">
-          <Button variant="outline" block onClick={onClose}>
+          <Button variant="secondary" block onClick={onClose}>
             {t.cancel}
           </Button>
         </div>

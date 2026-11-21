@@ -196,7 +196,7 @@ export function TranslateStrategy({
   return (
     <div className="flex flex-col gap-2">
       <Button
-        variant="soft"
+        variant="secondary"
         size="sm"
         onClick={run}
         disabled={busy}
@@ -253,14 +253,9 @@ export function TranslationNotice({ ws, isAr }: { ws: Workspace; isAr: boolean }
             : "This is a machine draft, not brand copy. Editing a field clears its flag."}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => setStrategyTranslation(ws.id, { unreviewed: [] })}
-        className="text-[12px] font-semibold cursor-pointer shrink-0 transition-opacity hover:opacity-70"
-        style={{ color: "var(--accent-text)" }}
-      >
+      <Button variant="ghost" size="sm" onClick={() => setStrategyTranslation(ws.id, { unreviewed: [] })} className="shrink-0">
         {isAr ? "راجعتها" : "Reviewed"}
-      </button>
+      </Button>
     </div>
   );
 }

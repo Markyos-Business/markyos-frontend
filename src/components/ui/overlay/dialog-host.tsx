@@ -118,7 +118,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
           )}
 
           <div className="flex gap-space-4 justify-end">
-            <Button type="button" variant="outline" onClick={() => onSettle(cancelValue)}>
+            <Button type="button" variant="secondary" onClick={() => onSettle(cancelValue)}>
               {cancelLabel}
             </Button>
             <Button

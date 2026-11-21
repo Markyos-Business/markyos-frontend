@@ -77,7 +77,7 @@ export function PeopleTable({ page, onInvite, onRemoveEverywhere }: PeopleTableP
         title={c.empty.noMatchTitle(page.query.trim())}
         description={c.empty.noMatchBody}
         action={
-          <Button variant="outline" size="sm" onClick={page.clearFilters}>
+          <Button variant="secondary" size="sm" onClick={page.clearFilters}>
             {c.empty.clear}
           </Button>
         }

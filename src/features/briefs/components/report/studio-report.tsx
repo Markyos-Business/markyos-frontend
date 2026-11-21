@@ -31,12 +31,12 @@ export function StudioReport({ workspace, ...report }: StudioReportProps) {
         editor.editing === section.key ? null : (
           <>
             {section.status === "ready" && (
-              <Button variant="outline" size="sm" icon={<Icon name="pen" size={16} />} onClick={() => editor.start(section)} disabled={!!editor.editing}>
+              <Button variant="secondary" size="sm" icon={<Icon name="pen" size={16} />} onClick={() => editor.start(section)} disabled={!!editor.editing}>
                 {isAr ? "تعديل" : "Edit"}
               </Button>
             )}
             {section.editedByUser && (
-              <Button variant="link" onClick={() => void editor.reset(section)} disabled={!!editor.editing}>
+              <Button variant="ghost" onClick={() => void editor.reset(section)} disabled={!!editor.editing}>
                 {isAr ? "العودة إلى نسخة التحليل" : "Back to the analysis's version"}
               </Button>
             )}

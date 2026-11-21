@@ -136,7 +136,7 @@ export function PreviewModal({
         </div>
       </div>
       <div className="flex justify-end gap-ctl-row">
-      <Button variant="outline" onClick={onCancel}>
+      <Button variant="secondary" onClick={onCancel}>
         {isAr ? "اختر ملفًا آخر" : "Choose another file"}
       </Button>
       <Button variant="primary" onClick={onAttach}>

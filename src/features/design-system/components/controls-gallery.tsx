@@ -31,7 +31,7 @@ const T = {
   ar: { sizes: "المقاسات", variants: "أنواع الأزرار وحالاتها", fields: "حالات الحقول", rows: "صفوف يجب أن تتحاذى", choose: "اختيار واحد", search: "ابحث في العلامات…", sort: "ترتيب", last: "آخر تعديل", name: "الاسم أ–ي", newBrand: "علامة جديدة", save: "حفظ", cancel: "إلغاء", email: "البريد الإلكتروني", password: "كلمة المرور", copy: "نسخ", generate: "توليد", role: "الدور", editor: "محرّر", client: "عميل", date: "يُغلق في", notes: "ملاحظات", value: "استوديو نادين", hint: "يظهر في الدليل.", error: "أدخل بريدًا إلكترونيًا صحيحًا.", success: "متاح.", warning: "قريب من الحد.", status: "الحالة", all: "الكل", draft: "مسودة", mode: "الوضع", edit: "تحرير", read: "قراءة", remove: "إزالة", label: "التسمية" },
 } as const;
 
-const VARIANTS: ButtonVariant[] = ["primary", "outline", "soft", "ghost", "link", "solid", "danger", "danger-soft", "success-soft"];
+const VARIANTS: ButtonVariant[] = ["primary", "secondary", "ghost", "danger"];
 const STATES = ["default", "hover", "focus", "disabled", "loading"] as const;
 const noop = () => {};
 
@@ -77,8 +77,8 @@ function Panel({ lang, theme }: { lang: Lang; theme: "light" | "dark" }) {
               </>
             )}
             <Button size={size} variant="primary" icon={<Icon name="plus" size={size === "xs" || size === "sm" ? 16 : 18} />}>{t.newBrand}</Button>
-            <Button size={size} variant="outline">{t.cancel}</Button>
-            <IconButton size={size} variant="outline" icon="ellipsis-h" label={t.label} />
+            <Button size={size} variant="secondary">{t.cancel}</Button>
+            <IconButton size={size} variant="secondary" icon="ellipsis-h" label={t.label} />
           </div>
         ))}
       </Section>
@@ -134,15 +134,15 @@ function Panel({ lang, theme }: { lang: Lang; theme: "light" | "dark" }) {
         </div>
         <div className="mk-field-row max-w-xl">
           <InputField label={t.password} value="nadeen2026" onChange={noop} hint={t.hint} />
-          <Button variant="soft" icon={<Icon name="copy" size={18} />}>{t.copy}</Button>
-          <Button variant="outline">{t.generate}</Button>
+          <Button variant="secondary" icon={<Icon name="copy" size={18} />}>{t.copy}</Button>
+          <Button variant="secondary">{t.generate}</Button>
         </div>
         <div className="flex flex-wrap items-center gap-ctl-row">
-          <Button variant="soft" size="sm" icon={<Icon name="key" size={16} />}>{t.role}</Button>
+          <Button variant="secondary" size="sm" icon={<Icon name="key" size={16} />}>{t.role}</Button>
           <FilterSelectField size="sm" label={t.role} hideLabel value="editor" options={roles} onChange={noop} />
           <IconButton size="sm" icon="times" label={t.remove} />
           <div className="w-64"><InputField size="sm" aria-label={t.label} placeholder={t.label} value="" onChange={noop} /></div>
-          <Button variant="soft" size="sm">{t.save}</Button>
+          <Button variant="secondary" size="sm">{t.save}</Button>
         </div>
       </Section>
 

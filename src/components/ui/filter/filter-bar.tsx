@@ -15,11 +15,11 @@ export function FilterBar({ search, children, active = false, onClear, filterCou
   const filters = Children.toArray(children);
   const columns = ["", "xl:grid-cols-1", "xl:grid-cols-2", "xl:grid-cols-3", "xl:grid-cols-4", "xl:grid-cols-5"][Math.min(filters.length, 5)];
   const title = label ?? t.form.filters;
-  const clear = active && onClear ? <Button variant="link" size="sm" icon={<Icon name="times" size={16} />} onClick={onClear}>{t.clearFilters}</Button> : null;
+  const clear = active && onClear ? <Button variant="ghost" size="sm" icon={<Icon name="times" size={16} />} onClick={onClear}>{t.clearFilters}</Button> : null;
   return <div role="search" aria-label={title} data-filter-bar className={`flex min-w-0 flex-col gap-space-3 ${className}`}>
     <div className="flex min-w-0 flex-wrap items-center gap-space-3">
       {search && <div className="min-w-0 flex-1 [&>label]:h-control-sm [&>label]:w-full">{search}</div>}
-      {!!filters.length && <Button variant={filterCount ? "ghost" : "outline"} size="lg" icon={<Icon name="filter" size={18} />} aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? panelId : undefined} onClick={() => setOpen(true)} className="shrink-0 sm:hidden">
+      {!!filters.length && <Button variant="secondary" size="lg" icon={<Icon name="filter" size={18} />} aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? panelId : undefined} onClick={() => setOpen(true)} className="shrink-0 sm:hidden">
         {title}{filterCount > 0 && <span className="rounded-md bg-accent-soft px-space-2 text-caption tabular-nums">{filterCount}</span>}
       </Button>}
       <div className="hidden shrink-0 sm:block">{clear}</div>
@@ -29,7 +29,7 @@ export function FilterBar({ search, children, active = false, onClear, filterCou
     </div>}
     {clear && <div className="sm:hidden">{clear}</div>}
     <Popup id={panelId} open={open} onOpenChange={setOpen} title={title} description={<span role="status">{t.form.activeFilters(filterCount)}</span>} variant="sheet" size="sm" dir={isAr ? "rtl" : "ltr"}
-      footer={<>{onClear && <Button variant="outline" disabled={!active} onClick={onClear}>{t.clearFilters}</Button>}<Button onClick={() => setOpen(false)}>{t.showResults}</Button></>}>
+      footer={<>{onClear && <Button variant="secondary" disabled={!active} onClick={onClear}>{t.clearFilters}</Button>}<Button onClick={() => setOpen(false)}>{t.showResults}</Button></>}>
       <div data-filter-panel data-expanded="true" className="group/filter-panel flex min-w-0 flex-col gap-space-6">{filters.map((control,index) => <div key={index} className="min-w-0 [&>*]:w-full [&_[role=combobox]]:w-full [&_[role=combobox]]:max-w-none">{control}</div>)}</div>
     </Popup>
   </div>;

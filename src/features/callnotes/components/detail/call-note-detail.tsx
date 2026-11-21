@@ -120,10 +120,10 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
           </label>
           {canEdit && (
             <>
-              <Button variant="outline" size="sm" href={editHref} icon={<Icon name="pen" size={16} />}>
+              <Button variant="secondary" size="sm" href={editHref} icon={<Icon name="pen" size={16} />}>
                 {t("Edit", "تعديل")}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => void remove()} icon={<Icon name="trash" size={16} />}>
+              <Button variant="secondary" size="sm" onClick={() => void remove()} icon={<Icon name="trash" size={16} />}>
                 {t("Delete", "حذف")}
               </Button>
             </>

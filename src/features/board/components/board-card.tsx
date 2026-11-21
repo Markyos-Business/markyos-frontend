@@ -42,7 +42,7 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
 
       {pendingDrafts > 0 && (
         <div className="flex flex-wrap items-center gap-ctl-row">
-          <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
+          <Link /* button-audit-ignore: a count chip on a board card, links to the drafts */ href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
             {isAr ? `${pendingDrafts} بانتظار القرار` : `${pendingDrafts} waiting`}
           </Link>
         </div>

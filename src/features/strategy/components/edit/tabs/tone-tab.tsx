@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint, Button } from "@/components/ui";
+import { useToast, Icon, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { traitIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -45,14 +45,9 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "الشخصية والنبرة" : "Personality & tone"}
       icon="quote-right"
       right={
-        <button
-          type="button"
-          onClick={() => setAdding((v) => !v)}
-          className="mk-tap text-[12px] font-semibold cursor-pointer"
-          style={{ color: "var(--accent-text)" }}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-        </button>
+        </Button>
       }
     >
       {adding && (
@@ -72,7 +67,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setTraitDont}
             placeholder={isAr ? "لا تفعل: ما يجب تجنبه" : "Don't: what to avoid"}
           />
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة سمة" : "Add trait"}
           </Button>
         </form>
@@ -130,16 +125,16 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                       }
                     />
                   </div>
-                  <button
-                    type="button"
+                  <IconButton
+                    icon="times"
+                    iconSize={16}
+                    size="xs"
                     onClick={() => removeVoiceTrait(ws.id, t.id)}
-                    aria-label={
+                    label={
                       isAr ? `حذف ${shown.trait || "السمة"}` : `Remove ${shown.trait || "trait"}`
                     }
-                    className="mk-icon-btn cursor-pointer self-start mt-1 transition-opacity opacity-50 hover:opacity-100"
-                  >
-                    <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                  </button>
+                    className="self-start mt-1"
+                  />
                 </div>
                 {flagged && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
                 {isAr && (

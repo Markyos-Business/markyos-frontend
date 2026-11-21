@@ -9,7 +9,7 @@ export function brandSetup(ws: Workspace) {
     { key: "logo", label: "Add your logo", arLabel: "أضف شعارك", done: Object.values(ws.logo).some(s => s.phase === "attached"), href: `${base}/visual-identity?tab=logo` },
     { key: "colors", label: "Add brand colours", arLabel: "أضف ألوان العلامة", done: ws.colors.length > 0, href: `${base}/visual-identity?tab=color` },
     { key: "fonts", label: "Choose your fonts", arLabel: "اختر خطوطك", done: !!(ws.typography.latinFamily?.trim() && ws.typography.arabicFamily?.trim()), href: `${base}/visual-identity?tab=typography` },
-    { key: "purpose", label: "Write your purpose", arLabel: "اكتب غاية العلامة", done: !!purpose?.trim(), href: `${base}/strategy?tab=purpose` },
+    { key: "purpose", label: "Write your purpose", arLabel: "اكتب غاية العلامة", done: !!purpose?.trim(), href: `${base}/strategy/purpose` },
     { key: "publish", label: "Publish your guideline", arLabel: "انشر دليل العلامة", done: !!ws.published, href: `${base}/builder` },
   ];
 }

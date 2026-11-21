@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonLook } from "../button/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { usePresence } from "@/hooks/usePresence";
@@ -44,7 +45,9 @@ const triggers = {
   plain: "flex cursor-pointer items-center",
   // Fills its row: a field-shaped trigger (a date range).
   block: "flex w-full cursor-pointer items-center",
-  pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
+  // A secondary sm button (Share, the review chip): it was its own 32px grey
+  // pill, the same fill as a disabled button (review, 22 Nov 2026).
+  pill: buttonLook("secondary", "sm"),
 };
 
 const Popover = ({ button, label, align = "end", width = 260, className, trigger = "plain", children, describedBy, onOpen }: PopoverProps) => {

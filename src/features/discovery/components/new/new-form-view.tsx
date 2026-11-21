@@ -183,7 +183,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
       )}
 
       <div className="flex flex-wrap justify-end gap-ctl-row">
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel}>
           {isAr ? "إلغاء" : "Cancel"}
         </Button>
         <Button variant="primary" onClick={() => void create()} disabled={busy} icon={<Icon name="arrow-right" size={18} />}>

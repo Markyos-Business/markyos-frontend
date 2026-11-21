@@ -9,14 +9,22 @@ import { Tooltip } from "../tooltip";
 import { useUiStrings } from "../ui-strings";
 
 /**
- * One variant per job. Primary: the page's main action. Outline: secondary
- * actions. Link and soft: tertiary. Danger: destructive, after confirmation.
- * Ghost (accent tint), the soft status tints and solid cover the rest.
- * `secondary`, `destructive` and `light` were duplicates of soft, danger and
- * solid and are gone.
+ * Four variants, one job each (review, 22 Nov 2026; docs/MARKYOS_COMPONENTS.md):
+ * - primary: the one main action of an area, in the accent.
+ * - secondary: every other action, a filled control with a hairline edge.
+ * - ghost: quiet actions (toolbars, icon buttons, "Add…" inside a list),
+ *   transparent until hovered.
+ * - danger: destructive, after confirmation.
+ * They replaced nine (outline, soft, solid, link, the accent tint and the
+ * status tints), which gave about 24 looks across the app.
  */
-export type ButtonVariant = "primary" | "outline" | "ghost" | "link" | "soft" | "success-soft" | "danger-soft" | "danger" | "solid";
-export type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+/**
+ * sm / md / lg share their heights with fields of the same size (32 / 40 /
+ * 46px; sm and md are 44px on touch). xs (28px, 44px touch target) is for
+ * dense in-row icon buttons only (IconButton); a labelled button is sm or up.
+ */
+export type ButtonSize = "xs" | "sm" | "md" | "lg";
 export type ButtonStatus = "idle" | "loading" | "success" | "error";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -49,22 +57,26 @@ const sizes: Record<ButtonSize, string> = {
   sm: "h-ctl-sm px-ctl-px-sm gap-ctl-icon text-caption",
   md: "h-ctl-md px-ctl-px-md gap-ctl-icon text-body",
   lg: "h-ctl-lg px-ctl-px-lg gap-ctl-icon text-body",
-  icon: "size-ctl-md p-0 text-body",
 };
 const variants: Record<ButtonVariant, string> = {
   primary: "bg-accent text-accent-ink",
-  outline: "bg-ink-soft text-text shadow-edge",
-  ghost: "bg-accent-soft text-accent-on-soft",
-  link: "bg-transparent text-accent-text hover:underline underline-offset-2",
-  soft: "bg-surface-2 text-text",
-  "success-soft": "bg-success-soft text-success",
-  "danger-soft": "bg-danger-soft text-danger",
+  secondary: "bg-ink-soft text-text shadow-edge",
+  ghost: "bg-transparent text-text",
   danger: "bg-danger-fill text-danger-ink",
-  solid: "bg-solid text-solid-ink",
 };
 
+/**
+ * The button look for a control that has to be another element (a menu or
+ * popover trigger renders its own <button>): the same family classes, so its
+ * height, fill, hover, focus and disabled state match a Button of that
+ * variant and size exactly.
+ */
+export function buttonLook(variant: ButtonVariant = "secondary", size: ButtonSize = "sm"): string {
+  return `mk-btn mk-family-button relative inline-flex shrink-0 items-center justify-center rounded-control font-medium leading-none whitespace-nowrap cursor-pointer ${sizes[size]} ${variants[variant]}`;
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
-  variant = "outline", size = "md", icon, iconEnd, active, block, href, asChild,
+  variant = "secondary", size = "md", icon, iconEnd, active, block, href, asChild,
   loading, loadingText: loadingTextProp, successText: successTextProp, errorText: errorTextProp,
   status: statusProp, disabledReason, locked, lockedReason: lockedReasonProp, skeleton,
   disabled, children, className = "", type = "button", onClick, onClickCapture,
@@ -87,7 +99,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const stateText = busy ? loadingText : status === "success" ? successText : status === "error" ? errorText : null;
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" && !children && !ariaLabel) console.warn("Button: icon-only buttons require an aria-label.");
-  }, [children, ariaLabel]);
+    if (process.env.NODE_ENV !== "production" && size === "xs" && children) console.warn("Button: xs is for icon-only buttons; a labelled button is sm or larger.");
+  }, [children, ariaLabel, size]);
   const original = asChild && isValidElement(children) ? (children as ReactElement<{ children?: ReactNode }>).props.children : children;
   const content = <>
     <span className="inline-grid items-center gap-[inherit]">

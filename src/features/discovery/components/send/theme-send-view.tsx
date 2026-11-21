@@ -100,11 +100,11 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
           </div>
         </>}
         actions={<>
-        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
+        <Button variant="secondary" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
         {form.status !== "draft" && (
-          <Button variant="outline" href={answersHref}>
+          <Button variant="secondary" href={answersHref}>
             {t("Answers", "الإجابات")}
           </Button>
         )}
@@ -130,7 +130,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
               <span className="text-caption text-text-muted">{t("Accent colour", "لون التمييز")}</span>
               <div className="flex flex-wrap items-center gap-ctl-row">
                 {swatches.slice(0, 8).map((s) => (
-                  <button
+                  <button /* button-audit-ignore: a colour swatch that picks the accent */
                     key={s.hex}
                     type="button"
                     aria-label={`${s.name} ${s.hex}`}
@@ -231,11 +231,11 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                   />
                 </div>
                 <div className="flex flex-wrap gap-ctl-row">
-                  <Button variant="link" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
+                  <Button variant="ghost" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
                     {t("New link", "رابط جديد")}
                   </Button>
                   <Button
-                    variant="link"
+                    variant="ghost"
                     onClick={async () => {
                       const ok = await confirm({
                         title: t("Switch off this link?", "إيقاف هذا الرابط؟"),

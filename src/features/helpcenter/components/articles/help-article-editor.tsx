@@ -93,7 +93,7 @@ export function HelpArticleEditor({ id }: { id: string }) {
         }
         actions={canWrite && (
           // Outline: each language's Publish is the main action on this page.
-          <Button variant="outline" onClick={() => void editor.save()} disabled={!editor.dirty || editor.state === "saving"}>
+          <Button variant="secondary" onClick={() => void editor.save()} disabled={!editor.dirty || editor.state === "saving"}>
             {editor.state === "saving" ? t.saving : t.save}
           </Button>
         )}
@@ -101,18 +101,18 @@ export function HelpArticleEditor({ id }: { id: string }) {
           <>
             <HelpVersionHistory id={id} version={doc.version} canWrite={canWrite} onRestore={editor.restore} />
             {canWrite && (
-              <Button variant="outline" icon={<Icon name="copy" size={18} />} onClick={() => void run(async () => router.push(`${LIST}/articles/${(await duplicateHelpArticle(id)).id}`), h.articles.toast.duplicated)}>
+              <Button variant="secondary" icon={<Icon name="copy" size={18} />} onClick={() => void run(async () => router.push(`${LIST}/articles/${(await duplicateHelpArticle(id)).id}`), h.articles.toast.duplicated)}>
                 {h.articles.actions.duplicate}
               </Button>
             )}
             {canManage && (
               archived ? (
-                <Button variant="outline" icon={<Icon name="undo" size={18} />} onClick={() => void run(async () => editor.adopt(await unarchiveHelpArticle(id)), h.articles.toast.unarchived)}>
+                <Button variant="secondary" icon={<Icon name="undo" size={18} />} onClick={() => void run(async () => editor.adopt(await unarchiveHelpArticle(id)), h.articles.toast.unarchived)}>
                   {h.articles.actions.unarchive}
                 </Button>
               ) : (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   icon={<Icon name="inbox" size={18} />}
                   onClick={async () => {
                     if (await confirm({ title: h.articles.confirmArchive.title(name), body: h.articles.confirmArchive.body, confirmLabel: h.articles.confirmArchive.confirm }))
@@ -125,7 +125,7 @@ export function HelpArticleEditor({ id }: { id: string }) {
             )}
             {canManage && (
               <Button
-                variant="danger-soft"
+                variant="danger"
                 icon={<Icon name="trash" size={18} />}
                 onClick={async () => {
                   if (await confirm({ title: h.articles.confirmRemove.title(name), body: h.articles.confirmRemove.body, confirmLabel: h.articles.confirmRemove.confirm, tone: "danger" }))
@@ -250,7 +250,7 @@ function TranslationFields({
           )}
           {!readOnly && (
             <>
-              <Button variant="outline" size="sm" onClick={() => void pickImage().then((m) => m && onChange({ ogImage: m }))}>{f.chooseImage}</Button>
+              <Button variant="secondary" size="sm" onClick={() => void pickImage().then((m) => m && onChange({ ogImage: m }))}>{f.chooseImage}</Button>
               {draft.ogImage && <Button variant="ghost" size="sm" onClick={() => onChange({ ogImage: null })}>{f.removeImage}</Button>}
             </>
           )}

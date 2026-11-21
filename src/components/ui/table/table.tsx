@@ -174,7 +174,7 @@ const TableErrorRow = ({ colSpan, message, onRetry }: TableErrorRowProps) => {
           {message ?? t.loadFailed}
         </p>
         {onRetry && (
-          <Button variant="outline" size="sm" className="mt-space-3" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
+          <Button variant="secondary" size="sm" className="mt-space-3" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
             {t.retry}
           </Button>
         )}

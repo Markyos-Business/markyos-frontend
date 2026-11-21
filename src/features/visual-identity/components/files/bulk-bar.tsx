@@ -1,7 +1,7 @@
 "use client";
 
 import { saveFile } from "@/lib/download";
-import { Icon } from "@/components/ui";
+import { Button, Icon, IconButton } from "@/components/ui";
 
 /**
  * Shared selection bar for the asset surfaces. Brand files and each of the
@@ -35,41 +35,17 @@ export function BulkBar({
       <span className="text-[12px] font-semibold" style={{ color: "var(--accent-text)" }}>
         {isAr ? `${count} محدد` : `${count} selected`}
       </span>
-      <button
-        type="button"
-        onClick={allSelected ? onClear : onSelectAll}
-        className="text-[12px] font-medium cursor-pointer"
-        style={{ color: "var(--text-secondary)" }}
-      >
+      <Button variant="ghost" size="sm" onClick={allSelected ? onClear : onSelectAll}>
         {allSelected ? (isAr ? "إلغاء التحديد" : "Deselect all") : isAr ? `تحديد الكل (${total})` : `Select all (${total})`}
-      </button>
+      </Button>
       <span className="ms-auto flex items-center gap-ctl-row">
-        <button
-          type="button"
-          onClick={onDownload}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
-          style={{ color: "var(--accent-text)" }}
-        >
-          <Icon name="download" size={12} />
+        <Button variant="secondary" size="sm" icon={<Icon name="download" size={16} />} onClick={onDownload}>
           {isAr ? "تحميل" : "Download"}
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
-          style={{ color: "var(--danger)" }}
-        >
-          <Icon name="times" size={12} />
+        </Button>
+        <Button variant="danger" size="sm" icon={<Icon name="times" size={16} />} onClick={onDelete}>
           {isAr ? "حذف" : "Delete"}
-        </button>
-        <button
-          type="button"
-          onClick={onClear}
-          aria-label={isAr ? "إلغاء التحديد" : "Clear selection"}
-          className="mk-icon-btn cursor-pointer"
-        >
-          <Icon name="times" size={13} style={{ color: "var(--text-faint)" }} />
-        </button>
+        </Button>
+        <IconButton icon="times" iconSize={16} size="sm" onClick={onClear} label={isAr ? "إلغاء التحديد" : "Clear selection"} />
       </span>
     </div>
   );
@@ -86,7 +62,7 @@ export function downloadFiles(files: { url?: string; fileName: string }[]): numb
 /** A checkbox that sits over an asset thumbnail. */
 export function SelectBox({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) {
   return (
-    <button
+    <button /* button-audit-ignore: an 18px tick box over an asset thumbnail */
       type="button"
       role="checkbox"
       aria-checked={checked}

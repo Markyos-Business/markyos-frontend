@@ -2,7 +2,7 @@
 
 import { MoodImage } from "./mood-image";
 import { useState } from "react";
-import { ColorPopover, FilterSelectField, Button } from "@/components/ui";
+import { ColorPopover, FilterSelectField, Button, IconButton } from "@/components/ui";
 import { Icon } from "@/components/ui";
 import { contrastRatio } from "@/lib/contrast";
 import type { Asset, MoodboardItem } from "@/types";
@@ -147,7 +147,7 @@ function Body({
             }
           />
           {onSampleColor && (
-            <button /* ctl-audit-ignore: drawn over the card's image on its dark scrim */
+            <button /* ctl-audit-ignore: drawn over the card's image on its dark scrim */ /* button-audit-ignore: overlay on the card's image */
               type="button"
               onClick={() => onSampleColor(asset.url)}
               title={isAr ? "استخرج الألوان من هذه الصورة" : "Read the colours out of this image"}
@@ -306,7 +306,7 @@ function LinkCard({
       className="flex flex-col gap-1.5 p-3 no-underline overflow-hidden"
     >
       {fill && item.url && (
-        <a
+        <a /* button-audit-ignore: overlay on a link card, drawn on its scrim */
           href={item.url}
           target="_blank"
           rel="noreferrer noopener"
@@ -398,8 +398,8 @@ function Footer({
             : isAr ? `اختر ${label}` : `Pick ${label}`
         }
         title={count > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-        variant={mine ? "ghost" : "link"}
-        size="xs"
+        variant={mine ? "secondary" : "ghost"}
+        size="sm"
         className={mine ? "" : "text-text-faint"}
         icon={<Icon name="check" size={16} />}
       >
@@ -421,29 +421,30 @@ function Footer({
           ]}
         />
         {asset?.credit?.sourceUrl && (
-          <a
+          <IconButton
             href={asset.credit.sourceUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label={isAr ? `مصدر ${label}` : `Source of ${label}`}
+            // An outside page, in a new tab. Button types only a button's
+            // attributes, so the link's own two travel in a spread; Link puts
+            // them on the <a>.
+            external
+            size="xs"
+            icon="external-link-alt"
+            iconSize={16}
+            label={isAr ? `مصدر ${label}` : `Source of ${label}`}
             title={asset.credit.source || asset.credit.sourceUrl}
-            className="mk-icon-btn"
-          >
-            <Icon name="external-link-alt" size={11} style={{ color: "var(--text-faint)" }} />
-          </a>
+          />
         )}
-        <button
-          type="button"
+        <IconButton
+          size="xs"
+          icon="times"
+          iconSize={16}
           onClick={onRemove}
-          aria-label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}
+          label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}
           title={isAr ? "حذف — يمكن التراجع" : "Delete — you can undo this"}
           // Named for the sweeps, which delete a specific card in both
           // languages and cannot select it by a label that changes with them.
           data-mood-remove
-          className="mk-icon-btn mk-danger-hover cursor-pointer"
-        >
-          <Icon name="times" size={11} style={{ color: "var(--text-faint)" }} />
-        </button>
+        />
       </span>
     </figcaption>
   );
