@@ -4050,13 +4050,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   // Development only: an action whose identity changes defeats the split
-  // above, silently. Say so the moment it happens.
+  // above, silently. Say so the moment it happens, naming it. `uiLang` is the
+  // one deliberate exception: it changes when the interface language does
+  // (once, when the account's preference loads), and every screen showing
+  // words has to re-render then anyway.
   const firstActions = useRef(actions);
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" && actions !== firstActions.current) {
-      console.warn("AppContext: the actions object changed identity; an action depends on state. Read state through stateRef instead.");
-      firstActions.current = actions;
-    }
+    if (process.env.NODE_ENV === "production" || actions === firstActions.current) return;
+    const before = firstActions.current as unknown as Record<string, unknown>;
+    const changed = Object.keys(actions).filter((k) => k !== "uiLang" && (actions as unknown as Record<string, unknown>)[k] !== before[k]);
+    if (changed.length) console.warn(`AppContext: the actions object changed identity (${changed.join(", ")}); an action depends on state. Read state through stateRef instead.`);
+    firstActions.current = actions;
   }, [actions]);
 
   return (
