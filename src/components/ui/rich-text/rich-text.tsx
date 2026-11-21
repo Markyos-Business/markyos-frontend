@@ -372,7 +372,7 @@ const RichTextEditor = ({
     <div
       className="flex flex-col overflow-hidden rounded-lg bg-surface-2 shadow-edge-editing"
     >
-      <div
+      <div /* ctl-audit-ignore: the editor toolbar's tight row of formatting icons */
         className="flex shrink-0 flex-wrap items-center gap-0.5 px-2 py-1.5 text-text-muted shadow-rule-b"
       >
         {toolbar.map((t) => {

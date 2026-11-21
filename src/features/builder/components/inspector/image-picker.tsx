@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchField, SegmentedControl } from "@/components/ui";
+import { SearchField, SegmentedControl, Button } from "@/components/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
@@ -129,7 +129,7 @@ function LibraryTab({
       {assets.map((a) => {
         const active = selectedIds.includes(a.id);
         return (
-          <button
+          <button /* ctl-audit-ignore: an image tile in the picker grid */
             key={a.id}
             type="button"
             title={a.fileName}
@@ -215,12 +215,12 @@ function UploadTab({
         hidden
         onChange={(e) => void handleFiles(e.target.files)}
       />
-      <button
+      <button /* ctl-audit-ignore: the upload drop tile in the picker grid */
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="h-[92px] rounded-card grid place-items-center gap-1.5 cursor-pointer disabled:cursor-wait"
-        style={{ border: "1px dashed var(--hairline-strong)", color: "var(--text-muted)" }}
+        className="h-[92px] rounded-card grid place-items-center gap-1.5 cursor-pointer border border-dashed border-hairline-strong text-text-muted disabled:cursor-wait"
+        
       >
         <Icon name="upload" size={18} style={{ color: "var(--accent-text)" }} />
         <span className="text-[12px] font-medium">
@@ -293,15 +293,9 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
         placeholder="https://…/photo.jpg"
         className="mk-field mk-field-sm"
       />
-      <button
-        type="button"
-        disabled={busy || !url.trim()}
-        onClick={() => void add()}
-        className="h-9 rounded-full text-[12px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ background: "var(--surface-2)", color: "var(--text)" }}
-      >
+      <Button variant="soft" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
         {busy ? (isAr ? "جارٍ الجلب…" : "Fetching…") : isAr ? "إضافة الصورة" : "Add image"}
-      </button>
+      </Button>
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
         {isAr
           ? "الصق رابطًا مباشرًا لصورة من أي موقع. تأكد من أن الترخيص يسمح بالاستخدام التجاري."
@@ -411,19 +405,19 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
             placeholder="Access Key"
             className="mk-field mk-field-sm"
           />
-          <button
-            type="button"
+          <Button
+            variant="soft"
+            size="sm"
+            block
             disabled={!keyDraft.trim()}
             onClick={() => {
               setUnsplashKey(keyDraft);
               setHasKey(true);
               setKeyDraft("");
             }}
-            className="h-9 rounded-full text-[12px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             {isAr ? "حفظ المفتاح" : "Save key"}
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -456,7 +450,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
           {results.length > 0 && (
             <div className="grid grid-cols-2 gap-2">
               {results.map((r) => (
-                <button
+                <button /* ctl-audit-ignore: an image tile in the stock results grid */
                   key={r.id}
                   type="button"
                   disabled={!!importing}

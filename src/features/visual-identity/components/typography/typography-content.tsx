@@ -589,7 +589,7 @@ function GoogleFontImport({
           type="button"
           onClick={() => setOpen(false)}
           aria-label={isAr ? "إلغاء" : "Cancel"}
-          className="h-8 w-8 grid place-items-center cursor-pointer shrink-0"
+          className="h-ctl-sm w-8 grid place-items-center cursor-pointer shrink-0"
           style={{ color: "var(--text-faint)" }}
         >
           <Icon name="times" size={12} />
@@ -605,8 +605,8 @@ function GoogleFontImport({
               setValue(family);
               onImport(family);
             }}
-            className="text-[11px] px-2 py-1 rounded-md cursor-pointer disabled:opacity-40"
-            style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
+            className="text-[11px] px-2 py-1 rounded-md cursor-pointer disabled:opacity-40 bg-surface-2 text-text-muted"
+            
           >
             {family}
           </button>

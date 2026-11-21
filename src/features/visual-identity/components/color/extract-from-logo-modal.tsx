@@ -127,7 +127,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                     key={s.key}
                     type="button"
                     onClick={() => setSourceKey(s.key)}
-                    className="h-9 px-3.5 rounded-lg text-[12.5px] font-medium cursor-pointer max-w-[220px] truncate"
+                    className="h-ctl-sm px-ctl-px-sm rounded-control text-caption font-medium cursor-pointer max-w-[220px] truncate"
                     style={{
                       background: active ? "var(--accent-soft)" : "var(--surface-2)",
                       color: active ? "var(--accent)" : "var(--text-muted)",
@@ -172,7 +172,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                     className="flex items-center gap-ctl-row rounded-card p-2.5"
                     style={{ background: "var(--surface-2)", opacity: already ? 0.55 : 1 }}
                   >
-                    <button
+                    <button /* ctl-audit-ignore: a 20px tick box on a colour swatch */
                       type="button"
                       disabled={already}
                       onClick={() =>

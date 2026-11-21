@@ -186,8 +186,8 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
-            style={{ borderColor: "var(--hairline-strong)" }}
+            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"
+            
           >
             <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
             <span className="text-[13px] font-medium">

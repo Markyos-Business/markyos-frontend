@@ -85,7 +85,7 @@ type SwitchProps = {
 const Switch = ({ checked, onToggle, label, disabled = false, loading = false }: SwitchProps) => (
   <span className="flex shrink-0 items-center gap-space-3">
     {loading && <Icon name="circle-notch" size={16} className="animate-spin text-text-muted" />}
-    <button
+    <button /* ctl-audit-ignore: the spec switch, 40 by 22 (MARKYOS_UI 6.6) */
       type="button"
       role="switch"
       aria-checked={checked}

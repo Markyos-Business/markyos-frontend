@@ -1603,7 +1603,7 @@ function FrameBase({
           onPointerDown={(e) => e.stopPropagation()}
         >
           {action && (
-            <button
+            <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
               type="button"
               onClick={action.run}
               disabled={action.busy || empty}
@@ -1682,7 +1682,7 @@ function FrameBase({
         const g = zone.ghostBoxes[i];
         if (!g) return null;
         return (
-          <button
+          <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
             key={i}
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -1826,7 +1826,7 @@ function AddMenu({
             }}
           >
             {ordered.map((k) => (
-              <button
+              <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
                 key={k.kind}
                 type="button"
                 onClick={() => {
@@ -1997,7 +1997,7 @@ function CardOnCanvasBase({
         style={{ insetInlineEnd: 4 }}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <button
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
           type="button"
           onClick={() => onVote(item.id)}
           aria-pressed={mine}
@@ -2016,7 +2016,7 @@ function CardOnCanvasBase({
           <Icon name="check" size={9} />
           {item.votes.length || ""}
         </button>
-        <button
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
           type="button"
           onClick={() => onRemove(item.id)}
           aria-label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}

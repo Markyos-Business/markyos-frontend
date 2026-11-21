@@ -74,7 +74,7 @@ export function BlockInspector({
                     type="button"
                     onClick={() => onChange({ assetIds: active ? ids.filter((x) => x !== a.id) : [...ids, a.id] })}
                     className={`flex cursor-pointer items-center gap-2.5 rounded-lg bg-surface-1 px-3 py-2.5 text-start ${
-                      active ? "shadow-[inset_0_0_0_2px_var(--accent)]" : "shadow-[inset_0_0_0_1px_transparent]"
+                      active ? "shadow-selected" : "shadow-none"
                     }`}
                   >
                     <Icon name="file-alt" size={14} className="shrink-0 text-accent-text" />

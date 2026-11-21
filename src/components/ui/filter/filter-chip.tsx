@@ -13,7 +13,7 @@ type FilterChipProps = {
 const FilterChip = ({ label, onRemove, removeLabel }: FilterChipProps) => (
   <span className="inline-flex h-tag shrink-0 items-center gap-space-1 whitespace-nowrap rounded-lg bg-accent-soft ps-space-5 pe-space-2 text-body font-medium text-accent-on-soft">
     {label}
-    <button
+    <button /* ctl-audit-ignore: the remove mark inside a filter chip */
       type="button"
       onClick={onRemove}
       aria-label={removeLabel ?? `Remove ${label} filter`}

@@ -320,7 +320,7 @@ export function LogoSlotCard({
                 both effectively invisible at the moment you're trying to
                 replace or remove a lockup.
               */}
-              <button
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -331,7 +331,7 @@ export function LogoSlotCard({
               >
                 {isAr ? "استبدال" : "Replace"}
               </button>
-              <button
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
                 type="button"
                 onClick={remove}
                 className="h-ctl-sm cursor-pointer rounded-control px-ctl-px-sm text-caption font-medium"
@@ -417,8 +417,8 @@ function LightVersionStrip({
           e.stopPropagation();
           onPick();
         }}
-        className="h-[42px] rounded-lg flex items-center justify-center gap-2 text-[11.5px] font-medium cursor-pointer"
-        style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)" }}
+        className="h-ctl-md rounded-control flex items-center justify-center gap-ctl-icon text-caption font-medium cursor-pointer shadow-edge text-text-muted"
+        
         title={
           isAr
             ? "ارفع نسخة الشعار البيضاء بدلًا من ترك النظام يعكس الألوان"
