@@ -53,6 +53,10 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 9 (21 Nov 2026): the style debt cleared
+
+The control audit's baseline of pre-existing hand-styled controls is empty (63 → 0). Heights, selection rings, swatch edges and inline colours moved to tokens (new `shadow-selected`, `shadow-edge-chip`); two image-picker buttons became kit Buttons; the genuine exceptions — moodboard canvas items that scale with zoom, image tiles, the small marks inside chips, the spec-sized switch — are marked in place with their reason. Any new hand-set value now fails the build outright. All 771 unit tests and the 30 e2e tests pass.
+
 ## Round 8 (21 Nov 2026): improvements, and the sweep is complete
 
 - Account → Sessions: the table ran wider than its card and hid each session's Sign out; columns now fit. "Now" and "just now" read the same.
