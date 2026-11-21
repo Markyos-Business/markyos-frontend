@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { Workspace } from "@/types";
 import { Button, EmptyState, Icon, MarkyosLogo } from "@/components/ui";
 import { publishedGuidelineHref } from "@/lib/data/brandNavigation";
@@ -19,10 +18,9 @@ export function ClientBrandHome({ workspace, isAr }: { workspace: Workspace; isA
   return (
     <main dir={isAr ? "rtl" : "ltr"} className="flex min-h-screen flex-col gap-space-11 bg-canvas px-space-6 py-space-8 sm:px-space-10">
       <div className="flex items-center justify-between gap-space-5">
-        <Link href="/brands" className="mk-tap flex items-center gap-space-3 text-body text-text-muted">
-          <Icon name="arrow-left" size={18} />
+        <Button href="/brands" variant="ghost" icon={<Icon name="arrow-left" size={18} />}>
           {isAr ? "العلامات المشاركة معك" : "Brands shared with you"}
-        </Link>
+        </Button>
         <MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} />
       </div>
       <div className="mx-auto flex w-full max-w-120 flex-1 flex-col justify-center gap-space-5">

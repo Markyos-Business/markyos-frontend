@@ -182,7 +182,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
               return (
                 <tr key={form.id} className={rowClasses}>
                   <td className={cellClasses}>
-                    <Link href={formHref(form)} className="mk-tap font-medium text-text hover:text-accent-text">
+                    <Link /* button-audit-ignore: the form's name, a text link in its table row */ href={formHref(form)} className="mk-tap font-medium text-text hover:text-accent-text">
                       {form.name}
                     </Link>
                   </td>

@@ -61,7 +61,7 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
           : `Written for the ${STYLE_META[ws.guidelineTemplate].name} template — everything added stays editable or deletable.`}
       </p>
       {TEMPLATE_SETS[ws.guidelineTemplate].map((t) => (
-        <button
+        <button /* button-audit-ignore: a starter-section card (icon, name, hint) */
           key={t.key}
           type="button"
           onClick={() => onApplyTemplate(t)}

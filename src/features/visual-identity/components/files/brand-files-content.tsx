@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useMemo, useRef, useState } from "react";
-import { Button, PageHeader, SearchField, SegmentedControl, SortControl } from "@/components/ui";
+import { Button, IconButton, PageHeader, SearchField, SegmentedControl, SortControl, ToggleButton } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { useToast, useDialog, Icon, EmptyHint, EmptyState, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
@@ -485,7 +485,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                 {/* The box stays 18px; the button around it is 28, so the
                     target is comfortable without the tick growing into the
                     thumbnail it sits on. */}
-                <button
+                <button /* button-audit-ignore: an 18px tick box over the file's thumbnail */
                   type="button"
                   onClick={() => toggleSelect(r.key)}
                   aria-label={isAr ? `تحديد ${r.fileName}` : `Select ${r.fileName}`}
@@ -526,18 +526,17 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                 <div className="flex items-center justify-between gap-ctl-row">
                   <span className="text-[12px] font-medium truncate">{r.fileName}</span>
                   {r.source === "manager" && r.asset && (
-                    <button
-                      type="button"
+                    <IconButton
+                      icon="ellipsis-h"
+                      iconSize={16}
+                      size="xs"
                       onClick={() => setDetail(r.asset!)}
-                      aria-label={
+                      label={
                         isAr
                           ? `تفاصيل ${r.fileName} — ${STATUS_META[r.asset.status].arLabel}`
                           : `Details for ${r.fileName} — ${STATUS_META[r.asset.status].label}`
                       }
-                      className="mk-icon-btn cursor-pointer shrink-0"
-                    >
-                      <Icon name="ellipsis-h" size={13} style={{ color: "var(--text-faint)" }} />
-                    </button>
+                    />
                   )}
                 </div>
                 <div className="flex items-center gap-ctl-row flex-wrap">
@@ -549,9 +548,9 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                   </span>
                 </div>
                 {r.source === "logo" && (
-                  <button type="button" onClick={onManageLogo} className="mk-tap text-[10px] text-start cursor-pointer" style={{ color: "var(--accent-text)" }}>
+                  <Button variant="ghost" size="sm" onClick={onManageLogo} className="self-start">
                     {isAr ? "الإدارة من تبويب الشعار" : "Manage on Logo system"}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -613,13 +612,7 @@ function Chip({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className="flex h-ctl-sm shrink-0 cursor-pointer items-center gap-ctl-icon rounded-control px-ctl-px-sm text-caption font-medium"
-      style={{ background: active ? "var(--accent-soft)" : "var(--surface-1)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
-    >
+    <ToggleButton variant="secondary" size="sm" pressed={active} onClick={onClick}>
       {/* Resolved against its own first strong character, so a tag chip's
           leading `#` — a neutral — stays on the tag rather than flipping to
           the far end inside an Arabic page. */}
@@ -633,7 +626,7 @@ function Chip({
           {count}
         </span>
       )}
-    </button>
+    </ToggleButton>
   );
 }
 
@@ -751,9 +744,12 @@ function AssetDetailModal({
         </span>
         <div className="flex flex-wrap gap-ctl-row">
           {EDITABLE_TYPES.map((t) => (
-            <button
+            <ToggleButton
               key={t}
-              type="button"
+              variant="secondary"
+              size="sm"
+              pressed={asset.type === t}
+              icon={<Icon name={TYPE_META[t].icon} size={16} />}
               onClick={() => {
                 if (t === asset.type) return;
                 setAssetType(workspaceId, asset.id, t);
@@ -763,18 +759,9 @@ function AssetDetailModal({
                   "success",
                 );
               }}
-              className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer flex items-center gap-1.5"
-              style={{
-                background: asset.type === t ? "var(--accent-soft)" : "var(--surface-2)",
-                // `--accent-on-soft`, not `--accent`: the accent is a fill,
-                // and as 11px text on its own tint it measured 5.72:1 dark
-                // and 4.58:1 light, under the 7:1 bar this size carries.
-                color: asset.type === t ? "var(--accent-on-soft)" : "var(--text-muted)",
-              }}
             >
-              <Icon name={TYPE_META[t].icon} size={11} />
               {isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
-            </button>
+            </ToggleButton>
           ))}
         </div>
       </div>
@@ -791,7 +778,7 @@ function AssetDetailModal({
                   character instead, a Latin tag stays a Latin token and an
                   Arabic one reads right-to-left as it should. */}
               <span dir="auto" className="bidi-auto">#{t}</span>
-              <button type="button" onClick={() => onTagsChange(asset.tags.filter((x) => x !== t))} className="mk-icon-btn mk-danger-hover cursor-pointer" aria-label={isAr ? `أزل ${t}` : `Remove ${t}`}>
+              <button /* button-audit-ignore: the remove mark inside a tag chip, part of the tag */ type="button" onClick={() => onTagsChange(asset.tags.filter((x) => x !== t))} className="mk-icon-btn mk-danger-hover cursor-pointer" aria-label={isAr ? `أزل ${t}` : `Remove ${t}`}>
                 <Icon name="times" size={9} />
               </button>
             </span>
@@ -825,9 +812,9 @@ function AssetDetailModal({
               e.target.value = "";
             }}
           />
-          <button type="button" onClick={() => versionInputRef.current?.click()} className="mk-tap text-[11px] font-semibold cursor-pointer" style={{ color: "var(--accent-text)" }}>
+          <Button variant="ghost" size="sm" onClick={() => versionInputRef.current?.click()}>
             {isAr ? "رفع إصدار جديد" : "Upload new version"}
-          </button>
+          </Button>
         </div>
         {asset.versions.length === 0 ? (
           <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
@@ -840,18 +827,17 @@ function AssetDetailModal({
                 <span className="truncate" style={{ color: "var(--text-secondary)" }}>{v.fileName}</span>
                 <div className="flex items-center gap-ctl-row shrink-0">
                   <span style={{ color: "var(--text-faint)" }}>{formatRelative(v.createdAt)}</span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       restoreAssetVersion(workspaceId, asset.id, v.id);
                       showToast(isAr ? "استُعيد الإصدار." : "Version restored.", "success");
                       onClose();
                     }}
-                    className="font-semibold cursor-pointer"
-                    style={{ color: "var(--accent-text)" }}
                   >
                     {isAr ? "استعادة" : "Restore"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

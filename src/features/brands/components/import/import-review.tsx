@@ -58,7 +58,7 @@ export function ImportReview({
             {analysis.colors.map((c) => {
               const on = pickedColors.has(c.hex);
               return (
-                <button
+                <button /* button-audit-ignore: a colour swatch tile picked for import */
                   key={c.hex}
                   type="button"
                   onClick={() => onToggleColor(c.hex)}

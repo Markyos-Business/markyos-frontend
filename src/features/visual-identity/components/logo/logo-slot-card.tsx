@@ -176,14 +176,14 @@ export function LogoSlotCard({
         {slot.phase === "attached" && (
           <>
             <Icon name="check-circle" size={15} style={{ color: "var(--success)" }} />
-            <button
-              type="button"
+            <IconButton
+              icon="ellipsis-h"
+              iconSize={16}
+              size="xs"
               onClick={remove}
-              className="mk-icon-btn ms-auto cursor-pointer"
-              aria-label={isAr ? "إزالة" : "Remove"}
-            >
-              <Icon name="ellipsis-h" size={16} style={{ color: "var(--text-muted)" }} />
-            </button>
+              className="ms-auto"
+              label={isAr ? "إزالة" : "Remove"}
+            />
           </>
         )}
       </div>
@@ -320,7 +320,7 @@ export function LogoSlotCard({
                 both effectively invisible at the moment you're trying to
                 replace or remove a lockup.
               */}
-              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */ /* button-audit-ignore: drawn over the logo on its dark overlay, in the scrim ink */
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -331,7 +331,7 @@ export function LogoSlotCard({
               >
                 {isAr ? "استبدال" : "Replace"}
               </button>
-              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */ /* button-audit-ignore: drawn over the logo on its dark overlay, in the scrim ink */
                 type="button"
                 onClick={remove}
                 className="h-ctl-sm cursor-pointer rounded-control px-ctl-px-sm text-caption font-medium"
@@ -411,23 +411,23 @@ function LightVersionStrip({
 
   if (!slot.lightUrl) {
     return (
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="md"
+        block
+        icon={<Icon name="plus" size={16} />}
         onClick={(e) => {
           e.stopPropagation();
           onPick();
         }}
-        className="h-ctl-md rounded-control flex items-center justify-center gap-ctl-icon text-caption font-medium cursor-pointer shadow-edge text-text-muted"
-        
         title={
           isAr
             ? "ارفع نسخة الشعار البيضاء بدلًا من ترك النظام يعكس الألوان"
             : "Upload the brand's white artwork instead of letting the app invert the colours"
         }
       >
-        <Icon name="plus" size={12} />
         {isAr ? `أضف ${label} — ${hint}` : `Add ${label.toLowerCase()} — ${hint}`}
-      </button>
+      </Button>
     );
   }
 
@@ -454,7 +454,7 @@ function LightVersionStrip({
       </div>
       <Button
         variant="secondary"
-        size="xs"
+        size="sm"
         onClick={(e) => {
           e.stopPropagation();
           onPick();

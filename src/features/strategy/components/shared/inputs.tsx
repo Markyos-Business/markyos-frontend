@@ -66,7 +66,7 @@ export function InlineText({
   }
 
   return (
-    <button
+    <button /* button-audit-ignore: click-to-edit inline text, it reads as the text itself */
       type="button"
       onClick={() => setDraft(value)}
       dir="auto"

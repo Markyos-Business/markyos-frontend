@@ -30,7 +30,7 @@ export function TemplatePicker({ isAr, onPick, onUpload, hasBoard }: TemplatePic
       )}
       <div className="grid max-w-[900px] grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
         {MOODBOARD_TEMPLATES.map((t) => (
-          <button
+          <button /* button-audit-ignore: template card that starts a board, not a button to look at */
             key={t.key}
             type="button"
             onClick={() => onPick(t.key, isAr ? t.arTitle : t.title)}

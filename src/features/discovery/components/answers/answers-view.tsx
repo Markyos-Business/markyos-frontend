@@ -128,7 +128,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
         <div className="flex flex-col gap-5 lg:sticky lg:top-0 print:hidden">
           <nav aria-label={t("Sections", "الأقسام")} className="mk-surface flex flex-col rounded-card bg-surface-1 p-space-3">
-            <button
+            <button /* button-audit-ignore: an item in the sections side navigation */
               type="button"
               aria-current={!sectionId ? "true" : undefined}
               onClick={() => setSectionId(null)}
@@ -140,7 +140,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               const answered = s.questions.filter((q) => q.answer).length;
               const visible = s.questions.filter((q) => q.visible).length;
               return (
-                <button
+                <button /* button-audit-ignore: an item in the sections side navigation */
                   key={s.id}
                   type="button"
                   aria-current={sectionId === s.id ? "true" : undefined}

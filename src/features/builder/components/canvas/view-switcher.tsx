@@ -47,7 +47,7 @@ export function ViewSwitcher({
           const active = breakpoint === w.key;
           const label = isAr ? w.arLabel : w.label;
           return (
-            <button
+            <button /* button-audit-ignore: a kit pill segment (pillSegment); SegmentedControl has no per-segment name or title for an icon-only width */
               key={w.key}
               type="button"
               role="radio"
@@ -84,7 +84,7 @@ export function ViewSwitcher({
             ? `لغة المعاينة — ${l === "en" ? "الإنجليزية" : "العربية"}`
             : `Preview language — ${l === "en" ? "English" : "العربية"}`;
           return (
-            <button
+            <button /* button-audit-ignore: a kit pill segment (pillSegment); SegmentedControl has no per-segment name or font for EN/ع */
               key={l}
               type="button"
               role="radio"

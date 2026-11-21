@@ -35,7 +35,7 @@ export function UsersStats({ stats, loading, error, onRetry, status, filtered, o
     </div>}
     <StatGrid>{cards.map(card => {
       const selected = card.key ? status === card.key : !filtered;
-      return <button key={card.key} type="button" aria-pressed={selected} disabled={!stats || loading} onClick={() => onSelect(card.key)}
+      return <button /* button-audit-ignore: a stat card that filters the user list */ key={card.key} type="button" aria-pressed={selected} disabled={!stats || loading} onClick={() => onSelect(card.key)}
         className={`mk-btn flex min-w-0 flex-col items-stretch gap-space-4 rounded-card border p-space-5 text-start disabled:cursor-wait ${selected ? "border-accent-edge bg-accent-soft" : "border-hairline-strong bg-surface-1"}`}>
         <span className="flex items-center justify-between gap-space-3 text-body text-text-muted"><span>{card.label}</span><Icon name={card.icon} size={18} /></span>
         {loading && !stats ? <Skeleton className="h-8 w-24 rounded-lg" /> : <span className="text-2xl font-medium tabular-nums text-text">{card.value?.toLocaleString("en-US") ?? "—"}</span>}

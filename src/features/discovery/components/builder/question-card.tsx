@@ -47,7 +47,7 @@ export function QuestionCard(props: QuestionCardProps) {
       className={`flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 transition-shadow ${selected ? "shadow-edge-primary" : "shadow-edge"}`}
     >
       <div className="flex items-center gap-ctl-row">
-        <button
+        <button /* button-audit-ignore: a drag handle for reordering, grab cursor */
           type="button"
           {...props.dragProps}
           aria-label={isAr ? "اسحب لإعادة الترتيب" : "Drag to reorder"}

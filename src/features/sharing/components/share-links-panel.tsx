@@ -97,18 +97,18 @@ export function ShareLinksPanel({
 
       {links.length > 0 && (
         <>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="mk-tap gap-1.5 text-[11.5px] font-semibold cursor-pointer self-start"
-            style={{ color: "var(--text-muted)" }}
+            icon={<Icon name={open ? "angle-up" : "angle-down"} size={16} />}
+            className="self-start"
           >
-            <Icon name={open ? "angle-up" : "angle-down"} size={11} />
             {isAr
               ? `${live.length} رابط نشط من ${links.length}`
               : `${live.length} active of ${links.length} link${links.length === 1 ? "" : "s"}`}
-          </button>
+          </Button>
 
           {open && (
             <div className="flex flex-col gap-2">
@@ -147,8 +147,8 @@ export function ShareLinksPanel({
                         className="shrink-0"
                       />
                     )}
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
                       onClick={() => {
                         if (revoked) {
                           restoreShareLink(ws.id, l.id);
@@ -161,11 +161,9 @@ export function ShareLinksPanel({
                           );
                         }
                       }}
-                      className="text-[11.5px] font-semibold cursor-pointer shrink-0"
-                      style={{ color: revoked ? "var(--text-muted)" : "var(--danger)" }}
                     >
                       {revoked ? (isAr ? "إعادة التفعيل" : "Restore") : isAr ? "إيقاف" : "Revoke"}
-                    </button>
+                    </Button>
                   </div>
                 );
               })}

@@ -1,4 +1,4 @@
-import { IconButton, SegmentedControl } from "@/components/ui";
+import { IconButton, SegmentedControl, ToggleButton } from "@/components/ui";
 import { TOOL_TABS } from "../../constants";
 import { TOOLS_DEFAULT_W } from "../../hooks/use-builder-panels";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
@@ -12,8 +12,6 @@ import { TemplateTab } from "./template-tab";
 export function ToolsPanel(b: BuilderPageState) {
   const { ws, isAr, tab, activePage, sortedPages } = b;
   const hide = isAr ? "إخفاء لوحة الأدوات" : "Hide the tools panel";
-  const pageChip = (on: boolean) =>
-    `h-8 cursor-pointer rounded-full px-3 text-[12px] font-semibold ${on ? "bg-accent-soft text-accent-on-soft" : "bg-surface-1 text-text-muted"}`;
 
   return (
     <div
@@ -33,13 +31,14 @@ export function ToolsPanel(b: BuilderPageState) {
       <div className="flex flex-col gap-1.5">
         <span lang={isAr ? "ar" : "en"} className={`px-1 text-[10.5px] font-semibold ${isAr ? "tracking-normal" : "tracking-[0.08em]"} text-text-faint uppercase`}>{isAr ? "الصفحات" : "Pages"}</span>
         <div className="flex flex-wrap items-center gap-ctl-row">
-          <button type="button" onClick={() => b.onPage(null)} className={pageChip(!activePage)}>
+          {/* Which page the canvas edits: the chosen one reads as pressed. */}
+          <ToggleButton variant="secondary" size="sm" pressed={!activePage} onClick={() => b.onPage(null)}>
             {isAr ? "الرئيسية" : "Home"}
-          </button>
+          </ToggleButton>
           {sortedPages.map((p) => (
-            <button key={p.id} type="button" onClick={() => b.onPage(p.id)} className={pageChip(activePage?.id === p.id)}>
+            <ToggleButton key={p.id} variant="secondary" size="sm" pressed={activePage?.id === p.id} onClick={() => b.onPage(p.id)}>
               {isAr ? p.arName : p.name}
-            </button>
+            </ToggleButton>
           ))}
           <IconButton icon="plus" iconSize={16} variant="secondary" size="sm" shape="round" label={isAr ? "إضافة صفحة" : "Add page"} onClick={b.onAddPage} />
         </div>

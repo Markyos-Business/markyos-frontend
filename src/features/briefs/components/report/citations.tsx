@@ -41,16 +41,15 @@ export function CitationChips({ citations }: { citations: Citation[] }) {
         const source = index[c.sourceId];
         return (
           <li key={`${c.sourceId}-${i}`}>
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => open(c)}
               disabled={!source}
               title={c.quote}
-              className="mk-btn inline-flex h-badge items-center gap-space-1 rounded-md bg-surface-2 px-space-3 text-caption font-medium text-text-muted hover:text-accent-text disabled:cursor-default"
+              icon={<Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />}
             >
-              <Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />
               <span className="bidi-plain">{source ? sourceLabel(source, isAr) : c.sourceId}</span>
-            </button>
+            </Button>
           </li>
         );
       })}

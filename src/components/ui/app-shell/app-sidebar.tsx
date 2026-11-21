@@ -3,7 +3,7 @@
 import { revealInScroller } from "@/lib/scroll";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Badge, Icon } from "@/components/ui";
+import { Badge, Icon, IconButton } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import { useNarrowViewport } from "@/hooks/useNarrowViewport";
 import { useSidebarPlacement } from "./sidebar-drawer";
@@ -314,12 +314,7 @@ export function AppSidebar({
         <div className={`flex shrink-0 items-center gap-space-2 py-space-5 shadow-rule-t ${collapsed ? "flex-col" : ""}`}>
           {account && <div className="min-w-0 flex-1">{account(collapsed)}</div>}
           {footerIcons.map((item) => renderIcon(item))}
-          {help?.onOpen && (
-            <button type="button" onClick={help.onOpen} aria-label={help.label} title={help.label}
-              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
-              <Icon name="question-circle" size={18} />
-            </button>
-          )}
+          {help?.onOpen && <IconButton icon="question-circle" size="md" label={help.label} onClick={help.onOpen} />}
           {help && !help.onOpen && (
             <a href={help.href} target="_blank" rel="noopener noreferrer" aria-label={help.label} title={help.label}
               className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">

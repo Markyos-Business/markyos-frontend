@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, EditableField, Section, EmptyHint, Button } from "@/components/ui";
+import { useToast, EditableField, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { personaIn, strategyText, textKey } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -71,14 +71,9 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
         title={isAr ? "الشخصيات" : "Personas"}
         icon="users"
         right={
-          <button
-            type="button"
-            onClick={() => setAddingPersona((v) => !v)}
-            className="mk-tap text-[12px] font-semibold cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setAddingPersona((v) => !v)}>
             {addingPersona ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-          </button>
+          </Button>
         }
       >
         {addingPersona && (
@@ -136,16 +131,16 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                         onCommit={(next) => updatePersona(ws.id, p.id, isAr ? { roleAr: next } : { role: next })}
                       />
                     </div>
-                    <button
-                      type="button"
+                    <IconButton
+                      icon="times"
+                      iconSize={16}
+                      size="xs"
                       onClick={() => removePersona(ws.id, p.id)}
-                      aria-label={
+                      label={
                         isAr ? `حذف ${shown.name || "الشخصية"}` : `Remove ${shown.name || "persona"}`
                       }
-                      className="mk-icon-btn cursor-pointer shrink-0 transition-opacity opacity-50 hover:opacity-100"
-                    >
-                      <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                    </button>
+                      className="shrink-0"
+                    />
                   </div>
                   <InlineText
                     value={shown.description}

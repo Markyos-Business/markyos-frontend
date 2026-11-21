@@ -130,7 +130,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
               <span className="text-caption text-text-muted">{t("Accent colour", "لون التمييز")}</span>
               <div className="flex flex-wrap items-center gap-ctl-row">
                 {swatches.slice(0, 8).map((s) => (
-                  <button
+                  <button /* button-audit-ignore: a colour swatch that picks the accent */
                     key={s.hex}
                     type="button"
                     aria-label={`${s.name} ${s.hex}`}

@@ -76,7 +76,7 @@ export function TableSelectGallery() {
           getSubRows={mode === "nested" ? row => row.id === "asset-1" ? [{ ...row, id: "child-1", name: "Ramadan story format" }] : undefined : undefined}
           groupBy={mode === "grouped" ? "city" : undefined} editable={active("editable")} onEdit={async (row,key,value) => { await new Promise(resolve => setTimeout(resolve, 350)); if(value === "fail") throw new Error("Demo save failure"); setData(previous => previous.map(item => item.id === row.id ? {...item,[key]:value} : item)); }}
           rowActions={active("actions") ? row => [{ label:t("Open asset", "فتح الأصل"),icon:"external-link-alt",onSelect:()=>setLastAction(row.name) }] : undefined}
-          rowHoverActions={active("actions") ? row => <Button size="xs" variant="secondary" onClick={()=>setLastAction(row.name)}>{t("Open", "فتح")}</Button> : undefined}
+          rowHoverActions={active("actions") ? row => <Button size="sm" variant="secondary" onClick={()=>setLastAction(row.name)}>{t("Open", "فتح")}</Button> : undefined}
           stickyHeader stickyColumns={active("sticky") ? {first:true,actions:true} : undefined} columnControls={active("columns")} resizable={active("columns")} reorderColumns={active("columns")} densityControl={active("density")}
           virtualized={mode === "virtualized" ? { height:480 } : false} mobileCard={{primary:"name",secondary:["owner","city","budget","date","status"]}}
           onReorderRows={mode === "reorder" ? setData : undefined}

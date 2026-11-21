@@ -81,7 +81,7 @@ export function ReviewChip({
         {rows.map((row) => {
           const f = row.kind === "one" ? row.finding : row.first;
           return (
-            <button
+            <button /* button-audit-ignore: a two-line finding row in the review list (mk-nav-item) */
               key={row.kind === "one" ? f.id : `group:ar-missing:${f.severity}`}
               type="button"
               data-review-row={f.severity}

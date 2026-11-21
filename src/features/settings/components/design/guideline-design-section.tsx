@@ -10,7 +10,7 @@ export function GuidelineDesignSection({ ws, isAr }: { ws: Workspace; isAr: bool
         label={t("Style, pages, and prebuilt sections", "النمط والصفحات والأقسام الجاهزة")}
         hint={t("Pick Vault, Docs, or Studio, add extra pages, and drop in prebuilt sections — all editable afterward.", "اختر Vault أو Docs أو Studio، وأضف صفحات، وضع أقسامًا جاهزة، وكلها قابلة للتعديل لاحقًا.")}
         right={
-          <Button variant="secondary" size="xs" href={`/w/${ws.slug}/builder`} className="shrink-0">
+          <Button variant="secondary" size="sm" href={`/w/${ws.slug}/builder`} className="shrink-0">
             {t("Open editor", "فتح المحرر")}
           </Button>
         }

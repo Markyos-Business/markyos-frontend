@@ -183,7 +183,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
               if (file) handleFile(file);
             }}
           />
-          <button
+          <button /* button-audit-ignore: a dashed drop zone for choosing the file */
             type="button"
             onClick={() => inputRef.current?.click()}
             className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"

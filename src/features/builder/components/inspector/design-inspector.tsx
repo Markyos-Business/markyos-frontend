@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon, SegmentedControl } from "@/components/ui";
+import { Button, Icon, SegmentedControl, ToggleButton } from "@/components/ui";
 import { ColorPopover } from "@/components/ui";
 import {
   backgroundInkWarning,
@@ -144,14 +144,9 @@ export function DesignInspector({
        */}
       {touched && (
         <div className="flex items-center justify-end">
-          <button
-            type="button"
-            onClick={() => onChange({})}
-            className="mk-tap text-[11px] font-semibold cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
-          >
+          <Button variant="ghost" size="sm" onClick={() => onChange({})}>
             {isAr ? "إعادة الضبط" : "Reset all"}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -462,7 +457,7 @@ function LayoutPicker({
         {options.map((v, i) => {
           const on = v.key === active;
           return (
-            <button
+            <button /* button-audit-ignore: a layout option card (name + description), the whole card is the choice */
               key={v.key}
               type="button"
               aria-pressed={on}
@@ -557,10 +552,11 @@ function OptionsPanel({
                   {COLOR_FORMATS.map((f) => {
                     const picked = on.includes(f);
                     return (
-                      <button
+                      <ToggleButton
                         key={f}
-                        type="button"
-                        aria-pressed={picked}
+                        variant="secondary"
+                        size="sm"
+                        pressed={picked}
                         data-option={`formats:${f}`}
                         onClick={() => {
                           // Order kept canonical rather than click-order, so the
@@ -569,14 +565,9 @@ function OptionsPanel({
                           const next = COLOR_FORMATS.filter((k) => (k === f ? !picked : on.includes(k)));
                           onChange({ formats: next });
                         }}
-                        className="h-ctl-xs px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
-                        style={{
-                          background: picked ? "var(--accent-soft)" : "var(--surface-1)",
-                          color: picked ? "var(--accent-on-soft)" : "var(--text-faint)",
-                        }}
                       >
                         {f}
-                      </button>
+                      </ToggleButton>
                     );
                   })}
                 </div>
@@ -744,19 +735,19 @@ function OverrideDot({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={(e) => {
         e.preventDefault();
         onReset(here);
       }}
       title={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
       aria-label={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
-      className="mk-tap text-[10px] font-semibold px-1.5 rounded-md cursor-pointer shrink-0 bg-accent-soft text-accent-on-soft"
-      
+      className="shrink-0"
     >
       {isAr ? "إعادة" : "Reset"}
-    </button>
+    </Button>
   );
 }
 
@@ -830,20 +821,17 @@ function PaletteColor({
     <div className="flex flex-col gap-1.5">
       <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>{label}</span>
       <div className="flex items-center gap-ctl-row flex-wrap">
-        <button
-          type="button"
+        <ToggleButton
+          variant="secondary"
+          size="sm"
+          pressed={value === undefined}
           onClick={() => onChange(undefined)}
           title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-ctl-xs px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
-          style={{
-            background: value === undefined ? "var(--surface-2)" : "var(--surface-1)",
-            color: value === undefined ? "var(--text)" : "var(--text-faint)",
-          }}
         >
           {isAr ? "تلقائي" : "Auto"}
-        </button>
+        </ToggleButton>
         {ws.colors.map((c) => (
-          <button
+          <button /* button-audit-ignore: a colour swatch */
             key={c.id}
             type="button"
             onClick={() => onChange(c.hex)}

@@ -78,7 +78,7 @@ function MediaPickerDialog({ onDone }: { onDone: (item: MediaItem | null) => voi
       {items && items.length === 0 && <p className="text-body text-text-muted">{t.empty}</p>}
       <div role="listbox" aria-label={t.title} className="grid max-h-[50vh] grid-cols-3 gap-space-4 overflow-y-auto sm:grid-cols-4">
         {items?.map((m) => (
-          <button
+          <button /* button-audit-ignore: a thumbnail option in the media listbox */
             key={m.id}
             type="button"
             role="option"

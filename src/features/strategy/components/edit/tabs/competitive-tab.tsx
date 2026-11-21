@@ -116,20 +116,15 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       icon="chart-line"
       right={
         <div className="flex items-center gap-ctl-row">
-          <button type="button" onClick={() => setPasteOpen(true)} className="mk-tap text-[12px] font-semibold cursor-pointer" style={{ color: "var(--text-muted)" }}>
+          <Button variant="ghost" size="sm" onClick={() => setPasteOpen(true)}>
             {isAr ? "لصق جدول" : "Paste a table"}
-          </button>
-          <button type="button" onClick={() => void addColumn()} className="mk-tap text-[12px] font-semibold cursor-pointer" style={{ color: "var(--text-muted)" }}>
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => void addColumn()}>
             {isAr ? "+ عمود" : "+ Column"}
-          </button>
-          <button
-            type="button"
-            onClick={() => addCompetitor(ws.id, { name: isAr ? "منافس جديد" : "New competitor" })}
-            className="mk-tap text-[12px] font-semibold cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
-          >
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => addCompetitor(ws.id, { name: isAr ? "منافس جديد" : "New competitor" })}>
             {isAr ? "+ منافس" : "+ Competitor"}
-          </button>
+          </Button>
         </div>
       }
     >

@@ -33,12 +33,13 @@
     "test:watch": "vitest",
     "test:buttons": "node audit/buttons-2026-11-14/verify.mjs",
     "test:tabs": "node audit/tabs-2026-11-14/verify.mjs",
-    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs && node scripts/radius-audit.mjs && node scripts/control-audit.mjs && npm run lint:tokens",
+    "check": "next typegen && tsc --noEmit && eslint . --max-warnings=0 && vitest run && node scripts/contrast-audit.mjs && node scripts/token-contract.mjs && node scripts/no-physical-props.mjs && node scripts/icon-names.mjs && node scripts/rtl-audit.mjs && node scripts/radius-audit.mjs && node scripts/control-audit.mjs && node scripts/button-audit.mjs && npm run lint:tokens",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui",
     "status": "node --experimental-strip-types --no-warnings scripts/component-status.mjs",
     "lint:tokens": "node scripts/ui-library-tokens.mjs",
-    "lint:controls": "node scripts/control-audit.mjs"
+    "lint:controls": "node scripts/control-audit.mjs",
+    "lint:buttons": "node scripts/button-audit.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

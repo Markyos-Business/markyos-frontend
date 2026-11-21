@@ -105,7 +105,7 @@ function CardList({ cards, onOpen }: { cards: HelpCardItem[]; onOpen: (card: Hel
     <ul className="flex flex-col gap-space-3">
       {cards.map((card) => (
         <li key={card.id}>
-          <button type="button" onClick={() => onOpen(card)} className="mk-btn flex w-full flex-col items-start gap-space-1 rounded-card bg-surface-2 p-space-6 text-start shadow-edge">
+          <button /* button-audit-ignore: an article card that opens the article */ type="button" onClick={() => onOpen(card)} className="mk-btn flex w-full flex-col items-start gap-space-1 rounded-card bg-surface-2 p-space-6 text-start shadow-edge">
             <span dir="auto" className="text-body font-medium text-text">{card.title}</span>
             {card.categoryTitle && <span dir="auto" className="text-caption text-text-muted">{card.categoryTitle}</span>}
           </button>

@@ -56,8 +56,8 @@ const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButto
           {/* The kit's calendar; weeks start on Monday here, as they always have. */}
           <Calendar autoFocus range={draft} onPick={pick} weekStart={1} />
           <div className="flex justify-end gap-space-3">
-            <Button size="xs" variant="ghost" onClick={() => { setDraft({}); onChange({}); close(); }}>{t.clear}</Button>
-            <Button size="xs" variant="primary" disabled={!draft.from} onClick={() => { onChange(draft); close(); }}>{t.apply}</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setDraft({}); onChange({}); close(); }}>{t.clear}</Button>
+            <Button size="sm" variant="primary" disabled={!draft.from} onClick={() => { onChange(draft); close(); }}>{t.apply}</Button>
           </div>
         </div>
       )}

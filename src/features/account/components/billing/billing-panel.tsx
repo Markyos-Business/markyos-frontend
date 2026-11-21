@@ -77,7 +77,7 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
                   key={w.id}
                   className={`flex flex-wrap items-center gap-space-4 py-space-4 ${i > 0 ? "shadow-rule-t" : ""}`}
                 >
-                  <Link
+                  <Link /* button-audit-ignore: the brand's name, a text link in its billing row */
                     href={`/w/${w.slug}/overview`}
                     dir="auto"
                     className="mk-tap bidi-auto w-full sm:w-auto sm:flex-1 min-w-0 truncate text-body font-medium"

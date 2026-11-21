@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { BLOCK_META } from "@/features/guideline-site";
 import type { BlockStyle, PageBlock } from "@/types";
 
@@ -393,19 +393,16 @@ function RowButton({
   disabled?: boolean;
 }) {
   return (
-    <button /* ctl-audit-ignore: a show/hide toggle inside a layer row */
-      type="button"
-      aria-label={label}
-      title={label}
+    <IconButton
+      icon={icon}
+      iconSize={16}
+      size="xs"
+      label={label}
       disabled={disabled}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
       }}
-      className="h-6 w-6 grid place-items-center rounded-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
-      style={{ color: "inherit" }}
-    >
-      <Icon name={icon} size={11} />
-    </button>
+    />
   );
 }

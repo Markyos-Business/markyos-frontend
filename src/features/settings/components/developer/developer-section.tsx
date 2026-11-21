@@ -30,16 +30,15 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
               copiedMessage={t("API key copied.", "تم نسخ مفتاح API.")}
               failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             />
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => {
                 setApiKey(ws.id, randomApiKey());
                 showToast(t("API key regenerated — the old key stops working immediately.", "أُعيد توليد المفتاح، ويتوقف القديم عن العمل فورًا."));
               }}
-              className="mk-tap cursor-pointer text-[12px] font-semibold text-text-muted"
             >
               {t("Regenerate", "إعادة توليد")}
-            </button>
+            </Button>
           </div>
         }
       />

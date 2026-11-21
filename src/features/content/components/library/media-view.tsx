@@ -52,7 +52,7 @@ export function MediaView() {
           const alt = lang === "ar" ? m.altAr || m.altEn : m.altEn || m.altAr;
           return (
             <li key={m.id}>
-              <button type="button" onClick={() => setEditing(m)} className="mk-surface flex w-full flex-col overflow-hidden rounded-card bg-surface-1 text-start">
+              <button /* button-audit-ignore: a media card that opens the item */ type="button" onClick={() => setEditing(m)} className="mk-surface flex w-full flex-col overflow-hidden rounded-card bg-surface-1 text-start">
                 {m.contentType.startsWith("image/") ? (
                   // eslint-disable-next-line @next/next/no-img-element -- media from the content store, any host
                   <img src={m.url} alt={alt} className="aspect-video w-full bg-surface-2 object-cover" />

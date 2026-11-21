@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon, EmptyHint, PageHeader } from "@/components/ui";
+import { Button, Icon, EmptyHint, PageHeader } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
 import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -222,14 +222,9 @@ function DraftPanel({
                   {f.excerpt}
                 </span>
                 {f.replacement !== undefined && (
-                  <button
-                    type="button"
-                    onClick={() => onFix(f)}
-                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer bg-accent-soft text-accent-on-soft"
-                    
-                  >
+                  <Button size="sm" onClick={() => onFix(f)} className="ms-auto">
                     {isAr ? "أصلحها" : "Fix"}
-                  </button>
+                  </Button>
                 )}
               </div>
               <p className="text-[12.5px] leading-[1.5]" style={{ color: "var(--text-secondary)" }}>

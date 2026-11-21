@@ -172,7 +172,7 @@ export function AssetTypeGrid({
                     label={`Select ${a.fileName}`}
                   />
                 </span>
-                <button
+                <button /* button-audit-ignore: an 18px remove chip over the artwork, on its scrim */
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();

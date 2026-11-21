@@ -126,7 +126,7 @@ export function ImportInstructionsModal({
               if (file) handleFile(file);
             }}
           />
-          <button
+          <button /* button-audit-ignore: a file drop zone that opens the file picker */
             type="button"
             onClick={() => inputRef.current?.click()}
             className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"
