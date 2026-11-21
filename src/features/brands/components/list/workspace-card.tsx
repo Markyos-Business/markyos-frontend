@@ -9,6 +9,9 @@ import type { Lang } from "@/types/lang";
 import { brandInitials, brandSetup } from "@/lib/data/brandSetup";
 import { BRANDS_COPY } from "../../copy";
 
+/** First letter up; Arabic has no case, so it passes through. */
+const capitalise = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
+
 /**
  * `role` is the viewer's own role on the brand. Anything but owner means it
  * came to them through someone else's team, and the card says so — otherwise
@@ -44,7 +47,9 @@ export function WorkspaceCard({
           role === "client"
             ? { label: t("Guideline", "الدليل"), value: workspace.published ? t("Ready to review", "جاهز للمراجعة") : t("Not published yet", "لم يُنشر بعد") }
             : { label: t("Brand setup", "إعداد العلامة"), value: t(`${complete} of ${setup.length} done`, `${complete} من ${setup.length} مكتمل`) },
-          { label: t("Your role", "دورك"), value: c.roles[role ?? ""] ?? "—" },
+          // A value stands alone, so it takes a capital; the lowercase word is
+          // for the "shared with you as …" sentence below.
+          { label: t("Your role", "دورك"), value: capitalise(c.roles[role ?? ""] ?? "—") },
         ]} />}
       >
         <div className="mk-surface grid h-33 place-items-center overflow-hidden rounded-widget bg-surface-2">

@@ -371,7 +371,9 @@ function Footer({
 
   return (
     <figcaption
-      className="flex items-center gap-1 px-2 h-9 shrink-0"
+      // Wraps rather than clips: on a phone-width tile the size picker
+      // (Small/Medium/Large in words) ran past the card edge.
+      className="flex min-h-9 shrink-0 flex-wrap items-center gap-1 px-2 py-1"
       style={{ background: "var(--surface-1)", boxShadow: "inset 0 1px 0 var(--hairline)" }}
     >
       <span
