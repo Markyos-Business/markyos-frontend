@@ -10,6 +10,8 @@ export type DataColumn<T> = {
   className?: string; width?: number; minWidth?: number; filterable?: boolean; filterOptions?: readonly SelectOption[];
   editable?: "text" | "select" | "date"; editOptions?: readonly SelectOption[];
   media?: (row: T) => { src?: string; name: string; meta?: string };
+  /** On a phone card, take the full row and wrap (tags, chips) instead of one truncated line. */
+  mobileWide?: boolean;
 };
 export type ServerPaging = { page: number; pageSize: number; total: number; onPageChange: (p: number) => void; onPageSizeChange?: (n: number) => void };
 export type DataTableState = "idle" | "loading" | "refetching" | "error" | "empty" | "no-permission" | "stale";
