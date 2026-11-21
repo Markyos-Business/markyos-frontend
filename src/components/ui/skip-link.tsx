@@ -24,7 +24,7 @@ export function SkipLink() {
     <a
       href="#main"
       onClick={jump}
-      className="mk-btn sr-only z-popover rounded-control bg-accent px-ctl-px-md text-body font-medium text-accent-ink focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:inline-flex focus:h-ctl-md focus:items-center"
+      className="mk-btn sr-only z-popover rounded-control bg-accent px-ctl-px-md text-body font-medium text-accent-ink focus:not-sr-only focus:px-ctl-px-md focus:fixed focus:start-3 focus:top-3 focus:inline-flex focus:h-ctl-md focus:items-center"
     >
       {t.skipToContent}
     </a>
