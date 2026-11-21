@@ -10,18 +10,24 @@ const TAGS = ["p", "div", "br", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "b
  * nobody chose to put in the brand. Image sources are http(s) only, never
  * `data:` — the same rule the backend's cleaner applies on save.
  */
-export function sanitizeRichHtml(html: string, { media = false }: { media?: boolean } = {}): string {
+/** Help Center additions (`help`): code blocks, callouts and video links, the same set the backend's help cleaner keeps. */
+const HELP_TAGS = ["pre", "code", "aside"];
+
+export function sanitizeRichHtml(html: string, { media = false, help = false }: { media?: boolean; help?: boolean } = {}): string {
+  const images = media || help;
   return sanitizeHtml(html, {
-    allowedTags: media ? [...TAGS, "img", "figure", "figcaption"] : TAGS,
+    allowedTags: [...TAGS, ...(images ? ["img", "figure", "figcaption"] : []), ...(help ? HELP_TAGS : [])],
+    // Classes only with these exact values: a callout's kind and the video marker.
+    allowedClasses: help ? { aside: ["callout-note", "callout-warning"], a: ["video-embed"] } : {},
     allowedAttributes: {
       a: ["href", "title"],
       "*": ["dir"],
       th: ["colspan", "rowspan"],
       td: ["colspan", "rowspan"],
-      ...(media ? { img: ["src", "alt", "width", "height"] } : {}),
+      ...(images ? { img: ["src", "alt", "width", "height"] } : {}),
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
-    allowedSchemesByTag: media ? { img: ["http", "https"] } : {},
+    allowedSchemesByTag: images ? { img: ["http", "https"] } : {},
     allowProtocolRelative: false,
   });
 }

@@ -12,7 +12,7 @@ export default function BrandDiscoveryPage() {
   if (!page) return null;
   const analysis = page.tab === "analysis";
   return (
-    <PageShell {...page.shell} offline={<NeedsServer isAr={page.isAr} feature={analysis ? "analysis" : "discovery"} />}>
+    <PageShell {...page.shell} help={analysis ? "brand.analysis" : page.tab === "calls" ? "brand.callNotes" : "brand.discovery"} offline={<NeedsServer isAr={page.isAr} feature={analysis ? "analysis" : "discovery"} />}>
       {analysis ? <AnalysisView {...page.analysis} /> : <DiscoveryView {...page.view} />}
     </PageShell>
   );

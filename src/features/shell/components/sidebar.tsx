@@ -6,6 +6,7 @@ import { useApp } from "@/contexts/AppContext";
 import type { TeamRole, Workspace } from "@/types";
 import { AppSidebar, type SidebarItem } from "@/components/ui";
 import { AccountMenu } from "@/features/account";
+import { useHelpPanel } from "@/features/helpcenter";
 import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
 import { marketingHref } from "@/lib/marketing";
 import { BrandSwitcher } from "./brand-switcher";
@@ -94,6 +95,7 @@ type BrandSidebarProps = {
 };
 
 const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, id, name, reviewHref, logo, paid, live, assetCount, pendingDrafts }: BrandSidebarProps) {
+  const helpPanel = useHelpPanel();
   const isClient = role === "client";
   const base = `/w/${slug}`;
   const toItem = (item: Item): SidebarItem => ({
@@ -118,7 +120,7 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, id
     subtitle={isClient ? (isAr ? "مراجعة" : "Review") : paid ? (isAr ? "خطة مدفوعة" : "Paid plan") : (isAr ? "خطة مجانية" : "Free plan")}
     switcher={<BrandSwitcher currentId={id} isAr={isAr} />}
     account={(collapsed) => <AccountMenu variant="row" compact={collapsed} isAr={isAr} />}
-    help={{ href: marketingHref("/help", isAr ? "ar" : "en"), label: isAr ? "مركز المساعدة" : "Help centre" }}
+    help={{ href: marketingHref("/help", isAr ? "ar" : "en"), label: isAr ? "مركز المساعدة" : "Help centre", onOpen: helpPanel ? () => helpPanel.openHelp() : undefined }}
     footerSlot={isClient && !reviewHref ? <p className="px-space-2 text-caption text-text-muted">{isAr ? "اطلب من مالك العلامة رابط الدليل للمراجعة." : "Ask the brand owner for a guideline review link."}</p> : undefined}
     // Visited now and then, so icons beside the person rather than rows beside the work.
     footerIcons={[

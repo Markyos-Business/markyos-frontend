@@ -10,7 +10,7 @@ export default function AssetsPage() {
   const router = useRouter();
   const page = useBrandPage(slug);
   if (!page) return null;
-  return <PageShell workspace={page.workspace} section="Assets" arSection="الأصول" width="full">
+  return <PageShell workspace={page.workspace} section="Assets" arSection="الأصول" width="full" help="brand.assets">
     <BrandFilesContent ws={page.workspace} onManageLogo={() => router.push(`/w/${slug}/visual-identity?tab=logo`)} title={{ en: "Assets", ar: "الأصول" }} />
   </PageShell>;
 }

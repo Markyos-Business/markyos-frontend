@@ -14,9 +14,11 @@ export function notificationText(item:NotificationItem,isAr:boolean){
     "discovery.first_answer":t("A client started answering","بدأ عميل بالإجابة"),
     "discovery.section_completed":t("A questionnaire section was completed","اكتمل قسم من الاستبيان"),
     "discovery.submitted":t("New questionnaire answers are ready","إجابات جديدة للاستبيان جاهزة"),
+    help_published:t("Your Help article is live","مقالتك في مركز المساعدة منشورة الآن"),
+    help_sent_back:t("Changes requested on your Help article","طُلبت تعديلات على مقالتك في مركز المساعدة"),
   };
   return {title:titles[item.kind]??t("Account update","تحديث الحساب"),
-    body:item.kind==="welcome"?t("Your account and questionnaire updates appear here.","تظهر تحديثات حسابك واستبياناتك هنا."):item.kind.startsWith("discovery.")?[item.data.form,clientName(item.data.client,isAr)].filter(Boolean).join(" · "):item.data.actor?t(`Updated by ${item.data.actor}`,`تم التحديث بواسطة ${item.data.actor}`):""};
+    body:item.kind==="welcome"?t("Your account and questionnaire updates appear here.","تظهر تحديثات حسابك واستبياناتك هنا."):item.kind.startsWith("discovery.")?[item.data.form,clientName(item.data.client,isAr)].filter(Boolean).join(" · "):item.kind.startsWith("help_")?[item.data.title,item.data.comment].filter(Boolean).join(" · "):item.data.actor?t(`Updated by ${item.data.actor}`,`تم التحديث بواسطة ${item.data.actor}`):""};
 }
 /** Treat API destinations as internal paths, including when older data exists. */
 export function notificationHref(value:string){return /^\/(?![\\/])/.test(value)&&!/[\\\u0000-\u001f\u007f]/.test(value)?value:"/brands";}

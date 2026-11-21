@@ -9,7 +9,7 @@ export default function OverviewPage() {
   const page = useOverviewPage(slug);
   if (!page) return null;
   return (
-    <PageShell {...page.shell}>
+    <PageShell {...page.shell} help="brand.overview">
       <OverviewView {...page.view} />
     </PageShell>
   );
