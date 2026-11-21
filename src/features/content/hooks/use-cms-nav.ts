@@ -54,6 +54,7 @@ export function useCmsNav(): { loading: boolean; role: string | null; sections: 
           { key: "help-articles", label: c.nav.helpArticles, icon: "question-circle", href: `${CMS_HOME}/help`, active: pathname === `${CMS_HOME}/help` || pathname.startsWith(`${CMS_HOME}/help/articles/`) },
           page("help/categories", c.nav.helpCategories, "layer-group"),
           page("help/feedback", c.nav.helpFeedback, "inbox"),
+          page("help/analytics", c.nav.helpAnalytics, "chart-line"),
         ] }]
       : []),
     {

@@ -113,6 +113,26 @@ export type HelpFeedbackList = {
   summary: Record<string, { yes: number; no: number }>;
 };
 
+/** The Help Center dashboard for a period (C9). */
+export type HelpAnalytics = {
+  from: string;
+  to: string;
+  totals: { articleViews: number; votes: number; helpfulPct: number | null; searches: number; zeroResultSearches: number; clickThroughPct: number | null };
+  daily: { date: string; views: number; searches: number }[];
+  articles: HelpAnalyticsArticle[];
+  mostViewed: HelpAnalyticsArticle[];
+  leastHelpful: HelpAnalyticsArticle[];
+  topics: { id: number; titleEn: string; titleAr: string; articleViews: number; topicPageViews: number; helpfulPct: number | null }[];
+  reasons: { reason: HelpFeedbackReason; count: number }[];
+  topSearches: HelpAnalyticsSearch[];
+  zeroResults: HelpAnalyticsSearch[];
+  stale: { id: string; titleEn: string; titleAr: string; lastReviewed: string | null; since: string | null }[];
+  staleDays: number;
+  leastHelpfulMinVotes: number;
+};
+export type HelpAnalyticsArticle = { id: string; titleEn: string; titleAr: string; categoryId: number | null; views: number; helpful: number; notHelpful: number; helpfulPct: number | null };
+export type HelpAnalyticsSearch = { term: string; locale: HelpLocale; searches: number; clicks: number; ctr: number };
+
 export type HelpArticleRow = {
   id: string;
   titleEn: string;

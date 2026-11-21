@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { HelpFeedbackList, HelpFeedbackRow, HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
+import type { HelpAnalytics, HelpFeedbackList, HelpFeedbackRow, HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
 
 export const listHelpCategories = () => api<HelpCategory[]>("/help/admin/categories/");
 
@@ -66,3 +66,7 @@ export const listHelpFeedback = (filters: Record<string, string>) => {
 
 export const resolveHelpFeedback = (id: number, resolved: boolean) =>
   api<HelpFeedbackRow>(`/help/admin/feedback/${id}/`, { method: "PATCH", body: { resolved } });
+
+/** The dashboard for `from`–`to` (YYYY-MM-DD, Help timezone days, both included). */
+export const getHelpAnalytics = (from: string, to: string) =>
+  api<HelpAnalytics>(`/help/admin/analytics/?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);

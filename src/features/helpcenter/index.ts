@@ -5,3 +5,4 @@ export { HelpArticlesView } from "./components/articles/help-articles-view";
 export { HelpArticleEditor } from "./components/articles/help-article-editor";
 export { HelpPreviewView } from "./components/preview/help-preview-view";
 export { HelpFeedbackView } from "./components/feedback/help-feedback-view";
+export { HelpAnalyticsView } from "./components/analytics/help-analytics-view";
