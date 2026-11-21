@@ -53,6 +53,7 @@ export function useCmsNav(): { loading: boolean; role: string | null; sections: 
           // An open article keeps "Help articles" lit: that is where it lives.
           { key: "help-articles", label: c.nav.helpArticles, icon: "question-circle", href: `${CMS_HOME}/help`, active: pathname === `${CMS_HOME}/help` || pathname.startsWith(`${CMS_HOME}/help/articles/`) },
           page("help/categories", c.nav.helpCategories, "layer-group"),
+          page("help/feedback", c.nav.helpFeedback, "inbox"),
         ] }]
       : []),
     {

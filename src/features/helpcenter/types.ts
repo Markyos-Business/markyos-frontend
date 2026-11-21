@@ -89,6 +89,30 @@ export type HelpArticleDraft = Pick<HelpArticleDoc, "categoryId" | "type" | "aud
   translations: Record<HelpLocale, HelpTranslationDraft>;
 };
 
+export type HelpFeedbackReason = "outdated" | "unclear" | "missing_steps" | "not_solved";
+
+/** One visitor's answer to "Was this article helpful?" (C6). */
+export type HelpFeedbackRow = {
+  id: number;
+  articleId: string;
+  titleEn: string;
+  titleAr: string;
+  locale: HelpLocale;
+  helpful: boolean;
+  reasons: HelpFeedbackReason[];
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+};
+
+export type HelpFeedbackList = {
+  results: HelpFeedbackRow[];
+  articles: { id: string; titleEn: string; titleAr: string }[];
+  summary: Record<string, { yes: number; no: number }>;
+};
+
 export type HelpArticleRow = {
   id: string;
   titleEn: string;

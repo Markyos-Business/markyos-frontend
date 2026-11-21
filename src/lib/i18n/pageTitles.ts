@@ -19,7 +19,7 @@ const pages: Record<string, Name> = {
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
   "/admin/cms": ["Website content", "محتوى الموقع"],
   "/admin/cms/media": ["Media", "الوسائط"], "/admin/cms/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],
-  "/admin/cms/redirects": ["Redirects", "إعادة التوجيه"], "/admin/cms/help/categories": ["Help categories", "تصنيفات المساعدة"], "/admin/cms/help": ["Help articles", "مقالات المساعدة"], "/admin/cms/traffic": ["Website traffic", "زيارات الموقع"], "/admin/cms/people": ["CMS people", "فريق المحتوى"],
+  "/admin/cms/redirects": ["Redirects", "إعادة التوجيه"], "/admin/cms/help/categories": ["Help categories", "تصنيفات المساعدة"], "/admin/cms/help/feedback": ["Article feedback", "آراء القرّاء"], "/admin/cms/help": ["Help articles", "مقالات المساعدة"], "/admin/cms/traffic": ["Website traffic", "زيارات الموقع"], "/admin/cms/people": ["CMS people", "فريق المحتوى"],
 };
 const brandPages: Record<string, Name> = {
   "": ["Overview", "نظرة عامة"], overview: ["Overview", "نظرة عامة"], assets: ["Assets", "الأصول"], builder: ["Guideline editor", "محرر الدليل"],

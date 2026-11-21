@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
+import type { HelpFeedbackList, HelpFeedbackRow, HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
 
 export const listHelpCategories = () => api<HelpCategory[]>("/help/admin/categories/");
 
@@ -57,3 +57,12 @@ export const createHelpPreview = (id: string, locale: HelpLocale) =>
   api<{ token: string; path: string; expiresAt: string }>(`/help/admin/articles/${id}/preview/`, { method: "POST", body: { locale } });
 
 export const getHelpPreview = (token: string) => api<HelpPreview>(`/help/public/preview/${encodeURIComponent(token)}/`);
+
+/** Feedback on articles (C6): ?article=&helpful=yes|no&reason=&status=open|resolved&locale=. */
+export const listHelpFeedback = (filters: Record<string, string>) => {
+  const query = new URLSearchParams(Object.entries(filters).filter(([, v]) => v)).toString();
+  return api<HelpFeedbackList>(`/help/admin/feedback/${query ? `?${query}` : ""}`);
+};
+
+export const resolveHelpFeedback = (id: number, resolved: boolean) =>
+  api<HelpFeedbackRow>(`/help/admin/feedback/${id}/`, { method: "PATCH", body: { resolved } });
