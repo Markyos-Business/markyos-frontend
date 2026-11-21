@@ -317,6 +317,7 @@ Every input, select, textarea, combobox, date picker and button reads one token 
 - **Toolbar selects** (`SortControl`, `FilterSelectField`) are fields too, not boxes; an active filter takes the accent tint and an accent underline.
 - **Border contrast:** `--control-border` replaces `--border-strong` (white 20%, 1.84:1) as the underline, because WCAG 1.4.11 asks 3:1 of a control's boundary. `scripts/contrast-audit.mjs` holds both themes at 3:1 on every card surface. Card edges (`--hairline-strong`) are not controls and stay as they are.
 - **Spacing around controls** comes from the rows above, all steps of the §2.4 scale: one gap inside controls, one between controls in a row, and two between fields (`FormGrid` and `Fieldset` take `density="compact"` for dense panels). Card padding, page margins and section spacing outside forms are not part of this set.
+- **Enforced** by `scripts/control-audit.mjs` (in `npm run check`, or `npm run lint:controls`): on native and kit controls it refuses arbitrary corner, border, background, shadow, height and padding values, fixed inline styles, Tailwind number heights and number gaps in rows of controls. Cases that predate the rule sit in `scripts/control-audit.baseline.json` and may only shrink (`--update-baseline` after fixing one); a deliberate exception carries `ctl-audit-ignore: <reason>`.
 - **Exempt:** guideline-site templates and the public questionnaire follow the client brand's own theme (`--g-*`, `--f-*`).
 
 ---

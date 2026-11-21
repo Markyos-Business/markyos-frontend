@@ -174,7 +174,7 @@ export function AssetTypeGrid({
                     removeAsset(ws.id, a.id);
                   }}
                   aria-label={`Remove ${a.fileName}`}
-                  className="absolute top-[3px] end-[3px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[3px] end-[3px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   {/* The 18px chip stays 18px; only the target around it grows.
                       A scrim over artwork, so it stays dark in both themes —

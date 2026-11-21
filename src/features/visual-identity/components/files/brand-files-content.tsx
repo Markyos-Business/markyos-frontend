@@ -487,7 +487,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                   onClick={() => toggleSelect(r.key)}
                   aria-label={isAr ? `تحديد ${r.fileName}` : `Select ${r.fileName}`}
                   aria-pressed={selected.has(r.key)}
-                  className="absolute top-[5px] start-[5px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[5px] start-[5px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   <span
                     className="w-[18px] h-[18px] rounded-sm grid place-items-center"

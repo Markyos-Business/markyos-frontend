@@ -98,7 +98,7 @@ export function SelectBox({ checked, onToggle, label }: { checked: boolean; onTo
       // The tick stays 18px and the target around it is 28. Growing the chip
       // itself would put a bigger box over artwork that the thumbnail exists
       // to show.
-      className="w-[28px] h-[28px] -m-[5px] grid place-items-center cursor-pointer"
+      className="w-[28px] h-ctl-xs -m-[5px] grid place-items-center cursor-pointer"
     >
       <span
         className="w-[18px] h-[18px] rounded-sm grid place-items-center"

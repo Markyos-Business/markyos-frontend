@@ -41,7 +41,7 @@ export function ClientAccessSection({ ws, clientLink, isAr }: { ws: Workspace; c
           </Button>
         </div>
       )}
-      <div className="mk-surface flex items-center gap-2.5 rounded-lg bg-surface-2 px-3.5 py-3">
+      <div className="mk-surface flex items-center gap-ctl-row rounded-lg bg-surface-2 px-3.5 py-3">
         <Icon name="link" size={17} className="text-accent-text" />
         <span
           // The full link in a title: this truncates on a narrow window, and a
