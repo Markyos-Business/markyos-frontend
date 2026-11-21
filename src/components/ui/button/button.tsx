@@ -44,10 +44,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * in-row size (28px, with a 44px touch target); sm and md are 44px on touch.
  */
 const sizes: Record<ButtonSize, string> = {
-  xs: "h-ctl-xs px-ctl-px-sm gap-1.5 text-caption",
-  sm: "h-ctl-sm px-ctl-px-sm gap-1.5 text-caption",
-  md: "h-ctl-md px-ctl-px-md gap-2 text-body",
-  lg: "h-ctl-lg px-ctl-px-lg gap-2 text-body",
+  xs: "h-ctl-xs px-ctl-px-sm gap-ctl-icon text-caption",
+  sm: "h-ctl-sm px-ctl-px-sm gap-ctl-icon text-caption",
+  md: "h-ctl-md px-ctl-px-md gap-ctl-icon text-body",
+  lg: "h-ctl-lg px-ctl-px-lg gap-ctl-icon text-body",
   icon: "size-ctl-md p-0 text-body",
 };
 const variants: Record<ButtonVariant, string> = {
@@ -82,9 +82,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-[inherit] ${stateText ? "invisible" : ""}`} aria-hidden={!!stateText || undefined}>
       {locked ? <Icon name="lock" size={18} /> : icon}{original}{iconEnd}
     </span>
-    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-2"><span className="w-[18px] shrink-0" />{text}</span>)}
+    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-ctl-icon"><span className="w-[18px] shrink-0" />{text}</span>)}
     </span>
-    {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-2">
+    {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-ctl-icon">
       <Icon name={busy ? "clock" : status === "success" ? "check" : "exclamation-circle"} size={18} />{original && stateText}
     </span>}
     <span className="sr-only" role="status" aria-live="polite">{stateText}</span>

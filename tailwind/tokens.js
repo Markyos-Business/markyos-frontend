@@ -238,6 +238,22 @@ export const darkTokens = {
   "--focus-ring-offset": "2px",
   "--focus-ring-color": "var(--accent)",
   /*
+   * Spacing around controls, on the measured scale (§2.4): inside a control,
+   * between a field and its label and note, between controls in a row, and
+   * between fields in a form. Compact is for dense panels — inspectors,
+   * moodboard cards, table rows — where 18px between fields wastes the panel.
+   */
+  "--control-gap": "8px",
+  "--control-padding-y-sm": "5px",
+  "--control-padding-y-md": "9px",
+  "--field-label-gap": "5px",
+  "--field-label-gap-sm": "4px",
+  "--control-row-gap": "8px",
+  "--field-stack-gap": "18px",
+  "--field-stack-gap-compact": "8px",
+  "--form-column-gap": "25px",
+  "--form-section-gap": "25px",
+  /*
    * The ring around a selected card. Dozens of call sites wrote this as a
    * literal `rgba(0,153,255,.5)`, which froze the old accent into the markup —
    * so the light theme drew its selection rings in the dark theme's blue.

@@ -99,7 +99,7 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
   // Nothing to clear in a field that can't change.
   const protectedField = Boolean(rest.disabled || rest.readOnly);
   return (
-    <label className={`${fieldClasses(size)} flex items-center gap-space-3 ${fullWidth ? "" : "sm:w-65"}`}>
+    <label className={`${fieldClasses(size)} flex items-center gap-ctl-icon ${fullWidth ? "" : "sm:w-65"}`}>
       <Icon name="search" size={size === "sm" ? 16 : 18} className="shrink-0 text-text-muted" />
       <span className="sr-only">{label}</span>
       <input

@@ -7,7 +7,7 @@ import { Badge } from "../badge/badge";
 import { useUiStrings } from "../ui-strings";
 import { selectLabels, selectLabelsAr, type SelectCommonProps, type SelectOption } from "./types";
 
-export const controlClasses = "mk-field flex w-full min-w-0 items-center gap-space-3 text-start text-body text-text disabled:cursor-not-allowed disabled:text-text-disabled";
+export const controlClasses = "mk-field flex w-full min-w-0 items-center gap-ctl-icon text-start text-body text-text disabled:cursor-not-allowed disabled:text-text-disabled";
 export const panelClasses = "z-popover max-h-[min(24rem,var(--radix-popover-content-available-height,var(--radix-select-content-available-height)))] min-w-[var(--radix-select-trigger-width,12rem)] max-w-[calc(100vw-2rem)] overflow-auto rounded-card bg-surface-1 p-space-2 text-text shadow-edge-pop";
 const subscribe = (cb: () => void) => { const m = matchMedia("(pointer: coarse)"); m.addEventListener("change", cb); return () => m.removeEventListener("change", cb); };
 export function useNativeTouch(enabled?: boolean) { return useSyncExternalStore(subscribe, () => !!enabled && matchMedia("(pointer: coarse)").matches, () => false); }

@@ -260,6 +260,20 @@ const config = {
         "ctl-px-sm": "var(--control-padding-x-sm)",
         "ctl-px-md": "var(--control-padding-x-md)",
         "ctl-px-lg": "var(--control-padding-x-lg)",
+        // Spacing around controls (MARKYOS_UI §2.6): gap-ctl-icon inside a
+        // control, gap-field-label between a field and its label and note,
+        // gap-ctl-row between controls in a row, gap-field-stack between
+        // fields (compact in dense panels), form-col / form-section for forms.
+        "ctl-icon": "var(--control-gap)",
+        "ctl-py-sm": "var(--control-padding-y-sm)",
+        "ctl-py-md": "var(--control-padding-y-md)",
+        "field-label": "var(--field-label-gap)",
+        "field-label-sm": "var(--field-label-gap-sm)",
+        "ctl-row": "var(--control-row-gap)",
+        "field-stack": "var(--field-stack-gap)",
+        "field-stack-compact": "var(--field-stack-gap-compact)",
+        "form-col": "var(--form-column-gap)",
+        "form-section": "var(--form-section-gap)",
       },
       borderRadius: {
         // Radius encodes size class (spec §2.5), so every corner is one of

@@ -1243,7 +1243,7 @@ export const baseStyles = [
       // 9 + 21 + 9 + the underline = 40; the min-height takes it to 44 on a
       // touch screen. Labels and notes take the same inset as the value.
       "min-height": "var(--control-height-md)",
-      "padding-block": "9px",
+      "padding-block": "var(--control-padding-y-md)",
       "padding-inline": "var(--control-padding-x-md)",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
@@ -1443,7 +1443,7 @@ export const baseStyles = [
     ".mk-field.mk-field-sm": {
       // 5 + 20 + 5 + the underline = 31; the min-height makes it 32.
       "min-height": "var(--control-height-sm)",
-      "padding-block": "5px",
+      "padding-block": "var(--control-padding-y-sm)",
       "padding-inline": "var(--control-padding-x-sm)",
       "font-size": "0.78125rem",
       "line-height": "1.25rem",

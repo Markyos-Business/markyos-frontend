@@ -119,7 +119,7 @@ const Combobox = (props: ComboboxProps) => {
         aria-describedby={error ?? hint ? noteId : undefined}
         data-state={error ? "error" : undefined}
         onClick={() => (open ? close() : (setActive(0), setOpen(true)))}
-        className={`${inputClasses} flex cursor-pointer items-center justify-between gap-space-3 text-start ${
+        className={`${inputClasses} flex cursor-pointer items-center justify-between gap-ctl-icon text-start ${
           compact ? "text-caption" : ""
         }`}
       >
