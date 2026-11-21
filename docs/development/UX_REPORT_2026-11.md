@@ -53,6 +53,17 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 5 (21 Nov 2026): improvements
+
+- A moodboard showed its title twice (a page heading and the toolbar's). Now there is one: the toolbar's, with the rename pencil, under the "All boards" link.
+- On a phone, a moodboard card's size picker ran past the card edge; the card's controls now wrap.
+- Team: the owner's own row no longer offers a role change or a remove button that cannot work (the slot stays, so rows line up). A disabled kit select now looks disabled.
+- Brand cards read "Your role: Owner", capitalised like every other value.
+- Analysis: hovering or focusing "Free run" says why it was free.
+- The CMS nav label reads "Website content", matching the page title and the account menu.
+
+All 770 unit tests and the 30 e2e tests pass.
+
 ## Round 4 (21 Nov 2026): improvements
 
 - Files under a kilobyte read "<1 KB" instead of "0 KB" (a small SVG looked empty).
