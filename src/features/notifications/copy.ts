@@ -12,11 +12,17 @@ export function notificationText(item:NotificationItem,isAr:boolean){
     "account.signed_out":t("Your sessions were signed out","تم تسجيل الخروج من جلساتك"),
     "account.session_ended":t("One of your sessions was ended","تم إنهاء إحدى جلساتك"),
     "discovery.first_answer":t("A client started answering","بدأ عميل بالإجابة"),
-    "discovery.section_completed":t("A form section was completed","اكتمل قسم من النموذج"),
-    "discovery.submitted":t("New form answers are ready","إجابات جديدة للنموذج جاهزة"),
+    "discovery.section_completed":t("A questionnaire section was completed","اكتمل قسم من الاستبيان"),
+    "discovery.submitted":t("New questionnaire answers are ready","إجابات جديدة للاستبيان جاهزة"),
   };
   return {title:titles[item.kind]??t("Account update","تحديث الحساب"),
-    body:item.kind==="welcome"?t("Your account and discovery form updates appear here.","تظهر تحديثات حسابك ونماذج الاستكشاف هنا."):item.kind.startsWith("discovery.")?[item.data.form,item.data.client].filter(Boolean).join(" · "):item.data.actor?t(`Updated by ${item.data.actor}`,`تم التحديث بواسطة ${item.data.actor}`):""};
+    body:item.kind==="welcome"?t("Your account and questionnaire updates appear here.","تظهر تحديثات حسابك واستبياناتك هنا."):item.kind.startsWith("discovery.")?[item.data.form,clientName(item.data.client,isAr)].filter(Boolean).join(" · "):item.data.actor?t(`Updated by ${item.data.actor}`,`تم التحديث بواسطة ${item.data.actor}`):""};
 }
 /** Treat API destinations as internal paths, including when older data exists. */
 export function notificationHref(value:string){return /^\/(?![\\/])/.test(value)&&!/[\\\u0000-\u001f\u007f]/.test(value)?value:"/brands";}
+
+/** The server writes a plain "client" when the recipient has no name; say it in the reader's language. */
+function clientName(name:unknown,isAr:boolean){
+  if(typeof name!=="string"||!name)return "";
+  return name.toLowerCase()==="client"?(isAr?"العميل":"Client"):name;
+}
