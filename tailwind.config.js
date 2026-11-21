@@ -356,6 +356,10 @@ const config = {
         // A one-pixel rule along one side: under a header, over a footer.
         "rule-b": "inset 0 -1px 0 var(--hairline)",
         "rule-t": "inset 0 1px 0 var(--hairline)",
+        // A picked tile (image, template, media): the accent ring, 2px.
+        selected: "inset 0 0 0 2px var(--accent)",
+        // The edge on a colour swatch, so white and black swatches both show.
+        "edge-chip": "inset 0 0 0 1px var(--chip-edge)",
       },
       dropShadow: {
         // Chart lines emit light: `drop-shadow-glow` on the line's SVG.

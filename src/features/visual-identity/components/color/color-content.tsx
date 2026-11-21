@@ -82,7 +82,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           const rgb = hexToRgb(c.hex);
           const cmyk = rgb ? rgbToCmyk(rgb) : null;
           return (
-            <div key={c.id} className="rounded-card overflow-hidden" style={{ background: "var(--surface-1)" }}>
+            <div key={c.id} className="rounded-card overflow-hidden bg-surface-1" >
               <div
                 className="h-[104px]"
                 style={{
@@ -109,8 +109,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                       onClick={() => setEditor({ mode: "edit", color: c })}
                       aria-label={`Edit ${c.name}`}
                       title={`Edit, set primary, or delete ${c.name}`}
-                      className="h-7 w-7 grid place-items-center rounded-full cursor-pointer"
-                      style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
+                      className="h-ctl-xs w-7 grid place-items-center rounded-full cursor-pointer bg-surface-2 text-text-muted"
+                      
                     >
                       <Icon name="pen" size={13} />
                     </button>
@@ -157,8 +157,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setEditor({ mode: "add" })}
-          className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer"
-          style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)", minHeight: 220 }}
+          className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer shadow-edge text-text-muted min-h-55"
+          
         >
           <Icon name="plus" size={22} />
           <span className="text-[13px] font-medium">{isAr ? "أضف لونًا" : "Add colour"}</span>
@@ -179,8 +179,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
           <button
             type="button"
             onClick={() => setShowReport((v) => !v)}
-            className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start"
-            style={{ background: "var(--surface-1)" }}
+            className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start bg-surface-1"
+            
           >
             <Icon name="adjust" size={18} style={{ color: "var(--accent-text)" }} />
             <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
@@ -196,7 +196,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             </span>
           </button>
           {showReport && ws.colors.length > 1 && (
-            <div className="rounded-card p-4 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-card p-4 overflow-x-auto bg-surface-1" >
               <table className="border-separate" style={{ borderSpacing: 4 }}>
                 <thead>
                   <tr>

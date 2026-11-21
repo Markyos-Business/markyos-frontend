@@ -85,7 +85,7 @@ function MediaPickerDialog({ onDone }: { onDone: (item: MediaItem | null) => voi
             aria-selected={chosen === m.id}
             onClick={() => setChosen(m.id)}
             onDoubleClick={() => finish(m)}
-            className={`overflow-hidden rounded-lg bg-surface-2 ${chosen === m.id ? "shadow-[inset_0_0_0_2px_var(--accent)]" : "shadow-edge"}`}
+            className={`overflow-hidden rounded-lg bg-surface-2 ${chosen === m.id ? "shadow-selected" : "shadow-edge"}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- media from the content store, any host */}
             <img src={m.url} alt={m.altEn || m.altAr || m.fileName} className="aspect-square w-full object-cover" />

@@ -63,7 +63,7 @@ export function ImportReview({
                   type="button"
                   onClick={() => onToggleColor(c.hex)}
                   className={`cursor-pointer overflow-hidden rounded-lg bg-surface-2 text-start ${
-                    on ? "shadow-[inset_0_0_0_2px_var(--accent)]" : "opacity-50 shadow-edge-soft"
+                    on ? "shadow-selected" : "opacity-50 shadow-edge-soft"
                   }`}
                 >
                   {/* The measured colour is data, so it stays inline. */}

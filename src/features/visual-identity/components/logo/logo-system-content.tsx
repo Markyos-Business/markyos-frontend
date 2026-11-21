@@ -266,8 +266,8 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
           <button
             type="button"
             onClick={() => setNotesDraft(ws.logoUsageNotes)}
-            className="text-start rounded-lg px-3 py-2.5 text-[14px] cursor-pointer"
-            style={{ background: "var(--surface-2)", color: ws.logoUsageNotes ? "var(--text)" : "var(--text-faint)" }}
+            className="bg-surface-2 text-start rounded-lg px-3 py-2.5 text-[14px] cursor-pointer"
+            style={{ color: ws.logoUsageNotes ? "var(--text)" : "var(--text-faint)" }}
           >
             {ws.logoUsageNotes ||
               (isAr

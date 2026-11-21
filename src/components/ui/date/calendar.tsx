@@ -158,7 +158,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
                 const h = hijri ? hijriOf(day, lang, digits) : null;
                 return (
                   <td key={day} role="gridcell" aria-selected={isSelected || between || undefined} className="p-0.5">
-                    <button
+                    <button /* ctl-audit-ignore: a calendar day cell, sized by the grid (44px with the Hijri date under it) */
                       type="button"
                       data-day={day}
                       data-autofocus={autoFocus && day === stop ? "" : undefined}
@@ -171,7 +171,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
                         onPick(day);
                       }}
                       onKeyDown={(e) => onKeyDown(e, day)}
-                      className={`flex w-full flex-col items-center justify-center rounded-md text-caption transition-colors ${h ? "h-11" : "h-8"} disabled:cursor-not-allowed disabled:text-text-disabled disabled:line-through ${
+                      className={`flex w-full flex-col items-center justify-center rounded-md text-caption transition-colors ${h ? "h-11" : "h-ctl-sm"} disabled:cursor-not-allowed disabled:text-text-disabled disabled:line-through ${
                         isSelected
                           ? "bg-accent font-medium text-accent-ink"
                           : between

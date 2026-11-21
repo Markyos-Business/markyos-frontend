@@ -145,8 +145,8 @@ export const AccountMenu = memo(function AccountMenu({
               logout();
               router.replace("/login");
             }}
-            className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body cursor-pointer text-start"
-            style={{ color: "var(--text-secondary)", boxShadow: "inset 0 1px 0 var(--hairline)" }}
+            className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body cursor-pointer text-start text-text-secondary shadow-rule-t"
+            
           >
             <Icon name="sign-out-alt" size={16} style={{ color: "var(--text-muted)" }} />
             {isAr ? "تسجيل الخروج" : "Log out"}

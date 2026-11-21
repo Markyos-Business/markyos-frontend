@@ -384,7 +384,7 @@ function RowButton({
   disabled?: boolean;
 }) {
   return (
-    <button
+    <button /* ctl-audit-ignore: a show/hide toggle inside a layer row */
       type="button"
       aria-label={label}
       title={label}

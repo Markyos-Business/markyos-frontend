@@ -218,12 +218,9 @@ export function Zone({
             key={i}
             type="button"
             onClick={() => onAdd(zone, ghost.kind)}
-            className="rounded-card grid place-items-center gap-1.5 cursor-pointer p-4"
+            className="rounded-card grid min-h-26 place-items-center gap-1.5 cursor-pointer p-4 text-text-faint shadow-edge"
             style={{
               gridColumn: ghost.size === "l" ? "span 2" : "span 1",
-              minHeight: 104,
-              color: "var(--text-faint)",
-              boxShadow: "inset 0 0 0 1px var(--hairline-strong)",
             }}
           >
             <Icon name="plus" size={13} />
@@ -311,7 +308,7 @@ function AddMenu({
                   onAdd(zone, k.kind);
                   setOpen(false);
                 }}
-                className="flex items-center gap-2.5 h-8 px-3 text-[12px] cursor-pointer text-start"
+                className="flex items-center gap-2.5 h-ctl-sm px-3 text-[12px] cursor-pointer text-start"
                 style={{ color: "var(--text)" }}
               >
                 <Icon name={k.icon} size={12} style={{ color: "var(--text-faint)" }} />

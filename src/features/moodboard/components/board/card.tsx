@@ -147,12 +147,12 @@ function Body({
             }
           />
           {onSampleColor && (
-            <button
+            <button /* ctl-audit-ignore: drawn over the card's image on its dark scrim */
               type="button"
               onClick={() => onSampleColor(asset.url)}
               title={isAr ? "استخرج الألوان من هذه الصورة" : "Read the colours out of this image"}
               aria-label={isAr ? "استخرج الألوان من هذه الصورة" : "Read the colours out of this image"}
-              className="absolute top-2 h-7 w-7 rounded-full grid place-items-center cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="absolute top-2 h-ctl-xs w-7 rounded-full grid place-items-center cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
               style={{ insetInlineEnd: 8, background: "rgba(0,0,0,.62)", color: "#fff" }}
             >
               <Icon name="eye-dropper" size={12} />
@@ -231,7 +231,7 @@ function Swatch({
         dir="auto"
         aria-label={isAr ? "اسم اللون" : "Colour name"}
         onPointerDown={(e) => e.stopPropagation()}
-        className="bidi-auto h-8 px-2.5 bg-transparent outline-none text-[11.5px] shrink-0"
+        className="bidi-auto h-ctl-sm px-2.5 bg-transparent outline-none text-[11.5px] shrink-0"
         style={{ color: "var(--text-muted)" }}
       />
     </div>
@@ -257,8 +257,8 @@ function Note({
       rows={4}
       dir="auto"
       aria-label={isAr ? "نص الملاحظة" : "Note text"}
-      className="bidi-auto w-full bg-transparent outline-none resize-none px-3 py-2.5 text-[12.5px] leading-[1.5]"
-      style={{ color: "var(--text)", minHeight: 96, height: fill ? "100%" : undefined }}
+      className="min-h-24 bidi-auto w-full bg-transparent outline-none resize-none px-3 py-2.5 text-[12.5px] leading-[1.5]"
+      style={{ color: "var(--text)", height: fill ? "100%" : undefined }}
     />
   );
 }

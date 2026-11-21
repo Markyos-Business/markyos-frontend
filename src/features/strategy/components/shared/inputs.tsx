@@ -71,7 +71,7 @@ export function InlineText({
       onClick={() => setDraft(value)}
       dir="auto"
       title={isAr ? "اضغط للتعديل" : "Click to edit"}
-      className={`text-start cursor-text rounded-md px-1.5 py-1 -mx-1.5 transition-colors hover:bg-[var(--surface-1)] bidi-auto ${className}`}
+      className={`text-start cursor-text rounded-md px-1.5 py-1 -mx-1.5 transition-colors hover:bg-surface-1 bidi-auto ${className}`}
       style={style}
     >
       {value || <span style={{ color: "var(--text-faint)" }}>{placeholder}</span>}

@@ -49,7 +49,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
                 type="button"
                 aria-pressed={on}
                 onClick={() => setCategory(key)}
-                className={`h-8 rounded-md px-space-4 text-caption font-medium transition-[background-color,color,box-shadow] ${
+                className={`h-ctl-sm rounded-md px-space-4 text-caption font-medium transition-[background-color,color,box-shadow] ${
                   on ? "bg-accent-soft text-accent-on-soft shadow-edge-accent" : "bg-surface-2 text-text-muted hover:text-text"
                 }`}
               >

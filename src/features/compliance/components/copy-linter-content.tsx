@@ -83,8 +83,8 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
           {ws.strategy.voiceTraits.map((t) => (
             <span
               key={t.id}
-              className="px-2.5 py-1 rounded-lg font-medium"
-              style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+              className="px-2.5 py-1 rounded-lg font-medium bg-accent-soft text-accent-on-soft"
+              
               title={isAr ? `افعل: ${t.doExample}\nلا تفعل: ${t.dontExample}` : `Do: ${t.doExample}\nDon't: ${t.dontExample}`}
             >
               {t.trait}
@@ -225,8 +225,8 @@ function DraftPanel({
                   <button
                     type="button"
                     onClick={() => onFix(f)}
-                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer"
-                    style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer bg-accent-soft text-accent-on-soft"
+                    
                   >
                     {isAr ? "أصلحها" : "Fix"}
                   </button>

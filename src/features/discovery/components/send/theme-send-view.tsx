@@ -136,7 +136,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                     aria-label={`${s.name} ${s.hex}`}
                     aria-pressed={form.theme.accent?.toLowerCase() === s.hex.toLowerCase()}
                     onClick={() => save({ theme: { accent: s.hex.toLowerCase() } })}
-                    className={`size-ctl-sm rounded-md shadow-[inset_0_0_0_1px_var(--chip-edge)] ${form.theme.accent?.toLowerCase() === s.hex.toLowerCase() ? "outline-2 outline-offset-2 outline-accent" : ""}`}
+                    className={`size-ctl-sm rounded-md shadow-edge-chip ${form.theme.accent?.toLowerCase() === s.hex.toLowerCase() ? "outline-2 outline-offset-2 outline-accent" : ""}`}
                     style={{ background: s.hex }}
                   />
                 ))}

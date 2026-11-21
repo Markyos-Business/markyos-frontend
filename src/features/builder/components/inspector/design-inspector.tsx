@@ -157,8 +157,8 @@ export function DesignInspector({
 
       {view.scope && (
         <div
-          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
-          style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45] bg-accent-soft text-accent-on-soft"
+          
         >
           <Icon name={view.scope === "rtl" ? "language" : view.scope === "phone" ? "mobile" : "tablet"} size={12} style={{ flexShrink: 0, marginTop: 1 }} />
           <span>
@@ -569,7 +569,7 @@ function OptionsPanel({
                           const next = COLOR_FORMATS.filter((k) => (k === f ? !picked : on.includes(k)));
                           onChange({ formats: next });
                         }}
-                        className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
+                        className="h-ctl-xs px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
                         style={{
                           background: picked ? "var(--accent-soft)" : "var(--surface-1)",
                           color: picked ? "var(--accent-on-soft)" : "var(--text-faint)",
@@ -752,8 +752,8 @@ function OverrideDot({
       }}
       title={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
       aria-label={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
-      className="mk-tap text-[10px] font-semibold px-1.5 rounded-md cursor-pointer shrink-0"
-      style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+      className="mk-tap text-[10px] font-semibold px-1.5 rounded-md cursor-pointer shrink-0 bg-accent-soft text-accent-on-soft"
+      
     >
       {isAr ? "إعادة" : "Reset"}
     </button>
@@ -834,7 +834,7 @@ function PaletteColor({
           type="button"
           onClick={() => onChange(undefined)}
           title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
+          className="h-ctl-xs px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
           style={{
             background: value === undefined ? "var(--surface-2)" : "var(--surface-1)",
             color: value === undefined ? "var(--text)" : "var(--text-faint)",
@@ -849,7 +849,7 @@ function PaletteColor({
             onClick={() => onChange(c.hex)}
             title={`${c.name} — ${c.hex}`}
             aria-label={c.name}
-            className="w-7 h-7 rounded-full cursor-pointer shrink-0"
+            className="w-7 h-ctl-xs rounded-full cursor-pointer shrink-0"
             style={{
               background: c.hex,
               boxShadow:
