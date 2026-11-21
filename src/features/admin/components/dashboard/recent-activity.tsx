@@ -32,7 +32,7 @@ export function RecentActivity({ items, error, loading, onRetry }: {
             `${visible?.length} of ${items.length} latest events`,
             `${visible?.length} من أحدث ${items.length} حدثًا`,
           )}</span>
-          <Button size="sm" variant="outline" aria-expanded={expanded} aria-controls={listId} onClick={() => setExpanded(!expanded)}>
+          <Button size="sm" variant="secondary" aria-expanded={expanded} aria-controls={listId} onClick={() => setExpanded(!expanded)}>
             {expanded ? t("Show less", "عرض أقل") : t("Show more", "عرض المزيد")}
           </Button>
         </div>
@@ -40,7 +40,7 @@ export function RecentActivity({ items, error, loading, onRetry }: {
     >
       {error && <div role="alert" className="mb-space-4 flex flex-wrap items-center justify-between gap-ctl-row text-caption text-danger">
         <span>{items ? t("Could not refresh. Showing previous activity.", "تعذر التحديث. يظهر النشاط السابق.") : t("Activity could not be loaded.", "تعذر تحميل النشاط.")}</span>
-        <Button size="sm" variant="outline" onClick={onRetry} disabled={loading}>{t("Retry", "إعادة المحاولة")}</Button>
+        <Button size="sm" variant="secondary" onClick={onRetry} disabled={loading}>{t("Retry", "إعادة المحاولة")}</Button>
       </div>}
       {!items ? loading ? (
         <div aria-busy="true" className="flex flex-col gap-space-4">

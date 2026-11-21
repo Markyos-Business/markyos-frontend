@@ -93,22 +93,22 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
         </>}
         actions={<>
         <div className="flex flex-wrap gap-ctl-row print:hidden">
-          <Button variant="outline" size="sm" href={builderHref}>
+          <Button variant="secondary" size="sm" href={builderHref}>
             {t("Questions", "الأسئلة")}
           </Button>
-          <Button variant="outline" size="sm" href={sendHref}>
+          <Button variant="secondary" size="sm" href={sendHref}>
             {t("Theme and link", "التصميم والرابط")}
           </Button>
           {form.status === "submitted" && (
-            <Button variant="outline" size="sm" onClick={() => void reopen()} icon={<Icon name="undo" size={16} />}>
+            <Button variant="secondary" size="sm" onClick={() => void reopen()} icon={<Icon name="undo" size={16} />}>
               {t("Reopen", "إعادة الفتح")}
             </Button>
           )}
           {/* The browser's print-to-PDF keeps Arabic shaping and direction intact. */}
-          <Button variant="outline" size="sm" onClick={() => window.print()} icon={<Icon name="download" size={16} />}>
+          <Button variant="secondary" size="sm" onClick={() => window.print()} icon={<Icon name="download" size={16} />}>
             {t("Export PDF", "تصدير PDF")}
           </Button>
-          <Button variant="outline" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
+          <Button variant="secondary" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
             {t("Open in Strategy", "فتح في الاستراتيجية")}
           </Button>
           {analysis}
@@ -255,7 +255,7 @@ function AnswerRow({ question, lang, isAr, files }: { question: Row; lang: "en" 
           </div>
           {foreign && (
             <div className="flex flex-col gap-space-2 print:hidden">
-              <Button variant="link" onClick={() => void translate()} disabled={translating}>
+              <Button variant="ghost" onClick={() => void translate()} disabled={translating}>
                 <Icon name="language" size={16} />
                 {translating ? t("Translating…", "جارٍ الترجمة…") : translation ? t("Hide translation", "إخفاء الترجمة") : t("Show machine translation", "عرض ترجمة آلية")}
               </Button>

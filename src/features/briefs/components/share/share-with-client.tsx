@@ -21,7 +21,7 @@ export function ShareWithClient({ analysis, isAr }: { analysis: BriefAnalysis; i
 
   return (
     <>
-      <Button variant="outline" icon={<Icon name="share-alt" size={18} />} onClick={share.start}>
+      <Button variant="secondary" icon={<Icon name="share-alt" size={18} />} onClick={share.start}>
         {t("Share with client", "مشاركة مع العميل")}
       </Button>
       <FormSheet

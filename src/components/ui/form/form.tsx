@@ -297,7 +297,7 @@ function Form<S extends AnySchema>({
             <div className="flex justify-end">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 icon={<Icon name="pen" size={16} />}
                 onClick={meta.startEdit}

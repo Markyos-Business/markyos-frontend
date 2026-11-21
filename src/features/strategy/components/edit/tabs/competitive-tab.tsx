@@ -367,10 +367,10 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
       </label>
 
       <div className="flex items-center justify-end gap-ctl-row">
-        <Button variant="outline" size="md" onClick={onClose}>
+        <Button variant="secondary" size="md" onClick={onClose}>
           {isAr ? "إلغاء" : "Cancel"}
         </Button>
-        <Button variant="solid" size="md" onClick={apply} disabled={body.length === 0}>
+        <Button variant="primary" size="md" onClick={apply} disabled={body.length === 0}>
           {isAr ? "بناء الجدول" : "Build the table"}
         </Button>
       </div>

@@ -101,7 +101,7 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
         actions={
           canWrite ? (
             <>
-              <Button variant="outline" onClick={() => void editor.save()} disabled={!editor.dirty || !!editor.busy}>
+              <Button variant="secondary" onClick={() => void editor.save()} disabled={!editor.dirty || !!editor.busy}>
                 {editor.busy === "save" ? t.saving : t.save}
               </Button>
               {canPublish && (
@@ -115,11 +115,11 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
         secondaryActions={<><VersionHistory id={id} version={doc.version} canWrite={canWrite} dirty={editor.dirty} busy={!!editor.busy} onRestore={editor.restore}/>{          canPublish ? (
             <>
               {doc.isPublished && (
-                <Button variant="ghost" icon={<Icon name="eye-slash" size={18} />} onClick={() => void editor.unpublish()} disabled={!!editor.busy}>
+                <Button variant="secondary" icon={<Icon name="eye-slash" size={18} />} onClick={() => void editor.unpublish()} disabled={!!editor.busy}>
                   {t.takeDown}
                 </Button>
               )}
-              <Button variant="danger-soft" icon={<Icon name="trash" size={18} />} onClick={() => void remove()} disabled={!!editor.busy}>
+              <Button variant="danger" icon={<Icon name="trash" size={18} />} onClick={() => void remove()} disabled={!!editor.busy}>
                 {t.remove}
               </Button>
             </>
@@ -206,7 +206,7 @@ function TranslationFields({
           )}
           {!readOnly && (
             <>
-              <Button variant="outline" size="sm" onClick={() => void pickCover().then((m) => m && onChange({ heroImage: toRef(m) }))}>
+              <Button variant="secondary" size="sm" onClick={() => void pickCover().then((m) => m && onChange({ heroImage: toRef(m) }))}>
                 {draft.heroImage ? t.changeImage : t.chooseImage}
               </Button>
               {draft.heroImage && (
@@ -266,7 +266,7 @@ function GuideFields({
         )}
         {!readOnly && (
           <UploadButton
-            variant="outline"
+            variant="secondary"
             size="sm"
             onFiles={(files) => {
               const file = files[0];

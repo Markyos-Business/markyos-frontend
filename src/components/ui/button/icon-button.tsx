@@ -2,7 +2,8 @@
 import { forwardRef } from "react";
 import { Icon } from "../icon";
 import { Button, type ButtonProps, type ButtonVariant } from "./button";
-export type IconButtonVariant = ButtonVariant | "quiet";
+/** The Button variants; ghost (the default) draws the glyph in the muted ink, as icons are at rest. */
+export type IconButtonVariant = ButtonVariant;
 export interface IconButtonProps extends Omit<ButtonProps, "children" | "icon" | "variant"> {
   icon: string;
   label: string;
@@ -10,8 +11,8 @@ export interface IconButtonProps extends Omit<ButtonProps, "children" | "icon" |
   iconSize?: 16 | 18 | 22;
   shape?: "square" | "round";
 }
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({ icon, label, variant = "quiet", iconSize = 18, size = "md", shape = "square", className = "", ...props }, ref) {
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({ icon, label, variant = "ghost", iconSize = 18, size = "md", shape = "square", className = "", ...props }, ref) {
   const md = "w-ctl-md";
-  const widths = { xs: "w-ctl-xs", sm: "w-ctl-sm", md, lg: "w-ctl-lg", icon: md };
-  return <Button {...props} ref={ref} size={size} variant={variant === "quiet" ? "link" : variant} aria-label={label} title={props.title ?? label} icon={<Icon name={icon} size={iconSize} />} className={`${widths[size]} !px-0 ${shape === "round" ? "!rounded-full" : ""} ${className}`} />;
+  const widths = { xs: "w-ctl-xs", sm: "w-ctl-sm", md, lg: "w-ctl-lg" };
+  return <Button {...props} ref={ref} size={size} variant={variant} aria-label={label} title={props.title ?? label} icon={<Icon name={icon} size={iconSize} />} className={`${widths[size]} !px-0 ${variant === "ghost" ? "text-text-muted" : ""} ${shape === "round" ? "!rounded-full" : ""} ${className}`} />;
 });

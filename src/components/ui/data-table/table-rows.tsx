@@ -53,7 +53,7 @@ export function TableRow<T>({ row, props, model, measure, index }: { row: Row<T>
         </div>}
       </td>}
     </tr>
-    {state !== "idle" && ["saving", "saved", "failed"].includes(state) && <tr><td colSpan={span} className="px-space-6 py-space-2"><span role={state === "failed" ? "alert" : "status"} className={`text-caption ${state === "failed" ? "text-danger" : "text-text-muted"}`}>{state === "saving" ? l.saving : state === "saved" ? l.saved : props.rowError?.(row.original) ?? l.failed}</span>{state === "failed" && props.onRowRetry && <Button size="xs" variant="outline" onClick={() => props.onRowRetry?.(row.original)}>{l.retry}</Button>}</td></tr>}
+    {state !== "idle" && ["saving", "saved", "failed"].includes(state) && <tr><td colSpan={span} className="px-space-6 py-space-2"><span role={state === "failed" ? "alert" : "status"} className={`text-caption ${state === "failed" ? "text-danger" : "text-text-muted"}`}>{state === "saving" ? l.saving : state === "saved" ? l.saved : props.rowError?.(row.original) ?? l.failed}</span>{state === "failed" && props.onRowRetry && <Button size="xs" variant="secondary" onClick={() => props.onRowRetry?.(row.original)}>{l.retry}</Button>}</td></tr>}
     {row.getIsExpanded() && props.expandable && !row.getIsGrouped() && <tr><td colSpan={span} className="bg-surface-2 p-space-6">{props.expandable(row.original)}</td></tr>}
   </Fragment>;
 }

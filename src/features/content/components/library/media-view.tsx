@@ -118,7 +118,7 @@ function EditMediaDialog({ item, canEdit, canDelete, onClose, onChanged }: { ite
       <InputField label={t.credit} value={credit} readOnly={!canEdit} maxLength={200} onChange={(e) => setCredit(e.target.value)} />
       {canDelete && (
         <div>
-          <Button variant="danger-soft" size="sm" icon={<Icon name="trash" size={18} />} onClick={() => void remove(() => deleteMedia(item.id), onChanged)}>
+          <Button variant="danger" size="sm" icon={<Icon name="trash" size={18} />} onClick={() => void remove(() => deleteMedia(item.id), onChanged)}>
             {c.common.remove}
           </Button>
         </div>

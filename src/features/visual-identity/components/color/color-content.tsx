@@ -53,7 +53,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         actions={<>
         <div className="flex gap-ctl-row">
           <Button
-            variant="outline"
+            variant="secondary"
             size="md"
             onClick={() => setExtracting(true)}
             title={hasArtwork ? (isAr ? "اقرأ الألوان الموجودة فعليًا في الشعار" : "Read the colours actually present in your logo") : undefined}

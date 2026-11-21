@@ -41,7 +41,7 @@ export function ToolsPanel(b: BuilderPageState) {
               {isAr ? p.arName : p.name}
             </button>
           ))}
-          <IconButton icon="plus" iconSize={16} variant="soft" size="sm" shape="round" label={isAr ? "إضافة صفحة" : "Add page"} onClick={b.onAddPage} />
+          <IconButton icon="plus" iconSize={16} variant="secondary" size="sm" shape="round" label={isAr ? "إضافة صفحة" : "Add page"} onClick={b.onAddPage} />
         </div>
       </div>
 

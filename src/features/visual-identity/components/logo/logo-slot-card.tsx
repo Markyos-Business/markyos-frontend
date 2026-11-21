@@ -280,7 +280,7 @@ export function LogoSlotCard({
           <Icon name="undo" size={19} style={{ color: "var(--danger)" }} />
           <span className="text-[12px] font-medium">{slot.errorMessage}</span>
           <Button
-            variant="solid"
+            variant="primary"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
@@ -453,7 +453,7 @@ function LightVersionStrip({
         </span>
       </div>
       <Button
-        variant="soft"
+        variant="secondary"
         size="xs"
         onClick={(e) => {
           e.stopPropagation();

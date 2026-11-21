@@ -24,7 +24,7 @@ export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, on
         <MoodboardIntro isAr={isAr} compact={false} hidden={false} />
         {!empty && (
           <div className="flex shrink-0 items-center gap-ctl-row">
-            <Button variant="outline" icon={<Icon name="upload" size={18} />} onClick={() => fileRef.current?.click()}>
+            <Button variant="secondary" icon={<Icon name="upload" size={18} />} onClick={() => fileRef.current?.click()}>
               {isAr ? "ارفع مراجع" : "Upload references"}
             </Button>
             <Button variant="primary" icon={<Icon name="plus" size={18} />} onClick={() => onPicking(!picking)} aria-expanded={picking}>

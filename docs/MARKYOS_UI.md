@@ -395,15 +395,18 @@ Props: `padding?: number|string`
 ### 6.2 Button
 46px tall with an 8px radius and a 14px label at weight 500. The icon is optional, 18px, and placed before the label.
 
-> **Sizes (2026-11-21, §2.6):** 46px is the `lg` size. Buttons share their heights with fields — xs 28, sm 32, md 40, lg 46 (sm and md 44 on touch) — and the variant table below stays as the fills.
+> **Sizes (2026-11-21, §2.6):** 46px is the `lg` size. Buttons share their heights with fields — sm 32, md 40, lg 46 (sm and md 44 on touch); xs 28 is for icon-only buttons in dense rows.
+>
+> **Variants (decided 2026-11-22, review item 3):** four, replacing nine. The table below is the product; the full rules (one primary per area, states, icon-only buttons, the lint rule) are in `docs/MARKYOS_COMPONENTS.md`.
 
 | variant | Fill | Label |
 |---|---|---|
 | `primary` | `--primary` | `--on-accent` |
-| `outline` | `--ink-10` + `--inset-outline` | `--text-heading` |
-| `ghost` | `--primary-10` | `--primary` |
+| `secondary` | `--ink-10` + `--inset-outline` | `--text-heading` |
+| `ghost` | transparent (`--ink-10` on hover) | `--text-heading` (icons `--text-muted`) |
+| `danger` | `--status-danger` | `--on-accent` |
 | `light` (marketing CTA only) | `#FFF` | `#000` |
-| disabled | `--bg-light` | `--text-40` |
+| disabled | the variant's own fill and label at 45% opacity, no hover | — |
 
 ```html
 <button class="mk-btn mk-button mk-button--primary"><i class="las la-plus" aria-hidden="true"></i>Add asset</button>
@@ -413,16 +416,18 @@ Props: `padding?: number|string`
   cursor:pointer;transition:var(--transition-state)}
 .mk-button i{font-size:18px}
 .mk-button--primary{background:var(--primary);color:var(--on-accent)}
-.mk-button--outline{background:var(--ink-10);color:var(--text-heading);box-shadow:var(--inset-outline)}
-.mk-button--ghost{background:var(--primary-10);color:var(--primary)}
-.mk-button:disabled{background:var(--bg-light);color:var(--text-40);cursor:not-allowed}
+.mk-button--secondary{background:var(--ink-10);color:var(--text-heading);box-shadow:var(--inset-outline)}
+.mk-button--ghost{background:transparent;color:var(--text-heading)}
+.mk-button--ghost:hover{background:var(--ink-10)}
+.mk-button--danger{background:var(--status-danger);color:var(--on-accent)}
+.mk-button:disabled{opacity:.45;cursor:not-allowed}
 </style>
 ```
-Props: `variant?: 'primary'|'outline'|'ghost'|'light'`, `icon?`, `iconStyle?: 'solid'|'regular'|'brand'`, `disabled?`, `active?` (permanent scrim), `block?`
+Props: `variant?: 'primary'|'secondary'|'ghost'|'danger'`, `size?: 'sm'|'md'|'lg'` (`xs` icon-only), `icon?`, `disabled?` / `disabledReason?`, `loading?`, `active?` (permanent scrim), `block?`, `href?`
 
 ### 6.3 ArrowButton
 A 46×46 icon-only button for next/prev, add and toolbar affordances. It **must** have an `aria-label`.
-Props: `variant?: 'primary'|'outline'`, `icon?` (default `arrow-right`), `disabled?`
+Props: `variant?: 'primary'|'secondary'`, `icon?` (default `arrow-right`), `disabled?`
 
 ### 6.4 LinkButton
 A text-only action at 12px, weight 500 and uppercase, in `--text-muted` (or `--primary` for `tone="primary"`), with an optional 18px icon. Use it for `PREV`, `NEXT` and `VIEW ALL`.

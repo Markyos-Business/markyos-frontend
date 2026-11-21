@@ -18,7 +18,7 @@ function Demo({ name, spec, children }: { name: string; spec: string; children: 
             {spec}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setKey((k) => k + 1)}>
+        <Button variant="secondary" size="sm" onClick={() => setKey((k) => k + 1)}>
           Replay
         </Button>
       </div>
@@ -44,7 +44,7 @@ function EnterExit({ enter, exit, exitMs, label }: { enter: string; exit: string
   return (
     <div className="flex flex-col items-center gap-space-5">
       <div className="flex h-24 items-center">{open && <div className={`${box} ${closing ? exit : enter}`}>{label}</div>}</div>
-      <Button variant="soft" size="xs" onClick={toggle}>
+      <Button variant="secondary" size="xs" onClick={toggle}>
         {open ? "Close" : "Open"}
       </Button>
     </div>
@@ -137,7 +137,7 @@ export function MotionGallery() {
         <Demo name="Collapsible (alerts, bulk bar, filters)" spec={`grid rows 0fr → 1fr + opacity · ${DURATION.base}ms`}>
           {() => (
             <div className="flex w-full flex-col gap-space-4">
-              <Button variant="soft" size="xs" className="self-start" onClick={() => setOpen((o) => !o)}>
+              <Button variant="secondary" size="xs" className="self-start" onClick={() => setOpen((o) => !o)}>
                 {open ? "Collapse" : "Expand"}
               </Button>
               <div className="mk-collapse" data-open={open}>

@@ -31,7 +31,7 @@ export function UsersStats({ stats, loading, error, onRetry, status, filtered, o
       <p className="text-caption text-text-muted">{o.scope}</p>
     </div>
     {error && <div role="alert" className="flex flex-wrap items-center justify-between gap-ctl-row rounded-lg bg-danger-soft px-space-5 py-space-3 text-caption text-danger">
-      <span>{stats ? o.stale : o.failed}</span><Button size="sm" variant="outline" disabled={loading} onClick={onRetry}>{o.retry}</Button>
+      <span>{stats ? o.stale : o.failed}</span><Button size="sm" variant="secondary" disabled={loading} onClick={onRetry}>{o.retry}</Button>
     </div>}
     <StatGrid>{cards.map(card => {
       const selected = card.key ? status === card.key : !filtered;

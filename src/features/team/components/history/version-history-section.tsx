@@ -59,7 +59,7 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
           placeholder={t("Label this version — e.g. Before campaign refresh", "سمِّ هذا الإصدار، مثل: قبل تحديث الحملة")}
           className="flex-1"
         />
-        <Button variant="outline" size="sm" onClick={save}>
+        <Button variant="secondary" size="sm" onClick={save}>
           {t("Save current as version", "حفظ الحالي كإصدار")}
         </Button>
       </div>}

@@ -196,7 +196,7 @@ export function TranslateStrategy({
   return (
     <div className="flex flex-col gap-2">
       <Button
-        variant="soft"
+        variant="secondary"
         size="sm"
         onClick={run}
         disabled={busy}

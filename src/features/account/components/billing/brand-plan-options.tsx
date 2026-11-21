@@ -90,12 +90,12 @@ export function BrandPlanOptions({ ws, typeLabel, prices, isAr }: BrandPlanOptio
 
       {running && (
         <div className="flex flex-wrap gap-space-3">
-          <LinkButton variant="outline" href={PAYPAL_AUTOPAY} external>
+          <LinkButton variant="secondary" href={PAYPAL_AUTOPAY} external>
             {t("Update payment method in PayPal", "تحديث وسيلة الدفع في PayPal")}
           </LinkButton>
           <ConfirmButton
             mode="dialog"
-            variant="outline"
+            variant="secondary"
             disabled={paypal.busy !== null}
             onConfirm={paypal.cancel}
             dialogTitle={t("Cancel this subscription?", "إلغاء هذا الاشتراك؟")}
@@ -113,7 +113,7 @@ export function BrandPlanOptions({ ws, typeLabel, prices, isAr }: BrandPlanOptio
 
       {/* A subscription from before PayPal is still managed where it was bought. */}
       {!onPayPal && subscriptionStatus && (
-        <Button variant="outline" onClick={manageSubscription} disabled={managing}>
+        <Button variant="secondary" onClick={manageSubscription} disabled={managing}>
           {managing ? t("Opening billing…", "جارٍ فتح الفوترة…") : t("Manage subscription", "إدارة الاشتراك")}
         </Button>
       )}

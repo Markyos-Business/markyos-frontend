@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonLook } from "./button";
 import { useState, type KeyboardEvent } from "react";
 import { usePhoneViewport } from "@/hooks/useNarrowViewport";
 import { SOFT_VARIANT_CLASSES } from "../badge/variants";
@@ -38,12 +39,13 @@ type ActionsDropdownProps = {
 /** What opens the menu: the ⋯ square for a row, or a labelled outline button. */
 const TriggerLook = ({ label, iconOnly, size = "md" }: { label: string; iconOnly: boolean; size?: "sm" | "md" }) =>
   iconOnly ? (
-    <span className={`flex ${size === "sm" ? "size-ctl-sm" : "size-ctl-md"} items-center justify-center rounded-control text-text-muted hover:bg-ink-soft hover:text-text`}>
+    // A ghost icon button's look (as IconButton draws it).
+    <span data-variant="ghost" className={`${buttonLook("ghost", size)} ${size === "sm" ? "w-ctl-sm" : "w-ctl-md"} !px-0 text-text-muted`}>
       <Icon name="ellipsis-h" size={18} />
     </span>
   ) : (
-    // The outline button's look, at the control height of its size.
-    <span className={`flex items-center gap-ctl-icon rounded-control bg-ink-soft font-medium text-text shadow-edge ${size === "sm" ? "h-ctl-sm px-ctl-px-sm text-caption" : "h-ctl-md px-ctl-px-md text-body"}`}>
+    // A secondary button's look, at the control height of its size.
+    <span data-variant="secondary" className={buttonLook("secondary", size)}>
       {label}
       <Icon name="ellipsis-h" size={18} />
     </span>

@@ -22,8 +22,8 @@ export function TableToolbar<T>({ props, model }: { props: DataTableProps<T>; mo
     </div>)}</div>}</Popover>
     <Select label={l.density} aria-label={l.density} value={model.density} options={[{ value: "comfortable", label: l.comfortable }, { value: "compact", label: l.compact }]} onValueChange={value => model.setDensity(value as "comfortable" | "compact")} />
     {(model.search || model.filters.length > 0) && <div className="flex w-full flex-wrap gap-space-2">
-      {model.filters.map(filter => <Button key={filter.id} size="xs" variant="soft" onClick={() => table.getColumn(filter.id)?.setFilterValue(undefined)}>{props.columns.find(c => c.key === filter.id)?.header}: {String(filter.value)} <Icon name="times" size={16} /></Button>)}
-      <Button size="xs" variant="outline" onClick={() => { table.resetColumnFilters(true); table.setGlobalFilter(""); }}>{l.clearFilters}</Button>
+      {model.filters.map(filter => <Button key={filter.id} size="xs" variant="secondary" onClick={() => table.getColumn(filter.id)?.setFilterValue(undefined)}>{props.columns.find(c => c.key === filter.id)?.header}: {String(filter.value)} <Icon name="times" size={16} /></Button>)}
+      <Button size="xs" variant="secondary" onClick={() => { table.resetColumnFilters(true); table.setGlobalFilter(""); }}>{l.clearFilters}</Button>
     </div>}
   </div>;
 }

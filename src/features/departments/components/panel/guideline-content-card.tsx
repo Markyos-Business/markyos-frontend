@@ -39,7 +39,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
             e.target.value = "";
           }}
         />
-        <Button variant="link" onClick={() => fileInputRef.current?.click()} className="text-[12px] font-semibold">
+        <Button variant="ghost" onClick={() => fileInputRef.current?.click()} className="text-[12px] font-semibold">
           {isAr ? "ارفع ملف الدليل" : "Upload guideline file"}
         </Button>
       </div>

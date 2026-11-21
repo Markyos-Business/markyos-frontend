@@ -21,7 +21,7 @@ export function PasswordSection({ account, password }: { account: Account; passw
           "لا تُرسل رسائل كلمة المرور في العرض التجريبي.",
         )}
         right={
-          <Button variant="outline" size="sm" onClick={password.sendLink} disabled={!API_ENABLED || password.busy || password.cooldown > 0}>
+          <Button variant="secondary" size="sm" onClick={password.sendLink} disabled={!API_ENABLED || password.busy || password.cooldown > 0}>
             {password.busy ? t("Sending…", "جارٍ الإرسال…") : password.cooldown > 0 ? t(
               `Resend in ${password.cooldown}s`, `إعادة الإرسال بعد ${password.cooldown}ث`,
             ) : password.sentTo ? t("Resend email", "إعادة إرسال البريد") : account.hasPassword === false ? t("Set password", "تعيين كلمة المرور") : t("Change password", "تغيير كلمة المرور")}

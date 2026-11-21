@@ -51,7 +51,7 @@ export function TemplatePicker({ isAr, onPick, onUpload, hasBoard }: TemplatePic
       </div>
       {!hasBoard && (
         <div>
-          <Button variant="outline" onClick={onUpload}>
+          <Button variant="secondary" onClick={onUpload}>
             {isAr ? "أو ارفع مراجع مباشرة" : "Or just upload references"}
           </Button>
         </div>

@@ -21,7 +21,7 @@ export function BrandAccessNotice({ workspace, isAr }: { workspace: Workspace; i
           action={
             <div className="flex flex-wrap justify-center gap-ctl-row">
               {reviewHref && <Button href={reviewHref} variant="primary">{isAr ? "مراجعة الدليل" : "Review guideline"}</Button>}
-              <Button href={`/w/${workspace.slug}/overview`} variant="outline">{isAr ? "العودة إلى نظرة عامة" : "Back to overview"}</Button>
+              <Button href={`/w/${workspace.slug}/overview`} variant="secondary">{isAr ? "العودة إلى نظرة عامة" : "Back to overview"}</Button>
             </div>
           }
         />

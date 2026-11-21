@@ -45,7 +45,7 @@ export default function ReminderCard({ heading, title, startsAt, location, cta, 
       )}
       {cta && (
         <div className="mt-4">
-          <Button href={cta.href} onClick={cta.onClick} icon={cta.icon} block variant={hi ? "solid" : "primary"}>{cta.label}</Button>
+          <Button href={cta.href} onClick={cta.onClick} icon={cta.icon} block variant="primary">{cta.label}</Button>
         </div>
       )}
     </DashboardCard>

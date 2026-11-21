@@ -398,7 +398,7 @@ function Footer({
             : isAr ? `اختر ${label}` : `Pick ${label}`
         }
         title={count > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-        variant={mine ? "ghost" : "link"}
+        variant={mine ? "secondary" : "ghost"}
         size="xs"
         className={mine ? "" : "text-text-faint"}
         icon={<Icon name="check" size={16} />}

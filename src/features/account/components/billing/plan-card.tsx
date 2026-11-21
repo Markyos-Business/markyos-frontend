@@ -28,7 +28,7 @@ export function PlanCard({ name, price, period, description, active, loading = f
       </div>
       <p className="flex-1 text-[12px] text-text-muted">{description}</p>
       {action ?? (
-      <Button variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={!enabled || active || loading} title={!enabled ? (isAr ? "المدفوعات غير متاحة في العرض التجريبي" : "Payments are unavailable in this demo") : undefined}>
+      <Button variant={active ? "secondary" : "primary"} size="sm" onClick={onSelect} disabled={!enabled || active || loading} title={!enabled ? (isAr ? "المدفوعات غير متاحة في العرض التجريبي" : "Payments are unavailable in this demo") : undefined}>
         {active ? (isAr ? "مفعّلة" : "Active") : loading ? (isAr ? "جارٍ التحويل…" : "Redirecting…") : isAr ? "اختر الخطة" : "Choose plan"}
       </Button>
       )}

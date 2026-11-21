@@ -65,7 +65,7 @@ const RepeaterField = ({
     <fieldset className="flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 shadow-edge">
       <div className="flex items-center justify-between gap-space-5">
         <legend className="text-body font-medium text-text">{label}</legend>
-        <Button variant="outline" size="sm" icon={<Icon name="plus" size={18} />} onClick={add}>
+        <Button variant="secondary" size="sm" icon={<Icon name="plus" size={18} />} onClick={add}>
           {addLabel}
         </Button>
       </div>

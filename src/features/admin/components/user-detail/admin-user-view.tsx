@@ -21,7 +21,7 @@ export function AdminUserView({ id }: { id: string }) {
   const page = useUserPage(id);
   const { user, actions } = page;
   const back = (
-    <Button variant="link" href="/admin/users" icon={<Icon name="arrow-left" size={16} />}>
+    <Button variant="ghost" href="/admin/users" icon={<Icon name="arrow-left" size={16} />}>
       {c.detail.back}
     </Button>
   );

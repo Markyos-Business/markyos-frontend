@@ -51,7 +51,7 @@ export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean
       <p className="-mt-1 text-body text-text-muted">{c.body}</p>
       <div className="mk-field-row flex flex-wrap items-center gap-ctl-row">
         <span dir="ltr" className="min-w-0 truncate font-mono text-caption text-text">{path}</span>
-        <Button variant="outline" size="sm" onClick={() => void copyLink()} className="shrink-0">
+        <Button variant="secondary" size="sm" onClick={() => void copyLink()} className="shrink-0">
           {c.copy}
         </Button>
       </div>

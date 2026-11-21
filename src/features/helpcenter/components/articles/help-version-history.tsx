@@ -37,14 +37,14 @@ export function HelpVersionHistory({ id, version, canWrite, onRestore }: Props) 
 
   return (
     <>
-      <Button variant="outline" icon={<Icon name="history" size={18} />} onClick={() => { setRows(null); setOpen(true); }}>
+      <Button variant="secondary" icon={<Icon name="history" size={18} />} onClick={() => { setRows(null); setOpen(true); }}>
         {t.open}
       </Button>
       <Popup open={open} onOpenChange={setOpen} title={t.title} description={t.description} size="md" dir={lang === "ar" ? "rtl" : "ltr"}>
         {failed ? (
           <div role="alert" className="flex items-center justify-between gap-ctl-row text-body text-danger">
             <span>{t.failed}</span>
-            <Button variant="outline" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</Button>
+            <Button variant="secondary" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</Button>
           </div>
         ) : !rows ? (
           <Skeleton className="h-24 w-full rounded-lg" />

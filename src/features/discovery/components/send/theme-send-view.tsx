@@ -100,11 +100,11 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
           </div>
         </>}
         actions={<>
-        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
+        <Button variant="secondary" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
         {form.status !== "draft" && (
-          <Button variant="outline" href={answersHref}>
+          <Button variant="secondary" href={answersHref}>
             {t("Answers", "الإجابات")}
           </Button>
         )}
@@ -231,11 +231,11 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                   />
                 </div>
                 <div className="flex flex-wrap gap-ctl-row">
-                  <Button variant="link" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
+                  <Button variant="ghost" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
                     {t("New link", "رابط جديد")}
                   </Button>
                   <Button
-                    variant="link"
+                    variant="ghost"
                     onClick={async () => {
                       const ok = await confirm({
                         title: t("Switch off this link?", "إيقاف هذا الرابط؟"),

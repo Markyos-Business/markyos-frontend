@@ -192,7 +192,7 @@ const Autosave = ({ onSave, debounceMs = 800, storageKey, savedAt }: AutosavePro
         {text}
       </span>
       {shown === "failed" && (
-        <Button type="button" variant="outline" size="xs" onClick={() => void saveRef.current()}>
+        <Button type="button" variant="secondary" size="xs" onClick={() => void saveRef.current()}>
           {meta.strings.retry ?? t.retry}
         </Button>
       )}

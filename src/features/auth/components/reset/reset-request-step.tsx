@@ -21,7 +21,7 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
       footer={
         <>
           {c.reset.remembered}
-          <Button variant="link" href="/login">
+          <Button variant="ghost" href="/login">
             {c.reset.backToLogin}
           </Button>
         </>

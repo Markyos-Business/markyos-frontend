@@ -77,7 +77,7 @@ export function CanvasToolbar(b: BuilderPageState) {
         </span>
         {!activePage && (
           <Button
-            variant="soft"
+            variant="secondary"
             size="xs"
             onClick={b.onAutoFill}
             // The kit's reason tooltip, not a `title`: a disabled button's

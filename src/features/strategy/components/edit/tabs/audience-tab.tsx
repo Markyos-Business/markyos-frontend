@@ -100,7 +100,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
               onChange={setPersonaDesc}
               placeholder={isAr ? "ماذا يحتاجون من هذا الدليل؟" : "What do they need from this guideline?"}
             />
-            <Button type="submit" variant="solid" size="sm" className="self-start">
+            <Button type="submit" variant="primary" size="sm" className="self-start">
               {isAr ? "إضافة شخصية" : "Add persona"}
             </Button>
           </form>

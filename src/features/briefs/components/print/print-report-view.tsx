@@ -35,7 +35,7 @@ export function PrintReportView({ id }: { id: string }) {
       sourceIndex={data.sourceIndex}
       onCitation={open}
       toolbar={
-        <Button variant="outline" size="sm" icon={<Icon name="file-export" size={16} />} onClick={() => window.print()}>
+        <Button variant="secondary" size="sm" icon={<Icon name="file-export" size={16} />} onClick={() => window.print()}>
           {t("Print / save as PDF", "طباعة / حفظ PDF")}
         </Button>
       }

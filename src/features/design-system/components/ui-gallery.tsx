@@ -63,12 +63,12 @@ const UiGallery = () => {
     <div dir={dir} className="min-h-screen bg-canvas text-text">
       <header className="sticky top-0 z-sticky flex flex-wrap items-center justify-between gap-3 bg-canvas px-5 py-3 shadow-rule-b">
         <h1 className="text-h3 font-medium">UI gallery</h1>
-        <Button href="/design-system/dashboard" size="sm" variant="outline">Dashboard widgets</Button>
-        <Button href="/design-system/filters" size="sm" variant="outline">Filters</Button>
-        <Button href="/design-system/popups" size="sm" variant="outline">Popups</Button>
+        <Button href="/design-system/dashboard" size="sm" variant="secondary">Dashboard widgets</Button>
+        <Button href="/design-system/filters" size="sm" variant="secondary">Filters</Button>
+        <Button href="/design-system/popups" size="sm" variant="secondary">Popups</Button>
         <div className="flex flex-wrap items-center gap-3">
-          <Button href="/design-system/table-select" size="sm" variant="outline">Tables & selects</Button>
-          <Button size="sm" variant="outline" onClick={() => setDir((d) => (d === "ltr" ? "rtl" : "ltr"))} data-gallery-dir>
+          <Button href="/design-system/table-select" size="sm" variant="secondary">Tables & selects</Button>
+          <Button size="sm" variant="secondary" onClick={() => setDir((d) => (d === "ltr" ? "rtl" : "ltr"))} data-gallery-dir>
             {dir === "ltr" ? "Switch to RTL" : "Switch to LTR"}
           </Button>
           <ThemeToggle />
@@ -82,7 +82,7 @@ const UiGallery = () => {
             <Button variant="primary" icon={<Icon name="plus" size={18} />}>
               Save
             </Button>
-            <Button variant="outline">Add task</Button>
+            <Button variant="secondary">Add task</Button>
             <Button variant="ghost">Mark all reviewed</Button>
             <Button variant="danger">Delete brand</Button>
             <Button variant="primary" disabled>
@@ -92,9 +92,9 @@ const UiGallery = () => {
               Compact
             </Button>
             <IconButton variant="primary" icon="arrow-right" label="Next asset" iconSize={18} />
-            <IconButton variant="outline" icon="plus" label="Add asset" />
+            <IconButton variant="secondary" icon="plus" label="Add asset" />
             <IconButton icon="times" label="Close" />
-            <Button variant="link">View all</Button>
+            <Button variant="ghost">View all</Button>
           </div>
         </Section>
 
@@ -128,7 +128,7 @@ const UiGallery = () => {
         <Section title="Buttons, tooltip, chips, dates">
           <div className="flex flex-wrap items-center gap-3">
             <Tooltip content="Opens on the reading-end side." side="end">
-              <Button variant="outline">Tooltip end</Button>
+              <Button variant="secondary">Tooltip end</Button>
             </Tooltip>
             <Tooltip content="Above the trigger.">
               <Button>Tooltip top</Button>

@@ -40,7 +40,7 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "الأهداف" : "Objectives"}
       icon="bullseye"
       right={
-        <Button variant="link" onClick={() => setAdding((v) => !v)}>
+        <Button variant="ghost" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
         </Button>
       }
@@ -61,7 +61,7 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
               options={priorityOptions}
             />
           </div>
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة هدف" : "Add objective"}
           </Button>
         </form>

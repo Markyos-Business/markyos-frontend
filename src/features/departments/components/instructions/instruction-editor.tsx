@@ -55,10 +55,10 @@ export function InstructionEditor({
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-ctl-row">
-          <Button variant="soft" size="sm" onClick={onImport} icon={<Icon name="upload" size={16} />}>
+          <Button variant="secondary" size="sm" onClick={onImport} icon={<Icon name="upload" size={16} />}>
             {isAr ? "بناء من ملف" : "Build from file"}
           </Button>
-          <Button variant="soft" size="sm" onClick={() => write([...sections, { id: uid(), heading: "", body: "" }])} icon={<Icon name="plus" size={16} />}>
+          <Button variant="secondary" size="sm" onClick={() => write([...sections, { id: uid(), heading: "", body: "" }])} icon={<Icon name="plus" size={16} />}>
             {isAr ? "قسم" : "Section"}
           </Button>
         </div>

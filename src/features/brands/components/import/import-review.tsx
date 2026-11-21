@@ -119,7 +119,7 @@ export function ImportReview({
       </ImportGroup>
 
       <div className="mt-1 flex gap-ctl-row">
-        <Button variant="outline" onClick={onReset}>
+        <Button variant="secondary" onClick={onReset}>
           {t("Start over", "البدء من جديد")}
         </Button>
         <Button variant="primary" onClick={onConfirm}>

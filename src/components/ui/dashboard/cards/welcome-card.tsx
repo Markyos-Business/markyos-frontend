@@ -33,7 +33,7 @@ export interface WelcomeCardProps {
 /** Outlined shortcuts; one marked `primary` is filled. */
 function Shortcuts({ actions }: { actions: WelcomeAction[] }) {
   return actions.slice(0, 3).map((a) => (
-    <Button key={a.label} href={a.href} onClick={a.onClick} icon={a.icon} size="sm" variant={a.primary ? "primary" : "outline"}>
+    <Button key={a.label} href={a.href} onClick={a.onClick} icon={a.icon} size="sm" variant={a.primary ? "primary" : "secondary"}>
       {a.label}
     </Button>
   ));

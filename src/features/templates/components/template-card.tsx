@@ -25,7 +25,7 @@ export function TemplateCard({ template: t, onApply }: { template: Template; onA
         </div>
         {/* Named for the template it starts: four buttons all reading "Use
             this template" are four identical choices to a screen reader. */}
-        <Button variant="solid" size="sm" block onClick={() => onApply(t)} aria-label={isAr ? `استخدم قالب ${name}` : `Use the ${name} template`} className="mt-1">
+        <Button variant="primary" size="sm" block onClick={() => onApply(t)} aria-label={isAr ? `استخدم قالب ${name}` : `Use the ${name} template`} className="mt-1">
           {isAr ? "استخدم هذا القالب" : "Use this template"}
         </Button>
       </div>

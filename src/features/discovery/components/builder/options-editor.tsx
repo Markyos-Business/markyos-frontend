@@ -43,7 +43,7 @@ export function OptionsEditor({ options, onChange, mode, languages, locked, isAr
       ))}
       <div>
         <Button
-          variant="link"
+          variant="ghost"
           disabled={locked}
           onClick={() => onChange([...options, { value: newOptionValue(options), label: { en: null, ar: null } }])}
         >

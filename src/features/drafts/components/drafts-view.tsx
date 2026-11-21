@@ -47,7 +47,7 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
             icon="inbox"
             title={t("Nothing to review.", "لا شيء للمراجعة.")}
             description={t("Send a discovery questionnaire, or import a document, and what it proposes lands here.", "أرسل استبيان استكشاف أو استورد مستندًا، وسيصل ما يقترحه إلى هنا.")}
-            action={<Button variant="outline" href={discoveryHref}>{t("Open Discovery", "فتح الاكتشاف")}</Button>}
+            action={<Button variant="secondary" href={discoveryHref}>{t("Open Discovery", "فتح الاكتشاف")}</Button>}
           />
         ) : (
           <EmptyState

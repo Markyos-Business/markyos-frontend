@@ -57,9 +57,9 @@ export function DataTable<T>(props: DataTableProps<T>) {
     {model.count > 0 && props.selectable && <div role="region" aria-label={l.selected(model.count)} aria-busy={!!bulk} className="flex flex-wrap items-center gap-space-3 bg-accent-soft p-space-4">
       <span className="text-body font-medium">{l.selected(model.count)}</span>
       <fieldset disabled={!!bulk} className="flex min-w-0 flex-wrap items-center gap-space-3">
-        {!model.scope.allMatching && model.count < model.selectableTotal && <Button size="xs" variant="outline" onClick={model.selectMatching}>{l.selectAllMatching(model.selectableTotal)}</Button>}
+        {!model.scope.allMatching && model.count < model.selectableTotal && <Button size="xs" variant="secondary" onClick={model.selectMatching}>{l.selectAllMatching(model.selectableTotal)}</Button>}
         {Array.isArray(props.bulkActions) ? props.bulkActions.map(action => <Button key={action.label} size="xs" onClick={() => runBulk(action)}>{action.label}</Button>) : props.bulkActions?.(model.ids, model.resetSelection, model.bulkContext)}
-        <Button size="xs" variant="outline" onClick={model.resetSelection}>{l.clearSelection}</Button>
+        <Button size="xs" variant="secondary" onClick={model.resetSelection}>{l.clearSelection}</Button>
       </fieldset>
       {bulk && <span role="status" className="text-body">{bulk}</span>}{bulkFailed && <span role="alert" className="text-body text-danger">{l.failed}</span>}
     </div>}
@@ -91,7 +91,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
             {pending && <tr><td colSpan={colSpan} className="p-space-4"><span role="status" className="inline-flex items-center gap-space-3 text-body"><Icon name="circle-notch" size={18} className="animate-spin motion-reduce:animate-none" />{l.loadingMore}</span></td></tr>}
           </>}</tbody>
         </table>}
-        {props.infinite && !denied && !error && <div ref={sentinel} className="flex justify-center p-space-4"><Button variant="outline" disabled={pending || !more} onClick={load}>{pending ? l.loadingMore : l.loadMore}</Button></div>}
+        {props.infinite && !denied && !error && <div ref={sentinel} className="flex justify-center p-space-4"><Button variant="secondary" disabled={pending || !more} onClick={load}>{pending ? l.loadingMore : l.loadMore}</Button></div>}
       </div>
     </div>
     {model.paginated && !error && !denied && !loading && model.total > 0 && (props.paging || model.total > (props.pageSizes?.[0] ?? 20)) && <div className="min-w-0">

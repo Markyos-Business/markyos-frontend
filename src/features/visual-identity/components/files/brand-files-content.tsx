@@ -434,7 +434,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
         <div className="flex items-center gap-ctl-row flex-wrap">
           <EmptyHint>{isAr ? "لا ملف يطابق هذه المرشحات." : "No file matches these filters."}</EmptyHint>
           <Button
-            variant="soft"
+            variant="secondary"
             size="sm"
             onClick={() => {
               setQuery("");
@@ -859,7 +859,7 @@ function AssetDetailModal({
         )}
       </div>
 
-      <Button variant="danger-soft" size="md" block onClick={onDelete} className="mt-1">
+      <Button variant="danger" size="md" block onClick={onDelete} className="mt-1">
         {isAr ? "حذف الملف" : "Delete asset"}
       </Button>
     </Modal>

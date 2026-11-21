@@ -111,7 +111,7 @@ export function SectionCard({ analysisId, section, canEdit, isAr, onChange, acti
           )}
           {actions}
           {canEdit && section.status !== "pending" && (
-            <Button variant="outline" size="sm" onClick={() => void regenerate()} disabled={section.status === "regenerating"} icon={<Icon name="history" size={16} />}>
+            <Button variant="secondary" size="sm" onClick={() => void regenerate()} disabled={section.status === "regenerating"} icon={<Icon name="history" size={16} />}>
               {t("Regenerate", "إعادة التوليد")}
             </Button>
           )}

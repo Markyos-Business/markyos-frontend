@@ -57,7 +57,7 @@ export function SessionsTab({ user, sessions, actions }: SessionsTabProps) {
       flush
       controls={
         sessions.data?.length ? (
-          <Button variant="danger-soft" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={() => actions.signOutEverywhere(user)}>
+          <Button variant="danger" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={() => actions.signOutEverywhere(user)}>
             {c.actions.signOutAll}
           </Button>
         ) : undefined

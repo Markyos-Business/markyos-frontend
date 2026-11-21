@@ -15,7 +15,7 @@ export function BuilderTooSmall({ ws, isAr, previewHref }: { ws: Workspace; isAr
         action={
           <div className="flex flex-wrap justify-center gap-ctl-row">
             <Button variant="primary" size="md" href={`${previewHref}?preview=1`}>{c.view}</Button>
-            <Button variant="outline" size="md" href={`/w/${ws.slug}/overview`}>{c.back}</Button>
+            <Button variant="secondary" size="md" href={`/w/${ws.slug}/overview`}>{c.back}</Button>
           </div>
         }
       />

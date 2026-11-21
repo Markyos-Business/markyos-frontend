@@ -87,12 +87,12 @@ export function ApprovalSection({ ws, canGovern, canPropose, isAr }: Props) {
 
   return (
     <Section title={isAr ? "طلبات الاعتماد" : "Approval queue"} icon="check-circle"
-      right={API_ENABLED ? <Button variant="link" size="sm" disabled={loading || busy !== null} onClick={() => { setLoading(true); setReads((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الطلبات" : "Refresh approvals")}</Button> : undefined}>
+      right={API_ENABLED ? <Button variant="ghost" size="sm" disabled={loading || busy !== null} onClick={() => { setLoading(true); setReads((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الطلبات" : "Refresh approvals")}</Button> : undefined}>
       {canPropose ? <form onSubmit={(event) => void propose(event)} className="flex items-end gap-ctl-row" aria-busy={busy === "proposal"}>
         <InputField size="sm" dir="auto" value={text} onChange={(event) => setText(event.target.value)} required maxLength={2000} disabled={loading || busy !== null}
           aria-label={isAr ? "صف التغيير الذي تقترحه" : "Describe the change you're proposing"}
           placeholder={isAr ? "اقترح تغييرًا — مثل إضافة لون ثانوي جديد" : "Propose a change — e.g. add a new secondary colour"} className="flex-1" />
-        <Button type="submit" variant="soft" size="sm" disabled={loading || busy !== null} className="shrink-0 shadow-edge">{busy === "proposal" ? (isAr ? "جارٍ الإرسال…" : "Sending…") : (isAr ? "اقتراح" : "Propose")}</Button>
+        <Button type="submit" variant="secondary" size="sm" disabled={loading || busy !== null} className="shrink-0 shadow-edge">{busy === "proposal" ? (isAr ? "جارٍ الإرسال…" : "Sending…") : (isAr ? "اقتراح" : "Propose")}</Button>
       </form> : <p className="text-[13px] text-text-muted">{isAr ? "يمكنك الاطلاع على المقترحات. يمكن للمالك والمحررين اقتراح تغييرات." : "You can view proposals. Owners and editors can propose changes."}</p>}
       {error && <p role="alert" className="text-[13px] text-danger">{error}</p>}
       {ws.approvals.length === 0 ? <EmptyHint>{loading ? (isAr ? "جارٍ تحميل المقترحات…" : "Loading proposals…") : (isAr ? "لا توجد مقترحات بعد. يقترح المحررون التغييرات ويعتمدها المالك أو يرفضها." : "No proposals yet. Editors propose changes here; owners approve or reject them.")}</EmptyHint> : <div className="flex flex-col gap-field-stack-compact">{ws.approvals.map((approval) => (

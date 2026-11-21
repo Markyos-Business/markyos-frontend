@@ -221,7 +221,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
 
       {error && (
         <div>
-          <Button variant="outline" size="sm" onClick={reload}>
+          <Button variant="secondary" size="sm" onClick={reload}>
             {isAr ? "حاول مجددًا" : "Try again"}
           </Button>
         </div>

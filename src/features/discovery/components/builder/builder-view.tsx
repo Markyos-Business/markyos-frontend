@@ -236,7 +236,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
               })}
             </div>
             <Button
-              variant="link"
+              variant="ghost"
               disabled={!canAdd}
               onClick={() =>
                 run(async () => {

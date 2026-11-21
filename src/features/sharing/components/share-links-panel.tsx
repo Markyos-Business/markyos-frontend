@@ -90,7 +90,7 @@ export function ShareLinksPanel({
                 : "A read-only link to the full strategy — no editor, no rest of the app."}
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={handleCreate}>
+        <Button variant="secondary" size="sm" onClick={handleCreate}>
           {isAr ? "إنشاء رابط" : "Create link"}
         </Button>
       </div>
@@ -138,7 +138,7 @@ export function ShareLinksPanel({
                     </span>
                     {!revoked && (
                       <CopyButton
-                        variant="link"
+                        variant="ghost"
                         text={urlFor(l.id)}
                         label={isAr ? "نسخ" : "Copy"}
                         copiedLabel={isAr ? "تم النسخ" : "Copied"}

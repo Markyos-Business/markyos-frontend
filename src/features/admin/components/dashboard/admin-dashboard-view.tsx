@@ -32,7 +32,7 @@ export function AdminDashboardView() {
         subtitle={t("Account growth, brand activity and follow-up in one place.", "نمو الحسابات ونشاط العلامات والمتابعة في مكان واحد.")}
         primaryAction={<Button href="/admin/users" variant="primary">{t("Manage users", "إدارة المستخدمين")}</Button>}
         secondaryActions={
-          <Button variant="outline" size="sm" icon={<Icon name="sync" size={18} />} onClick={refresh} disabled={(loading || activity.loading) && !refreshing} loading={refreshing} loadingText={t("Refreshing…", "جارٍ التحديث…")}>
+          <Button variant="secondary" size="sm" icon={<Icon name="sync" size={18} />} onClick={refresh} disabled={(loading || activity.loading) && !refreshing} loading={refreshing} loadingText={t("Refreshing…", "جارٍ التحديث…")}>
             {t("Refresh", "تحديث")}
           </Button>
         }

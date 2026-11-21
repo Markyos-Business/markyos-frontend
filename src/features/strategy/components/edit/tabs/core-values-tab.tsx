@@ -61,7 +61,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setDescription}
             placeholder={isAr ? "ماذا تعني هذه القيمة عمليًا؟" : "What does this actually mean in practice?"}
           />
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة قيمة" : "Add value"}
           </Button>
         </form>

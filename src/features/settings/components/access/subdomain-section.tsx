@@ -70,7 +70,7 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
             error={value && !unchanged ? (error ?? undefined) : undefined}
           />
           <Button
-            variant="solid"
+            variant="primary"
             onClick={commit}
             disabled={unchanged || (!!value && !!error)}
             // The field's own error covers the invalid case on screen, but not

@@ -72,7 +72,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setTraitDont}
             placeholder={isAr ? "لا تفعل: ما يجب تجنبه" : "Don't: what to avoid"}
           />
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة سمة" : "Add trait"}
           </Button>
         </form>

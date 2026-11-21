@@ -17,7 +17,7 @@ export function StrategyReadView({ ws, isAr, lang }: { ws: Workspace; isAr: bool
         <StrategyContents ws={ws} isAr={isAr} />
         <div className="mt-auto flex flex-col gap-3">
           <StrategyProgress ws={ws} isAr={isAr} />
-          <Button variant="soft" size="xs" block onClick={() => window.print()} icon={<Icon name="file-alt" size={16} />}>
+          <Button variant="secondary" size="xs" block onClick={() => window.print()} icon={<Icon name="file-alt" size={16} />}>
             {isAr ? "طباعة / PDF" : "Print / PDF"}
           </Button>
         </div>

@@ -73,7 +73,7 @@ function Field({ name, value, path, isAr, set }: FieldProps) {
         {(value.length > 0 || !objects) && (
           <Button
             type="button"
-            variant="link"
+            variant="ghost"
             className="self-start"
             icon={<Icon name="plus" size={16} />}
             onClick={() => set(path, [...value, value.length ? blankLike(value[0]) : ""])}
@@ -123,7 +123,7 @@ export function SectionEditor({ editor, isAr }: { editor: SectionEditorState; is
         <Button type="submit" variant="primary" size="sm" disabled={editor.saving}>
           {editor.saving ? t("Saving…", "جارٍ الحفظ…") : t("Save section", "حفظ القسم")}
         </Button>
-        <Button type="button" variant="outline" size="sm" onClick={editor.cancel} disabled={editor.saving}>
+        <Button type="button" variant="secondary" size="sm" onClick={editor.cancel} disabled={editor.saving}>
           {t("Cancel", "إلغاء")}
         </Button>
       </div>

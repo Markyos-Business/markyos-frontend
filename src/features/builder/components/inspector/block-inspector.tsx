@@ -209,7 +209,7 @@ export function BlockInspector({
               </div>
             ))}
           </div>
-          <Button variant="link" onClick={() => onChange({ socialLinks: [...links, { id: uid(), platform: "", url: "" }] })} className="self-start text-[12px] font-semibold">
+          <Button variant="ghost" onClick={() => onChange({ socialLinks: [...links, { id: uid(), platform: "", url: "" }] })} className="self-start text-[12px] font-semibold">
             {isAr ? "+ إضافة رابط" : "+ Add link"}
           </Button>
         </>

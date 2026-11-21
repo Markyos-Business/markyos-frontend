@@ -16,7 +16,7 @@ export function itemActionFor(strategy: AddToStrategy, section: Section): ItemAc
     if (strategy.isAdded(field, item)) return <Tag tone="success">{t("Added", "أُضيف")}</Tag>;
     if (!strategy.isNoteField(field)) {
       return (
-        <Button variant="link" icon={<Icon name="plus" size={16} />} onClick={() => strategy.add(section, field, item)}>
+        <Button variant="ghost" icon={<Icon name="plus" size={16} />} onClick={() => strategy.add(section, field, item)}>
           {t("Add to Strategy", "إضافة إلى الاستراتيجية")}
         </Button>
       );
@@ -53,7 +53,7 @@ export function AddAllButton({ strategy, section }: { strategy: AddToStrategy; s
   const pending = strategy.pending(section).length;
   if (pending === 0) return null;
   return (
-    <Button variant="outline" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => strategy.addAll(section)}>
+    <Button variant="secondary" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => strategy.addAll(section)}>
       {t(`Add all to Strategy (${pending})`, `إضافة الكل إلى الاستراتيجية (${pending})`)}
     </Button>
   );

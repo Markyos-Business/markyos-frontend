@@ -71,7 +71,7 @@ export default function WidgetStateView({ state, skeleton = "lines", emptyMessag
           {errorMessage ?? t("This couldn't load.", "تعذر التحميل.")}
         </p>
         {onRetry && (
-          <Button onClick={onRetry} size="sm" variant="outline">
+          <Button onClick={onRetry} size="sm" variant="secondary">
             <RotateCw className="h-4 w-4" aria-hidden="true" />
             {t("Try again", "إعادة المحاولة")}
           </Button>

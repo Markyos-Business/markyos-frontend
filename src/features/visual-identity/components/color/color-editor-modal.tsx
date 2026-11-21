@@ -91,7 +91,7 @@ export function ColorEditorModal({
           <div className="flex flex-wrap items-center gap-ctl-row">
             <Button
               type="button"
-              variant={isPrimary ? "ghost" : "outline"}
+              variant={isPrimary ? "primary" : "secondary"}
               size="sm"
               icon={<Icon name={isPrimary ? "check-circle" : "palette"} size={18} />}
               onClick={onSetPrimary}
@@ -100,7 +100,7 @@ export function ColorEditorModal({
               {isPrimary ? (isAr ? "هذا هو اللون الأساسي" : "This is the primary colour") : isAr ? "اجعله أساسيًا" : "Set as primary"}
             </Button>
             {onDelete && (
-              <Button type="button" variant="danger-soft" size="sm" icon={<Icon name="trash" size={18} />} onClick={onDelete} className="ms-auto">
+              <Button type="button" variant="danger" size="sm" icon={<Icon name="trash" size={18} />} onClick={onDelete} className="ms-auto">
                 {isAr ? "احذف" : "Delete"}
               </Button>
             )}

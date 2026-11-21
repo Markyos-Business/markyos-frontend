@@ -293,7 +293,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
         placeholder="https://…/photo.jpg"
         className="mk-field mk-field-sm"
       />
-      <Button variant="soft" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
+      <Button variant="secondary" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
         {busy ? (isAr ? "جارٍ الجلب…" : "Fetching…") : isAr ? "إضافة الصورة" : "Add image"}
       </Button>
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
@@ -406,7 +406,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
             className="mk-field mk-field-sm"
           />
           <Button
-            variant="soft"
+            variant="secondary"
             size="sm"
             block
             disabled={!keyDraft.trim()}

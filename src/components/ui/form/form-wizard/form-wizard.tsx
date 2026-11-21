@@ -245,7 +245,7 @@ const FormWizard = ({ steps, linear = true, submitLabel, storageKey, label, labe
         </p>
         <div className="flex flex-wrap items-center gap-space-3">
           {index > 0 && (
-            <Button type="button" variant="outline" icon={<Icon name="angle-left" size={18} />} onClick={() => show(steps[index - 1].id)}>
+            <Button type="button" variant="secondary" icon={<Icon name="angle-left" size={18} />} onClick={() => show(steps[index - 1].id)}>
               {s.back}
             </Button>
           )}

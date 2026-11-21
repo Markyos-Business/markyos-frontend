@@ -17,7 +17,7 @@ export function RelevantLinksCard({ ws, view, isAr }: RelevantLinksCardProps) {
     <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
       <div className="flex items-center justify-between">
         <span className="text-[15px] font-semibold">{isAr ? "روابط ذات صلة" : "Relevant links"}</span>
-        <Button variant="link" onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
+        <Button variant="ghost" onClick={() => setAdding((v) => !v)} className="text-[12px] font-semibold">
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
         </Button>
       </div>

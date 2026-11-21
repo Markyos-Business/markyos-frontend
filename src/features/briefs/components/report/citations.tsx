@@ -129,7 +129,7 @@ function CallSource({ source, citation, slug, isAr }: { source: Extract<SourceRe
           );
         })}
       </ol>
-      <Button variant="link" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
+      <Button variant="ghost" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
         <Icon name="phone" size={16} />
         {isAr ? "فتح المكالمة" : "Open the call"}
       </Button>
@@ -159,7 +159,7 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
           {question.answer ? answerText(question.answer.value) : isAr ? "لا إجابة" : "Not answered"}
         </p>
       </div>
-      <Button variant="link" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
+      <Button variant="ghost" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
         <Icon name="clipboard-list" size={16} />
         {isAr ? "فتح الإجابات" : "Open the answers"}
       </Button>

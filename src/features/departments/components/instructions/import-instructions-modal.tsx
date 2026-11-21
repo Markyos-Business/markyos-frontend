@@ -207,7 +207,7 @@ export function ImportInstructionsModal({
                 : `${rows.length} section${rows.length === 1 ? "" : "s"} found in ${fileName}`}
             </span>
             <div className="flex items-center gap-ctl-row">
-              <Button variant="outline" size="md" onClick={onClose}>
+              <Button variant="secondary" size="md" onClick={onClose}>
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button variant="primary" size="md" onClick={apply} disabled={selected.length === 0}>

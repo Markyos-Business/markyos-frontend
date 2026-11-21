@@ -239,7 +239,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                   </div>
                 </div>
               )}
-              <Button variant="outline" size="sm" onClick={() => setStep("pick")} className="self-start">
+              <Button variant="secondary" size="sm" onClick={() => setStep("pick")} className="self-start">
                 {isAr ? "جرّب ملفًا آخر" : "Try another file"}
               </Button>
             </div>
@@ -380,7 +380,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
 
       {step === "review" && !nothingDetected && (
         <div className="flex shrink-0 items-center justify-end gap-ctl-row pt-1">
-          <Button variant="outline" size="md" onClick={onClose}>
+          <Button variant="secondary" size="md" onClick={onClose}>
             {isAr ? "إلغاء" : "Cancel"}
           </Button>
           <Button variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>

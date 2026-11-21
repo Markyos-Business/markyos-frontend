@@ -117,7 +117,7 @@ export function Zone({
         <span className="ms-auto flex items-center gap-ctl-row">
           {action && (
             <Button
-              variant="ghost"
+              variant="secondary"
               size="xs"
               onClick={action.run}
               disabled={action.busy || items.length === 0}

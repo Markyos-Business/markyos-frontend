@@ -231,7 +231,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
           )}
 
           <div className="flex items-center justify-end gap-ctl-row pt-1">
-            <Button variant="outline" size="md" onClick={onClose}>
+            <Button variant="secondary" size="md" onClick={onClose}>
               {isAr ? "إلغاء" : "Cancel"}
             </Button>
             <Button variant="primary" size="md" onClick={commit} disabled={chosen.length === 0}>

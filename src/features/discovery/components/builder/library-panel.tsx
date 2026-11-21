@@ -82,7 +82,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
                   </div>
                   <Button
                     size="sm"
-                    variant={isAdded ? "outline" : "ghost"}
+                    variant="secondary"
                     disabled={disabled || isAdded}
                     onClick={() => onAdd(q.id)}
                     icon={<Icon name={isAdded ? "check" : "plus"} size={16} />}

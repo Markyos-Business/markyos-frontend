@@ -88,7 +88,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
               onCopied={markSynced}
               failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             />
-            <Button variant="outline" size="sm" onClick={downloadTokens}>
+            <Button variant="secondary" size="sm" onClick={downloadTokens}>
               {t("Download", "تنزيل")}
             </Button>
           </div>
@@ -109,7 +109,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
         label={t("Import tokens", "استيراد الرموز")}
         hint={t("Adds colours it doesn't have and updates ones whose hex changed. Nothing is deleted.", "يضيف الألوان غير الموجودة ويحدّث التي تغيّر كودها. لا يُحذف شيء.")}
         right={
-          <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={syncing}>
+          <Button variant="secondary" size="sm" onClick={() => inputRef.current?.click()} disabled={syncing}>
             {syncing ? t("Reading…", "جارٍ القراءة…") : t("Choose file", "اختر ملفًا")}
           </Button>
         }

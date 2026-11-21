@@ -129,7 +129,7 @@ export function AssetTypeGrid({
           icon="image"
           title={isAr ? `لا ملفات في «${arTitle}» بعد.` : `No ${title.toLowerCase()} yet.`}
           description={isAr ? "ارفع صورة لتظهر هنا وفي الدليل." : "Upload an image and it shows here and in the guideline."}
-          action={<Button variant="outline" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>{isAr ? "رفع ملف" : "Upload"}</Button>}
+          action={<Button variant="secondary" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>{isAr ? "رفع ملف" : "Upload"}</Button>}
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
