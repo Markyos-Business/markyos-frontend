@@ -11,10 +11,10 @@ export function SignupsChart({ signups, lang }: { signups: AdminStats["signups"]
   const t = (en: string, ar: string) => lang === "ar" ? ar : en;
   const selected = period === "week" ? signups.slice(-7) : signups;
   const total = selected.reduce((sum, day) => sum + day.count, 0);
-  const date = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(lang === "ar" ? "ar-u-nu-latn" : "en", { month: "short", day: "numeric" });
-  const data = period === "week" ? selected.map(day => ({ label: new Date(`${day.date}T00:00:00`).toLocaleDateString(lang === "ar" ? "ar-u-nu-latn" : "en", { weekday: "short" }), value: day.count })) : Array.from({ length: Math.ceil(selected.length / 7) }, (_, i) => {
+  const date = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(lang === "ar" ? "ar-u-nu-latn" : "en-GB", { month: "short", day: "numeric" });
+  const data = period === "week" ? selected.map(day => ({ label: new Date(`${day.date}T00:00:00`).toLocaleDateString(lang === "ar" ? "ar-u-nu-latn" : "en-GB", { weekday: "short" }), value: day.count })) : Array.from({ length: Math.ceil(selected.length / 7) }, (_, i) => {
     const days = selected.slice(i * 7, i * 7 + 7);
-    return { label: `${date(days[0].date)}–${date(days[days.length - 1].date)}`, value: days.reduce((sum, day) => sum + day.count, 0) };
+    return { label: `${date(days[0].date)} – ${date(days[days.length - 1].date)}`, value: days.reduce((sum, day) => sum + day.count, 0) };
   });
   return <BarChartCard
     title={t("Signups", "التسجيلات")}
