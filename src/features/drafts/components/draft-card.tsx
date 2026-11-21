@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, Icon } from "@/components/ui";
+import { ActionsDropdown, Badge, Icon } from "@/components/ui";
 import type { Draft } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import { SOURCE_META, STATUS_LABEL, STATUS_TONE } from "../constants";
@@ -28,7 +28,21 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
           <span className="text-[13px] font-semibold">{targetLabel(d, isAr)}</span>
           {d.status !== "pending" && <Badge tone={STATUS_TONE[d.status]}>{status}</Badge>}
         </div>
-        <span className="shrink-0 text-[11px] text-text-faint">{formatRelative(d.createdAt)}</span>
+        <div className="flex shrink-0 items-center gap-ctl-row">
+          <span className="text-[11px] text-text-faint">{formatRelative(d.createdAt)}</span>
+          {/* Accept and Reject in the ⋯ menu at the card's end, like every list's rows. */}
+          {d.status === "pending" && (
+            <ActionsDropdown
+              iconOnly
+              size="sm"
+              label={t(`${targetLabel(d, isAr)} draft actions`, `إجراءات مسودة ${targetLabel(d, isAr)}`)}
+              items={[
+                { label: t("Accept", "قبول"), icon: "check", tone: "success", onSelect: () => void onAccept(d) },
+                { label: t("Reject", "رفض"), icon: "times", tone: "danger", onSelect: () => onReject(d) },
+              ]}
+            />
+          )}
+        </div>
       </div>
 
       {/* The proposal, in the reviewer's hands verbatim. A draft
@@ -53,16 +67,6 @@ export function DraftCard({ draft: d, isAr, onAccept, onReject }: DraftCardProps
         )}
       </div>
 
-      {d.status === "pending" && (
-        <div className="flex items-center gap-ctl-row pt-1">
-          <Button size="sm" variant="primary" onClick={() => void onAccept(d)}>
-            {t("Accept", "قبول")}
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => onReject(d)}>
-            {t("Reject", "رفض")}
-          </Button>
-        </div>
-      )}
     </article>
   );
 }

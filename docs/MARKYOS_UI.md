@@ -517,6 +517,8 @@ Charts **emit light**: glowing lines (`filter: var(--glow-line)`), bars that fad
 
 Chart series order is primary `#0099FF`, then green `#00DE68`, yellow `#FFBB00`, red `#FF0066`, cyan `#00CCFF` and indigo `#8A58FF`.
 
+**Row actions (decided 2026-11-21).** Tables and lists of records have no buttons, icon buttons or action links in their rows or cells. Each row's actions sit in one icon-only ⋯ menu (`ActionsDropdown iconOnly`, or `DataTable rowActions`) at the row's end: the right in English, the left in Arabic. Its accessible name is "<item> actions" / «إجراءات <item>». The menu takes arrow keys, Home/End, Enter and Escape, and focus returns to the ⋯. Clicking the row (or its title, which stretches over the row) opens the item; a row with no detail page isn't clickable. Bulk actions appear only after rows are selected, in a bar above the table. Delete, Remove, Revoke, Reject and Sign out always ask first. A row with nothing to do shows no ⋯. Links that only open the item, such as its name, stay links. Card grids (assets, brands, moodboards, board cards, templates) are not rows and keep their own controls.
+
 ### 6.16 Modules
 - **CalendarMonth:** a Gregorian month grid with tinted event chips. `locale="ar"` gives RTL with Arabic-Indic digits. Props: `year`, `month (0–11)`, `events`, `selected`, `weekStart: 0|1|6`, `locale`, `maxPerDay`
 - **KanbanColumn:** an accent-topped header, task cards (tag, title, progress, due date, comments, up to 3 assignee initials) and a dashed add button. Lay columns out with `gap: 20px`.

@@ -70,7 +70,16 @@ export function useDraftsPage(slug: string) {
     showToast(page!.isAr ? `قُبلت في ${targetLabel(d, true)}.` : `Accepted into ${targetLabel(d)}.`, "success");
   }
 
-  function reject(d: Draft) {
+  // Rejecting is destructive (the draft leaves the queue), so it asks first like every Reject.
+  async function reject(d: Draft) {
+    const ok = await confirm({
+      title: page!.isAr ? "رفض هذه المسودة؟" : "Reject this draft?",
+      body: page!.isAr ? "تخرج من قائمة المراجعة، وتُحفظ مع مبرراتها في المرفوضة." : "It leaves the review queue and is kept, with its reasoning, under Rejected.",
+      confirmLabel: page!.isAr ? "رفض" : "Reject",
+      tone: "danger",
+      isAr: page!.isAr,
+    });
+    if (!ok) return;
     rejectDraft(ws!.id, d.id);
     showToast(page!.isAr ? "رُفضت، وحُفظت مع مبرراتها." : "Rejected — kept with its reasoning.");
   }

@@ -21,6 +21,8 @@ const en = {
   selectRow: "Select row",
   rowActions: "Row actions",
   actionsFor: (name: string) => `${name} actions`,
+  /** The ⋯ menu's name when it isn't tied to one named row. */
+  actions: "Actions",
   upload: "Upload",
   fileLimit: (kind: string, limit: string) => `${kind} – max ${limit}`,
   wrongFileType: (name: string, kind: string) => `"${name}" isn't a ${kind} file.`,
@@ -303,6 +305,7 @@ const ar: UiStrings = {
   selectRow: "تحديد الصف",
   rowActions: "إجراءات الصف",
   actionsFor: (name: string) => `إجراءات ${name}`,
+  actions: "إجراءات",
   upload: "رفع",
   fileLimit: (kind, limit) => `${kind}، بحد أقصى ${limit}`,
   wrongFileType: (name, kind) => `«${name}» ليس ملف ${kind}.`,

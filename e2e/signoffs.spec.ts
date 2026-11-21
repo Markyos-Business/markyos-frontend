@@ -40,7 +40,8 @@ test.describe("client sign-off", () => {
       await signIn(owner, studio);
       await owner.goto(`/w/${brand.slug}/team`);
       await expect(owner.getByText("Please keep the Arabic name — معتمد", { exact: true })).toBeVisible();
-      await owner.getByRole("button", { name: "Mark handled", exact: true }).click();
+      await owner.getByRole("button", { name: /note actions$/ }).click();
+      await owner.getByRole("menuitem", { name: "Mark handled", exact: true }).click();
       await expect(owner.getByText("Marked as handled.", { exact: true })).toBeVisible();
       const pins = await call(`/brands/${brand.id}/sign-offs/`, { token: studio.token });
       expect(pins).toHaveLength(1);
