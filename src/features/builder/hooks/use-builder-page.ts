@@ -1,5 +1,7 @@
 "use client";
 
+import { canGoLive } from "@/lib/data/publication";
+import { builderCopy } from "../copy";
 import { reviewSite, type SiteFinding } from "../utils/site-review";
 import { plural } from "@/lib/i18n/plural";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -289,6 +291,11 @@ export function useBuilderPage(slug: string) {
   }
 
   async function handlePublish() {
+    // A brand that can't go live (no paid plan) isn't asked to fix anything first.
+    if (!canGoLive(ws!)) {
+      showToast(builderCopy(isAr).publication.planRequired, "danger");
+      return;
+    }
     // Must fix stops here, and the server refuses the same list if this is skipped.
     if (review.errors > 0) return showWhatToFix();
     const incomplete = brandSetup(ws!).filter(step => step.key !== "publish" && !step.done);
@@ -309,6 +316,10 @@ export function useBuilderPage(slug: string) {
       if (!ok) return;
     }
     const result = await publishGuideline(ws!.id);
+    if (!result.ok && result.planRequired) {
+      showToast(builderCopy(isAr).publication.planRequired, "danger");
+      return;
+    }
     if (!result.ok && result.blocked) {
       showToast(isAr ? "لم يُنشر الدليل: ما زالت هناك بنود يجب إصلاحها." : "Not published: some Must fix items remain.", "danger");
       return;

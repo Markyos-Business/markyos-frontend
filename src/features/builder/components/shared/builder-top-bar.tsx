@@ -6,6 +6,8 @@ import { useNarrowViewport, usePhoneViewport } from "@/hooks/useNarrowViewport";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { ViewSwitcher } from "../canvas/view-switcher";
 import { ReviewChip } from "../review/review-panel";
+import { canGoLive, isLive, publishedButNotLive } from "@/lib/data/publication";
+import { builderCopy } from "../../copy";
 
 /**
  * The editor's one bar, across the whole window: the way out and where you
@@ -23,10 +25,17 @@ export function BuilderTopBar(b: BuilderPageState) {
   // the View/Copy pair move into More, and the status keeps only its dot.
   const narrow = useNarrowViewport();
   const phone = usePhoneViewport();
-  const live = !!ws.publishedAt;
+  // The server's word (`live`), not just "a publish happened": a published
+  // brand without a paid plan isn't shown on its link (review, 21 Nov 2026).
+  const live = isLive(ws);
+  const notLive = publishedButNotLive(ws);
+  const allowed = canGoLive(ws);
+  const words = builderCopy(isAr).publication;
   const upToDate = live && !hasUnpublished;
   const back = isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`;
-  const status = !live
+  const status = notLive
+    ? { tone: "warning" as const, text: words.status.notLive, hint: words.status.notLiveHint }
+    : !live
     ? { tone: "neutral" as const, text: isAr ? "غير منشور" : "Not published" }
     : hasUnpublished
       ? { tone: "warning" as const, text: isAr ? "تغييرات غير منشورة" : "Unpublished changes" }
@@ -55,7 +64,7 @@ export function BuilderTopBar(b: BuilderPageState) {
         {narrow ? (
           <span title={status.text} className="shrink-0"><Badge tone={status.tone} dot><span className="sr-only">{status.text}</span></Badge></span>
         ) : (
-          <Badge tone={status.tone} dot>{status.text}</Badge>
+          <span title={"hint" in status ? status.hint : undefined}><Badge tone={status.tone} dot>{status.text}</Badge></span>
         )}
       </div>
 
@@ -91,6 +100,11 @@ export function BuilderTopBar(b: BuilderPageState) {
             ]}
           />
         )}
+        {!allowed ? (
+          <Button variant="primary" size="sm" href={`/w/${ws.slug}/settings`} title={words.upgradeHint}>
+            {words.upgrade}
+          </Button>
+        ) : (
         <Button
           variant="primary"
           size="sm"
@@ -101,6 +115,7 @@ export function BuilderTopBar(b: BuilderPageState) {
         >
           {live ? (isAr ? "تحديث" : "Update") : isAr ? "نشر" : "Publish"}
         </Button>
+        )}
       </div>
     </header>
   );

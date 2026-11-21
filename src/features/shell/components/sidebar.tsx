@@ -9,6 +9,7 @@ import { AccountMenu } from "@/features/account";
 import { useHelpPanel } from "@/features/helpcenter";
 import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
 import { marketingHref } from "@/lib/marketing";
+import { isLive } from "@/lib/data/publication";
 import { BrandSwitcher } from "./brand-switcher";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 import { roleOn } from "@/lib/data/access";
@@ -71,7 +72,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       reviewHref={role === "client" ? publishedGuidelineHref(workspace) : null}
       logo={brandMarkUrl(workspace)}
       paid={workspace.billing.plan !== "free"}
-      live={!!workspace.publishedAt}
+      live={isLive(workspace)}
       // The same set the library lists: uploaded files plus the attached logo files.
       assetCount={workspace.assets.length + Object.values(workspace.logo).filter((slot) => slot?.phase === "attached").length}
       pendingDrafts={workspace.drafts.filter((draft) => draft.status === "pending").length}
