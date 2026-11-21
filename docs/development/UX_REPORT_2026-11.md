@@ -53,6 +53,16 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 8 (21 Nov 2026): improvements, and the sweep is complete
+
+- Account → Sessions: the table ran wider than its card and hid each session's Sign out; columns now fit. "Now" and "just now" read the same.
+- Questionnaire builder: the English / Arabic / Both switch is the kit's choose-one pill, not a tab row.
+- Text boxes: the send page's welcome text cut its placeholder mid-word, and an empty auto-growing box now sizes to its placeholder; the copy linter's English and Arabic boxes were 175 and 200px side by side and now match.
+- Copy: "Open in Strategy Hub" reads "Open in Strategy" (the page's name); user-facing "color" reads "colour" like the rest of the app.
+- Control audit: 14 hand-set sizes became control tokens (77 → 63 known cases).
+
+With this round every screen in the app and on the public pages has been reviewed on desktop and phone, in English and Arabic, light and dark. All 771 unit tests and the 30 e2e tests pass.
+
 ## Round 7 (21 Nov 2026): improvements
 
 - Disabled buttons looked enabled: they kept the resting muted ink, so the board's "move on" arrow on the last column looked live, and a disabled text-only button grew a grey box. They now take the disabled ink, and text-only buttons stay unfilled.
