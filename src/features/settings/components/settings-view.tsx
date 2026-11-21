@@ -11,10 +11,23 @@ import { GuidelineDesignSection } from "./design/guideline-design-section";
 import { SubdomainSection } from "./access/subdomain-section";
 import { WhiteLabelSection } from "./billing/white-label-section";
 import { OwnerOnly } from "./owner-only";
+import { VersionHistorySection } from "@/features/team";
 
 /** A brand's settings, section by section. Keyed by brand so drafts start over on another brand. */
-export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGovern }: SettingsViewProps) {
+export function SettingsView({ ws, isAr, typeLabel, prices, clientLink, canGovern, canEdit, actorName, tab }: SettingsViewProps) {
   const locked = !canGovern;
+  if (tab === "activity") {
+    return (
+      <div key={ws.id} className="flex min-h-0 max-w-[720px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
+        <PageHeader
+          title={isAr ? "النشاط" : "Activity"}
+          description={isAr ? `النسخ المحفوظة من ${ws.name}، وكيف تعود إلى إحداها.` : `Saved versions of ${ws.name}, and how to go back to one.`}
+        />
+        <VersionHistorySection ws={ws} isAr={isAr} actorName={actorName} canEdit={canEdit} />
+        <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
+      </div>
+    );
+  }
   return (
     <div key={ws.id} className="flex min-h-0 max-w-[720px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
       <PageHeader title={isAr ? PAGE_SECTION.ar : PAGE_SECTION.en} description={SHOW_UNFINISHED_SETTINGS

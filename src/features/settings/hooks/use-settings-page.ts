@@ -7,10 +7,15 @@ import { capabilitiesOn } from "@/lib/data/access";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { useToast } from "@/components/ui";
+import { useUrlTab } from "@/hooks/useUrlTab";
+import type { TopBarTab } from "@/features/shell";
 import { PAGE_SECTION } from "../constants";
 import { errorText } from "@/lib/api/errorText";
 
-/** The settings page: the client link, and finishing a return from checkout. */
+const TABS = ["general", "activity"] as const;
+export type SettingsTab = (typeof TABS)[number];
+
+/** The settings page: the client link, finishing a return from checkout, and the Activity tab (saved versions). */
 export function useSettingsPage(slug: string) {
   const { confirmPurchase, state } = useApp();
   const page = useBrandPage(slug);
@@ -23,6 +28,7 @@ export function useSettingsPage(slug: string) {
   const account = useCurrentAccount();
   const { label: typeLabel, prices } = ACCOUNT_TYPES[accountTypeOf(account)];
   const [origin, setOrigin] = useState("");
+  const [tab, setTab] = useUrlTab<SettingsTab>(TABS, "general");
 
   useEffect(() => {
     // Reads the browser's origin to build the client link — not derivable
@@ -66,9 +72,21 @@ export function useSettingsPage(slug: string) {
   }, [ws?.id, searchParams]);
 
   if (!page || !ws) return null;
+  const capabilities = capabilitiesOn(ws, state.session);
+  const tabs: TopBarTab[] = [
+    { key: "general", label: "General", arLabel: "عام", active: tab === "general", onSelect: () => setTab("general") },
+    // Saved versions and restoring one; it used to sit at the foot of Team & history.
+    { key: "activity", label: "Activity", arLabel: "النشاط", active: tab === "activity", onSelect: () => setTab("activity") },
+  ];
   return {
-    shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const },
-    view: { ws, isAr: page.isAr, typeLabel, prices, canGovern: capabilitiesOn(ws, state.session).canGovern, clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}` },
+    shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const, tabs },
+    view: {
+      ws, isAr: page.isAr, typeLabel, prices, tab,
+      canGovern: capabilities.canGovern,
+      canEdit: capabilities.canEdit,
+      actorName: state.session?.name || state.session?.email || "You",
+      clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}`,
+    },
   };
 }
 
