@@ -56,10 +56,10 @@ export function BoardToolbar({ board, view, isAr, hidden, shortlistOnly, onView,
         </label>
       )}
 
-      <Button variant="link" onClick={onAddZone} className="text-[12px] font-semibold">
-        {isAr ? "+ قسم" : "+ Zone"}
+      <Button variant="link" icon={<Icon name="plus" size={16} />} onClick={onAddZone} className="text-[12px] font-semibold">
+        {isAr ? "قسم" : "Zone"}
       </Button>
-      {/* Deleting the whole board sits behind More, apart from "+ Zone":
+      {/* Deleting the whole board sits behind More, apart from Zone:
           "make something" and "destroy everything" are never neighbours. On a
           phone it also stopped being a stray line of text under the toolbar. */}
       <ActionsDropdown
