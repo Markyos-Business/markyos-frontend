@@ -53,6 +53,16 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 13 (21 Nov 2026): a brand-new brand
+
+Every page of an empty brand, at desktop in English and phone in Arabic, plus a slow-network pass (900ms latency, 50 KB/s).
+
+- Empty states: Drafts, Departments, Assets and the Patterns, Graphics, Illustrations and Icons tabs showed a grey note with no icon and, mostly, no way forward. They now use the kit `EmptyState` like Check and Call notes do: an icon, one line, and an action where one fits (Open Discovery, Add department, Upload).
+- Main actions: Colour, Logo system, the asset tabs, Departments and the reviewer access notice led with the black ink button; they now use `primary`, as every other page does. "Pick from logo" and "Download assets" say why they're disabled, on hover and focus.
+- Loading: on a slow connection the skeleton's sidebar was eight even bars; it now has the staged sidebar's shape (two rows, three labelled groups, the bottom bar), so nothing moves when the page arrives.
+
+All 769 unit tests and the 30 e2e tests pass.
+
 ## Round 12 (21 Nov 2026): Overview, and the console sweep
 
 - Overview: Brand details now ends with the brand at a glance (Assets, Drafts, People), each a link to its page. The setup card lists only the steps left, with the finished ones in one line, so a nearly set-up brand no longer has a column of ticks twice the height of the card beside it. "Start with a template" shows only before any step is done.
@@ -175,7 +185,7 @@ All 769 unit tests and the 30 e2e tests pass.
 
 ## Summary
 
-- **Overall score: 5.5 / 10.** 46 screens × 4 variants (English light and Arabic dark, at 1440px and 390px) = 208 screenshots, across 5 roles: public, studio, company, client and admin.
+- **Overall score: 7.6 / 10 after round 12 (was 5.5 at the first audit).** Re-scored by the same method; copy waits on the copy guide and phone stays at 7 while the builder and moodboard are desktop-first. First audit: 46 screens × 4 variants (English light and Arabic dark, at 1440px and 390px) = 208 screenshots, across 5 roles: public, studio, company, client and admin.
 - **One P0:** invited clients can't see their brand. The server leaves `team` out of the brand reply for clients, and the app works out the role from `team`, so the brand is filtered out (UX-01).
 - **The weak spots** are phone layout (no studio phone menu; builder, Discovery, Team and moodboard break), Arabic finishing (leftover English, bidi-scrambled values, wrong terms) and consistency (page headers, field styles, public pages that each look slightly different).
 - **Strong already:** desktop, dark mode, RTL mirroring, empty states on company Discovery and Moodboard, cited AI analysis, and accessibility basics (3 axe rule failures across 104 desktop scans, one h1 per page, no sideways overflow).
