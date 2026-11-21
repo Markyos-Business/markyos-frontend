@@ -11,6 +11,7 @@ export interface IconButtonProps extends Omit<ButtonProps, "children" | "icon" |
   shape?: "square" | "round";
 }
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({ icon, label, variant = "quiet", iconSize = 18, size = "md", shape = "square", className = "", ...props }, ref) {
-  const widths = { xs: "w-7", sm: "w-8", md: "w-9", lg: "w-10", icon: ["w-9"].join(" ") };
-  return <Button {...props} ref={ref} size={size} variant={variant === "quiet" ? "link" : variant} aria-label={label} title={props.title ?? label} icon={<Icon name={icon} size={iconSize} />} className={`${widths[size]} !px-0 min-w-9 ${shape === "round" ? "!rounded-full" : ""} ${className}`} />;
+  const md = "w-ctl-md";
+  const widths = { xs: "w-ctl-xs", sm: "w-ctl-sm", md, lg: "w-ctl-lg", icon: md };
+  return <Button {...props} ref={ref} size={size} variant={variant === "quiet" ? "link" : variant} aria-label={label} title={props.title ?? label} icon={<Icon name={icon} size={iconSize} />} className={`${widths[size]} !px-0 ${shape === "round" ? "!rounded-full" : ""} ${className}`} />;
 });

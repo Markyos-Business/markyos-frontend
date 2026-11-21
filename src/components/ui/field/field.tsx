@@ -141,7 +141,7 @@ const Field = ({
     return (
       <div aria-busy="true" className={`flex w-full flex-col gap-space-2 ${className}`}>
         {label && <Skeleton className="ms-space-5 h-3 w-24 rounded-sm" />}
-        <Skeleton className={`${size === "sm" ? "h-8" : "h-control-sm"} w-full rounded-sm`} />
+        <Skeleton className={`${size === "sm" ? "h-ctl-sm" : "h-ctl-md"} w-full rounded-control`} />
       </div>
     );
   }

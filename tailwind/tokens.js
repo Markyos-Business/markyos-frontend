@@ -224,9 +224,10 @@ export const darkTokens = {
   "--control-bg": "var(--ink-soft)",
   "--control-bg-hover": "color-mix(in srgb, var(--ink-soft), var(--text) 6%)",
   "--control-bg-disabled": "rgba(255, 255, 255, 0.04)",
-  // One height per size for inputs, selects and buttons alike. `md` grows
-  // to 44px on a touch screen (tailwind/base.js); `sm` keeps its 32px and
-  // takes the kit's 44px hit area instead.
+  // One height per size for inputs, selects and buttons alike. `sm` and
+  // `md` grow to 44px on a touch screen (tailwind/base.js); the dense `xs`
+  // button keeps 28px with a 44px hit area around it.
+  "--control-height-xs": "28px",
   "--control-height-sm": "32px",
   "--control-height-md": "40px",
   "--control-height-lg": "46px",

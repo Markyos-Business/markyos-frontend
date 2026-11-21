@@ -997,11 +997,17 @@ export const baseStyles = [
     },
   },
   {
-    // A finger needs 44px (WCAG 2.5.5 / Apple HIG): on a touch screen the
-    // default control size grows from 40 to 44. Inputs, selects and buttons
-    // all read `--control-height-md`, so a row of them still lines up.
+    // A finger needs 44px (WCAG 2.5.5 / Apple HIG): on a touch screen the sm
+    // and md control sizes grow to 44. Inputs, selects and buttons all read
+    // `--control-height-*`, so a row of them still lines up.
     "@media (pointer: coarse)": {
-      ":root": { "--control-height-md": "44px" },
+      ":root": { "--control-height-sm": "44px", "--control-height-md": "44px" },
+      // The dense 28px size keeps its look and gets a 44px target around it.
+      ".mk-btn[data-size=\"xs\"]::before": {
+        "content": "\"\"",
+        "position": "absolute",
+        "inset": "-8px",
+      },
     },
   },
   {
@@ -1188,8 +1194,8 @@ export const baseStyles = [
   // inline style on the element still wins (the :not guard).
   {
     ":focus-visible:not([style*=\"outline\"])": {
-      "outline": "2px solid var(--accent) !important",
-      "outline-offset": "2px !important",
+      "outline": "var(--focus-ring-width) solid var(--focus-ring-color) !important",
+      "outline-offset": "var(--focus-ring-offset) !important",
     },
   },
   // Scrollable tab strips clip an outside ring. Reuse the kit's focus outline
@@ -1205,7 +1211,10 @@ export const baseStyles = [
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
-    ":focus-visible:not([style*=\"border-radius\"])": {
+    // Rounds the ring on things with no corner of their own (a link, a row).
+    // Controls keep theirs: an 8px button turning 6px, or a field growing
+    // corners, the moment it took focus read as the control changing shape.
+    ":focus-visible:not([style*=\"border-radius\"]):not(.mk-btn):not(.mk-field):not(.mk-field-control):not([role=\"combobox\"])": {
       "border-radius": "6px !important",
     },
   },
@@ -1222,16 +1231,20 @@ export const baseStyles = [
     ".mk-field": {
       "display": "block",
       "border": "0",
-      "border-bottom": "1px solid var(--line-strong)",
-      "border-radius": "0",
-      // The same ground as the filter select (`bg-ink-soft`), so a text field
-      // and a select side by side read as one family. State stays the underline.
-      "background": "var(--ink-soft)",
-      // The select's measurements: 40px tall (--control-h-sm: 9 + 21 + 9 + the
-      // 1px underline) with --space-5 either side, so a field and a select in
-      // one row line up. Labels and notes take the same inset as the value.
+      // Form-control tokens (UX-CON-001, MARKYOS_UI §2.6): the underline is
+      // the only border, the control corner sits on the top edge, and every
+      // field, select and button of a size shares one height.
+      "border-bottom": "var(--control-border-width) solid var(--control-border)",
+      "border-start-start-radius": "var(--control-radius)",
+      "border-start-end-radius": "var(--control-radius)",
+      "border-end-start-radius": "0",
+      "border-end-end-radius": "0",
+      "background": "var(--control-bg)",
+      // 9 + 21 + 9 + the underline = 40; the min-height takes it to 44 on a
+      // touch screen. Labels and notes take the same inset as the value.
+      "min-height": "var(--control-height-md)",
       "padding-block": "9px",
-      "padding-inline": "14px",
+      "padding-inline": "var(--control-padding-x-md)",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
@@ -1245,7 +1258,8 @@ export const baseStyles = [
     // directions. A gradient switched on hover cannot animate smoothly.
     "@media (hover: hover) and (pointer: fine)": {
       ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
-        "background-color": "color-mix(in srgb, var(--ink-soft), var(--text) 6%)",
+        "background-color": "var(--control-bg-hover)",
+        "border-bottom-color": "var(--control-border-hover)",
       },
     },
   },
@@ -1309,29 +1323,40 @@ export const baseStyles = [
     },
   },
   {
+    // Focus is the underline at 2px: the second pixel is an inset shadow, so
+    // the field doesn't move. It is the field's focus indicator (the ring is
+    // switched off below), 4.9:1 against the field in both themes.
     ".mk-field:focus, .mk-field:focus-within, .mk-field[aria-expanded=\"true\"]": {
-      "border-bottom-color": "var(--accent)",
-      "box-shadow": "none",
+      "border-bottom-color": "var(--control-border-focus)",
+      "box-shadow": "inset 0 calc(-1 * (var(--control-border-width-focus) - var(--control-border-width))) 0 var(--control-border-focus)",
     },
   },
   {
     ".mk-field[aria-invalid=\"true\"], .mk-field:has([aria-invalid=\"true\"]), .mk-field[data-state=\"error\"]": {
-      "border-bottom-color": "var(--danger)",
+      "border-bottom-color": "var(--control-border-error)",
     },
   },
   {
     ".mk-field[data-state=\"success\"]": {
-      "border-bottom-color": "var(--success)",
+      "border-bottom-color": "var(--control-border-success)",
     },
   },
   {
     ".mk-field[data-state=\"warning\"]": {
-      "border-bottom-color": "var(--warning)",
+      "border-bottom-color": "var(--control-border-warning)",
     },
   },
   {
     // Read-only and locked: the value is shown, not offered. A dashed rule
     // and muted ink say "you can't change this" before anyone tries.
+    // A filter that is narrowing the list says so with the accent: its tint
+    // and an accent underline, the field shape otherwise unchanged.
+    "[data-filter-control][data-active] .mk-field": {
+      "background": "var(--accent-soft)",
+      "border-bottom-color": "var(--control-border-focus)",
+    },
+  },
+  {
     ".mk-field[data-readonly]": {
       "border-bottom-style": "dashed",
       "color": "var(--text-muted)",
@@ -1381,6 +1406,7 @@ export const baseStyles = [
   },
   {
     ".mk-field:disabled, .mk-field:has(:disabled)": {
+      "background": "var(--control-bg-disabled)",
       "color": "var(--text-disabled)",
       "cursor": "not-allowed",
     },
@@ -1415,8 +1441,10 @@ export const baseStyles = [
     // The compact field (size="sm"): inspectors, dense panels and rows. The
     // same underline, a shorter block and a 12.5px value.
     ".mk-field.mk-field-sm": {
+      // 5 + 20 + 5 + the underline = 31; the min-height makes it 32.
+      "min-height": "var(--control-height-sm)",
       "padding-block": "5px",
-      "padding-inline": "6px",
+      "padding-inline": "var(--control-padding-x-sm)",
       "font-size": "0.78125rem",
       "line-height": "1.25rem",
     },

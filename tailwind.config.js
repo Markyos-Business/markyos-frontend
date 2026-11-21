@@ -210,6 +210,8 @@ const config = {
         h5: ["1rem", { lineHeight: "1.5rem" }],
         body: ["0.875rem", { lineHeight: "1.3125rem" }],
         caption: ["0.75rem", { lineHeight: "1.125rem" }],
+        // The compact field's value (spec §6.5): 12.5px, between caption and body.
+        "control-sm": ["0.78125rem", { lineHeight: "1.25rem" }],
         // The only place caps appear (pair with `uppercase`): tab labels,
         // SORT:, PREV, NEXT, VIEW ALL. Never type copy in caps.
         overline: ["0.75rem", { lineHeight: "1", fontWeight: "500" }],
@@ -251,6 +253,7 @@ const config = {
         "widget-row": "72px",
         // Form controls (UX-CON-001): inputs, selects and buttons share these,
         // so a row of them lines up. `h-ctl-md` is 44px on a touch screen.
+        "ctl-xs": "var(--control-height-xs)",
         "ctl-sm": "var(--control-height-sm)",
         "ctl-md": "var(--control-height-md)",
         "ctl-lg": "var(--control-height-lg)",

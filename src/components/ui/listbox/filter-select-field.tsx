@@ -35,8 +35,11 @@ const FilterSelectField = ({ label, hideLabel = false, icon, size = "md", active
         aria-labelledby={labelId}
         panelWidth={240}
         leading={icon ? <Icon name={icon} size={16} className="shrink-0 text-text-muted" /> : undefined}
-        valueClassName={`font-medium ${rest.disabled ? "text-text-disabled" : active ? "text-accent-on-soft" : "text-text"} ${size === "sm" ? "text-caption" : ""}`}
-        triggerClassName={`mk-btn min-w-0 max-w-72 rounded-lg text-text ${active ? "bg-accent-soft shadow-[inset_0_0_0_1px_var(--accent-edge)]" : "bg-ink-soft shadow-edge"} ${size === "sm" ? "h-8 px-space-4 text-caption" : "h-control-sm px-space-5 text-body"}`}
+        valueClassName={`font-medium ${rest.disabled ? "text-text-disabled" : active ? "text-accent-on-soft" : "text-text"}`}
+        // The field shape (MARKYOS_UI §2.6), not a box: a sort or filter
+        // select beside a search field is the same control family. The active
+        // tint comes from `[data-active]` on the wrapper (tailwind/base.js).
+        triggerClassName={`mk-field min-w-0 max-w-72 text-text ${size === "sm" ? "mk-field-sm" : "text-body"}`}
       />
     </span>
   );

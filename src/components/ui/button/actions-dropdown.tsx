@@ -35,12 +35,12 @@ type ActionsDropdownProps = {
 /** What opens the menu: the ⋯ square for a row, or a labelled outline button. */
 const TriggerLook = ({ label, iconOnly }: { label: string; iconOnly: boolean }) =>
   iconOnly ? (
-    <span className="flex size-control-sm items-center justify-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+    <span className="flex size-ctl-md items-center justify-center rounded-control text-text-muted hover:bg-ink-soft hover:text-text">
       <Icon name="ellipsis-h" size={18} />
     </span>
   ) : (
     // The outline button's look, at the compact control height.
-    <span className="flex h-control-sm items-center gap-space-3 rounded-lg bg-ink-soft px-space-5 text-body font-medium text-text shadow-edge">
+    <span className="flex h-ctl-md items-center gap-space-3 rounded-control bg-ink-soft px-ctl-px-md text-body font-medium text-text shadow-edge">
       {label}
       <Icon name="ellipsis-h" size={18} />
     </span>

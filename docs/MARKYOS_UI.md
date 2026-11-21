@@ -301,12 +301,14 @@ Every input, select, textarea, combobox, date picker and button reads one token 
 | `--control-bg` | `--ink-soft` (white 10%) | `--ink-soft` (ink 6%) | — |
 | `--control-bg-hover` | `--ink-soft` mixed with 6% `--text` | same | — |
 | `--control-bg-disabled` | white 4% | ink 3% | — |
-| `--control-height-sm` / `-md` / `-lg` | 32 / 40 / 46px (`md` is 44px on a touch screen) | same | `h-ctl-sm` / `h-ctl-md` / `h-ctl-lg` |
+| `--control-height-xs` / `-sm` / `-md` / `-lg` | 28 / 32 / 40 / 46px; on a touch screen `sm` and `md` are 44px and `xs` buttons get a 44px target | same | `h-ctl-xs` … `h-ctl-lg` |
 | `--control-padding-x-sm` / `-md` / `-lg` | 10 / 14 / 18px | same | `px-ctl-px-sm` … |
 | `--focus-ring-width` / `-offset` / `-color` | 2px / 2px / `--accent` | same | — |
+| Compact field value | 12.5px | same | `text-control-sm` |
 
 - **Fields** (text, email, password, number, search, textarea, select, combobox, date) keep §6.5's shape: the `--control-bg` ground and a `--control-border` underline, with `--control-radius` on the top corners only. State is the underline: hover, focus (2px accent), error, success, warning; read-only is dashed.
-- **Buttons** keep their variant fills and take `--control-radius` and the same heights. They show focus with the ring (§1.7); fields show it on the underline.
+- **Buttons** keep their variant fills and take `--control-radius` and the same heights (`xs` is the dense in-row size, buttons only). They show focus with the ring (§1.7); fields show it on the underline. Focus never changes a control's corners.
+- **Toolbar selects** (`SortControl`, `FilterSelectField`) are fields too, not boxes; an active filter takes the accent tint and an accent underline.
 - **Border contrast:** `--control-border` replaces `--border-strong` (white 20%, 1.84:1) as the underline, because WCAG 1.4.11 asks 3:1 of a control's boundary. `scripts/contrast-audit.mjs` holds both themes at 3:1 on every card surface. Card edges (`--hairline-strong`) are not controls and stay as they are.
 - **Exempt:** guideline-site templates and the public questionnaire follow the client brand's own theme (`--g-*`, `--f-*`).
 
