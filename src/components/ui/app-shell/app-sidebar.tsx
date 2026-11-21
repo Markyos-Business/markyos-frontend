@@ -284,7 +284,7 @@ function CollapseButton({
       aria-label={label}
       aria-expanded={!collapsed}
       title={`${label} — [`}
-      className="grid size-7 shrink-0 place-items-center rounded-md text-text-muted transition-colors"
+      className="grid size-ctl-xs shrink-0 place-items-center rounded-md text-text-muted transition-colors"
     >
       <Icon name="angle-double-left" size={16} className={`transition-[rotate] duration-base ${collapsed ? "rotate-180" : ""}`} />
     </button>

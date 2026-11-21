@@ -71,7 +71,7 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
             <Row
               key={v.id}
               label={v.label}
-              hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colors"}`}
+              hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colours"}`}
               right={
                 canEdit && <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
                   {t("Restore", "استعادة")}

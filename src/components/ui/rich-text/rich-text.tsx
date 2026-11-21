@@ -388,7 +388,7 @@ const RichTextEditor = ({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => run(t.action)}
               disabled={!editable}
-              className="grid size-7 cursor-pointer place-items-center rounded-md enabled:hover:text-text disabled:cursor-not-allowed disabled:text-text-disabled"
+              className="grid size-ctl-xs cursor-pointer place-items-center rounded-md enabled:hover:text-text disabled:cursor-not-allowed disabled:text-text-disabled"
             >
               <Icon name={t.icon} size={16} />
             </button>

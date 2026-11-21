@@ -52,7 +52,7 @@ export function QuestionCard(props: QuestionCardProps) {
           {...props.dragProps}
           aria-label={isAr ? "اسحب لإعادة الترتيب" : "Drag to reorder"}
           disabled={locked}
-          className="grid size-7 cursor-grab place-items-center rounded-md text-text-muted active:cursor-grabbing disabled:cursor-not-allowed disabled:text-text-disabled"
+          className="grid size-ctl-xs cursor-grab place-items-center rounded-md text-text-muted active:cursor-grabbing disabled:cursor-not-allowed disabled:text-text-disabled"
         >
           <Icon name="grip-vertical" size={16} />
         </button>

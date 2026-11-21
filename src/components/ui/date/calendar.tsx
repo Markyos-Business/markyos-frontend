@@ -125,7 +125,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
   return (
     <div className="flex flex-col gap-space-4">
       <div className="flex items-center justify-between gap-space-3">
-        <button type="button" aria-label={t.previousMonth} onClick={() => step(-1)} className="grid size-8 place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+        <button type="button" aria-label={t.previousMonth} onClick={() => step(-1)} className="grid size-ctl-sm place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
           <Icon name="angle-left" size={16} />
         </button>
         <div className="flex flex-col items-center">
@@ -134,7 +134,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
           </span>
           {hijriTitle && <span className="text-caption text-text-muted">{hijriTitle}</span>}
         </div>
-        <button type="button" aria-label={t.nextMonth} onClick={() => step(1)} className="grid size-8 place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+        <button type="button" aria-label={t.nextMonth} onClick={() => step(1)} className="grid size-ctl-sm place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
           <Icon name="angle-right" size={16} />
         </button>
       </div>

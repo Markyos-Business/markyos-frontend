@@ -107,7 +107,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
       />
       <Row
         label={t("Import tokens", "استيراد الرموز")}
-        hint={t("Adds colors it doesn't have and updates ones whose hex changed. Nothing is deleted.", "يضيف الألوان غير الموجودة ويحدّث التي تغيّر كودها. لا يُحذف شيء.")}
+        hint={t("Adds colours it doesn't have and updates ones whose hex changed. Nothing is deleted.", "يضيف الألوان غير الموجودة ويحدّث التي تغيّر كودها. لا يُحذف شيء.")}
         right={
           <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={syncing}>
             {syncing ? t("Reading…", "جارٍ القراءة…") : t("Choose file", "اختر ملفًا")}

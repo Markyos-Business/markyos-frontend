@@ -191,7 +191,9 @@ function DraftPanel({
         placeholder={placeholder}
         className="mk-field w-full resize-y"
         style={{
-          lineHeight: dir === "rtl" ? 1.85 : 1.6,
+          // One line height for both boxes, so the English and Arabic drafts side
+          // by side are the same height (1.6 and 1.85 made them 175 and 200px).
+          lineHeight: 1.7,
           fontFamily: dir === "rtl" ? "var(--font-arabic)" : "var(--font-sans)",
         }}
       />

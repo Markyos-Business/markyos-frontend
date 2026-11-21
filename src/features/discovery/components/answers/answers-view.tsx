@@ -109,7 +109,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
             {t("Export PDF", "تصدير PDF")}
           </Button>
           <Button variant="outline" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
-            {t("Open in Strategy Hub", "فتح في مركز الاستراتيجية")}
+            {t("Open in Strategy", "فتح في الاستراتيجية")}
           </Button>
           {analysis}
         </div>
