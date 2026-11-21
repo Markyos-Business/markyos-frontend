@@ -64,9 +64,6 @@ export function AccountTypeSection({ account }: { account: Account }) {
           </Button>
         </form>
       )}
-      {account.accountType && (
-        <Button href="/brands/new" variant="outline">{t("Create a brand", "إنشاء علامة")}</Button>
-      )}
     </Section>
   );
 }

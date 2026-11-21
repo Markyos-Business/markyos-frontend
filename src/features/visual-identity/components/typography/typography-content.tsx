@@ -304,8 +304,8 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
       </div>
       <p className="text-[12px] -mt-2" style={{ color: "var(--text-faint)" }}>
         {isAr
-          ? "تُقرأ أسماء العائلات من اسم الملف وهي إعداد خاص بهذه المساحة، اضغط على أحدها لتصحيحه. وإلى أن يُطبَّق ملف، فالاسم وحده يطلب من المتصفح أقرب خط مطابق فقط."
-          : "Family names are read from the file name and are this workspace's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
+          ? "تُقرأ أسماء العائلات من اسم الملف وهي إعداد خاص بهذه العلامة، اضغط على أحدها لتصحيحه. وإلى أن يُطبَّق ملف، فالاسم وحده يطلب من المتصفح أقرب خط مطابق فقط."
+          : "Family names are read from the file name and are this brand's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
       </p>
 
       <div className="mk-surface flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>

@@ -1,6 +1,6 @@
 import type { DeptItemType, SectionKey } from "@/types";
 
-export const PAGE_SECTION = { en: "Company departments", ar: "أقسام الشركة" } as const;
+export const PAGE_SECTION = { en: "Departments", ar: "الأقسام" } as const;
 
 export const SECTION_META: Record<SectionKey, { label: string; arLabel: string; icon: string; href: string }> = {
   overview: { label: "Overview", arLabel: "نظرة عامة", icon: "file-alt", href: "overview" },

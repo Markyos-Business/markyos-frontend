@@ -63,10 +63,10 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
   // One header for both states, so adding the first colour doesn't make the heading jump.
   const header = (
     <PageHeader
-      title={t("Asset colors", "ألوان الأصول")}
+      title={t("Asset colours", "ألوان الأصول")}
       description={t(
-        "Upload a finished asset and check its dominant colors against this workspace's approved palette — catches drift before it ships, not after.",
-        "ارفع أصلًا جاهزًا وافحص ألوانه الغالبة مقابل الألوان المعتمدة لهذه المساحة، لتكتشف الانحراف قبل النشر لا بعده."
+        "Upload a finished asset and check its dominant colours against this brand's approved palette — catches drift before it ships, not after.",
+        "ارفع أصلًا جاهزًا وافحص ألوانه الغالبة مقابل الألوان المعتمدة لهذه العلامة، لتكتشف الانحراف قبل النشر لا بعده."
       )}
     />
   );
@@ -123,7 +123,7 @@ export function AssetColorContent({ ws }: { ws: Workspace }) {
         <div>
           <div className="font-semibold text-[14px] mb-1">{fileName || t("Drop an image, or click to browse", "أفلت صورة، أو انقر للاختيار")}</div>
           <div className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-            {t("Runs entirely in your browser — colors are sampled from the pixels, nothing is uploaded anywhere.", "يعمل بالكامل في متصفحك؛ تؤخذ الألوان من البكسلات ولا يُرفع شيء إلى أي مكان.")}
+            {t("Runs entirely in your browser — colours are sampled from the pixels, nothing is uploaded anywhere.", "يعمل بالكامل في متصفحك؛ تؤخذ الألوان من البكسلات ولا يُرفع شيء إلى أي مكان.")}
           </div>
         </div>
       </div>

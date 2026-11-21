@@ -53,6 +53,25 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 2 (21 Nov 2026): re-audit of the fixed build
+
+The same seeded data and the same 50 routes × 4 variants (200 screenshots), run on release/staging-v1 after round 1. axe went from 3 rule failures to 3 (two had carried over unfixed), and now 0. Every round-1 fix in view was checked on screen. Clients can now open brand pages, which round 1 couldn't reach, and that surfaced the main new finding.
+
+| Finding | Outcome | Commit |
+|---|---|---|
+| R2-01 (P1) a client opening a brand got the studio's screens, all empty (setup checklist, editor, "strategy not written yet"), because the server sends clients no working document | Fixed: clients get one page with the brand, Review the guideline (or "not published yet") and a way back | 016e3a3 |
+| R2-02 (P2) asset filter counts under 4.5:1 (carried over from round 1) | Fixed: no extra fade on muted text | 0905051 |
+| R2-03 (P2) `aria-selected` on moodboard figures (carried over) | Fixed: `aria-current` | 0905051 |
+| R2-04 (P3) tab rows cut off on phone with no sign they scroll (Account: "Organisat") | Fixed: kit tab rows fade at the trailing edge when they overflow | 0061a4d |
+| R2-05 (P3) Settings guideline address scrambled in Arabic | Fixed: isolated with bdi | dd4e097 |
+| R2-06 (P3) Account type card had an unrelated Create a brand button | Fixed: removed | dd4e097 |
+| R2-07 (P3) Industry placeholder was the studio's own industry, shown to companies too | Fixed: a client industry example | dd4e097 |
+| R2-08 (P3) color/workspace leftovers (Compliance, Settings, Typography, Builder) and "Company departments" vs "Departments" | Fixed | b7ba1cf |
+
+Checked and not a problem: the Colour tab's 9.5s first load is background colour-name translation after the page has painted (an editor's first visit translates untranslated names one by one); warm it loads in 0.7s.
+
+All 769 unit tests and the 30 e2e tests pass.
+
 ## Summary
 
 - **Overall score: 5.5 / 10.** 46 screens × 4 variants (English light and Arabic dark, at 1440px and 390px) = 208 screenshots, across 5 roles: public, studio, company, client and admin.

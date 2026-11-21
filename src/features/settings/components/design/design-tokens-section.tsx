@@ -62,8 +62,8 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
     <Section title={t("Design tokens", "رموز التصميم")} icon="shapes">
       <p className="-mt-1 text-[12.5px] leading-[1.6] text-text-muted">
         {t(
-          "This workspace's palette and type, in the W3C Design Tokens format that Figma Variables, Tokens Studio and Style Dictionary all read. Export it into your Figma library, edit there, and bring the file back to catch drift in either direction.",
-          "ألوان هذه المساحة وخطوطها بصيغة W3C Design Tokens التي يقرأها Figma Variables وTokens Studio وStyle Dictionary. صدّرها إلى مكتبة Figma، وعدّل هناك، ثم أعد الملف لاكتشاف أي اختلاف في الاتجاهين."
+          "This brand's palette and type, in the W3C Design Tokens format that Figma Variables, Tokens Studio and Style Dictionary all read. Export it into your Figma library, edit there, and bring the file back to catch drift in either direction.",
+          "ألوان هذه العلامة وخطوطها بصيغة W3C Design Tokens التي يقرأها Figma Variables وTokens Studio وStyle Dictionary. صدّرها إلى مكتبة Figma، وعدّل هناك، ثم أعد الملف لاكتشاف أي اختلاف في الاتجاهين."
         )}
       </p>
       <Row

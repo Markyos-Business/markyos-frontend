@@ -620,8 +620,9 @@ function Chip({
       <span dir="auto" className="bidi-auto">{label}</span>
       {count !== undefined && (
         <span
+          // No extra fade: muted text at 65% fell under 4.5:1 (axe).
           className="tabular-nums font-medium"
-          style={{ fontFamily: "ui-monospace, Menlo, monospace", opacity: 0.65 }}
+          style={{ fontFamily: "ui-monospace, Menlo, monospace" }}
         >
           {count}
         </span>

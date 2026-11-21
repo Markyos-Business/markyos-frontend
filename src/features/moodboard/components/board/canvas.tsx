@@ -1913,10 +1913,11 @@ function CardOnCanvasBase({
     <figure
       data-mood-item={item.id}
       // Published rather than inferred from the box shadow, which several other
-      // states also change. `aria-selected` says the same thing to a screen
-      // reader, which otherwise had no way to know a card was picked up.
+      // states also change. `aria-current` says the same thing to a screen
+      // reader; `aria-selected` is not allowed on a figure (axe), and a
+      // screen reader ignores it there anyway.
       data-selected={selected || undefined}
-      aria-selected={selected}
+      aria-current={selected || undefined}
       aria-label={label}
       className="absolute rounded-card overflow-hidden group"
       // Belt and braces after the `<img>` case: anything natively draggable

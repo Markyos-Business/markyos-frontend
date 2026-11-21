@@ -110,8 +110,8 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
       {sources.length === 0 ? (
         <div className="rounded-card p-5 text-[13px]" style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}>
           {isAr
-            ? "لا يوجد شعار أو صورة في هذا المشروع بعد. ارفع شعارًا من «نظام الشعار» أولًا."
-            : "There's no logo or image in this workspace yet. Upload one under Logo system first."}
+            ? "لا يوجد شعار أو صورة لهذه العلامة بعد. ارفع شعارًا من «نظام الشعار» أولًا."
+            : "There's no logo or image for this brand yet. Upload one under Logo system first."}
         </div>
       ) : (
         <>

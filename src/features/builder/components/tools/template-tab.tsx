@@ -18,7 +18,7 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
       <p className="px-1 text-[11.5px] text-text-faint">
         {isAr
           ? "قالب موقع الدليل الذي يراه العميل. لكل قالب نظام تصميمه الخاص، والألوان والشعار والخطوط تُقرأ من هذا المشروع في جميعها."
-          : "The template the client's guideline site is built in. Each one is its own design system; colors, logo and type read from this workspace in all of them."}
+          : "The template the client's guideline site is built in. Each one is its own design system; colours, logo and type come from this brand in all of them."}
       </p>
 
       {(Object.keys(STYLE_META) as GuidelineTemplate[]).map((kind) => (

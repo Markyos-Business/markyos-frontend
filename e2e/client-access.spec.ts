@@ -19,6 +19,10 @@ test("an invited client sees the brand and can open it", async ({ page }) => {
   await page.goto(`/w/${brand.slug}/overview`);
   await page.waitForLoadState("networkidle");
   await expect(page).toHaveURL(new RegExp(`/w/${brand.slug}`));
+  // Their own page, not the studio's empty screens: the guideline isn't published yet.
+  await expect(page.getByRole("heading", { name: "Wadi Rum Coffee" })).toBeVisible();
+  await expect(page.getByText("The guideline isn't published yet")).toBeVisible();
+  await expect(page.getByText("Set up your brand")).toHaveCount(0);
 });
 
 test("an unknown address gets a way back, in the reader's language", async ({ page }) => {
