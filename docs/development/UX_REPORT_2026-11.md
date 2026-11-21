@@ -53,6 +53,16 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 10 (21 Nov 2026): accessibility audit
+
+An automated axe-core audit of about 30 screens (studio in English light and Arabic dark, admin, client and public pages). Against WCAG 2.1 A and AA the app already passed with no violations. With axe's best-practice rules added it found 96 structural issues, now 0:
+
+- Twenty pages had no main landmark, so a screen-reader user could not jump to the content: full-width and tabbed brand pages, Brands, Board, Account and the public guideline (including its password gate). Each now has exactly one.
+- The top bar's breadcrumb, page actions and section tabs now share one banner instead of sitting outside every landmark.
+- Analysis: sub-labels went from the section's h2 straight to h4; they are h3.
+
+Nothing moved on screen. All 771 unit tests and the 30 e2e tests pass.
+
 ## Round 9 (21 Nov 2026): the style debt cleared
 
 The control audit's baseline of pre-existing hand-styled controls is empty (63 → 0). Heights, selection rings, swatch edges and inline colours moved to tokens (new `shadow-selected`, `shadow-edge-chip`); two image-picker buttons became kit Buttons; the genuine exceptions — moodboard canvas items that scale with zoom, image tiles, the small marks inside chips, the spec-sized switch — are marked in place with their reason. Any new hand-set value now fails the build outright. All 771 unit tests and the 30 e2e tests pass.
