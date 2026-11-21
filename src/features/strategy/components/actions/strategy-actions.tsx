@@ -16,7 +16,7 @@ export function StrategyActions({ ws, isAr, mode, canEdit, onMode, onImport }: S
   const [translating, setTranslating] = useState(false);
   if (!canEdit) return null;
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-ctl-row">
       {/* Share sits in the top bar, in both modes: sharing is a thing you
           decide about the page, not a thing you do while reading it. */}
       <Popover

@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ActionsDropdown, Badge, Button, Icon, IconButton, useToast } from "@/components/ui";
+import { ActionsDropdown, Badge, Button, ButtonGroup, IconButton, LinkButton, useToast } from "@/components/ui";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { ViewSwitcher } from "../canvas/view-switcher";
 import { ReviewChip } from "../review/review-panel";
@@ -54,9 +53,7 @@ export function BuilderTopBar(b: BuilderPageState) {
     <header className={`mk-no-hover h-14 shrink-0 flex-nowrap items-center gap-space-4 overflow-hidden bg-surface-1 px-space-5 shadow-rule-b ${narrow ? "flex" : "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"}`}>
       {/* The way out, and what you're editing: the studio's own navigation is not on this route. */}
       <div className="flex min-w-0 flex-1 items-center gap-space-3">
-        <Link href={`/w/${ws.slug}/overview`} aria-label={back} title={back} className="grid size-8 shrink-0 place-items-center rounded-lg text-text-muted">
-          <Icon name="arrow-left" size={18} />
-        </Link>
+        <IconButton href={`/w/${ws.slug}/overview`} icon="arrow-left" size="sm" label={back} />
         <h1 className="min-w-0">
           <span className="sr-only">{isAr ? "محرر الدليل: " : "Guideline editor: "}</span>
           <span dir="auto" className="block truncate text-body font-medium text-text [text-align:match-parent]">{ws.name}</span>
@@ -72,22 +69,19 @@ export function BuilderTopBar(b: BuilderPageState) {
 
       <div className="flex min-w-0 shrink-0 items-center justify-end gap-ctl-row">
         <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={narrow} upToDate={upToDate} />
-        {!narrow && <span className="flex items-center rounded-lg shadow-edge">
-          <Link
-            href={`${previewHref}?preview=1`}
-            target="_blank"
-            title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}
-            className="flex h-8 items-center gap-ctl-icon px-space-4 text-caption font-medium text-text"
-          >
-            {isAr ? "عرض" : "View"}
-            <Icon name="external-link-alt" size={16} className="text-text-muted" />
-          </Link>
-          <span aria-hidden className="h-5 w-px bg-hairline-strong" />
-          <IconButton size="sm" icon="copy" label={isAr ? "نسخ رابط الدليل" : "Copy the guideline link"} onClick={() => void copyLink()} disabled={!live} className="size-8" />
-        </span>}
+        {/* View and copy-the-link as one kit button group (review item 3): it was a hand-drawn pair. */}
+        {!narrow && (
+          <ButtonGroup label={isAr ? "الموقع" : "The site"}>
+            <LinkButton variant="secondary" size="sm" external href={`${previewHref}?preview=1`} title={isAr ? "افتح الموقع في تبويب جديد" : "Open the site in a new tab"}>
+              {isAr ? "عرض" : "View"}
+            </LinkButton>
+            <IconButton variant="secondary" size="sm" icon="copy" iconSize={16} label={isAr ? "نسخ رابط الدليل" : "Copy the guideline link"} onClick={() => void copyLink()} disabledReason={live ? undefined : isAr ? "انشر الموقع أولًا." : "Publish the site first."} />
+          </ButtonGroup>
+        )}
         {(live || narrow) && (
           <ActionsDropdown
             iconOnly
+            size="sm"
             label={isAr ? "المزيد" : "More"}
             items={[
               ...(narrow
@@ -109,9 +103,8 @@ export function BuilderTopBar(b: BuilderPageState) {
           variant="primary"
           size="sm"
           onClick={onPublish}
-          disabled={upToDate}
-          // A blocked action that does not say what is blocking it sends someone hunting for a permission they already have.
-          title={upToDate ? (isAr ? "لا توجد تغييرات منذ آخر نشر." : "Nothing has changed since the last publish.") : undefined}
+          // Says why it is disabled in the kit's tooltip: a `title` never shows on a disabled button, so it looked broken.
+          disabledReason={upToDate ? (isAr ? "لا توجد تغييرات منذ آخر نشر." : "Nothing has changed since the last publish.") : undefined}
         >
           {live ? (isAr ? "تحديث" : "Update") : isAr ? "نشر" : "Publish"}
         </Button>
