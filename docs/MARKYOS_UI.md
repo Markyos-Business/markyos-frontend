@@ -286,6 +286,30 @@ Widget rows and sunken areas use `--surface-sunken` (white at 4%).
 The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, round icon buttons, switches, radios): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label). **One exception (decided 2026-11-20):** every "choose one" control — mode, language, Edit/Read, canvas width, All/Unread, weights, status — is a pill: a round track with round segments, the chosen one raised on `--surface-0` in the accent. They all draw from `src/components/ui/choice/pill-segments.ts` (`SegmentedToggle`, `SegmentedControl`, `LangToggle`, `ThemeToggle`); never style one by hand.
 Tailwind's `xl`/`2xl`/`3xl` and arbitrary `rounded-[…]` values are refused by `scripts/radius-audit.mjs` (in `npm run check`). The guideline-site templates are exempt: they follow the client brand's own `--g-radius-*` theme.
 
+
+### 2.6 Form controls (decided 2026-11-21, UX-CON-001)
+
+Every input, select, textarea, combobox, date picker and button reads one token set from `tailwind/tokens.js`. Controls of the same size share a height, a corner and a focus treatment, so a search field, a sort select and a button in one row line up.
+
+| Token | Dark | Light | Tailwind |
+|---|---|---|---|
+| `--control-radius` | 8px | 8px | `rounded-control` |
+| `--control-border-width` / `-focus` | 1px / 2px | 1px / 2px | — |
+| `--control-border` (the underline) | white 40% (3.8:1 on `#111`) | ink 50% (3.7:1 on white) | — |
+| `--control-border-hover` | white 56% | ink 64% | — |
+| `--control-border-focus` / `-error` / `-success` / `-warning` | `--accent` / `--danger` / `--success` / `--warning` | same | — |
+| `--control-bg` | `--ink-soft` (white 10%) | `--ink-soft` (ink 6%) | — |
+| `--control-bg-hover` | `--ink-soft` mixed with 6% `--text` | same | — |
+| `--control-bg-disabled` | white 4% | ink 3% | — |
+| `--control-height-sm` / `-md` / `-lg` | 32 / 40 / 46px (`md` is 44px on a touch screen) | same | `h-ctl-sm` / `h-ctl-md` / `h-ctl-lg` |
+| `--control-padding-x-sm` / `-md` / `-lg` | 10 / 14 / 18px | same | `px-ctl-px-sm` … |
+| `--focus-ring-width` / `-offset` / `-color` | 2px / 2px / `--accent` | same | — |
+
+- **Fields** (text, email, password, number, search, textarea, select, combobox, date) keep §6.5's shape: the `--control-bg` ground and a `--control-border` underline, with `--control-radius` on the top corners only. State is the underline: hover, focus (2px accent), error, success, warning; read-only is dashed.
+- **Buttons** keep their variant fills and take `--control-radius` and the same heights. They show focus with the ring (§1.7); fields show it on the underline.
+- **Border contrast:** `--control-border` replaces `--border-strong` (white 20%, 1.84:1) as the underline, because WCAG 1.4.11 asks 3:1 of a control's boundary. `scripts/contrast-audit.mjs` holds both themes at 3:1 on every card surface. Card edges (`--hairline-strong`) are not controls and stay as they are.
+- **Exempt:** guideline-site templates and the public questionnaire follow the client brand's own theme (`--g-*`, `--f-*`).
+
 ---
 
 ## 3. Typography

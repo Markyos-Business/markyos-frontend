@@ -200,6 +200,43 @@ export const darkTokens = {
   "--hairline-strong": "rgba(255, 255, 255, 0.1)",
   "--line-strong": "rgba(255, 255, 255, 0.2)",
   /*
+   * Form controls (UX-CON-001): one set for every input, select, textarea,
+   * combobox, date picker and button, so controls in one row share a height,
+   * a corner and a focus treatment. Fields keep the spec's shape (§6.5: a
+   * ground and an underline, state carried by the underline), now with the
+   * control corner on their top edge; buttons keep their own fills.
+   *
+   * `--control-border` is the field's underline. The spec's `--line-strong`
+   * (white 20%) measured 1.84:1 on a #111 card, under the 3:1 WCAG 1.4.11
+   * asks of a control's boundary; 40% measures 3.8:1 and
+   * `contrast-audit.mjs` holds it at 3:1 on every surface. `--line-strong`
+   * itself is unchanged for the rules that are not control edges.
+   */
+  "--control-radius": "8px",
+  "--control-border-width": "1px",
+  "--control-border-width-focus": "2px",
+  "--control-border": "rgba(255, 255, 255, 0.4)",
+  "--control-border-hover": "rgba(255, 255, 255, 0.56)",
+  "--control-border-focus": "var(--accent)",
+  "--control-border-error": "var(--danger)",
+  "--control-border-success": "var(--success)",
+  "--control-border-warning": "var(--warning)",
+  "--control-bg": "var(--ink-soft)",
+  "--control-bg-hover": "color-mix(in srgb, var(--ink-soft), var(--text) 6%)",
+  "--control-bg-disabled": "rgba(255, 255, 255, 0.04)",
+  // One height per size for inputs, selects and buttons alike. `md` grows
+  // to 44px on a touch screen (tailwind/base.js); `sm` keeps its 32px and
+  // takes the kit's 44px hit area instead.
+  "--control-height-sm": "32px",
+  "--control-height-md": "40px",
+  "--control-height-lg": "46px",
+  "--control-padding-x-sm": "10px",
+  "--control-padding-x-md": "14px",
+  "--control-padding-x-lg": "18px",
+  "--focus-ring-width": "2px",
+  "--focus-ring-offset": "2px",
+  "--focus-ring-color": "var(--accent)",
+  /*
    * The ring around a selected card. Dozens of call sites wrote this as a
    * literal `rgba(0,153,255,.5)`, which froze the old accent into the markup —
    * so the light theme drew its selection rings in the dark theme's blue.
@@ -398,6 +435,10 @@ export const lightTokens = {
   "--hairline": "#e5e5e5",
   "--hairline-strong": "rgba(10, 10, 10, 0.106)",
   "--line-strong": "rgba(10, 10, 10, 0.32)",
+  // 50% ink: 3.7:1 on a white card (32% was 2.15:1). See the dark block.
+  "--control-border": "rgba(10, 10, 10, 0.5)",
+  "--control-border-hover": "rgba(10, 10, 10, 0.64)",
+  "--control-bg-disabled": "rgba(10, 10, 10, 0.03)",
   "--accent-edge": "rgba(0, 85, 255, 0.55)",
   /* Chip edge and scrim are intentionally identical to the dark theme's — see
    * the note there; both are about the content, not the interface. */

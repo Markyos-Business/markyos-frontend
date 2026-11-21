@@ -249,6 +249,14 @@ const config = {
         "rail-item-box": "48px",
         topbar: "84px",
         "widget-row": "72px",
+        // Form controls (UX-CON-001): inputs, selects and buttons share these,
+        // so a row of them lines up. `h-ctl-md` is 44px on a touch screen.
+        "ctl-sm": "var(--control-height-sm)",
+        "ctl-md": "var(--control-height-md)",
+        "ctl-lg": "var(--control-height-lg)",
+        "ctl-px-sm": "var(--control-padding-x-sm)",
+        "ctl-px-md": "var(--control-padding-x-md)",
+        "ctl-px-lg": "var(--control-padding-x-lg)",
       },
       borderRadius: {
         // Radius encodes size class (spec §2.5), so every corner is one of
@@ -263,6 +271,7 @@ const config = {
         card: "15px", // cards, counters
         widget: "15px", // widget rows
         feature: "25px", // marketing feature cards
+        control: "var(--control-radius)", // every form control (UX-CON-001)
       },
       lineHeight: {
         // Body copy in dialogs and settings rows: a touch looser than normal.

@@ -997,6 +997,14 @@ export const baseStyles = [
     },
   },
   {
+    // A finger needs 44px (WCAG 2.5.5 / Apple HIG): on a touch screen the
+    // default control size grows from 40 to 44. Inputs, selects and buttons
+    // all read `--control-height-md`, so a row of them still lines up.
+    "@media (pointer: coarse)": {
+      ":root": { "--control-height-md": "44px" },
+    },
+  },
+  {
     // A real pointer only: a touch screen has no hover, and a hover state left
     // behind after a tap reads as a stuck button.
     "@media (hover: hover) and (pointer: fine)": {
