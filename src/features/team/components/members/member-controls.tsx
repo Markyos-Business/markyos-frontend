@@ -100,6 +100,10 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
         hideLabel
         size="sm"
         value={m.role}
+        // The owner is set by the brand itself, not this row: the way to hand
+        // it on is "Make owner" on someone else. Locked, not hidden, so the
+        // rows stay lined up.
+        disabled={m.role === "owner"}
         onChange={(value) => setTeamRole(ws.id, m.id, value as TeamRole)}
         options={ROLES.map((r) => ({ value: r, label: roleName(r), disabled: r === "editor" && editorsFull && m.role !== "editor" }))}
       />
@@ -108,7 +112,9 @@ export function MemberControls({ ws, member: m, isAr, canGovern, editorsFull }: 
         label={isAr ? `إزالة ${m.name}` : `Remove ${m.name}`}
         title={isAr ? `إزالة ${who} من هذه العلامة` : `Remove ${who} from this brand`}
         onClick={() => void remove()}
-        className="mk-danger-hover cursor-pointer text-text-faint"
+        // The owner can't be removed, only replaced: the slot is kept empty
+        // so the row lines up with the others.
+        className={`mk-danger-hover cursor-pointer text-text-faint ${m.role === "owner" ? "invisible" : ""}`}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertBanner, Badge, Button, EmptyState, Icon, PageHeader, Skeleton, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, EmptyState, Icon, PageHeader, Skeleton, Tooltip, useDialog, useToast } from "@/components/ui";
 import { SelectField } from "@/components/ui";
 import { formatDay } from "@/features/discovery";
 import { useBriefAnalysis } from "../hooks/use-brief-analysis";
@@ -83,7 +83,12 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
           />
         </div>
         <Badge>{analysis.language === "ar" ? "العربية" : "English"}</Badge>
-        {analysis.isFreeRun && <Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge>}
+        {/* Said, not just shown: "Free run" alone didn't say what made it free. */}
+        {analysis.isFreeRun && (
+          <Tooltip content={t("This was the brand's first analysis, which is free.", "كان هذا أول تحليل للعلامة، وهو مجاني.")}>
+            <span tabIndex={0} className="rounded-md"><Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge></span>
+          </Tooltip>
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-space-4">
         {analysis.status === "ready" && (

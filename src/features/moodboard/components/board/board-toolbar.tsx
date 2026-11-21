@@ -20,9 +20,9 @@ type BoardToolbarProps = {
 export function BoardToolbar({ board, view, isAr, hidden, shortlistOnly, onView, onShortlistOnly, onRename, onAddZone, onDelete }: BoardToolbarProps) {
   return (
     <div className={`shrink-0 flex-wrap items-center gap-3 ${hidden ? "hidden" : "flex"}`}>
-      <h2 dir="auto" className="bidi-auto text-[16px] font-semibold">
+      <h1 dir="auto" className="bidi-auto min-w-0 truncate text-h4 font-medium">
         {board.title}
-      </h2>
+      </h1>
       <IconButton icon="pen" label={isAr ? "أعد تسمية اللوح" : "Rename board"} onClick={onRename} className="cursor-pointer text-text-faint" />
       <MoodboardSaveIndicator isAr={isAr} />
 

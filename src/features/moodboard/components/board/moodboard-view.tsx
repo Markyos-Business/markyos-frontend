@@ -66,14 +66,17 @@ export function MoodboardView({ ws, isAr, board, view, onView, compact, immersiv
         immersive ? "gap-0 overflow-hidden p-0" : compact ? "gap-3 overflow-hidden px-7 py-4" : "gap-5 overflow-auto px-7 py-6.5"
       }`}
     >
-      <h1 className={immersive ? "sr-only" : "mb-space-3 truncate text-h4 font-medium"}>{board?.title || (isAr ? "لوح إلهامي" : "Moodboard")}</h1>
-      {/* The way back to all boards, and which board this is. */}
-      <div className={`shrink-0 items-center gap-space-3 ${immersive ? "hidden" : "flex"}`}>
-        <Link href={allBoards} className="mk-linkbtn flex min-h-6 min-w-6 items-center gap-space-2 text-caption font-medium text-text-muted">
-          <Icon name="angle-left" size={16} />
-          {isAr ? "كل الألواح" : "All boards"}
-        </Link>
-      </div>
+      {/* The way back sits above the title, as everywhere else. The title
+          itself is the toolbar's (it carries the rename); with no toolbar —
+          immersive, or no board — the page still needs its heading. */}
+      <Link
+        href={allBoards}
+        className={`mk-linkbtn min-h-6 min-w-6 shrink-0 items-center gap-space-2 self-start text-caption font-medium text-text-muted ${immersive ? "hidden" : "flex"}`}
+      >
+        <Icon name="angle-left" size={16} />
+        {isAr ? "كل الألواح" : "All boards"}
+      </Link>
+      {(immersive || !board) && <h1 className="sr-only">{board?.title || (isAr ? "لوح إلهامي" : "Moodboard")}</h1>}
 
       {/* Outside the board on purpose: uploading with no board yet creates
           one, so the input has to exist before the first board does. */}

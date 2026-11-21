@@ -18,7 +18,8 @@ export const CONTENT_COPY = {
     area: "Website content",
     back: "Back to studio",
     language: "Interface language",
-    allContent: "All content",
+    // Matches the page heading and the account menu link.
+    allContent: "Website content",
     retry: "Try again",
     nav: { cms: "CMS", library: "CMS library", media: "Media", taxonomy: "Authors and labels", manage: "Manage", cmsManage: "CMS settings", redirects: "Redirects", traffic: "Website traffic", people: "CMS people" },
     common: { save: "Save", add: "Add", remove: "Remove", cancel: "Cancel", edit: "Edit", confirmRemove: "Remove this?", saved: "Saved.", removed: "Removed." },
@@ -168,7 +169,7 @@ export const CONTENT_COPY = {
     area: "محتوى الموقع",
     back: "العودة إلى الاستوديو",
     language: "لغة الواجهة",
-    allContent: "كل المحتوى",
+    allContent: "محتوى الموقع",
     retry: "إعادة المحاولة",
     nav: { cms: "نظام المحتوى", library: "مكتبة المحتوى", media: "الوسائط", taxonomy: "الكُتّاب والتصنيفات", manage: "الإدارة", cmsManage: "إعدادات المحتوى", redirects: "إعادة التوجيه", traffic: "زيارات الموقع", people: "فريق المحتوى" },
     common: { save: "حفظ", add: "إضافة", remove: "إزالة", cancel: "إلغاء", edit: "تعديل", confirmRemove: "إزالة هذا العنصر؟", saved: "تم الحفظ.", removed: "تمت الإزالة." },
