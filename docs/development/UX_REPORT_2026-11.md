@@ -53,6 +53,14 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 4 (21 Nov 2026): improvements
+
+- Files under a kilobyte read "<1 KB" instead of "0 KB" (a small SVG looked empty).
+- On phone, People's brand chips wrap onto their own row instead of being cut to "Nadeen Studio · C" (new `mobileWide` option on kit table columns).
+- Account, Notifications, People and Questionnaires leave room under the beta notice; their headings touched it.
+
+All 770 unit tests and the 30 e2e tests pass.
+
 ## Round 3 (21 Nov 2026): improvements
 
 Not defects from an audit table: rough edges seen during rounds 1 and 2, fixed and checked on screen.
