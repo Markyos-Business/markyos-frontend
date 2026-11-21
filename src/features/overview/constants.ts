@@ -18,7 +18,7 @@ export type ToolbarAction = (typeof TOOLBAR)[number]["action"];
 
 /** The brand details that edit in place, with their labels. */
 export const DETAIL_FIELDS = [
-  { key: "industry", en: "Industry", ar: "الصناعة", placeholder: "e.g. Brand & identity design", arPlaceholder: "مثل: تصميم العلامات والهويات" },
+  { key: "industry", en: "Industry", ar: "الصناعة", placeholder: "e.g. Specialty coffee", arPlaceholder: "مثل: القهوة المختصة" },
   { key: "tagline", en: "Tagline", ar: "الشعار الترويجي", placeholder: "A short line that sums up the brand", arPlaceholder: "سطر قصير يلخّص العلامة" },
   { key: "foundedYear", en: "Founded", ar: "سنة التأسيس", placeholder: "e.g. 2019", arPlaceholder: "مثل: 2019" },
 ] as const;
