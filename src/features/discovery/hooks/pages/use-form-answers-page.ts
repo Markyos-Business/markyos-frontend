@@ -14,6 +14,6 @@ export function useFormAnswersPage(slug: string, formId: string) {
     shell: { workspace, section: PAGE_SECTIONS.forms.en, arSection: PAGE_SECTIONS.forms.ar, width: "wide" as const },
     view: { formId, builderHref: `${base}/edit`, sendHref: `${base}/send`, strategyHref: `/w/${workspace.slug}/strategy`, isAr },
     relatedCalls: { brandId: workspace.id, brandSlug: workspace.slug, formId, isAr },
-    analysis: { href: `/w/${workspace.slug}/analysis`, isAr },
+    analysis: { href: `/w/${workspace.slug}/discovery?tab=analysis`, isAr },
   };
 }

@@ -26,14 +26,13 @@ type PageShellProps = {
 export function PageShell({ workspace, section, arSection, right, tabs, tabsRight, width = "default", offline, topBar = true, children }: PageShellProps) {
   const ids = useTabIds();
   const active = tabs?.find(tab => tab.active)?.key ?? tabs?.[0]?.key;
-  // Room under the top bar, so a contained page's title sits where a full-width
-  // page's does (Analysis and Discovery sat 25px higher than Overview). A tab
-  // bar already gives that room.
+  // Room under the top bar (or its tab row), so a contained page's title sits
+  // where a full-width page's does: those pad their own top by 26px, tabs or not.
   // A full-width page still needs its main landmark (PageContainer has one):
   // without it a screen reader could not jump to the content.
   // One main landmark per page: the tab panel's when there are tabs, otherwise
   // the container's (or a plain one for a full-width page).
-  const content = width === "full" ? children : <PageContainer width={width} offline={offline} spaced={!tabs} landmark={!active}>{children}</PageContainer>;
+  const content = width === "full" ? children : <PageContainer width={width} offline={offline} spaced landmark={!active}>{children}</PageContainer>;
   return (
     <>
       {topBar && <TopBar workspace={workspace} section={section} arSection={arSection} right={right} tabs={tabs} tabsRight={tabsRight} tabsId={ids.id} panelId={ids.panelId} />}

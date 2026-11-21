@@ -27,6 +27,8 @@ export function useVisualIdentityPage(slug: string) {
     logo: Object.values(ws.logo).every((s) => s.phase !== "attached"),
     color: ws.colors.length === 0,
     typography: !ws.typography.latinFamily && !ws.typography.arabicFamily,
+    // A sandbox, never empty: it falls back to the system faces.
+    "type-lab": false,
     patterns: countOf("pattern") === 0,
     graphics: countOf("graphic") === 0,
     illustrations: countOf("illustration") === 0,

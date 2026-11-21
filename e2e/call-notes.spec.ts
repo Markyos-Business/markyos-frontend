@@ -18,7 +18,8 @@ test.describe("call notes", () => {
 
     await page.goto(`/w/${brand.slug}/discovery`);
     await expect(page.getByRole("link", { name: "Wadi Rum Coffee rebrand" })).toBeVisible();
-    await page.getByRole("tab", { name: /Call notes 0/ }).click();
+    await page.getByRole("tab", { name: "Call notes", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Call notes 0" })).toBeVisible();
     await expect(page.getByText("No call notes yet.")).toBeVisible();
 
     await page.getByRole("link", { name: "Add call notes" }).first().click();
@@ -60,7 +61,8 @@ test.describe("call notes", () => {
     );
 
     await page.goto(`/w/${brand.slug}/discovery`);
-    await page.getByRole("tab", { name: /Call notes 1/ }).click();
+    await page.getByRole("tab", { name: "Call notes", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Call notes 1" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Kick-off with Omar" })).toBeVisible();
     await expect(page.getByText("In analysis")).toBeVisible();
 
