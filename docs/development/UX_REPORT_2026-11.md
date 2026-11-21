@@ -53,6 +53,15 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 7 (21 Nov 2026): improvements
+
+- Disabled buttons looked enabled: they kept the resting muted ink, so the board's "move on" arrow on the last column looked live, and a disabled text-only button grew a grey box. They now take the disabled ink, and text-only buttons stay unfilled.
+- Page titles jumped by 25px between brand pages: Analysis and Discovery sat higher than Overview, Team and Settings. Contained pages now get the same room under the top bar (measured: all within 1px).
+- Settings on phone: a field with Copy and Generate beside it squeezed the input to about 100px. Field rows now wrap on narrow screens, with the actions under the field.
+- Analysis on phone: the section list scrolls sideways; its far edge now fades while there is more to scroll, like the tab rows.
+
+All 771 unit tests and the 30 e2e tests pass.
+
 ## Round 6 (21 Nov 2026): improvements
 
 - Buttons were sized for their longest hidden state label ("Try again") even when they never show one: a 4-letter "Pick" was 99px and pushed moodboard captions onto two lines. Buttons now reserve that room only when they use a loading or status state. Their default state labels ("Saving…", "Saved", "Try again", "Ask for access") follow the interface language.
