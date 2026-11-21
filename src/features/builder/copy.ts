@@ -4,6 +4,15 @@
  * `isAr ? … : …`; new strings go here.
  */
 const en = {
+  layout: {
+    resize: "Resize the tools panel",
+    tooSmall: {
+      title: "The guideline editor needs a larger screen",
+      body: "Open it on a computer or a tablet in landscape, at least 768px wide. You can still view the site from here.",
+      view: "View the site",
+      back: "Back to the brand",
+    },
+  },
   publication: {
     status: {
       notLive: "Not live",
@@ -18,6 +27,15 @@ const en = {
 type BuilderCopy = typeof en;
 
 const ar: BuilderCopy = {
+  layout: {
+    resize: "غيّر عرض لوحة الأدوات",
+    tooSmall: {
+      title: "يحتاج محرر الدليل إلى شاشة أكبر",
+      body: "افتحه على حاسوب أو جهاز لوحي بالوضع الأفقي، بعرض 768 بكسل على الأقل. يمكنك عرض الموقع من هنا.",
+      view: "اعرض الموقع",
+      back: "العودة إلى العلامة",
+    },
+  },
   publication: {
     status: {
       notLive: "غير متاح للعملاء",

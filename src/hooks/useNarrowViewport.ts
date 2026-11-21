@@ -38,7 +38,8 @@ export function usePhoneViewport(): boolean {
   return useMediaQuery(PHONE_QUERY);
 }
 
-function useMediaQuery(query: string): boolean {
+/** Whether a media query matches, kept in sync; false on the server. */
+export function useMediaQuery(query: string): boolean {
   const subscribe = useCallback((notify: () => void) => {
     const mql = window.matchMedia(query);
     mql.addEventListener("change", notify);

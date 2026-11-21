@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ActionsDropdown, Badge, Button, Icon, IconButton, useToast } from "@/components/ui";
-import { useNarrowViewport, usePhoneViewport } from "@/hooks/useNarrowViewport";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { ViewSwitcher } from "../canvas/view-switcher";
 import { ReviewChip } from "../review/review-panel";
@@ -21,10 +20,11 @@ import { builderCopy } from "../../copy";
 export function BuilderTopBar(b: BuilderPageState) {
   const { ws, isAr, hasUnpublished, review, revealFinding, previewHref, onPublish, onUnpublish } = b;
   const { showToast } = useToast();
-  // Below 900px the three-part bar overlapped itself: the view switcher and
-  // the View/Copy pair move into More, and the status keeps only its dot.
-  const narrow = useNarrowViewport();
-  const phone = usePhoneViewport();
+  // Under 1024px the bar is one row that never wraps: the status keeps only
+  // its dot, the review chip its count, and View/Copy move into More. The view
+  // switcher stays: the builder isn't shown under 768px, and from there up it
+  // fits (review, 21 Nov 2026).
+  const narrow = b.compact;
   // The server's word (`live`), not just "a publish happened": a published
   // brand without a paid plan isn't shown on its link (review, 21 Nov 2026).
   const live = isLive(ws);
@@ -51,7 +51,7 @@ export function BuilderTopBar(b: BuilderPageState) {
   }
 
   return (
-    <header className={`mk-no-hover h-14 shrink-0 items-center gap-space-4 bg-surface-1 px-space-5 shadow-rule-b ${narrow ? "flex" : "grid grid-cols-[1fr_auto_1fr]"}`}>
+    <header className={`mk-no-hover h-14 shrink-0 flex-nowrap items-center gap-space-4 overflow-hidden bg-surface-1 px-space-5 shadow-rule-b ${narrow ? "flex" : "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"}`}>
       {/* The way out, and what you're editing: the studio's own navigation is not on this route. */}
       <div className="flex min-w-0 flex-1 items-center gap-space-3">
         <Link href={`/w/${ws.slug}/overview`} aria-label={back} title={back} className="grid size-8 shrink-0 place-items-center rounded-lg text-text-muted">
@@ -68,10 +68,10 @@ export function BuilderTopBar(b: BuilderPageState) {
         )}
       </div>
 
-      {!narrow && <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />}
+      <ViewSwitcher breakpoint={b.breakpoint} onBreakpoint={b.onBreakpoint} lang={b.canvasLang} onLang={b.onPreviewLang} isAr={isAr} />
 
       <div className="flex min-w-0 shrink-0 items-center justify-end gap-ctl-row">
-        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={phone} upToDate={upToDate} />
+        <ReviewChip report={review} isAr={isAr} onSelect={revealFinding} compact={narrow} upToDate={upToDate} />
         {!narrow && <span className="flex items-center rounded-lg shadow-edge">
           <Link
             href={`${previewHref}?preview=1`}

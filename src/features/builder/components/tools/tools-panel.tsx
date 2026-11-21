@@ -1,5 +1,6 @@
 import { IconButton, SegmentedControl } from "@/components/ui";
 import { TOOL_TABS } from "../../constants";
+import { TOOLS_DEFAULT_W } from "../../hooks/use-builder-panels";
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { LayersTab } from "../layers/layers-tab";
 import { ElementsTab } from "./elements-tab";
@@ -15,7 +16,15 @@ export function ToolsPanel(b: BuilderPageState) {
     `h-8 cursor-pointer rounded-full px-3 text-[12px] font-semibold ${on ? "bg-accent-soft text-accent-on-soft" : "bg-surface-1 text-text-muted"}`;
 
   return (
-    <div className="motion-safe:animate-fade-in flex w-[240px] shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto p-4 shadow-[inset_-1px_0_0_var(--hairline)]">
+    <div
+      // On a wide screen the panel sits beside the canvas at the width it was
+      // dragged to; under 1024px it floats over the canvas's start edge, so
+      // opening it doesn't squeeze the page being edited.
+      className={`motion-safe:animate-fade-in flex shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto bg-surface-1 p-4 ${
+        b.compact ? "absolute inset-y-0 start-0 z-20 shadow-edge-pop" : "shadow-[inset_-1px_0_0_var(--hairline)] rtl:shadow-[inset_1px_0_0_var(--hairline)]"
+      }`}
+      style={{ width: b.compact ? TOOLS_DEFAULT_W : b.leftWidth }} /* ctl-audit-ignore: a dragged panel width, not a control */
+    >
       {/* The way out lives in the editor's top bar; this row only hides the panel. */}
       <div className="-mt-1 flex shrink-0 items-center justify-end">
         <IconButton icon="angle-double-left" iconSize={16} size="xs" label={hide} title={hide} onClick={() => b.setLeftOpen(false)} className="text-text-faint" />
@@ -36,8 +45,7 @@ export function ToolsPanel(b: BuilderPageState) {
         </div>
       </div>
 
-      {/* The panel is 220px: the kit's full-width pill fits its four tools,
-          where a row of tabs had to scroll. */}
+      {/* At its narrowest (288px) the kit's full-width pill still fits all four tool names. */}
       <SegmentedControl fullWidth label={isAr ? "أدوات الدليل" : "Guideline tools"} options={TOOL_TABS.map((t) => ({ value: t.key, label: isAr ? t.ar : t.en }))} value={tab} onChange={b.onTab} />
 
       {/* Keyed on the tab so the swap animates: the content moves, the chrome above it doesn't. */}

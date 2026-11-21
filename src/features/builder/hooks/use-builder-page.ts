@@ -83,7 +83,7 @@ export function useBuilderPage(slug: string) {
    * being dragged off the desktop.
    */
   const [draggingKind, setDraggingKind] = useState<BlockKind | null>(null);
-  const { leftOpen, rightOpen, setLeftOpen, setRightOpen } = useBuilderPanels();
+  const { leftOpen, rightOpen, setLeftOpen, setRightOpen, narrow: compact, leftWidth, setLeftWidth } = useBuilderPanels();
 
   /**
    * Selects a section and brings it on screen.
@@ -471,6 +471,9 @@ export function useBuilderPage(slug: string) {
     scope,
     draggingKind,
     onDraggingKind: setDraggingKind,
+    compact,
+    leftWidth,
+    setLeftWidth,
     leftOpen,
     rightOpen,
     setLeftOpen,

@@ -8,14 +8,15 @@ export function CanvasToolbar(b: BuilderPageState) {
   const roundIcon = "grid h-8 w-8 cursor-pointer place-items-center rounded-full text-text-muted disabled:cursor-not-allowed disabled:opacity-30";
   return (
     <div className="flex h-12 shrink-0 items-center gap-ctl-row px-5 shadow-rule-b">
-      <h2 className="text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h2>
+      {/* A long page name truncates (with its full name on hover) instead of pushing the controls off the end. */}
+      <h2 dir="auto" title={activePage ? (isAr ? activePage.arName : activePage.name) : undefined} className="min-w-0 max-w-[40%] shrink truncate text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h2>
       {activePage && (
         <>
           <IconButton icon="pen" label={isAr ? "أعد تسمية الصفحة" : "Rename page"} onClick={b.onRenamePage} className="cursor-pointer text-text-faint" />
           <IconButton icon="times" label={isAr ? "احذف الصفحة" : "Delete page"} title={isAr ? "احذف هذه الصفحة" : "Delete this page"} onClick={b.onDeletePage} className="mk-danger-hover cursor-pointer text-text-faint" />
         </>
       )}
-      <span dir="ltr" className="truncate text-[11.5px] text-text-faint">{activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}</span>
+      <span dir="ltr" className="min-w-0 truncate text-[11.5px] text-text-faint">{activePage ? `/v/${ws.slug}/p/${activePage.slug}` : `/v/${ws.slug}`}</span>
       {/*
         The hint takes all the slack, outside the control group. It says
         something different depending on the selection, and different widths

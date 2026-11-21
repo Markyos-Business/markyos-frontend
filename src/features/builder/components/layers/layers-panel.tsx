@@ -234,7 +234,7 @@ function LayerRow({
         aria-selected={active}
         aria-level={depth + 1}
         draggable={reorderable}
-        className="group flex items-center gap-1.5 h-8 rounded-lg pe-1 cursor-pointer"
+        className="group relative flex items-center gap-1.5 h-8 rounded-lg pe-1 cursor-pointer"
         style={{
           // Indentation is inline-start padding, so the tree nests toward the
           // start of the line in both directions rather than always leftward.
@@ -323,8 +323,17 @@ function LayerRow({
 
         {/* The row's own controls. Kept out of the tab order until the row is
             focused or hovered would hide them from keyboard users entirely, so
-            they are always focusable and only visually quiet. */}
-        <span className="flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+            they are always focusable and only visually quiet.
+
+            They float over the row's end rather than sitting beside the name:
+            invisible but in the flow, they kept 72px for themselves and cut
+            "Departments" to "Departme…" at any window width (review, 21 Nov
+            2026). Now the name has the whole row until the pointer or focus
+            arrives, and the controls cover its end on the row's own ground. */}
+        <span
+          className="absolute inset-y-0 end-1 flex items-center rounded-lg bg-surface-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+          style={{ boxShadow: active ? "inset 0 0 0 999px var(--accent-soft)" : undefined }}
+        >
           <RowButton
             icon="angle-up"
             label={isAr ? `نقل ${layer.label} لأعلى` : `Move ${layer.label} up`}
