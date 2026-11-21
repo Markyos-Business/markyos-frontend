@@ -1,6 +1,6 @@
 "use client";
 
-import { AppFooter, EmptyHint, TabPanel, Tabs, useTabIds, PageHeader } from "@/components/ui";
+import { AppFooter, Button, EmptyState, TabPanel, Tabs, useTabIds, PageHeader } from "@/components/ui";
 import type { Draft } from "@/types";
 import type { DraftsTab } from "../hooks/use-drafts-page";
 import { DraftCard } from "./draft-card";
@@ -14,10 +14,12 @@ type DraftsViewProps = {
   shown: Draft[];
   onAccept: (d: Draft) => void;
   onReject: (d: Draft) => void;
+  /** Where proposals come from, offered when the queue is empty. */
+  discoveryHref: string;
 };
 
 /** The queue: what's waiting, what's decided, one card each. */
-export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept, onReject }: DraftsViewProps) {
+export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept, onReject, discoveryHref }: DraftsViewProps) {
   const tabIds = useTabIds();
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
@@ -40,11 +42,20 @@ export function DraftsView({ isAr, tab, onTab, pending, decided, shown, onAccept
 
       <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={tab}>
       {shown.length === 0 ? (
-        <EmptyHint>
-          {tab === "pending"
-            ? t("Nothing waiting. Send a discovery questionnaire, or import a document, and answers land here for review.", "لا شيء بانتظار القرار. أرسل استبيان استكشاف أو استورد مستندًا، وستصل الإجابات هنا للمراجعة.")
-            : t("Nothing decided yet.", "لم يُحسم شيء بعد.")}
-        </EmptyHint>
+        tab === "pending" ? (
+          <EmptyState
+            icon="inbox"
+            title={t("Nothing to review.", "لا شيء للمراجعة.")}
+            description={t("Send a discovery questionnaire, or import a document, and what it proposes lands here.", "أرسل استبيان استكشاف أو استورد مستندًا، وسيصل ما يقترحه إلى هنا.")}
+            action={<Button variant="outline" href={discoveryHref}>{t("Open Discovery", "فتح الاكتشاف")}</Button>}
+          />
+        ) : (
+          <EmptyState
+            icon="check-circle"
+            title={t("Nothing decided yet.", "لم يُحسم شيء بعد.")}
+            description={t("Drafts you accept or reject are kept here, with their reasoning.", "تُحفظ هنا المسودات التي تقبلها أو ترفضها، مع مبرراتها.")}
+          />
+        )
       ) : (
         <div className="flex flex-col gap-3">
           {shown.map((d) => (

@@ -56,21 +56,14 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             variant="outline"
             size="md"
             onClick={() => setExtracting(true)}
-            title={
-              hasArtwork
-                ? isAr
-                  ? "اقرأ الألوان الموجودة فعليًا في الشعار"
-                  : "Read the colours actually present in your logo"
-                : isAr
-                  ? "ارفع شعارًا أولًا"
-                  : "Upload a logo first"
-            }
-            disabled={!hasArtwork}
+            title={hasArtwork ? (isAr ? "اقرأ الألوان الموجودة فعليًا في الشعار" : "Read the colours actually present in your logo") : undefined}
+            // Says why on hover and focus, not only in a title nobody sees on a disabled button.
+            disabledReason={hasArtwork ? undefined : isAr ? "ارفع شعارًا أولًا" : "Upload a logo first"}
             icon={<Icon name="palette" size={18} className="text-accent-text" />}
           >
             {isAr ? "من الشعار" : "Pick from logo"}
           </Button>
-          <Button variant="solid" size="md" onClick={() => setEditor({ mode: "add" })}>
+          <Button variant="primary" size="md" icon={<Icon name="plus" size={18} />} onClick={() => setEditor({ mode: "add" })}>
             {isAr ? "أضف لونًا" : "Add colour"}
           </Button>
         </div>

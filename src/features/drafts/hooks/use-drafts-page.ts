@@ -95,6 +95,7 @@ export function useDraftsPage(slug: string) {
       shown: tab === "pending" ? pending : decided,
       onAccept: accept,
       onReject: reject,
+      discoveryHref: `/w/${ws.slug}/discovery`,
     },
   };
 }

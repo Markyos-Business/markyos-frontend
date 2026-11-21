@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint, PageHeader, Button } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyState, PageHeader, Button } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { AssetType, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
@@ -106,7 +106,7 @@ export function AssetTypeGrid({
             e.target.value = "";
           }}
         />
-        <Button variant="solid" size="md" onClick={() => inputRef.current?.click()}>
+        <Button variant="primary" size="md" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>
           {isAr ? "رفع ملف" : "Upload"}
         </Button>
         </>}
@@ -125,7 +125,12 @@ export function AssetTypeGrid({
       )}
 
       {items.length === 0 ? (
-        <EmptyHint>{isAr ? "لا ملفات هنا بعد." : "Nothing here yet — upload one to get started."}</EmptyHint>
+        <EmptyState
+          icon="image"
+          title={isAr ? `لا ملفات في «${arTitle}» بعد.` : `No ${title.toLowerCase()} yet.`}
+          description={isAr ? "ارفع صورة لتظهر هنا وفي الدليل." : "Upload an image and it shows here and in the guideline."}
+          action={<Button variant="outline" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>{isAr ? "رفع ملف" : "Upload"}</Button>}
+        />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {items.map((a) => (

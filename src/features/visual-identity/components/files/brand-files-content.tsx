@@ -3,7 +3,7 @@
 import { type ReactNode, useMemo, useRef, useState } from "react";
 import { Button, PageHeader, SearchField, SegmentedControl, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint, EmptyState, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
@@ -422,11 +422,14 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
        * filtered one carries the way out rather than describing it.
        */}
       {filtered.length === 0 && rows.length === 0 ? (
-        <EmptyHint>
-          {isAr
-            ? "لا شيء هنا بعد. ارفع ملفات الشعار والخطوط والصور وملفات التصدير التي تملكها هذه العلامة — كل تبويب آخر في الهوية البصرية يقرأ من هنا."
-            : "Nothing here yet. Upload the logo files, fonts, photography and exports this brand owns — every other Visual identity tab reads from this one."}
-        </EmptyHint>
+        // The header already carries Upload, so the empty state explains rather than repeating the button.
+        <EmptyState
+          icon="file-alt"
+          title={isAr ? "لا ملفات بعد." : "No files yet."}
+          description={isAr
+            ? "ارفع ملفات الشعار والخطوط والصور وملفات التصدير التي تملكها هذه العلامة؛ تقرأ منها كل تبويبات الهوية البصرية."
+            : "Upload the logo files, fonts, photography and exports this brand owns; every Visual identity tab reads from them."}
+        />
       ) : filtered.length === 0 ? (
         <div className="flex items-center gap-ctl-row flex-wrap">
           <EmptyHint>{isAr ? "لا ملف يطابق هذه المرشحات." : "No file matches these filters."}</EmptyHint>

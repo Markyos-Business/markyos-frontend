@@ -76,11 +76,10 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               : "Three slots. Arabic and Latin are separate lockups — the mark is shared. Each one can carry its own light version for dark backgrounds."}
         actions={<>
         <Button
-          variant="solid"
+          variant="primary"
           size="md"
           onClick={() => setShowDownload(true)}
-          disabled={!Object.values(ws.logo).some(slot => slot.phase === "attached")}
-          title={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
+          disabledReason={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
         >
           {isAr ? "تنزيل الملفات" : "Download assets"}
         </Button>
