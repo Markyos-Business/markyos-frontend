@@ -460,7 +460,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
               style={{ background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
               <div
-                className="h-[110px] relative grid place-items-center"
+                className="h-[110px] relative grid place-items-center overflow-hidden rounded-t-card"
                 style={{ background: "var(--surface-2)", boxShadow: "inset 0 -1px 0 var(--hairline)" }}
               >
                 {IMAGE_TYPES.has(r.type) && r.url ? (
@@ -473,7 +473,9 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                     alt=""
                     ground="--surface-2"
                     adapt={r.type !== "photo"}
-                    style={{ maxHeight: 64, maxWidth: "80%" }}
+                    // A photo fills its tile, so two photos can be told apart at
+                    // a glance; marks and graphics stay whole, never cropped.
+                    style={r.type === "photo" ? { width: "100%", height: "100%", objectFit: "cover" } : { maxHeight: 80, maxWidth: "80%" }}
                   />
                 ) : (
                   <Icon name={TYPE_META[r.type].icon} size={26} style={{ color: "var(--text-faint)" }} />
