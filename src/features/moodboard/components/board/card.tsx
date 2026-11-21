@@ -414,10 +414,11 @@ function Footer({
           size="sm"
           value={item.size}
           onChange={(value) => onEdit({ size: value as MoodboardItem["size"] })}
+          // Words, not S/M/L: a lone "M" on every card didn't say it was a size.
           options={[
-            { value: "s", label: "S" },
-            { value: "m", label: "M" },
-            { value: "l", label: "L" },
+            { value: "s", label: isAr ? "صغير" : "Small" },
+            { value: "m", label: isAr ? "متوسط" : "Medium" },
+            { value: "l", label: isAr ? "كبير" : "Large" },
           ]}
         />
         {asset?.credit?.sourceUrl && (

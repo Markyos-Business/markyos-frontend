@@ -39,7 +39,11 @@ export function WorkspaceCard({
         actions={<Badge tone={workspace.sharedStatus === "shared" ? "success" : "neutral"}>{workspace.sharedStatus === "shared" ? c.shared : c.draft}</Badge>}
         className="h-full"
         footer={<Dashboard.CardFooterStats items={[
-          { label: t("Brand setup", "إعداد العلامة"), value: t(`${complete} of ${setup.length} done`, `${complete} من ${setup.length} مكتمل`) },
+          // A client gets no working document, so a setup count would be made
+          // up; what they can act on is whether the guideline is out.
+          role === "client"
+            ? { label: t("Guideline", "الدليل"), value: workspace.published ? t("Ready to review", "جاهز للمراجعة") : t("Not published yet", "لم يُنشر بعد") }
+            : { label: t("Brand setup", "إعداد العلامة"), value: t(`${complete} of ${setup.length} done`, `${complete} من ${setup.length} مكتمل`) },
           { label: t("Your role", "دورك"), value: c.roles[role ?? ""] ?? "—" },
         ]} />}
       >

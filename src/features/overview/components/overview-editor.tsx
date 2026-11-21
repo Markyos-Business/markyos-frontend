@@ -38,7 +38,10 @@ export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: 
         suppressContentEditableWarning
         onInput={onInput}
         dir={isAr ? "rtl" : "ltr"}
-        className={`overview-editor min-h-0 max-w-[74ch] flex-1 overflow-auto px-10 py-8 outline-none ${isAr ? "font-arabic" : "font-sans"}`}
+        // An empty brand showed a blank box with no hint of what goes in it.
+        aria-label={isAr ? "نظرة عامة على العلامة" : "Brand overview"}
+        data-placeholder={isAr ? "اكتب نظرة عامة على العلامة: من هي، ولمن، وما الذي يميّزها." : "Write the brand overview: who it is, who it's for, and what sets it apart."}
+        className={`overview-editor min-h-0 max-w-[74ch] flex-1 overflow-auto px-10 py-8 outline-none empty:before:pointer-events-none empty:before:text-text-faint empty:before:content-[attr(data-placeholder)] ${isAr ? "font-arabic" : "font-sans"}`}
       />
     </div>
   );
