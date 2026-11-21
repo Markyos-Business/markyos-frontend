@@ -2,9 +2,9 @@
 
 import { useAccountCopy } from "@/contexts/useAccountCopy";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, TabPanel, Tabs, useTabIds, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Avatar, Badge, Button, CopyButton, EmptyState, Icon, IconBadge, PageHeader, Skeleton, Stagger, useDialog, useToast } from "@/components/ui";
 import { STATUS_META, formatDay, publicUrl, sendForm } from "@/features/discovery";
 import { KIND_META, LANGUAGE_META } from "../../constants";
 import { useDiscoveryFeed } from "../../hooks/discovery/use-discovery-feed";
@@ -19,6 +19,8 @@ type DiscoveryViewProps = {
   brandId: string;
   brandSlug: string;
   isAr: boolean;
+  /** Which part is open; the top bar's tabs choose it (Analysis is the third tab, drawn by its own view). */
+  section: Section;
 };
 
 const base = (slug: string) => `/w/${slug}/discovery`;
@@ -30,25 +32,15 @@ const formHref = (slug: string, form: FeedForm) => `/w/${slug}/forms/${form.id}/
  * questionnaire they fill in (with its share link right there, since sending
  * it is the point) and the notes from calls. The analysis reads both.
  */
-export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) {
-  const tabIds = useTabIds();
+export function DiscoveryView({ brandId, brandSlug, isAr, section }: DiscoveryViewProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const copy = useAccountCopy(isAr);
   const { data, error, loading, reload } = useDiscoveryFeed(brandId);
-  const router = useRouter();
-  const pathname = usePathname();
-  const section: Section = useSearchParams().get("tab") === "calls" ? "calls" : "questionnaires";
   const items = data?.items ?? [];
   const forms = items.filter((i): i is FeedForm => i.type === "form");
   const calls = items.filter((i): i is FeedCall => i.type === "call");
   const canEdit = data?.canEdit ?? false;
   const newFormHref = `/w/${brandSlug}/forms/new`;
-
-  // Kept in the address, so a link or a refresh opens the same part.
-  // push, not replace: Back steps through the tabs like any other page change.
-  const choose = (next: Section) => {
-    if (next !== section) router.push(next === "calls" ? `${pathname}?tab=calls` : pathname, { scroll: false });
-  };
 
   const addCallButton = canEdit && (
     <Button variant="primary" href={`${base(brandSlug)}/calls/new`} icon={<Icon name="plus" size={18} />}>
@@ -72,7 +64,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
-        title={t("Discovery", "الاستكشاف")}
+        title={t("Discovery", "الاكتشاف")}
         description={copy.discoveryIntro}
       />
 
@@ -80,15 +72,10 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
 
       <section className="mk-surface flex flex-col rounded-card bg-surface-1">
         <div className="flex flex-wrap items-center justify-between gap-ctl-row px-space-8 pt-space-8 pb-space-5">
-          <Tabs {...tabIds}
-            label={t("Discovery", "الاستكشاف")}
-            tabs={[
-              { key: "questionnaires", label: `${t("Questionnaire", "الاستبيان")} ${forms.length}` },
-              { key: "calls", label: `${t("Call notes", "ملاحظات المكالمات")} ${calls.length}` },
-            ]}
-            active={section}
-            onChange={(key) => choose(key as Section)}
-          />
+          <h2 className="flex items-center gap-space-3 text-h5 font-medium">
+            {section === "questionnaires" ? t("Questionnaire", "الاستبيان") : t("Call notes", "ملاحظات المكالمات")}
+            {data && <Badge tone="neutral">{section === "questionnaires" ? forms.length : calls.length}</Badge>}
+          </h2>
           <div className="flex flex-wrap items-center gap-ctl-row">
             {section === "questionnaires" ? (
               <>
@@ -104,7 +91,6 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
           </div>
         </div>
 
-        <TabPanel id={tabIds.panelId} tabsId={tabIds.id} active={section}>
         {loading && !data ? (
           loadingRows
         ) : section === "questionnaires" ? (
@@ -140,26 +126,8 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
             ))}
           </Stagger>
         )}
-        </TabPanel>
       </section>
 
-      <section className="mk-surface flex flex-wrap items-center justify-between gap-ctl-row rounded-card bg-surface-1 p-space-8">
-        <div className="flex items-start gap-ctl-row">
-          <IconBadge icon="chart-line" tone="accent" />
-          <div className="flex flex-col gap-space-1">
-            <h2 className="text-h5 font-medium">{t("Brief analysis", "تحليل الموجز")}</h2>
-            <p className="text-caption text-text-muted">
-              {t(
-                "A strategist's read of everything above: tensions, gaps and routes, every claim cited.",
-                "قراءة استراتيجية لكل ما سبق: التناقضات والفجوات والمسارات، مع مصدر لكل فكرة."
-              )}
-            </p>
-          </div>
-        </div>
-        <Button variant="outline" href={`/w/${brandSlug}/analysis`} icon={<Icon name="chart-line" size={18} />}>
-          {t("Open analysis", "فتح التحليل")}
-        </Button>
-      </section>
     </div>
   );
 }

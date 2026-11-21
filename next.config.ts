@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       // The CMS moved into the admin area; old links still land.
       { source: "/content", destination: "/admin/cms", permanent: false },
       { source: "/content/:path*", destination: "/admin/cms/:path*", permanent: false },
+      // The brand sidebar's stages (Nov 2026): the type sandbox became a Visual
+      // identity tab and Analysis a Discovery tab; their old pages still land.
+      { source: "/w/:slug/type-lab", destination: "/w/:slug/visual-identity?tab=type-lab", permanent: false },
+      { source: "/w/:slug/analysis", destination: "/w/:slug/discovery?tab=analysis", permanent: false },
     ];
   },
 };

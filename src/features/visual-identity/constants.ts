@@ -2,7 +2,7 @@ import type { AssetType } from "@/types";
 
 // The file library lives on Assets alone: a "Brand files" tab here showed the
 // same library a second time under another name.
-export type VisualIdentityTab = "logo" | "color" | "typography" | "patterns" | "graphics" | "illustrations" | "icons";
+export type VisualIdentityTab = "logo" | "color" | "typography" | "type-lab" | "patterns" | "graphics" | "illustrations" | "icons";
 
 export const PAGE_SECTION = { en: "Visual identity", ar: "الهوية البصرية" } as const;
 
@@ -10,6 +10,8 @@ export const TABS: { key: VisualIdentityTab; label: string; arLabel: string }[] 
   { key: "logo", label: "Logo system", arLabel: "الشعار" },
   { key: "color", label: "Colour", arLabel: "الألوان" },
   { key: "typography", label: "Typography", arLabel: "الخطوط" },
+  // The type sandbox sits beside the brand's type (it used to be its own page, /type-lab).
+  { key: "type-lab", label: "Type lab", arLabel: "مختبر الخطوط" },
   { key: "patterns", label: "Patterns", arLabel: "الأنماط" },
   { key: "graphics", label: "Graphics", arLabel: "الرسومات" },
   { key: "illustrations", label: "Illustrations", arLabel: "الرسوم التوضيحية" },

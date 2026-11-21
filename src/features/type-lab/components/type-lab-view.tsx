@@ -23,8 +23,8 @@ export function TypeLabView({ isAr, fontCss, anyUploaded, latin, arabic }: TypeL
           <Icon name="info-circle" size={15} className="mt-px shrink-0 text-warning" />
           <span>
             {t(
-              "No brand font file is applied yet, so this is previewing the interface font. Upload a .woff2 on Visual identity → Brand files and apply it under Typography — these numbers only transfer if they were measured on the real face.",
-              "لم يُطبَّق ملف خط للعلامة بعد، لذلك تعرض المعاينة خط الواجهة. ارفع ملف ‎.woff2 من الهوية البصرية ← ملفات العلامة وطبّقه في الخطوط، فهذه القيم لا تصح إلا إذا قيست على الخط الحقيقي."
+              "No brand font file is applied yet, so this is previewing the interface font. Upload a .woff2 on the Typography tab: these numbers only transfer if they were measured on the real face.",
+              "لم يُطبَّق ملف خط للعلامة بعد، لذلك تعرض المعاينة خط الواجهة. ارفع ملف ‎.woff2 من تبويب الخطوط، فهذه القيم لا تصح إلا إذا قيست على الخط الحقيقي."
             )}
           </span>
         </div>
