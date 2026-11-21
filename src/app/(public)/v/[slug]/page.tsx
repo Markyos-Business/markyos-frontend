@@ -8,7 +8,11 @@ export default async function ClientViewerPage({ params }: { params: Promise<{ s
   const badge = await getPublicBadge("guide", slug);
   return (
     <PublicPageShell showBadge={badge?.show ?? false} pageType="guide" locale={badge?.locale ?? "en"} pageId={badge?.pageId} workspaceId={badge?.workspaceId}>
-      <ClientGuideView slug={slug} />
+      {/* The page's main landmark, around every state (gate, loading, the site).
+          `contents` adds no box, so the client's template lays out as before. */}
+      <main className="contents">
+        <ClientGuideView slug={slug} />
+      </main>
     </PublicPageShell>
   );
 }

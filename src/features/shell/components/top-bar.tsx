@@ -31,8 +31,10 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
     row.current?.querySelector<HTMLElement>(`[data-tab-key="${CSS.escape(active)}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [active, row]);
   return (
-    <div className="flex shrink-0 flex-col">
-      <header className="mk-no-hover flex min-h-topbar items-center gap-ctl-row px-space-6 py-space-4 sm:px-space-10">
+    // One banner for the breadcrumb, the page actions and the section tabs, so
+    // none of them sits outside a landmark.
+    <header className="flex shrink-0 flex-col">
+      <div className="mk-no-hover flex min-h-topbar items-center gap-ctl-row px-space-6 py-space-4 sm:px-space-10">
         <SidebarMenuButton />
         <Breadcrumb className="flex-1" label={isAr ? "مسار الصفحة" : "Breadcrumb"} items={[
           { label: workspace.name, href: `/w/${workspace.slug}/overview` },
@@ -40,7 +42,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
         ]} />
         {/* The account sits at the bottom of the brand sidebar; the bell stays here. */}
         <NotificationBell isAr={isAr} />
-      </header>
+      </div>
       {right && <div className="flex flex-wrap items-center gap-ctl-row px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
       {!!tabs?.length && <div className="flex flex-wrap items-start gap-ctl-row px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
         {/* One row that scrolls on phones and tablets (Strategy has ten tabs); wraps from lg up. */}
@@ -55,6 +57,6 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
         </div>
         {tabsRight}
       </div>}
-    </div>
+    </header>
   );
 }

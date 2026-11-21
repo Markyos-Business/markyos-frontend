@@ -17,7 +17,7 @@ const Text = ({ children, className = "" }: { children: ReactNode; className?: s
   </p>
 );
 
-const Label = ({ children }: { children: ReactNode }) => <h4 className="text-caption text-text-muted">{children}</h4>;
+const Label = ({ children }: { children: ReactNode }) => <h3 className="text-caption text-text-muted">{children}</h3>;
 
 const Bullets = ({ items }: { items: string[] }) =>
   items.length ? (

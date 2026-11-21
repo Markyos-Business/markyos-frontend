@@ -6,5 +6,6 @@ import { ClientGuideView } from "@/features/guideline-site";
 /** A real, addressable URL for one custom guideline page. */
 export default function ClientGuidePageViewer() {
   const { slug, page } = useParams<{ slug: string; page: string }>();
-  return <ClientGuideView slug={slug} page={page} />;
+  // The page's main landmark; `contents` adds no box around the template.
+  return <main className="contents"><ClientGuideView slug={slug} page={page} /></main>;
 }
