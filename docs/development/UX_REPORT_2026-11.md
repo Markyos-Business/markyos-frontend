@@ -53,6 +53,22 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 6 (21 Nov 2026): improvements
+
+- Buttons were sized for their longest hidden state label ("Try again") even when they never show one: a 4-letter "Pick" was 99px and pushed moodboard captions onto two lines. Buttons now reserve that room only when they use a loading or status state. Their default state labels ("Saving…", "Saved", "Try again", "Ask for access") follow the interface language.
+- Every form dialog submits with the primary button; "Send invite" was an outline button beside Cancel.
+- Admin Users: the "Last active" date filter takes the field shape of the selects beside it.
+- Assets on phone: Type, Status and Tags chips wrap instead of scrolling off the edge with nothing to say there was more.
+- Notifications say "just now" / "5m ago" like the rest of the app, not "19 seconds ago".
+- Overview: "Saved 11h ago" sits beside the word count of the text it describes, not alone above the title; "Brand set up" reads "Brand setup".
+- Sign in and sign up: title and subtitle on the type scale (20px h3, 14px body), no tracking on Arabic.
+
+All 771 unit tests and the 30 e2e tests pass.
+
+## UX-CON-001 (21 Nov 2026): one style for form controls
+
+Buttons, selects and inputs used 6 radii, 9 heights and 5 border styles, and every control border was under WCAG's 3:1. Now one token set (MARKYOS_UI §2.6) gives every control of a size one height (28 / 32 / 40 / 46px; 44px on touch), one 8px corner and one focus treatment; the underline is 3:1 or better in both themes; toolbar selects take the field shape; 36 one-off buttons and 3 hand-made pills became kit controls; 235 gaps moved onto spacing tokens. `scripts/control-audit.mjs` keeps it so, and `/dev/controls` shows every control in every size and state. Merge f3661d5.
+
 ## Round 5 (21 Nov 2026): improvements
 
 - A moodboard showed its title twice (a page heading and the toolbar's). Now there is one: the toolbar's, with the rename pencil, under the "All boards" link.
