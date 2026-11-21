@@ -1,4 +1,5 @@
 import type { Workspace } from "@/types";
+import { initialsFor } from "@/lib/utils";
 
 /** Derived from saved brand data, so cards, overview and publishing agree. */
 export function brandSetup(ws: Workspace) {
@@ -13,6 +14,17 @@ export function brandSetup(ws: Workspace) {
   ];
 }
 
+/** A brand's fallback mark when it has no logo: one letter (see `initialsFor`). */
 export function brandInitials(name: string) {
-  return name.trim().split(/\s+/).slice(0, 2).map(word => Array.from(word)[0] ?? "").join("").toLocaleUpperCase();
+  return initialsFor(name);
+}
+
+/** The brand's logo for an avatar-sized spot: the symbol, else a wordmark in the brand's language. */
+export function brandMarkUrl(ws: Pick<Workspace, "logo" | "primaryLocale">): string | null {
+  const order = ["symbol", ws.primaryLocale === "ar" ? "arabic" : "latin", ws.primaryLocale === "ar" ? "latin" : "arabic"] as const;
+  for (const kind of order) {
+    const slot = ws.logo?.[kind];
+    if (slot?.phase === "attached" && slot.url) return slot.url;
+  }
+  return null;
 }

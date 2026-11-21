@@ -282,6 +282,8 @@ export function Canvas(props: CanvasProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [view, setView] = useState({ x: 40, y: 40, zoom: 0.8 });
   const [gesture, setGesture] = useState<Gesture>({ kind: "none" });
+  /** Image files are being dragged over the board: show where they will land. */
+  const [filesOver, setFilesOver] = useState(false);
   const [tool, setTool] = useState<Tool>("select");
   const fitted = useRef(false);
 
@@ -1063,14 +1065,30 @@ export function Canvas(props: CanvasProps) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!filesOver && e.dataTransfer.types.includes("Files")) setFilesOver(true);
+        }}
+        onDragLeave={(e) => {
+          // Only when the drag leaves the board, not when it crosses a card inside it.
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFilesOver(false);
+        }}
         onDrop={(e) => {
+          setFilesOver(false);
           if (!e.dataTransfer.files?.length) return;
           e.preventDefault();
           const at = toBoard(e.clientX, e.clientY);
           props.onDropFiles(e.dataTransfer.files, zoneAtPoint(at.x, at.y)?.id ?? null);
         }}
       >
+        {filesOver && (
+          <div aria-hidden className="pointer-events-none absolute inset-space-4 z-30 grid place-items-center rounded-card border-2 border-dashed border-accent bg-accent-soft">
+            <span className="flex items-center gap-space-3 rounded-lg bg-surface-1 px-space-5 py-space-3 text-body font-medium text-text shadow-raised">
+              <Icon name="upload" size={18} className="text-accent" />
+              {isAr ? "أفلت الصور لإضافتها" : "Drop images to add them"}
+            </span>
+          </div>
+        )}
         {/*
           The board's coordinate space, which is physical in both languages.
 
@@ -1579,13 +1597,13 @@ function FrameBase({
         </span>
 
         <span
-          className="ms-auto flex items-center gap-1"
+          className="ms-auto flex items-center gap-ctl-row"
           // The header is the drag handle, so its own controls have to opt out
           // or every click on them starts a drag instead.
           onPointerDown={(e) => e.stopPropagation()}
         >
           {action && (
-            <button
+            <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
               type="button"
               onClick={action.run}
               disabled={action.busy || empty}
@@ -1596,7 +1614,7 @@ function FrameBase({
                     : "Nothing in this zone to propose yet."
                   : undefined
               }
-              className="mk-tap h-6 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mk-tap h-6 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-ctl-icon disabled:cursor-not-allowed disabled:opacity-40"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
             >
               <Icon name={action.icon} size={10} />
@@ -1664,7 +1682,7 @@ function FrameBase({
         const g = zone.ghostBoxes[i];
         if (!g) return null;
         return (
-          <button
+          <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
             key={i}
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -1808,7 +1826,7 @@ function AddMenu({
             }}
           >
             {ordered.map((k) => (
-              <button
+              <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
                 key={k.kind}
                 type="button"
                 onClick={() => {
@@ -1895,10 +1913,11 @@ function CardOnCanvasBase({
     <figure
       data-mood-item={item.id}
       // Published rather than inferred from the box shadow, which several other
-      // states also change. `aria-selected` says the same thing to a screen
-      // reader, which otherwise had no way to know a card was picked up.
+      // states also change. `aria-current` says the same thing to a screen
+      // reader; `aria-selected` is not allowed on a figure (axe), and a
+      // screen reader ignores it there anyway.
       data-selected={selected || undefined}
-      aria-selected={selected}
+      aria-current={selected || undefined}
       aria-label={label}
       className="absolute rounded-card overflow-hidden group"
       // Belt and braces after the `<img>` case: anything natively draggable
@@ -1954,6 +1973,7 @@ function CardOnCanvasBase({
           // Only a photograph carries a colour worth lifting off it.
           onSampleColor={item.kind === "asset" ? onSampleColor : undefined}
           fill
+          width={box.w}
         />
       </div>
 
@@ -1973,11 +1993,11 @@ function CardOnCanvasBase({
       )}
 
       <span
-        className="absolute top-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+        className="absolute top-1 flex items-center gap-ctl-row opacity-0 group-hover:opacity-100 focus-within:opacity-100"
         style={{ insetInlineEnd: 4 }}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <button
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
           type="button"
           onClick={() => onVote(item.id)}
           aria-pressed={mine}
@@ -1987,7 +2007,7 @@ function CardOnCanvasBase({
               : isAr ? `اختر ${label}` : `Pick ${label}`
           }
           title={item.votes.length > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-          className="mk-tap h-6 px-2 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1"
+          className="mk-tap h-6 px-2 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
           style={{
             background: mine ? "var(--accent)" : "var(--scrim)",
             color: mine ? "var(--accent-ink)" : "var(--scrim-ink)",
@@ -1996,7 +2016,7 @@ function CardOnCanvasBase({
           <Icon name="check" size={9} />
           {item.votes.length || ""}
         </button>
-        <button
+        <button /* ctl-audit-ignore: canvas content, scaled with the board's zoom */
           type="button"
           onClick={() => onRemove(item.id)}
           aria-label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}

@@ -37,7 +37,7 @@ export function VerifyEmailStep({ pending, onVerified, onBack }: VerifyEmailStep
         </>
       }
     >
-      <form onSubmit={verify.submit} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={verify.submit} className="flex flex-col gap-field-stack" noValidate>
         <p className="text-caption text-text-muted">
           {c.verify.sentTo} <span dir="ltr" className="font-medium text-text">{verify.email}</span>
         </p>

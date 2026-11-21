@@ -4,6 +4,7 @@ import { Button, EmptyState, ErrorState, Icon, Skeleton, TabPanel, Tabs, useTabI
 import { USER_TABS } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import { useUserPage } from "../../hooks/user-detail/use-user-page";
+import { ChangeTypeDialog } from "../shared/change-type-dialog";
 import { ChangeRoleDialog } from "../shared/change-role-dialog";
 import { ActivityTab } from "./activity-tab";
 import { OverviewTab } from "./overview-tab";
@@ -73,6 +74,7 @@ export function AdminUserView({ id }: { id: string }) {
         {page.tab === "sessions" && <SessionsTab user={account} sessions={page.sessions} actions={actions} />}
       </TabPanel>
 
+      {actions.typeFor && <ChangeTypeDialog user={actions.typeFor} onClose={()=>actions.setTypeFor(null)} onSubmit={type=>actions.changeType(actions.typeFor!,type)}/>}
       {actions.roleFor && (
         <ChangeRoleDialog
           open

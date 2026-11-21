@@ -14,7 +14,7 @@ export { PasswordMatch } from "./components/shared/password-match";
 export { SocialSignIn } from "./components/shared/social-sign-in";
 
 export { EMAIL_RE } from "./constants";
-export { toAccount } from "./api/auth.api";
+export { toAccount, requestPasswordReset } from "./api/auth.api";
 export type { ApiAccount } from "./types";
 export { normaliseEmail } from "./utils/email";
 export { isPlaintext, scorePassword } from "./utils/password";

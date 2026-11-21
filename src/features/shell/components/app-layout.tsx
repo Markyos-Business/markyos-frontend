@@ -1,7 +1,8 @@
 import { API_ENABLED } from "@/lib/api/client";
-import { DemoNotice } from "./demo-notice";
+import { BetaNotice } from "./beta-notice";
 import type { CSSProperties, ReactNode, Ref } from "react";
 import { MobileSidebar, SidebarDrawerProvider } from "@/components/ui";
+import { HelpPanelProvider } from "@/features/helpcenter";
 
 /**
  * The signed-in app's frame: a sidebar beside one column that holds an
@@ -12,6 +13,13 @@ import { MobileSidebar, SidebarDrawerProvider } from "@/components/ui";
  * `min-h-screen` the shell grew to content height instead, so the whole
  * document scrolled and took the chrome with it — and any inner
  * `flex-1 min-h-0 overflow-y-auto` never bounded, so it never scrolled either.
+ *
+ * `relative` makes the frame the containing block for absolutely positioned
+ * descendants that have no positioned ancestor of their own, such as the
+ * `sr-only` caption on a table. Without it their containing block is the page
+ * itself, `overflow-hidden` doesn't clip them, and one sitting below the fold
+ * made the document taller than the screen: scrolling over the sidebar then
+ * moved the whole frame up and showed black underneath.
  */
 export function AppLayout({
   sidebar,
@@ -32,19 +40,22 @@ export function AppLayout({
 }) {
   const hasSidebar = Boolean(sidebar);
   return (
+    // The Help panel wraps the sidebar and the page, so both can open it.
+    <HelpPanelProvider>
     <SidebarDrawerProvider available={hasSidebar} isAr={dir === "rtl"}>
-      <div data-app-mode={API_ENABLED ? "connected" : "demo"} dir={dir} className="flex h-screen overflow-hidden" style={style}>
+      <div data-app-mode={API_ENABLED ? "connected" : "demo"} dir={dir} className="relative flex h-screen overflow-hidden" style={style}>
         {/* Beside the page from tablet width up; on a phone the same sidebar
             opens as a drawer from the top bar's menu button instead, so the
             page gets the whole screen. */}
         {hasSidebar && <div className="hidden md:flex">{sidebar}</div>}
         <div ref={paneRef} className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <DemoNotice />
+          <BetaNotice />
           {topbar}
           {children}
         </div>
         {hasSidebar && <MobileSidebar>{sidebar}</MobileSidebar>}
       </div>
     </SidebarDrawerProvider>
+    </HelpPanelProvider>
   );
 }

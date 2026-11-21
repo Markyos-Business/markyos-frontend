@@ -4,27 +4,29 @@ import { CanvasFrame } from "./canvas/canvas-frame";
 import { CanvasToolbar } from "./canvas/canvas-toolbar";
 import { InspectorPanel } from "./inspector/inspector-panel";
 import { PanelReveal } from "./shared/panel-reveal";
-import { ShipCluster } from "./shared/ship-cluster";
+import { BuilderTopBar } from "./shared/builder-top-bar";
 import { ToolsPanel } from "./tools/tools-panel";
 import { SecondaryViewBanner } from "./canvas/view-switcher";
 
-/** The guidelines editor: tools, the live canvas with its toolbar and ship cluster, and the design panel. */
+/** The guidelines editor: one bar across the top, then tools, the live canvas with its toolbar, and the design panel. */
 export function BuilderView(b: BuilderPageState) {
   const { ws, isAr, leftOpen, rightOpen, inspectorShown } = b;
   return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <BuilderTopBar {...b} />
     <div className="flex min-h-0 flex-1 overflow-hidden">
       {!leftOpen && <PanelReveal side="start" isAr={isAr} label={isAr ? "إظهار لوحة الأدوات" : "Show the tools panel"} onClick={() => b.setLeftOpen(true)} />}
       {/* Unmounted rather than sized to zero: a zero-width panel keeps every
           control in the tab order and in-page search, all of it invisible. */}
       {leftOpen && <ToolsPanel {...b} />}
 
-      {/* The canvas region, and the positioning context for the ship cluster in its corner. */}
+      {/* The canvas region. */}
       <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-surface-1">
         <CanvasToolbar {...b} />
         {/* The frame is itself the scroll container: an outer scroller left
             this card clipping with overflow:hidden, which disables sticky for
             the guideline site's own nav inside it. */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-0 px-5 pt-3 pb-24">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-0 px-5 pt-3 pb-5">
           {b.scope && (
             <div className="mx-auto w-full max-w-[720px] shrink-0 pb-3">
               <SecondaryViewBanner ctx={b.view} isAr={isAr} />
@@ -42,13 +44,13 @@ export function BuilderView(b: BuilderPageState) {
             />
           </CanvasFrame>
         </div>
-        <ShipCluster {...b} />
       </div>
 
       {inspectorShown && !rightOpen && (
         <PanelReveal side="end" isAr={isAr} label={isAr ? "إظهار لوحة التصميم" : "Show the design panel"} onClick={() => b.setRightOpen(true)} />
       )}
       {inspectorShown && rightOpen && <InspectorPanel {...b} />}
+    </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "@/components/ui";
+import { Icon, pillSegment, pillSegmentStyle, pillTrack, pillTrackStyle } from "@/components/ui";
 import { VIEWPORT_WIDTH } from "@/lib/doc/core/types";
 import { secondaryViewNotice } from "@/lib/doc/core/rules";
 import type { Breakpoint, Lang } from "./view-types";
@@ -41,13 +41,8 @@ export function ViewSwitcher({
     // of its own, with the same accessible name — it is the *client's* control
     // for the published site, and this is the studio's control for the editor.
     // Both are correct; only a selector needs help telling them apart.
-    <div data-view-switcher className="flex items-center gap-1.5 shrink-0">
-      <div
-        className="flex rounded-full p-0.5"
-        role="radiogroup"
-        aria-label={isAr ? "عرض الشاشة" : "Canvas width"}
-        style={{ background: "var(--surface-1)" }}
-      >
+    <div data-view-switcher className="flex items-center gap-ctl-row shrink-0">
+      <div className={pillTrack} role="radiogroup" aria-label={isAr ? "عرض الشاشة" : "Canvas width"} style={pillTrackStyle}>
         {WIDTHS.map((w) => {
           const active = breakpoint === w.key;
           const label = isAr ? w.arLabel : w.label;
@@ -63,20 +58,17 @@ export function ViewSwitcher({
               // numbers across the top bar is noise the rest of the time.
               title={`${label} — ${VIEWPORT_WIDTH[w.key]}px`}
               aria-label={label}
-              className="h-7 px-2.5 rounded-lg grid place-items-center cursor-pointer"
-              style={{
-                background: active ? "var(--surface-2)" : "transparent",
-                color: active ? "var(--text)" : "var(--text-faint)",
-              }}
+              className={pillSegment(true)}
+              style={pillSegmentStyle(active)}
             >
-              <Icon name={w.icon} size={13} />
+              <Icon name={w.icon} size={16} />
             </button>
           );
         })}
       </div>
 
       <div
-        className="flex rounded-full p-0.5"
+        className={pillTrack}
         role="radiogroup"
         aria-label={isAr ? "لغة المعاينة" : "Preview language"}
         // Scoped the same way `LangToggle` is. This screen carries three EN/ع
@@ -84,7 +76,7 @@ export function ViewSwitcher({
         // the page inside the canvas — and the name they are selected by is
         // translated, so it cannot be a selector.
         data-lang-toggle="preview"
-        style={{ background: "var(--surface-1)" }}
+        style={pillTrackStyle}
       >
         {(["en", "ar"] as const).map((l) => {
           const active = lang === l;
@@ -102,11 +94,8 @@ export function ViewSwitcher({
               // hear the radiogroup's name.
               aria-label={name}
               title={name}
-              className="h-7 px-3 rounded-md text-[11px] font-semibold cursor-pointer"
-              style={{
-                background: active ? "var(--surface-2)" : "transparent",
-                color: active ? "var(--text)" : "var(--text-faint)",
-              }}
+              className={`${pillSegment(true)} ${l === "en" ? "font-sans" : "font-arabic"}`}
+              style={pillSegmentStyle(active)}
             >
               {l === "en" ? "EN" : "ع"}
             </button>

@@ -4,11 +4,13 @@ export * from "./activity-feed";
 export * from "./alert-banner";
 export * from "./app-date";
 export * from "./app-shell";
+export * from "./app-shell/app-footer";
 export * from "./app-shell/app-sidebar";
 export * from "./app-shell/app-top-bar";
 export * from "./app-shell/page-transition";
 export * from "./app-shell/sidebar-drawer";
 export * from "./async-state-view";
+export * from "./breadcrumb";
 export * from "./auto-textarea";
 export * from "./avatar";
 export * from "./avatar/avatar";
@@ -40,6 +42,7 @@ export * from "./filter/filter-chip";
 export * from "./filter/sort-control";
 export * from "./icon";
 export * from "./kbd";
+export * from "./skip-link";
 export * from "./key-value-list";
 export * from "./lang-toggle";
 export * from "./listbox";
@@ -63,3 +66,12 @@ export * from "./theme";
 export * from "./tooltip";
 export * from "./ui-strings";
 export * from "./upload";
+
+export * from "./popup";
+
+// MetricCard and the Dashboard namespace keep widgets distinct from basic UI cards.
+export * as Dashboard from "./dashboard";
+
+export { DashboardHeader, DashboardCard, DashboardProvider, MetricCard, BarChartCard, GaugeCard, PeriodSelect, WelcomeCard } from "./dashboard";
+export type { WelcomeAction } from "./dashboard";
+export type { DashboardPeriod } from "./dashboard";

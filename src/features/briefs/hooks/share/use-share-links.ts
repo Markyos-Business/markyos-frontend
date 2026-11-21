@@ -6,6 +6,7 @@ import { useRequest } from "@/hooks/useRequest";
 import { SECTION_ORDER } from "../../constants";
 import { createShare, listShares, revokeShare } from "../../api/briefs.api";
 import type { BriefAnalysis, SectionKey, ShareLinkInfo } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 /** What a new link shows unless changed: the read of the brief, not the working notes. */
 const DEFAULT_SECTIONS: SectionKey[] = ["snapshot", "goals", "audience", "market", "personality", "routes", "creative"];
@@ -47,7 +48,7 @@ export function useShareLinks(analysis: BriefAnalysis, isAr: boolean) {
       await copy(link);
       return false;
     } catch (err) {
-      return err instanceof Error ? err.message : String(err);
+      return errorText(err, isAr ? "ar" : "en");
     }
   }
 
@@ -65,7 +66,7 @@ export function useShareLinks(analysis: BriefAnalysis, isAr: boolean) {
       setVersion((v) => v + 1);
       showToast(t("Link turned off.", "أُوقف الرابط."), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : String(err), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en"), "danger");
     }
   }
 

@@ -18,7 +18,7 @@ import { join, relative } from "node:path";
  *    same double flip by another route. Write the English direction once.
  */
 const ROOT = process.cwd();
-const SCAN = ["src/components", "src/app", "src/contexts"];
+const SCAN = ["src/components", "src/app", "src/contexts", "src/features", "src/hooks", "src/lib"];
 const DIRECTIONAL = "(?:angle-left|angle-right|angle-double-left|angle-double-right|arrow-left|arrow-right|sign-out-alt|undo)";
 const PHYSICAL = /^(?:[a-z0-9-]+:)*-?(?:ml|mr|pl|pr|left|right|border-l|border-r|rounded-l|rounded-r|rounded-tl|rounded-tr|rounded-bl|rounded-br|text-left|text-right|float-left|float-right|scroll-ml|scroll-mr|scroll-pl|scroll-pr)(?:-[\w[\].%/-]+)?$/;
 const CLASSY = /^(?:[a-z0-9-]+:)*(?:flex|grid|text-|bg-|p[xyse]?-|m[xyse]?-|w-|h-|gap-|rounded|items-|justify-|absolute|relative|inset|top-|bottom-|shadow|border)/;

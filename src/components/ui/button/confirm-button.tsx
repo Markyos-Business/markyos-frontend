@@ -20,7 +20,7 @@ export const ConfirmButton = forwardRef<HTMLButtonElement, ConfirmButtonProps>(f
   useEffect(() => () => clearTimeout(timer.current), []);
   function confirm() { clearTimeout(timer.current); armedUntil.current = 0; setArmed(false); dialog.current?.close(); void action.run(); }
   return <>
-    <Button {...props} ref={ref} status={props.status ?? action.status} variant={props.variant ?? "destructive"} aria-haspopup={mode === "dialog" ? "dialog" : undefined} onClick={(event) => {
+    <Button {...props} ref={ref} status={props.status ?? action.status} variant={props.variant ?? "danger"} aria-haspopup={mode === "dialog" ? "dialog" : undefined} onClick={(event) => {
       onClick?.(event); if (event.defaultPrevented) return;
       if (mode === "dialog") { dialog.current?.showModal(); return; }
       if (Date.now() < armedUntil.current) { confirm(); return; }
@@ -30,7 +30,7 @@ export const ConfirmButton = forwardRef<HTMLButtonElement, ConfirmButtonProps>(f
     <span role="status" className="sr-only">{armed ? confirmText : ""}</span>
     <dialog ref={dialog} aria-label={dialogTitle} className="m-auto w-[calc(100%-2rem)] max-w-md rounded-card bg-surface-1 p-6 text-text shadow-pop backdrop:bg-ink-soft">
       <h2 className="text-h5 font-medium">{dialogTitle}</h2><p className="mt-3 text-body text-text-muted">{dialogDescription}</p>
-      <div className="mt-6 flex flex-wrap justify-end gap-2"><Button autoFocus onClick={() => dialog.current?.close()}>{cancelLabel}</Button><Button variant="destructive" disabled={props.disabled || props.loading || props.locked || !!props.disabledReason || props.status === "loading"} onClick={confirm}>{confirmLabel}</Button></div>
+      <div className="mt-6 flex flex-wrap justify-end gap-2"><Button autoFocus onClick={() => dialog.current?.close()}>{cancelLabel}</Button><Button variant="danger" disabled={props.disabled || props.loading || props.locked || !!props.disabledReason || props.status === "loading"} onClick={confirm}>{confirmLabel}</Button></div>
     </dialog>
   </>;
 });

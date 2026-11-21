@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useDialog } from "@/components/ui";
@@ -12,12 +13,13 @@ export function useDepartmentsPage(slug: string) {
   const { addDepartmentView } = useAppActions();
   const { prompt } = useDialog();
   const page = useBrandPage(slug);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const sorted = page ? [...page.workspace.departmentViews].sort((a, b) => a.createdAt - b.createdAt) : [];
+  // `?tab=<department id>`: a link opens that department, and Back returns to the last one.
+  const [activeId, setActiveId] = useUrlTab(sorted.map((d) => d.id), sorted[0]?.id ?? "");
   const [mode, setMode] = useState<DepartmentMode>("edit");
   if (!page) return null;
   const { workspace: ws, isAr } = page;
-  const sorted = [...ws.departmentViews].sort((a, b) => a.createdAt - b.createdAt);
-  const active = activeId ? sorted.find((d) => d.id === activeId) : sorted[0];
+  const active = sorted.find((d) => d.id === activeId) ?? sorted[0];
 
   async function add() {
     const name = await prompt({
@@ -29,7 +31,8 @@ export function useDepartmentsPage(slug: string) {
       isAr,
     });
     if (!name) return;
-    setActiveId(addDepartmentView(ws.id, name));
+    const id = addDepartmentView(ws.id, name);
+    if (id) setActiveId(id);
   }
 
   const tabs: TopBarTab[] = sorted.map((d) => ({

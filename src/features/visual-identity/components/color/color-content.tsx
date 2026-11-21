@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
@@ -10,6 +10,7 @@ import { ColorSwatch, SlotKind, Workspace } from "@/types";
 import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
 import { useColorNameTranslations } from "../../hooks/use-color-name-translations";
 import { nameLang } from "@/lib/data/colorNames";
+import { plural } from "@/lib/i18n/plural";
 
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
 
@@ -44,66 +45,37 @@ export function ColorContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الألوان" : "Color"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
-              ? `${ws.colors.length} لون · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
-              : `${ws.colors.length} colors · click a code to copy it, or the pencil to edit.`}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
+      <PageHeader
+        title={isAr ? "الألوان" : "Colour"}
+        description={isAr
+              ? `${plural("ar", ws.colors.length, { zero: "لا ألوان", one: "لون واحد", two: "لونان", few: "{n} ألوان", many: "{n} لونًا", other: "{n} لون" })} · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
+              : `${plural("en", ws.colors.length, { one: "{n} colour", other: "{n} colours" })} · click a code to copy it, or the pencil to edit.`}
+        actions={<>
+        <div className="flex gap-ctl-row">
+          <Button
+            variant="outline"
+            size="md"
             onClick={() => setExtracting(true)}
-            title={
-              hasArtwork
-                ? isAr
-                  ? "اقرأ الألوان الموجودة فعليًا في الشعار"
-                  : "Read the colours actually present in your logo"
-                : isAr
-                  ? "ارفع شعارًا أولًا"
-                  : "Upload a logo first"
-            }
-            disabled={!hasArtwork}
-            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
+            title={hasArtwork ? (isAr ? "اقرأ الألوان الموجودة فعليًا في الشعار" : "Read the colours actually present in your logo") : undefined}
+            // Says why on hover and focus, not only in a title nobody sees on a disabled button.
+            disabledReason={hasArtwork ? undefined : isAr ? "ارفع شعارًا أولًا" : "Upload a logo first"}
+            icon={<Icon name="palette" size={18} className="text-accent-text" />}
           >
-            <Icon name="palette" size={14} style={{ color: "var(--accent-text)" }} />
             {isAr ? "من الشعار" : "Pick from logo"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditor({ mode: "add" })}
-            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
-            style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-          >
-            {isAr ? "أضف لونًا" : "Add color"}
-          </button>
+          </Button>
+          <Button variant="primary" size="md" icon={<Icon name="plus" size={18} />} onClick={() => setEditor({ mode: "add" })}>
+            {isAr ? "أضف لونًا" : "Add colour"}
+          </Button>
         </div>
-      </div>
-
-      {/* Contrast sits next to the palette because that is where the fix is —
-          a failing ratio is a swatch to change, not a report to file. */}
-      {ws.colors.length > 0 && (
-        <div className="rounded-card p-5" style={{ background: "var(--surface-1)" }}>
-          <ContrastReport ws={ws} isAr={isAr} />
-        </div>
-      )}
+        </>}
+      />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {ws.colors.map((c) => {
           const rgb = hexToRgb(c.hex);
           const cmyk = rgb ? rgbToCmyk(rgb) : null;
           return (
-            <div key={c.id} className="rounded-card overflow-hidden" style={{ background: "var(--surface-1)" }}>
+            <div key={c.id} className="rounded-card overflow-hidden bg-surface-1" >
               <div
                 className="h-[104px]"
                 style={{
@@ -114,9 +86,9 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                 }}
               />
               <div className="px-4 py-3.5 flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-ctl-row">
                   <span className="font-semibold text-[14px] truncate">{c.name}</span>
-                  <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="flex items-center gap-ctl-row shrink-0">
                     {c.isPrimary && (
                       <span
                         className="text-[10px] font-medium px-2 py-[5px] rounded-md"
@@ -130,8 +102,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                       onClick={() => setEditor({ mode: "edit", color: c })}
                       aria-label={`Edit ${c.name}`}
                       title={`Edit, set primary, or delete ${c.name}`}
-                      className="h-7 w-7 grid place-items-center rounded-full cursor-pointer"
-                      style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
+                      className="h-ctl-xs w-7 grid place-items-center rounded-full cursor-pointer bg-surface-2 text-text-muted"
+                      
                     >
                       <Icon name="pen" size={13} />
                     </button>
@@ -178,21 +150,30 @@ export function ColorContent({ ws }: { ws: Workspace }) {
         <button
           type="button"
           onClick={() => setEditor({ mode: "add" })}
-          className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer"
-          style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)", minHeight: 220 }}
+          className="rounded-card flex flex-col items-center justify-center gap-2.5 cursor-pointer shadow-edge text-text-muted min-h-55"
+          
         >
           <Icon name="plus" size={22} />
           <span className="text-[13px] font-medium">{isAr ? "أضف لونًا" : "Add colour"}</span>
         </button>
       </div>
 
+      {/* Contrast sits right under the palette because that is where the fix
+          is: a failing ratio is a swatch to change. Under it, not above it, so
+          the colours themselves are the first thing on the page. */}
+      {ws.colors.length > 0 && (
+        <div className="mk-surface rounded-card bg-surface-1 p-5">
+          <ContrastReport ws={ws} isAr={isAr} />
+        </div>
+      )}
+
       {ratio !== null && (
         <div className="flex flex-col gap-2.5">
           <button
             type="button"
             onClick={() => setShowReport((v) => !v)}
-            className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start"
-            style={{ background: "var(--surface-1)" }}
+            className="flex items-center gap-3 px-4 py-3.5 rounded-card cursor-pointer text-start bg-surface-1"
+            
           >
             <Icon name="adjust" size={18} style={{ color: "var(--accent-text)" }} />
             <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
@@ -208,7 +189,7 @@ export function ColorContent({ ws }: { ws: Workspace }) {
             </span>
           </button>
           {showReport && ws.colors.length > 1 && (
-            <div className="rounded-card p-4 overflow-x-auto" style={{ background: "var(--surface-1)" }}>
+            <div className="rounded-card p-4 overflow-x-auto bg-surface-1" >
               <table className="border-separate" style={{ borderSpacing: 4 }}>
                 <thead>
                   <tr>

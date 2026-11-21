@@ -18,7 +18,10 @@ type StudioReportProps = Omit<ComponentProps<typeof ReportView>, "sectionActions
 export function StudioReport({ workspace, ...report }: StudioReportProps) {
   const strategy = useAddToStrategy(workspace, report.analysis, report.onSection);
   const editor = useSectionEditor(report.analysis, report.onSection);
-  const isAr = report.analysis.language === "ar";
+  // Labels follow the reader's interface, not the analysis's language: an
+  // English analysis read in Arabic still gets Arabic buttons. The editor's
+  // fields set their own direction from what is typed (dir="auto").
+  const { isAr } = report;
   if (!report.canEdit) return <ReportView {...report} />;
   return (
     <ReportView

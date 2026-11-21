@@ -1,13 +1,15 @@
 "use client";
 
+import { initialsFor } from "@/lib/utils";
 import Link from "next/link";
-import { memo, type ReactNode } from "react";
+import { NotificationBell } from "@/features/notifications";
+import { memo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon, LangToggle, Popover } from "@/components/ui";
 import { useAppActions, useCurrentAccount, useSession } from "@/contexts/AppContext";
 import { ThemeToggle } from "@/components/ui";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
-import { API_ENABLED } from "@/lib/api/client";
+import { api, API_ENABLED } from "@/lib/api/client";
 import type { MenuLink } from "../../types";
 
 /**
@@ -22,17 +24,21 @@ import type { MenuLink } from "../../types";
  */
 export const AccountMenu = memo(function AccountMenu({
   isAr: isArProp,
-  controls,
   phoneLinks = [],
+  variant = "avatar",
+  compact = false,
 }: {
   /** The page's language; the person's own interface language when not given. */
   isAr?: boolean;
-  /**
-   * Optional replacement controls for the shared theme and language row.
-   */
-  controls?: ReactNode;
   /** Account navigation available in the menu at every viewport. */
   phoneLinks?: MenuLink[];
+  /**
+   * `avatar` (top bar): the bell, then the avatar. `row` (sidebar bottom bar):
+   * avatar, name and an ellipsis, without the bell, which stays in the top bar.
+   */
+  variant?: "avatar" | "row";
+  /** In the collapsed rail the row is the avatar alone. */
+  compact?: boolean;
 }) {
   const { logout } = useAppActions();
   const interfaceLang = useInterfaceLang();
@@ -40,7 +46,8 @@ export const AccountMenu = memo(function AccountMenu({
   const account = useCurrentAccount();
   const router = useRouter();
   const session = useSession();
-  const initials = session ? session.name.slice(0, 2).toUpperCase() : "ND";
+  // One letter of the signed-in name (or email); never a made-up stand-in.
+  const initials = initialsFor(account?.name || session?.name || session?.email || "");
 
   const items: MenuLink[] = [
     { href: "/account?tab=profile", label: "Profile", arLabel: "الملف الشخصي", icon: "user" },
@@ -51,9 +58,37 @@ export const AccountMenu = memo(function AccountMenu({
   if (API_ENABLED && account?.isAdmin) {
     items.push({ href: "/admin", label: "Platform admin", arLabel: "إدارة المنصة", icon: "key" });
   }
+  // Content managers and the editors a content admin added aren't platform
+  // admins, so this is how they find the CMS. Asked once, the first time the
+  // menu opens, not per page.
+  const [contentAccess, setContentAccess] = useState<boolean | null>(null);
+  const checkContentAccess = () => {
+    if (!API_ENABLED || !session || contentAccess !== null) return;
+    if (account?.isAdmin || account?.role === "content") return setContentAccess(true);
+    // Direct: one small call, without pulling the CMS screens into the menu.
+    api<{ role: string | null }>("/content/me/")
+      .then((me) => setContentAccess(me.role !== null))
+      .catch(() => setContentAccess(false));
+  };
+  if (contentAccess || (API_ENABLED && (account?.isAdmin || account?.role === "content"))) {
+    items.push({ href: "/admin/cms", label: "Website content", arLabel: "محتوى الموقع", icon: "globe" });
+  }
 
   return (
-    <Popover label={isAr ? "الحساب" : "Account"} button={<Avatar initials={initials} src={account?.avatarUrl} size={40} />} width={250}>
+    <div className="flex min-w-0 items-center gap-space-3">{variant === "avatar" && <NotificationBell isAr={isAr}/>}<Popover
+      className={variant === "row" ? "min-w-0 flex-1" : undefined}
+      label={isAr ? "الحساب" : "Account"}
+      width={250}
+      onOpen={checkContentAccess}
+      trigger={variant === "row" && !compact ? "block" : "plain"}
+      align={variant === "row" ? "start" : "end"}
+      button={variant === "row" && !compact ? (
+        <span className="flex min-w-0 flex-1 items-center gap-space-4 rounded-lg py-space-2 text-start">
+          <Avatar initials={initials} src={account?.avatarUrl} size={28} />
+          <span dir="auto" className="min-w-0 flex-1 truncate text-body font-medium text-text [text-align:match-parent]">{session?.name || session?.email}</span>
+        </span>
+      ) : <Avatar initials={initials} src={account?.avatarUrl} size={variant === "row" ? 28 : 40} />}
+    >
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="px-space-6 py-space-4 flex flex-col shadow-rule-b">
@@ -63,23 +98,26 @@ export const AccountMenu = memo(function AccountMenu({
             </span>
           </div>
 
-          {controls ? (
-            <div className="flex flex-wrap items-center gap-space-4 px-space-6 py-space-4 shadow-rule-b">{controls}</div>
-          ) : (
-            // Pages with no language switch of their own (the brands gallery,
-            // People, Forms, Account) change it here.
-            <div className="flex flex-wrap items-center justify-between gap-space-4 px-space-6 py-space-4 shadow-rule-b">
+          {/* Mode and language, each named, on every page: the same place to change them everywhere. */}
+          <div className="flex flex-col gap-space-3 px-space-6 py-space-4 shadow-rule-b">
+            <div className="flex items-center justify-between gap-space-4">
+              <span className="text-body text-text-muted">{isAr ? "الوضع" : "Mode"}</span>
               <ThemeToggle isAr={isAr} />
-              <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" size="sm" />
             </div>
-          )}
+            <div className="flex items-center justify-between gap-space-4">
+              <span className="text-body text-text-muted">{isAr ? "اللغة" : "Language"}</span>
+              <LangToggle value={interfaceLang.lang} onChange={interfaceLang.setLang} label={isAr ? "اللغة" : "Language"} scope="chrome" />
+            </div>
+          </div>
 
+          {/* The header shows these as a nav bar from tablet width up; only a
+              phone, where that bar is hidden, needs them here. */}
           {phoneLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
+              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body md:hidden"
               style={{ color: "var(--text-secondary)" }}
             >
               <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />
@@ -92,7 +130,7 @@ export const AccountMenu = memo(function AccountMenu({
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
+              className="mk-nav-item flex items-center gap-ctl-icon px-space-6 py-space-4 text-body"
               style={{ color: "var(--text-secondary)" }}
             >
               <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />
@@ -107,14 +145,14 @@ export const AccountMenu = memo(function AccountMenu({
               logout();
               router.replace("/login");
             }}
-            className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body cursor-pointer text-start"
-            style={{ color: "var(--text-secondary)", boxShadow: "inset 0 1px 0 var(--hairline)" }}
+            className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body cursor-pointer text-start text-text-secondary shadow-rule-t"
+            
           >
             <Icon name="sign-out-alt" size={16} style={{ color: "var(--text-muted)" }} />
             {isAr ? "تسجيل الخروج" : "Log out"}
           </button>
         </div>
       )}
-    </Popover>
+    </Popover></div>
   );
 });

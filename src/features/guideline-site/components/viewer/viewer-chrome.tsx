@@ -1,8 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Icon, Button } from "@/components/ui";
+import { BrandMark, Icon, Button, LangToggle } from "@/components/ui";
 import { PasswordField } from "@/components/ui";
+import type { Workspace } from "@/types";
+import { navLogo } from "../../utils/brand-logo";
+import { readLinkLang } from "@/lib/i18n/interfaceLang";
 import { getBrandTheme, themeCssVars } from "../../utils/theme";
 
 /** Wrong guesses allowed before the form stops answering. */
@@ -25,21 +28,27 @@ function readLockUntil(slug: string): number {
  *  guideline-site route shows before real content mounts — shared by the
  *  Home route and the per-page route so neither has its own copy. */
 export function PasswordGate({
-  name,
-  slug,
+  ws,
   verify,
-  isAr,
+  isAr: brandAr,
   theme,
   onUnlock,
 }: {
-  name: string;
-  slug: string;
+  /** The brand behind the gate: its name, slug and logo. */
+  ws: Workspace;
   /** Whether a password is the right one: on the server, when there is one. */
   verify: (password: string) => boolean | Promise<boolean>;
   isAr: boolean;
   theme: ReturnType<typeof getBrandTheme>;
   onUnlock: () => void;
 }) {
+  const { name, slug } = ws;
+  // EN | ع here too, the same control the guideline itself carries.
+  // The brand's language, which the studio chose for this client, unless the
+  // link names one (?lang=).
+  const [lang, setLang] = useState<"en" | "ar">(() => readLinkLang() ?? (brandAr ? "ar" : "en"));
+  const isAr = lang === "ar";
+  const logo = navLogo(ws, isAr);
   const [value, setValue] = useState("");
   const [used, setUsed] = useState(0);
   // Separate from `used` on purpose: typing clears the message, but it must not
@@ -122,12 +131,21 @@ export function PasswordGate({
   return (
     <div
       dir={isAr ? "rtl" : "ltr"}
-      className="min-h-screen flex flex-col items-center justify-center gap-6 px-8"
+      lang={lang}
+      className="relative min-h-screen flex flex-col items-center justify-center gap-6 px-8"
       style={{ ...themeCssVars(theme), background: "var(--g-canvas)", color: "var(--g-text)", fontFamily: isAr ? "var(--font-arabic)" : undefined }}
     >
+      <div className="absolute top-6 end-6">
+        <LangToggle value={lang} onChange={setLang} label={isAr ? "لغة الدليل" : "Guideline language"} scope="gate" />
+      </div>
       <div className="flex flex-col items-center gap-2">
-        <Icon name="lock" size={26} style={{ color: "var(--g-accent)" }} />
-        <h1 className="text-[22px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{name}</h1>
+        {/* The studio's own mark, so a client arriving from an email knows whose link this is. */}
+        {logo.src ? (
+          <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={name} onDark={!theme.isLight} style={{ maxHeight: 40, maxWidth: 200 }} />
+        ) : (
+          <Icon name="lock" size={22} style={{ color: "var(--g-accent)" }} />
+        )}
+        <h1 dir="auto" className="text-[22px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{name}</h1>
         <p className="text-[13px]" style={{ color: "var(--g-text-muted)" }}>
           {isAr ? "دليل الهوية هذا محمي بكلمة مرور." : "This brand guideline is password-protected."}
         </p>
@@ -153,8 +171,8 @@ export function PasswordGate({
               ? `يُفتح الرابط تلقائيًا بعد ${countdown}.`
               : `The link unlocks again on its own in ${countdown}.`
             : isAr
-              ? `كلمة المرور وصلتك مع رسالة التسليم — اسأل ${name} إن لم تكن لديك. بعد ${MAX_TRIES} محاولات يُقفل الرابط ١٥ دقيقة.`
-              : `The password came with your hand-off email — ask ${name} if you don't have it. After ${MAX_TRIES} tries the link locks for 15 minutes.`}
+              ? `كلمة المرور في رسالة التسليم، أو اطلبها من ${name}. يُقفل الرابط 15 دقيقة بعد ${MAX_TRIES} محاولات.`
+              : `The password is in your hand-off email, or ask ${name}. ${MAX_TRIES} wrong tries lock the link for 15 minutes.`}
         </p>
       </form>
     </div>

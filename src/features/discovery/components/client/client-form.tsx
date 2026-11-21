@@ -5,6 +5,7 @@ import { Icon, usePublicPageLocale } from "@/components/ui";
 import type { Lang } from "@/types";
 import { AnswerError, isEmptyAnswer, textIn, validateAnswer } from "../../utils/question-types";
 import { formPalette, paletteVars } from "../../utils/theme";
+import { plural } from "@/lib/i18n/plural";
 import { evaluateVisibility } from "../../utils/visibility";
 import type { AnswerValue, PublicForm, PublicQuestion, UploadedFile } from "../../types";
 import { CLIENT_INPUTS } from "./type-inputs";
@@ -39,8 +40,7 @@ const COPY = {
   saved: { en: "Saved", ar: "تم الحفظ" },
   notSaved: { en: "Not saved — check your connection", ar: "لم يُحفظ — تحقّق من الاتصال" },
   resume: { en: "Your answers save as you go. Come back to this link any time to finish.", ar: "تُحفظ إجاباتك تلقائيًا. عُد إلى هذا الرابط متى شئت لإكمالها." },
-  doneTitle: { en: "Thank you. Your answers are in.", ar: "شكرًا لكم، وصلت إجاباتكم." },
-  doneBody: { en: "The studio has them now and will be in touch.", ar: "أصبحت لدى الاستوديو، وسيتواصل معكم قريبًا." },
+  doneTitle: { en: "Your answers are in", ar: "وصلت إجاباتك" },
   step: { en: "Section", ar: "القسم" },
   of: { en: "of", ar: "من" },
 } as const;
@@ -79,7 +79,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
         try {
           validateAnswer(q.type, q.config, value);
         } catch (err) {
-          if (err instanceof AnswerError) found[q.id] = err.message;
+          if (err instanceof AnswerError) found[q.id] = err.in(lang);
         }
       }
     }
@@ -119,7 +119,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
       try {
         validateAnswer(q.type, q.config, value);
       } catch (err) {
-        if (err instanceof AnswerError) return setErrors((e) => ({ ...e, [q.id]: err.message }));
+        if (err instanceof AnswerError) return setErrors((e) => ({ ...e, [q.id]: err.in(lang) }));
       }
     }
     setErrors((e) => {
@@ -153,7 +153,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
             </span>
           )}
           {form.languages.length > 1 && (
-            <div role="radiogroup" aria-label={isAr ? "اللغة" : "Language"} className="flex rounded-lg bg-[var(--f-raised)] p-1 shadow-[inset_0_0_0_1px_var(--f-line)]">
+            <div role="radiogroup" aria-label={isAr ? "اللغة" : "Language"} className="flex rounded-full bg-[var(--f-raised)] p-1 shadow-[inset_0_0_0_1px_var(--f-line)]">
               {(["en", "ar"] as const).map((l) => (
                 <button
                   key={l}
@@ -162,7 +162,7 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
                   aria-checked={lang === l}
                   lang={l}
                   onClick={() => onLang(l)}
-                  className={`grid h-9 min-w-11 place-items-center rounded-md px-space-4 text-caption font-medium ${
+                  className={`grid h-8 min-w-10 place-items-center rounded-full px-space-4 text-caption font-medium ${
                     lang === l ? "bg-[var(--f-surface)] text-[var(--f-text)] shadow-[inset_0_0_0_1px_var(--f-line)]" : "text-[var(--f-muted)]"
                   }`}
                 >
@@ -198,12 +198,23 @@ export function ClientForm({ form, answers, onAnswer, saveState = "idle", onSubm
               <span className="grid size-control place-items-center rounded-lg bg-[var(--f-accent)] text-[var(--f-accent-ink)]">
                 <Icon name="check" size={22} />
               </span>
+              {/* Which questionnaire, and who has it now: a client may answer more than one. */}
+              <span dir="auto" style={{ textAlign: isAr ? "right" : "left" }} className="self-stretch text-caption text-[var(--f-muted)]">{form.name}</span>
               <Heading className={`text-h3 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{c("doneTitle")}</Heading>
-              <p className={`text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>{c("doneBody")}</p>
+              <p className={`text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>
+                {isAr ? <>أصبحت لدى <bdi>{form.studioName}</bdi>، وسيتواصل معك قريبًا.</> : <><bdi>{form.studioName}</bdi> has them now and will be in touch.</>}
+              </p>
             </div>
           ) : step === 0 ? (
             <div className="flex flex-col gap-space-6 rounded-card bg-[var(--f-surface)] p-space-10 shadow-[inset_0_0_0_1px_var(--f-line)]">
-              <Heading className={`text-h2 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</Heading>
+              {/* The studio writes the title in one language; it keeps its own
+                  direction inside the other without moving the layout. */}
+              <Heading dir="auto" style={{ textAlign: isAr ? "right" : "left" }} className={`text-h2 font-medium ${isAr ? "leading-[1.3]" : ""}`}>{form.name}</Heading>
+              <p className="text-caption text-[var(--f-muted)]">
+                {isAr
+                  ? <>{plural("ar", all.length, { one: "سؤال واحد", two: "سؤالان", few: "{n} أسئلة", many: "{n} سؤالًا", other: "{n} سؤال" })} من <bdi>{form.studioName}</bdi></>
+                  : <>{plural("en", all.length, { one: "{n} question", other: "{n} questions" })} from <bdi>{form.studioName}</bdi></>}
+              </p>
               {textIn(form.theme.welcome, lang) && (
                 <p className={`whitespace-pre-line text-body text-[var(--f-muted)] ${isAr ? "leading-[1.7]" : ""}`}>{textIn(form.theme.welcome, lang)}</p>
               )}

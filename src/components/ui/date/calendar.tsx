@@ -125,7 +125,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
   return (
     <div className="flex flex-col gap-space-4">
       <div className="flex items-center justify-between gap-space-3">
-        <button type="button" aria-label={t.previousMonth} onClick={() => step(-1)} className="grid size-8 place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+        <button type="button" aria-label={t.previousMonth} onClick={() => step(-1)} className="grid size-ctl-sm place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
           <Icon name="angle-left" size={16} />
         </button>
         <div className="flex flex-col items-center">
@@ -134,7 +134,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
           </span>
           {hijriTitle && <span className="text-caption text-text-muted">{hijriTitle}</span>}
         </div>
-        <button type="button" aria-label={t.nextMonth} onClick={() => step(1)} className="grid size-8 place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+        <button type="button" aria-label={t.nextMonth} onClick={() => step(1)} className="grid size-ctl-sm place-items-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
           <Icon name="angle-right" size={16} />
         </button>
       </div>
@@ -158,7 +158,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
                 const h = hijri ? hijriOf(day, lang, digits) : null;
                 return (
                   <td key={day} role="gridcell" aria-selected={isSelected || between || undefined} className="p-0.5">
-                    <button
+                    <button /* ctl-audit-ignore: a calendar day cell, sized by the grid (44px with the Hijri date under it) */
                       type="button"
                       data-day={day}
                       data-autofocus={autoFocus && day === stop ? "" : undefined}
@@ -171,7 +171,7 @@ const Calendar = ({ selected, range, onPick, weekStart = 0, min, max, isDisabled
                         onPick(day);
                       }}
                       onKeyDown={(e) => onKeyDown(e, day)}
-                      className={`flex w-full flex-col items-center justify-center rounded-md text-caption transition-colors ${h ? "h-11" : "h-8"} disabled:cursor-not-allowed disabled:text-text-disabled disabled:line-through ${
+                      className={`flex w-full flex-col items-center justify-center rounded-md text-caption transition-colors ${h ? "h-11" : "h-ctl-sm"} disabled:cursor-not-allowed disabled:text-text-disabled disabled:line-through ${
                         isSelected
                           ? "bg-accent font-medium text-accent-ink"
                           : between

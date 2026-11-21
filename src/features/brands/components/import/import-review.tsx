@@ -1,4 +1,4 @@
-import { Button, Icon } from "@/components/ui";
+import { Button, Icon, PageHeader } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { STRATEGY_LABELS } from "../../constants";
 import type { ImportReviewProps } from "../../hooks/import/use-brand-import";
@@ -27,22 +27,17 @@ export function ImportReview({
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="mb-space-2 text-h2 font-medium">{t("Here's what's actually in the file", "هذا ما في الملف فعلًا")}</h1>
-        <p className="text-body text-text-muted">
-          {analysis.fileName}
+      <PageHeader title={t("Here's what's actually in the file", "هذا ما في الملف فعلًا")} description={<>{analysis.fileName}
           {analysis.pageCount > 0 &&
             (isAr
               ? ` · ${analysis.pageCount} صفحات، أُخذت عينات الألوان من ${analysis.pagesRendered}`
               : ` · ${analysis.pageCount} pages, ${analysis.pagesRendered} sampled for colour`)}
-          . {t("Nothing is saved until you confirm.", "لا يُحفظ شيء حتى تؤكد.")}
-        </p>
-      </div>
+          . {t("Nothing is saved until you confirm.", "لا يُحفظ شيء حتى تؤكد.")}</>} />
 
       {analysis.notes.length > 0 && (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-field-stack-compact">
           {analysis.notes.map((n, i) => (
-            <div key={i} className="flex items-start gap-2.5 text-caption text-text-faint">
+            <div key={i} className="flex items-start gap-ctl-row text-caption text-text-faint">
               <Icon name="info-circle" size={14} className="mt-px shrink-0" />
               {n}
             </div>
@@ -68,7 +63,7 @@ export function ImportReview({
                   type="button"
                   onClick={() => onToggleColor(c.hex)}
                   className={`cursor-pointer overflow-hidden rounded-lg bg-surface-2 text-start ${
-                    on ? "shadow-[inset_0_0_0_2px_var(--accent)]" : "opacity-50 shadow-edge-soft"
+                    on ? "shadow-selected" : "opacity-50 shadow-edge-soft"
                   }`}
                 >
                   {/* The measured colour is data, so it stays inline. */}
@@ -111,7 +106,7 @@ export function ImportReview({
             return (
               <span
                 key={key}
-                className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-caption ${has ? "bg-success-soft text-success" : "bg-surface-2 text-text-faint"}`}
+                className={`flex items-center gap-ctl-row rounded-lg px-2.5 py-1.5 text-caption ${has ? "bg-success-soft text-success" : "bg-surface-2 text-text-faint"}`}
                 title={typeof value === "string" ? value.slice(0, 200) : undefined}
               >
                 <Icon name={has ? "check" : "times"} size={11} />
@@ -123,12 +118,12 @@ export function ImportReview({
         </div>
       </ImportGroup>
 
-      <div className="mt-1 flex gap-2.5">
+      <div className="mt-1 flex gap-ctl-row">
         <Button variant="outline" onClick={onReset}>
           {t("Start over", "البدء من جديد")}
         </Button>
         <Button variant="primary" onClick={onConfirm}>
-          {t("Create workspace from this", "إنشاء مساحة عمل من هذا")}
+          {t("Create brand from this", "إنشاء علامة من هذا")}
         </Button>
       </div>
     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useMoodboardUploads } from "./use-moodboard-uploads";
+import { API_ENABLED } from "@/lib/api/client";
 import { type RefObject, useRef, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useDialog, useToast } from "@/components/ui";
@@ -46,6 +48,7 @@ export function useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone,
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
+  const uploads = useMoodboardUploads(isAr);
   const me = state.session?.name ?? "You";
   /** Which zone an upload started from, so files land where they were dropped. */
   const uploadZoneRef = useRef<string | null>(null);
@@ -201,6 +204,20 @@ export function useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone,
     const zoneId =
       uploadZoneRef.current ?? zoneForKind(target.zones, "imagery")?.id ?? target.zones[0]?.id;
     if (!zoneId) return;
+
+    // Signed in to a server: each file goes up first, with progress in the tray,
+    // and its card is added once the server has it (use-moodboard-uploads).
+    if (API_ENABLED) {
+      const at = uploadAtRef.current;
+      const boardId = target.id;
+      uploads.start(list, (file, i) => (url, sizeKB) => {
+        const assetId = addAsset(ws.id, { type: "photo", fileName: file.name, url, sizeKB, tags: ["moodboard"], status: "exploration" });
+        addMoodboardItems(ws.id, boardId, zoneId, [{ kind: "asset" as const, assetId, ...(at ? { x: at.x + i * 24, y: at.y + i * 24 } : null) }]);
+      });
+      uploadZoneRef.current = null;
+      uploadAtRef.current = null;
+      return;
+    }
 
     const ids: string[] = [];
     for (const file of list) {
@@ -509,6 +526,7 @@ export function useMoodboardActions({ ws, board, isAr, onBoardMade, onBoardGone,
 
   return {
     me,
+    uploads,
     makeBoard,
     addCard: (zoneId: string, kind: MoodboardItem["kind"], at?: { x: number; y: number }) => void addCard(zoneId, kind, at),
     removeItems: handleRemoveItem,

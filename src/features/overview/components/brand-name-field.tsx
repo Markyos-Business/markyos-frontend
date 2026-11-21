@@ -39,7 +39,7 @@ export function BrandNameField({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
           if (e.key === "Escape") setDraft(null);
         }}
         aria-label={isAr ? "اسم العلامة" : "Brand name"}
-        className="bidi-auto h-8 min-w-0 flex-1 rounded-md bg-surface-2 px-2 text-[14px] font-semibold text-text shadow-[inset_0_0_0_1px_rgba(0,153,255,.5)] outline-none"
+        className="mk-field mk-field-sm bidi-auto min-w-0 flex-1 text-body font-medium"
       />
     );
   }

@@ -12,7 +12,7 @@ export default function StudioPeoplePage() {
   return (
     <div dir={page.isAr ? "rtl" : "ltr"} className="flex h-screen flex-col">
       <StudioHeader isAr={page.isAr} end={<AccountMenu isAr={page.isAr} />} />
-      <PageContainer>
+      <PageContainer spaced>
         <PeopleView page={page} />
       </PageContainer>
     </div>

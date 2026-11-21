@@ -31,6 +31,11 @@ export const bricolage = localFont({
   ],
   variable: "--font-bricolage",
   display: "swap",
+  // The brand face only appears on guideline templates and the wordmark, never
+  // in the studio's first paint, so preloading its two TTFs (~180 KB) on every
+  // page was wasted (Chrome warned "preloaded but not used"). Pages that use it
+  // still fetch it the moment their CSS asks.
+  preload: false,
   // next/font otherwise appends a metric-adjusted local fallback ("bricolage
   // Fallback", backed by Arial) to this variable. Because that fallback is a
   // real font that *does* carry Arabic glyphs, it swallowed every Arabic

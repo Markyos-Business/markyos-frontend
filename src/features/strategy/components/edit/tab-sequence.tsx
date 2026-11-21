@@ -23,7 +23,7 @@ export function TabSequence({ current, onSelect, isAr, empty }: TabSequenceProps
   const onIcon = "angle-right";
 
   return (
-    <nav aria-label={isAr ? "أقسام الاستراتيجية" : "Strategy sections"} className="flex items-center gap-3 pb-2 pt-1">
+    <nav aria-label={isAr ? "أقسام الاستراتيجية" : "Strategy sections"} className="flex items-center gap-ctl-row pb-2 pt-1">
       {prev ? (
         <Button variant="soft" size="xs" onClick={() => onSelect(prev.key)} icon={<Icon name={backIcon} size={16} />} className="text-text-muted">
           <span dir="auto" className="bidi-auto">

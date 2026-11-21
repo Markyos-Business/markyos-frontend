@@ -1,17 +1,12 @@
-/** A labelled count per category, with a meter against the largest. */
-export function Breakdown({
-  title,
-  empty,
-  counts,
-  labels,
-  order,
-}: {
+import { Dashboard, DashboardCard } from "@/components/ui";
+const { BreakdownTable } = Dashboard;
+
+/** Feature data ordering; presentation is owned by the shared widget table. */
+export function Breakdown({ title, empty, counts, labels, order }: {
   title: string;
-  /** Said when there is nothing to count. */
   empty: string;
   counts: Record<string, number>;
   labels: Record<string, string>;
-  /** Categories listed first, in this order; the rest follow by size. */
   order?: string[];
 }) {
   const keys = Object.keys(counts).sort((a, b) => {
@@ -20,28 +15,12 @@ export function Breakdown({
     if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     return counts[b] - counts[a];
   });
-  const max = Math.max(1, ...Object.values(counts));
 
-  return (
-    <section className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-space-8">
-      <h2 className="text-h5 font-medium">{title}</h2>
-      {keys.length === 0 ? (
-        <p className="text-caption text-text-faint">{empty}</p>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {keys.map((k) => (
-            <li key={k} className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-caption">
-                <span className="text-text-secondary">{labels[k] ?? k}</span>
-                <span className="font-medium tabular-nums">{counts[k]}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-ink-soft">
-                <div className="h-full rounded-full bg-accent" style={{ width: `${(counts[k] / max) * 100}%` }} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
+  return <DashboardCard title={title} as="h2">
+    <BreakdownTable
+      caption={title}
+      rows={keys.map(key => ({ key, label: labels[key] ?? key, value: counts[key].toLocaleString("en-US") }))}
+      emptyMessage={empty}
+    />
+  </DashboardCard>;
 }

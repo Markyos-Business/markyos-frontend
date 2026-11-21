@@ -4,7 +4,7 @@ import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
-import { useDialog, useToast } from "@/components/ui";
+import { useDialog } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import { PAGE_SECTION, type ToolbarAction } from "../constants";
 
@@ -12,9 +12,8 @@ const countWords = (el: HTMLElement) => (el.textContent || "").trim().split(/\s+
 
 /** The overview page: the rich-text editor, its toolbar, and the preview-language switch. */
 export function useOverviewPage(slug: string) {
-  const { setOverview, setPrimaryLocale } = useAppActions();
+  const { setOverview } = useAppActions();
   const page = useBrandPage(slug);
-  const { showToast } = useToast();
   const { prompt } = useDialog();
   const ws = page?.workspace;
   const editorRef = useRef<HTMLDivElement>(null);
@@ -111,20 +110,13 @@ export function useOverviewPage(slug: string) {
 
   // The brand's own language, not the reader's: the toast calls it the
   // preview, and it decides what a client sees at /v/<slug>.
-  function toggleLocale() {
-    if (!ws) return;
-    setPrimaryLocale(ws.id, isAr ? "en" : "ar");
-    showToast(isAr ? "Switched preview to English." : "Switched preview to Arabic.");
-  }
-
   return {
     shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const },
     savedLabel,
     view: {
       ws,
       isAr,
-      onToggleLocale: toggleLocale,
-      editor: { editorRef, isAr, wordCount, onInput: handleInput, onTool: runTool },
+      editor: { editorRef, isAr, contentAr: ws.primaryLocale === "ar", wordCount, savedLabel, onInput: handleInput, onTool: runTool },
     },
   };
 }

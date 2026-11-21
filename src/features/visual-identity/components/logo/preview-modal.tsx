@@ -68,7 +68,7 @@ export function PreviewModal({
           </span>
         </div>
         <div className="flex flex-col gap-3.5">
-          <div className="rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
+          <div className="mk-surface rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
             <span className="font-semibold text-[13px]">{isAr ? "مقروء من الملف" : "Read from the file"}</span>
             <Row label={isAr ? "الصيغة" : "Format"} value={`${pending.format.toUpperCase()} · ${pending.format === "svg" ? (isAr ? "متجه" : "vector") : isAr ? "نقطي" : "raster"}`} />
             <Row label={isAr ? "الحجم" : "Size"} value={formatBytes(pending.sizeKB)} />
@@ -84,7 +84,7 @@ export function PreviewModal({
             point where the mark stops resolving — so the rule is something
             you can see rather than something you have to trust.
           */}
-          <div className="rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+          <div className="mk-surface rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
             <span className="font-semibold text-[13px]">{isAr ? "الأحجام الصغيرة" : "Small sizes"}</span>
             <div className="flex items-end gap-4 flex-wrap">
               {[minDigital, Math.round(minDigital * 0.66), Math.round(minDigital * 0.5)].map(
@@ -129,13 +129,13 @@ export function PreviewModal({
               </span>
             </div>
           )}
-          <div className="mt-auto flex items-center gap-2 text-[12px]" style={{ color: "var(--text-muted)" }}>
+          <div className="mt-auto flex items-center gap-ctl-row text-[12px]" style={{ color: "var(--text-muted)" }}>
             <Icon name="lock" size={15} style={{ color: "var(--accent-text)" }} />
             {isAr ? "لا يُرفع شيء قبل أن ترفقه." : "Nothing is uploaded until you attach."}
           </div>
         </div>
       </div>
-      <div className="flex justify-end gap-space-3">
+      <div className="flex justify-end gap-ctl-row">
       <Button variant="outline" onClick={onCancel}>
         {isAr ? "اختر ملفًا آخر" : "Choose another file"}
       </Button>

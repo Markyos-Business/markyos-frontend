@@ -42,6 +42,8 @@ export function PeopleTable({ page, onInvite, onRemoveEverywhere }: PeopleTableP
       key: "brands",
       header: t.brands,
       sortable: false,
+      // A row of brand chips: wrapped on a phone, not cut to "Nadeen Studio · C".
+      mobileWide: true,
       cell: (p) => (
         <div className="flex flex-wrap gap-space-3">
           {p.brands.map((b) => (

@@ -1,8 +1,8 @@
 "use client";
 
 import { useAppActions } from "@/contexts/AppContext";
-import { Button, DataTable, Icon, Row, Section, Tag, useToast } from "@/components/ui";
-import type { DataColumn } from "@/components/ui";
+import { Button, DataTable, Icon, Row, Section, Tag, useDialog, useToast } from "@/components/ui";
+import type { ActionItem, DataColumn } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import { formatRelative } from "@/lib/utils";
 import type { Account } from "@/types";
@@ -16,6 +16,7 @@ type SessionSectionProps = { account: Account; sessions: MySessionsState };
 export function SessionSection({ account, sessions }: SessionSectionProps) {
   const { logout } = useAppActions();
   const { showToast } = useToast();
+  const { confirm } = useDialog();
   const { t, isAr } = useAccountLang();
   const signOutHere = () => {
     logout();
@@ -48,6 +49,9 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
       key: "device",
       header: t("Device", "الجهاز"),
       sortable: false,
+      // Widths that fit the card: left to defaults, the row ran wider than it
+      // and pushed each session's Sign out off the edge.
+      width: 220,
       cell: (s) => (
         <div className="flex flex-wrap items-center gap-space-4">
           <Icon name={s.mobile ? "mobile" : "laptop"} size={18} className="text-text-muted" />
@@ -56,25 +60,25 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
         </div>
       ),
     },
-    { key: "ip", header: t("IP address", "عنوان IP"), sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell" },
+    { key: "ip", header: t("IP address", "عنوان IP"), sortable: false, cell: (s) => <span dir="ltr">{s.ip ?? "—"}</span>, className: "hidden md:table-cell", width: 130 },
     {
       key: "lastSeen",
       header: t("Last active", "آخر نشاط"),
       sortable: false,
-      cell: (s) => <span className="text-text-muted">{s.current ? t("Now", "الآن") : formatRelative(Date.parse(s.lastSeenAt))}</span>,
+      width: 120,
+      // One wording for every row: this browser said "Now", the others "just now".
+      cell: (s) => <span className="text-text-muted">{formatRelative(s.current ? Date.now() : Date.parse(s.lastSeenAt))}</span>,
     },
-    {
-      key: "action",
-      header: t("Sign out", "تسجيل الخروج"),
-      hideHeader: true,
-      sortable: false,
-      className: "text-end",
-      cell: (s) => (
-        <Button variant="outline" size="xs" onClick={() => (s.current ? signOutHere() : sessions.signOut(s))}>
-          {t("Sign out", "تسجيل الخروج")}
-        </Button>
-      ),
-    },
+  ];
+
+  // Signing out is destructive, so the row menu asks first (the other rows ask in sessions.signOut).
+  const confirmSignOutHere = async () => {
+    const ok = await confirm({ title: t("Sign out of this browser?", "تسجيل الخروج من هذا المتصفح؟"), body: t("You'll need to sign in again to keep working here.", "ستحتاج إلى تسجيل الدخول مجددًا لمتابعة العمل هنا."), confirmLabel: t("Sign out", "تسجيل الخروج"), tone: "danger", isAr });
+    if (ok) signOutHere();
+  };
+  // In the row's ⋯ menu, like every table: no buttons in the cells.
+  const rowActions = (s: MySession): ActionItem[] => [
+    { label: s.current ? t("Sign out here", "تسجيل الخروج هنا") : t("Sign out", "تسجيل الخروج"), icon: "sign-out-alt", tone: "danger", onSelect: () => void (s.current ? confirmSignOutHere() : sessions.signOut(s)) },
   ];
 
   return (
@@ -96,6 +100,7 @@ export function SessionSection({ account, sessions }: SessionSectionProps) {
         rows={sessions.data ?? undefined}
         getRowId={(s) => s.id}
         getRowLabel={sessions.deviceName}
+        rowActions={rowActions}
         loading={sessions.loading}
         error={sessions.error}
         onRetry={sessions.reload}

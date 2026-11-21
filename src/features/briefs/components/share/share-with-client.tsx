@@ -41,7 +41,7 @@ export function ShareWithClient({ analysis, isAr }: { analysis: BriefAnalysis; i
             <ul className="flex flex-col gap-space-3">
               {live.map((link) => (
                 <li key={link.id} className="flex flex-col gap-space-2 rounded-widget bg-surface-2 p-space-5">
-                  <div className="flex items-center gap-space-3">
+                  <div className="flex items-center gap-ctl-row">
                     <span dir="ltr" className="min-w-0 flex-1 truncate text-start text-caption text-text">
                       {share.urlOf(link)}
                     </span>
@@ -62,7 +62,7 @@ export function ShareWithClient({ analysis, isAr }: { analysis: BriefAnalysis; i
           </section>
         )}
 
-        <fieldset className="flex flex-col gap-space-3">
+        <fieldset className="flex flex-col gap-field-stack-compact">
           <legend className="mb-space-3 text-caption font-medium text-text-muted">{t("Sections in a new link", "أقسام الرابط الجديد")}</legend>
           {SECTION_ORDER.map((key) => (
             <CheckboxField key={key} label={SECTION_META[key][lang]} checked={share.sections.includes(key)} onChange={() => share.toggle(key)} />

@@ -42,6 +42,19 @@ export function readGuestLang(): Lang | null {
   }
 }
 
+/**
+ * The language a link explicitly asks for (?lang=), or null.
+ *
+ * Client-facing pages open in the language the studio chose for the brand or
+ * form; only a link that names a language overrides that. A browser's saved
+ * preference does not: it may be the studio's own, left on a shared machine.
+ */
+export function readLinkLang(): Lang | null {
+  if (typeof window === "undefined") return null;
+  const asked = new URLSearchParams(window.location.search).get("lang");
+  return isLang(asked) ? asked : null;
+}
+
 export function writeGuestLang(lang: Lang) {
   // An explicit choice replaces a landing link's ?lang= instead of being
   // overridden by it on every read. Native history preserves form state.

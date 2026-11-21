@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { usePhoneViewport } from "@/hooks/useNarrowViewport";
 import { SOFT_VARIANT_CLASSES } from "../badge/variants";
 import { ActionSheet } from "../overlay/action-sheet";
 import { Popover } from "../overlay/popover";
 import { Icon } from "../icon";
+import { useUiStrings } from "../ui-strings";
 
 type ActionTone = "accent" | "info" | "success" | "warning" | "danger";
 
@@ -28,19 +29,21 @@ type ActionsDropdownProps = {
   align?: "start" | "end";
   /** Just the ⋯ glyph, square, with `label` as its accessible name: a table row's menu. Default false. */
   iconOnly?: boolean;
+  /** The trigger's control size, to match the buttons beside it. Default md. */
+  size?: "sm" | "md";
   /** The phone action sheet's heading, e.g. "Nour Haddad actions". Defaults to `label`. */
   title?: string;
 };
 
 /** What opens the menu: the ⋯ square for a row, or a labelled outline button. */
-const TriggerLook = ({ label, iconOnly }: { label: string; iconOnly: boolean }) =>
+const TriggerLook = ({ label, iconOnly, size = "md" }: { label: string; iconOnly: boolean; size?: "sm" | "md" }) =>
   iconOnly ? (
-    <span className="flex size-control-sm items-center justify-center rounded-lg text-text-muted hover:bg-ink-soft hover:text-text">
+    <span className={`flex ${size === "sm" ? "size-ctl-sm" : "size-ctl-md"} items-center justify-center rounded-control text-text-muted hover:bg-ink-soft hover:text-text`}>
       <Icon name="ellipsis-h" size={18} />
     </span>
   ) : (
-    // The outline button's look, at the compact control height.
-    <span className="flex h-control-sm items-center gap-space-3 rounded-lg bg-ink-soft px-space-5 text-body font-medium text-text shadow-edge">
+    // The outline button's look, at the control height of its size.
+    <span className={`flex items-center gap-ctl-icon rounded-control bg-ink-soft font-medium text-text shadow-edge ${size === "sm" ? "h-ctl-sm px-ctl-px-sm text-caption" : "h-ctl-md px-ctl-px-md text-body"}`}>
       {label}
       <Icon name="ellipsis-h" size={18} />
     </span>
@@ -54,7 +57,22 @@ const TriggerLook = ({ label, iconOnly }: { label: string; iconOnly: boolean }) 
  * Escape, returns focus to the trigger, and hangs off the same edge of it on
  * either side of the page.
  */
-const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = false, title }: ActionsDropdownProps) => {
+/** Arrow keys, Home and End move between a menu's items, as a menu should; Tab still leaves it. */
+function moveInMenu(e: KeyboardEvent<HTMLDivElement>) {
+  const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+  if (!keys.includes(e.key)) return;
+  const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')];
+  if (!items.length) return;
+  e.preventDefault();
+  const at = items.indexOf(document.activeElement as HTMLButtonElement);
+  const next =
+    e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : e.key === "ArrowDown" ? (at + 1) % items.length : (at - 1 + items.length) % items.length;
+  items[next].focus();
+}
+
+const ActionsDropdown = ({ items, label: labelProp, align = "end", iconOnly = false, size = "md", title }: ActionsDropdownProps) => {
+  const { t } = useUiStrings();
+  const label = labelProp ?? t.actions;
   const phone = usePhoneViewport();
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -70,7 +88,7 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = f
           onClick={() => setSheetOpen(true)}
           className="flex cursor-pointer items-center"
         >
-          <TriggerLook label={label} iconOnly={iconOnly} />
+          <TriggerLook label={label} iconOnly={iconOnly} size={size} />
         </button>
         <ActionSheet open={sheetOpen} title={title ?? label} items={items} onClose={() => setSheetOpen(false)} />
       </>
@@ -78,9 +96,9 @@ const ActionsDropdown = ({ items, label = "Actions", align = "end", iconOnly = f
   }
 
   return (
-    <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} />}>
+    <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} size={size} />}>
       {(close) => (
-        <div role="menu" aria-label={label} className="flex flex-col p-space-2">
+        <div role="menu" aria-label={label} onKeyDown={moveInMenu} className="flex flex-col p-space-2">
           {items.map((item) => (
             <button
               key={item.label}

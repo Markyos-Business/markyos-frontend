@@ -7,7 +7,7 @@ import { canEdit, roleOn } from "@/lib/data/access";
 import { AppLayout, Sidebar } from "@/features/shell";
 import { UiStringsProvider } from "@/components/ui";
 import { canOpenBrandPage } from "@/lib/data/brandNavigation";
-import { BrandAccessNotice } from "@/features/shell";
+import { BrandAccessNotice, BrandLoading, ClientBrandHome } from "@/features/shell";
 
 export default function WorkspaceLayout({
   children,
@@ -112,7 +112,18 @@ export default function WorkspaceLayout({
     };
   }, [ws, isAr]);
 
-  if (!hydrated || !state.session || !ws) return null;
+  // Still loading: the shapes of the page, never a blank screen.
+  if (!hydrated) return <BrandLoading />;
+  if (!state.session || !ws) return null;
+  // A client never receives the studio's document, so the studio pages would
+  // all be empty for them: they get one page that leads to the guideline.
+  if (role === "client") {
+    return (
+      <UiStringsProvider lang={isAr ? "ar" : "en"}>
+        <ClientBrandHome workspace={ws} isAr={isAr} />
+      </UiStringsProvider>
+    );
+  }
 
   return (
     // The kit's own words follow this brand's language, like the rest of its pages.

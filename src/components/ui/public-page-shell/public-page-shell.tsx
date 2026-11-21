@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { BadgePageType } from "../made-with-badge/badge-events";
 import { BadgeFrame } from "./badge-frame";
+import { MARKETING_URL } from "@/lib/marketing";
 
 type PublicPageShellProps = {
   /** From the server's decision for this page's owner. A paid page passes false and its HTML has no badge. */
@@ -16,7 +17,6 @@ type PublicPageShellProps = {
   children: ReactNode;
 };
 
-const MARKETING_URL = (process.env.NEXT_PUBLIC_MARKETING_URL ?? "https://markyos.com").replace(/\/+$/, "");
 
 /**
  * The frame of every logged-out public page: forms, shared analyses, share

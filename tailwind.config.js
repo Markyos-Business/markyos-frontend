@@ -210,6 +210,8 @@ const config = {
         h5: ["1rem", { lineHeight: "1.5rem" }],
         body: ["0.875rem", { lineHeight: "1.3125rem" }],
         caption: ["0.75rem", { lineHeight: "1.125rem" }],
+        // The compact field's value (spec §6.5): 12.5px, between caption and body.
+        "control-sm": ["0.78125rem", { lineHeight: "1.25rem" }],
         // The only place caps appear (pair with `uppercase`): tab labels,
         // SORT:, PREV, NEXT, VIEW ALL. Never type copy in caps.
         overline: ["0.75rem", { lineHeight: "1", fontWeight: "500" }],
@@ -244,10 +246,34 @@ const config = {
         "status-tag": "28px",
         badge: "24px",
         rail: "84px", // nav rail width
+        sidebar: "300px", // nav sidebar width, open
         "rail-item": "64px",
         "rail-item-box": "48px",
         topbar: "84px",
         "widget-row": "72px",
+        // Form controls (UX-CON-001): inputs, selects and buttons share these,
+        // so a row of them lines up. `h-ctl-md` is 44px on a touch screen.
+        "ctl-xs": "var(--control-height-xs)",
+        "ctl-sm": "var(--control-height-sm)",
+        "ctl-md": "var(--control-height-md)",
+        "ctl-lg": "var(--control-height-lg)",
+        "ctl-px-sm": "var(--control-padding-x-sm)",
+        "ctl-px-md": "var(--control-padding-x-md)",
+        "ctl-px-lg": "var(--control-padding-x-lg)",
+        // Spacing around controls (MARKYOS_UI §2.6): gap-ctl-icon inside a
+        // control, gap-field-label between a field and its label and note,
+        // gap-ctl-row between controls in a row, gap-field-stack between
+        // fields (compact in dense panels), form-col / form-section for forms.
+        "ctl-icon": "var(--control-gap)",
+        "ctl-py-sm": "var(--control-padding-y-sm)",
+        "ctl-py-md": "var(--control-padding-y-md)",
+        "field-label": "var(--field-label-gap)",
+        "field-label-sm": "var(--field-label-gap-sm)",
+        "ctl-row": "var(--control-row-gap)",
+        "field-stack": "var(--field-stack-gap)",
+        "field-stack-compact": "var(--field-stack-gap-compact)",
+        "form-col": "var(--form-column-gap)",
+        "form-section": "var(--form-section-gap)",
       },
       borderRadius: {
         // Radius encodes size class (spec §2.5), so every corner is one of
@@ -262,6 +288,7 @@ const config = {
         card: "15px", // cards, counters
         widget: "15px", // widget rows
         feature: "25px", // marketing feature cards
+        control: "var(--control-radius)", // every form control (UX-CON-001)
       },
       lineHeight: {
         // Body copy in dialogs and settings rows: a touch looser than normal.
@@ -329,6 +356,10 @@ const config = {
         // A one-pixel rule along one side: under a header, over a footer.
         "rule-b": "inset 0 -1px 0 var(--hairline)",
         "rule-t": "inset 0 1px 0 var(--hairline)",
+        // A picked tile (image, template, media): the accent ring, 2px.
+        selected: "inset 0 0 0 2px var(--accent)",
+        // The edge on a colour swatch, so white and black swatches both show.
+        "edge-chip": "inset 0 0 0 1px var(--chip-edge)",
       },
       dropShadow: {
         // Chart lines emit light: `drop-shadow-glow` on the line's SVG.

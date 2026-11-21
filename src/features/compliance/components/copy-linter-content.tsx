@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon, EmptyHint } from "@/components/ui";
+import { Icon, EmptyHint, PageHeader } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
 import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -58,16 +58,12 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      <div>
-        <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-          {isAr ? "مدقّق النصوص" : "Copy linter"}
-        </h1>
-        <p className="text-[14px] max-w-[70ch]" style={{ color: "var(--text-muted)" }}>
-          {isAr
+      <PageHeader
+        title={isAr ? "مدقّق النصوص" : "Copy linter"}
+        description={isAr
             ? "الصق النسختين الإنجليزية والعربية قبل النشر. يفحص المدقّق النص مقابل مصفوفة النبرة الخاصة بهذه الهوية، ثم يفحص الأخطاء التي لا يراها مدقّق لاتيني: الترقيم العربي، التطويل، خلط الأرقام، وترتيب الاتجاهين."
             : "Paste the English and Arabic before it ships. Every line is checked against this brand's own voice matrix, then against the mistakes a Latin-only linter can't see — Arabic punctuation, tatweel, mixed digits, and bidi ordering."}
-        </p>
-      </div>
+      />
 
       {ws.strategy.voiceTraits.length === 0 ? (
         <div
@@ -87,8 +83,8 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
           {ws.strategy.voiceTraits.map((t) => (
             <span
               key={t.id}
-              className="px-2.5 py-1 rounded-lg font-medium"
-              style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+              className="px-2.5 py-1 rounded-lg font-medium bg-accent-soft text-accent-on-soft"
+              
               title={isAr ? `افعل: ${t.doExample}\nلا تفعل: ${t.dontExample}` : `Do: ${t.doExample}\nDon't: ${t.dontExample}`}
             >
               {t.trait}
@@ -131,8 +127,8 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
       <p className="text-[11.5px] max-w-[70ch]" style={{ color: "var(--text-faint)" }}>
         {isAr
-          ? "كل قاعدة هنا حرفية وقابلة للتفسير — تطابقت عبارة أو لم تتطابق. لا يُرسل النص إلى أي خادم أو نموذج؛ الفحص يجري في متصفحك، وما تكتبه هنا لا يُحفظ."
-          : "Every rule here is literal and explainable — a phrase matched or it didn't. Nothing is sent to a server or a model; the check runs in your browser, and what you type here isn't saved."}
+          ? "كل قاعدة هنا واضحة: إما أن تتطابق العبارة أو لا. يجري الفحص على جهازك، ولا يُرسل ما تكتبه ولا يُحفظ."
+          : "Every rule here is plain: a phrase matches or it doesn't. The check runs on your device, and what you type isn't sent or saved."}
       </p>
     </div>
   );
@@ -195,7 +191,9 @@ function DraftPanel({
         placeholder={placeholder}
         className="mk-field w-full resize-y"
         style={{
-          lineHeight: dir === "rtl" ? 1.85 : 1.6,
+          // One line height for both boxes, so the English and Arabic drafts side
+          // by side are the same height (1.6 and 1.85 made them 175 and 200px).
+          lineHeight: 1.7,
           fontFamily: dir === "rtl" ? "var(--font-arabic)" : "var(--font-sans)",
         }}
       />
@@ -227,8 +225,8 @@ function DraftPanel({
                   <button
                     type="button"
                     onClick={() => onFix(f)}
-                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer"
-                    style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer bg-accent-soft text-accent-on-soft"
+                    
                   >
                     {isAr ? "أصلحها" : "Fix"}
                   </button>

@@ -16,6 +16,7 @@
 // come from the Mosaic design system in lib/designSystem.ts — so the same
 // layout arrives warm and gold for one brand and cool and teal for the next.
 
+import { initialsFor } from "@/lib/utils";
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
@@ -124,7 +125,7 @@ export function MosaicTemplate(props: TemplateProps) {
                 {logo.src ? (
                   <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ maxWidth: 18, maxHeight: 18 }} />
                 ) : (
-                  ws.initials
+                  initialsFor(ws.name)
                 )}
               </span>
               <span className="font-semibold text-[15px] truncate" style={{ fontFamily: "var(--font-display)" }}>{ws.name}</span>
@@ -179,7 +180,7 @@ export function MosaicTemplate(props: TemplateProps) {
         </nav>
 
         <div className="flex items-center gap-2.5 shrink-0 ms-auto md:ms-0">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <button
               type="button"

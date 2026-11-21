@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAppActions } from "@/contexts/AppContext";
-import { useTheme } from "@/components/ui";
+import { Dashboard, DashboardCard, useTheme } from "@/components/ui";
 import { EditableField } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { navLogo } from "@/features/guideline-site";
@@ -32,9 +33,27 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
     setField(null);
   }
 
+  const t = (en: string, ar: string) => (isAr ? ar : en);
+  const base = `/w/${ws.slug}`;
+  // The same counts the sidebar shows: uploaded files plus attached logo files, and drafts still waiting.
+  const assetCount = ws.assets.length + Object.values(ws.logo).filter((slot) => slot?.phase === "attached").length;
+  const pendingDrafts = ws.drafts.filter((d) => d.status === "pending").length;
+  const count = (n: number, href: string, label: string) => (
+    <Link href={href} className="mk-linkbtn text-text" aria-label={`${n} ${label}`}>{n}</Link>
+  );
+
   return (
-    <div className="mk-surface flex flex-col gap-3.5 rounded-card bg-surface-1 p-5">
-      <div className="flex items-center justify-between gap-3">
+    <DashboardCard
+      title={isAr ? "تفاصيل العلامة" : "Brand details"}
+      // The brand at a glance, each figure a way to its page.
+      footer={<Dashboard.CardFooterStats items={[
+        { label: t("Assets", "الأصول"), value: count(assetCount, `${base}/assets`, t("assets", "أصول")) },
+        { label: t("Drafts", "المسودات"), value: count(pendingDrafts, `${base}/drafts`, t("drafts to review", "مسودات للمراجعة")) },
+        { label: t("People", "الأشخاص"), value: count(ws.team.length, `${base}/team`, t("people on the team", "أشخاص في الفريق")) },
+      ]} />}
+    >
+      <div className="flex flex-col gap-field-stack-compact">
+      <div className="flex items-center justify-between gap-ctl-row">
         <BrandNameField ws={ws} isAr={isAr} />
         <div className="flex items-center gap-2">
           {/* Plated: this snapshot is app chrome, and a coloured symbol beside a
@@ -67,6 +86,7 @@ export function BrandDetailsCard({ ws, isAr }: { ws: Workspace; isAr: boolean })
           />
         ))}
       </div>
-    </div>
+      </div>
+    </DashboardCard>
   );
 }

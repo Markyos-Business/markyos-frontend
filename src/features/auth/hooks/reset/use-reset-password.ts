@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
 import { EMAIL_RE } from "../../constants";
 import type { ResetStep } from "../../types";
+import { safeNextPath } from "../../utils/safe-next";
 import { scorePassword } from "../../utils/password";
 import { useAuthLang } from "../shared/use-auth-lang";
 
@@ -39,7 +40,7 @@ export function useResetPassword() {
   // Where the link means to land, e.g. the brand an invite was for. Only a
   // path inside this app: never another site, never a protocol-relative URL.
   const requested = search.get("next");
-  const next = requested && requested.startsWith("/") && !requested.startsWith("//") ? requested : null;
+  const next = safeNextPath(requested);
   const invited = setup && next?.startsWith("/w/") === true;
   const [step, setStep] = useState<ResetStep>(linkToken ? "confirm" : "request");
   const [email, setEmail] = useState(search.get("email") ?? "");
@@ -53,8 +54,9 @@ export function useResetPassword() {
   async function request(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
-    if (!EMAIL_RE.test(email.trim())) {
-      setErrors({ email: c.errors.email });
+    if (!email.trim() || !EMAIL_RE.test(email.trim())) {
+      // Empty and malformed are different problems, and say so.
+      setErrors({ email: email.trim() ? c.errors.email : c.errors.emailRequired });
       return;
     }
     setErrors({});

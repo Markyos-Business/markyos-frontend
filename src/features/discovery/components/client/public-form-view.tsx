@@ -15,8 +15,8 @@ const NOTICES: Record<PublicFormProblem, { icon: string; en: [string, string]; a
   },
   revoked: {
     icon: "lock",
-    en: ["This link was switched off", "The studio turned it off. Ask them for a new one if you still need it."],
-    ar: ["أُوقف هذا الرابط", "أوقفه الاستوديو. اطلب منهم رابطًا جديدًا إن كنت ما زلت بحاجة إليه."],
+    en: ["This link was switched off", "Whoever shared it switched it off. Ask them for a new one if you still need it."],
+    ar: ["أُوقف هذا الرابط", "أوقفه من شاركه معك. اطلب منه رابطًا جديدًا إن كنت ما زلت بحاجة إليه."],
   },
   closed: {
     icon: "clock",

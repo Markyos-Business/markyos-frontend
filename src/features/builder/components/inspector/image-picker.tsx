@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchField } from "@/components/ui";
+import { SearchField, SegmentedControl, Button } from "@/components/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon, useToast, EmptyHint } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
@@ -18,6 +18,7 @@ import {
   setUnsplashKey,
   stockFileName,
 } from "../../api/builder.api";
+import { errorText } from "@/lib/api/errorText";
 
 const PICKABLE_TYPES: AssetType[] = ["photo", "icon", "mockup", "export", "pattern", "graphic", "illustration"];
 
@@ -65,22 +66,13 @@ export function ImagePicker({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex rounded-full p-0.5" style={{ background: "var(--surface-1)" }}>
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setTab(t.key)}
-            className="flex-1 h-8 rounded-full text-[11px] font-semibold cursor-pointer"
-            style={{
-              background: tab === t.key ? "var(--surface-2)" : "transparent",
-              color: tab === t.key ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {isAr ? t.arLabel : t.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "مصدر الصورة" : "Image source"}
+        options={tabs.map((t) => ({ value: t.key, label: isAr ? t.arLabel : t.label }))}
+        value={tab}
+        onChange={setTab}
+      />
 
       {tab === "library" && (
         <LibraryTab ws={ws} isAr={isAr} multiple={multiple} selectedIds={selectedIds} onChange={onChange} />
@@ -137,7 +129,7 @@ function LibraryTab({
       {assets.map((a) => {
         const active = selectedIds.includes(a.id);
         return (
-          <button
+          <button /* ctl-audit-ignore: an image tile in the picker grid */
             key={a.id}
             type="button"
             title={a.fileName}
@@ -223,12 +215,12 @@ function UploadTab({
         hidden
         onChange={(e) => void handleFiles(e.target.files)}
       />
-      <button
+      <button /* ctl-audit-ignore: the upload drop tile in the picker grid */
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="h-[92px] rounded-card grid place-items-center gap-1.5 cursor-pointer disabled:cursor-wait"
-        style={{ border: "1px dashed var(--hairline-strong)", color: "var(--text-muted)" }}
+        className="h-[92px] rounded-card grid place-items-center gap-1.5 cursor-pointer border border-dashed border-hairline-strong text-text-muted disabled:cursor-wait"
+        
       >
         <Icon name="upload" size={18} style={{ color: "var(--accent-text)" }} />
         <span className="text-[12px] font-medium">
@@ -238,7 +230,7 @@ function UploadTab({
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
         {isAr
           ? "تُحفظ الصورة في مكتبة أصول المشروع، فيمكن إعادة استخدامها في أقسام أخرى."
-          : "Saved to this workspace's asset library, so you can reuse it in other sections."}
+          : "Saved to this brand's asset library, so you can reuse it in other sections."}
       </span>
     </div>
   );
@@ -290,7 +282,7 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-field-stack-compact">
       <input
         dir="ltr"
         value={url}
@@ -301,15 +293,9 @@ function LinkTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded:
         placeholder="https://…/photo.jpg"
         className="mk-field mk-field-sm"
       />
-      <button
-        type="button"
-        disabled={busy || !url.trim()}
-        onClick={() => void add()}
-        className="h-9 rounded-full text-[12px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ background: "var(--surface-2)", color: "var(--text)" }}
-      >
+      <Button variant="soft" size="sm" block disabled={busy || !url.trim()} onClick={() => void add()}>
         {busy ? (isAr ? "جارٍ الجلب…" : "Fetching…") : isAr ? "إضافة الصورة" : "Add image"}
-      </button>
+      </Button>
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
         {isAr
           ? "الصق رابطًا مباشرًا لصورة من أي موقع. تأكد من أن الترخيص يسمح بالاستخدام التجاري."
@@ -369,7 +355,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
       if (controller.signal.aborted) return;
       setResults([]);
       setStatus("error");
-      setError(e instanceof Error ? e.message : "Search failed.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Search failed.", ar: "تعذّر البحث." }));
     }
   }
 
@@ -397,25 +383,16 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
 
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex rounded-full p-0.5" style={{ background: "var(--surface-1)" }}>
-        {(["openverse", "unsplash"] as StockSource[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => switchSource(s)}
-            className="flex-1 h-7 rounded-full text-[11px] font-semibold cursor-pointer capitalize"
-            style={{
-              background: source === s ? "var(--surface-2)" : "transparent",
-              color: source === s ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "مكتبة الصور" : "Photo library"}
+        options={(["openverse", "unsplash"] as StockSource[]).map((src) => ({ value: src, label: src === "openverse" ? "Openverse" : "Unsplash" }))}
+        value={source}
+        onChange={switchSource}
+      />
 
       {needsKey ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-field-stack-compact">
           <span className="text-[11px] leading-[1.6]" style={{ color: "var(--text-faint)" }}>
             {isAr
               ? "يحتاج بحث Unsplash إلى مفتاح وصول مجاني خاص بك. أنشئه من unsplash.com/developers والصقه هنا — يُحفظ في هذا المتصفح فقط."
@@ -428,19 +405,19 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
             placeholder="Access Key"
             className="mk-field mk-field-sm"
           />
-          <button
-            type="button"
+          <Button
+            variant="soft"
+            size="sm"
+            block
             disabled={!keyDraft.trim()}
             onClick={() => {
               setUnsplashKey(keyDraft);
               setHasKey(true);
               setKeyDraft("");
             }}
-            className="h-9 rounded-full text-[12px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             {isAr ? "حفظ المفتاح" : "Save key"}
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -473,7 +450,7 @@ function StockTab({ ws, isAr, onAdded }: { ws: Workspace; isAr: boolean; onAdded
           {results.length > 0 && (
             <div className="grid grid-cols-2 gap-2">
               {results.map((r) => (
-                <button
+                <button /* ctl-audit-ignore: an image tile in the stock results grid */
                   key={r.id}
                   type="button"
                   disabled={!!importing}

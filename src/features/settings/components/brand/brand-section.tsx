@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
 import { LangToggle, Row, Section, useToast } from "@/components/ui";
@@ -14,6 +15,7 @@ import type { Workspace } from "@/types";
 export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const { setPrimaryLocale } = useAppActions();
   const { showToast } = useToast();
+  const copy = useAccountCopy(isAr);
   return (
     <Section title={isAr ? "العلامة" : "Brand"} icon="shapes">
       <BrandNameRow ws={ws} isAr={isAr} />
@@ -26,9 +28,7 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
         /* "On the next publish", not "now": /v/<slug> serves the published
            snapshot and never the live workspace. */
         hint={
-          isAr
-            ? "اللغة التي يفتح بها موقع الدليل عند العميل، عند النشر القادم. لغة واجهتك أنت إعداد منفصل في الشريط الأعلى."
-            : "Which language the client's guideline opens in, from the next publish. Your own interface language is a separate setting in the top bar."
+          copy.brandLanguageHint
         }
         right={
           <LangToggle
@@ -37,13 +37,7 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
               if (lang === ws.primaryLocale) return;
               setPrimaryLocale(ws.id, lang);
               showToast(
-                isAr
-                  ? lang === "ar"
-                    ? "لغة الهوية: العربية. تصل إلى العميل عند النشر."
-                    : "لغة الهوية: الإنجليزية. تصل إلى العميل عند النشر."
-                  : lang === "ar"
-                    ? "Brand language set to Arabic. Publish to show clients."
-                    : "Brand language set to English. Publish to show clients.",
+                lang === "ar" ? copy.brandLanguageArabic : copy.brandLanguageEnglish,
               );
             }}
             label={isAr ? "لغة الهوية" : "Brand language"}
@@ -83,7 +77,7 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-field-stack-compact">
       <InputField
         label={t("Brand name", "اسم العلامة")}
         value={draft}
@@ -98,8 +92,10 @@ function BrandNameRow({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
       />
       <span className="px-space-5 text-[12px] text-text-faint">
         {t("Shown across the app and on the published guideline. Its shared link stays", "يظهر في التطبيق وفي موقع الدليل المنشور. يبقى الرابط المشترك")}{" "}
-        <span dir="ltr" className="font-mono">/v/{ws.slug}</span>{" "}
-        {t("— renaming never breaks a link you've already shared.", "، فإعادة التسمية لا تكسر أي رابط شاركته من قبل.")}
+        {/* bdi, not a dir'd span: a span doesn't isolate, so the slashes and
+            the full stop around it jumped sides in Arabic. */}
+        <bdi dir="ltr" className="font-mono">/v/{ws.slug}</bdi>
+        {t(", so renaming never breaks a link you've already shared.", "، فإعادة التسمية لا تكسر أي رابط شاركته من قبل.")}
       </span>
     </div>
   );

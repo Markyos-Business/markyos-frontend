@@ -44,7 +44,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
         </Button>
       </div>
       {guidelineFile && (
-        <div className="flex items-center gap-2.5 rounded-lg bg-surface-2 px-3 py-2.5">
+        <div className="flex items-center gap-ctl-row rounded-lg bg-surface-2 px-3 py-2.5">
           <Icon name="file-alt" size={14} className="text-text-faint" />
           <span className="flex-1 truncate text-[12px]">{guidelineFile.fileName}</span>
           <span className="font-mono text-[11px] text-text-faint">{formatBytes(guidelineFile.sizeKB)}</span>

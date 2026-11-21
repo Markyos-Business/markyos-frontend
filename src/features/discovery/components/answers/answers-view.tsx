@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, EmptyState, Icon, Skeleton, StatTile, useDialog, useToast, PageHeader } from "@/components/ui";
 import { translateText } from "@/features/strategy";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { STATUS_META } from "../../constants";
@@ -11,6 +11,7 @@ import { reopenForm } from "../../api/discovery.api";
 import type { FormEventType, ResponsesView, UploadedFile } from "../../types";
 import { formatDayTime, formatDuration } from "../../utils/format";
 import { TYPE_RESULTS } from "./type-results";
+import { errorText } from "@/lib/api/errorText";
 
 type AnswersViewProps = {
   formId: string;
@@ -72,16 +73,16 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
       showToast(t("Reopened", "أُعيد فتحه"), "success");
       reload();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't work.", "لم ينجح ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work.", ar: "لم ينجح ذلك." }), "danger");
     }
   };
 
   return (
     <div className="flex flex-col gap-5 print:gap-space-6">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
-          <div className="flex flex-wrap items-center gap-space-4 text-caption text-text-muted">
+      <PageHeader
+        title={form.name}
+        description={<>
+          <div className="flex flex-wrap items-center gap-ctl-row text-caption text-text-muted">
             <Badge tone={status.tone} dot>
               {status[lang]}
             </Badge>
@@ -89,8 +90,9 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
               {form.recipientName || t("No client named", "لم يُحدَّد العميل")} · {form.workspaceName}
             </span>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-space-3 print:hidden">
+        </>}
+        actions={<>
+        <div className="flex flex-wrap gap-ctl-row print:hidden">
           <Button variant="outline" size="sm" href={builderHref}>
             {t("Questions", "الأسئلة")}
           </Button>
@@ -107,11 +109,12 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
             {t("Export PDF", "تصدير PDF")}
           </Button>
           <Button variant="outline" size="sm" href={strategyHref} icon={<Icon name="bullseye" size={16} />}>
-            {t("Open in Strategy Hub", "فتح في مركز الاستراتيجية")}
+            {t("Open in Strategy", "فتح في الاستراتيجية")}
           </Button>
           {analysis}
         </div>
-      </div>
+        </>}
+      />
 
       <AlertBanner message={error} />
 

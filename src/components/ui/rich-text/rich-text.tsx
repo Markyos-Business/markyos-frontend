@@ -8,7 +8,8 @@ import { useDialog } from "../overlay/dialog";
 
 /**
  * A small rich-text editor for brand copy — headings, emphasis, lists, quotes,
- * links and tables.
+ * links and tables — and, with `tools="article"`, website articles (two
+ * heading levels, images and dividers as well).
  *
  * Strategy used to store plain strings, which is fine for a one-line purpose
  * and wrong for everything else: a competitive analysis is a table, a set of
@@ -23,7 +24,7 @@ import { useDialog } from "../overlay/dialog";
 
 /** Detects whether a stored value is already an HTML fragment. */
 function isHtml(value: string): boolean {
-  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a)\b/i.test(value);
+  return /<(p|h[1-6]|ul|ol|li|table|blockquote|div|br|strong|em|a|figure|img|hr|pre|aside)\b/i.test(value);
 }
 
 function escapeHtml(s: string): string {
@@ -38,9 +39,9 @@ function escapeHtml(s: string): string {
  * lines into paragraphs, so old data keeps rendering correctly with no
  * migration step and no risk of a half-converted field.
  */
-const toRichHtml = (value: string): string => {
+const toRichHtml = (value: string, { media = false, help = false }: { media?: boolean; help?: boolean } = {}): string => {
   if (!value.trim()) return "";
-  if (isHtml(value)) return sanitizeRichHtml(value);
+  if (isHtml(value)) return sanitizeRichHtml(value, { media, help });
   return value
     .split(/\n{2,}/)
     .map((p) => `<p>${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`)
@@ -74,6 +75,9 @@ const richIsEmpty = (value: string): boolean => {
 
 type ToolAction =
   | "heading"
+  | "subheading"
+  | "image"
+  | "divider"
   | "bold"
   | "italic"
   | "bullets"
@@ -82,7 +86,11 @@ type ToolAction =
   | "link"
   | "table"
   | "row"
-  | "clear";
+  | "clear"
+  | "code"
+  | "note"
+  | "warning"
+  | "video";
 
 /**
  * Declared once at module scope rather than rebuilt per render. Building the
@@ -103,6 +111,37 @@ const TOOLS: { action: ToolAction; icon: string; en: string; ar: string }[] = [
   { action: "clear", icon: "undo", en: "Clear formatting", ar: "إزالة التنسيق" },
 ];
 
+/**
+ * The article set, for website content: two heading levels (an article's
+ * sections and their parts), images and dividers on top of the rest.
+ */
+const ARTICLE_TOOLS: typeof TOOLS = [
+  { action: "heading", icon: "heading", en: "Heading", ar: "عنوان" },
+  { action: "subheading", icon: "font", en: "Subheading", ar: "عنوان فرعي" },
+  ...TOOLS.filter((t) => !["heading", "table", "row", "clear"].includes(t.action)),
+  { action: "image", icon: "image", en: "Insert image", ar: "إدراج صورة" },
+  { action: "divider", icon: "minus", en: "Insert divider", ar: "إدراج فاصل" },
+  ...TOOLS.filter((t) => ["table", "row", "clear"].includes(t.action)),
+];
+
+/**
+ * The Help Center set: the article tools plus code blocks, two kinds of
+ * callout and a video link (YouTube or Vimeo; the website embeds it).
+ */
+const HELP_TOOLS: typeof TOOLS = [
+  ...ARTICLE_TOOLS.filter((t) => !["table", "row", "clear"].includes(t.action)),
+  { action: "code", icon: "file-code", en: "Code block", ar: "كتلة شيفرة" },
+  { action: "note", icon: "info-circle", en: "Note callout", ar: "تنبيه ملاحظة" },
+  { action: "warning", icon: "exclamation-circle", en: "Warning callout", ar: "تنبيه تحذير" },
+  { action: "video", icon: "play", en: "Video", ar: "فيديو" },
+  ...ARTICLE_TOOLS.filter((t) => ["table", "row", "clear"].includes(t.action)),
+];
+
+/** A video link the website can embed: YouTube or Vimeo, https only. */
+const VIDEO_HOST = /^https:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\//i;
+
+const escapeAttr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
 type RichTextEditorProps = {
   value: string;
   onChange: (html: string) => void;
@@ -117,6 +156,13 @@ type RichTextEditorProps = {
   readOnly?: boolean;
   /** Typing or pasting past this many characters of text is refused. */
   maxLength?: number;
+  /**
+   * `article` adds a second heading level, images and dividers, for website
+   * content. Brand copy keeps the standard set, which has no images.
+   */
+  tools?: "standard" | "article" | "help";
+  /** With `article` tools: asks for an image (a media picker); null cancels. */
+  onInsertImage?: () => Promise<{ url: string; alt: string } | null>;
   /** Ids and states for the editable area, from a Field around it. */
   editorProps?: {
     id?: string;
@@ -138,8 +184,14 @@ const RichTextEditor = ({
   disabled = false,
   readOnly = false,
   maxLength,
+  tools = "standard",
+  onInsertImage,
   editorProps,
 }: RichTextEditorProps) => {
+  const help = tools === "help";
+  // The Help set is a superset of the article set (two heading levels, images, dividers).
+  const article = tools === "article" || help;
+  const toolbar = (help ? HELP_TOOLS : article ? ARTICLE_TOOLS : TOOLS).filter((t) => t.action !== "image" || onInsertImage);
   const ref = useRef<HTMLDivElement | null>(null);
   // The HTML this editor last sent: when `value` comes back as that, it's our
   // own typing and the DOM already shows it; anything else came from outside.
@@ -159,10 +211,10 @@ const RichTextEditor = ({
   useEffect(() => {
     const el = ref.current;
     if (!el || value === sent.current) return;
-    const html = toRichHtml(value);
+    const html = toRichHtml(value, { media: article, help });
     if (el.innerHTML !== html) el.innerHTML = html;
     sent.current = value;
-  }, [value]);
+  }, [value, article, help]);
 
   // maxLength counts text, not tags, so it's checked before each insertion.
   useEffect(() => {
@@ -188,7 +240,7 @@ const RichTextEditor = ({
     (el: HTMLDivElement | null) => {
       ref.current = el;
       if (!el) return;
-      el.innerHTML = toRichHtml(value);
+      el.innerHTML = toRichHtml(value, { media: article, help });
       sent.current = value;
       if (autoFocus) {
         el.focus();
@@ -202,7 +254,7 @@ const RichTextEditor = ({
     },
     // Intentionally not re-running on `value`: see the comment above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [autoFocus]
+    [autoFocus, article, help]
   );
 
   const run = useCallback(
@@ -248,7 +300,24 @@ const RichTextEditor = ({
 
       switch (action) {
         case "heading":
+          // Articles have two levels; brand copy has one, which stays an h3.
+          return exec("formatBlock", article ? "h2" : "h3");
+        case "subheading":
           return exec("formatBlock", "h3");
+        case "divider":
+          return exec("insertHorizontalRule");
+        case "image": {
+          if (!onInsertImage) return;
+          void (async () => {
+            const picked = await askKeepingSelection(onInsertImage);
+            if (!picked?.url) return;
+            exec(
+              "insertHTML",
+              `<figure><img src="${escapeAttr(picked.url)}" alt="${escapeAttr(picked.alt ?? "")}"></figure><p><br></p>`
+            );
+          })();
+          return;
+        }
         case "bold":
           return exec("bold");
         case "italic":
@@ -261,6 +330,35 @@ const RichTextEditor = ({
           return exec("formatBlock", "blockquote");
         case "clear":
           return exec("removeFormat");
+        case "code":
+          return exec("formatBlock", "pre");
+        case "note":
+        case "warning": {
+          const text = window.getSelection()?.toString().trim() || (isAr ? "اكتب التنبيه هنا." : "Write the callout here.");
+          return exec("insertHTML", `<aside class="callout-${action}"><p>${escapeAttr(text)}</p></aside><p><br></p>`);
+        }
+        case "video": {
+          void (async () => {
+            const url = await askKeepingSelection(() =>
+              prompt({
+                title: isAr ? "إضافة فيديو" : "Add a video",
+                label: isAr ? "رابط يوتيوب أو فيميو" : "YouTube or Vimeo link",
+                placeholder: "https://www.youtube.com/watch?v=…",
+                confirmLabel: isAr ? "إضافة" : "Add",
+                isAr,
+              })
+            );
+            if (!url) return;
+            if (!VIDEO_HOST.test(url.trim())) {
+              // Any other address stays a plain link; only these two are embedded.
+              exec("createLink", url.trim());
+              return;
+            }
+            const safe = escapeAttr(url.trim());
+            exec("insertHTML", `<p><a class="video-embed" href="${safe}">${safe}</a></p><p><br></p>`);
+          })();
+          return;
+        }
         case "link": {
           void (async () => {
             const url = await askKeepingSelection(() =>
@@ -318,17 +416,17 @@ const RichTextEditor = ({
         }
       }
     },
-    [sync, isAr, prompt]
+    [sync, isAr, prompt, article, onInsertImage]
   );
 
   return (
     <div
       className="flex flex-col overflow-hidden rounded-lg bg-surface-2 shadow-edge-editing"
     >
-      <div
+      <div /* ctl-audit-ignore: the editor toolbar's tight row of formatting icons */
         className="flex shrink-0 flex-wrap items-center gap-0.5 px-2 py-1.5 text-text-muted shadow-rule-b"
       >
-        {TOOLS.map((t) => {
+        {toolbar.map((t) => {
           const label = isAr ? t.ar : t.en;
           return (
             <button
@@ -341,7 +439,7 @@ const RichTextEditor = ({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => run(t.action)}
               disabled={!editable}
-              className="grid size-7 cursor-pointer place-items-center rounded-md enabled:hover:text-text disabled:cursor-not-allowed disabled:text-text-disabled"
+              className="grid size-ctl-xs cursor-pointer place-items-center rounded-md enabled:hover:text-text disabled:cursor-not-allowed disabled:text-text-disabled"
             >
               <Icon name={t.icon} size={16} />
             </button>
@@ -381,6 +479,8 @@ type RichTextProps = {
   value: string;
   className?: string;
   style?: CSSProperties;
+  /** Lets images through, for website articles (see sanitizeRichHtml). */
+  media?: boolean;
 };
 
 /** Read-only rendering of a rich value, on either surface. */
@@ -388,6 +488,7 @@ const RichText = ({
   value,
   className = "",
   style,
+  media = false,
 }: RichTextProps) => {
   if (richIsEmpty(value)) return null;
   return (
@@ -395,7 +496,7 @@ const RichText = ({
       dir="auto"
       className={`rich-text bidi-auto ${className}`}
       style={style}
-      dangerouslySetInnerHTML={{ __html: toRichHtml(value) }}
+      dangerouslySetInnerHTML={{ __html: toRichHtml(value, { media }) }}
     />
   );
 };

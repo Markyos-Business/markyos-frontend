@@ -5,7 +5,7 @@ import { Icon, Row, Section, Switch } from "@/components/ui";
 import type { Workspace } from "@/types";
 
 /**
- * "Remove Markyos branding": whether this brand's public pages carry the
+ * "Hide the badge" (was "Remove Markyos branding"): whether this brand's public pages carry the
  * «صُنع بماركيوس» / "Made with Markyos" badge. Paid plans remove it (on by
  * default, so an upgrade takes it off everywhere at once); a paid brand may
  * switch it back off to give the credit. Free brands always show the badge:
@@ -18,9 +18,9 @@ export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; type
   const paid = ws.billing.plan !== "free";
   const removed = paid && !ws.brandingCredit;
   return (
-    <Section title={t("Branding", "علامة ماركيوس")} icon="id-badge">
+    <Section title={t("Made with Markyos badge", "شارة «صُنع بماركيوس»")} icon="id-badge">
       <Row
-        label={t("Remove Markyos branding", "إزالة علامة ماركيوس")}
+        label={t("Hide the badge", "إخفاء الشارة")}
         hint={
           paid
             ? removed
@@ -37,7 +37,7 @@ export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; type
         right={
           <span className="flex items-center gap-space-3">
             {!paid && <Icon name="lock" size={16} className="text-text-muted" />}
-            <Switch label={t("Remove Markyos branding", "إزالة علامة ماركيوس")} checked={removed} disabled={!paid} onToggle={() => setBrandingCredit(ws.id, removed)} />
+            <Switch label={t("Hide the “Made with Markyos” badge", "إخفاء شارة «صُنع بماركيوس»")} checked={removed} disabled={!paid} onToggle={() => setBrandingCredit(ws.id, removed)} />
           </span>
         }
       />

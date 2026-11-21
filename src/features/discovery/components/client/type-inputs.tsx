@@ -4,6 +4,7 @@ import { useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui";
 import { textIn } from "../../utils/question-types";
 import type { AnswerValue, ChoiceAnswer, PublicQuestion, QuestionType, UploadedFile } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 export type ClientInputProps = {
   question: PublicQuestion;
@@ -233,7 +234,7 @@ function UploadInput({ question, value, onChange, lang, onUpload, files, describ
       try {
         next.push((await onUpload(file)).assetId);
       } catch (err) {
-        setError(err instanceof Error ? err.message : t(lang, "That file didn't upload.", "لم يُرفع الملف."));
+        setError(errorText(err, lang, { en: "That file didn't upload.", ar: "لم يُرفع الملف." }));
       }
     }
     setBusy(false);

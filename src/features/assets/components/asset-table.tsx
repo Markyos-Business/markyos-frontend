@@ -81,8 +81,8 @@ export function AssetTable({ simulateError = false, simulateEmpty = false }: Ass
   }
 
   return (
-    <SurfaceCard padding="md" className="flex flex-col gap-space-6">
-      <div className="flex flex-wrap items-center justify-between gap-space-5">
+    <SurfaceCard padding="md" className="flex flex-col gap-field-stack">
+      <div className="flex flex-wrap items-center justify-between gap-ctl-row">
         <h2 className="text-h4 font-medium">{c.title}</h2>
         <SearchField
           label={c.search}

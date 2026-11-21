@@ -45,11 +45,11 @@ const FormSection = ({ title, description, icon, variant = "plain", headingLevel
     </>
   );
   return variant === "card" ? (
-    <SurfaceCard as="section" aria-labelledby={`${id}-title`} className={`flex min-w-0 flex-col gap-space-6 ${className}`}>
+    <SurfaceCard as="section" aria-labelledby={`${id}-title`} className={`flex min-w-0 flex-col gap-field-stack ${className}`}>
       {body}
     </SurfaceCard>
   ) : (
-    <section aria-labelledby={`${id}-title`} className={`flex min-w-0 flex-col gap-space-6 ${className}`}>
+    <section aria-labelledby={`${id}-title`} className={`flex min-w-0 flex-col gap-field-stack ${className}`}>
       {body}
     </section>
   );

@@ -14,7 +14,7 @@ export function PanelReveal({ side, isAr, label, onClick }: PanelRevealProps) {
   // direction: "start" grows rightward in English and leftward in Arabic.
   const pointsRight = side === "start" ? !isAr : isAr;
   return (
-    <button
+    <button /* ctl-audit-ignore: the thin strip that reopens a collapsed panel */
       type="button"
       onClick={onClick}
       aria-label={label}

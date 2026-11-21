@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "@/components/ui";
+import { Icon, Button } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { LogoSlot, SlotKind, Workspace } from "@/types";
 import { formatBytes } from "@/lib/utils";
@@ -31,7 +31,7 @@ export function ClearspacePanel({
     return (
       <div className="w-[308px] shrink-0 flex flex-col gap-3.5">
         <div
-          className="rounded-card p-[18px] flex flex-col items-center gap-2 text-center"
+          className="mk-surface rounded-card p-[18px] flex flex-col items-center gap-2 text-center"
           style={{ background: "var(--surface-1)" }}
         >
           <Icon name="info-circle" size={20} style={{ color: "var(--text-muted)" }} />
@@ -49,8 +49,8 @@ export function ClearspacePanel({
   const minPrintMm = Math.round(((minDigital / 72) * 25.4) * 10) / 10;
 
   return (
-    <div className="w-[308px] shrink-0 flex flex-col gap-3.5">
-      <div className="rounded-card p-[18px]" style={{ background: "var(--surface-1)" }}>
+    <div className="w-[308px] shrink-0 flex flex-col gap-field-stack">
+      <div className="mk-surface rounded-card p-[18px]" style={{ background: "var(--surface-1)" }}>
         <div className="flex items-baseline justify-between mb-3.5">
           <span className="font-semibold text-[13px]">
             {isAr ? "الهامش الآمن" : "Clearspace"} — {isAr ? SLOT_META[selected].arLabel : SLOT_META[selected].label}
@@ -88,12 +88,21 @@ export function ClearspacePanel({
           <span>1×</span>
         </div>
         <p className="mt-3.5 text-[12px] leading-[1.55]" style={{ color: "var(--text-muted)" }}>
-          Measured from the file&apos;s bounding box ({Math.round(height)} px tall). Guide is{" "}
-          <span style={{ color: "var(--text-secondary)" }}>{csPx} px</span> at native size.
+          {isAr ? (
+            <>
+              مقيس من حدود الملف (بارتفاع <bdi dir="ltr">{Math.round(height)} px</bdi>). الهامش{" "}
+              <bdi dir="ltr" style={{ color: "var(--text-secondary)" }}>{csPx} px</bdi> بالحجم الأصلي.
+            </>
+          ) : (
+            <>
+              Measured from the file&apos;s bounding box ({Math.round(height)} px tall). Guide is{" "}
+              <span style={{ color: "var(--text-secondary)" }}>{csPx} px</span> at native size.
+            </>
+          )}
         </p>
       </div>
 
-      <div className="rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+      <div className="mk-surface rounded-card p-[18px] flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
         <span className="font-semibold text-[13px]">{isAr ? "الحجم الأدنى" : "Minimum size"}</span>
         <div
           className="flex items-center justify-between px-3 py-2.5 rounded-lg"
@@ -119,7 +128,7 @@ export function ClearspacePanel({
         </div>
       </div>
 
-      <div className="rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
+      <div className="mk-surface rounded-card p-[18px] flex flex-col gap-2.5" style={{ background: "var(--surface-1)" }}>
         <span className="font-semibold text-[13px]">{isAr ? "الملفات" : "Files"}</span>
         {attachedSlots.map((k) => {
           const s = workspace.logo[k];
@@ -138,16 +147,10 @@ export function ClearspacePanel({
         )}
       </div>
 
-      <div className="mt-auto flex flex-col gap-2.5">
-        <button
-          type="button"
-          onClick={onDownload}
-          disabled={attachedSlots.length === 0}
-          className="h-11 rounded-full font-semibold text-[14px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+      <div className="mt-auto flex flex-col gap-ctl-row">
+        <Button variant="solid" size="lg" block onClick={onDownload} disabled={attachedSlots.length === 0}>
           {isAr ? "تنزيل الملفات" : "Download assets"}
-        </button>
+        </Button>
       </div>
     </div>
   );

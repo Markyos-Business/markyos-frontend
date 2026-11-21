@@ -32,7 +32,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
 
   return (
     <aside aria-label={isAr ? "مكتبة الأسئلة" : "Question library"} className="mk-surface flex min-h-0 flex-col rounded-card bg-surface-1">
-      <div className="flex flex-col gap-space-5 p-space-6 shadow-rule-b">
+      <div className="flex flex-col gap-field-stack p-space-6 shadow-rule-b">
         <h2 className="text-h5 font-medium">{isAr ? "مكتبة الأسئلة" : "Question library"}</h2>
         <SearchField
           label={isAr ? "ابحث في المكتبة" : "Search the library"}
@@ -40,7 +40,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div role="group" aria-label={isAr ? "الفئات" : "Categories"} className="flex flex-wrap gap-space-3">
+        <div role="group" aria-label={isAr ? "الفئات" : "Categories"} className="flex flex-wrap gap-ctl-row">
           {(["", ...CATEGORY_ORDER] as (QuestionCategory | "")[]).map((key) => {
             const on = category === key;
             return (
@@ -49,7 +49,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
                 type="button"
                 aria-pressed={on}
                 onClick={() => setCategory(key)}
-                className={`h-8 rounded-md px-space-4 text-caption font-medium transition-[background-color,color,box-shadow] ${
+                className={`h-ctl-sm rounded-md px-space-4 text-caption font-medium transition-[background-color,color,box-shadow] ${
                   on ? "bg-accent-soft text-accent-on-soft shadow-edge-accent" : "bg-surface-2 text-text-muted hover:text-text"
                 }`}
               >
@@ -72,7 +72,7 @@ export function LibraryPanel({ added, onAdd, disabled, isAr }: LibraryPanelProps
           : data?.results.map((q) => {
               const isAdded = added.has(q.id);
               return (
-                <li key={q.id} className="flex items-start gap-space-4 px-space-6 py-space-5 shadow-rule-t first:shadow-none">
+                <li key={q.id} className="flex items-start gap-ctl-row px-space-6 py-space-5 shadow-rule-t first:shadow-none">
                   <Icon name={TYPE_META[q.type].icon} size={16} className="mt-0.5 shrink-0 text-text-muted" />
                   <div className="min-w-0 flex-1">
                     <p dir="auto" className="text-body text-text">

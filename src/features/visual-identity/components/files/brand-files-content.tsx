@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { FilterSelectField, SearchField } from "@/components/ui";
+import { type ReactNode, useMemo, useRef, useState } from "react";
+import { Button, PageHeader, SearchField, SegmentedControl, SortControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint, Modal } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint, EmptyState, Modal } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { Asset, AssetStatus, AssetType, SlotKind, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
@@ -62,10 +62,10 @@ const STATUS_META: Record<AssetStatus, { label: string; arLabel: string; tone: "
 type SortKey = "newest" | "oldest" | "name" | "largest";
 
 const SORT_META: Record<SortKey, { label: string; arLabel: string }> = {
-  newest: { label: "Newest", arLabel: "الأحدث" },
-  oldest: { label: "Oldest", arLabel: "الأقدم" },
-  name: { label: "Name", arLabel: "الاسم" },
-  largest: { label: "Largest", arLabel: "الأكبر حجمًا" },
+  newest: { label: "Newest first", arLabel: "الأحدث أولًا" },
+  oldest: { label: "Oldest first", arLabel: "الأقدم أولًا" },
+  name: { label: "Name A–Z", arLabel: "الاسم (أ–ي)" },
+  largest: { label: "Largest first", arLabel: "الأكبر حجمًا أولًا" },
 };
 
 const SORTERS: Record<SortKey, (a: Row, b: Row) => number> = {
@@ -89,7 +89,11 @@ interface Row {
   asset?: Asset;
 }
 
-export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManageLogo: () => void }) {
+/**
+ * `title` follows where the library is opened: "Assets" from the sidebar's
+ * Assets page, "Brand files" as the Visual identity tab of the same name.
+ */
+export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files", ar: "ملفات الهوية" } }: { ws: Workspace; onManageLogo: () => void; title?: { en: string; ar: string } }) {
   const { addAsset, removeAsset, setAssetTags, uiLang } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -305,26 +309,18 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
           className="absolute inset-4 z-20 rounded-card grid place-items-center pointer-events-none animate-fade-in"
           style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 2px var(--accent)" }}
         >
-          <span className="flex items-center gap-2.5 text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
+          <span className="flex items-center gap-ctl-row text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
             <Icon name="upload" size={16} />
             {isAr ? "أفلِت للرفع" : "Drop to upload"}
           </span>
         </div>
       )}
-      {/* Wraps on a narrow window. Fixed side by side, the paragraph was
-          squeezed to about 150px on a phone — three words a line — while the
-          Upload button sat beside it holding the rest. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-            {isAr ? "ملفات الهوية" : "Brand files"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? title.ar : title.en}
+        description={isAr
               ? "شعاراتك وخطوطك وصورك في مكتبة واحدة. أعد استخدام الملفات نفسها في أنحاء هوية علامتك."
               : "Keep your logos, fonts and images in one library. Reuse the same files throughout your brand identity."}
-          </p>
-        </div>
+        actions={<>
         <input
           ref={inputRef}
           type="file"
@@ -335,67 +331,71 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+        <Button variant="primary" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()} className="shrink-0">
           {isAr ? "رفع ملف" : "Upload asset"}
-        </button>
-      </div>
+        </Button>
+        </>}
+      />
 
-      <div className="flex items-center gap-2.5 flex-wrap">
+      <div className="flex items-center gap-ctl-row flex-wrap">
         <SearchField
           label={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
         />
-        <FilterSelectField
+        <SortControl
           label={isAr ? "ترتيب الملفات" : "Sort files"}
           hideLabel
-          icon="sort"
-          value={sort}
-          onChange={(value) => setSort(value as SortKey)}
-          options={(Object.keys(SORT_META) as SortKey[]).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
+          defaultLabel={isAr ? SORT_META.newest.arLabel : SORT_META.newest.label}
+          value={sort === "newest" ? "" : sort}
+          onChange={(value) => setSort((value || "newest") as SortKey)}
+          options={(["oldest", "name", "largest"] as const).map((k) => ({ value: k, label: isAr ? SORT_META[k].arLabel : SORT_META[k].label }))}
         />
-        <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
-        {/* Only the types this workspace actually has — plus whichever one is
-            selected, so pressing a chip can never make it vanish under the
-            pointer. */}
-        {(Object.keys(TYPE_META) as (AssetType | "logo")[])
-          .filter((t) => (facets.byType.get(t) ?? 0) > 0 || typeFilter === t)
-          .map((t) => (
-            <Chip
-              key={t}
-              label={isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
-              count={facets.byType.get(t) ?? 0}
-              active={typeFilter === t}
-              onClick={() => setTypeFilter(typeFilter === t ? "all" : t)}
-            />
-          ))}
+      </div>
+
+      {/* Type, status and tags each on a labelled row: run together, a status
+          chip read like one more file type. On a phone each row scrolls
+          sideways instead of stacking five rows of chips above the files. */}
+      <div className="flex flex-col gap-space-3">
+        <FilterRow label={isAr ? "النوع" : "Type"}>
+          <Chip label={isAr ? "الكل" : "All"} count={rows.length} active={typeFilter === "all"} onClick={() => setTypeFilter("all")} />
+          {/* Only the types this workspace actually has — plus whichever one is
+              selected, so pressing a chip can never make it vanish under the
+              pointer. */}
+          {(Object.keys(TYPE_META) as (AssetType | "logo")[])
+            .filter((t) => (facets.byType.get(t) ?? 0) > 0 || typeFilter === t)
+            .map((t) => (
+              <Chip
+                key={t}
+                label={isAr ? TYPE_META[t].arLabel : TYPE_META[t].label}
+                count={facets.byType.get(t) ?? 0}
+                active={typeFilter === t}
+                onClick={() => setTypeFilter(typeFilter === t ? "all" : t)}
+              />
+            ))}
+        </FilterRow>
         {(Object.keys(STATUS_META) as AssetStatus[]).some((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s) && (
-          <span className="w-px h-5" style={{ background: "var(--hairline-strong)" }} />
+          <FilterRow label={isAr ? "الحالة" : "Status"}>
+            {(Object.keys(STATUS_META) as AssetStatus[])
+              .filter((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s)
+              .map((s) => (
+                <Chip
+                  key={s}
+                  label={isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
+                  count={facets.byStatus.get(s) ?? 0}
+                  active={statusFilter === s}
+                  onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
+                />
+              ))}
+          </FilterRow>
         )}
-        {(Object.keys(STATUS_META) as AssetStatus[])
-          .filter((s) => (facets.byStatus.get(s) ?? 0) > 0 || statusFilter === s)
-          .map((s) => (
-            <Chip
-              key={s}
-              label={isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
-              count={facets.byStatus.get(s) ?? 0}
-              active={statusFilter === s}
-              onClick={() => setStatusFilter(statusFilter === s ? "all" : s)}
-            />
-          ))}
         {allTags.length > 0 && (
-          <>
-            <span className="w-px h-5" style={{ background: "var(--hairline-strong)" }} />
+          <FilterRow label={isAr ? "الوسوم" : "Tags"}>
             {allTags.map((tag) => (
               <Chip key={tag} label={`#${tag}`} active={tagFilter === tag} onClick={() => setTagFilter(tagFilter === tag ? null : tag)} />
             ))}
-          </>
+          </FilterRow>
         )}
       </div>
 
@@ -422,27 +422,29 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
        * filtered one carries the way out rather than describing it.
        */}
       {filtered.length === 0 && rows.length === 0 ? (
-        <EmptyHint>
-          {isAr
-            ? "لا شيء هنا بعد. ارفع ملفات الشعار والخطوط والصور وملفات التصدير التي تملكها هذه العلامة — كل تبويب آخر في الهوية البصرية يقرأ من هنا."
-            : "Nothing here yet. Upload the logo files, fonts, photography and exports this brand owns — every other Visual identity tab reads from this one."}
-        </EmptyHint>
+        // The header already carries Upload, so the empty state explains rather than repeating the button.
+        <EmptyState
+          icon="file-alt"
+          title={isAr ? "لا ملفات بعد." : "No files yet."}
+          description={isAr
+            ? "ارفع ملفات الشعار والخطوط والصور وملفات التصدير التي تملكها هذه العلامة؛ تقرأ منها كل تبويبات الهوية البصرية."
+            : "Upload the logo files, fonts, photography and exports this brand owns; every Visual identity tab reads from them."}
+        />
       ) : filtered.length === 0 ? (
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-ctl-row flex-wrap">
           <EmptyHint>{isAr ? "لا ملف يطابق هذه المرشحات." : "No file matches these filters."}</EmptyHint>
-          <button
-            type="button"
+          <Button
+            variant="soft"
+            size="sm"
             onClick={() => {
               setQuery("");
               setTypeFilter("all");
               setStatusFilter("all");
               setTagFilter(null);
             }}
-            className="mk-tap shrink-0 rounded-lg px-3.5 h-8 text-[12px] font-semibold cursor-pointer"
-            style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             {isAr ? "امسح المرشحات" : "Clear filters"}
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
@@ -460,7 +462,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
               style={{ background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
             >
               <div
-                className="h-[110px] relative grid place-items-center"
+                className="h-[110px] relative grid place-items-center overflow-hidden rounded-t-card"
                 style={{ background: "var(--surface-2)", boxShadow: "inset 0 -1px 0 var(--hairline)" }}
               >
                 {IMAGE_TYPES.has(r.type) && r.url ? (
@@ -473,7 +475,9 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                     alt=""
                     ground="--surface-2"
                     adapt={r.type !== "photo"}
-                    style={{ maxHeight: 64, maxWidth: "80%" }}
+                    // A photo fills its tile, so two photos can be told apart at
+                    // a glance; marks and graphics stay whole, never cropped.
+                    style={r.type === "photo" ? { width: "100%", height: "100%", objectFit: "cover" } : { maxHeight: 80, maxWidth: "80%" }}
                   />
                 ) : (
                   <Icon name={TYPE_META[r.type].icon} size={26} style={{ color: "var(--text-faint)" }} />
@@ -484,17 +488,17 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                 <button
                   type="button"
                   onClick={() => toggleSelect(r.key)}
-                  aria-label={`Select ${r.fileName}`}
+                  aria-label={isAr ? `تحديد ${r.fileName}` : `Select ${r.fileName}`}
                   aria-pressed={selected.has(r.key)}
-                  className="absolute top-[5px] start-[5px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[5px] start-[5px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   <span
                     className="w-[18px] h-[18px] rounded-sm grid place-items-center"
                     style={{
-                      background: selected.has(r.key) ? "var(--accent)" : "var(--scrim)",
-                      boxShadow: selected.has(r.key)
-                        ? "none"
-                        : "inset 0 0 0 1px color-mix(in srgb, var(--scrim-ink) 55%, transparent)",
+                      // Unticked is an empty box on the card colour: the dark
+                      // scrim it used to sit on read as already ticked.
+                      background: selected.has(r.key) ? "var(--accent)" : "var(--surface-1)",
+                      boxShadow: selected.has(r.key) ? "none" : "inset 0 0 0 1.5px var(--hairline-strong)",
                     }}
                   >
                     {selected.has(r.key) && <Icon name="check" size={12} style={{ color: "var(--accent-ink)" }} />}
@@ -519,7 +523,7 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                 )}
               </div>
               <div className="p-3 flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-1.5">
+                <div className="flex items-center justify-between gap-ctl-row">
                   <span className="text-[12px] font-medium truncate">{r.fileName}</span>
                   {r.source === "manager" && r.asset && (
                     <button
@@ -536,9 +540,9 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
                     </button>
                   )}
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="flex items-center gap-ctl-row flex-wrap">
                   <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded-sm" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
-                    {TYPE_META[r.type].label.toUpperCase()}
+                    {isAr ? TYPE_META[r.type].arLabel : TYPE_META[r.type].label}
                   </span>
                   <span className="text-[10px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
                     {formatBytes(r.sizeKB)}
@@ -585,6 +589,18 @@ export function BrandFilesContent({ ws, onManageLogo }: { ws: Workspace; onManag
  * a chip that says "Pattern 4" is an answer. `aria-pressed` because these are
  * toggles, which a screen reader could not otherwise tell from links.
  */
+/** One labelled row of filter chips; scrolls sideways on a phone. */
+function FilterRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    // Wraps at every width: a phone used to scroll each row sideways with
+    // nothing saying there was more ("Icon", "#mono…" cut at the edge).
+    <div role="group" aria-label={label} className="flex items-start gap-space-4">
+      <span className="flex h-ctl-sm w-14 shrink-0 items-center text-caption text-text-muted">{label}</span>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-ctl-row">{children}</div>
+    </div>
+  );
+}
+
 function Chip({
   label,
   count,
@@ -601,7 +617,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="h-8 px-3 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 flex items-center gap-1.5"
+      className="flex h-ctl-sm shrink-0 cursor-pointer items-center gap-ctl-icon rounded-control px-ctl-px-sm text-caption font-medium"
       style={{ background: active ? "var(--accent-soft)" : "var(--surface-1)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
     >
       {/* Resolved against its own first strong character, so a tag chip's
@@ -610,8 +626,9 @@ function Chip({
       <span dir="auto" className="bidi-auto">{label}</span>
       {count !== undefined && (
         <span
+          // No extra fade: muted text at 65% fell under 4.5:1 (axe).
           className="tabular-nums font-medium"
-          style={{ fontFamily: "ui-monospace, Menlo, monospace", opacity: 0.65 }}
+          style={{ fontFamily: "ui-monospace, Menlo, monospace" }}
         >
           {count}
         </span>
@@ -677,8 +694,9 @@ function AssetDetailModal({
             if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") setName(asset.fileName);
           }}
-          className="bidi-auto flex-1 min-w-0 text-[16px] font-semibold outline-none rounded-md px-2 py-1 -mx-2"
-          style={{ background: "transparent", color: "var(--text)" }}
+          // Reads as the drawer's title until focused; then the field's focus
+          // underline says it is editable.
+          className="mk-field bidi-auto -mx-ctl-px-md min-w-0 flex-1 bg-transparent text-h5 font-medium"
         />
       }
     >
@@ -692,12 +710,11 @@ function AssetDetailModal({
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
           {isAr ? "الحالة" : "Status"}
         </span>
-        <div className="flex flex-wrap gap-1.5">
-          {(Object.keys(STATUS_META) as AssetStatus[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => {
+        <SegmentedControl
+          label={isAr ? "الحالة" : "Status"}
+          options={(Object.keys(STATUS_META) as AssetStatus[]).map((s) => ({ value: s, label: isAr ? STATUS_META[s].arLabel : STATUS_META[s].label }))}
+          value={asset.status}
+          onChange={(s) => {
                 if (s === asset.status) return;
                 setAssetStatus(workspaceId, asset.id, s);
                 onStatusChange(s);
@@ -711,18 +728,8 @@ function AssetDetailModal({
                       : `Moved to ${STATUS_META[s].label.toLowerCase()} — it won't be published.`,
                   s === "approved" ? "success" : undefined,
                 );
-              }}
-              aria-pressed={asset.status === s}
-              className="text-[11px] px-2.5 py-1.5 rounded-md cursor-pointer"
-              style={{
-                background: asset.status === s ? "var(--accent-soft)" : "var(--surface-2)",
-                color: asset.status === s ? "var(--accent-on-soft)" : "var(--text-muted)",
-              }}
-            >
-              {isAr ? STATUS_META[s].arLabel : STATUS_META[s].label}
-            </button>
-          ))}
-        </div>
+          }}
+        />
         <span dir="auto" className="bidi-auto text-[11px]" style={{ color: "var(--text-faint)" }}>
           {asset.status === "approved"
             ? isAr
@@ -742,7 +749,7 @@ function AssetDetailModal({
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
           {isAr ? "النوع" : "Type"}
         </span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-ctl-row">
           {EDITABLE_TYPES.map((t) => (
             <button
               key={t}
@@ -774,9 +781,9 @@ function AssetDetailModal({
 
       <div className="flex flex-col gap-1.5">
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "الوسوم" : "Tags"}</span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-ctl-row">
           {asset.tags.map((t) => (
-            <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
+            <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-ctl-row" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
               {/* `dir="auto"` keeps the hash on the tag. It is a neutral
                   character, so inside an Arabic page it takes the paragraph's
                   direction and lands on the wrong end — "#export" painting as
@@ -831,7 +838,7 @@ function AssetDetailModal({
             {asset.versions.map((v) => (
               <div key={v.id} className="flex items-center justify-between text-[12px] rounded-lg px-2.5 py-2" style={{ background: "var(--surface-2)" }}>
                 <span className="truncate" style={{ color: "var(--text-secondary)" }}>{v.fileName}</span>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-ctl-row shrink-0">
                   <span style={{ color: "var(--text-faint)" }}>{formatRelative(v.createdAt)}</span>
                   <button
                     type="button"
@@ -852,9 +859,9 @@ function AssetDetailModal({
         )}
       </div>
 
-      <button type="button" onClick={onDelete} className="h-10 rounded-full text-[13px] font-semibold cursor-pointer mt-1" style={{ color: "var(--danger)" }}>
+      <Button variant="danger-soft" size="md" block onClick={onDelete} className="mt-1">
         {isAr ? "حذف الملف" : "Delete asset"}
-      </button>
+      </Button>
     </Modal>
   );
 }

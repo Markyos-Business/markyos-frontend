@@ -106,7 +106,8 @@ import type {
   PendingVerification,
 } from "@/features/auth/types";
 import { createApiAdapter, isApiAdapter } from "@/lib/data/adapters/apiAdapter";
-import { DEFAULT_LANG } from "@/lib/i18n/interfaceLang";
+import { DEFAULT_LANG, readGuestLang, resolveLang } from "@/lib/i18n/interfaceLang";
+import { errorText } from "@/lib/api/errorText";
 
 /** How many edits back undo reaches. Entries share structure, so the cost of a
  *  deep history is an array per step, not a copy of every brand. */
@@ -305,6 +306,8 @@ interface AppContextValue {
   /** Claims a subdomain. Returns an error message, or null when it was taken. */
   setSubdomain: (workspaceId: string, subdomain: string) => string | null;
   confirmPurchase: (workspaceId: string, sessionId: string) => Promise<{ status: string; billing: Billing }>;
+  /** Applies billing the server verified (PayPal confirm or cancel), keeping unsaved brand edits. */
+  applyServerBilling: (workspaceId: string, billing: Billing) => void;
   // v3.0 developer / Figma
   setApiKey: (workspaceId: string, key: string) => void;
   setWebhookUrl: (workspaceId: string, url: string) => void;
@@ -609,7 +612,7 @@ interface AppContextValue {
   setSiteMode: (workspaceId: string, mode: Workspace["siteMode"]) => void;
   /** Copies the current draft to the live site clients see. */
   /** Publishes on the server when signed in; resolves with what happened. */
-  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
+  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; blocked?: boolean; message?: string }>;
   /** Takes the live site down; the draft is untouched. */
   unpublishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   addTemplateBlocks: (workspaceId: string, blocks: Omit<PageBlock, "id" | "order">[], pageId?: string) => void;
@@ -689,7 +692,8 @@ async function restoreServerSession(): Promise<Account | null> {
 export interface SyncNotice {
   /** Changes with every notice, so the same message twice shows twice. */
   id: number;
-  message: string;
+  /** Both languages: the toast layer picks the reader's. */
+  message: { en: string; ar: string };
   tone: "default" | "danger";
 }
 
@@ -722,8 +726,14 @@ function withServerBilling(state: AppState, workspaceId: string, billing: Billin
   };
 }
 
-const apiMessage = (err: unknown) =>
-  err instanceof ApiError ? err.message : "Something went wrong. Try again.";
+/** A failed request in the reader's language (see `errorText`): never the server's English in Arabic. */
+const apiMessage = (err: unknown, lang: Lang) =>
+  // A sign-in failure wraps the request's ApiError; its status is what decides the message.
+  errorText(err instanceof Error && err.cause instanceof ApiError ? err.cause : err, lang);
+
+/** The interface language right now: the account's choice, else this browser's, else Arabic. */
+const langOf = (state: AppState): Lang =>
+  resolveLang(state.accounts.find((a) => a.id === state.session?.accountId)?.adminLang ?? null, readGuestLang());
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(() => defaultState());
@@ -747,7 +757,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const [slugMoves, setSlugMoves] = useState<Record<string, string>>({});
   const [syncNotice, setSyncNotice] = useState<SyncNotice | null>(null);
-  const notify = (message: string, tone: SyncNotice["tone"] = "danger") =>
+  const notify = (message: SyncNotice["message"], tone: SyncNotice["tone"] = "danger") =>
     setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message, tone }));
   /** When a viewer's edit was last refused, so a burst of them says so once. */
   const lastRefusedEdit = useRef(0);
@@ -766,11 +776,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
             }
           },
-          onRefused: (ws, message) => notify(`"${ws.name}" wasn't saved: ${message}`),
+          onRefused: (ws, err) =>
+            notify({
+              en: `"${ws.name}" wasn't saved: ${errorText(err, "en")}`,
+              ar: `لم تُحفظ التغييرات على «${ws.name}». ${errorText(err, "ar")}`,
+            }),
           // Taken off the team: the brand leaves this browser too.
           onLost: (ws) => {
             setState((prev) => ({ ...prev, workspaces: prev.workspaces.filter((w) => w.id !== ws.id) }));
-            notify(`You no longer have access to "${ws.name}".`);
+            notify({ en: `You no longer have access to "${ws.name}".`, ar: `لم يعد بإمكانك الوصول إلى «${ws.name}».` });
           },
         })
       : createLocalAdapter()
@@ -787,7 +801,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // With a backend, who is signed in is the server's answer, not whatever
       // session this browser last saved: the refresh cookie either still
       // works or it does not.
-      const account = API_ENABLED ? await restoreServerSession() : null;
+      let account: Account | null;
+      try {
+        account = API_ENABLED ? await restoreServerSession() : null;
+      } catch {
+        // A temporary outage is not evidence that the saved session expired.
+        if (!cancelled) {
+          if (loaded) setState(loaded);
+          setHydrated(true);
+        }
+        return;
+      }
       const server =
         account && isApiAdapter(repo) ? await repo.pullWorkspaces(loaded ?? defaultState()) : null;
       if (cancelled) return;
@@ -882,7 +906,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           lastRefusedEdit.current = Date.now();
           setSyncNotice((prev) => ({
             id: (prev?.id ?? 0) + 1,
-            message: `You're a ${role} on this brand, so nothing here can be changed.`,
+            message: {
+              en: `You're a ${role} on this brand, so nothing here can be changed.`,
+              ar: `دورك في هذه العلامة ${role === "viewer" ? "مشاهد" : "عميل"}، لذا لا يمكن تغيير أي شيء هنا.`,
+            },
             tone: "default",
           }));
         }
@@ -996,7 +1023,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           const res = await authApi.signup(name.trim(), clean, accountType);
           return { setup: { email: res.email, emailSent: res.emailSent } };
         } catch (err) {
-          return { error: apiMessage(err) };
+          const lang = langOf(stateRef.current);
+          // The one sign-up refusal worth naming: the server only says it in English.
+          if (err instanceof ApiError && err.status === 400 && err.fields.email) {
+            return { error: lang === "ar"
+              ? "يوجد حساب بهذا البريد الإلكتروني. سجّل الدخول، أو أعد تعيين كلمة المرور."
+              : "An account already uses that email. Log in instead, or reset the password." };
+          }
+          return { error: apiMessage(err, lang) };
         }
       }
       // The browser-only build has no inbox, so the password is set here.
@@ -1056,7 +1090,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           await pullServerWorkspaces();
           return {};
         } catch (err) {
-          return { error: apiMessage(err), loginFailure: classifyLoginFailure(err) };
+          return { error: apiMessage(err, langOf(stateRef.current)), loginFailure: classifyLoginFailure(err) };
         }
       }
       const account = findByEmail(email);
@@ -1121,7 +1155,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await pullServerWorkspaces();
         return null;
       } catch (err) {
-        return apiMessage(err);
+        return apiMessage(err, langOf(stateRef.current));
       }
     },
     [pullServerWorkspaces]
@@ -1132,14 +1166,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await authApi.resendVerification(email, purpose);
       return null;
     } catch (err) {
-      return apiMessage(err);
+      return apiMessage(err, langOf(stateRef.current));
     }
   }, []);
 
   const signInWithGoogle = useCallback(
     async (body: GoogleSignInBody): Promise<{ error?: string; pending?: GooglePendingSignup }> => {
       // There is no Google in the browser-only build: no server to check the code.
-      if (!API_ENABLED) return { error: "Google sign-in needs the Markyos server." };
+      if (!API_ENABLED) return { error: langOf(stateRef.current) === "ar" ? "تسجيل الدخول عبر Google غير متاح في العرض التجريبي." : "Google sign-in isn't available in the demo." };
       try {
         const res = await authApi.googleSignIn(body);
         if (res.kind === "needsAccountType") {
@@ -1149,7 +1183,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await pullServerWorkspaces();
         return {};
       } catch (err) {
-        return { error: apiMessage(err) };
+        return { error: apiMessage(err, langOf(stateRef.current)) };
       }
     },
     [pullServerWorkspaces]
@@ -1162,7 +1196,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
       return null;
     } catch (err) {
-      return apiMessage(err);
+      return apiMessage(err, langOf(stateRef.current));
     }
   }, []);
 
@@ -1180,7 +1214,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return { email };
     } catch (err) {
-      return { error: apiMessage(err) };
+      return { error: apiMessage(err, langOf(stateRef.current)) };
     }
   }, []);
 
@@ -1196,7 +1230,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setState((prev) => signedInAs(prev, account, prev.session?.remember ?? true));
           return null;
         } catch (err) {
-          return apiMessage(err);
+          return apiMessage(err, langOf(stateRef.current));
         }
       }
 
@@ -1245,8 +1279,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           // The backend's wording for a wrong current password is "Incorrect
           // old password."; say it the way the rest of this form does.
           return err instanceof ApiError && err.status === 400 && /old password/i.test(err.message)
-            ? "Your current password doesn't match."
-            : apiMessage(err);
+            ? (langOf(stateRef.current) === "ar" ? "كلمة المرور الحالية غير صحيحة." : "Your current password doesn't match.")
+            : apiMessage(err, langOf(stateRef.current));
         }
         setState((prev) => ({
           ...prev,
@@ -1258,7 +1292,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
 
       const { ok } = await verifyPassword(current ?? "", account.password);
-      if (!ok) return "Your current password doesn't match.";
+      if (!ok) return langOf(stateRef.current) === "ar" ? "كلمة المرور الحالية غير صحيحة." : "Your current password doesn't match.";
 
       const hashed = await hashPassword(next);
       setState((prev) => ({
@@ -1324,7 +1358,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           await pullServerWorkspaces();
           return { firstTime };
         } catch (err) {
-          return { error: apiMessage(err) };
+          return { error: apiMessage(err, langOf(stateRef.current)) };
         }
       }
       const clean = token.trim().toUpperCase();
@@ -1721,7 +1755,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const confirmPurchase = useCallback(
     async (workspaceId: string, sessionId: string) => {
-      if (!API_ENABLED) throw new Error("Payment verification needs the Markyos server.");
+      if (!API_ENABLED) throw new Error("Payments aren't available in the demo.");
       const result = await api<{ status: string; billing: Billing }>("/billing/confirm/", {
         method: "POST", body: { brandId: workspaceId, sessionId },
       });
@@ -1731,6 +1765,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+
+  const applyServerBilling = useCallback((workspaceId: string, billing: Billing) => {
+    setState((prev) => withServerBilling(prev, workspaceId, billing));
+  }, []);
 
   const setApiKey = useCallback(
     (workspaceId: string, key: string) => {
@@ -2240,7 +2278,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (result.ok) return setVotes(result.votes);
         setVotes(before);
         if (result.unsupported) patchMoodboard(workspaceId, boardId, toggle);
-        else setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message: `Your vote wasn't saved: ${result.message}`, tone: "danger" }));
+        else setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message: { en: `Your vote wasn't saved: ${result.message}`, ar: "لم يُحفظ تصويتك. حاول مرة أخرى." }, tone: "danger" }));
       });
     },
     [patchMoodboard, repo]
@@ -3715,6 +3753,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDomainStatus,
       setSubdomain,
       confirmPurchase,
+      applyServerBilling,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,
@@ -3866,6 +3905,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDomainStatus,
       setSubdomain,
       confirmPurchase,
+      applyServerBilling,
       setApiKey,
       setWebhookUrl,
       toggleFigmaSync,
@@ -4010,13 +4050,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   // Development only: an action whose identity changes defeats the split
-  // above, silently. Say so the moment it happens.
+  // above, silently. Say so the moment it happens, naming it. `uiLang` is the
+  // one deliberate exception: it changes when the interface language does
+  // (once, when the account's preference loads), and every screen showing
+  // words has to re-render then anyway.
   const firstActions = useRef(actions);
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" && actions !== firstActions.current) {
-      console.warn("AppContext: the actions object changed identity; an action depends on state. Read state through stateRef instead.");
-      firstActions.current = actions;
-    }
+    if (process.env.NODE_ENV === "production" || actions === firstActions.current) return;
+    const before = firstActions.current as unknown as Record<string, unknown>;
+    const changed = Object.keys(actions).filter((k) => k !== "uiLang" && (actions as unknown as Record<string, unknown>)[k] !== before[k]);
+    if (changed.length) console.warn(`AppContext: the actions object changed identity (${changed.join(", ")}); an action depends on state. Read state through stateRef instead.`);
+    firstActions.current = actions;
   }, [actions]);
 
   return (

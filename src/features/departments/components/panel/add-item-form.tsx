@@ -60,7 +60,7 @@ export function AddItemForm({ ws, view, isAr, onDone }: AddItemFormProps) {
 
       {refOptions &&
         (refOptions.items.length === 0 ? (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-ctl-row">
             <span className="text-[12px] text-text-faint">{refOptions.empty}</span>
           </div>
         ) : (

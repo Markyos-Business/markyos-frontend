@@ -1,58 +1,78 @@
 "use client";
 
-import { AlertBanner, Button, PageHeader, Stagger, StatTile } from "@/components/ui";
+import { AlertBanner, Button, Icon, Skeleton } from "@/components/ui";
+import { useMinBusy } from "@/hooks/useMinBusy";
 import { ACCOUNT_TYPE_LABELS, AR_ACCOUNT_TYPE_LABELS, AR_PLAN_LABELS, AR_STAGE_LABELS, PLAN_LABELS, STAGE_LABELS, STAGE_ORDER } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 import { useAdminStats } from "../../hooks/shared/use-admin-stats";
+import { useRequest } from "@/hooks/useRequest";
+import { getDashboardActivity } from "../../api/admin.api";
+import { NeedsAttention } from "./needs-attention";
+import { RecentActivity } from "./recent-activity";
 import { Breakdown } from "./breakdown";
 import { SignupsChart } from "./signups-chart";
+import { DashboardHeader, DashboardProvider } from "@/components/ui";
+import { WelcomeMessage } from "@/features/account";
+import { DashboardSummary } from "./dashboard-summary";
 
 export function AdminDashboardView() {
-  const { data, error, loading, reload } = useAdminStats();
+  const { data, failure, loading, reload } = useAdminStats();
+  const activity = useRequest(getDashboardActivity, "dashboard-activity");
+  const refresh = () => { reload(); activity.reload(); };
+  // A reload has data on screen already; the first load is the skeleton's job, so the button only disables.
+  const refreshing = useMinBusy((loading && data !== null) || (activity.loading && activity.data !== null));
   const { isAr, lang } = useAdminLang();
   const t = (en: string, ar: string) => (isAr ? ar : en);
 
   return (
-    <>
-      <PageHeader
+    <DashboardProvider lang={lang}>
+      <DashboardHeader
         title={t("Dashboard", "لوحة المعلومات")}
-        description={t("Everyone on Markyos, and what they're building.", "كل من على ماركيوس، وما يبنونه.")}
-        actions={
-          <Button variant="outline" size="sm" onClick={reload} disabled={loading}>
-            {loading ? t("Refreshing…", "جارٍ التحديث…") : t("Refresh", "تحديث")}
+        subtitle={t("Account growth, brand activity and follow-up in one place.", "نمو الحسابات ونشاط العلامات والمتابعة في مكان واحد.")}
+        primaryAction={<Button href="/admin/users" variant="primary">{t("Manage users", "إدارة المستخدمين")}</Button>}
+        secondaryActions={
+          <Button variant="outline" size="sm" icon={<Icon name="sync" size={18} />} onClick={refresh} disabled={(loading || activity.loading) && !refreshing} loading={refreshing} loadingText={t("Refreshing…", "جارٍ التحديث…")}>
+            {t("Refresh", "تحديث")}
           </Button>
         }
       />
 
-      <AlertBanner message={error} />
+      <WelcomeMessage
+        message={
+          data && data.users.pending > 0
+            ? t(`${data.users.pending} accounts are waiting for setup.`, `${data.users.pending} حسابات بانتظار الإعداد.`)
+            : t("Accounts, brands and website content, all in one place.", "الحسابات والعلامات ومحتوى الموقع في مكان واحد.")
+        }
+        actions={[{ label: t("Website content", "محتوى الموقع"), href: "/admin/cms" }]}
+      />
 
-      {data && (
-        <>
-          <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-            <StatTile value={data.users.total} label={t("Accounts", "الحسابات")} />
-            <StatTile value={data.users.pending} label={t("Waiting to join", "بانتظار الانضمام")} />
-            <StatTile value={data.users.activeLast30d} label={t("Active in 30 days", "نشطة خلال 30 يومًا")} />
-            <StatTile value={data.users.new7d} label={t("New this week", "جديدة هذا الأسبوع")} />
-            <StatTile value={data.brands.total} label={t("Brands", "العلامات")} />
-            <StatTile value={data.brands.shared} label={t("Brands with a team", "علامات لها فريق")} />
-            <StatTile value={data.members.people} label={t("People on teams", "أشخاص في الفرق")} />
-          </Stagger>
+      <AlertBanner message={failure ? errorText(failure, lang) : null} />
 
-          <SignupsChart signups={data.signups} lang={lang} />
+      <DashboardSummary stats={data} loading={loading} isAr={isAr} />
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            <Breakdown title={t("Accounts by type", "الحسابات حسب النوع")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.users.byType} labels={isAr ? AR_ACCOUNT_TYPE_LABELS : ACCOUNT_TYPE_LABELS} order={["studio", "freelancer", "company", "none"]} />
-            <Breakdown title={t("Brands by stage", "العلامات حسب المرحلة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byStage} labels={isAr ? AR_STAGE_LABELS : STAGE_LABELS} order={STAGE_ORDER} />
-            <Breakdown title={t("Brands by plan", "العلامات حسب الخطة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byPlan} labels={isAr ? AR_PLAN_LABELS : PLAN_LABELS} />
+      <div className="grid grid-cols-1 items-start gap-space-5 xl:grid-cols-3">
+        <div className="contents xl:col-span-2 xl:flex xl:min-w-0 xl:flex-col xl:gap-space-5">
+          <div className="order-1 min-w-0">
+            {data ? <SignupsChart signups={data.signups} lang={lang} /> : loading ? (
+              <Skeleton className="h-64 w-full rounded-card" />
+            ) : null}
           </div>
-
-          <p className="text-caption text-text-faint">
-            {isAr
-              ? `${data.users.active} من ${data.users.total} حسابات نشطة · ${data.users.admins} مسؤول · ${data.users.new30d} انضموا خلال آخر 30 يومًا`
-              : `${data.users.active} of ${data.users.total} accounts are active · ${data.users.admins} admin${data.users.admins === 1 ? "" : "s"} · ${data.users.new30d} joined in the last 30 days`}
-          </p>
-        </>
-      )}
-    </>
+          {data && (
+            <div className="order-4 grid min-w-0 grid-cols-1 items-start gap-space-5 sm:grid-cols-3">
+              <Breakdown title={t("Accounts by type", "الحسابات حسب النوع")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.users.byType} labels={isAr ? AR_ACCOUNT_TYPE_LABELS : ACCOUNT_TYPE_LABELS} order={["studio", "freelancer", "company", "none"]} />
+              <Breakdown title={t("Brands by stage", "العلامات حسب المرحلة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byStage} labels={isAr ? AR_STAGE_LABELS : STAGE_LABELS} order={STAGE_ORDER} />
+              <Breakdown title={t("Brands by plan", "العلامات حسب الخطة")} empty={t("Nothing yet.", "لا شيء بعد.")} counts={data.brands.byPlan} labels={isAr ? AR_PLAN_LABELS : PLAN_LABELS} />
+            </div>
+          )}
+        </div>
+        <div className="contents xl:flex xl:min-w-0 xl:flex-col xl:gap-space-5">
+          <div className="order-2 min-w-0"><NeedsAttention stats={data} loading={loading} /></div>
+          <div className="order-3 min-w-0">
+            <RecentActivity items={activity.data} error={activity.failure ? errorText(activity.failure, lang) : null} loading={activity.loading} onRetry={activity.reload} />
+          </div>
+        </div>
+      </div>
+    </DashboardProvider>
   );
 }

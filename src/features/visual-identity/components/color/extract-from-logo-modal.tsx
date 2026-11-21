@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Icon, useToast, Modal } from "@/components/ui";
+import { Icon, useToast, Modal, Button } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
@@ -110,8 +110,8 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
       {sources.length === 0 ? (
         <div className="rounded-card p-5 text-[13px]" style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}>
           {isAr
-            ? "لا يوجد شعار أو صورة في هذا المشروع بعد. ارفع شعارًا من «نظام الشعار» أولًا."
-            : "There's no logo or image in this workspace yet. Upload one under Logo system first."}
+            ? "لا يوجد شعار أو صورة لهذه العلامة بعد. ارفع شعارًا من «نظام الشعار» أولًا."
+            : "There's no logo or image for this brand yet. Upload one under Logo system first."}
         </div>
       ) : (
         <>
@@ -119,7 +119,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
             <span className="text-[11px] font-semibold uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
               {isAr ? "المصدر" : "Read from"}
             </span>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-ctl-row flex-wrap">
               {sources.map((s) => {
                 const active = s.key === sourceKey;
                 return (
@@ -127,7 +127,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                     key={s.key}
                     type="button"
                     onClick={() => setSourceKey(s.key)}
-                    className="h-9 px-3.5 rounded-lg text-[12.5px] font-medium cursor-pointer max-w-[220px] truncate"
+                    className="h-ctl-sm px-ctl-px-sm rounded-control text-caption font-medium cursor-pointer max-w-[220px] truncate"
                     style={{
                       background: active ? "var(--accent-soft)" : "var(--surface-2)",
                       color: active ? "var(--accent)" : "var(--text-muted)",
@@ -169,10 +169,10 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                 return (
                   <div
                     key={c.hex}
-                    className="flex items-center gap-3 rounded-card p-2.5"
+                    className="flex items-center gap-ctl-row rounded-card p-2.5"
                     style={{ background: "var(--surface-2)", opacity: already ? 0.55 : 1 }}
                   >
-                    <button
+                    <button /* ctl-audit-ignore: a 20px tick box on a colour swatch */
                       type="button"
                       disabled={already}
                       onClick={() =>
@@ -230,22 +230,11 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
-              style={{ background: "var(--surface-2)", color: "var(--text)" }}
-            >
+          <div className="flex items-center justify-end gap-ctl-row pt-1">
+            <Button variant="outline" size="md" onClick={onClose}>
               {isAr ? "إلغاء" : "Cancel"}
-            </button>
-            <button
-              type="button"
-              onClick={commit}
-              disabled={chosen.length === 0}
-              className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
-            >
+            </Button>
+            <Button variant="primary" size="md" onClick={commit} disabled={chosen.length === 0}>
               {chosen.length === 0
                 ? isAr
                   ? "اختر لونًا"
@@ -253,7 +242,7 @@ export function ExtractFromLogoModal({ ws, onClose }: { ws: Workspace; onClose: 
                 : isAr
                   ? `أضف ${chosen.length}`
                   : `Add ${chosen.length}`}
-            </button>
+            </Button>
           </div>
         </>
       )}

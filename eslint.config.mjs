@@ -71,10 +71,37 @@ const boundaries = [
   },
 ];
 
+/*
+ * No hardcoded copy where the words are already managed. Text in these
+ * folders comes from a strings object (useUiStrings for the kit) or props, so
+ * a bare "Save" or "No results" in JSX is a string that never reaches Arabic.
+ *
+ * The list grows screen by screen: when a feature's copy moves to its
+ * en/ar catalogue (UX copy phase), add its folder here so it stays moved.
+ * Props are not checked (labels arrive through them by design); symbols that
+ * read the same in both languages are allowed.
+ */
+// The Help Center is held to translation keys from the start (HC-EPIC-001).
+const copyManaged = ["src/components/ui/**/*.tsx", "src/features/helpcenter/**/*.tsx"];
+const noHardcodedCopy = [
+  {
+    files: copyManaged,
+    ignores: ["src/components/ui/ui-strings.tsx"],
+    rules: {
+      "react/jsx-no-literals": ["error", {
+        noStrings: false,
+        ignoreProps: true,
+        allowedStrings: ["/", "·", "—", "–", "×", "+", "%", ":", "(", ")", "…", "*", "-", "|", ",", ".", "©", "⌘K", "EN", "ع"],
+      }],
+    },
+  },
+];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   ...boundaries,
+  ...noHardcodedCopy,
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

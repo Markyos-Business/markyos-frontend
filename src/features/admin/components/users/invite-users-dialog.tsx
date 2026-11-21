@@ -36,18 +36,19 @@ export function InviteUsersDialog({ invite }: InviteUsersDialogProps) {
         onChange={(e) => set("email", e.target.value)}
         autoFocus
       />
-      <div className="grid gap-space-5 sm:grid-cols-2">
+      <div className="flex flex-col gap-field-stack">
         <SelectField
           label={d.role}
           value={form.role}
           onChange={(value) => set("role", value as AccountRole)}
           options={[
             { value: "member", label: c.roles.member },
+            { value: "content", label: c.roles.content },
             { value: "admin", label: c.roles.admin },
           ]}
         />
         {/* Admins have no account type: it sets a customer's plans and limits. */}
-        {form.role === "member" && (
+        {form.role !== "admin" && (
           <SelectField
             label={d.type}
             value={form.accountType}

@@ -2,7 +2,7 @@ import { call, djangoShell, expect, newBrand, newStudio, signIn, test } from "./
 
 async function publishedBrand(password = "") {
   const studio = await newStudio();
-  const brand = await newBrand(studio);
+  const brand = await newBrand(studio, undefined, { publishable: true });
   // The payment itself is outside this test; seed a verified entitlement.
   djangoShell(`from apps.brands.models import Checkout, Workspace; from django.utils import timezone; w=Workspace.objects.get(pk=${JSON.stringify(brand.id)}); Checkout.objects.create(workspace=w, buyer=w.owner, plan="pass", amount=1900, status="paid", paid_at=timezone.now(), session_id=${JSON.stringify(`cs_${brand.id}`)})`);
   const stored = await call(`/brands/${brand.id}/`, { token: studio.token });
@@ -40,7 +40,8 @@ test.describe("client sign-off", () => {
       await signIn(owner, studio);
       await owner.goto(`/w/${brand.slug}/team`);
       await expect(owner.getByText("Please keep the Arabic name — معتمد", { exact: true })).toBeVisible();
-      await owner.getByRole("button", { name: "Mark handled", exact: true }).click();
+      await owner.getByRole("button", { name: /note actions$/ }).click();
+      await owner.getByRole("menuitem", { name: "Mark handled", exact: true }).click();
       await expect(owner.getByText("Marked as handled.", { exact: true })).toBeVisible();
       const pins = await call(`/brands/${brand.id}/sign-offs/`, { token: studio.token });
       expect(pins).toHaveLength(1);

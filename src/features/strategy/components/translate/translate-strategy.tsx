@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, richIsEmpty } from "@/components/ui";
+import { useToast, Icon, richIsEmpty, Button } from "@/components/ui";
 import { TranslateDirection, translateHtml, translateText } from "../../api/strategy.api";
 import { StrategyTextField, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 /**
  * Fills one language copy of the strategy from the other.
@@ -178,7 +179,7 @@ export function TranslateStrategy({
           unreviewed: [...t.unreviewed, ...written],
         });
       }
-      const reason = err instanceof Error ? err.message : isAr ? "تعذّرت الترجمة." : "Translation failed.";
+      const reason = errorText(err, isAr ? "ar" : "en", { en: "Translation failed.", ar: "تعذّرت الترجمة." });
       const salvaged =
         written.length === 0
           ? ""
@@ -194,14 +195,14 @@ export function TranslateStrategy({
 
   return (
     <div className="flex flex-col gap-2">
-      <button
-        type="button"
+      <Button
+        variant="soft"
+        size="sm"
         onClick={run}
         disabled={busy}
-        className="h-8 px-3.5 rounded-lg text-[12.5px] font-medium cursor-pointer whitespace-nowrap flex items-center gap-1.5 disabled:cursor-wait transition-colors"
-        style={{ background: "var(--surface-2)", color: "var(--text)" }}
+        className="self-start disabled:cursor-wait"
+        icon={<Icon name={busy ? "circle-notch" : "language"} size={16} className={busy ? "animate-spin-quick origin-center" : undefined} />}
       >
-        <Icon name={busy ? "circle-notch" : "language"} size={13} className={busy ? "animate-spin-quick origin-center" : undefined} />
         {/* Names the destination as well as the source. This button overwrites
             the copy currently open, and "Translate from English" reads like it
             produces something new rather than replacing what is on screen. */}
@@ -214,7 +215,7 @@ export function TranslateStrategy({
             : isAr
               ? "املأ الإنجليزية من العربية"
               : "Fill English from Arabic"}
-      </button>
+      </Button>
     </div>
   );
 }

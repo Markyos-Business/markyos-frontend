@@ -88,9 +88,16 @@ export type PlanKind = "free" | "pass" | "subscription";
 
 export interface Billing {
   plan: PlanKind;
+  /** The latest subscription's status, as its provider reports it (lower case). */
   subscriptionStatus?: string;
   purchasedAt?: number;
   stripeSessionId?: string;
+  /** "paypal" for a PayPal subscription; absent for Stripe ones. */
+  provider?: "paypal";
+  /** Paid up to here (ms): the next billing date, or when a cancelled plan ends. */
+  currentPeriodEnd?: number;
+  /** A renewal failed at this time (ms) and PayPal is retrying it. */
+  paymentFailedAt?: number;
 }
 
 // ---- v2.0 ----
@@ -962,6 +969,12 @@ export interface Workspace {
    * point of those is that someone with no account at all can open them.
    */
   ownerAccountId: string;
+  /**
+   * The signed-in reader's role as the server reported it when the brand was
+   * loaded. A client is sent only the brand's metadata, with no team list, so
+   * this is the only way the app knows they belong. Never sent back.
+   */
+  viewerRole?: TeamRole | null;
   slug: string;
   name: string;
   initials: string;
@@ -1013,7 +1026,7 @@ export interface Workspace {
   versionHistory: VersionSnapshot[];
   whiteLabel: boolean;
   /**
-   * A paid brand switched "Remove Markyos branding" off to give the credit:
+   * A paid brand switched "Hide the badge" off to give the credit:
    * its public pages show the Made with Markyos badge. Free brands always do,
    * whatever this says; the server decides (apps/brands/branding.py).
    */
@@ -1193,7 +1206,8 @@ export interface Account {
   hasPassword?: boolean;
 }
 
-export type AccountRole = "admin" | "member";
+/** Admin runs the platform; content runs the website's content only. */
+export type AccountRole = "admin" | "member" | "content";
 
 export type AccountType = "studio" | "freelancer" | "company";
 

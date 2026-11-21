@@ -199,7 +199,7 @@ const Listbox = ({
         data-state={error ? "error" : undefined}
         onClick={() => (open ? close() : openList())}
         onKeyDown={onKeyDown}
-        className={`flex cursor-pointer items-center gap-space-3 text-start ${triggerClassName}`}
+        className={`flex cursor-pointer items-center gap-ctl-icon text-start ${triggerClassName}`}
       >
         {leading}
         <span className={`min-w-0 flex-1 truncate ${current ? "" : `font-normal ${disabled ? "text-text-disabled" : "text-text-muted"}`} ${valueClassName}`}>

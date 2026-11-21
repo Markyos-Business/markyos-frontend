@@ -1,5 +1,6 @@
 "use client";
 
+import { pillSegment, pillSegmentStyle, pillTrack, pillTrackStyle } from "./choice/pill-segments";
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import { Icon } from "./icon";
 import { THEME_STORAGE_KEY, type ThemeChoice } from "@/lib/interfaceTheme";
@@ -111,7 +112,7 @@ const OPTIONS: { key: ThemeChoice; icon: string; label: string; arLabel: string 
 export function ThemeToggle({ isAr = false }: { isAr?: boolean }) {
   const { resolved, setChoice } = useTheme();
   return (
-    <div className="flex rounded-full p-0.5 shrink-0" style={{ background: "var(--surface-2)" }} role="group" aria-label={isAr ? "سمة الواجهة" : "Interface theme"}>
+    <div className={pillTrack} style={pillTrackStyle} role="group" aria-label={isAr ? "سمة الواجهة" : "Interface theme"}>
       {OPTIONS.map((o) => {
         const active = resolved === o.key;
         return (
@@ -122,8 +123,8 @@ export function ThemeToggle({ isAr = false }: { isAr?: boolean }) {
             aria-pressed={active}
             title={isAr ? o.arLabel : o.label}
             aria-label={isAr ? o.arLabel : o.label}
-            className="h-7 w-7 grid place-items-center rounded-full cursor-pointer"
-            style={{ background: active ? "var(--surface-0)" : "transparent", color: active ? "var(--accent)" : "var(--text-faint)" }}
+            className={pillSegment(true)}
+            style={pillSegmentStyle(active)}
           >
             {/* The chosen one turns into place; the other turns away and settles smaller. */}
             <Icon

@@ -2,15 +2,19 @@ import { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS } from "@/constants/accountTypes";
 import type { BadgeTone } from "@/components/ui";
 import type { AdminUserStatus } from "./types";
 
-/** Account types, as the dashboard breakdown names them; admins have none. */
+/** Account types, as the dashboard breakdown names them; admins and untyped collaborators may have none. */
 export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].label])),
-  none: "No type (admins)",
+  none: "No type selected",
 };
 export const AR_ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ...Object.fromEntries(ACCOUNT_TYPE_KEYS.map((key) => [key, ACCOUNT_TYPES[key].arLabel])),
-  none: "بلا نوع (المسؤولون)",
+  none: "لم يُحدّد النوع",
 };
+
+/** A role's tag: admins in the accent, content managers in indigo, members plain. */
+export const roleTone = (u: { isAdmin: boolean; role: string }): "primary" | "indigo" | "neutral" =>
+  u.isAdmin ? "primary" : u.role === "content" ? "indigo" : "neutral";
 
 /** A user's status dot; the word beside it says the same. */
 export const STATUS_TONE: Record<AdminUserStatus, BadgeTone> = {
@@ -49,7 +53,7 @@ export const AR_PLAN_LABELS: Record<string, string> = {
   pass: "تصريح لمرة واحدة",
 };
 
-/** The admin sidebar, in both languages. Each new admin page adds its link here. */
+/** The platform part of the admin sidebar, in both languages; the CMS part comes from the content feature. Each new admin page adds its link here. */
 export const ADMIN_NAV = [
   {
     key: "overview",
@@ -59,7 +63,9 @@ export const ADMIN_NAV = [
   {
     key: "manage",
     label: { en: "Manage", ar: "الإدارة" },
-    items: [{ key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" }],
+    items: [
+      { key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" },
+    ],
   },
 ];
 
@@ -74,12 +80,13 @@ export const STAGE_ORDER = ["discovery", "strategy", "design", "review", "delive
 
 /** What each role may do, for the read-only Permissions tab. Keys are the copy's `permissions.items`. */
 export const ROLE_PERMISSIONS = {
-  ownBrands: { admin: true, member: true },
-  adminArea: { admin: true, member: false },
-  seeAccounts: { admin: true, member: false },
-  invite: { admin: true, member: false },
-  changeRoles: { admin: true, member: false },
-  removeAccounts: { admin: true, member: false },
+  ownBrands: { admin: true, member: true, content: true },
+  adminArea: { admin: true, member: false, content: false },
+  websiteContent: { admin: true, member: false, content: true },
+  seeAccounts: { admin: true, member: false, content: false },
+  invite: { admin: true, member: false, content: false },
+  changeRoles: { admin: true, member: false, content: false },
+  removeAccounts: { admin: true, member: false, content: false },
 } as const;
 
 /** The account page's tabs, in order. */

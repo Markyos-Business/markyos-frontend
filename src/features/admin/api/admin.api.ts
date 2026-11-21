@@ -76,3 +76,7 @@ export function getUserActivity(id: string): Promise<AdminActivity[]> {
 export function listUserBrands(id: string): Promise<AdminUserBrand[]> {
   return api<AdminUserBrand[]>(`/admin/users/${id}/brands/`);
 }
+
+export function getDashboardActivity(): Promise<import("../types").DashboardActivity[]> {
+  return api("/admin/activity/");
+}

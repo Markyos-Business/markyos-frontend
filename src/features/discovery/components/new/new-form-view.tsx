@@ -8,6 +8,7 @@ import { useTemplates } from "../../hooks/use-templates";
 import { createForm } from "../../api/discovery.api";
 import { textIn } from "../../utils/question-types";
 import type { DiscoveryForm } from "../../types";
+import { errorText } from "@/lib/api/errorText";
 
 type Brand = { id: string; name: string };
 
@@ -56,13 +57,13 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
       });
       onCreated(form);
     } catch (err) {
-      setErrors({ form: err instanceof Error ? err.message : "That didn't save." });
+      setErrors({ form: errorText(err, lang, { en: "That didn't save.", ar: "لم يُحفظ ذلك." }) });
       setBusy(false);
     }
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-field-stack">
       <PageHeader
         title={isAr ? "استبيان جديد" : "New questionnaire"}
         description={isAr ? "اختر من أين تبدأ؛ يمكنك تعديل كل سؤال لاحقًا." : "Choose a starting point; every question can be edited after."}
@@ -181,7 +182,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
         </section>
       )}
 
-      <div className="flex flex-wrap justify-end gap-space-4">
+      <div className="flex flex-wrap justify-end gap-ctl-row">
         <Button variant="outline" onClick={onCancel}>
           {isAr ? "إلغاء" : "Cancel"}
         </Button>

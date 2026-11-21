@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, Button, IconButton } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { useTheme } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
@@ -165,7 +165,7 @@ export function LogoSlotCard({
       }}
       onClick={() => slot.phase === "attached" && onSelect(kind)}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-ctl-row">
         <span className="font-semibold text-[13px]">{displayLabel}</span>
         <span
           className="text-[10px] font-medium px-[7px] py-[5px] rounded-md"
@@ -279,17 +279,16 @@ export function LogoSlotCard({
         >
           <Icon name="undo" size={19} style={{ color: "var(--danger)" }} />
           <span className="text-[12px] font-medium">{slot.errorMessage}</span>
-          <button
-            type="button"
+          <Button
+            variant="solid"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               updateLogoSlot(workspaceId, kind, { phase: "uploading", progress: 0, errorMessage: undefined });
             }}
-            className="h-8 px-4 rounded-lg text-[12px] font-semibold cursor-pointer"
-            style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
           >
             {isAr ? "إعادة المحاولة" : "Retry"}
-          </button>
+          </Button>
         </div>
       ) : (
         <div
@@ -310,7 +309,7 @@ export function LogoSlotCard({
           />
           {hovering && (
             <div
-              className="absolute inset-0 flex items-center justify-center gap-2"
+              className="absolute inset-0 flex items-center justify-center gap-ctl-row"
               style={{ background: "var(--scrim)" }}
             >
               {/*
@@ -321,21 +320,21 @@ export function LogoSlotCard({
                 both effectively invisible at the moment you're trying to
                 replace or remove a lockup.
               */}
-              <button
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   openPicker();
                 }}
-                className="h-[34px] px-[15px] rounded-lg text-[12px] font-semibold cursor-pointer"
+                className="h-ctl-sm cursor-pointer rounded-control px-ctl-px-sm text-caption font-medium"
                 style={{ background: "var(--scrim-ink)", color: "#0b0b0d" }}
               >
                 {isAr ? "استبدال" : "Replace"}
               </button>
-              <button
+              <button /* ctl-audit-ignore: drawn over the logo on its dark overlay */
                 type="button"
                 onClick={remove}
-                className="h-[34px] px-[15px] rounded-lg text-[12px] font-semibold cursor-pointer"
+                className="h-ctl-sm cursor-pointer rounded-control px-ctl-px-sm text-caption font-medium"
                 style={{
                   background: "transparent",
                   color: "var(--scrim-ink)",
@@ -418,8 +417,8 @@ function LightVersionStrip({
           e.stopPropagation();
           onPick();
         }}
-        className="h-[42px] rounded-lg flex items-center justify-center gap-2 text-[11.5px] font-medium cursor-pointer"
-        style={{ boxShadow: "inset 0 0 0 1px var(--hairline-strong)", color: "var(--text-muted)" }}
+        className="h-ctl-md rounded-control flex items-center justify-center gap-ctl-icon text-caption font-medium cursor-pointer shadow-edge text-text-muted"
+        
         title={
           isAr
             ? "ارفع نسخة الشعار البيضاء بدلًا من ترك النظام يعكس الألوان"
@@ -453,26 +452,17 @@ function LightVersionStrip({
           {slot.lightSizeKB ? ` · ${formatBytes(slot.lightSizeKB)}` : ""}
         </span>
       </div>
-      <button
-        type="button"
+      <Button
+        variant="soft"
+        size="xs"
         onClick={(e) => {
           e.stopPropagation();
           onPick();
         }}
-        className="text-[11px] font-semibold px-2.5 py-1.5 rounded-md cursor-pointer shrink-0"
-        style={{ background: "var(--surface-3)", color: "var(--text-secondary)" }}
       >
         {isAr ? "استبدال" : "Replace"}
-      </button>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={isAr ? "إزالة النسخة الفاتحة" : "Remove light version"}
-        className="w-6 h-6 grid place-items-center rounded-full cursor-pointer shrink-0"
-        style={{ color: "var(--text-faint)" }}
-      >
-        <Icon name="times" size={12} />
-      </button>
+      </Button>
+      <IconButton icon="times" iconSize={16} size="xs" label={isAr ? "إزالة النسخة الفاتحة" : "Remove light version"} onClick={onRemove} className="text-text-faint" />
     </div>
   );
 }

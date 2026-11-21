@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { inter, plexArabic, bricolage } from "./fonts";
 import { AppProvider } from "@/contexts/AppContext";
-import { ToastProvider, DialogProvider } from "@/components/ui";
+import { ToastProvider, DialogProvider, SkipLink } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
 import { ThemeProvider } from "@/components/ui";
 import { THEME_INIT_SCRIPT } from "@/lib/interfaceTheme";
@@ -46,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <AppProvider>
             <InterfaceUiStrings>
+              <SkipLink />
               <ToastProvider>
                 <SyncNotices />
                 <InterfaceLangSync />

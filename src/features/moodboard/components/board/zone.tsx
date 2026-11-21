@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, Button } from "@/components/ui";
 import { Card } from "./card";
 import { zoneSpecFor } from "../../utils/templates";
 import type { Asset, MoodboardItem, MoodboardZone } from "@/types";
@@ -107,25 +107,24 @@ export function Zone({
         onDropInZone(zone.id, null);
       }}
     >
-      <header className="flex items-center gap-2">
+      <header className="flex items-center gap-ctl-row">
         <Icon name={ZONE_ICON[zone.kind] ?? "th-large"} size={13} style={{ color: "var(--text-faint)" }} />
         <h2 dir="auto" className="bidi-auto text-[13px] font-semibold">{title}</h2>
         <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
           {items.length > 0 ? items.length : ""}
         </span>
 
-        <span className="ms-auto flex items-center gap-1.5">
+        <span className="ms-auto flex items-center gap-ctl-row">
           {action && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="xs"
               onClick={action.run}
               disabled={action.busy || items.length === 0}
-              className="mk-tap h-7 px-3 rounded-md text-[11px] font-semibold cursor-pointer flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+              icon={<Icon name={action.icon} size={16} />}
             >
-              <Icon name={action.icon} size={11} />
               {isAr ? action.arLabel : action.label}
-            </button>
+            </Button>
           )}
           <AddMenu zone={zone} isAr={isAr} onAdd={onAdd} />
           <button
@@ -154,7 +153,7 @@ export function Zone({
 
       {instructions && !zone.instructionsDismissed && (
         <div
-          className="flex items-start gap-2.5 rounded-card px-3 py-2.5"
+          className="flex items-start gap-ctl-row rounded-card px-3 py-2.5"
           style={{ background: "var(--surface-1)" }}
         >
           <Icon name="info-circle" size={13} style={{ color: "var(--text-faint)", flexShrink: 0, marginTop: 2 }} />
@@ -219,12 +218,9 @@ export function Zone({
             key={i}
             type="button"
             onClick={() => onAdd(zone, ghost.kind)}
-            className="rounded-card grid place-items-center gap-1.5 cursor-pointer p-4"
+            className="rounded-card grid min-h-26 place-items-center gap-1.5 cursor-pointer p-4 text-text-faint shadow-edge"
             style={{
               gridColumn: ghost.size === "l" ? "span 2" : "span 1",
-              minHeight: 104,
-              color: "var(--text-faint)",
-              boxShadow: "inset 0 0 0 1px var(--hairline-strong)",
             }}
           >
             <Icon name="plus" size={13} />
@@ -312,7 +308,7 @@ function AddMenu({
                   onAdd(zone, k.kind);
                   setOpen(false);
                 }}
-                className="flex items-center gap-2.5 h-8 px-3 text-[12px] cursor-pointer text-start"
+                className="flex items-center gap-2.5 h-ctl-sm px-3 text-[12px] cursor-pointer text-start"
                 style={{ color: "var(--text)" }}
               >
                 <Icon name={k.icon} size={12} style={{ color: "var(--text-faint)" }} />

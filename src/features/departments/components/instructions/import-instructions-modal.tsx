@@ -2,10 +2,11 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Button, Modal } from "@/components/ui";
+import { useToast, Icon, Button, Modal, SegmentedControl } from "@/components/ui";
 import { DepartmentView, Workspace } from "@/types";
 import { extractText, parseDocumentSections } from "@/lib/docParse";
 import { uid } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 interface Row {
   heading: string;
@@ -71,7 +72,7 @@ export function ImportInstructionsModal({
       );
       setStep("review");
     } catch (e) {
-      setError(e instanceof Error ? e.message : isAr ? "تعذّرت قراءة الملف." : "Couldn't read that file.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Couldn't read that file.", ar: "تعذّرت قراءة الملف." }));
       setStep("pick");
     }
   }
@@ -128,8 +129,8 @@ export function ImportInstructionsModal({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
-            style={{ borderColor: "var(--hairline-strong)" }}
+            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"
+            
           >
             <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
             <span className="text-[13px] font-medium">
@@ -151,33 +152,23 @@ export function ImportInstructionsModal({
       {step === "review" && (
         <>
           {view.instructionSections.length > 0 && (
-            <div className="flex gap-1.5 shrink-0">
-              {(["append", "replace"] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMode(m)}
-                  className="h-8 px-3.5 rounded-lg text-[12px] font-semibold cursor-pointer"
-                  style={{
-                    background: mode === m ? "var(--solid)" : "var(--surface-2)",
-                    color: mode === m ? "var(--solid-ink)" : "var(--text-muted)",
-                  }}
-                >
-                  {m === "append"
-                    ? isAr
-                      ? `أضف إلى ${view.instructionSections.length} قسمًا`
-                      : `Add to the existing ${view.instructionSections.length}`
-                    : isAr
-                      ? "استبدل الكل"
-                      : "Replace all"}
-                </button>
-              ))}
+            // Add to or replace: a "choose one", so the kit's pill (MARKYOS_UI §2.5).
+            <div className="shrink-0">
+              <SegmentedControl
+                label={isAr ? "طريقة الإضافة" : "How to add them"}
+                value={mode}
+                onChange={setMode}
+                options={[
+                  { value: "append", label: isAr ? `أضف إلى ${view.instructionSections.length} قسمًا` : `Add to the existing ${view.instructionSections.length}` },
+                  { value: "replace", label: isAr ? "استبدل الكل" : "Replace all" },
+                ]}
+              />
             </div>
           )}
 
-          <div className="flex flex-col gap-2.5 overflow-y-auto pe-1 -me-1">
+          <div className="flex flex-col gap-field-stack-compact overflow-y-auto pe-1 -me-1">
             {rows.map((r, i) => (
-              <div key={i} className="mk-surface rounded-card p-3.5 flex items-start gap-2.5" style={{ background: "var(--surface-2)" }}>
+              <div key={i} className="mk-surface rounded-card p-3.5 flex items-start gap-ctl-row" style={{ background: "var(--surface-2)" }}>
                 <input
                   type="checkbox"
                   checked={r.include}
@@ -186,7 +177,7 @@ export function ImportInstructionsModal({
                     setRows((prev) => prev.map((x, xi) => (xi === i ? { ...x, include: e.target.checked } : x)))
                   }
                 />
-                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                <div className="flex-1 min-w-0 flex flex-col gap-field-stack-compact">
                   <input
                     dir="auto"
                     value={r.heading}
@@ -209,21 +200,16 @@ export function ImportInstructionsModal({
             ))}
           </div>
 
-          <div className="flex items-center justify-between gap-2.5 shrink-0 pt-1">
+          <div className="flex items-center justify-between gap-ctl-row shrink-0 pt-1">
             <span className="text-[11.5px]" style={{ color: "var(--text-faint)" }}>
               {isAr
                 ? `${rows.length} قسمًا في ${fileName}`
                 : `${rows.length} section${rows.length === 1 ? "" : "s"} found in ${fileName}`}
             </span>
-            <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
-                style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-              >
+            <div className="flex items-center gap-ctl-row">
+              <Button variant="outline" size="md" onClick={onClose}>
                 {isAr ? "إلغاء" : "Cancel"}
-              </button>
+              </Button>
               <Button variant="primary" size="md" onClick={apply} disabled={selected.length === 0}>
                 {isAr ? `أضف ${selected.length}` : `Add ${selected.length} section${selected.length === 1 ? "" : "s"}`}
               </Button>

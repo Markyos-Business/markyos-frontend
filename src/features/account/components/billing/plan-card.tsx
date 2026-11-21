@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui";
 
 type PlanCardProps = {
@@ -6,14 +7,16 @@ type PlanCardProps = {
   period: string;
   description: string;
   active: boolean;
-  loading: boolean;
-  onSelect: () => void;
+  loading?: boolean;
+  onSelect?: () => void;
+  /** Replaces the Choose button, e.g. a provider's own checkout button. */
+  action?: ReactNode;
   isAr: boolean;
   enabled?: boolean;
 };
 
 /** One plan: its price, what it unlocks, and choosing it. */
-export function PlanCard({ name, price, period, description, active, loading, onSelect, isAr, enabled = true }: PlanCardProps) {
+export function PlanCard({ name, price, period, description, active, loading = false, onSelect, action, isAr, enabled = true }: PlanCardProps) {
   return (
     <div className={`flex flex-col gap-3 rounded-card bg-surface-2 p-4 ${active ? "shadow-[inset_0_0_0_1px_rgba(0,153,255,.5)]" : ""}`}>
       <div>
@@ -24,9 +27,11 @@ export function PlanCard({ name, price, period, description, active, loading, on
         </div>
       </div>
       <p className="flex-1 text-[12px] text-text-muted">{description}</p>
+      {action ?? (
       <Button variant={active ? "outline" : "primary"} size="sm" onClick={onSelect} disabled={!enabled || active || loading} title={!enabled ? (isAr ? "المدفوعات غير متاحة في العرض التجريبي" : "Payments are unavailable in this demo") : undefined}>
         {active ? (isAr ? "مفعّلة" : "Active") : loading ? (isAr ? "جارٍ التحويل…" : "Redirecting…") : isAr ? "اختر الخطة" : "Choose plan"}
       </Button>
+      )}
     </div>
   );
 }

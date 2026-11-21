@@ -49,7 +49,6 @@ export function useTeamPage(slug: string) {
       canEdit,
       editorsFull,
       editorsFullNote,
-      actorName: state.session?.name || state.session?.email || "You",
     },
   };
 }

@@ -13,6 +13,7 @@ import {
   ParsedVoiceTrait,
   SingleStrategyKey,
 } from "@/lib/docParse";
+import { errorText } from "@/lib/api/errorText";
 
 const SINGLE_LABELS: Record<SingleStrategyKey, string> = {
   purpose: "Purpose",
@@ -103,7 +104,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
       load(parseStrategyDocument(text));
       setStep("review");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't read that file.");
+      setError(errorText(e, isAr ? "ar" : "en", { en: "Couldn't read that file.", ar: "تعذّرت قراءة الملف." }));
       setStep("pick");
     }
   }
@@ -185,8 +186,8 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer"
-            style={{ borderColor: "var(--hairline-strong)" }}
+            className="rounded-card border-2 border-dashed flex flex-col items-center justify-center gap-2 py-10 cursor-pointer border-hairline-strong"
+            
           >
             <Icon name="file-alt" size={22} style={{ color: "var(--text-faint)" }} />
             <span className="text-[13px] font-medium">
@@ -250,7 +251,7 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
                   className="rounded-card p-3.5 flex flex-col gap-2 cursor-pointer"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-ctl-row">
                     <input
                       type="checkbox"
                       checked={s.include}
@@ -378,15 +379,10 @@ export function ImportStrategyModal({ ws, onClose }: { ws: Workspace; onClose: (
       )}
 
       {step === "review" && !nothingDetected && (
-        <div className="flex items-center justify-end gap-2.5 shrink-0 pt-1">
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
-            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-          >
+        <div className="flex shrink-0 items-center justify-end gap-ctl-row pt-1">
+          <Button variant="outline" size="md" onClick={onClose}>
             {isAr ? "إلغاء" : "Cancel"}
-          </button>
+          </Button>
           <Button variant="primary" size="md" onClick={apply} disabled={selectedCount === 0}>
             {isAr ? `استيراد ${selectedCount || ""}` : `Import ${selectedCount || ""} ${selectedCount === 1 ? "item" : "items"}`}
           </Button>
@@ -422,14 +418,14 @@ function ListRowEditor({
   onChange: (row: ListRow) => void;
 }) {
   return (
-    <label className="rounded-card p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
+    <label className="rounded-card p-3 flex items-start gap-ctl-icon cursor-pointer" style={{ background: "var(--surface-2)" }}>
       <input
         type="checkbox"
         checked={row.include}
         className="mt-1"
         onChange={(e) => onChange({ ...row, include: e.target.checked })}
       />
-      <div className="flex-1 flex flex-col gap-1.5">
+      <div className="flex-1 flex flex-col gap-field-stack-compact">
         <input
           dir="auto"
           value={row.title}
@@ -462,14 +458,14 @@ function TripleRowEditor({
   onChange: (include: boolean, values: [string, string, string]) => void;
 }) {
   return (
-    <label className="rounded-card p-3 flex items-start gap-2.5 cursor-pointer" style={{ background: "var(--surface-2)" }}>
+    <label className="rounded-card p-3 flex items-start gap-ctl-icon cursor-pointer" style={{ background: "var(--surface-2)" }}>
       <input
         type="checkbox"
         checked={include}
         className="mt-1"
         onChange={(e) => onChange(e.target.checked, values)}
       />
-      <div className="flex-1 flex flex-col gap-1.5">
+      <div className="flex-1 flex flex-col gap-field-stack-compact">
         {values.map((v, i) => (
           <input
             key={i}

@@ -90,7 +90,7 @@ const TimePicker = ({ label, info, value, onChange, hour12 = false, minuteStep =
             describedBy={control["aria-describedby"]}
           />
           {hour12 && (
-            <button
+            <button /* ctl-audit-ignore: a small Now chip inside the time field */
               type="button"
               // A switch between the two halves of the day, named by what it shows.
               role="switch"

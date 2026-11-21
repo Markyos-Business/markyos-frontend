@@ -5,9 +5,9 @@ type FontRowProps = { script: "latin" | "arabic"; label: string; fonts: Detected
 /** Which embedded font sets one script; pressing the chosen one clears it. */
 export function FontRow({ script, label, fonts, value, onChange }: FontRowProps) {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-ctl-row">
       <span className="w-[54px] shrink-0 pt-1.5 text-caption font-medium text-text-muted">{label}</span>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-ctl-row">
         {fonts.map((f) => {
           const on = value === f.name;
           const chars = script === "arabic" ? f.arabicChars : f.latinChars;

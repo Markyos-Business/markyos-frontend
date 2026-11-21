@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { revealInScroller } from "@/lib/scroll";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge, Icon } from "@/components/ui";
 import { useLocalPref } from "@/hooks/useLocalPref";
@@ -17,22 +18,32 @@ export interface SidebarItem {
   active?: boolean;
   /** A count or short note beside the label; a dot once the rail collapses. */
   badge?: string | number;
+  /** A status dot beside the label, e.g. a site that is live. `label` says it in words. */
+  status?: { tone: "success"; label: string };
+  /**
+   * A second, small link at the row's end, e.g. opening the live site while
+   * the row itself opens the editor. A sibling of the row's link, never inside it.
+   */
+  external?: { href: string; label: string };
 }
 
 export interface SidebarSection {
   key: string;
-  /** Omit for a group with no heading. */
+  /** Names the group for assistive tech; shown above it when the sidebar has `headings`. */
   label?: string;
+  /** Keep the name for assistive tech only, e.g. a top group that needs no heading. */
+  hideHeading?: boolean;
   items: SidebarItem[];
 }
 
 /*
- * The spec's NavRail (MARKYOS_UI.md §5): 84px wide as a rail, 240px expanded
- * with labels, counts and section headings. Rows are 64px in the rail, each
- * icon on a 48px tile; expanded, the tile is the whole row.
+ * The nav (MARKYOS_UI.md §5): 300px open, 84px as a rail. On top, the brand
+ * (mark, name, plan); then 36px rows, each icon on a 28px tile, in groups that
+ * either carry a small heading (`headings`) or are split by a rule; at the
+ * bottom, the person and a few icon links (notifications, team, settings, help).
  */
-const OPEN = "w-60 px-space-3";
-const RAIL = "w-rail px-0";
+const OPEN = "w-sidebar px-space-4";
+const RAIL = "w-rail px-space-3";
 
 /**
  * The app's navigation, collapsible to an icon rail.
@@ -49,6 +60,14 @@ export function AppSidebar({
   sections,
   footer = [],
   footerSlot,
+  footerIcons = [],
+  headings = false,
+  subtitle,
+  avatar,
+  switcher,
+  card,
+  account,
+  help,
   storageKey,
   isAr = false,
   collapseLabels = { collapse: "Collapse sidebar", expand: "Expand sidebar" },
@@ -63,8 +82,25 @@ export function AppSidebar({
   sections: SidebarSection[];
   /** Pinned to the bottom, e.g. Settings. */
   footer?: SidebarItem[];
-  /** Under the footer links, e.g. the signed-in person's card. Hidden on the collapsed rail. */
+  /** Under the footer links, e.g. a note for a reviewer. Hidden on the collapsed rail. */
   footerSlot?: ReactNode;
+  /** Icon links in the bottom bar beside the person: places you visit now and then, not the work itself. */
+  footerIcons?: SidebarItem[];
+  /** Show each labelled group's name above it, instead of a bare rule between groups. */
+  headings?: boolean;
+  /** Under the title, e.g. the brand's plan. */
+  subtitle?: string;
+  /** In place of the Markyos mark: the brand's logo or its letter. */
+  avatar?: ReactNode;
+  /** A way to another brand or area, beside the title, e.g. a brand switcher dropdown. */
+  switcher?: ReactNode;
+  /** Under the title: a card such as the brand's public site. Hidden on the rail. */
+  card?: ReactNode;
+  /** The bottom bar's person: given whether the rail is collapsed. */
+  account?: (collapsed: boolean) => ReactNode;
+  /** The bottom bar's help item: a link, or (with `onOpen`) a button that
+   *  opens the app's help panel, the link kept as its fallback. */
+  help?: { href: string; label: string; onOpen?: () => void };
   /** Where the collapsed preference is remembered, per sidebar. */
   storageKey: string;
   isAr?: boolean;
@@ -101,6 +137,17 @@ export function AppSidebar({
   }, []);
 
   /**
+   * The page you are on is always in view. On a laptop-height window the list
+   * runs under the bottom bar, and Team or Settings could be the active item
+   * while sitting out of sight.
+   */
+  const listRef = useRef<HTMLDivElement>(null);
+  const activeKey = [...sections.flatMap((s) => s.items), ...footer].find((item) => item.active)?.key;
+  useEffect(() => {
+    revealInScroller(listRef.current, listRef.current?.querySelector<HTMLElement>('[aria-current="page"]'));
+  }, [activeKey]);
+
+  /**
    * `[` collapses and expands the rail.
    *
    * The shortcut is skipped while a field has focus — typing a bracket into a
@@ -119,9 +166,10 @@ export function AppSidebar({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [collapsed, toggle, inDrawer]);
 
-  function renderItem(item: SidebarItem, extra = "") {
-    const { active, badge, label: name } = item;
-    return (
+  function renderItem(item: SidebarItem) {
+    const { active, badge, label: name, status, external } = item;
+    const extra = !collapsed && external;
+    const link = (
       <Link
         key={item.key}
         href={item.href}
@@ -129,46 +177,78 @@ export function AppSidebar({
         // The title is the only thing naming this item once the rail is
         // collapsed, so it carries the badge too — otherwise "3 pending
         // approvals" becomes an unexplained dot.
-        // Expanded, it still names the item in case a long label is cut off.
-        title={badge !== undefined ? `${name} — ${badge}` : name}
-        aria-label={collapsed ? name : undefined}
-        className={`group relative flex shrink-0 items-center ${collapsed ? "h-rail-item justify-center" : "h-rail-item-box"} ${extra}`}
+        title={badge !== undefined ? `${name} — ${badge}` : status ? `${name} — ${status.label}` : name}
+        aria-label={collapsed ? (status ? `${name}, ${status.label}` : name) : undefined}
+        className={`relative flex h-9 shrink-0 items-center rounded-lg transition-colors ${
+          collapsed ? "mx-auto w-10 justify-center" : `gap-space-4 px-space-3 ${extra ? "pe-11" : ""}`
+        } ${active ? "bg-ink-soft text-text" : "text-text-muted"}`}
       >
-        {/* The tile: the accent tint when active. No hover fill: the rail is `mk-no-hover`. */}
-        <span
-          className={`flex items-center rounded-sm transition-colors ${
-            collapsed ? "size-rail-item-box justify-center" : "h-full w-full gap-space-4 px-space-4"
-          } ${active ? "bg-accent-soft text-text" : "text-text-muted"}`}
-        >
-          <Icon name={item.icon} size={22} className={`shrink-0 ${active ? "text-accent" : ""}`} />
-          {!collapsed && (
-            <>
-              {/* Slide in as the rail opens; on collapse they're gone at once, before the width finishes. */}
-              <span className={`flex-1 truncate text-body font-medium ${opened ? "animate-label-in" : ""}`}>{name}</span>
-              {badge !== undefined && (
-                <span className={opened ? "animate-label-in" : undefined}>
-                  <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>
-                </span>
-              )}
-            </>
-          )}
+        {/* The tile: the accent when this is the page, a quiet fill otherwise. No hover tint: the rail is `mk-no-hover`. */}
+        <span className={`grid size-7 shrink-0 place-items-center rounded-lg ${active ? "bg-accent text-accent-ink" : "bg-surface-2"}`}>
+          <Icon name={item.icon} size={16} />
         </span>
-        {/* A count can't be read in the rail, so it becomes a presence marker:
-            something is waiting here. The title says what. */}
-        {collapsed && badge !== undefined && (
-          <span aria-hidden className="absolute end-5 top-3 size-2 rounded-full bg-accent shadow-ring-status" />
+        {!collapsed && (
+          <>
+            {/* Slide in as the rail opens; on collapse they're gone at once, before the width finishes. */}
+            <span className={`flex-1 truncate text-body font-medium ${opened ? "animate-label-in" : ""}`}>{name}</span>
+            {badge !== undefined && (
+              <span className={opened ? "animate-label-in" : undefined}>
+                <Badge tone={active ? "accent" : "neutral"}>{badge}</Badge>
+              </span>
+            )}
+            {status && (
+              <>
+                <span aria-hidden className="size-2 shrink-0 rounded-full bg-success" />
+                <span className="sr-only">{status.label}</span>
+              </>
+            )}
+          </>
         )}
-        {/* The active bar: 2px of the accent, with its glow, on the rail's
-            inline-end edge. */}
-        {active && (
-          <span
-            aria-hidden
-            className={`absolute top-1/2 h-8 w-0.5 -translate-y-1/2 rounded-full bg-accent shadow-glow ${collapsed ? "end-0" : "-end-space-3"}`}
-          />
-        )}
+        {collapsed && status && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-success shadow-ring-status" />}
+        {/* A count can't be read in the rail, so it becomes a presence marker. The title says what. */}
+        {collapsed && badge !== undefined && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-accent shadow-ring-status" />}
+      </Link>
+    );
+    if (!extra) return link;
+    return (
+      <div key={item.key} className="relative shrink-0">
+        {link}
+        <a
+          href={external.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={external.label}
+          title={external.label}
+          className="absolute end-1 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-text-muted"
+        >
+          <Icon name="external-link-alt" size={16} />
+        </a>
+      </div>
+    );
+  }
+
+  /** A bottom-bar icon link: the same item, just its glyph; the title and label name it. */
+  function renderIcon(item: SidebarItem) {
+    return (
+      <Link
+        key={item.key}
+        href={item.href}
+        aria-current={item.active ? "page" : undefined}
+        aria-label={item.badge !== undefined ? `${item.label} — ${item.badge}` : item.label}
+        title={item.label}
+        className={`relative grid size-9 shrink-0 place-items-center rounded-lg ${item.active ? "bg-ink-soft text-text" : "text-text-muted"}`}
+      >
+        <Icon name={item.icon} size={18} />
+        {item.badge !== undefined && <span aria-hidden className="absolute end-1 top-1 size-2 rounded-full bg-accent shadow-ring-status" />}
       </Link>
     );
   }
+
+  /** Between groups: a rule, or with `headings` the group's name (the rail has no room for words, so it keeps the rule). */
+  const rule = <div aria-hidden className="mx-space-3 my-space-3 h-px shrink-0 bg-hairline-strong" />;
+  const heading = (text: string) => (
+    <div aria-hidden className="truncate px-space-3 pb-space-2 pt-space-5 text-caption text-text-muted">{text}</div>
+  );
 
   return (
     <nav
@@ -179,64 +259,75 @@ export function AppSidebar({
       data-rail={inDrawer ? undefined : rail}
       data-ready={ready && !inDrawer ? "" : undefined}
       // The 1px separator on the inline-end side is the hairline at 10%.
-      className={`mk-no-hover flex shrink-0 flex-col gap-space-8 overflow-hidden py-space-8 ${
+      className={`mk-no-hover flex shrink-0 flex-col overflow-hidden ${
         inDrawer
-          ? "h-full w-72 max-w-full px-space-3"
+          ? "h-full w-sidebar max-w-full px-space-4"
           : `bg-sidebar shadow-[inset_-1px_0_0_var(--hairline-strong)] rtl:shadow-[inset_1px_0_0_var(--hairline-strong)] ${collapsed ? RAIL : OPEN}`
       }`}
     >
-      <div className={`flex shrink-0 items-center ${collapsed ? "justify-center" : "gap-space-4 px-space-2"}`}>
-        <Link
-          href={titleHref}
-          // In the rail the mark is all there is, and an 18px-wide logo is an
-          // 18px-wide target — so the link keeps a full-size hit area of its
-          // own rather than shrink-wrapping the image.
-          className={`mk-tap min-w-0 gap-space-4 ${collapsed ? "min-h-8 min-w-8 justify-center" : ""}`}
-          title={collapsed ? title : undefined}
-        >
-          <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />
+      {/* Who this is: the brand's mark, its name and plan, a way to another brand, and the collapse control. */}
+      <div className={`flex shrink-0 items-center gap-space-3 py-space-6 ${collapsed ? "flex-col" : "px-space-2"}`}>
+        <Link href={titleHref} title={collapsed ? title : undefined} className={`mk-tap min-w-0 gap-space-4 ${collapsed ? "justify-center" : "flex-1"}`}>
+          <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-surface-2 text-body font-medium text-text">
+            {avatar ?? <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />}
+          </span>
           {!collapsed && (
-            <span className="flex-1 truncate text-h5 font-medium">{title}</span>
+            <span className="flex min-w-0 flex-1 flex-col">
+              {/* The name sets its own direction, so a Latin name in an Arabic sidebar is cut at its end. */}
+              <span className="flex min-w-0 items-center gap-space-3">
+                <span dir="auto" className="truncate text-body font-medium text-text [text-align:match-parent]">{title}</span>
+                {MARKYOS_BETA && !avatar && <BetaTag isAr={isAr} />}
+                {titleBadge}
+              </span>
+              {subtitle && <span className="truncate text-caption text-text-muted">{subtitle}</span>}
+            </span>
           )}
-          {/* The tag rides with the title, not the mark: a collapsed rail has room for the mark alone. */}
-          {!collapsed && MARKYOS_BETA && <BetaTag isAr={isAr} />}
-          {!collapsed && titleBadge}
         </Link>
-        {!collapsed && !inDrawer && (
-          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(true)} />
+        {!collapsed && switcher && <span className="shrink-0">{switcher}</span>}
+        {/* No expand control while the viewport is what's forcing the rail — a button that does nothing is worse than none. */}
+        {!inDrawer && !(collapsed && narrow) && (
+          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(!collapsed)} />
         )}
       </div>
 
-      {/* No expand control while the viewport is what's forcing the rail —
-          a button that does nothing is worse than no button. */}
-      {collapsed && !narrow && (
-        <div className="-mt-space-5 flex shrink-0 justify-center">
-          <CollapseButton collapsed={collapsed} labels={collapseLabels} onClick={() => toggle(false)} />
+      {card && !collapsed && <div className="shrink-0 pb-space-6">{card}</div>}
+
+      {/* The bottom fade says the list goes on when it runs under the bar. */}
+      <div ref={listRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-space-6 [mask-image:linear-gradient(to_bottom,black_calc(100%-24px),transparent)]">
+        {sections.map((section, i) => (
+          <div key={section.key} role="group" aria-label={section.label} className="flex flex-col gap-space-1">
+            {headings && !collapsed ? section.label && !section.hideHeading && heading(section.label) : i > 0 && rule}
+            {section.items.map((item) => renderItem(item))}
+          </div>
+        ))}
+        {footer.length > 0 && (
+          <div className="flex flex-col gap-space-1">
+            {rule}
+            {footer.map((item) => renderItem(item))}
+          </div>
+        )}
+        {footerSlot && !collapsed && <div className="pt-space-4">{footerSlot}</div>}
+      </div>
+
+      {/* The person and help, on their own bar at the bottom. */}
+      {(account || help || footerIcons.length > 0) && (
+        <div className={`flex shrink-0 items-center gap-space-2 py-space-5 shadow-rule-t ${collapsed ? "flex-col" : ""}`}>
+          {account && <div className="min-w-0 flex-1">{account(collapsed)}</div>}
+          {footerIcons.map((item) => renderIcon(item))}
+          {help?.onOpen && (
+            <button type="button" onClick={help.onOpen} aria-label={help.label} title={help.label}
+              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
+              <Icon name="question-circle" size={18} />
+            </button>
+          )}
+          {help && !help.onOpen && (
+            <a href={help.href} target="_blank" rel="noopener noreferrer" aria-label={help.label} title={help.label}
+              className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted">
+              <Icon name="question-circle" size={18} />
+            </a>
+          )}
         </div>
       )}
-
-      <div className="flex min-h-0 flex-1 flex-col gap-space-5 overflow-y-auto">
-      {sections.map((section) => (
-        <div key={section.key} className="flex flex-col gap-space-1">
-          {section.label &&
-            (collapsed ? (
-              // A heading with nothing legible under it is noise; the rule
-              // keeps the groups visibly separate without pretending to be a
-              // label.
-              <div className="mx-space-6 mb-space-2 h-px shrink-0 bg-hairline-strong" />
-            ) : (
-              // Sentence case: caps belong to the overline style only.
-              <div className="truncate px-space-4 pb-space-3 text-caption text-text-faint">
-                {section.label}
-              </div>
-            ))}
-          {section.items.map((item) => renderItem(item))}
-        </div>
-      ))}
-
-      </div>
-      <div className="flex shrink-0 flex-col gap-space-1">{footer.map(item => renderItem(item))}</div>
-      {footerSlot && !collapsed && <div className={`shrink-0 pt-space-4 ${footer.length ? "" : "mt-auto"}`}>{footerSlot}</div>}
     </nav>
   );
 }
@@ -261,7 +352,7 @@ function CollapseButton({
       aria-label={label}
       aria-expanded={!collapsed}
       title={`${label} — [`}
-      className="grid size-7 shrink-0 place-items-center rounded-md text-text-muted transition-colors"
+      className="grid size-ctl-xs shrink-0 place-items-center rounded-md text-text-muted transition-colors"
     >
       <Icon name="angle-double-left" size={16} className={`transition-[rotate] duration-base ${collapsed ? "rotate-180" : ""}`} />
     </button>

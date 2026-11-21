@@ -2,12 +2,13 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button } from "@/components/ui";
 import { Asset, Workspace } from "@/types";
 import { brandFontStacks, familyFiles } from "@/features/guideline-site";
 import { FONT_ACCEPT, fontMetaFromFileName, isFontFile } from "../../utils/font-file";
 import { importGoogleFont, SUGGESTED_FONTS } from "../../api/visual-identity.api";
 import { fileToDataUrl, formatBytes, formatRelative } from "@/lib/utils";
+import { errorText } from "@/lib/api/errorText";
 
 const WEIGHTS = ["300", "400", "500", "600", "700"];
 
@@ -82,7 +83,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
         "success"
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "Couldn't import that font.", "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "Couldn't import that font.", ar: "تعذّر استيراد الخط." }), "danger");
     } finally {
       setImporting(null);
     }
@@ -202,25 +203,15 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
           plain tag for exactly this (see BrandFonts); this now matches it. */}
       <style>{fontFaceCss}</style>
 
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الخطوط" : "Typography"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? "الخطوط" : "Typography"}
+        description={isAr
               ? "كتابتان، مقياس واحد. العربية تُصفّ بمقاييسها لا بمقاييس اللاتينية منقولة إليها. أفلِت ملفات خطوطك هنا أو استورد عائلة من Google Fonts أدناه؛ وما تطبّقه هنا يسري على موقع الدليل كله بالكتابتين."
               : "Two scripts, one scale. Arabic is set natively — never a transliteration of the Latin metrics. Drop in your own font files or import a family from Google Fonts below; whatever you apply here sets the whole guideline site, in both scripts."}
-          </p>
-        </div>
-      </div>
+      />
 
       <div dir={rowDir} className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
-        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="mk-surface rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               isAr={isAr}
@@ -263,7 +254,7 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
             onUpload={(files) => handleUploadFont("latin", files)}
           />
         </div>
-        <div className="rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
+        <div className="mk-surface rounded-card p-[22px] flex flex-col gap-3.5" style={{ background: "var(--surface-1)" }}>
           <div className="flex items-center justify-between gap-2">
             <FamilyName
               isAr={isAr}
@@ -313,18 +304,19 @@ export function TypographyContent({ ws }: { ws: Workspace }) {
       </div>
       <p className="text-[12px] -mt-2" style={{ color: "var(--text-faint)" }}>
         {isAr
-          ? "تُقرأ أسماء العائلات من اسم الملف وهي إعداد خاص بهذه المساحة، اضغط على أحدها لتصحيحه. وإلى أن يُطبَّق ملف، فالاسم وحده يطلب من المتصفح أقرب خط مطابق فقط."
-          : "Family names are read from the file name and are this workspace's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
+          ? "تُقرأ أسماء العائلات من اسم الملف وهي إعداد خاص بهذه العلامة، اضغط على أحدها لتصحيحه. وإلى أن يُطبَّق ملف، فالاسم وحده يطلب من المتصفح أقرب خط مطابق فقط."
+          : "Family names are read from the file name and are this brand's own setting. Click one to correct it. Until a file is applied, a name alone only asks the browser for its closest match."}
       </p>
 
-      <div className="flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
+      <div className="mk-surface flex-1 min-h-0 rounded-card flex flex-col overflow-hidden" style={{ background: "var(--surface-1)" }}>
         <div
           className="shrink-0 flex items-center justify-between px-5 py-3.5"
           style={{ boxShadow: "inset 0 -1px 0 var(--hairline)" }}
         >
           <span className="font-semibold text-[13px]">{isAr ? "مقياس الخط" : "Type scale"}</span>
-          <span className="text-[11px]" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
-            {isAr ? "٤ مستويات بنسبة ثابتة ١٫٢٥" : "4 steps · locked to 1.25 ratio"}
+          {/* Western digits, as everywhere else on the page; mono only for the Latin label. */}
+          <span className="text-[11px]" style={{ fontFamily: isAr ? undefined : "ui-monospace, Menlo, monospace", color: "var(--text-faint)" }}>
+            {isAr ? "4 مستويات بنسبة ثابتة 1.25" : "4 steps · locked to 1.25 ratio"}
           </span>
         </div>
         <div dir={rowDir} className="flex-1 min-h-0 flex flex-col">
@@ -410,7 +402,7 @@ function FontFilePicker({
   }
 
   return (
-    <div className="flex gap-1.5 flex-wrap items-center">
+    <div className="flex gap-ctl-row flex-wrap items-center">
       {[...families.entries()].map(([key, files]) => {
         const sorted = [...files].sort((a, b) => (a.font?.weight ?? 400) - (b.font?.weight ?? 400));
         const applyTarget = sorted.find((f) => f.font?.weight === 400) ?? sorted[0];
@@ -479,7 +471,7 @@ function FontSources({
 
   return (
     <div
-      className="flex flex-col gap-2.5 rounded-card transition-colors"
+      className="flex flex-col gap-field-stack-compact rounded-card transition-colors"
       onDragOver={(e) => {
         e.preventDefault();
         if (!dragOver) setDragOver(true);
@@ -504,7 +496,7 @@ function FontSources({
           e.target.value = "";
         }}
       />
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-ctl-row flex-wrap">
         <button
           type="button"
           disabled={busy}
@@ -570,8 +562,8 @@ function GoogleFontImport({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-1.5">
+    <div className="flex flex-col gap-field-stack-compact">
+      <div className="flex items-center gap-ctl-row">
         <input
           dir="ltr"
           autoFocus
@@ -585,26 +577,25 @@ function GoogleFontImport({
           placeholder={script === "arabic" ? "Cairo" : "Inter"}
           className="mk-field mk-field-sm flex-1 min-w-0"
         />
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="sm"
           disabled={busy || !value.trim()}
           onClick={() => onImport(value.trim())}
-          className="h-8 px-3 rounded-md text-[11.5px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-          style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
         >
           {busy ? (isAr ? "جارٍ الاستيراد…" : "Importing…") : isAr ? "استيراد" : "Import"}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           aria-label={isAr ? "إلغاء" : "Cancel"}
-          className="h-8 w-8 grid place-items-center cursor-pointer shrink-0"
+          className="h-ctl-sm w-8 grid place-items-center cursor-pointer shrink-0"
           style={{ color: "var(--text-faint)" }}
         >
           <Icon name="times" size={12} />
         </button>
       </div>
-      <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-ctl-row flex-wrap">
         {SUGGESTED_FONTS[script].map((family) => (
           <button
             key={family}
@@ -614,8 +605,8 @@ function GoogleFontImport({
               setValue(family);
               onImport(family);
             }}
-            className="text-[11px] px-2 py-1 rounded-md cursor-pointer disabled:opacity-40"
-            style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
+            className="text-[11px] px-2 py-1 rounded-md cursor-pointer disabled:opacity-40 bg-surface-2 text-text-muted"
+            
           >
             {family}
           </button>
@@ -658,8 +649,7 @@ function FamilyName({
         onKeyDown={(e) => {
           if (e.key === "Enter") onCommit();
         }}
-        className="font-semibold text-[13px] outline-none rounded-md px-2 py-1 -mx-2 -my-1"
-        style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--accent-edge)", color: "var(--text)" }}
+        className="mk-field mk-field-sm font-medium"
       />
     );
   }
@@ -707,10 +697,9 @@ function WeightChips({ suffix, weights }: { suffix: string; weights?: number[] }
           {w}
         </span>
       ))}
-      <span
-        className="text-[11px] px-2.5 py-1.5 rounded-md"
-        style={{ fontFamily: "ui-monospace, Menlo, monospace", background: "var(--surface-2)", color: "var(--text-faint)" }}
-      >
+      {/* A sentence, in either language: the interface face, not the mono
+          the weight numbers use. Mono set Arabic letter by letter. */}
+      <span className="text-[11px] px-2.5 py-1.5 rounded-md" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
         {suffix}
       </span>
     </div>

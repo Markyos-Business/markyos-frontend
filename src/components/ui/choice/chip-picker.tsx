@@ -25,7 +25,7 @@ const chosen: Record<ChipPickerTone, string> = {
  */
 export function ChipPicker<T extends string>({ options, value, onChange, tone = "solid", className = "" }: ChipPickerProps<T>) {
   return (
-    <div className={`flex flex-wrap gap-1.5 ${className}`}>
+    <div className={`flex flex-wrap gap-ctl-row ${className}`}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -34,7 +34,7 @@ export function ChipPicker<T extends string>({ options, value, onChange, tone = 
           disabled={o.disabled}
           title={o.title}
           onClick={() => onChange(o.value)}
-          className={`h-8 cursor-pointer rounded-full px-3 text-[11px] font-semibold ${value === o.value ? chosen[tone] : "bg-surface-1 text-text-muted"}`}
+          className={`h-ctl-sm cursor-pointer rounded-full px-3 text-[11px] font-semibold ${value === o.value ? chosen[tone] : "bg-surface-1 text-text-muted"}`}
         >
           {o.label}
         </button>

@@ -176,7 +176,7 @@ export function ManualTemplate(props: TemplateProps) {
                 {isAr ? p.arName : p.name}
               </Link>
             ))}
-            <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+            <LangToggle value={previewLang} onChange={setPreviewLang} />
           </div>
         </div>
 

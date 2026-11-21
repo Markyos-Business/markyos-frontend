@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type DragEvent } from "react";
-import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, Skeleton, TabPanel, Tabs, useTabIds, tabButtonId, useDialog } from "@/components/ui";
+import { ActionsDropdown, AlertBanner, Badge, Button, EmptyState, Icon, IconButton, SegmentedControl, Skeleton, TabPanel, useTabIds, tabButtonId, useDialog, PageHeader } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
 import { STATUS_META, TYPE_META, TYPE_ORDER } from "../../constants";
 import { useFormEditor } from "../../hooks/builder/use-form-editor";
@@ -47,9 +47,8 @@ const flatten = (form: DiscoveryForm): Placed[] => {
  * refuse.
  */
 export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
-  const tabIds = useTabIds();
   const sectionTabIds = useTabIds();
-  const editor = useFormEditor(formId);
+  const editor = useFormEditor(formId, isAr);
   const { form, run } = editor;
   const { confirm } = useDialog();
   const [sectionId, setSectionId] = useState<string | null>(null);
@@ -157,34 +156,38 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
+      <PageHeader
+        title={form.name}
+        description={<>
           <div className="flex flex-wrap items-center gap-space-4">
             <Badge tone={status.tone} dot>
               {status[isAr ? "ar" : "en"]}
             </Badge>
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
-        </div>
+        </>}
+        actions={<>
         {both && (
-          <Tabs {...tabIds}
+          // Which language to edit in is a "choose one" (MARKYOS_UI §2.5), the
+          // kit pill like every language switch, not a row of tabs.
+          <SegmentedControl
             label={t("Edit in", "التحرير بـ")}
-            tabs={[
-              { key: "en", label: "English" },
-              { key: "ar", label: "العربية" },
-              { key: "both", label: t("Both", "كلتاهما") },
+            options={[
+              { value: "en", label: "English" },
+              { value: "ar", label: "العربية" },
+              { value: "both", label: t("Both", "كلتاهما") },
             ]}
-            active={mode}
+            value={mode}
             onChange={setModeChoice}
           />
         )}
         <Button variant="primary" href={sendHref} icon={<Icon name="arrow-right" size={18} />}>
           {form.status === "draft" ? t("Theme and send", "التصميم والإرسال") : t("Theme and link", "التصميم والرابط")}
         </Button>
-      </div>
+        </>}
+      />
 
-      <div id={tabIds.panelId} role={both ? "tabpanel" : undefined} aria-labelledby={both ? tabButtonId(tabIds.id, mode) : undefined} tabIndex={both ? 0 : undefined} className="flex min-w-0 flex-col gap-5">
+      <div className="flex min-w-0 flex-col gap-5">
       <AlertBanner message={editor.error} />
       {readOnly ? (
         <AlertBanner message={t("This questionnaire was submitted. Reopen it from its answers to change questions.", "سُلِّم هذا الاستبيان. أعد فتحه من صفحة الإجابات لتعديل الأسئلة.")} />
@@ -205,8 +208,8 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </div>
 
         <div className="flex min-w-0 flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-space-3">
-            <div ref={sectionRow} id={sectionTabIds.id} role="tablist" aria-orientation="horizontal" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-space-3">
+          <div className="flex flex-wrap items-center gap-ctl-row">
+            <div ref={sectionRow} id={sectionTabIds.id} role="tablist" aria-orientation="horizontal" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-ctl-row">
               {form.sections.map((s, i) => {
                 const on = s.id === section.id;
                 return (
@@ -252,7 +255,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
           </div>
 
           <TabPanel id={sectionTabIds.panelId} tabsId={sectionTabIds.id} active={section.id} className="flex min-w-0 flex-col gap-5">
-            <div className="flex items-end gap-space-4 rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
+            <div className="flex items-end gap-ctl-row rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
               <div className="min-w-0 flex-1">
                 <LocalizedInput
                   label={{ en: "Section title", ar: "عنوان القسم" }}

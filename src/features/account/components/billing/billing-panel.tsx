@@ -1,5 +1,6 @@
 "use client";
 
+import { plural } from "@/lib/i18n/plural";
 import { BrandPlanOptions } from "./brand-plan-options";
 import Link from "next/link";
 import { Icon, StatTile, Section, Row, Badge, EmptyHint, Stagger } from "@/components/ui";
@@ -47,15 +48,20 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         ) : (
           <Row
             label={t("No subscription", "لا يوجد اشتراك")}
-            hint={t("Choose a Project Pass or a monthly brand plan above.", "اختر تصريح مشروع أو خطة شهرية للعلامة من الخيارات أعلاه.")}
+            hint={t("Subscribe a brand to its monthly plan above, with PayPal.", "اشترك لعلامة في خطتها الشهرية أعلاه عبر PayPal.")}
             right={<Badge tone="neutral">{t("None", "لا شيء")}</Badge>}
           />
         )}
 
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-space-4">
+        {/* Passes are no longer sold; the tile stays only for brands that already hold one. */}
+        <Stagger className={`grid grid-cols-1 gap-space-4 ${passes.length ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           <StatTile value={`$${monthly}`} label={t("Recurring, per month", "متكرر شهريًا")} />
-          <StatTile value={`$${oneTimeTotal}`} label={isAr ? `لمرة واحدة، ${passes.length} تصريح` : `One-time, ${passes.length} pass${passes.length === 1 ? "" : "es"}`} />
-          <StatTile value={String(paid.length)} label={isAr ? `مدفوعة من ${workspaces.length} علامات` : `Paid of ${workspaces.length} brand${workspaces.length === 1 ? "" : "s"}`} />
+          {passes.length > 0 && <StatTile value={`$${oneTimeTotal}`} label={isAr
+            ? plural("ar", passes.length, { one: "لمرة واحدة، تصريح واحد", two: "لمرة واحدة، تصريحان", few: "لمرة واحدة، {n} تصاريح", other: "لمرة واحدة، {n} تصريح" })
+            : plural("en", passes.length, { one: "One-time, {n} pass", other: "One-time, {n} passes" })} />}
+          <StatTile value={String(paid.length)} label={isAr
+            ? plural("ar", workspaces.length, { one: "مدفوعة من علامة واحدة", two: "مدفوعة من علامتين", few: "مدفوعة من {n} علامات", other: "مدفوعة من {n} علامة" })
+            : plural("en", workspaces.length, { one: "Paid of {n} brand", other: "Paid of {n} brands" })} />
         </Stagger>
       </Section>
 
@@ -94,12 +100,12 @@ export function BillingPanel({ workspaces }: { workspaces: Workspace[] }) {
         )}
         {/* Receipts live with the processor that issued them. Reprinting them
             here would mean inventing them, since this build has no record of
-            what Stripe actually charged. */}
+            what PayPal actually charged. */}
         <p className="text-caption flex items-start gap-space-3 text-text-faint">
           <Icon name="info-circle" size={16} className="shrink-0" />
           {t(
-            "Receipts and invoices are issued by Stripe and sent to your email — this page shows what each brand is on, not a copy of those documents.",
-            "تصدر Stripe الإيصالات والفواتير وترسلها إلى بريدك. هذه الصفحة تعرض خطة كل علامة، لا نسخة من تلك المستندات."
+            "PayPal sends a receipt to your email for every payment. This page shows what each brand is on, not a copy of those receipts.",
+            "يرسل PayPal إيصالًا إلى بريدك عن كل دفعة. تعرض هذه الصفحة خطة كل علامة، لا نسخة من تلك الإيصالات."
           )}
         </p>
       </Section>

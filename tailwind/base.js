@@ -37,10 +37,13 @@ export const baseStyles = [
       "letter-spacing": "normal",
     },
   },
-  // The utility half has to beat `tracking-tight` itself, as it did before
-  // this moved here; an inline style on the element still wins.
+  // Every other tracking source too: `tracking-*` utilities on overline labels
+  // and inline `letter-spacing` from guideline-site themes. `:dir(rtl)` follows
+  // the element's resolved direction, so Latin set with `dir="ltr"` or
+  // `dir="auto"` (codes, Latin specimens) keeps its tracking. `!important` is
+  // what lets a stylesheet beat an inline style.
   {
-    "[dir=\"rtl\"] .tracking-tight:not([style*=\"letter-spacing\"])": {
+    ":is([class*=\"tracking-\"], [style*=\"letter-spacing\"]):dir(rtl)": {
       "letter-spacing": "normal !important",
     },
   },
@@ -181,6 +184,18 @@ export const baseStyles = [
       "margin-bottom": "4px",
     },
   },
+  // Tailwind's reset takes list markers off; a list in written content needs
+  // them back (fixed 21 Nov 2026: numbered steps showed no numbers).
+  {
+    ".rich-text ul": {
+      "list-style": "disc",
+    },
+  },
+  {
+    ".rich-text ol": {
+      "list-style": "decimal",
+    },
+  },
   {
     ".rich-text blockquote": {
       "margin": "0 0 12px",
@@ -199,6 +214,51 @@ export const baseStyles = [
     ".rich-text a": {
       "color": "var(--accent)",
       "text-decoration": "underline",
+    },
+  },
+  /* Help Center blocks (HC-EPIC-001): callouts and code (a video stays a link
+  here; the website embeds it),
+  styled the same in the editor and on the page so a writer sees what a reader will. */
+  {
+    ".rich-text aside": {
+      "margin": "0 0 12px",
+      "padding": "12px 16px",
+      "border-radius": "8px",
+      "line-height": "1.7",
+    },
+  },
+  {
+    ".rich-text aside.callout-note": {
+      "background": "var(--accent-soft)",
+      "box-shadow": "inset 2px 0 0 var(--accent)",
+    },
+  },
+  {
+    ".rich-text aside.callout-warning": {
+      "background": "var(--warning-soft)",
+      "box-shadow": "inset 2px 0 0 var(--warning)",
+    },
+  },
+  {
+    "[dir=rtl] .rich-text aside.callout-note, .rich-text[dir=rtl] aside.callout-note": { "box-shadow": "inset -2px 0 0 var(--accent)" },
+  },
+  {
+    "[dir=rtl] .rich-text aside.callout-warning, .rich-text[dir=rtl] aside.callout-warning": { "box-shadow": "inset -2px 0 0 var(--warning)" },
+  },
+  {
+    ".rich-text pre": {
+      "margin": "0 0 12px",
+      "padding": "12px 16px",
+      "border-radius": "8px",
+      "background": "var(--surface-2)",
+      "box-shadow": "inset 0 0 0 1px var(--hairline)",
+      "font-family": "var(--font-mono, ui-monospace, monospace)",
+      "font-size": "13px",
+      "line-height": "1.6",
+      "white-space": "pre-wrap",
+      // Code reads left to right in an Arabic article too.
+      "direction": "ltr",
+      "text-align": "left", // physical-ok: code is always left to right, in an Arabic article too
     },
   },
   {
@@ -911,7 +971,7 @@ export const baseStyles = [
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
       ".mk-card:not([style*=\"transition\"])": {
-        "transition": "box-shadow var(--duration-instant) var(--ease-standard) !important",
+        "transition": "color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard) !important",
       },
     },
   },
@@ -929,9 +989,9 @@ export const baseStyles = [
     // Not under reduced motion, where the rule at the end of this file
     // brings every transition down to nothing.
     "@media (prefers-reduced-motion: no-preference)": {
-      "button:not([style*=\"transition\"]), [role=\"button\"]:not([style*=\"transition\"]), a:not([style*=\"transition\"]), summary:not([style*=\"transition\"])": {
-        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale !important",
-        "transition-duration": "var(--duration-instant) !important",
+      ":is(button, [role=\"button\"], a, summary, [role=\"option\"], [role=\"tab\"], [role=\"switch\"], [role=\"checkbox\"], [role=\"radio\"], tr, .mk-field, .mk-tap):not([style*=\"transition\"])": {
+        "transition-property": "color, background-color, border-color, box-shadow, opacity, scale, text-decoration-color !important",
+        "transition-duration": "var(--duration-fast) !important",
         "transition-timing-function": "var(--ease-standard) !important",
       },
     },
@@ -994,6 +1054,22 @@ export const baseStyles = [
     },
   },
   {
+    // A finger needs 44px (WCAG 2.5.5 / Apple HIG): on a touch screen the sm
+    // and md control sizes grow to 44. Inputs, selects and buttons all read
+    // `--control-height-*`, so a row of them still lines up.
+    "@media (pointer: coarse)": {
+      // `html` raises it above the token blocks, which also sit on :root and
+      // on the theme-scoped panels (.mk-theme-*) and are emitted after this.
+      "html:root, html .mk-theme-dark, html .mk-theme-light": { "--control-height-sm": "44px", "--control-height-md": "44px" },
+      // The dense 28px size keeps its look and gets a 44px target around it.
+      ".mk-btn[data-size=\"xs\"]::before": {
+        "content": "\"\"",
+        "position": "absolute",
+        "inset": "-8px",
+      },
+    },
+  },
+  {
     // A real pointer only: a touch screen has no hover, and a hover state left
     // behind after a tap reads as a stuck button.
     "@media (hover: hover) and (pointer: fine)": {
@@ -1041,7 +1117,7 @@ export const baseStyles = [
       "background": "var(--hover-scrim)",
       "opacity": "0",
       "pointer-events": "none",
-      "transition": "opacity var(--duration-instant) var(--ease-standard)",
+      "transition": "opacity var(--duration-fast) var(--ease-standard)",
     },
   },
   {
@@ -1177,8 +1253,8 @@ export const baseStyles = [
   // inline style on the element still wins (the :not guard).
   {
     ":focus-visible:not([style*=\"outline\"])": {
-      "outline": "2px solid var(--accent) !important",
-      "outline-offset": "2px !important",
+      "outline": "var(--focus-ring-width) solid var(--focus-ring-color) !important",
+      "outline-offset": "var(--focus-ring-offset) !important",
     },
   },
   // Scrollable tab strips clip an outside ring. Reuse the kit's focus outline
@@ -1194,7 +1270,10 @@ export const baseStyles = [
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
-    ":focus-visible:not([style*=\"border-radius\"])": {
+    // Rounds the ring on things with no corner of their own (a link, a row).
+    // Controls keep theirs: an 8px button turning 6px, or a field growing
+    // corners, the moment it took focus read as the control changing shape.
+    ":focus-visible:not([style*=\"border-radius\"]):not(.mk-btn):not(.mk-field):not(.mk-field-control):not([role=\"combobox\"])": {
       "border-radius": "6px !important",
     },
   },
@@ -1211,31 +1290,35 @@ export const baseStyles = [
     ".mk-field": {
       "display": "block",
       "border": "0",
-      "border-bottom": "1px solid var(--line-strong)",
-      "border-radius": "0",
-      // The same ground as the filter select (`bg-ink-soft`), so a text field
-      // and a select side by side read as one family. State stays the underline.
-      "background": "var(--ink-soft)",
-      // The select's measurements: 40px tall (--control-h-sm: 9 + 21 + 9 + the
-      // 1px underline) with --space-5 either side, so a field and a select in
-      // one row line up. Labels and notes take the same inset as the value.
-      "padding-block": "9px",
-      "padding-inline": "14px",
+      // Form-control tokens (UX-CON-001, MARKYOS_UI §2.6): the underline is
+      // the only border, the control corner sits on the top edge, and every
+      // field, select and button of a size shares one height.
+      "border-bottom": "var(--control-border-width) solid var(--control-border)",
+      "border-start-start-radius": "var(--control-radius)",
+      "border-start-end-radius": "var(--control-radius)",
+      "border-end-start-radius": "0",
+      "border-end-end-radius": "0",
+      "background": "var(--control-bg)",
+      // 9 + 21 + 9 + the underline = 40; the min-height takes it to 44 on a
+      // touch screen. Labels and notes take the same inset as the value.
+      "min-height": "var(--control-height-md)",
+      "padding-block": "var(--control-padding-y-md)",
+      "padding-inline": "var(--control-padding-x-md)",
       "font-size": "0.875rem",
       "line-height": "1.3125rem",
       "font-weight": "500",
       "color": "var(--text)",
       "outline": "none",
-      "transition": "border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard)",
+      "transition": "color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard)",
     },
   },
   {
-    // The select's hover: the button scrim over the resting ground. An input
-    // can't hold the ::after the buttons use, so the scrim is a background
-    // layer here, and it adapts to the theme through `--hover-scrim`.
+    // Fields tint their background colour so hover interpolates in both
+    // directions. A gradient switched on hover cannot animate smoothly.
     "@media (hover: hover) and (pointer: fine)": {
       ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
-        "background-image": "linear-gradient(var(--hover-scrim), var(--hover-scrim))",
+        "background-color": "var(--control-bg-hover)",
+        "border-bottom-color": "var(--control-border-hover)",
       },
     },
   },
@@ -1299,29 +1382,74 @@ export const baseStyles = [
     },
   },
   {
+    // Focus is the underline at 2px: the second pixel is an inset shadow, so
+    // the field doesn't move. It is the field's focus indicator (the ring is
+    // switched off below), 4.9:1 against the field in both themes.
     ".mk-field:focus, .mk-field:focus-within, .mk-field[aria-expanded=\"true\"]": {
-      "border-bottom-color": "var(--accent)",
-      "box-shadow": "0 6px 10px -8px var(--accent)",
+      "border-bottom-color": "var(--control-border-focus)",
+      "box-shadow": "inset 0 calc(-1 * (var(--control-border-width-focus) - var(--control-border-width))) 0 var(--control-border-focus)",
     },
   },
   {
     ".mk-field[aria-invalid=\"true\"], .mk-field:has([aria-invalid=\"true\"]), .mk-field[data-state=\"error\"]": {
-      "border-bottom-color": "var(--danger)",
+      "border-bottom-color": "var(--control-border-error)",
     },
   },
   {
     ".mk-field[data-state=\"success\"]": {
-      "border-bottom-color": "var(--success)",
+      "border-bottom-color": "var(--control-border-success)",
     },
   },
   {
     ".mk-field[data-state=\"warning\"]": {
-      "border-bottom-color": "var(--warning)",
+      "border-bottom-color": "var(--control-border-warning)",
     },
   },
   {
     // Read-only and locked: the value is shown, not offered. A dashed rule
     // and muted ink say "you can't change this" before anyone tries.
+    // A labelled field with its actions beside it (Copy, Generate, Connect).
+    // A labelled field reserves room for its note below, so aligning to the
+    // row's bottom put the buttons under the input; instead the row aligns
+    // to the top and each action drops by the label's height, landing level
+    // with the input whether or not a hint or an error shows.
+    ".mk-field-row": {
+      "display": "flex",
+      "align-items": "flex-start",
+      "gap": "var(--control-row-gap)",
+    },
+    ".mk-field-row > :not(:has(.mk-field))": {
+      "margin-top": "calc(1.25rem + var(--field-label-gap))",
+    },
+    // A phone has no room for a field and two buttons on one line (the input
+    // shrank to ~100px): the field takes the row and its actions sit under it.
+    "@media (max-width: 639px)": {
+      ".mk-field-row": { "flex-wrap": "wrap" },
+      ".mk-field-row > :has(.mk-field)": { "flex": "1 1 100%", "min-width": "0" },
+      ".mk-field-row > :not(:has(.mk-field))": { "margin-top": "0" },
+    },
+  },
+  {
+    // Gallery-only (/dev/controls): a field drawn in its hover or focus state
+    // without a pointer, so the states can be compared side by side.
+    ".mk-field[data-preview=\"hover\"]": {
+      "background-color": "var(--control-bg-hover)",
+      "border-bottom-color": "var(--control-border-hover)",
+    },
+    ".mk-field[data-preview=\"focus\"]": {
+      "border-bottom-color": "var(--control-border-focus)",
+      "box-shadow": "inset 0 calc(-1 * (var(--control-border-width-focus) - var(--control-border-width))) 0 var(--control-border-focus)",
+    },
+  },
+  {
+    // A filter that is narrowing the list says so with the accent: its tint
+    // and an accent underline, the field shape otherwise unchanged.
+    "[data-filter-control][data-active] .mk-field, .mk-field[data-filter-control][data-active]": {
+      "background": "var(--accent-soft)",
+      "border-bottom-color": "var(--control-border-focus)",
+    },
+  },
+  {
     ".mk-field[data-readonly]": {
       "border-bottom-style": "dashed",
       "color": "var(--text-muted)",
@@ -1371,6 +1499,7 @@ export const baseStyles = [
   },
   {
     ".mk-field:disabled, .mk-field:has(:disabled)": {
+      "background": "var(--control-bg-disabled)",
       "color": "var(--text-disabled)",
       "cursor": "not-allowed",
     },
@@ -1405,8 +1534,10 @@ export const baseStyles = [
     // The compact field (size="sm"): inspectors, dense panels and rows. The
     // same underline, a shorter block and a 12.5px value.
     ".mk-field.mk-field-sm": {
-      "padding-block": "5px",
-      "padding-inline": "6px",
+      // 5 + 20 + 5 + the underline = 31; the min-height makes it 32.
+      "min-height": "var(--control-height-sm)",
+      "padding-block": "var(--control-padding-y-sm)",
+      "padding-inline": "var(--control-padding-x-sm)",
       "font-size": "0.78125rem",
       "line-height": "1.25rem",
     },

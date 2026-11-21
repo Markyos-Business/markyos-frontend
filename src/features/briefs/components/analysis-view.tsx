@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertBanner, Badge, Button, EmptyState, Icon, PageHeader, Skeleton, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, EmptyState, Icon, PageHeader, Skeleton, Tooltip, useDialog, useToast } from "@/components/ui";
 import { SelectField } from "@/components/ui";
 import { formatDay } from "@/features/discovery";
 import { useBriefAnalysis } from "../hooks/use-brief-analysis";
@@ -13,6 +13,7 @@ import { StudioReport } from "./report/studio-report";
 import { ShareWithClient } from "./share/share-with-client";
 import { RunningView } from "./run/running-view";
 import { RunPanel } from "./run/run-panel";
+import { errorText } from "@/lib/api/errorText";
 
 type AnalysisViewProps = { brandId: string; brandSlug: string; isAr: boolean; workspace: Workspace };
 
@@ -29,7 +30,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
   const [starting, setStarting] = useState(false);
   const versions = overview.data?.versions ?? [];
   const selectedId = chosen ?? versions[0]?.id ?? null;
-  const { analysis, error, replaceSection } = useBriefAnalysis(selectedId);
+  const { analysis, error, replaceSection } = useBriefAnalysis(selectedId, isAr);
   const running = !!analysis && (analysis.status === "queued" || analysis.status === "running");
 
   // Finished while open: say so, and refresh the versions.
@@ -61,15 +62,15 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
         overview.reload();
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't start.", "لم يبدأ ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't start.", ar: "لم يبدأ ذلك." }), "danger");
     }
     setStarting(false);
   };
 
   const data = overview.data;
   const header = analysis && data && (
-    <div className="flex flex-wrap items-end justify-between gap-space-5">
-      <div className="flex flex-wrap items-end gap-space-4">
+    <div className="flex flex-wrap items-end justify-between gap-ctl-row">
+      <div className="flex flex-wrap items-end gap-ctl-row">
         <div className="w-52">
           <SelectField
             label={t("Version", "الإصدار")}
@@ -82,9 +83,14 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
           />
         </div>
         <Badge>{analysis.language === "ar" ? "العربية" : "English"}</Badge>
-        {analysis.isFreeRun && <Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge>}
+        {/* Said, not just shown: "Free run" alone didn't say what made it free. */}
+        {analysis.isFreeRun && (
+          <Tooltip content={t("This was the brand's first analysis, which is free.", "كان هذا أول تحليل للعلامة، وهو مجاني.")}>
+            <span tabIndex={0} className="rounded-md"><Badge tone="success">{t("Free run", "تشغيل مجاني")}</Badge></span>
+          </Tooltip>
+        )}
       </div>
-      <div className="flex flex-wrap items-center gap-space-4">
+      <div className="flex flex-wrap items-center gap-ctl-row">
         {analysis.status === "ready" && (
           <Button
             variant="outline"

@@ -24,8 +24,8 @@ export const darkTokens = {
    * Grotesque is the brand face, for the wordmark and marketing only, never
    * product chrome; it is `--font-brand`. `--font-display` stays as a name
    * because a hundred headings use it, and now means the product heading
-   * stack. Arabic falls through to IBM Plex Sans Arabic: the spec names
-   * Thmanya Sans, whose files are not in the repo yet.
+   * stack. Arabic falls through to IBM Plex Sans Arabic, the product's
+   * Arabic face (chosen 2026-11-19 over the spec's original Thmanya Sans).
    */
   "--font-display": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",
   "--font-sans": "var(--font-inter), \"Inter\", var(--font-plex-arabic), system-ui, sans-serif",
@@ -199,6 +199,60 @@ export const darkTokens = {
   "--hairline": "rgba(255, 255, 255, 0.05)",
   "--hairline-strong": "rgba(255, 255, 255, 0.1)",
   "--line-strong": "rgba(255, 255, 255, 0.2)",
+  /*
+   * Form controls (UX-CON-001): one set for every input, select, textarea,
+   * combobox, date picker and button, so controls in one row share a height,
+   * a corner and a focus treatment. Fields keep the spec's shape (§6.5: a
+   * ground and an underline, state carried by the underline), now with the
+   * control corner on their top edge; buttons keep their own fills.
+   *
+   * `--control-border` is the field's underline. The spec's `--line-strong`
+   * (white 20%) measured 1.84:1 on a #111 card, under the 3:1 WCAG 1.4.11
+   * asks of a control's boundary; 40% measures 3.8:1 and
+   * `contrast-audit.mjs` holds it at 3:1 on every surface. `--line-strong`
+   * itself is unchanged for the rules that are not control edges.
+   */
+  "--control-radius": "8px",
+  "--control-border-width": "1px",
+  "--control-border-width-focus": "2px",
+  "--control-border": "rgba(255, 255, 255, 0.4)",
+  "--control-border-hover": "rgba(255, 255, 255, 0.56)",
+  "--control-border-focus": "var(--accent)",
+  "--control-border-error": "var(--danger)",
+  "--control-border-success": "var(--success)",
+  "--control-border-warning": "var(--warning)",
+  "--control-bg": "var(--ink-soft)",
+  "--control-bg-hover": "color-mix(in srgb, var(--ink-soft), var(--text) 6%)",
+  "--control-bg-disabled": "rgba(255, 255, 255, 0.04)",
+  // One height per size for inputs, selects and buttons alike. `sm` and
+  // `md` grow to 44px on a touch screen (tailwind/base.js); the dense `xs`
+  // button keeps 28px with a 44px hit area around it.
+  "--control-height-xs": "28px",
+  "--control-height-sm": "32px",
+  "--control-height-md": "40px",
+  "--control-height-lg": "46px",
+  "--control-padding-x-sm": "10px",
+  "--control-padding-x-md": "14px",
+  "--control-padding-x-lg": "18px",
+  "--focus-ring-width": "2px",
+  "--focus-ring-offset": "2px",
+  "--focus-ring-color": "var(--accent)",
+  /*
+   * Spacing around controls, on the measured scale (§2.4): inside a control,
+   * between a field and its label and note, between controls in a row, and
+   * between fields in a form. Compact is for dense panels — inspectors,
+   * moodboard cards, table rows — where 18px between fields wastes the panel.
+   */
+  "--control-gap": "8px",
+  "--control-padding-y-sm": "5px",
+  "--control-padding-y-md": "9px",
+  "--field-label-gap": "5px",
+  "--field-label-gap-sm": "4px",
+  "--control-row-gap": "8px",
+  "--field-stack-gap": "18px",
+  "--field-stack-gap-compact": "8px",
+  "--form-column-gap": "25px",
+  "--form-section-gap": "25px",
   /*
    * The ring around a selected card. Dozens of call sites wrote this as a
    * literal `rgba(0,153,255,.5)`, which froze the old accent into the markup —
@@ -398,6 +452,10 @@ export const lightTokens = {
   "--hairline": "#e5e5e5",
   "--hairline-strong": "rgba(10, 10, 10, 0.106)",
   "--line-strong": "rgba(10, 10, 10, 0.32)",
+  // 50% ink: 3.7:1 on a white card (32% was 2.15:1). See the dark block.
+  "--control-border": "rgba(10, 10, 10, 0.5)",
+  "--control-border-hover": "rgba(10, 10, 10, 0.64)",
+  "--control-bg-disabled": "rgba(10, 10, 10, 0.03)",
   "--accent-edge": "rgba(0, 85, 255, 0.55)",
   /* Chip edge and scrim are intentionally identical to the dark theme's — see
    * the note there; both are about the content, not the interface. */

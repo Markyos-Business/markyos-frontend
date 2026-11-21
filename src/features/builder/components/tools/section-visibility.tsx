@@ -38,7 +38,7 @@ export function SectionVisibility({ ws, isAr }: { ws: Workspace; isAr: boolean }
      * many are off without opening it.
      */
     <details className="flex shrink-0 flex-col gap-1.5">
-      <summary className="flex cursor-pointer list-none items-center gap-1.5 px-1 text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase select-none">
+      <summary className="flex cursor-pointer list-none items-center gap-ctl-icon px-1 text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase select-none">
         <Icon name="angle-right" size={10} className="mk-disclosure" />
         {isAr ? "أقسام الصفحة" : "Page sections"}
         <span className="ms-auto font-normal tracking-normal">
@@ -49,7 +49,7 @@ export function SectionVisibility({ ws, isAr }: { ws: Workspace; isAr: boolean }
         {v.availableFixed.map((s) => {
           const hidden = isParked(s.id);
           return (
-            <button
+            <button /* ctl-audit-ignore: a row in the section list, not a button control */
               key={s.id}
               type="button"
               onClick={() => setParked(s.id, !hidden)}
