@@ -42,6 +42,10 @@ describe("formatBytes", () => {
     expect(strip(formatBytes(1023))).toBe("1023 KB");
   });
 
+  it("says <1 KB for a file under a kilobyte, not 0 KB", () => {
+    expect(strip(formatBytes(0.4))).toBe("<1 KB");
+  });
+
   it("switches to MB at 1024 KB", () => {
     expect(strip(formatBytes(1024))).toBe("1.0 MB");
     expect(strip(formatBytes(2560))).toBe("2.5 MB");

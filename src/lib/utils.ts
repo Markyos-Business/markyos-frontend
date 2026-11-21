@@ -110,6 +110,8 @@ export function ltr(text: string): string {
 }
 
 export function formatBytes(kb: number): string {
+  // A small SVG is a few hundred bytes; "0 KB" read as an empty file.
+  if (kb > 0 && kb < 1) return ltr("<1 KB");
   if (kb < 1024) return ltr(`${Math.round(kb)} KB`);
   return ltr(`${(kb / 1024).toFixed(1)} MB`);
 }
