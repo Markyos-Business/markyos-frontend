@@ -18,7 +18,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
     <Section title={t("Developer", "المطوّرون")} icon="key">
       <Row
         label={t("API key", "مفتاح API")}
-        hint={t("Read-only access to this workspace's published assets and brand data.", "وصول للقراءة فقط إلى أصول هذه المساحة المنشورة وبيانات علامتها.")}
+        hint={t("Read-only access to this brand's published assets and brand data.", "وصول للقراءة فقط إلى أصول هذه العلامة المنشورة وبياناتها.")}
         right={
           <div className="flex items-center gap-2">
             <code dir="ltr" className="rounded-md bg-surface-2 px-2.5 py-1.5 font-mono text-[12px]">{apiKey}</code>

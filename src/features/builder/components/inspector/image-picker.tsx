@@ -239,7 +239,7 @@ function UploadTab({
       <span className="text-[11px]" style={{ color: "var(--text-faint)" }}>
         {isAr
           ? "تُحفظ الصورة في مكتبة أصول المشروع، فيمكن إعادة استخدامها في أقسام أخرى."
-          : "Saved to this workspace's asset library, so you can reuse it in other sections."}
+          : "Saved to this brand's asset library, so you can reuse it in other sections."}
       </span>
     </div>
   );
