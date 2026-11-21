@@ -53,6 +53,18 @@ Merged locally on release/staging-v1, not deployed. 35 fixed or corrected, 5 clo
 
 All unit tests (768) and the full e2e suite (30) pass on the merged branch.
 
+## Round 3 (21 Nov 2026): improvements
+
+Not defects from an audit table: rough edges seen during rounds 1 and 2, fixed and checked on screen.
+
+- A client's brand card says "Guideline: Ready to review" (or "Not published yet") instead of a setup count computed from metadata.
+- Asset photos fill their tile; marks and graphics stay whole.
+- Stat grids sit two across on a phone (admin Users no longer opens on four screens of counts).
+- The header search shrinks on a phone instead of pushing the bell and avatar to a second row (it did in Arabic).
+- The empty overview editor says what to write; moodboard card sizes read Small / Medium / Large; the admin signups chart writes 14 Nov.
+
+All 769 unit tests and the 30 e2e tests pass.
+
 ## Round 2 (21 Nov 2026): re-audit of the fixed build
 
 The same seeded data and the same 50 routes × 4 variants (200 screenshots), run on release/staging-v1 after round 1. axe went from 3 rule failures to 3 (two had carried over unfixed), and now 0. Every round-1 fix in view was checked on screen. Clients can now open brand pages, which round 1 couldn't reach, and that surfaced the main new finding.
