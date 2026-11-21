@@ -10,20 +10,24 @@ import { ObjectivesTab } from "./tabs/objectives-tab";
 import { PositioningOptionsTab } from "./tabs/positioning-options-tab";
 import { SingleTextTab } from "./tabs/single-text-tab";
 import { TabSequence } from "./tab-sequence";
+import { StrategySectionNav } from "./section-nav";
+import { strategyCopy } from "../../copy";
 import { ToneTab } from "./tabs/tone-tab";
 import { TranslationNotice } from "../translate/translate-strategy";
 import { VisionMissionTab } from "./tabs/vision-mission-tab";
 
 /** Edit mode: the page's heading, the open section, and the way to the next. */
-export function StrategyEditView({ ws, isAr, lang, tab, onTab, emptyTabs }: StrategyPageState["edit"]) {
+export function StrategyEditView({ ws, isAr, lang, tab, slug, emptyTabs }: StrategyPageState["edit"]) {
   const single = tab === "purpose" || tab === "positioning" || tab === "uvp" ? SINGLE_TEXT_TABS[tab] : null;
   return (
-    <div className="flex min-h-0 max-w-[820px] flex-1 flex-col gap-5 overflow-auto px-7 py-6.5">
+    // The section list beside the section (a row above it under 1024px), in one scroll.
+    <div className="flex min-h-0 flex-1 overflow-auto px-7 py-6.5">
+    <div className="grid w-full max-w-[1100px] grid-cols-1 content-start gap-space-8 lg:grid-cols-[240px_minmax(0,820px)]">
+    <StrategySectionNav slug={slug} current={tab} empty={emptyTabs} isAr={isAr} />
+    <div className="flex min-w-0 flex-col gap-5">
       {/* The page's own heading: without it the screen announced itself as an
           unlabelled region containing eight unlabelled boxes. */}
-      <PageHeader title={isAr ? "الاستراتيجية" : "Strategy"} description={isAr
-            ? "الطبقة التي تعلو الملفات: لماذا توجد العلامة، ولمن، وبأي صوت. كل قسم في تبويب أعلاه."
-            : "The layer above the files: why this brand exists, who it is for, and how it sounds. Each section is a tab above."} />
+      <PageHeader title={isAr ? "الاستراتيجية" : "Strategy"} description={strategyCopy(isAr).sections.description} />
       <TranslationNotice ws={ws} isAr={isAr} />
       <div key={`${tab}-${lang}`} className="flex flex-col gap-5">
         {single && <SingleTextTab ws={ws} lang={lang} {...single} />}
@@ -35,7 +39,9 @@ export function StrategyEditView({ ws, isAr, lang, tab, onTab, emptyTabs }: Stra
         {tab === "competitive" && <CompetitiveTab ws={ws} lang={lang} />}
         {tab === "tone" && <ToneTab ws={ws} lang={lang} />}
       </div>
-      <TabSequence current={tab} onSelect={onTab} isAr={isAr} empty={emptyTabs} />
+      <TabSequence current={tab} slug={slug} isAr={isAr} empty={emptyTabs} />
+    </div>
+    </div>
     </div>
   );
 }

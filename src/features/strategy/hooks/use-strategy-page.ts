@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useUrlTab } from "@/hooks/useUrlTab";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
-import type { TopBarTab } from "@/features/shell";
 import { capabilitiesOn } from "@/lib/data/access";
-import { PAGE_SECTION, STRATEGY_TABS, type StrategyMode, type StrategyTab } from "../constants";
+import { isStrategyTab, PAGE_SECTION, strategySectionHref, type StrategyMode, type StrategyTab } from "../constants";
 
-/** The strategy page: the section being edited, edit or read mode, and which sections are blank. */
-const TAB_KEYS = STRATEGY_TABS.map(tab => tab.key);
-
-export function useStrategyPage(slug: string) {
+/**
+ * The strategy page: the section being edited, edit or read mode, and which
+ * sections are blank. The section is the route (/w/<slug>/strategy/<section>),
+ * so the address changes with it, the back button walks back through the
+ * sections read, and any section can be linked to (review item 4).
+ */
+export function useStrategyPage(slug: string, section: string) {
   const { uiLang, state } = useApp();
   const page = useBrandPage(slug);
-  const [tab, setTab] = useUrlTab<StrategyTab>(TAB_KEYS, "purpose");
+  const router = useRouter();
+  const valid = isStrategyTab(section);
+  const tab: StrategyTab = valid ? section : "purpose";
+  // An unknown section in the address lands on the first one.
+  useEffect(() => {
+    if (!valid) router.replace(strategySectionHref(slug, "purpose"));
+  }, [valid, router, slug]);
   const [requestedMode, setMode] = useState<StrategyMode>("edit");
   const [importOpen, setImportOpen] = useState(false);
   if (!page) return null;
@@ -50,15 +58,6 @@ export function useStrategyPage(slug: string) {
     tone: s.voiceTraits.length === 0,
   };
 
-  const tabs: TopBarTab[] = STRATEGY_TABS.map((t) => ({
-    key: t.key,
-    label: t.label,
-    arLabel: t.arLabel,
-    active: tab === t.key,
-    empty: emptyTabs[t.key],
-    onSelect: () => setTab(t.key),
-  }));
-
   return {
     ws,
     isAr,
@@ -68,9 +67,8 @@ export function useStrategyPage(slug: string) {
       workspace: ws,
       section: PAGE_SECTION.en,
       arSection: PAGE_SECTION.ar,
-      // In read mode the document carries its own contents rail, so the
-      // section tabs would be a second, competing navigation.
-      tabs: mode === "edit" ? tabs : undefined,
+      // The sections are a list beside the content now (StrategySectionNav),
+      // not a row of tabs in the top bar that wrapped onto two lines.
       width: "full" as const,
     },
     actions: {
@@ -80,7 +78,7 @@ export function useStrategyPage(slug: string) {
     },
     importOpen: canEdit && importOpen,
     onCloseImport: () => setImportOpen(false),
-    edit: { ws, isAr, lang, tab, onTab: setTab, emptyTabs },
+    edit: { ws, isAr, lang, tab, slug, emptyTabs },
   };
 }
 

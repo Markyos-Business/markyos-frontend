@@ -72,3 +72,11 @@ export const OBJECTIVE_KINDS = [
   { value: "business", label: "Business goals", arLabel: "أهداف العمل" },
   { value: "brand", label: "Brand goals", arLabel: "أهداف العلامة" },
 ] as const;
+
+
+/** A section key from a URL, checked. */
+export const isStrategyTab = (value: string | undefined | null): value is StrategyTab =>
+  !!value && STRATEGY_TABS.some((t) => t.key === value);
+
+/** A section's own address (review item 4: every section is a route). */
+export const strategySectionHref = (slug: string, tab: StrategyTab) => `/w/${slug}/strategy/${tab}`;
