@@ -11,6 +11,7 @@ import { useHelpCopy } from "../../hooks/use-help-copy";
 import { useHelpEditor } from "../../hooks/use-help-editor";
 import type { HelpArticleType, HelpAudience, HelpLocale, HelpMediaRef, HelpStatus, HelpTranslationDraft, HelpVisibility } from "../../types";
 import { LabelledChoice } from "../shared/labelled-choice";
+import { WorkflowBar } from "../workflow/workflow-bar";
 import { HelpVersionHistory } from "./help-version-history";
 import { StatusDots } from "./status-dots";
 
@@ -62,6 +63,9 @@ export function HelpArticleEditor({ id }: { id: string }) {
   });
 
   const fieldsFor = (locale: HelpLocale) => (
+    <div className="flex flex-col gap-space-6 pt-space-6">
+      {/* Each language is published on its own, from its own tab. */}
+      <WorkflowBar doc={doc} locale={locale} canWrite={canWrite} canManage={canManage} dirty={editor.dirty} save={editor.save} adopt={editor.adopt} />
     <TranslationFields
       locale={locale}
       draft={draft.translations[locale]}
@@ -73,6 +77,7 @@ export function HelpArticleEditor({ id }: { id: string }) {
         return m ? { id: m.id, url: m.url, altEn: m.altEn, altAr: m.altAr } : null;
       }}
     />
+    </div>
   );
 
   return (
@@ -87,7 +92,8 @@ export function HelpArticleEditor({ id }: { id: string }) {
           </span>
         }
         actions={canWrite && (
-          <Button variant="primary" onClick={() => void editor.save()} disabled={!editor.dirty || editor.state === "saving"}>
+          // Outline: each language's Publish is the main action on this page.
+          <Button variant="outline" onClick={() => void editor.save()} disabled={!editor.dirty || editor.state === "saving"}>
             {editor.state === "saving" ? t.saving : t.save}
           </Button>
         )}
@@ -200,7 +206,7 @@ function TranslationFields({
   const dir = locale === "ar" ? "rtl" : "ltr";
   const alt = (m: HelpMediaRef) => (locale === "ar" ? m.altAr || m.altEn : m.altEn || m.altAr);
   return (
-    <div className="flex flex-col gap-field-stack pt-space-6">
+    <div className="flex flex-col gap-field-stack">
       <InputField label={f.title} value={draft.title} dir={dir} readOnly={readOnly} maxLength={200} onChange={(e) => onChange({ title: e.target.value })} />
       <InputField
         label={f.slug}

@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpVersion } from "../types";
+import type { HelpArticleDoc, HelpArticleDraft, HelpArticleRow, HelpCategory, HelpCategoryInput, HelpLocale, HelpPreview, HelpVersion, HelpWorkflowAction } from "../types";
 
 export const listHelpCategories = () => api<HelpCategory[]>("/help/admin/categories/");
 
@@ -46,3 +46,14 @@ export const unarchiveHelpArticle = (id: string) => api<HelpArticleDoc>(`/help/a
 export const listHelpVersions = (id: string) => api<{ results: HelpVersion[] }>(`/help/admin/articles/${id}/versions/`).then((r) => r.results);
 export const restoreHelpVersion = (id: string, number: number, version: number) =>
   api<HelpArticleDoc>(`/help/admin/articles/${id}/versions/${number}/restore/`, { method: "POST", body: { version } });
+
+// ── Workflow (C7) ──
+
+/** One step for one language. `at` is "YYYY-MM-DDTHH:mm" in the Help timezone. */
+export const helpWorkflow = (id: string, locale: HelpLocale, action: HelpWorkflowAction, extra: { version?: number; at?: string; comment?: string } = {}) =>
+  api<HelpArticleDoc>(`/help/admin/articles/${id}/workflow/`, { method: "POST", body: { locale, action, ...extra } });
+
+export const createHelpPreview = (id: string, locale: HelpLocale) =>
+  api<{ token: string; path: string; expiresAt: string }>(`/help/admin/articles/${id}/preview/`, { method: "POST", body: { locale } });
+
+export const getHelpPreview = (token: string) => api<HelpPreview>(`/help/public/preview/${encodeURIComponent(token)}/`);

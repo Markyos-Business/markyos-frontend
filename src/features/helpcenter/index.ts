@@ -3,3 +3,4 @@
 export { HelpCategoriesView } from "./components/categories/help-categories-view";
 export { HelpArticlesView } from "./components/articles/help-articles-view";
 export { HelpArticleEditor } from "./components/articles/help-article-editor";
+export { HelpPreviewView } from "./components/preview/help-preview-view";

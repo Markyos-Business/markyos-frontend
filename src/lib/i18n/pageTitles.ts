@@ -37,6 +37,7 @@ export function routePageName(pathname: string): Name {
   if (/^\/admin\/users\/[^/]+$/.test(path)) return ["User details", "تفاصيل المستخدم"];
   if (/^\/admin\/cms\/articles\/[^/]+$/.test(path)) return ["Edit article", "تحرير المقال"];
   if (/^\/admin\/cms\/help\/articles\/[^/]+$/.test(path)) return ["Edit help article", "تحرير مقالة المساعدة"];
+  if (/^\/help\/preview\/[^/]+$/.test(path)) return ["Help article preview", "معاينة مقالة المساعدة"];
   if (/^\/print\/analysis\/[^/]+$/.test(path)) return ["Analysis report", "تقرير التحليل"];
   if (/^\/v\/[^/]+(?:\/p\/[^/]+)?$/.test(path)) return ["Published guideline", "الدليل المنشور"];
   const share = path.match(/^\/([abfs])\/[^/]+$/)?.[1];

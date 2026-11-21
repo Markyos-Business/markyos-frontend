@@ -68,8 +68,9 @@ export function useHelpEditor(id: string) {
 
   const dirty = !!draft && !!saved && JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = useCallback(async () => {
-    if (!doc || !draft || inFlight.current) return false;
+  /** Saves the draft; resolves with the saved article, or null when it didn't save. */
+  const save = useCallback(async (): Promise<HelpArticleDoc | null> => {
+    if (!doc || !draft || inFlight.current) return null;
     inFlight.current = true;
     setState("saving");
     try {
@@ -79,7 +80,7 @@ export function useHelpEditor(id: string) {
       setSaved(draft);
       setFields({});
       setState("saved");
-      return true;
+      return next;
     } catch (e: unknown) {
       const body = e instanceof ApiError ? (e.data as { code?: string; current?: HelpArticleDoc; fields?: Record<string, string> } | null) : null;
       if (body?.code === "conflict" && body.current) {
@@ -94,7 +95,7 @@ export function useHelpEditor(id: string) {
         showToast(e instanceof ApiError ? h.editor.autosaveFailed : errorText(e, lang), "danger");
         setState("failed");
       }
-      return false;
+      return null;
     } finally {
       inFlight.current = false;
     }

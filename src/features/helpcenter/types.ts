@@ -38,6 +38,12 @@ export type HelpTranslation = {
   status: HelpStatus;
   isPublished: boolean;
   publishedAt: string | null;
+  submittedBy: string | null;
+  submittedAt: string | null;
+  scheduledFor: string | null;
+  reviewComment: string;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
 };
 
 /** One article as the editor loads it. */
@@ -56,6 +62,23 @@ export type HelpArticleDoc = {
   updatedAt: string;
   updatedBy: string | null;
   translations: Record<HelpLocale, HelpTranslation | null>;
+  /** The zone scheduled times are shown and entered in (e.g. "Asia/Kuala_Lumpur"). */
+  timezone: string;
+};
+
+export type HelpWorkflowAction = "submit" | "publish" | "schedule" | "unschedule" | "send_back" | "archive" | "unarchive";
+
+/** What a signed preview link returns: the draft of one language. */
+export type HelpPreview = {
+  preview: true;
+  locale: HelpLocale;
+  status: HelpStatus;
+  title: string;
+  summary: string;
+  bodyHtml: string;
+  type: HelpArticleType;
+  author: string | null;
+  lastReviewed: string | null;
 };
 
 /** What the editor sends: the doc's editable fields; a language left empty is dropped. */
