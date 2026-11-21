@@ -102,14 +102,14 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
         }
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-space-5">
+      <div className="flex flex-wrap items-center justify-between gap-ctl-row">
         <Tabs {...tabIds}
           label={isAr ? "حسب الحالة" : "By status"}
           tabs={(["", ...STATUS_ORDER] as (FormStatus | "")[]).map((status) => ({ key: status || "all", label: tab(status) }))}
           active={query.status || "all"}
           onChange={(key) => { setStatusTab(key as StatusTab); setQuery((q) => ({ ...q, page: 1 })); }}
         />
-        <div className="flex flex-wrap items-center gap-space-5">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           <SearchField
             label={isAr ? "ابحث في الاستبيانات" : "Search questionnaires"}
             placeholder={isAr ? "ابحث بالاسم أو العميل…" : "Search by name or client…"}

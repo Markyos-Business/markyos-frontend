@@ -286,6 +286,40 @@ Widget rows and sunken areas use `--surface-sunken` (white at 4%).
 The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, round icon buttons, switches, radios): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label). **One exception (decided 2026-11-20):** every "choose one" control — mode, language, Edit/Read, canvas width, All/Unread, weights, status — is a pill: a round track with round segments, the chosen one raised on `--surface-0` in the accent. They all draw from `src/components/ui/choice/pill-segments.ts` (`SegmentedToggle`, `SegmentedControl`, `LangToggle`, `ThemeToggle`); never style one by hand.
 Tailwind's `xl`/`2xl`/`3xl` and arbitrary `rounded-[…]` values are refused by `scripts/radius-audit.mjs` (in `npm run check`). The guideline-site templates are exempt: they follow the client brand's own `--g-radius-*` theme.
 
+
+### 2.6 Form controls (decided 2026-11-21, UX-CON-001)
+
+Every input, select, textarea, combobox, date picker and button reads one token set from `tailwind/tokens.js`. Controls of the same size share a height, a corner and a focus treatment, so a search field, a sort select and a button in one row line up.
+
+| Token | Dark | Light | Tailwind |
+|---|---|---|---|
+| `--control-radius` | 8px | 8px | `rounded-control` |
+| `--control-border-width` / `-focus` | 1px / 2px | 1px / 2px | — |
+| `--control-border` (the underline) | white 40% (3.8:1 on `#111`) | ink 50% (3.7:1 on white) | — |
+| `--control-border-hover` | white 56% | ink 64% | — |
+| `--control-border-focus` / `-error` / `-success` / `-warning` | `--accent` / `--danger` / `--success` / `--warning` | same | — |
+| `--control-bg` | `--ink-soft` (white 10%) | `--ink-soft` (ink 6%) | — |
+| `--control-bg-hover` | `--ink-soft` mixed with 6% `--text` | same | — |
+| `--control-bg-disabled` | white 4% | ink 3% | — |
+| `--control-height-xs` / `-sm` / `-md` / `-lg` | 28 / 32 / 40 / 46px; on a touch screen `sm` and `md` are 44px and `xs` buttons get a 44px target | same | `h-ctl-xs` … `h-ctl-lg` |
+| `--control-padding-x-sm` / `-md` / `-lg` | 10 / 14 / 18px | same | `px-ctl-px-sm` … |
+| `--focus-ring-width` / `-offset` / `-color` | 2px / 2px / `--accent` | same | — |
+| Compact field value | 12.5px | same | `text-control-sm` |
+| `--control-gap` (icon to label inside a control) | 8px | same | `gap-ctl-icon` |
+| `--control-padding-y-sm` / `-md` (fields) | 5 / 9px | same | `py-ctl-py-*` |
+| `--field-label-gap` / `-sm` (label and note to field) | 5 / 4px | same | `gap-field-label`, `gap-field-label-sm` |
+| `--control-row-gap` (controls side by side) | 8px | same | `gap-ctl-row` |
+| `--field-stack-gap` / `-compact` (fields in a form; dense panels) | 18 / 8px | same | `gap-field-stack`, `gap-field-stack-compact` |
+| `--form-column-gap` / `--form-section-gap` | 25 / 25px | same | `gap-x-form-col`, `gap-form-section` |
+
+- **Fields** (text, email, password, number, search, textarea, select, combobox, date) keep §6.5's shape: the `--control-bg` ground and a `--control-border` underline, with `--control-radius` on the top corners only. State is the underline: hover, focus (2px accent), error, success, warning; read-only is dashed.
+- **Buttons** keep their variant fills and take `--control-radius` and the same heights (`xs` is the dense in-row size, buttons only). They show focus with the ring (§1.7); fields show it on the underline. Focus never changes a control's corners.
+- **Toolbar selects** (`SortControl`, `FilterSelectField`) are fields too, not boxes; an active filter takes the accent tint and an accent underline.
+- **Border contrast:** `--control-border` replaces `--border-strong` (white 20%, 1.84:1) as the underline, because WCAG 1.4.11 asks 3:1 of a control's boundary. `scripts/contrast-audit.mjs` holds both themes at 3:1 on every card surface. Card edges (`--hairline-strong`) are not controls and stay as they are.
+- **Spacing around controls** comes from the rows above, all steps of the §2.4 scale: one gap inside controls, one between controls in a row, and two between fields (`FormGrid` and `Fieldset` take `density="compact"` for dense panels). Card padding, page margins and section spacing outside forms are not part of this set.
+- **Enforced** by `scripts/control-audit.mjs` (in `npm run check`, or `npm run lint:controls`): on native and kit controls it refuses arbitrary corner, border, background, shadow, height and padding values, fixed inline styles, Tailwind number heights and number gaps in rows of controls. Cases that predate the rule sit in `scripts/control-audit.baseline.json` and may only shrink (`--update-baseline` after fixing one); a deliberate exception carries `ctl-audit-ignore: <reason>`.
+- **Exempt:** guideline-site templates and the public questionnaire follow the client brand's own theme (`--g-*`, `--f-*`).
+
 ---
 
 ## 3. Typography
@@ -360,6 +394,8 @@ Props: `padding?: number|string`
 ### 6.2 Button
 46px tall with an 8px radius and a 14px label at weight 500. The icon is optional, 18px, and placed before the label.
 
+> **Sizes (2026-11-21, §2.6):** 46px is the `lg` size. Buttons share their heights with fields — xs 28, sm 32, md 40, lg 46 (sm and md 44 on touch) — and the variant table below stays as the fills.
+
 | variant | Fill | Label |
 |---|---|---|
 | `primary` | `--primary` | `--on-accent` |
@@ -415,6 +451,8 @@ Props: `label?`, `state?: 'default'|'error'|'success'|'focus'`, `icon?`, `iconSi
 Placeholders use the real ellipsis character: `Start typing…`
 
 The compact size (`size="sm"`) keeps the underline with a 12.5px value, for inspectors and dense rows.
+
+> **Since 2026-11-21 (§2.6):** the underline is `--control-border` (3:1), the field takes the 8px control corner on its top edge, focus is a 2px accent underline, and the control heights are 40 (md) and 32 (sm).
 
 **Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
 

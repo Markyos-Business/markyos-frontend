@@ -36,7 +36,7 @@ export function ReportView({ analysis, slug, canEdit, isAr, onSection, header, s
         {header}
 
         {analysis.stale && (
-          <div role="status" className="flex flex-wrap items-center justify-between gap-space-4 rounded-lg bg-info-soft px-space-6 py-space-4 text-body text-info">
+          <div role="status" className="flex flex-wrap items-center justify-between gap-ctl-row rounded-lg bg-info-soft px-space-6 py-space-4 text-body text-info">
             {t("Sources changed since this analysis.", "تغيّرت المصادر منذ هذا التحليل.")}
             {onRerun && canEdit && (
               <button type="button" onClick={onRerun} className="mk-linkbtn font-medium underline-offset-4 hover:underline">

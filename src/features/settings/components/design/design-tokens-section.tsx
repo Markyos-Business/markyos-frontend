@@ -78,7 +78,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
               : `${ws.colors.length} colors + 2 type tokens.`
         }
         right={
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 gap-ctl-row">
             <CopyButton
               size="sm"
               text={serializeTokens(ws)}

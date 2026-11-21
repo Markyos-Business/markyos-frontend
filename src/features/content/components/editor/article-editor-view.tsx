@@ -93,7 +93,7 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
         title={title}
         breadcrumb={<Link href={`/admin/cms?kind=${doc.kind}`}>{kindLabel(doc.kind, lang)}</Link>}
         description={
-          <span className="inline-flex flex-wrap items-center gap-space-4">
+          <span className="inline-flex flex-wrap items-center gap-ctl-row">
             <StatusDot tone={doc.isPublished ? (doc.hasUnpublishedChanges || editor.dirty ? "warning" : "success") : "neutral"} label={status} />
             {editor.dirty && <span className="text-caption text-text-muted">{t.unsaved}</span>}
           </span>
@@ -137,7 +137,7 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
           />
         </section>
 
-        <aside className="mk-surface flex flex-col gap-space-6 self-start rounded-card bg-surface-1 p-space-8">
+        <aside className="mk-surface flex flex-col gap-field-stack self-start rounded-card bg-surface-1 p-space-8">
           <h2 className="text-h5 font-medium">{t.details}</h2>
           <InputField label={f.slug} value={draft.slug} dir="ltr" readOnly={!canWrite} onChange={(e) => editor.patch({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-") })} />
           <DatePicker label={f.date} value={draft.publishedOn} readOnly={!canWrite} onChange={(value) => editor.patch({ publishedOn: value })} />
@@ -194,12 +194,12 @@ function TranslationFields({
   const f = t.fields;
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
-    <div className="flex flex-col gap-space-6 pt-space-6">
+    <div className="flex flex-col gap-field-stack pt-space-6">
       <InputField label={f.title} value={draft.title} dir={dir} readOnly={readOnly} maxLength={200} onChange={(e) => onChange({ title: e.target.value })} />
       <TextareaField label={f.excerpt} value={draft.excerpt} dir={dir} readOnly={readOnly} maxLength={600} rows={3} onChange={(e) => onChange({ excerpt: e.target.value })} />
       <div className="flex flex-col gap-space-3">
         <span className="text-caption text-text-muted">{f.heroImage}</span>
-        <div className="flex flex-wrap items-center gap-space-4">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           {draft.heroImage && (
             // eslint-disable-next-line @next/next/no-img-element -- media from the content store, any host
             <img src={draft.heroImage.url} alt={locale === "ar" ? draft.heroImage.altAr : draft.heroImage.altEn} className="h-20 rounded-lg object-cover" />

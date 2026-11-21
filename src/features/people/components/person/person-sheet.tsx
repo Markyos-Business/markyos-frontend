@@ -29,11 +29,11 @@ export function PersonSheet({ person, onClose }: PersonSheetProps) {
       onClose={onClose}
       onSubmit={access.save}
     >
-      <div className="flex flex-col gap-space-5">
+      <div className="flex flex-col gap-field-stack">
         {person.brands.map((b) => {
           const choice = access.draft[b.workspaceId];
           return (
-            <div key={b.workspaceId} className="flex flex-col gap-space-2">
+            <div key={b.workspaceId} className="flex flex-col gap-field-stack-compact">
               <SelectField
                 label={b.brandName}
                 value={choice}

@@ -1597,7 +1597,7 @@ function FrameBase({
         </span>
 
         <span
-          className="ms-auto flex items-center gap-1"
+          className="ms-auto flex items-center gap-ctl-row"
           // The header is the drag handle, so its own controls have to opt out
           // or every click on them starts a drag instead.
           onPointerDown={(e) => e.stopPropagation()}
@@ -1614,7 +1614,7 @@ function FrameBase({
                     : "Nothing in this zone to propose yet."
                   : undefined
               }
-              className="mk-tap h-6 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mk-tap h-6 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-ctl-icon disabled:cursor-not-allowed disabled:opacity-40"
               style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
             >
               <Icon name={action.icon} size={10} />
@@ -1993,7 +1993,7 @@ function CardOnCanvasBase({
       )}
 
       <span
-        className="absolute top-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+        className="absolute top-1 flex items-center gap-ctl-row opacity-0 group-hover:opacity-100 focus-within:opacity-100"
         style={{ insetInlineEnd: 4 }}
         onPointerDown={(e) => e.stopPropagation()}
       >
@@ -2007,7 +2007,7 @@ function CardOnCanvasBase({
               : isAr ? `اختر ${label}` : `Pick ${label}`
           }
           title={item.votes.length > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-          className="mk-tap h-6 px-2 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-1"
+          className="mk-tap h-6 px-2 rounded-md text-[10.5px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
           style={{
             background: mine ? "var(--accent)" : "var(--scrim)",
             color: mine ? "var(--accent-ink)" : "var(--scrim-ink)",

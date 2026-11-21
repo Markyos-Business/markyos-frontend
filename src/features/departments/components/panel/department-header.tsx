@@ -49,7 +49,7 @@ export function DepartmentHeader({ ws, view, isAr }: DepartmentHeaderProps) {
        * turns the warning colour under the pointer: the most destructive
        * control on the page must not be the twin of the most harmless one.
        */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-ctl-row">
         <IconButton
           icon="pen"
           label={isAr ? `أعد تسمية ${view.name}` : `Rename ${view.name}`}

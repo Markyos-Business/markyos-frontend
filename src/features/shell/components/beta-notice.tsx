@@ -25,7 +25,7 @@ export function BetaNotice() {
     : isAr
       ? "ماركيوس في مرحلته التجريبية، لذا قد تتغير بعض الشاشات."
       : "Markyos is in beta, so some screens may still change.";
-  return <aside data-beta-notice className="flex shrink-0 items-center gap-space-4 bg-info-soft px-space-6 py-space-2 text-caption text-info">
+  return <aside data-beta-notice className="flex shrink-0 items-center gap-ctl-row bg-info-soft px-space-6 py-space-2 text-caption text-info">
     <span className="flex-1">{message}</span>
     <IconButton icon="times" label={isAr ? "إخفاء الملاحظة" : "Dismiss notice"} onClick={() => dismiss(true)} />
   </aside>;

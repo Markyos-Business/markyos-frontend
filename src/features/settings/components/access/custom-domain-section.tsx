@@ -42,7 +42,7 @@ export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean
       <p className="-mt-1 text-[13px] text-text-muted">
         {copy.domainHint}
       </p>
-      <div className="flex items-end gap-2.5">
+      <div className="mk-field-row">
         <InputField label={t("Domain", "النطاق")} dir="ltr" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="brand.client.com" />
         <Button variant="solid" onClick={connect} className="shrink-0">
           {t("Connect", "ربط")}

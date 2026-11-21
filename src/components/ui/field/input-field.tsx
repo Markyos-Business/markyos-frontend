@@ -14,7 +14,7 @@ const inputClasses = "mk-field w-full";
 
 /** The block around a field: the 72px form block, or just a stack when compact. */
 const fieldBlockClasses = (size: FieldSize = "md", labelled = true) =>
-  size === "sm" ? "flex w-full flex-col gap-space-1" : `flex w-full flex-col gap-space-2 ${labelled ? "min-h-field" : ""}`;
+  size === "sm" ? "flex w-full flex-col gap-field-label-sm" : `flex w-full flex-col gap-field-label ${labelled ? "min-h-field" : ""}`;
 
 type FieldLabelProps = { htmlFor?: string; required?: boolean; children: ReactNode };
 

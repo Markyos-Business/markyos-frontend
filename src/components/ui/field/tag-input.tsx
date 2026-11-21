@@ -100,7 +100,7 @@ const TagInput = ({ label, info, value, onChange, max, placeholder, onBlur, clas
       {(control) => (
         // The box is the field; clicking anywhere in it goes to the input.
         <div
-          className="mk-field flex min-h-control-sm w-full cursor-text flex-wrap items-center gap-space-2"
+          className="mk-field flex w-full cursor-text flex-wrap items-center gap-space-2"
           data-state={state.error ? "error" : warning || refusal ? "warning" : state.success ? "success" : undefined}
           data-readonly={frozen ? "" : undefined}
           onClick={() => input.current?.focus()}

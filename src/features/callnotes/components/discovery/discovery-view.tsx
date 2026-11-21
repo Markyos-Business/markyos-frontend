@@ -79,7 +79,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
       <AlertBanner message={error} />
 
       <section className="mk-surface flex flex-col rounded-card bg-surface-1">
-        <div className="flex flex-wrap items-center justify-between gap-space-5 px-space-8 pt-space-8 pb-space-5">
+        <div className="flex flex-wrap items-center justify-between gap-ctl-row px-space-8 pt-space-8 pb-space-5">
           <Tabs {...tabIds}
             label={t("Discovery", "الاستكشاف")}
             tabs={[
@@ -89,7 +89,7 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
             active={section}
             onChange={(key) => choose(key as Section)}
           />
-          <div className="flex flex-wrap items-center gap-space-3">
+          <div className="flex flex-wrap items-center gap-ctl-row">
             {section === "questionnaires" ? (
               <>
                 <Button variant="outline" href={`/w/${brandSlug}/forms`} icon={<Icon name="clipboard-list" size={18} />}>
@@ -143,8 +143,8 @@ export function DiscoveryView({ brandId, brandSlug, isAr }: DiscoveryViewProps) 
         </TabPanel>
       </section>
 
-      <section className="mk-surface flex flex-wrap items-center justify-between gap-space-5 rounded-card bg-surface-1 p-space-8">
-        <div className="flex items-start gap-space-4">
+      <section className="mk-surface flex flex-wrap items-center justify-between gap-ctl-row rounded-card bg-surface-1 p-space-8">
+        <div className="flex items-start gap-ctl-row">
           <IconBadge icon="chart-line" tone="accent" />
           <div className="flex flex-col gap-space-1">
             <h2 className="text-h5 font-medium">{t("Brief analysis", "تحليل الموجز")}</h2>
@@ -228,7 +228,7 @@ function FormRow({ form, slug, isAr, canEdit, onChanged }: FormRowProps) {
         <Badge tone={status.tone} dot>
           {status[lang]}
         </Badge>
-        <div className="ms-auto flex items-center gap-space-3">
+        <div className="ms-auto flex items-center gap-ctl-row">
           {link ? (
             <CopyButton
               text={link}

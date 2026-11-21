@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Icon, PageHeader } from "@/components/ui";
+import { Icon, PageHeader, Button } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { LogoSlotCard } from "./logo-slot-card";
 import { ClearspacePanel } from "./clearspace-panel";
@@ -75,16 +75,15 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               ? "ثلاث خانات. الشعار العربي واللاتيني قفلان منفصلان، والرمز مشترك بينهما. ولكل خانة نسخة فاتحة خاصة بها للخلفيات الداكنة."
               : "Three slots. Arabic and Latin are separate lockups — the mark is shared. Each one can carry its own light version for dark backgrounds."}
         actions={<>
-        <button
-          type="button"
+        <Button
+          variant="solid"
+          size="md"
           onClick={() => setShowDownload(true)}
           disabled={!Object.values(ws.logo).some(slot => slot.phase === "attached")}
           title={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
-          className="h-9 px-[18px] rounded-lg text-[13px] font-semibold cursor-pointer"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
         >
           {isAr ? "تنزيل الملفات" : "Download assets"}
-        </button>
+        </Button>
         </>}
       />
 
@@ -242,8 +241,8 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         />
       </div>
 
-      <div className="mk-surface rounded-card p-5 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
-        <div className="flex flex-col gap-1.5">
+      <div className="mk-surface rounded-card p-5 flex flex-col gap-field-stack" style={{ background: "var(--surface-1)" }}>
+        <div className="flex flex-col gap-field-stack-compact">
           <span className="font-semibold text-[13px]">{isAr ? "إرشادات الاستخدام" : "Usage guidelines"}</span>
           <span dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--text-faint)" }}>
             {isAr
@@ -286,7 +285,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               {isAr ? "أضف الألوان من تبويب الألوان أولًا." : "Add colors on the Color tab first."}
             </span>
           ) : (
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-ctl-row flex-wrap">
               {ws.colors.map((c) => {
                 const active = ws.logoColorIds.includes(c.id);
                 return (
@@ -294,7 +293,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
                     key={c.id}
                     type="button"
                     onClick={() => toggleLogoColor(c.id)}
-                    className="h-8 ps-2 pe-3 rounded-lg text-[11px] font-semibold cursor-pointer flex items-center gap-2"
+                    className="flex h-ctl-sm cursor-pointer items-center gap-ctl-icon rounded-control ps-space-3 pe-ctl-px-sm text-caption font-medium"
                     style={{ background: active ? "var(--accent-soft)" : "var(--surface-2)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
                   >
                     <span className="w-4 h-4 rounded-full shrink-0" style={{ background: c.hex, boxShadow: "inset 0 0 0 1px var(--chip-edge)" }} />

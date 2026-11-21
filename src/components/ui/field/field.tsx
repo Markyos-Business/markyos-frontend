@@ -139,9 +139,9 @@ const Field = ({
 
   if (loading) {
     return (
-      <div aria-busy="true" className={`flex w-full flex-col gap-space-2 ${className}`}>
+      <div aria-busy="true" className={`flex w-full flex-col gap-field-label ${className}`}>
         {label && <Skeleton className="ms-space-5 h-3 w-24 rounded-sm" />}
-        <Skeleton className={`${size === "sm" ? "h-8" : "h-control-sm"} w-full rounded-sm`} />
+        <Skeleton className={`${size === "sm" ? "h-ctl-sm" : "h-ctl-md"} w-full rounded-control`} />
       </div>
     );
   }
@@ -164,7 +164,7 @@ const Field = ({
   const dataState = error ? "error" : warning ? "warning" : success ? "success" : undefined;
 
   const trailing = (validating || locked || suffix || action) && (
-    <span className="flex shrink-0 items-center gap-space-3 text-text-muted">
+    <span className="flex shrink-0 items-center gap-ctl-icon text-text-muted">
       {suffix}
       {validating && (
         <span className="flex">
@@ -189,7 +189,7 @@ const Field = ({
   ) : (
     <div
       dir={boxDir}
-      className={`${fieldClasses(size)} flex items-center gap-space-3`}
+      className={`${fieldClasses(size)} flex items-center gap-ctl-icon`}
       data-state={dataState}
       data-readonly={isReadOnly ? "" : undefined}
     >
@@ -242,9 +242,9 @@ const Field = ({
 
   if (layout === "horizontal") {
     return (
-      <div className={`relative flex w-full flex-col gap-space-2 sm:grid sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)] sm:items-start sm:gap-x-space-8 ${className}`}>
+      <div className={`relative flex w-full flex-col gap-space-2 sm:grid sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)] sm:items-start sm:gap-x-form-col ${className}`}>
         <div className="sm:pt-space-4">{labelRow}</div>
-        <div className="flex min-w-0 flex-col gap-space-2">
+        <div className="flex min-w-0 flex-col gap-field-label">
           {box}
           {below}
           {noteRow}
@@ -256,7 +256,7 @@ const Field = ({
   return (
     // `relative` keeps the visually hidden note inside the field: positioned
     // against the page, it lands far off its start in Arabic and widens it.
-    <div className={`relative flex w-full flex-col ${size === "sm" ? "gap-space-1" : "gap-space-2"} ${className}`}>
+    <div className={`relative flex w-full flex-col ${size === "sm" ? "gap-field-label-sm" : "gap-field-label"} ${className}`}>
       {labelRow}
       {box}
       {below}
@@ -272,6 +272,8 @@ type FieldsetProps = {
   /** Fields side by side from 640px up. Default 1. */
   columns?: 1 | 2 | 3;
   disabled?: boolean;
+  /** `compact` for dense panels: 8px between fields instead of 18. */
+  density?: "default" | "compact";
   className?: string;
   children: ReactNode;
 };
@@ -279,13 +281,13 @@ type FieldsetProps = {
 const COLUMNS = { 1: "", 2: "sm:grid-cols-2", 3: "sm:grid-cols-3" };
 
 /** A titled group of fields: a real `<fieldset>` and `<legend>`, so the group is announced. */
-const Fieldset = ({ legend, description, columns = 1, disabled, className = "", children }: FieldsetProps) => (
-  <fieldset disabled={disabled} className={`flex min-w-0 flex-col gap-space-6 ${className}`}>
+const Fieldset = ({ legend, description, columns = 1, density = "default", disabled, className = "", children }: FieldsetProps) => (
+  <fieldset disabled={disabled} className={`flex min-w-0 flex-col ${density === "compact" ? "gap-field-stack-compact" : "gap-field-stack"} ${className}`}>
     <legend className="flex flex-col gap-space-1 text-h5 font-medium text-text">
       {legend}
       {description && <span className="text-caption font-normal text-text-muted">{description}</span>}
     </legend>
-    <div className={`grid grid-cols-1 gap-x-space-8 gap-y-space-6 ${COLUMNS[columns]}`}>{children}</div>
+    <div className={`grid grid-cols-1 gap-x-form-col ${density === "compact" ? "gap-y-field-stack-compact" : "gap-y-field-stack"} ${COLUMNS[columns]}`}>{children}</div>
   </fieldset>
 );
 

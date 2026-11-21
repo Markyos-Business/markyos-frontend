@@ -21,7 +21,7 @@ export function OptionsEditor({ options, onChange, mode, languages, locked, isAr
   return (
     <div className="flex flex-col gap-space-5">
       {options.map((option, i) => (
-        <div key={option.value} className="flex items-end gap-space-4">
+        <div key={option.value} className="flex items-end gap-ctl-row">
           <div className="min-w-0 flex-1">
             <LocalizedInput
               label={{ en: `${noun.en} ${i + 1}`, ar: `${noun.ar} ${i + 1}` }}

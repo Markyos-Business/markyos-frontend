@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, PageHeader } from "@/components/ui";
+import { useToast, Icon, PageHeader, Button } from "@/components/ui";
 import { ColorEditorModal } from "./color-editor-modal";
 import { ExtractFromLogoModal } from "./extract-from-logo-modal";
 import { ContrastReport } from "@/features/guideline-site";
@@ -51,9 +51,10 @@ export function ColorContent({ ws }: { ws: Workspace }) {
               ? `${plural("ar", ws.colors.length, { zero: "لا ألوان", one: "لون واحد", two: "لونان", few: "{n} ألوان", many: "{n} لونًا", other: "{n} لون" })} · اضغط على أي رمز لنسخه، أو على القلم لتعديله.`
               : `${plural("en", ws.colors.length, { one: "{n} colour", other: "{n} colours" })} · click a code to copy it, or the pencil to edit.`}
         actions={<>
-        <div className="flex gap-2">
-          <button
-            type="button"
+        <div className="flex gap-ctl-row">
+          <Button
+            variant="outline"
+            size="md"
             onClick={() => setExtracting(true)}
             title={
               hasArtwork
@@ -65,20 +66,13 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                   : "Upload a logo first"
             }
             disabled={!hasArtwork}
-            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
+            icon={<Icon name="palette" size={18} className="text-accent-text" />}
           >
-            <Icon name="palette" size={14} style={{ color: "var(--accent-text)" }} />
             {isAr ? "من الشعار" : "Pick from logo"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditor({ mode: "add" })}
-            className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer"
-            style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-          >
+          </Button>
+          <Button variant="solid" size="md" onClick={() => setEditor({ mode: "add" })}>
             {isAr ? "أضف لونًا" : "Add colour"}
-          </button>
+          </Button>
         </div>
         </>}
       />
@@ -99,9 +93,9 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                 }}
               />
               <div className="px-4 py-3.5 flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-ctl-row">
                   <span className="font-semibold text-[14px] truncate">{c.name}</span>
-                  <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="flex items-center gap-ctl-row shrink-0">
                     {c.isPrimary && (
                       <span
                         className="text-[10px] font-medium px-2 py-[5px] rounded-md"

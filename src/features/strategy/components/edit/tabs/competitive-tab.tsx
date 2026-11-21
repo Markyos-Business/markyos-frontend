@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint, Modal } from "@/components/ui";
+import { useToast, useDialog, Icon, AutoTextarea, Section, EmptyHint, Modal, Button, IconButton } from "@/components/ui";
 import { CompetitorColumn, Lang, Workspace } from "@/types";
 import { uid } from "@/lib/utils";
 
@@ -96,7 +96,7 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "تحليل المنافسين" : "Competitive analysis"}
       icon="chart-line"
       right={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-ctl-row">
           <button type="button" onClick={() => setPasteOpen(true)} className="mk-tap text-[12px] font-semibold cursor-pointer" style={{ color: "var(--text-muted)" }}>
             {isAr ? "لصق جدول" : "Paste a table"}
           </button>
@@ -138,7 +138,7 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                 </th>
                 {columns.map((col, i) => (
                   <th key={col.id} className="text-start p-0" style={{ minWidth: 160 }}>
-                    <div className="flex items-center gap-1 px-2.5 py-2 group">
+                    <div className="flex items-center gap-ctl-row px-2.5 py-2 group">
                       <button
                         type="button"
                         onClick={() => void renameColumn(col)}
@@ -188,16 +188,7 @@ export function CompetitiveTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     </td>
                   ))}
                   <td className="align-top p-1">
-                    <button
-                      type="button"
-                      onClick={() => removeCompetitor(ws.id, c.id)}
-                      aria-label={`Remove ${c.name}`}
-                      title={`Remove ${c.name}`}
-                      className="w-7 h-7 grid place-items-center rounded-full cursor-pointer mk-danger-hover"
-                      style={{ color: "var(--text-faint)" }}
-                    >
-                      <Icon name="times" size={12} />
-                    </button>
+                    <IconButton icon="times" iconSize={16} size="xs" label={`Remove ${c.name}`} title={`Remove ${c.name}`} onClick={() => removeCompetitor(ws.id, c.id)} className="text-text-faint mk-danger-hover" />
                   </td>
                 </tr>
               ))}
@@ -349,29 +340,18 @@ function PasteTableModal({ ws, onClose }: { ws: Workspace; onClose: () => void }
         </div>
       )}
 
-      <label className="flex items-center gap-2.5 text-[12.5px] cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+      <label className="flex items-center gap-ctl-icon text-[12.5px] cursor-pointer" style={{ color: "var(--text-secondary)" }}>
         <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />
         {isAr ? "استبدل المنافسين الحاليين" : "Replace the competitors already in the table"}
       </label>
 
-      <div className="flex items-center justify-end gap-2.5">
-        <button
-          type="button"
-          onClick={onClose}
-          className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer"
-          style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline)" }}
-        >
+      <div className="flex items-center justify-end gap-ctl-row">
+        <Button variant="outline" size="md" onClick={onClose}>
           {isAr ? "إلغاء" : "Cancel"}
-        </button>
-        <button
-          type="button"
-          onClick={apply}
-          disabled={body.length === 0}
-          className="h-11 px-5 rounded-lg text-[13px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+        </Button>
+        <Button variant="solid" size="md" onClick={apply} disabled={body.length === 0}>
           {isAr ? "بناء الجدول" : "Build the table"}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

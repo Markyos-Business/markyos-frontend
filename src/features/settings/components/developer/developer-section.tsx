@@ -20,7 +20,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
         label={t("API key", "مفتاح API")}
         hint={t("Read-only access to this brand's published assets and brand data.", "وصول للقراءة فقط إلى أصول هذه العلامة المنشورة وبياناتها.")}
         right={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-ctl-row">
             <code dir="ltr" className="rounded-md bg-surface-2 px-2.5 py-1.5 font-mono text-[12px]">{apiKey}</code>
             <CopyButton
               variant="link"
@@ -53,7 +53,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
         curl https://api.markyos.com/v1/workspaces/{ws.slug} \{"\n"}
         {"  "}-H &quot;Authorization: Bearer {apiKey}&quot;
       </div>
-      <div className="flex items-end gap-2.5">
+      <div className="mk-field-row">
         <InputField
           label={t("Webhook URL", "رابط Webhook")}
           dir="ltr"

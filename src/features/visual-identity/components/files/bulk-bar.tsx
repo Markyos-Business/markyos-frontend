@@ -29,7 +29,7 @@ export function BulkBar({
   const allSelected = count > 0 && count === total;
   return (
     <div
-      className="rounded-card px-4 h-11 flex items-center gap-4 shrink-0"
+      className="rounded-card px-4 h-11 flex items-center gap-ctl-row shrink-0"
       style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 1px var(--accent-ring)" }}
     >
       <span className="text-[12px] font-semibold" style={{ color: "var(--accent-text)" }}>
@@ -43,11 +43,11 @@ export function BulkBar({
       >
         {allSelected ? (isAr ? "إلغاء التحديد" : "Deselect all") : isAr ? `تحديد الكل (${total})` : `Select all (${total})`}
       </button>
-      <span className="ms-auto flex items-center gap-3.5">
+      <span className="ms-auto flex items-center gap-ctl-row">
         <button
           type="button"
           onClick={onDownload}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
+          className="text-[12px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
           style={{ color: "var(--accent-text)" }}
         >
           <Icon name="download" size={12} />
@@ -56,7 +56,7 @@ export function BulkBar({
         <button
           type="button"
           onClick={onDelete}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
+          className="text-[12px] font-semibold cursor-pointer flex items-center gap-ctl-icon"
           style={{ color: "var(--danger)" }}
         >
           <Icon name="times" size={12} />
@@ -98,7 +98,7 @@ export function SelectBox({ checked, onToggle, label }: { checked: boolean; onTo
       // The tick stays 18px and the target around it is 28. Growing the chip
       // itself would put a bigger box over artwork that the thumbnail exists
       // to show.
-      className="w-[28px] h-[28px] -m-[5px] grid place-items-center cursor-pointer"
+      className="w-[28px] h-ctl-xs -m-[5px] grid place-items-center cursor-pointer"
     >
       <span
         className="w-[18px] h-[18px] rounded-sm grid place-items-center"

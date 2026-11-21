@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
+import { useToast, Icon, Section, EmptyHint, Button } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { valueIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -50,7 +50,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       }
     >
       {adding && (
-        <form onSubmit={submit} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submit} className="rounded-card p-4 flex flex-col gap-field-stack-compact" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={title}
             onChange={setTitle}
@@ -61,9 +61,9 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setDescription}
             placeholder={isAr ? "ماذا تعني هذه القيمة عمليًا؟" : "What does this actually mean in practice?"}
           />
-          <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
+          <Button type="submit" variant="solid" size="sm" className="self-start">
             {isAr ? "إضافة قيمة" : "Add value"}
-          </button>
+          </Button>
         </form>
       )}
       {ws.strategy.coreValues.length === 0 ? (
@@ -83,7 +83,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                 className="rounded-card p-4 flex flex-col gap-1 mk-card"
                 style={{ background: "var(--surface-2)" }}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between gap-ctl-row">
                   <InlineText
                     value={shown.title}
                     isAr={isAr}

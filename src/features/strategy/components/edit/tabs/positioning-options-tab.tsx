@@ -67,7 +67,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
       }
     >
       {adding && (
-        <form onSubmit={submit} className="flex flex-col gap-space-4 rounded-widget bg-surface-2 p-space-6">
+        <form onSubmit={submit} className="flex flex-col gap-field-stack-compact rounded-widget bg-surface-2 p-space-6">
           <MiniInput value={name} onChange={setName} placeholder={isAr ? "اسم الخيار — مثلًا: قهوة الصحراء" : "Option name — e.g. Desert roast"} />
           <Button type="submit" variant="solid" size="sm" className="self-start">
             {isAr ? "إضافة خيار" : "Add option"}
@@ -88,7 +88,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
             const notes = notesOf(o);
             return (
               <article key={o.id} className="flex flex-col gap-space-4 rounded-widget bg-surface-2 p-space-6">
-                <div className="flex items-start justify-between gap-space-3">
+                <div className="flex items-start justify-between gap-ctl-row">
                   <InlineText
                     value={text(o, "name")}
                     isAr={isAr}
@@ -122,7 +122,7 @@ export function PositioningOptionsTab({ ws, lang }: { ws: Workspace; lang: Lang 
                 <Field label={isAr ? "ملاحظات" : "Notes"}>
                   <ul className="flex flex-col gap-space-2">
                     {notes.map((note, i) => (
-                      <li key={i} className="flex items-start gap-space-3">
+                      <li key={i} className="flex items-start gap-ctl-row">
                         <InlineText
                           value={note}
                           isAr={isAr}

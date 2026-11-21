@@ -26,11 +26,11 @@ export function UsersStats({ stats, loading, error, onRetry, status, filtered, o
     { key: "deactivated", label: c.stats.deactivated, value: counts?.deactivated, note: o.deactivatedHint, icon: "user-slash" },
   ] as const;
   return <section aria-label={o.title} aria-busy={loading} className="flex flex-col gap-space-4">
-    <div className="flex flex-wrap items-baseline justify-between gap-space-2">
+    <div className="flex flex-wrap items-baseline justify-between gap-ctl-row">
       <h2 className="text-body font-medium text-text">{o.title}</h2>
       <p className="text-caption text-text-muted">{o.scope}</p>
     </div>
-    {error && <div role="alert" className="flex flex-wrap items-center justify-between gap-space-3 rounded-lg bg-danger-soft px-space-5 py-space-3 text-caption text-danger">
+    {error && <div role="alert" className="flex flex-wrap items-center justify-between gap-ctl-row rounded-lg bg-danger-soft px-space-5 py-space-3 text-caption text-danger">
       <span>{stats ? o.stale : o.failed}</span><Button size="sm" variant="outline" disabled={loading} onClick={onRetry}>{o.retry}</Button>
     </div>}
     <StatGrid>{cards.map(card => {

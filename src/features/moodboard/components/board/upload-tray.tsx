@@ -23,14 +23,14 @@ export function MoodboardUploadTray({ rows, isAr, onRetry, onDismiss }: { rows: 
       </span>
       {rows.map((r) => (
         <div key={r.id} className="flex flex-col gap-space-2">
-          <div className="flex items-center gap-space-3">
+          <div className="flex items-center gap-ctl-row">
             <Icon name={r.status === "failed" ? "exclamation-circle" : r.status === "done" ? "check-circle" : "image"} size={16}
               className={r.status === "failed" ? "text-danger" : r.status === "done" ? "text-success" : "text-text-muted"} />
             <span dir="auto" className="min-w-0 flex-1 truncate text-caption text-text [text-align:match-parent]">{r.name}</span>
             {r.status === "failed" && (
               <>
                 <Button size="xs" variant="outline" onClick={() => onRetry(r.id)}>{isAr ? "إعادة المحاولة" : "Retry"}</Button>
-                <IconButton icon="times" label={isAr ? "إزالة" : "Remove"} onClick={() => onDismiss(r.id)} />
+                <IconButton size="xs" icon="times" label={isAr ? "إزالة" : "Remove"} onClick={() => onDismiss(r.id)} />
               </>
             )}
           </div>

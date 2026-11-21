@@ -7,7 +7,7 @@ export function CanvasToolbar(b: BuilderPageState) {
   const { ws, isAr, activePage, selectedId, selected, autoFillCount } = b;
   const roundIcon = "grid h-8 w-8 cursor-pointer place-items-center rounded-full text-text-muted disabled:cursor-not-allowed disabled:opacity-30";
   return (
-    <div className="flex h-12 shrink-0 items-center gap-2 px-5 shadow-rule-b">
+    <div className="flex h-12 shrink-0 items-center gap-ctl-row px-5 shadow-rule-b">
       <h2 className="text-[13px] font-semibold">{activePage ? (isAr ? activePage.arName : activePage.name) : isAr ? "الرئيسية" : "Home"}</h2>
       {activePage && (
         <>
@@ -47,10 +47,10 @@ export function CanvasToolbar(b: BuilderPageState) {
 
       {/* The controls, pinned to the end edge; `ms-auto` carries them there
           below xl, where the hint is not rendered. */}
-      <span className="ms-auto flex shrink-0 items-center gap-2.5 xl:ms-2.5">
+      <span className="ms-auto flex shrink-0 items-center gap-ctl-row xl:ms-2.5">
         {/* Undo and redo as a pair: a lone undo can walk you back but not
             forward again, which makes trying something out cost more. */}
-        <span className="flex items-center gap-0.5">
+        <span className="flex items-center gap-ctl-row">
           <button
             type="button"
             onClick={() => b.undo()}

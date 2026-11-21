@@ -44,6 +44,7 @@ export function StrategyActions({ ws, isAr, mode, canEdit, onMode, onImport }: S
         onChange={(read) => onMode(read ? "read" : "edit")}
       />
       <ActionsDropdown
+        size="sm"
         label={isAr ? "المزيد" : "More"}
         title={isAr ? "إجراءات الاستراتيجية" : "Strategy actions"}
         align="end"

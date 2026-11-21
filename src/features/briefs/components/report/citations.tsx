@@ -36,7 +36,7 @@ export function CitationChips({ citations }: { citations: Citation[] }) {
   const { index, open, isAr } = useContext(CitationsContext);
   if (!citations?.length) return null;
   return (
-    <ul className="flex flex-wrap gap-space-2" aria-label={isAr ? "المصادر" : "Sources"}>
+    <ul className="flex flex-wrap gap-ctl-row" aria-label={isAr ? "المصادر" : "Sources"}>
       {citations.map((c, i) => {
         const source = index[c.sourceId];
         return (

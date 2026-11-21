@@ -66,7 +66,7 @@ export default function WidgetStateView({ state, skeleton = "lines", emptyMessag
   if (state === "error") {
     return (
       <div role="alert" className={clsx("flex flex-col items-start gap-3 rounded-widget border border-danger bg-danger-soft p-4", className)}>
-        <p className="flex items-start gap-2 text-caption text-danger">
+        <p className="flex items-start gap-space-3 text-caption text-danger">
           <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           {errorMessage ?? t("This couldn't load.", "تعذر التحميل.")}
         </p>

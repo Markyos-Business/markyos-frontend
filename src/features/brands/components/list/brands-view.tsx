@@ -33,7 +33,7 @@ export function BrandsView({ title, description, sort, onSort, onNew, brands, at
         subtitle={description}
         secondaryActions={<SortControl label={lang === "ar" ? "ترتيب العلامات" : "Sort brands"} value={sort === "updated" ? "" : sort} defaultLabel={c.lastEdited}
               options={[{value:"name",label:c.nameAz}]} onChange={value => onSort(value === "name" ? "name" : "updated")} />}
-        primaryAction={reviewer ? undefined : <Button variant="primary" size="sm" icon={atLimit ? undefined : <Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
+        primaryAction={reviewer ? undefined : <Button variant="primary" icon={atLimit ? undefined : <Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
               {atLimit ? c.reviewPlans : c.newWorkspace}
             </Button>}
       />

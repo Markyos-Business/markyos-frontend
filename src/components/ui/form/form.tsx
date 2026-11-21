@@ -288,7 +288,7 @@ function Form<S extends AnySchema>({
             e.stopPropagation();
             void submit(e);
           }}
-          className={`flex min-w-0 flex-col gap-space-8 ${className}`}
+          className={`flex min-w-0 flex-col gap-form-section ${className}`}
         >
           {chrome && locked && (
             <FormAlert tone="info" message={lockedReason ?? strings.locked} />
@@ -311,7 +311,7 @@ function Form<S extends AnySchema>({
           <fieldset
             disabled={submitting || view || locked}
             data-form-view={view || locked || undefined}
-            className="m-0 flex min-w-0 flex-col gap-space-8 border-0 p-0"
+            className="m-0 flex min-w-0 flex-col gap-form-section border-0 p-0"
           >
             {typeof children === "function" ? children(form) : children}
           </fieldset>

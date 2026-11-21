@@ -71,7 +71,7 @@ export function MoodboardView({ ws, isAr, board, view, onView, compact, immersiv
           immersive, or no board — the page still needs its heading. */}
       <Link
         href={allBoards}
-        className={`mk-linkbtn min-h-6 min-w-6 shrink-0 items-center gap-space-2 self-start text-caption font-medium text-text-muted ${immersive ? "hidden" : "flex"}`}
+        className={`mk-linkbtn min-h-6 min-w-6 shrink-0 items-center gap-ctl-icon self-start text-caption font-medium text-text-muted ${immersive ? "hidden" : "flex"}`}
       >
         <Icon name="angle-left" size={16} />
         {isAr ? "كل الألواح" : "All boards"}

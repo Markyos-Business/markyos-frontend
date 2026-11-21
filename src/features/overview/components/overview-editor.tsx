@@ -16,7 +16,7 @@ type OverviewEditorProps = {
 export function OverviewEditor({ editorRef, isAr, wordCount, onInput, onTool }: OverviewEditorProps) {
   return (
     <div className="mk-surface flex min-h-64 flex-1 flex-col overflow-hidden rounded-card bg-surface-1">
-      <div className="flex shrink-0 items-center gap-1 px-4 py-2.5 text-text-muted shadow-rule-b">
+      <div className="flex shrink-0 items-center gap-ctl-row px-4 py-2.5 text-text-muted shadow-rule-b">
         {TOOLBAR.map((t) => (
           <IconButton
             key={t.label}

@@ -25,7 +25,7 @@ export function OverviewView({ ws, isAr, editor }: OverviewViewProps) {
         // language, the one the published guideline opens in, from a label
         // that promised something else. That choice lives in Settings; this
         // says what it is and goes there.
-        secondaryActions={<Button variant="outline" size="sm" href={`/w/${ws.slug}/settings`} icon={<Icon name="language" size={16} />}>
+        secondaryActions={<Button variant="outline" href={`/w/${ws.slug}/settings`} icon={<Icon name="language" size={16} />}>
           {isAr ? `لغة العلامة: ${brandLang}` : `Brand language: ${brandLang}`}
         </Button>}
       />

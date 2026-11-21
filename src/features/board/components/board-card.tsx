@@ -41,18 +41,18 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
       </Link>
 
       {pendingDrafts > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
             {isAr ? `${pendingDrafts} بانتظار القرار` : `${pendingDrafts} waiting`}
           </Link>
         </div>
       )}
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-ctl-row">
         <span className="text-[10.5px] text-text-faint">{formatRelative(ws.updatedAt)}</span>
         {/* Buttons as well as dragging: drag-and-drop is unusable with a
             keyboard and awkward on a touch screen. */}
-        <span className="ms-auto flex items-center gap-0.5">
+        <span className="ms-auto flex items-center gap-ctl-row">
           <IconButton icon="angle-left" label={isAr ? `إرجاع ${ws.name} مرحلة` : `Move ${ws.name} back a stage`} onClick={() => onMove(-1)} disabled={stageIndex <= 0} className="text-text-muted" />
           <IconButton icon="angle-right" label={isAr ? `تقديم ${ws.name} مرحلة` : `Move ${ws.name} on a stage`} onClick={() => onMove(1)} disabled={stageIndex >= 5} className="text-text-muted" />
         </span>

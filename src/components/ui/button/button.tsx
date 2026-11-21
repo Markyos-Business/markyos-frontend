@@ -38,12 +38,17 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Gallery-only state simulation; never changes interaction semantics. */
   "data-state"?: string;
 }
+/**
+ * Heights and side padding are the form-control tokens (MARKYOS_UI §2.6), so
+ * a button sits level with the field or select of its size. `xs` is the dense
+ * in-row size (28px, with a 44px touch target); sm and md are 44px on touch.
+ */
 const sizes: Record<ButtonSize, string> = {
-  xs: "h-7 px-2.5 gap-1.5 text-caption",
-  sm: "h-8 px-3 gap-1.5 text-caption",
-  md: "h-9 px-4 gap-2 text-body",
-  lg: "h-10 px-5 gap-2 text-body",
-  icon: "size-9 p-0 text-body",
+  xs: "h-ctl-xs px-ctl-px-sm gap-ctl-icon text-caption",
+  sm: "h-ctl-sm px-ctl-px-sm gap-ctl-icon text-caption",
+  md: "h-ctl-md px-ctl-px-md gap-ctl-icon text-body",
+  lg: "h-ctl-lg px-ctl-px-lg gap-ctl-icon text-body",
+  icon: "size-ctl-md p-0 text-body",
 };
 const variants: Record<ButtonVariant, string> = {
   primary: "bg-accent text-accent-ink",
@@ -77,9 +82,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-[inherit] ${stateText ? "invisible" : ""}`} aria-hidden={!!stateText || undefined}>
       {locked ? <Icon name="lock" size={18} /> : icon}{original}{iconEnd}
     </span>
-    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-2"><span className="w-[18px] shrink-0" />{text}</span>)}
+    {original && [loadingText, successText, errorText].map((text, index) => <span key={index} aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center justify-center gap-ctl-icon"><span className="w-[18px] shrink-0" />{text}</span>)}
     </span>
-    {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-2">
+    {stateText && <span className="absolute inset-0 inline-flex items-center justify-center gap-ctl-icon">
       <Icon name={busy ? "clock" : status === "success" ? "check" : "exclamation-circle"} size={18} />{original && stateText}
     </span>}
     <span className="sr-only" role="status" aria-live="polite">{stateText}</span>
@@ -93,7 +98,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     aria-label={ariaLabel ? stateText ? `${ariaLabel}: ${stateText}` : ariaLabel : undefined}
     data-status={busy ? "loading" : status} data-skeleton={skeleton || undefined}
     data-active={active || undefined}
-    className={`mk-btn mk-family-button relative inline-flex shrink-0 items-center justify-center rounded-lg font-medium leading-none whitespace-nowrap ${sizes[size]} ${variants[variant]} ${active ? "is-active" : ""} ${block ? "w-full" : ""} ${blocked ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
+    data-size={size}
+    className={`mk-btn mk-family-button relative inline-flex shrink-0 items-center justify-center rounded-control font-medium leading-none whitespace-nowrap ${sizes[size]} ${variants[variant]} ${active ? "is-active" : ""} ${block ? "w-full" : ""} ${blocked ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
     onClickCapture={(event) => {
       if (blocked) { event.preventDefault(); event.stopPropagation(); return; }
       onClickCapture?.(event as React.MouseEvent<HTMLButtonElement>);

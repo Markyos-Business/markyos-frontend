@@ -19,7 +19,7 @@ export function TemplateCard({ template: t, onApply }: { template: Template; onA
       <div className="flex flex-1 flex-col gap-2.5 p-5">
         <h2 className="font-display text-[16px] font-semibold">{name}</h2>
         <p className="flex-1 text-[13px] text-text-muted">{isAr ? t.arTagline : t.tagline}</p>
-        <div dir="ltr" className="flex gap-2 text-[11px] text-text-faint">
+        <div dir="ltr" className="flex gap-ctl-row text-[11px] text-text-faint">
           <span className="rounded-lg bg-surface-2 px-2 py-1">{t.latinFamily}</span>
           <span className="rounded-lg bg-surface-2 px-2 py-1">{t.arabicFamily}</span>
         </div>

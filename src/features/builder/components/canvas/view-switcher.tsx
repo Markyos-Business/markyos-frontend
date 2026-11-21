@@ -41,7 +41,7 @@ export function ViewSwitcher({
     // of its own, with the same accessible name — it is the *client's* control
     // for the published site, and this is the studio's control for the editor.
     // Both are correct; only a selector needs help telling them apart.
-    <div data-view-switcher className="flex items-center gap-1.5 shrink-0">
+    <div data-view-switcher className="flex items-center gap-ctl-row shrink-0">
       <div className={pillTrack} role="radiogroup" aria-label={isAr ? "عرض الشاشة" : "Canvas width"} style={pillTrackStyle}>
         {WIDTHS.map((w) => {
           const active = breakpoint === w.key;

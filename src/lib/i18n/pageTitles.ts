@@ -15,7 +15,7 @@ const pages: Record<string, Name> = {
   "/design-system/popups": ["Popup gallery", "معرض النوافذ"],
   "/design-system/tabs": ["Tabs gallery", "معرض التبويبات"],
   "/design-system/forms": ["Forms gallery", "معرض النماذج"], "/design-system/form-structure": ["Form structure gallery", "معرض بنية النماذج"], "/design-system/badge": ["Badge gallery", "معرض الشارة"], "/assets": ["Assets", "الأصول"], "/design-system/table-select": ["Table and select gallery", "معرض الجداول والقوائم"],
-  "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"],
+  "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"], "/dev/controls": ["Form controls", "عناصر النماذج"],
   "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
   "/admin/cms": ["Website content", "محتوى الموقع"],
   "/admin/cms/media": ["Media", "الوسائط"], "/admin/cms/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],

@@ -28,7 +28,7 @@ const SegmentedControl = <V extends string>({ label, options, value, onChange, f
       ref={group}
       role="radiogroup"
       aria-label={label}
-      className={`${pillTrack} ${fullWidth ? "flex w-full" : ""}`}
+      className={`${pillTrack} ${fullWidth ? "flex w-full min-w-0 shrink" : ""}`}
       style={pillTrackStyle}
     >
       {options.map((o) => {
@@ -40,7 +40,9 @@ const SegmentedControl = <V extends string>({ label, options, value, onChange, f
             {...radioProps(o)}
             disabled={o.disabled}
             onClick={() => onChange(o.value)}
-            className={`${pillSegment(!o.label)} flex-1`}
+            // Full width shares the row: segments may shrink below their label's
+            // natural width (a 220px panel of four tools) and narrow their padding.
+            className={`${pillSegment(!o.label)} flex-1 ${fullWidth ? "min-w-0 overflow-hidden text-ellipsis !px-space-2" : ""}`}
             style={pillSegmentStyle(active)}
           >
             {o.icon && <Icon name={o.icon} size={16} />}

@@ -32,7 +32,7 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
   }, [active, row]);
   return (
     <div className="flex shrink-0 flex-col">
-      <header className="mk-no-hover flex min-h-topbar items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
+      <header className="mk-no-hover flex min-h-topbar items-center gap-ctl-row px-space-6 py-space-4 sm:px-space-10">
         <SidebarMenuButton />
         <Breadcrumb className="flex-1" label={isAr ? "مسار الصفحة" : "Breadcrumb"} items={[
           { label: workspace.name, href: `/w/${workspace.slug}/overview` },
@@ -41,10 +41,10 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
         {/* The account sits at the bottom of the brand sidebar; the bell stays here. */}
         <NotificationBell isAr={isAr} />
       </header>
-      {right && <div className="flex flex-wrap items-center gap-space-4 px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
-      {!!tabs?.length && <div className="flex flex-wrap items-start gap-space-3 px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
+      {right && <div className="flex flex-wrap items-center gap-ctl-row px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
+      {!!tabs?.length && <div className="flex flex-wrap items-start gap-ctl-row px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
         {/* One row that scrolls on phones and tablets (Strategy has ten tabs); wraps from lg up. */}
-        <div ref={row} id={tabsId} role="tablist" aria-label={isAr && arSection ? arSection : section} aria-orientation="horizontal" className="mk-tabs mk-no-hover flex min-w-0 flex-1 items-center gap-space-2 overflow-x-auto pb-space-1 lg:flex-wrap lg:overflow-visible lg:pb-0">
+        <div ref={row} id={tabsId} role="tablist" aria-label={isAr && arSection ? arSection : section} aria-orientation="horizontal" className="mk-tabs mk-no-hover flex min-w-0 flex-1 items-center gap-ctl-row overflow-x-auto pb-space-1 lg:flex-wrap lg:overflow-visible lg:pb-0">
           {tabs.map(tab => <button key={tab.key} type="button" role="tab" id={tabButtonId(tabsId, tab.key)}
             aria-selected={tab.active} aria-controls={panelId} data-tab-key={tab.key} {...tabProps(tab.key)} onClick={tab.onSelect}
             className={`relative isolate flex h-control-sm shrink-0 cursor-pointer items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body font-medium transition-colors ${tab.active ? "text-text" : "text-text-muted"}`}>

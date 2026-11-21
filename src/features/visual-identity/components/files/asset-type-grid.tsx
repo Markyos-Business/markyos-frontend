@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint, PageHeader } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyHint, PageHeader, Button } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { AssetType, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
@@ -106,14 +106,9 @@ export function AssetTypeGrid({
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+        <Button variant="solid" size="md" onClick={() => inputRef.current?.click()}>
           {isAr ? "رفع ملف" : "Upload"}
-        </button>
+        </Button>
         </>}
       />
 
@@ -179,7 +174,7 @@ export function AssetTypeGrid({
                     removeAsset(ws.id, a.id);
                   }}
                   aria-label={`Remove ${a.fileName}`}
-                  className="absolute top-[3px] end-[3px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[3px] end-[3px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   {/* The 18px chip stays 18px; only the target around it grows.
                       A scrim over artwork, so it stays dark in both themes —

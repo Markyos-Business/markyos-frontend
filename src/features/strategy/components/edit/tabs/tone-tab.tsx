@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
+import { useToast, Icon, Section, EmptyHint, Button } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { traitIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -56,7 +56,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       }
     >
       {adding && (
-        <form onSubmit={submitTrait} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submitTrait} className="rounded-card p-4 flex flex-col gap-field-stack-compact" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={traitName}
             onChange={setTraitName}
@@ -72,9 +72,9 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setTraitDont}
             placeholder={isAr ? "لا تفعل: ما يجب تجنبه" : "Don't: what to avoid"}
           />
-          <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
+          <Button type="submit" variant="solid" size="sm" className="self-start">
             {isAr ? "إضافة سمة" : "Add trait"}
-          </button>
+          </Button>
         </form>
       )}
       {ws.strategy.voiceTraits.length === 0 ? (

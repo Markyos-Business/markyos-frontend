@@ -37,7 +37,7 @@ export function InvitePeopleDialog({ invite, owned }: InvitePeopleDialogProps) {
         error={invite.errors.role}
         options={MEMBER_ROLES.map((r) => ({ value: r, label: c.roleHelp[r] }))}
       />
-      <fieldset className="flex flex-col gap-space-3">
+      <fieldset className="flex flex-col gap-field-stack-compact">
         <legend className="mb-space-3 text-caption text-text-muted">{d.brands}</legend>
         {owned.map((w) => (
           <CheckboxField

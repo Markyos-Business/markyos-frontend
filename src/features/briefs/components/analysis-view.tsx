@@ -69,8 +69,8 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
 
   const data = overview.data;
   const header = analysis && data && (
-    <div className="flex flex-wrap items-end justify-between gap-space-5">
-      <div className="flex flex-wrap items-end gap-space-4">
+    <div className="flex flex-wrap items-end justify-between gap-ctl-row">
+      <div className="flex flex-wrap items-end gap-ctl-row">
         <div className="w-52">
           <SelectField
             label={t("Version", "الإصدار")}
@@ -90,7 +90,7 @@ export function AnalysisView({ brandId, brandSlug, isAr, workspace }: AnalysisVi
           </Tooltip>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-space-4">
+      <div className="flex flex-wrap items-center gap-ctl-row">
         {analysis.status === "ready" && (
           <Button
             variant="outline"

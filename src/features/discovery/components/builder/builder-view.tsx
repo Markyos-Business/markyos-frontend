@@ -207,8 +207,8 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
         </div>
 
         <div className="flex min-w-0 flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-space-3">
-            <div ref={sectionRow} id={sectionTabIds.id} role="tablist" aria-orientation="horizontal" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-space-3">
+          <div className="flex flex-wrap items-center gap-ctl-row">
+            <div ref={sectionRow} id={sectionTabIds.id} role="tablist" aria-orientation="horizontal" aria-label={t("Sections", "الأقسام")} className="flex flex-wrap items-center gap-ctl-row">
               {form.sections.map((s, i) => {
                 const on = s.id === section.id;
                 return (
@@ -254,7 +254,7 @@ export function BuilderView({ formId, sendHref, isAr }: BuilderViewProps) {
           </div>
 
           <TabPanel id={sectionTabIds.panelId} tabsId={sectionTabIds.id} active={section.id} className="flex min-w-0 flex-col gap-5">
-            <div className="flex items-end gap-space-4 rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
+            <div className="flex items-end gap-ctl-row rounded-card bg-surface-sunken p-space-6 shadow-edge-soft">
               <div className="min-w-0 flex-1">
                 <LocalizedInput
                   label={{ en: "Section title", ar: "عنوان القسم" }}

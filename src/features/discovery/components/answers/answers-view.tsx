@@ -82,7 +82,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
       <PageHeader
         title={form.name}
         description={<>
-          <div className="flex flex-wrap items-center gap-space-4 text-caption text-text-muted">
+          <div className="flex flex-wrap items-center gap-ctl-row text-caption text-text-muted">
             <Badge tone={status.tone} dot>
               {status[lang]}
             </Badge>
@@ -92,7 +92,7 @@ export function AnswersView({ formId, builderHref, sendHref, strategyHref, isAr,
           </div>
         </>}
         actions={<>
-        <div className="flex flex-wrap gap-space-3 print:hidden">
+        <div className="flex flex-wrap gap-ctl-row print:hidden">
           <Button variant="outline" size="sm" href={builderHref}>
             {t("Questions", "الأسئلة")}
           </Button>

@@ -27,7 +27,7 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
         </>
       }
     >
-      <form onSubmit={reset.request} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={reset.request} className="flex flex-col gap-field-stack" noValidate>
         <AlertBanner message={reset.errors.form} />
         <InputField
           label={c.fields.email}

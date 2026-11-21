@@ -49,7 +49,7 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
 
   return (
     <Section title={t("Version history", "سجل الإصدارات")} icon="history">
-      {canEdit && <div className="flex items-end gap-2.5">
+      {canEdit && <div className="flex items-end gap-ctl-row">
         <InputField
           size="sm"
           value={label}

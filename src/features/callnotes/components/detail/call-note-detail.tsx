@@ -113,8 +113,8 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
           )}
         </div>}
         actions={<>
-        <div className="flex flex-wrap items-center gap-space-4">
-          <label className="flex items-center gap-space-3 text-body text-text-secondary">
+        <div className="flex flex-wrap items-center gap-ctl-row">
+          <label className="flex items-center gap-ctl-icon text-body text-text-secondary">
             {t("Included in analysis", "مُضمَّنة في التحليل")}
             <Switch label={t("Included in analysis", "مُضمَّنة في التحليل")} checked={current.includeInAnalysis} onToggle={() => canEdit && void toggle()} />
           </label>
@@ -132,8 +132,8 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
         </>}
       />
 
-      <section className="mk-surface flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 sm:p-space-10">
-        <div className="flex flex-wrap items-center justify-between gap-space-5">
+      <section className="mk-surface flex flex-col gap-field-stack rounded-card bg-surface-1 p-space-8 sm:p-space-10">
+        <div className="flex flex-wrap items-center justify-between gap-ctl-row">
           <SearchField
             label={t("Search in these notes", "ابحث في هذه الملاحظات")}
             placeholder={t("Search…", "ابحث…")}

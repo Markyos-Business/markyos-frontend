@@ -1,10 +1,9 @@
-import { Button, EmptyHint, Icon, IconButton } from "@/components/ui";
+import { Button, EmptyHint, Icon, IconButton, SegmentedControl } from "@/components/ui";
 import { ChipPicker, InputField, TextareaField } from "@/components/ui";
 import { formatBytes, uid } from "@/lib/utils";
 import type { PageBlock, SocialLink, Workspace } from "@/types";
 import { FILE_ASSET_TYPES } from "../../templates";
 import { ImagePicker } from "./image-picker";
-import { Segments } from "../shared/segments";
 import { Children, type ReactNode } from "react";
 
 /**
@@ -38,7 +37,7 @@ export function BlockInspector({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-field-stack">
       <span className="text-[11px] font-medium tracking-[.08em] text-text-faint uppercase">
         {isAr ? "إعدادات العنصر" : "Block settings"}
       </span>
@@ -182,9 +181,9 @@ export function BlockInspector({
 
       {block.kind === "socialLinks" && (
         <>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-field-stack-compact">
             {links.map((l) => (
-              <div key={l.id} className="flex items-center gap-1.5">
+              <div key={l.id} className="flex items-center gap-ctl-row">
                 <InputField
                   size="sm"
                   value={l.platform}
@@ -201,6 +200,7 @@ export function BlockInspector({
                   className="min-w-0 flex-1"
                 />
                 <IconButton
+                  size="sm"
                   icon="times"
                   label={isAr ? "أزل الرابط" : "Remove link"}
                   onClick={() => onChange({ socialLinks: links.filter((x) => x.id !== l.id) })}
@@ -277,11 +277,12 @@ export function BlockInspector({
           <span className="text-[11px] font-semibold tracking-[.08em] text-text-faint uppercase">
             {isAr ? "عدد الأعمدة" : "Columns"}
           </span>
-          <Segments
-            options={[2, 3].map((n) => ({ value: n, label: String(n) }))}
-            value={block.columnCount ?? 2}
-            onChange={(n) => onChange({ columnCount: n })}
-            textClass="text-[12px]"
+          <SegmentedControl
+            fullWidth
+            label={isAr ? "عدد الأعمدة" : "Columns"}
+            options={[{ value: "2", label: "2" }, { value: "3", label: "3" }]}
+            value={String(block.columnCount ?? 2) as "2" | "3"}
+            onChange={(n) => onChange({ columnCount: Number(n) as 2 | 3 })}
           />
           <EmptyHint>
             {isAr

@@ -309,7 +309,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
           className="absolute inset-4 z-20 rounded-card grid place-items-center pointer-events-none animate-fade-in"
           style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 2px var(--accent)" }}
         >
-          <span className="flex items-center gap-2.5 text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
+          <span className="flex items-center gap-ctl-row text-[14px] font-semibold" style={{ color: "var(--accent-text)" }}>
             <Icon name="upload" size={16} />
             {isAr ? "أفلِت للرفع" : "Drop to upload"}
           </span>
@@ -337,7 +337,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
         </>}
       />
 
-      <div className="flex items-center gap-2.5 flex-wrap">
+      <div className="flex items-center gap-ctl-row flex-wrap">
         <SearchField
           label={isAr ? "ابحث في الأسماء والوسوم" : "Search names and tags"}
           value={query}
@@ -428,21 +428,20 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
             : "Nothing here yet. Upload the logo files, fonts, photography and exports this brand owns — every other Visual identity tab reads from this one."}
         </EmptyHint>
       ) : filtered.length === 0 ? (
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-ctl-row flex-wrap">
           <EmptyHint>{isAr ? "لا ملف يطابق هذه المرشحات." : "No file matches these filters."}</EmptyHint>
-          <button
-            type="button"
+          <Button
+            variant="soft"
+            size="sm"
             onClick={() => {
               setQuery("");
               setTypeFilter("all");
               setStatusFilter("all");
               setTagFilter(null);
             }}
-            className="mk-tap shrink-0 rounded-lg px-3.5 h-8 text-[12px] font-semibold cursor-pointer"
-            style={{ background: "var(--surface-2)", color: "var(--text)" }}
           >
             {isAr ? "امسح المرشحات" : "Clear filters"}
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
@@ -488,7 +487,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                   onClick={() => toggleSelect(r.key)}
                   aria-label={isAr ? `تحديد ${r.fileName}` : `Select ${r.fileName}`}
                   aria-pressed={selected.has(r.key)}
-                  className="absolute top-[5px] start-[5px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[5px] start-[5px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   <span
                     className="w-[18px] h-[18px] rounded-sm grid place-items-center"
@@ -521,7 +520,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                 )}
               </div>
               <div className="p-3 flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-1.5">
+                <div className="flex items-center justify-between gap-ctl-row">
                   <span className="text-[12px] font-medium truncate">{r.fileName}</span>
                   {r.source === "manager" && r.asset && (
                     <button
@@ -538,7 +537,7 @@ export function BrandFilesContent({ ws, onManageLogo, title = { en: "Brand files
                     </button>
                   )}
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="flex items-center gap-ctl-row flex-wrap">
                   <span className="text-[9px] font-semibold px-1.5 py-[3px] rounded-sm" style={{ background: "var(--surface-2)", color: "var(--text-faint)" }}>
                     {isAr ? TYPE_META[r.type].arLabel : TYPE_META[r.type].label}
                   </span>
@@ -613,7 +612,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="h-8 px-3 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0 flex items-center gap-1.5"
+      className="flex h-ctl-sm shrink-0 cursor-pointer items-center gap-ctl-icon rounded-control px-ctl-px-sm text-caption font-medium"
       style={{ background: active ? "var(--accent-soft)" : "var(--surface-1)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
     >
       {/* Resolved against its own first strong character, so a tag chip's
@@ -690,8 +689,9 @@ function AssetDetailModal({
             if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") setName(asset.fileName);
           }}
-          className="bidi-auto flex-1 min-w-0 text-[16px] font-semibold outline-none rounded-md px-2 py-1 -mx-2"
-          style={{ background: "transparent", color: "var(--text)" }}
+          // Reads as the drawer's title until focused; then the field's focus
+          // underline says it is editable.
+          className="mk-field bidi-auto -mx-ctl-px-md min-w-0 flex-1 bg-transparent text-h5 font-medium"
         />
       }
     >
@@ -744,7 +744,7 @@ function AssetDetailModal({
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
           {isAr ? "النوع" : "Type"}
         </span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-ctl-row">
           {EDITABLE_TYPES.map((t) => (
             <button
               key={t}
@@ -776,9 +776,9 @@ function AssetDetailModal({
 
       <div className="flex flex-col gap-1.5">
         <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>{isAr ? "الوسوم" : "Tags"}</span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-ctl-row">
           {asset.tags.map((t) => (
-            <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
+            <span key={t} className="text-[11px] px-2 py-1 rounded-md flex items-center gap-ctl-row" style={{ background: "var(--surface-2)", color: "var(--text-secondary)" }}>
               {/* `dir="auto"` keeps the hash on the tag. It is a neutral
                   character, so inside an Arabic page it takes the paragraph's
                   direction and lands on the wrong end — "#export" painting as
@@ -833,7 +833,7 @@ function AssetDetailModal({
             {asset.versions.map((v) => (
               <div key={v.id} className="flex items-center justify-between text-[12px] rounded-lg px-2.5 py-2" style={{ background: "var(--surface-2)" }}>
                 <span className="truncate" style={{ color: "var(--text-secondary)" }}>{v.fileName}</span>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-ctl-row shrink-0">
                   <span style={{ color: "var(--text-faint)" }}>{formatRelative(v.createdAt)}</span>
                   <button
                     type="button"
@@ -854,9 +854,9 @@ function AssetDetailModal({
         )}
       </div>
 
-      <button type="button" onClick={onDelete} className="h-10 rounded-full text-[13px] font-semibold cursor-pointer mt-1" style={{ color: "var(--danger)" }}>
+      <Button variant="danger-soft" size="md" block onClick={onDelete} className="mt-1">
         {isAr ? "حذف الملف" : "Delete asset"}
-      </button>
+      </Button>
     </Modal>
   );
 }

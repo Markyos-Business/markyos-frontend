@@ -130,7 +130,7 @@ export const AccountMenu = memo(function AccountMenu({
               key={item.href}
               href={item.href}
               onClick={close}
-              className="mk-nav-item flex items-center gap-space-4 px-space-6 py-space-4 text-body"
+              className="mk-nav-item flex items-center gap-ctl-icon px-space-6 py-space-4 text-body"
               style={{ color: "var(--text-secondary)" }}
             >
               <Icon name={item.icon} size={16} style={{ color: "var(--text-muted)" }} />

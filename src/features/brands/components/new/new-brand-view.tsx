@@ -19,9 +19,9 @@ export function NewBrandView({ mode, onMode, onLogout, scratch, importer }: NewB
     <div className="flex min-h-screen flex-col">
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
         {/* A way back that isn't logging out. */}
-        <div className="flex items-center gap-space-5">
+        <div className="flex items-center gap-ctl-row">
           <MarkyosLogo variant="mark" className="h-5" isAr={isAr} />
-          <Link href="/brands" className="mk-tap flex items-center gap-space-2 text-caption text-text-muted">
+          <Link href="/brands" className="mk-tap flex items-center gap-ctl-icon text-caption text-text-muted">
             <Icon name="arrow-left" size={16} />
             {t("All brands", "كل العلامات")}
           </Link>
