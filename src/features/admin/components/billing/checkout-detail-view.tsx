@@ -143,13 +143,13 @@ function Compare({ checkout: c }: { checkout: AdminCheckoutDetail }) {
   );
   type Row = { key: string; field: string; ours: ReactNode; paypal: ReactNode };
   const rows: Row[] = [
-    { key: "status", field: d.status, ours: <CheckoutStatusBadge status={c.status} refused={c.refused} />, paypal: c.paypal ? <CheckoutStatusBadge status={c.paypal.status} /> : "—" },
+    { key: "status", field: d.status, ours: <CheckoutStatusBadge status={c.status} refused={c.refused} />, paypal: c.paypal ? <CheckoutStatusBadge status={c.paypal.status.toLowerCase()} /> : "—" },
     { key: "next", field: d.nextBilling, ours: day(c.currentPeriodEnd, lang), paypal: c.paypal ? day(c.paypal.nextBillingAt, lang) : "—" },
     {
       key: "last",
       field: d.lastPayment,
       ours: lastPaid ? paid(money(lastPaid.amount, lastPaid.currency, lang), day(lastPaid.occurredAt, lang)) : "—",
-      paypal: c.paypal?.lastPaymentAt ? paid(money(c.paypal.lastPaymentAmount, c.currency, lang), day(c.paypal.lastPaymentAt, lang)) : "—",
+      paypal: c.paypal?.lastPaymentAt ? paid(money(c.paypal.lastPaymentAmount?.amount ?? null, c.paypal.lastPaymentAmount?.currency ?? c.currency, lang), day(c.paypal.lastPaymentAt, lang)) : "—",
     },
     { key: "failed", field: d.failedPayments, ours: c.paymentFailedAt ? day(c.paymentFailedAt, lang) : "—", paypal: c.paypal ? String(c.paypal.failedPayments) : "—" },
   ];

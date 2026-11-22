@@ -32,7 +32,7 @@ export function checkoutDetail(row: ReturnType<typeof checkoutRow>, over: Record
     ],
     cancelReason: null,
     cancelNote: null,
-    paypal: { status: "suspended", nextBillingAt: NOW + 20 * DAY, lastPaymentAt: NOW - 10 * DAY, lastPaymentAmount: 2900, failedPayments: 1 },
+    paypal: { status: "SUSPENDED", nextBillingAt: NOW + 20 * DAY, lastPaymentAt: NOW - 10 * DAY, lastPaymentAmount: { amount: 2900, currency: "usd" }, failedPayments: 1 },
     mismatch: true,
     ...over,
   };
@@ -69,8 +69,8 @@ export async function mockAdminBilling(page: Page, { rows, count, details = {} }
     if (path === "/admin/billing/orphans/") {
       return route.fulfill({
         json: [
-          { subscriptionId: "I-ORPHAN1", checkout: null, workspaceId: "b-9", paypalStatus: "active", moneyTaken: true, firstSeenAt: NOW - 2 * DAY, alertedAt: NOW - 2 * DAY, cancelledAt: null },
-          { subscriptionId: "I-ORPHAN2", checkout: "co-1", workspaceId: "b-1", paypalStatus: "cancelled", moneyTaken: false, firstSeenAt: NOW - 5 * DAY, alertedAt: null, cancelledAt: NOW - 4 * DAY },
+          { id: "o1", subscriptionId: "I-ORPHAN1", checkoutId: null, brandId: "b-9", paypalStatus: "active", moneyTaken: true, firstSeenAt: NOW - 2 * DAY, alertedAt: NOW - 2 * DAY, cancelledAt: null },
+          { id: "o2", subscriptionId: "I-ORPHAN2", checkoutId: "co-1", brandId: "b-1", paypalStatus: "cancelled", moneyTaken: false, firstSeenAt: NOW - 5 * DAY, alertedAt: null, cancelledAt: NOW - 4 * DAY },
         ],
       });
     }
@@ -79,7 +79,7 @@ export async function mockAdminBilling(page: Page, { rows, count, details = {} }
         json: {
           count: 1,
           results: [
-            { id: "a1", actor: { email: "admin@markyos.com" }, action: "limits_changed", target: "owner1@studio.sa", reason: "Agency deal, signed 20 Nov", createdAt: NOW - DAY, before: { brands: 3 }, after: { brands: 10 } },
+            { id: "a1", actor: { id: "u-admin", email: "admin@markyos.com", name: "Nour Haddad" }, action: "limits_changed", target: { accountId: "u-1", email: "owner1@studio.sa", subject: "account:u-1" }, reason: "Agency deal, signed 20 Nov", createdAt: NOW - DAY, before: { brands: 3 }, after: { brands: 10 } },
           ],
         },
       });

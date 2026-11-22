@@ -213,7 +213,8 @@ export interface AdminPaypalView {
   status: string;
   nextBillingAt: number | null;
   lastPaymentAt: number | null;
-  lastPaymentAmount: number | null;
+  /** Cents, in PayPal's currency. */
+  lastPaymentAmount: { amount: number; currency: string | null } | null;
   failedPayments: number;
 }
 
@@ -230,10 +231,11 @@ export interface AdminCheckoutDetail extends AdminCheckout {
 
 /** A row of `GET /admin/billing/orphans/`: a PayPal subscription with no live checkout behind it. */
 export interface AdminOrphan {
+  id: string;
   subscriptionId: string;
   /** The checkout it once belonged to, if any. */
-  checkout: string | null;
-  workspaceId: string | null;
+  checkoutId: string | null;
+  brandId: string | null;
   paypalStatus: string;
   moneyTaken: boolean;
   firstSeenAt: number;
@@ -244,10 +246,11 @@ export interface AdminOrphan {
 /** A row of `GET /admin/billing/audit/`: one admin billing action, with why. */
 export interface AdminAuditEntry {
   id: string;
-  actor: { email: string } | null;
+  actor: { id: string; email: string; name: string } | null;
   action: string;
-  target: string;
-  reason: string;
+  /** Whose account the action touched, and what (`checkout:<id>`, `account:<id>`). */
+  target: { accountId: string | null; email: string | null; subject: string | null };
+  reason: string | null;
   createdAt: number;
   before: Record<string, unknown> | null;
   after: Record<string, unknown> | null;

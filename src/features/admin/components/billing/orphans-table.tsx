@@ -41,7 +41,7 @@ export function OrphansTable({ page }: { page: BillingPage }) {
           <span className="text-text-muted">{o.noMoney}</span>
         ),
     },
-    { key: "brand", header: o.brand, cell: (row) => <span dir="ltr" className="text-text-muted">{row.workspaceId ?? "—"}</span>, className: "hidden 2xl:table-cell" },
+    { key: "brand", header: o.brand, cell: (row) => <span dir="ltr" className="text-text-muted">{row.brandId ?? "—"}</span>, className: "hidden 2xl:table-cell" },
     { key: "firstSeen", header: o.firstSeen, cell: (row) => <span className="tabular-nums text-text-muted">{day(row.firstSeenAt, lang)}</span>, className: "hidden lg:table-cell" },
     { key: "alerted", header: o.alerted, cell: (row) => <span className="tabular-nums text-text-muted">{row.alertedAt ? day(row.alertedAt, lang) : o.notYet}</span>, className: "hidden xl:table-cell" },
     { key: "cancelled", header: o.cancelled, cell: (row) => <span className="tabular-nums text-text-muted">{row.cancelledAt ? day(row.cancelledAt, lang) : o.notYet}</span> },
@@ -64,7 +64,7 @@ export function OrphansTable({ page }: { page: BillingPage }) {
         onRetry={page.orphans.reload}
         // A row with a checkout behind it opens that checkout; the others have no page.
         onRowClick={(row) => {
-          if (row.checkout) router.push(`/admin/billing/${encodeURIComponent(row.checkout)}`);
+          if (row.checkoutId) router.push(`/admin/billing/${encodeURIComponent(row.checkoutId)}`);
         }}
         empty={<EmptyState icon="check-circle" title={o.emptyTitle} description={o.emptyBody} />}
         mobileCard={{ primary: "subscription", secondary: ["paypalStatus", "money", "cancelled"] }}

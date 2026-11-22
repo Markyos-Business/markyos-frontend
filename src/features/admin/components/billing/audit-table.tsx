@@ -16,7 +16,7 @@ export function AuditTable({ page }: { page: BillingPage }) {
     { key: "date", header: a.date, cell: (row) => <span className="tabular-nums">{day(row.createdAt, lang)}</span> },
     { key: "actor", header: a.actor, cell: (row) => <span dir="ltr">{row.actor?.email ?? a.system}</span>, className: "hidden md:table-cell" },
     { key: "action", header: a.action, cell: (row) => <span className="font-medium text-text">{a.actions[row.action] ?? humanize(row.action)}</span> },
-    { key: "target", header: a.target, cell: (row) => <span dir="auto">{row.target}</span>, className: "hidden lg:table-cell" },
+    { key: "target", header: a.target, cell: (row) => <span dir="auto">{row.target.email ?? row.target.subject ?? "—"}</span>, className: "hidden lg:table-cell" },
     { key: "reason", header: a.reason, mobileWide: true, cell: (row) => <span dir="auto" className="line-clamp-2">{row.reason || "—"}</span> },
     {
       key: "change",
