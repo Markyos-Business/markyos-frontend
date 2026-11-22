@@ -44,6 +44,7 @@ export type Glance = {
   colors: { name: string; hex: string; primary: boolean }[];
   logos: { slot: string; url: string }[];
   typefaces: { latin: string; arabic: string };
+  keyTerms?: { say: string; sayAr: string; avoid: string }[];
 };
 
 export type OverviewStep = { key: PathStepKey; state: StepState };
@@ -69,6 +70,8 @@ export type OverviewData = {
   shareLinks?: SharedLink[];
   activity?: ActivityEvent[];
   counts?: { draftsWaiting: number };
+  /** This month's saved content checks; null when none were saved. */
+  voice?: { checks: number; averageScore: number; commonNote: Bilingual | null } | null;
   /** Blocks the server couldn't work out this time; each shows its own error with a retry. */
-  errors?: ("attention" | "glance" | "people" | "contact" | "links" | "activity")[];
+  errors?: ("attention" | "glance" | "people" | "contact" | "links" | "activity" | "voice")[];
 };

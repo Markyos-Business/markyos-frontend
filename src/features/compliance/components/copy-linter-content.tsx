@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button, Icon, EmptyHint, PageHeader } from "@/components/ui";
+import { api } from "@/lib/api/client";
+import { checkOutcome } from "../utils/check-score";
+import { complianceCopy } from "../copy";
+import { Button, Icon, EmptyHint, PageHeader, useToast } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
 import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -24,6 +27,23 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
   const touched = en.trim().length > 0 || ar.trim().length > 0;
   const total = enFindings.length + arFindings.length + parity.length;
+  const sc = complianceCopy(isAr).save;
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const outcome = useMemo(() => checkOutcome(en, ar, [...enFindings, ...arFindings, ...parity]), [en, ar, enFindings, arFindings, parity]);
+
+  /** Saves the outcome only (score, commonest note, languages): never the text. */
+  async function saveCheck() {
+    setSaving(true);
+    try {
+      await api(`/brands/${encodeURIComponent(ws.id)}/tone-checks/`, { method: "POST", body: outcome });
+      showToast(sc.saved, "success");
+    } catch {
+      showToast(sc.failed, "danger");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   /** Applies a finding's replacement in place, so a fix is one click. */
   function applyFix(lang: "en" | "ar", f: LintFinding) {
@@ -116,7 +136,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
       </div>
 
       {touched && total === 0 && (
-        <div
+        <div /* ctl-audit-ignore: a status line (icon and sentence), not a row of controls */
           className="rounded-card px-4 py-3.5 flex items-center gap-3 text-[13px]"
           style={{ background: "var(--success-soft)", color: "var(--success)" }}
         >
@@ -125,10 +145,18 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
         </div>
       )}
 
+      {touched && (
+        <div className="flex flex-wrap items-center gap-ctl-row">
+          <span className="text-body text-text-muted">{sc.score}</span>
+          <bdi dir="ltr" className="text-h4 font-medium tabular-nums text-text">{sc.scoreOf(outcome.score)}</bdi>
+          <Button variant="secondary" size="sm" loading={saving} onClick={() => void saveCheck()} className="ms-auto">
+            {sc.button}
+          </Button>
+        </div>
+      )}
+
       <p className="text-[11.5px] max-w-[70ch]" style={{ color: "var(--text-faint)" }}>
-        {isAr
-          ? "كل قاعدة هنا واضحة: إما أن تتطابق العبارة أو لا. يجري الفحص على جهازك، ولا يُرسل ما تكتبه ولا يُحفظ."
-          : "Every rule here is plain: a phrase matches or it doesn't. The check runs on your device, and what you type isn't sent or saved."}
+        {sc.privacy}
       </p>
     </div>
   );

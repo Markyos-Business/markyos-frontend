@@ -13,6 +13,7 @@ import { BrandGlanceCard } from "./brand-glance-card";
 import { OverviewHeader } from "./overview-header";
 import { PathRail } from "./path-rail";
 import { ActivityCard, ContactCard, LinksCard, PeopleCard } from "./side-cards";
+import { VoiceCard } from "./voice-card";
 
 type OverviewViewProps = {
   slug: string;
@@ -256,7 +257,7 @@ function BrandHome({ data, slug, isAr, copy, site, onRetry }: OverviewViewProps 
   // Ask the brand has no backend yet (apps/ai reserves the feature only), so it isn't offered.
   const quick: Dashboard.QuickAction[] = [];
   if (data.role !== "client") {
-    quick.push({ icon: "shield-alt", href: `/w/${slug}/compliance`, label: copy.quick.check.label, description: copy.quick.check.description });
+    quick.push({ icon: "shield-alt", href: `/w/${slug}/compliance?tab=copy`, label: copy.quick.check.label, description: copy.quick.check.description });
     if (hasLogo) quick.push({ icon: "download", href: `/w/${slug}/visual-identity?tab=logo`, label: copy.quick.logo.label, description: copy.quick.logo.description });
     if (owner) quick.push({ icon: "share-alt", href: `/w/${slug}/settings`, label: copy.quick.share.label, description: copy.quick.share.description });
   }
@@ -287,6 +288,10 @@ function BrandHome({ data, slug, isAr, copy, site, onRetry }: OverviewViewProps 
         {quickBlock && <div className={at(3)}>{quickBlock}</div>}
         <Block block="glance" data={data} title={copy.soFar.glanceTitle} copy={copy} onRetry={onRetry} show className={at(4)}>
           {glance}
+        </Block>
+        {/* Only when checks were saved this month: the figures are real or the card isn't there. */}
+        <Block block="voice" data={data} title={copy.voice.title} copy={copy} onRetry={onRetry} show={!!data.voice} className={at(4)}>
+          {data.voice && <VoiceCard voice={data.voice} copy={copy} isAr={isAr} />}
         </Block>
       </div>
       <div className={column}>

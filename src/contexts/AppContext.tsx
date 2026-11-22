@@ -63,6 +63,7 @@ import {
   WorkspaceStage,
   ZoneKind,
   PathStepKey,
+  KeyTerm,
 } from "@/types";
 import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 import { between, nBetween } from "@/lib/doc/core/order";
@@ -300,6 +301,8 @@ interface AppContextValue {
   setLogoUsageNotes: (workspaceId: string, text: string) => void;
   setLogoColorIds: (workspaceId: string, ids: string[]) => void;
   setBrandDetails: (workspaceId: string, patch: Partial<{ industry: string; tagline: string; taglineAr: string; foundedYear: string }>) => void;
+  /** Personality & tone: the brand's key terms, replaced as a list. */
+  setKeyTerms: (workspaceId: string, terms: KeyTerm[]) => void;
   /** Overview: skip a project-path step, or take the skip back. */
   setPathSkip: (workspaceId: string, step: PathStepKey, skipped: boolean) => void;
   /** Overview: the moodboard chosen as the brand's direction, or none. */
@@ -1571,6 +1574,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setBrandDetails = useCallback(
     (workspaceId: string, patch: Partial<{ industry: string; tagline: string; taglineAr: string; foundedYear: string }>) => {
       mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, patch));
+    },
+    [mutateWorkspace, touchWorkspace]
+  );
+
+  const setKeyTerms = useCallback(
+    (workspaceId: string, terms: KeyTerm[]) => {
+      mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, { strategy: { ...ws.strategy, keyTerms: terms } }));
     },
     [mutateWorkspace, touchWorkspace]
   );
@@ -3775,6 +3785,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setOverview,
       setBrandDetails,
       setPathSkip,
+      setKeyTerms,
       setDirection,
       setHandoff,
       addColor,
@@ -3930,6 +3941,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setOverview,
       setBrandDetails,
       setPathSkip,
+      setKeyTerms,
       setDirection,
       setHandoff,
       addColor,

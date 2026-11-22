@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BrandMark, CopyButton, DashboardCard, Tag, useTheme } from "@/components/ui";
+import { BrandMark, CopyButton, DashboardCard, Tag, cellClasses, rowClasses, useTheme } from "@/components/ui";
 import type { OverviewCopy } from "../copy";
 import { glanceSlots, pick } from "../logic";
 import type { Glance } from "../types";
@@ -37,7 +37,7 @@ export function BrandGlanceCard({
   const { resolved } = useTheme();
   const has = glanceSlots(glance);
   const shown = (s: Slot) => mode === "project" || has[s];
-  if (!Object.values(has).some(Boolean) && mode === "home") return null;
+  if (!Object.values(has).some(Boolean) && !glance?.keyTerms?.length && mode === "home") return null;
   const c = copy.soFar;
   const strategy = `/w/${slug}/strategy/positioning`;
   const identity = `/w/${slug}/visual-identity`;
@@ -173,6 +173,32 @@ export function BrandGlanceCard({
             ),
           )}
       </div>
+      {mode === "home" && !!glance?.keyTerms?.length && (
+        <div className="mt-space-8 flex flex-col gap-space-2">
+          <h3 id="overview-key-terms" className="text-caption text-text-muted">{copy.keyTerms.title}</h3>
+          {/* Read-only here; the brand's words are edited in Strategy → Personality & tone. */}
+          <div className="mk-no-hover overflow-x-auto">
+            <table aria-labelledby="overview-key-terms" className="w-full text-start text-body">
+              <thead>
+                <tr className="text-caption text-text-muted">
+                  <th scope="col" className="px-space-6 py-space-3 text-start font-normal">{copy.keyTerms.say}</th>
+                  <th scope="col" className="px-space-6 py-space-3 text-start font-normal">{copy.keyTerms.arabic}</th>
+                  <th scope="col" className="px-space-6 py-space-3 text-start font-normal">{copy.keyTerms.avoid}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {glance.keyTerms.map((t, i) => (
+                  <tr key={i} className={rowClasses}>
+                    <td dir="ltr" lang="en" className={`${cellClasses} font-medium text-text`}>{t.say}</td>
+                    <td dir="rtl" lang="ar" className={`${cellClasses} text-text`}>{t.sayAr}</td>
+                    <td dir="auto" className={`${cellClasses} text-text-muted line-through`}>{t.avoid}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </DashboardCard>
   );
 }

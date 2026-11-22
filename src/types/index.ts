@@ -150,6 +150,14 @@ export interface Persona {
   source?: AnalysisSource;
 }
 
+/** One of the brand's own words: what to say in English and Arabic, and what not to. */
+export interface KeyTerm {
+  id: string;
+  say: string;
+  sayAr: string;
+  avoid: string;
+}
+
 export interface VoiceTrait {
   id: string;
   trait: string;
@@ -251,6 +259,8 @@ export interface BrandStrategy {
   uvp: string;
   /** "Personality & tone" — kept as voiceTraits, the existing do/don't matrix. */
   voiceTraits: VoiceTrait[];
+  /** Say / Arabic / Not: the brand's own words (Personality & tone; shown on the brand home). */
+  keyTerms?: KeyTerm[];
   /** The Arabic copy of each narrative field. See the note on Persona. */
   purposeAr?: string;
   missionAr?: string;

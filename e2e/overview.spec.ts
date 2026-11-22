@@ -196,3 +196,45 @@ test("a block that fails shows its own error and retry; the rest of the page wor
   await attention.getByRole("button", { name: /Try again|Retry/ }).click();
   await expect(attention.getByRole("link").first()).toContainText("2 drafts waiting for review");
 });
+
+test("company brand home: key terms from Strategy, and voice from saved checks", async ({ page }) => {
+  const owner = await newStudio("Nour Haddad");
+  const brand = await newBrand(owner, "Wadi Rum Coffee", { publishable: true });
+  djangoShell(`from apps.accounts.models import User; User.objects.filter(email=${JSON.stringify(owner.email)}).update(account_type="company", admin_lang="en")`);
+  seed(brand, { ...FULL, team: [] });
+  await signIn(page, owner);
+
+  // No saved checks: no voice card, no placeholder figures.
+  await open(page, brand);
+  await expect(page.getByRole("heading", { name: "Voice this month" })).toHaveCount(0);
+
+  // A key term, written in Strategy → Personality & tone.
+  await page.goto(`/w/${brand.slug}/strategy/tone`);
+  await page.getByRole("button", { name: "Add term" }).click();
+  const row = page.getByRole("row").last();
+  await row.getByRole("textbox", { name: "Say" }).fill("Roastery");
+  await row.getByRole("textbox", { name: "Arabic" }).fill("محمصة");
+  await row.getByRole("textbox", { name: "Not" }).fill("Factory");
+  // The edit is saved in the background; wait for it before leaving the page.
+  const saved = page.waitForResponse((r) => r.request().method() === "PUT" && r.url().includes(`/brands/${brand.id}/`) && r.ok());
+  await row.getByRole("textbox", { name: "Not" }).press("Enter");
+  await saved;
+
+  // A content check, saved (only its outcome).
+  await page.goto(`/w/${brand.slug}/compliance?tab=copy`);
+  await page.getByRole("textbox").first().fill("Our roastery brews slowly.");
+  await page.getByRole("button", { name: "Save this check" }).click();
+  await expect(page.getByText("Check saved.")).toBeVisible();
+
+  await open(page, brand);
+  const terms = page.getByRole("table", { name: "Key terms" });
+  await expect(terms.getByRole("cell", { name: "Roastery" })).toBeVisible();
+  await expect(terms.getByRole("cell", { name: "محمصة" })).toBeVisible();
+  await expect(terms.getByRole("cell", { name: "Factory" })).toBeVisible();
+  const voice = page.getByRole("heading", { name: "Voice this month" }).locator("xpath=ancestor::section[1]");
+  await expect(voice).toContainText("Checks run");
+  await expect(voice).toContainText("1");
+  await expect(voice).toContainText("/ 100");
+  // Ask the brand has no backend yet: not offered.
+  await expect(page.getByText(/Ask the brand/)).toHaveCount(0);
+});
