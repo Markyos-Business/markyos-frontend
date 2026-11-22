@@ -67,19 +67,34 @@ export async function mockAdminBilling(page: Page, { rows, count, details = {} }
       return route.fulfill({ json: one[2] ? { ...(detail as object), mismatch: false, status: "suspended" } : detail });
     }
     if (path === "/admin/billing/orphans/") {
+      // Paged like checkouts and the audit log: 25 a page, 30 in all.
+      const second = url.searchParams.get("page") === "2";
       return route.fulfill({
-        json: [
-          { id: "o1", subscriptionId: "I-ORPHAN1", checkoutId: null, brandId: "b-9", paypalStatus: "active", moneyTaken: true, firstSeenAt: NOW - 2 * DAY, alertedAt: NOW - 2 * DAY, cancelledAt: null },
-          { id: "o2", subscriptionId: "I-ORPHAN2", checkoutId: "co-1", brandId: "b-1", paypalStatus: "cancelled", moneyTaken: false, firstSeenAt: NOW - 5 * DAY, alertedAt: null, cancelledAt: NOW - 4 * DAY },
-        ],
+        json: {
+          count: 30,
+          results: second
+            ? [{ id: 26, subscriptionId: "I-ORPHAN26", checkoutId: null, brandId: null, paypalStatus: "EXPIRED", moneyTaken: false, firstSeenAt: NOW - 60 * DAY, alertedAt: NOW - 60 * DAY, cancelledAt: NOW - 59 * DAY }]
+            : [
+                { id: 1, subscriptionId: "I-ORPHAN1", checkoutId: null, brandId: "b-9", paypalStatus: "ACTIVE", moneyTaken: true, firstSeenAt: NOW - 2 * DAY, alertedAt: NOW - 2 * DAY, cancelledAt: null },
+                { id: 2, subscriptionId: "I-ORPHAN2", checkoutId: "co-1", brandId: "b-1", paypalStatus: "CANCELLED", moneyTaken: false, firstSeenAt: NOW - 5 * DAY, alertedAt: null, cancelledAt: NOW - 4 * DAY },
+              ],
+        },
       });
     }
     if (path === "/admin/billing/audit/") {
+      const actor = { id: "u-admin", email: "admin@markyos.com", name: "Nour Haddad" };
+      const target = { accountId: "u-1", email: "owner1@studio.sa", subject: "account:u-1" };
+      const entry = (id: string, action: string, reason: string, before: object, after: object) => ({ id, actor, action, target, reason, createdAt: NOW - DAY, before, after });
       return route.fulfill({
         json: {
-          count: 1,
+          count: 6,
           results: [
-            { id: "a1", actor: { id: "u-admin", email: "admin@markyos.com", name: "Nour Haddad" }, action: "limits_changed", target: { accountId: "u-1", email: "owner1@studio.sa", subject: "account:u-1" }, reason: "Agency deal, signed 20 Nov", createdAt: NOW - DAY, before: { brands: 3 }, after: { brands: 10 } },
+            entry("a1", "limits_changed", "Agency deal, signed 20 Nov", { brands: 3 }, { brands: 10 }),
+            entry("a2", "billing_synced", "Owner says PayPal shows suspended", { status: "active" }, { status: "suspended" }),
+            entry("a3", "comp_granted", "Launch partner", { provider: null }, { provider: "comp" }),
+            entry("a4", "comp_ended", "Partnership ended", { status: "active" }, { status: "expired" }),
+            entry("a5", "price_change", "Type changed to company", { amount: 2900 }, { amount: 4900 }),
+            entry("a6", "type_changed", "Moved to company", { accountType: "studio" }, { accountType: "company" }),
           ],
         },
       });

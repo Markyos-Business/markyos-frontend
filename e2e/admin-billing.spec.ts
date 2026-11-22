@@ -140,57 +140,122 @@ test("ending a comp asks for a reason in a red confirm", async ({ page }) => {
 
 test("orphans and the audit log are read-only lists", async ({ page }) => {
   const admin = await newAdmin();
-  await mockAdminBilling(page, { rows: [checkoutRow(1)] });
+  const sent = await mockAdminBilling(page, { rows: [checkoutRow(1)] });
   await signInAdmin(page, admin);
   await page.goto("/admin/billing?tab=orphans");
   const orphans = page.getByRole("table", { name: "Orphaned subscriptions" });
   await expect(orphans.getByText("I-ORPHAN1")).toBeVisible();
   await expect(orphans.getByText("Money taken")).toBeVisible();
   await expect(orphans.getByRole("button")).toHaveCount(0);
+  // Paged like the other tabs.
+  await page.getByRole("button", { name: /^(Next|Next page)$/i }).first().click();
+  await expect(orphans.getByText("I-ORPHAN26")).toBeVisible();
+  await expect.poll(() => sent.filter((s) => s.path === "/admin/billing/orphans/").at(-1)?.search.get("page")).toBe("2");
 
   await page.getByRole("tab", { name: "Audit log" }).click();
   const audit = page.getByRole("table", { name: "Audit log" });
-  await expect(audit.getByText("Limits overridden")).toBeVisible();
+  for (const label of ["Limits overridden", "Synced from PayPal", "Comp granted", "Comp ended", "Price change scheduled", "Account type changed"]) {
+    await expect(audit.getByText(label, { exact: true })).toBeVisible();
+  }
   await expect(audit.getByText("Agency deal, signed 20 Nov")).toBeVisible();
   await expect(audit.getByRole("button")).toHaveCount(0);
 });
 
-test("an admin overrides an account's limits with a reason", async ({ page }) => {
+test("the checkout page says when a price change waits for the owner", async ({ page }) => {
+  const admin = await newAdmin();
+  const row = checkoutRow(1);
+  await mockAdminBilling(page, {
+    rows: [row],
+    details: { "co-1": checkoutDetail(row, { mismatch: false, pendingPlanChange: { accountType: "company", amount: 4900, effectiveAt: NOW + 20 * 86_400_000, approvalPending: true, missedRenewals: 2 } }) },
+  });
+  await signInAdmin(page, admin);
+  await page.goto("/admin/billing/co-1");
+  const note = page.getByRole("alert").or(page.getByRole("status")).filter({ hasText: "Price change at renewal" });
+  await expect(note).toContainText(`Price change to Company (USD 49/month) from ${day(NOW + 20 * 86_400_000)}.`);
+  await expect(note).toContainText("Waiting for the owner's approval at PayPal.");
+  await expect(note).toContainText("Not approved at 2 renewals.");
+});
+
+test("an admin overrides an account's limits with a reason, one key at a time", async ({ page }) => {
   const admin = await newAdmin();
   const owner = await newStudio("Nour Haddad");
   const id = djangoShell(`from apps.accounts.models import User; print(User.objects.get(email=${JSON.stringify(owner.email)}).pk)`);
-  let limits = { brands: null as number | null, editors: null as number | null, override: false };
+  // Brands at the type's default; editors overridden to unlimited.
+  let limits = { brands: 3, editors: null as number | null, override: true, overridden: { brands: false, editors: true } };
   let sent: unknown = null;
-  // The account detail with limits, until the backend sends them.
+  // The account page's answer with the limits this test starts from (the e2e backend is release/staging-v1).
   await page.route(new RegExp(`/api/v1/admin/users/${id}/$`), async (route) => {
     if (route.request().method() !== "GET") return route.fallback();
     const res = await route.fetch();
     await route.fulfill({ response: res, json: { ...(await res.json()), limits } });
   });
+  // The override answers with the admin account, as the backend does.
   await page.route(new RegExp(`/api/v1/admin/accounts/${id}/limits/$`), async (route) => {
     sent = route.request().postDataJSON();
-    limits = { brands: 5, editors: null, override: true };
-    await route.fulfill({ json: { limits } });
+    limits = { brands: 5, editors: null, override: true, overridden: { brands: true, editors: true } };
+    const account = await (await route.fetch({ url: route.request().url().replace(/\/admin\/accounts\/([^/]+)\/limits\/$/, "/admin/users/$1/"), method: "GET" })).json();
+    await route.fulfill({ json: { ...account, limits } });
   });
   await signInAdmin(page, admin);
   await page.goto(`/admin/users/${id}`);
 
   const section = page.locator("[data-account-limits]");
-  await expect(section.getByText("The account type's limits")).toBeVisible();
-  await expect(section.getByText("Unlimited").first()).toBeVisible();
+  const brandsRow = section.locator("div", { has: page.getByText("Brands", { exact: true }) }).last();
+  const editorsRow = section.locator("div", { has: page.getByText("Editors per brand", { exact: true }) }).last();
+  await expect(brandsRow).toContainText("3");
+  await expect(brandsRow.getByText("Override")).toHaveCount(0);
+  await expect(editorsRow).toContainText("Unlimited");
+  await expect(editorsRow.getByText("Override")).toBeVisible();
 
   await page.getByRole("button", { name: "Override limits" }).click();
   const dialog = page.getByRole("dialog", { name: "Override limits for Nour Haddad" });
-  await dialog.getByRole("group", { name: "Brands" }).getByRole("radio", { name: "Set a number" }).check();
+  const brands = dialog.getByRole("group", { name: "Brands" });
+  const editors = dialog.getByRole("group", { name: "Editors per brand" });
+  // Each key starts where it stands: brands at Default, editors at Unlimited.
+  await expect(brands.getByRole("radio", { name: "Default" })).toBeChecked();
+  await expect(editors.getByRole("radio", { name: "Unlimited" })).toBeChecked();
+
+  // Nothing changed: nothing to send.
+  await dialog.getByRole("textbox", { name: /Reason/ }).fill("Agency deal, signed 20 Nov");
+  await dialog.getByRole("button", { name: "Save limits" }).click();
+  await expect(dialog.getByText("Change a limit first.")).toBeVisible();
+  expect(sent).toBeNull();
+
+  await brands.getByRole("radio", { name: "Set a number" }).check();
   await dialog.getByRole("button", { name: "Save limits" }).click();
   await expect(dialog.getByText("Enter a whole number from 0.")).toBeVisible();
-  await expect(dialog.getByText("Enter a reason.")).toBeVisible();
   await dialog.getByRole("spinbutton", { name: "Number of brands" }).fill("5");
-  await dialog.getByRole("textbox", { name: /Reason/ }).fill("Agency deal, signed 20 Nov");
   await dialog.getByRole("button", { name: "Save limits" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.getByText("Limits saved.")).toBeVisible();
-  expect(sent).toEqual({ brands: 5, editors: "default", reason: "Agency deal, signed 20 Nov" });
-  await expect(section.getByText("Override")).toBeVisible();
-  await expect(section.getByText("5", { exact: true })).toBeVisible();
+  // Only the key that changed; editors stay as they are on the server.
+  expect(sent).toEqual({ brands: 5, reason: "Agency deal, signed 20 Nov" });
+  await expect(brandsRow).toContainText("5");
+  await expect(brandsRow.getByText("Override")).toBeVisible();
+  await expect(editorsRow).toContainText("Unlimited");
+});
+
+test("a reason is required to override limits", async ({ page }) => {
+  const admin = await newAdmin();
+  const owner = await newStudio("Omar Aziz");
+  const id = djangoShell(`from apps.accounts.models import User; print(User.objects.get(email=${JSON.stringify(owner.email)}).pk)`);
+  await page.route(new RegExp(`/api/v1/admin/users/${id}/$`), async (route) => {
+    if (route.request().method() !== "GET") return route.fallback();
+    const res = await route.fetch();
+    await route.fulfill({ response: res, json: { ...(await res.json()), limits: { brands: null, editors: null, override: false, overridden: { brands: false, editors: false } } } });
+  });
+  let calls = 0;
+  await page.route(new RegExp(`/api/v1/admin/accounts/${id}/limits/$`), (route) => {
+    calls += 1;
+    return route.abort();
+  });
+  await signInAdmin(page, admin);
+  await page.goto(`/admin/users/${id}`);
+  await expect(page.locator("[data-account-limits]").getByText("The account type's limits")).toBeVisible();
+  await page.getByRole("button", { name: "Override limits" }).click();
+  const dialog = page.getByRole("dialog", { name: "Override limits for Omar Aziz" });
+  await dialog.getByRole("group", { name: "Editors per brand" }).getByRole("radio", { name: "Unlimited" }).check();
+  await dialog.getByRole("button", { name: "Save limits" }).click();
+  await expect(dialog.getByText("Enter a reason.")).toBeVisible();
+  expect(calls).toBe(0);
 });

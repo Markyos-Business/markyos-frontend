@@ -342,7 +342,7 @@ test("a price that moves at renewal is announced, with PayPal's approval when ne
   const note = page.getByRole("status").filter({ hasText: "The price changes at renewal" });
   await expect(note).toContainText(`From ${day(NEXT)} this plan is`);
   await expect(note).toContainText(/USD\s*49 a month \(Studio\)/);
-  await expect(note).toContainText("PayPal needs your approval");
+  await expect(note).toContainText("PayPal asks you to approve the new price before it charges it.");
   await expect(note.getByRole("link", { name: /Approve the new price at PayPal/ })).toHaveAttribute("href", APPROVAL_URL);
 
   approval = null;
