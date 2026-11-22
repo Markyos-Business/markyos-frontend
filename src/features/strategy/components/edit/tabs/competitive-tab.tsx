@@ -253,12 +253,8 @@ function Cell({
         if (draft !== null && draft !== value) onCommit(draft.trim());
         setDraft(null);
       }}
-      className="rounded-lg px-2.5 py-2 outline-none text-[12.5px] leading-[1.55] w-full"
-      style={{
-        background: "var(--surface-2)",
-        color: bold ? "var(--text)" : "var(--text-secondary)",
-        fontWeight: bold ? 600 : 400,
-      }}
+      // The compact kit field (MARKYOS_UI §2.6), like every other grid cell editor.
+      className={`mk-field mk-field-sm w-full ${bold ? "font-medium" : "font-normal text-text-secondary"}`}
     />
   );
 }

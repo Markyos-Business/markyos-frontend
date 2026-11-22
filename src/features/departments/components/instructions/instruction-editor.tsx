@@ -100,7 +100,6 @@ export function InstructionEditor({
                   icon="angle-up"
                   iconSize={16}
                   size="xs"
-                  shape="round"
                   onClick={() => move(i, -1)}
                   disabled={i === 0}
                   label={isAr ? "تحريك للأعلى" : "Move up"}
@@ -114,7 +113,6 @@ export function InstructionEditor({
                   icon="angle-down"
                   iconSize={16}
                   size="xs"
-                  shape="round"
                   onClick={() => move(i, 1)}
                   disabled={i === sections.length - 1}
                   label={isAr ? "تحريك للأسفل" : "Move down"}
@@ -125,7 +123,6 @@ export function InstructionEditor({
                   icon="times"
                   iconSize={16}
                   size="xs"
-                  shape="round"
                   onClick={() => write(sections.filter((x) => x.id !== s.id))}
                   label={isAr ? `إزالة ${s.heading || "القسم"}` : `Remove ${s.heading || "section"}`}
                   title={isAr ? `إزالة ${s.heading || "هذا القسم"}` : `Remove ${s.heading || "this section"}`}
@@ -143,8 +140,7 @@ export function InstructionEditor({
                 }
                 placeholder={isAr ? "اكتب التعليمات هنا…" : "Write the instructions for this section…"}
                 onChange={(v) => update(s.id, { body: v })}
-                className="rounded-md p-3 outline-none text-[13px] leading-[1.7]"
-                style={{ background: "var(--surface-1)", color: "var(--text-secondary)" }}
+                className="mk-field w-full font-normal leading-prose"
               />
               {s.sourceFileName && (
                 <span className="text-[10.5px]" style={{ color: "var(--text-faint)" }}>

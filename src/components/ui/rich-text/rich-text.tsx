@@ -420,8 +420,12 @@ const RichTextEditor = ({
   );
 
   return (
+    // A field (MARKYOS_UI §2.6): the control ground, top corners and the
+    // underline, which turns accent while the text has focus and danger when
+    // invalid. The toolbar and the text sit inside it.
     <div
-      className="flex flex-col overflow-hidden rounded-lg bg-surface-2 shadow-edge-editing"
+      data-readonly={readOnly || undefined}
+      className="mk-field flex flex-col overflow-hidden p-0 font-normal"
     >
       <div /* ctl-audit-ignore: the editor toolbar's tight row of formatting icons */
         className="flex shrink-0 flex-wrap items-center gap-0.5 px-2 py-1.5 text-text-muted shadow-rule-b"

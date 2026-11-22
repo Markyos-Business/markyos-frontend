@@ -101,7 +101,6 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                       icon="pen"
                       iconSize={16}
                       size="xs"
-                      shape="round"
                       onClick={() => setEditor({ mode: "edit", color: c })}
                       label={`Edit ${c.name}`}
                       title={`Edit, set primary, or delete ${c.name}`}

@@ -67,7 +67,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
         }}
         aria-label={isAr ? `دليل قسم ${view.name}` : `Guideline text for ${view.name}`}
         placeholder={isAr ? "أو اكتب دليل هذا القسم كنص هنا…" : "…or write this department's guidelines as text here."}
-        className="rounded-lg bg-surface-2 p-3 text-[14px] leading-[1.7] text-text outline-none"
+        className="mk-field w-full font-normal leading-prose"
       />
     </div>
   );

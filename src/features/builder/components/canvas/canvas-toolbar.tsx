@@ -52,9 +52,9 @@ export function CanvasToolbar(b: BuilderPageState) {
             forward again, which makes trying something out cost more. */}
         <span className="flex items-center gap-ctl-row">
           {/* Kit icon buttons (review item 3): the same size and disabled look as every other control. */}
-          <IconButton icon="undo" iconSize={16} size="sm" shape="round" onClick={() => b.undo()} disabled={!b.canUndo} label={isAr ? "تراجع" : "Undo"} title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"} />
+          <IconButton icon="undo" iconSize={16} size="sm" onClick={() => b.undo()} disabled={!b.canUndo} label={isAr ? "تراجع" : "Undo"} title={isAr ? "تراجع (Ctrl+Z)" : "Undo (Ctrl+Z)"} />
           {/* Redo is the undo glyph turned round (the icon set has no redo): the pair stays a mirror image in both directions. */}
-          <IconButton icon="undo" iconSize={16} size="sm" shape="round" className="[&_.la-undo]:-scale-x-100" onClick={() => b.redo()} disabled={!b.canRedo} label={isAr ? "إعادة" : "Redo"} title={isAr ? "إعادة (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z)"} />
+          <IconButton icon="undo" iconSize={16} size="sm" className="[&_.la-undo]:-scale-x-100" onClick={() => b.redo()} disabled={!b.canRedo} label={isAr ? "إعادة" : "Redo"} title={isAr ? "إعادة (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z)"} />
         </span>
         {!activePage && (
           <Button

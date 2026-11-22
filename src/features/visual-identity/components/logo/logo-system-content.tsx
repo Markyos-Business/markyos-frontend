@@ -259,14 +259,13 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               setLogoUsageNotes(ws.id, notesDraft.trim());
               setNotesDraft(null);
             }}
-            className="mk-field resize-none"
+            className="mk-field w-full resize-none font-normal leading-prose"
           />
         ) : (
-          <button /* button-audit-ignore: click-to-edit notes, drawn as the text it opens for editing */
+          <button /* button-audit-ignore: click-to-edit notes, drawn as the field it opens */
             type="button"
             onClick={() => setNotesDraft(ws.logoUsageNotes)}
-            className="bg-surface-2 text-start rounded-lg px-3 py-2.5 text-[14px] cursor-pointer"
-            style={{ color: ws.logoUsageNotes ? "var(--text)" : "var(--text-faint)" }}
+            className={`mk-field w-full cursor-text text-start font-normal leading-prose whitespace-pre-wrap ${ws.logoUsageNotes ? "text-text" : "text-text-faint"}`}
           >
             {ws.logoUsageNotes ||
               (isAr

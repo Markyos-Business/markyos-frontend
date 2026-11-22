@@ -157,18 +157,21 @@ const EditableField = ({
         minRows={multiline ? 3 : 1}
         autoFocus
         aria-label={label}
-        className="rounded-lg bg-surface-2 p-3 text-ui-md leading-prose text-text shadow-edge-accent outline-none"
+        // The kit field (MARKYOS_UI §2.6): its ground, top corners and
+        // underline, the underline turning accent while you type.
+        className="mk-field w-full text-ui-md font-normal leading-prose"
       />
     ) : (
       <button
         type="button"
         onClick={onStart}
         dir="auto"
-        /* p-3 + leading-prose mirror the editor exactly, so switching between
-           reading and editing doesn't shift the text. whitespace-pre-wrap
-           keeps paragraph breaks, which a plain button collapsed into one
-           run-on block. */
-        className={`bidi-auto cursor-pointer rounded-lg bg-surface-2 p-3 text-start text-ui-md leading-prose ${
+        /* Drawn as the field it opens (review, 22 Nov 2026): the same ground,
+           corners, underline and padding as the editor, so it reads as
+           something to type into and the text doesn't shift on click.
+           whitespace-pre-wrap keeps paragraph breaks, which a plain button
+           collapsed into one run-on block. */
+        className={`mk-field bidi-auto w-full cursor-text text-start text-ui-md font-normal leading-prose ${
           richIsEmpty(value) ? "text-text-faint" : "text-text"
         }${rich ? "" : " whitespace-pre-wrap"}`}
       >
