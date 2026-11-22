@@ -7,6 +7,7 @@ import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { traitIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
 import { InlineText, MiniInput } from "../../shared/inputs";
+import { KeyTermsSection } from "./key-terms";
 
 export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useAppActions();
@@ -41,6 +42,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   }
 
   return (
+    <>
     <Section
       title={isAr ? "الشخصية والنبرة" : "Personality & tone"}
       icon="quote-right"
@@ -149,5 +151,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
         </div>
       )}
     </Section>
+    <KeyTermsSection ws={ws} isAr={uiLang(ws) === "ar"} />
+    </>
   );
 }

@@ -42,6 +42,8 @@ type Copy = {
     latin: string;
     arabic: string;
   };
+  voice: { title: string; checks: string; average: string; common: string; score: (n: number) => string; noNote: string };
+  keyTerms: { title: string; say: string; arabic: string; avoid: string };
   quick: {
     title: string;
     check: { label: string; description: string };
@@ -151,6 +153,15 @@ const en: Copy = {
     latin: "Latin",
     arabic: "Arabic",
   },
+  voice: {
+    title: "Voice this month",
+    checks: "Checks run",
+    average: "Average score",
+    common: "Most common note",
+    score: (n) => `${n} / 100`,
+    noNote: "Nothing flagged",
+  },
+  keyTerms: { title: "Key terms", say: "Say", arabic: "Arabic", avoid: "Not" },
   quick: {
     title: "Quick actions",
     check: { label: "Check content", description: "Check copy against the brand's voice" },
@@ -281,6 +292,15 @@ const ar: Copy = {
     latin: "اللاتيني",
     arabic: "العربي",
   },
+  voice: {
+    title: "النبرة هذا الشهر",
+    checks: "الفحوص المحفوظة",
+    average: "متوسط الدرجة",
+    common: "الملاحظة الأكثر تكرارًا",
+    score: (n) => `${n} / 100`,
+    noNote: "لا ملاحظات",
+  },
+  keyTerms: { title: "المصطلحات الأساسية", say: "قل", arabic: "بالعربية", avoid: "لا تقل" },
   quick: {
     title: "إجراءات سريعة",
     check: { label: "فحص المحتوى", description: "طابق النص مع نبرة العلامة" },
