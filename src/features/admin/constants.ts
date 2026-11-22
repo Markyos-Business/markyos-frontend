@@ -65,6 +65,7 @@ export const ADMIN_NAV = [
     label: { en: "Manage", ar: "الإدارة" },
     items: [
       { key: "users", label: { en: "Users", ar: "المستخدمون" }, icon: "users", href: "/admin/users" },
+      { key: "billing", label: { en: "Billing", ar: "الفوترة" }, icon: "credit-card", href: "/admin/billing" },
     ],
   },
 ];

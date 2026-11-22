@@ -4,12 +4,13 @@ import { ContentCard, KeyValueList, StatCard, StatGrid } from "@/components/ui";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { AdminUser } from "../../types";
 import { formatDate, relativeTime } from "../../utils/format";
+import { LimitsSection } from "./limits-section";
 import { UserBrands } from "./user-brands";
 
-type OverviewTabProps = { user: AdminUser; sessionCount: number | null };
+type OverviewTabProps = { user: AdminUser; sessionCount: number | null; onChanged: () => void };
 
-/** The account at a glance: counts, its details, and its brands. */
-export function OverviewTab({ user, sessionCount }: OverviewTabProps) {
+/** The account at a glance: counts, its details, its limits, and its brands. */
+export function OverviewTab({ user, sessionCount, onChanged }: OverviewTabProps) {
   const { c, lang } = useAdminLang();
   const d = c.detail;
   return (
@@ -36,6 +37,8 @@ export function OverviewTab({ user, sessionCount }: OverviewTabProps) {
           ]}
         />
       </ContentCard>
+
+      <LimitsSection user={user} onChanged={onChanged} />
 
       <UserBrands userId={user.id} />
     </div>

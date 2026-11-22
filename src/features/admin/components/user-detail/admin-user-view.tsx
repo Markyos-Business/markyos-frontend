@@ -68,7 +68,7 @@ export function AdminUserView({ id }: { id: string }) {
       />
 
       <TabPanel key={page.tab} id={tabIds.panelId} tabsId={tabIds.id} active={page.tab}>
-        {page.tab === "overview" && <OverviewTab user={account} sessionCount={page.sessions.data?.length ?? null} />}
+        {page.tab === "overview" && <OverviewTab user={account} sessionCount={page.sessions.data?.length ?? null} onChanged={user.reload} />}
         {page.tab === "activity" && <ActivityTab activity={page.activity} />}
         {page.tab === "permissions" && <PermissionsTab user={account} />}
         {page.tab === "sessions" && <SessionsTab user={account} sessions={page.sessions} actions={actions} />}
