@@ -36,20 +36,21 @@ const DateRangeButton = ({ value, onChange, label, placeholder }: DateRangeButto
     <Popover
       label={label ?? t.dateRange}
       className="min-w-0 w-full"
-      trigger="block"
+      look="field"
+      // The field shape (MARKYOS_UI §2.6), drawn on the trigger itself, like
+      // the filter selects beside it; an active range takes the accent tint
+      // and underline.
+      triggerClassName={`text-body font-medium ${active ? "text-accent-on-soft" : "text-text"}`}
+      triggerData={{ "data-filter-control": true, "data-active": active || undefined }}
       describedBy={active ? valueId : undefined}
       onOpen={() => setDraft(value)}
       align="start"
       width={300}
-      button={
-        // The field shape (MARKYOS_UI §2.6), like the filter selects beside it;
-        // an active range takes the accent tint and underline.
-        <span data-filter-control data-active={active || undefined} className={`mk-field flex w-full min-w-0 items-center gap-ctl-icon text-body font-medium ${active ? "text-accent-on-soft" : "text-text"}`}>
-          <Icon name="calendar" size={16} className="shrink-0 text-text-muted" />
-          <span id={valueId} dir="auto" className="min-w-0 flex-1 truncate text-start">{text}</span>
-          <Icon name="angle-down" size={16} className="shrink-0 text-text-muted" />
-        </span>
-      }
+      button={<>
+        <Icon name="calendar" size={16} className="shrink-0 text-text-muted" />
+        <span id={valueId} dir="auto" className="min-w-0 flex-1 truncate text-start">{text}</span>
+        <Icon name="angle-down" size={16} className="shrink-0 text-text-muted" />
+      </>}
     >
       {(close) => (
         <div className="flex flex-col gap-space-4 p-space-5">

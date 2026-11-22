@@ -36,20 +36,17 @@ type ActionsDropdownProps = {
   title?: string;
 };
 
-/** What opens the menu: the ⋯ square for a row, or a labelled outline button. */
-const TriggerLook = ({ label, iconOnly, size = "md" }: { label: string; iconOnly: boolean; size?: "sm" | "md" }) =>
-  iconOnly ? (
-    // A ghost icon button's look (as IconButton draws it).
-    <span data-variant="ghost" className={`${buttonLook("ghost", size)} ${size === "sm" ? "w-ctl-sm" : "w-ctl-md"} !px-0 text-text-muted`}>
-      <Icon name="ellipsis-h" size={18} />
-    </span>
-  ) : (
-    // A secondary button's look, at the control height of its size.
-    <span data-variant="secondary" className={buttonLook("secondary", size)}>
-      {label}
-      <Icon name="ellipsis-h" size={18} />
-    </span>
-  );
+/**
+ * What opens the menu: the ⋯ square for a row (a ghost icon button), or a
+ * labelled secondary button. The look is drawn on the trigger <button> itself,
+ * never on a box inside it, so hover, focus and the open menu each show one
+ * shape (review, 22 Nov 2026).
+ */
+const triggerLook = (iconOnly: boolean, size: "sm" | "md") =>
+  ({ variant: iconOnly ? "ghost" : "secondary", size, iconOnly }) as const;
+
+const TriggerContent = ({ label, iconOnly }: { label: string; iconOnly: boolean }) =>
+  iconOnly ? <Icon name="ellipsis-h" size={18} /> : <>{label}<Icon name="ellipsis-h" size={18} /></>;
 
 /**
  * A row's or a page's secondary actions behind one button.
@@ -77,6 +74,7 @@ const ActionsDropdown = ({ items, label: labelProp, align = "end", iconOnly = fa
   const label = labelProp ?? t.actions;
   const phone = usePhoneViewport();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const look = triggerLook(iconOnly, size);
 
   if (phone) {
     return (
@@ -88,9 +86,11 @@ const ActionsDropdown = ({ items, label: labelProp, align = "end", iconOnly = fa
           aria-label={label}
           title={label}
           onClick={() => setSheetOpen(true)}
-          className="flex cursor-pointer items-center"
+          data-variant={look.variant}
+          data-size={size}
+          className={`${buttonLook(look.variant, size)} ${iconOnly ? `${size === "sm" ? "w-ctl-sm" : "w-ctl-md"} !px-0 text-text-muted` : ""}`}
         >
-          <TriggerLook label={label} iconOnly={iconOnly} size={size} />
+          <TriggerContent label={label} iconOnly={iconOnly} />
         </button>
         <ActionSheet open={sheetOpen} title={title ?? label} items={items} onClose={() => setSheetOpen(false)} />
       </>
@@ -98,7 +98,7 @@ const ActionsDropdown = ({ items, label: labelProp, align = "end", iconOnly = fa
   }
 
   return (
-    <Popover label={label} align={align} width={208} button={<TriggerLook label={label} iconOnly={iconOnly} size={size} />}>
+    <Popover label={label} align={align} width={208} look={look} button={<TriggerContent label={label} iconOnly={iconOnly} />}>
       {(close) => (
         <div role="menu" aria-label={label} onKeyDown={moveInMenu} className="flex flex-col p-space-2">
           {items.map((item) => (

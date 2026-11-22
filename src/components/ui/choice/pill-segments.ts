@@ -15,7 +15,7 @@ const pillTrackStyle: CSSProperties = { background: "var(--surface-2)" };
 
 /** `iconOnly` makes a 28px circle; text segments keep the height and grow sideways. */
 const pillSegment = (iconOnly = false) =>
-  `flex h-7 cursor-pointer items-center justify-center gap-space-2 whitespace-nowrap rounded-full text-caption font-medium transition-[background-color,color] disabled:cursor-not-allowed disabled:opacity-50 ${iconOnly ? "w-7" : "px-space-4"}`;
+  `mk-shaped flex h-7 cursor-pointer items-center justify-center gap-space-2 whitespace-nowrap rounded-full text-caption font-medium transition-[background-color,color] disabled:cursor-not-allowed disabled:opacity-50 ${iconOnly ? "w-7" : "px-space-4"}`;
 
 const pillSegmentStyle = (on: boolean): CSSProperties => ({
   background: on ? "var(--surface-0)" : "transparent",

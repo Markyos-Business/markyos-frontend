@@ -95,7 +95,7 @@ const Switch = ({ checked, onToggle, label, disabled = false, loading = false }:
       onClick={onToggle}
       // The button is 24px tall so the target clears WCAG 2.5.8's 24px floor;
       // the switch it draws is the spec's 22px.
-      className="relative flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-switch disabled:cursor-not-allowed disabled:opacity-58"
+      className="mk-shaped relative flex h-5.5 w-10 shrink-0 cursor-pointer items-center rounded-switch disabled:cursor-not-allowed disabled:opacity-58"
     >
       <SwitchMark checked={checked} />
     </button>

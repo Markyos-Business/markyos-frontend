@@ -20,9 +20,10 @@
    disabled primary is a pale accent and a disabled secondary a faint outline:
    never mistaken for an enabled button, and no enabled button looks disabled. */
 .mk-family-button[aria-disabled="true"]:not([data-status="loading"]), .mk-family-button:disabled { opacity: var(--control-disabled-opacity, .45); }
-/* Ghost: transparent at rest, a soft fill on hover and press (not in chrome marked mk-no-hover). */
-.mk-family-button[data-variant="ghost"]:not(:disabled):not([aria-disabled="true"]):is(:hover, [data-state="hover"], :active, [data-state="pressed"], .is-active) { background: var(--ink-soft); }
-.mk-no-hover .mk-family-button[data-variant="ghost"]:not(.is-active):hover { background: transparent; }
+/* Ghost: transparent at rest, a soft fill on hover and press (not in chrome marked mk-no-hover).
+   A menu trigger whose menu is open (aria-expanded) keeps the hover look: the same one layer. */
+.mk-family-button[data-variant="ghost"]:not(:disabled):not([aria-disabled="true"]):is(:hover, [data-state="hover"], :active, [data-state="pressed"], .is-active, [aria-expanded="true"]) { background: var(--ink-soft); }
+.mk-no-hover .mk-family-button[data-variant="ghost"]:not(.is-active):not([aria-expanded="true"]):hover { background: transparent; }
 .mk-family-button[data-skeleton="true"] > * { visibility: hidden; }
 .mk-button-group > :not(:first-child), .mk-button-group > :not(:first-child) > .mk-family-button { border-start-start-radius: 0; border-end-start-radius: 0; }
 .mk-button-group > :not(:last-child), .mk-button-group > :not(:last-child) > .mk-family-button { border-start-end-radius: 0; border-end-end-radius: 0; }
@@ -44,7 +45,7 @@
 .mk-button-group > :focus-within { z-index: 1; }
 .mk-button-group[data-orientation="vertical"] > * + * { margin-inline-start: 0; margin-block-start: -1px; }
 /* A full legacy scrim drops accent text below 4.5:1. Keep state veils subtle. */
-.mk-family-button:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus-visible, .is-active, [data-state="hover"], [data-state="focus"])::after { opacity: .1; }
+.mk-family-button:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus-visible, .is-active, [aria-expanded="true"], [data-state="hover"], [data-state="focus"])::after { opacity: .1; }
 .mk-family-button:not(:disabled):not([aria-disabled="true"]):is(:active, [data-state="pressed"])::after { opacity: .15; }
 
 /* Tabs family: colour-only feedback, with an optional measured underline. */
