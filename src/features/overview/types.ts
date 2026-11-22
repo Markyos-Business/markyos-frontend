@@ -69,4 +69,6 @@ export type OverviewData = {
   shareLinks?: SharedLink[];
   activity?: ActivityEvent[];
   counts?: { draftsWaiting: number };
+  /** Blocks the server couldn't work out this time; each shows its own error with a retry. */
+  errors?: ("attention" | "glance" | "people" | "contact" | "links" | "activity")[];
 };

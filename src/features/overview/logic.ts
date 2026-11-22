@@ -109,5 +109,6 @@ export function glanceSlots(g: Glance | null) {
 export function isNewBrand(data: OverviewData): boolean {
   const steps = data.steps ?? [];
   const started = steps.some((s) => s.state !== "not_started");
-  return !started && !data.attention?.length && !data.activity?.length && !data.site.published;
+  // A block that failed can't say it's empty: show the blocks, with its error.
+  return !started && !data.errors?.length && !data.attention?.length && !data.activity?.length && !data.site.published;
 }

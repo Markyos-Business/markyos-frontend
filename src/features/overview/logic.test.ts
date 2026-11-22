@@ -72,6 +72,8 @@ describe("Overview empty states", () => {
     expect(isNewBrand(data({ steps: [{ key: "discover", state: "in_progress" }] }))).toBe(false);
     expect(isNewBrand(data({ attention: [{ type: "drafts_waiting", at: 1, count: 1 }] }))).toBe(false);
     expect(isNewBrand(data({ site: { ...data().site, published: true } }))).toBe(false);
+    // A failed block can't say it's empty, so its error shows instead of a bare page.
+    expect(isNewBrand(data({ errors: ["activity"] }))).toBe(false);
   });
 
   it("knows which brand slots have data", () => {

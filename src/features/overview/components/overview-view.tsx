@@ -88,6 +88,21 @@ function OpenSite({ href, label }: { href: string; label: string }) {
   );
 }
 
+/**
+ * One block of the page. A block the server couldn't work out (named in
+ * `errors`) shows its own error with Try again, and the rest of the page
+ * works; a block with nothing to show is left out.
+ */
+function Block({ block, data, title, copy, onRetry, show, className, children }: { block: NonNullable<OverviewData["errors"]>[number]; data: OverviewData; title: string; copy: OverviewCopy; onRetry: () => void; show: boolean; className?: string; children: ReactNode }) {
+  const failed = !!data.errors?.includes(block);
+  if (!failed && !show) return null;
+  return (
+    <div className={className}>
+      {failed ? <DashboardCard title={title} state="error" errorMessage={copy.error.block} onRetry={onRetry} /> : children}
+    </div>
+  );
+}
+
 /** The page's one primary button, from the stage (worked out on the server). */
 function MainAction({ data, slug, site, copy, onHandOff }: Pick<OverviewViewProps, "slug" | "site" | "copy" | "onHandOff"> & { data: OverviewData }) {
   const action = data.mainAction;
@@ -131,7 +146,7 @@ function SharePopover({ data, slug, site, copy, isAr }: { data: OverviewData; sl
   );
 }
 
-function ProjectOverview({ data, slug, isAr, copy, site, onSkip, onHandOff }: OverviewViewProps & { data: OverviewData }) {
+function ProjectOverview({ data, slug, isAr, copy, site, onSkip, onHandOff, onRetry }: OverviewViewProps & { data: OverviewData }) {
   const canEdit = canEditRole(data.role);
   const fresh = isNewBrand(data);
   const stage = data.stage ?? null;
@@ -160,11 +175,9 @@ function ProjectOverview({ data, slug, isAr, copy, site, onSkip, onHandOff }: Ov
     return (
       <div className={page}>
         <div className={wide}>{header}</div>
-        {data.glance && (
-          <div className={wide}>
-            <BrandGlanceCard glance={data.glance} mode="home" slug={slug} copy={copy} isAr={isAr} links={data.role !== "client"} />
-          </div>
-        )}
+        <Block block="glance" data={data} title={copy.soFar.glanceTitle} copy={copy} onRetry={onRetry} show={!!data.glance} className={wide}>
+          <BrandGlanceCard glance={data.glance} mode="home" slug={slug} copy={copy} isAr={isAr} links={data.role !== "client"} />
+        </Block>
       </div>
     );
   }
@@ -181,34 +194,26 @@ function ProjectOverview({ data, slug, isAr, copy, site, onSkip, onHandOff }: Ov
       {!fresh && (
         <>
           <div className={column}>
-            <div className={at(2)}>
+            <Block block="attention" data={data} title={copy.attention.title} copy={copy} onRetry={onRetry} show className={at(2)}>
               <AttentionCard items={data.attention ?? []} slug={slug} copy={copy} isAr={isAr} />
-            </div>
-            <div className={at(4)}>
+            </Block>
+            <Block block="glance" data={data} title={copy.soFar.title} copy={copy} onRetry={onRetry} show className={at(4)}>
               <BrandGlanceCard glance={data.glance} mode="project" slug={slug} copy={copy} isAr={isAr} />
-            </div>
+            </Block>
           </div>
           <div className={column}>
-            {data.contact && (
-              <div className={at(5)}>
-                <ContactCard contact={data.contact} copy={copy} />
-              </div>
-            )}
-            {!!data.people?.length && (
-              <div className={at(5)}>
-                <PeopleCard people={data.people} title={copy.side.team} copy={copy} />
-              </div>
-            )}
-            {!!data.shareLinks?.length && (
-              <div className={at(6)}>
-                <LinksCard links={data.shareLinks} copy={copy} isAr={isAr} />
-              </div>
-            )}
-            {!!data.activity?.length && (
-              <div className={at(6)}>
-                <ActivityCard events={data.activity} copy={copy} isAr={isAr} />
-              </div>
-            )}
+            <Block block="contact" data={data} title={copy.side.contact} copy={copy} onRetry={onRetry} show={!!data.contact} className={at(5)}>
+              {data.contact && <ContactCard contact={data.contact} copy={copy} />}
+            </Block>
+            <Block block="people" data={data} title={copy.side.team} copy={copy} onRetry={onRetry} show={!!data.people?.length} className={at(5)}>
+              <PeopleCard people={data.people ?? []} title={copy.side.team} copy={copy} />
+            </Block>
+            <Block block="links" data={data} title={copy.side.links} copy={copy} onRetry={onRetry} show={!!data.shareLinks?.length} className={at(6)}>
+              <LinksCard links={data.shareLinks ?? []} copy={copy} isAr={isAr} />
+            </Block>
+            <Block block="activity" data={data} title={copy.side.activity} copy={copy} onRetry={onRetry} show={!!data.activity?.length} className={at(6)}>
+              <ActivityCard events={data.activity ?? []} copy={copy} isAr={isAr} />
+            </Block>
           </div>
         </>
       )}
@@ -216,7 +221,7 @@ function ProjectOverview({ data, slug, isAr, copy, site, onSkip, onHandOff }: Ov
   );
 }
 
-function BrandHome({ data, slug, isAr, copy, site }: OverviewViewProps & { data: OverviewData }) {
+function BrandHome({ data, slug, isAr, copy, site, onRetry }: OverviewViewProps & { data: OverviewData }) {
   const canEdit = canEditRole(data.role);
   const owner = data.role === "owner";
   const fresh = isNewBrand(data);
@@ -268,7 +273,9 @@ function BrandHome({ data, slug, isAr, copy, site }: OverviewViewProps & { data:
       <div className={page}>
         <div className={wide}>{header}</div>
         {quickBlock && <div className={wide}>{quickBlock}</div>}
-        {data.glance && <div className={wide}>{glance}</div>}
+        <Block block="glance" data={data} title={copy.soFar.glanceTitle} copy={copy} onRetry={onRetry} show={!!data.glance} className={wide}>
+          {glance}
+        </Block>
       </div>
     );
   }
@@ -278,22 +285,20 @@ function BrandHome({ data, slug, isAr, copy, site }: OverviewViewProps & { data:
       <div className={`${wide} ${at(1)}`}>{header}</div>
       <div className={column}>
         {quickBlock && <div className={at(3)}>{quickBlock}</div>}
-        <div className={at(4)}>{glance}</div>
+        <Block block="glance" data={data} title={copy.soFar.glanceTitle} copy={copy} onRetry={onRetry} show className={at(4)}>
+          {glance}
+        </Block>
       </div>
       <div className={column}>
-        <div className={at(2)}>
+        <Block block="attention" data={data} title={copy.attention.title} copy={copy} onRetry={onRetry} show className={at(2)}>
           <AttentionCard items={data.attention ?? []} slug={slug} copy={copy} isAr={isAr} />
-        </div>
-        {!!data.people?.length && (
-          <div className={at(5)}>
-            <PeopleCard people={data.people} title={copy.side.people} copy={copy} />
-          </div>
-        )}
-        {!!data.activity?.length && (
-          <div className={at(6)}>
-            <ActivityCard events={data.activity} copy={copy} isAr={isAr} />
-          </div>
-        )}
+        </Block>
+        <Block block="people" data={data} title={copy.side.people} copy={copy} onRetry={onRetry} show={!!data.people?.length} className={at(5)}>
+          <PeopleCard people={data.people ?? []} title={copy.side.people} copy={copy} />
+        </Block>
+        <Block block="activity" data={data} title={copy.side.activity} copy={copy} onRetry={onRetry} show={!!data.activity?.length} className={at(6)}>
+          <ActivityCard events={data.activity ?? []} copy={copy} isAr={isAr} />
+        </Block>
       </div>
     </div>
   );
