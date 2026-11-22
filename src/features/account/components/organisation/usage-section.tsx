@@ -10,9 +10,9 @@ export function UsageSection({ stats, richness }: AccountPageState["usage"]) {
   return (
     <Section title={t("Usage analytics", "تحليلات الاستخدام")} icon="chart-line">
       <Stagger className="grid grid-cols-2 sm:grid-cols-4 gap-space-4">
-        <StatTile value={stats.workspaces} label={t("Workspaces", "مساحات العمل")} />
+        <StatTile value={stats.workspaces} label={t("Brands", "العلامات")} />
         <StatTile value={stats.shared} label={t("Shared with clients", "مشاركة مع العملاء")} />
-        <StatTile value={stats.colors} label={t("Colors defined", "ألوان معرّفة")} />
+        <StatTile value={stats.colors} label={t("Colours defined", "ألوان معرّفة")} />
         <StatTile value={stats.logos} label={t("Logo files", "ملفات الشعار")} />
         <StatTile value={stats.signOffs} label={t("Sign-off notes", "ملاحظات الاعتماد")} />
         <StatTile value={stats.approvals} label={t("Change proposals", "مقترحات التغيير")} />

@@ -261,6 +261,22 @@ for (const [name, T] of THEMES) {
     );
   }
 
+  // Form-control edges (UX-CON-001): the underline has to be found against
+  // the field's own ground (the control fill over the card) and against the
+  // card around it, at WCAG 1.4.11's 3:1, on every surface a form sits on.
+  const fill = T.__alpha["ink-soft"];
+  for (const token of ["control-border", "control-border-hover"]) {
+    const edge = T.__alpha[token];
+    if (!edge || !fill) throw new Error(`--${token} and --ink-soft must be rgba() tokens in the ${name} theme`);
+    const worst = CARD_SURFACES.flatMap((g) => {
+      const ground = composite(fill, T[g]);
+      return [{ g, r: ratio(composite(edge, ground), ground) }, { g: `${g} (card)`, r: ratio(composite(edge, T[g]), T[g]) }];
+    }).sort((x, y) => x.r - y.r)[0];
+    const ok = worst.r >= NON_TEXT_FLOOR;
+    if (!ok) failures++;
+    rows.push(`${ok ? "ok  " : "FAIL"}  ${token.padEnd(15)} worst on ${worst.g.padEnd(17)} ${worst.r.toFixed(2)}:1  (needs ${NON_TEXT_FLOOR}, non-text)`);
+  }
+
   const edgeRgba = T.__alpha["hairline-strong"];
   if (!edgeRgba) throw new Error(`--hairline-strong is not an rgba() token in the ${name} theme`);
   for (const surface of CARD_SURFACES) {

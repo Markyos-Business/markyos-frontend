@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
+import { ActionsDropdown, Button, EmptyHint, Row, Section, useDialog, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
@@ -49,7 +49,7 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
 
   return (
     <Section title={t("Version history", "سجل الإصدارات")} icon="history">
-      {canEdit && <div className="flex items-end gap-2.5">
+      {canEdit && <div className="flex items-end gap-ctl-row">
         <InputField
           size="sm"
           value={label}
@@ -59,7 +59,7 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
           placeholder={t("Label this version — e.g. Before campaign refresh", "سمِّ هذا الإصدار، مثل: قبل تحديث الحملة")}
           className="flex-1"
         />
-        <Button variant="outline" size="sm" onClick={save}>
+        <Button variant="secondary" size="sm" onClick={save}>
           {t("Save current as version", "حفظ الحالي كإصدار")}
         </Button>
       </div>}
@@ -71,11 +71,16 @@ export function VersionHistorySection({ ws, isAr, actorName, canEdit }: VersionH
             <Row
               key={v.id}
               label={v.label}
-              hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colors"}`}
+              hint={`${v.createdBy} · ${formatRelative(v.createdAt)} · ${v.colors.length} ${isAr ? "ألوان" : "colours"}`}
               right={
-                canEdit && <Button variant="ghost" size="xs" onClick={() => void restore(v)}>
-                  {t("Restore", "استعادة")}
-                </Button>
+                canEdit && (
+                  <ActionsDropdown
+                    iconOnly
+                    size="sm"
+                    label={t(`${v.label} actions`, `إجراءات ${v.label}`)}
+                    items={[{ label: t("Restore", "استعادة"), icon: "history", tone: "warning", onSelect: () => void restore(v) }]}
+                  />
+                )
               }
             />
           ))}

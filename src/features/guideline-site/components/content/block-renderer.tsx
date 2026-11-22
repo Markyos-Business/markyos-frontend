@@ -1,5 +1,6 @@
 "use client";
 
+import { downloadOnClick } from "@/lib/download";
 import { createContext, FormEvent, useContext, useMemo, useState, ReactNode } from "react";
 import { Icon, useUiStrings } from "@/components/ui";
 import { BLOCK_META } from "../../utils/block-catalog";
@@ -542,6 +543,7 @@ function BlockBody({ block, ws, isAr }: { block: PageBlock; ws: Workspace; isAr:
             key={f.id}
             href={f.url}
             download={f.fileName}
+            onClick={downloadOnClick(f.url, f.fileName)}
             className="flex items-center gap-3 rounded-card px-4 py-3"
             style={{ background: "var(--surface-1)" }}
           >

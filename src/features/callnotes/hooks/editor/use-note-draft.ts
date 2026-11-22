@@ -5,6 +5,7 @@ import { ApiError } from "@/lib/api/client";
 import { updateNote } from "../../api/call-notes.api";
 import type { CallNote, NoteDraft } from "../../types";
 import { today } from "../../utils/format";
+import { errorText } from "@/lib/api/errorText";
 
 const LOCAL_DELAY_MS = 600;
 const SERVER_DELAY_MS = 1000;
@@ -47,13 +48,14 @@ function readLocal(brandId: string): NoteDraft | null {
  * itself to the server shortly after each change, carrying the version it
  * was edited from so it can't overwrite a newer copy.
  */
-export function useNoteDraft(brandId: string, note?: CallNote) {
+export function useNoteDraft(brandId: string, note: CallNote | undefined, isAr: boolean) {
   const editing = !!note;
   const [draft, setDraft] = useState<NoteDraft>(() => (note ? fromNote(note) : blank()));
   const [restored, setRestored] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // The failure itself; it becomes words at render, in the reader's language.
+  const [error, setError] = useState<unknown>(null);
   const [conflict, setConflict] = useState<CallNote | null>(null);
   const [dirty, setDirty] = useState(false);
   const version = useRef(note?.version ?? 0);
@@ -95,7 +97,7 @@ export function useNoteDraft(brandId: string, note?: CallNote) {
         return true;
       } catch (err) {
         if (err instanceof ApiError && err.status === 409) setConflict((err.data as { current?: CallNote })?.current ?? null);
-        setError(err instanceof Error ? err.message : "That didn't save.");
+        setError(err ?? new Error());
         return false;
       } finally {
         setSaving(false);
@@ -145,5 +147,6 @@ export function useNoteDraft(brandId: string, note?: CallNote) {
     }
   }, [brandId]);
 
-  return { draft, change, flush, restored, savedAt, saving, error, conflict, unsaved, discardLocal };
+  const message = error === null ? null : errorText(error, isAr ? "ar" : "en", { en: "That didn't save.", ar: "لم يُحفظ ذلك." });
+  return { draft, change, flush, restored, savedAt, saving, error: message, conflict, unsaved, discardLocal };
 }

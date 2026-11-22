@@ -99,7 +99,7 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
   // Nothing to clear in a field that can't change.
   const protectedField = Boolean(rest.disabled || rest.readOnly);
   return (
-    <label className={`${fieldClasses(size)} flex items-center gap-space-3 ${fullWidth ? "" : "sm:w-65"}`}>
+    <label className={`${fieldClasses(size)} flex items-center gap-ctl-icon ${fullWidth ? "" : "sm:w-65"}`}>
       <Icon name="search" size={size === "sm" ? 16 : 18} className="shrink-0 text-text-muted" />
       <span className="sr-only">{label}</span>
       <input
@@ -127,7 +127,7 @@ const SearchField = ({ label, onDebouncedChange, debounceMs = 300, shortcut = fa
           }
           inputProps.onKeyDown?.(e);
         }}
-        className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-[12.5px]" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled [&::-webkit-search-cancel-button]:hidden`}
+        className={`min-w-0 flex-1 bg-transparent font-medium ${size === "sm" ? "text-control-sm" : "text-body"} text-text outline-none placeholder:font-normal placeholder:text-text-disabled [&::-webkit-search-cancel-button]:hidden`}
       />
       {hasText && !protectedField && <IconButton icon="times" label={clearLabel ?? t.clearField(label)} onClick={clear} className="-me-space-2 shrink-0 text-text-muted" />}
       {shortcut && (

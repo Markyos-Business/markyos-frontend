@@ -100,10 +100,10 @@ const ImageUpload = ({ label, description, value, onChange, aspect = 16 / 9, out
         <img src={value} alt={t.imagePreview(label)} className="size-full object-cover" />
       </div>
       <div className="flex flex-wrap gap-space-3">
-        <Button size="sm" variant="outline" icon={<Icon name="expand" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => crop.open(value)}>
+        <Button size="sm" variant="secondary" icon={<Icon name="expand" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => crop.open(value)}>
           {t.crop}
         </Button>
-        <Button size="sm" variant="outline" icon={<Icon name="upload" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => picker.current?.click()}>
+        <Button size="sm" variant="secondary" icon={<Icon name="upload" size={16} />} disabled={disabled} aria-describedby={note ? noteId : undefined} onClick={() => picker.current?.click()}>
           {t.replace}
         </Button>
         <Button size="sm" variant="ghost" icon={<Icon name="trash" size={16} />} disabled={disabled} onClick={() => onChange(null)}>
@@ -168,7 +168,7 @@ const AvatarUpload = ({ label, value, onChange, initials, outputWidth = 512, acc
           <Avatar initials={initials} src={value} size={96} />
         </div>
         <div className="flex flex-col items-start gap-space-3">
-          <Button size="sm" variant="outline" icon={<Icon name="upload" size={16} />} disabled={disabled} onClick={() => picker.current?.click()}>
+          <Button size="sm" variant="secondary" icon={<Icon name="upload" size={16} />} disabled={disabled} onClick={() => picker.current?.click()}>
             {value ? t.changePhoto : t.uploadPhoto}
           </Button>
           {value && (

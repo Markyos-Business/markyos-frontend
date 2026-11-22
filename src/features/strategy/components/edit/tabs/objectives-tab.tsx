@@ -40,19 +40,19 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "الأهداف" : "Objectives"}
       icon="bullseye"
       right={
-        <Button variant="link" onClick={() => setAdding((v) => !v)}>
+        <Button variant="ghost" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
         </Button>
       }
     >
       {adding && (
-        <form onSubmit={submit} className="flex flex-col gap-space-4 rounded-widget bg-surface-2 p-space-6">
+        <form onSubmit={submit} className="flex flex-col gap-field-stack-compact rounded-widget bg-surface-2 p-space-6">
           <MiniInput
             value={text}
             onChange={setText}
             placeholder={isAr ? "الهدف — مثلًا: ضاعف المبيعات عبر الإنترنت في الرياض" : "Objective — e.g. Double online sales in Riyadh"}
           />
-          <div className="flex flex-wrap gap-space-4">
+          <div className="flex flex-wrap gap-ctl-row">
             <SelectInput aria-label={isAr ? "النوع" : "Kind"} value={kind} onChange={(value) => setKind(value as ObjectiveKind)} options={kindOptions} />
             <SelectInput
               aria-label={isAr ? "الأولوية" : "Priority"}
@@ -61,7 +61,7 @@ export function ObjectivesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
               options={priorityOptions}
             />
           </div>
-          <Button type="submit" variant="solid" size="sm" className="self-start">
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة هدف" : "Add objective"}
           </Button>
         </form>

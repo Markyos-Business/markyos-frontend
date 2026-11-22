@@ -88,7 +88,7 @@ const AssetDrawer = ({ t }: { t: Tr }) => {
           </span>
         </div>
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           icon={<Icon name="pen" size={16} />}
           onClick={() => setOpen(true)}

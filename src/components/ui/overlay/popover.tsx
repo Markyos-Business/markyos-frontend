@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonLook, type ButtonSize, type ButtonVariant } from "../button/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { usePresence } from "@/hooks/usePresence";
@@ -10,9 +11,23 @@ type PopoverAlign = "start" | "end";
 
 const FOCUSABLE = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
+/**
+ * The trigger's look, drawn on the trigger <button> itself (review, 22 Nov
+ * 2026): one element owns hover, focus and the open state, so a ⋯ never shows
+ * a square veil behind a rounded button. A kit button look, or `field` for a
+ * field-shaped trigger (a date range).
+ */
+type PopoverLook = { variant: ButtonVariant; size: ButtonSize; iconOnly?: boolean } | "field";
+
 type PopoverProps = {
-  /** What the trigger looks like. Rendered inside the trigger button. */
+  /** The trigger's content: an icon, a label. With `look`, never a styled box of its own. */
   button: ReactNode;
+  /** Draws the trigger as a kit button or a field; see PopoverLook. */
+  look?: PopoverLook;
+  /** Classes added to the trigger <button> (layout, or a field's text colour). */
+  triggerClassName?: string;
+  /** Data attributes on the trigger <button>: a field's `data-state`, a filter's `data-active`. */
+  triggerData?: Record<`data-${string}`, string | boolean | undefined>;
   /** Accessible name for the trigger. */
   label: string;
   /** Which edge of the trigger the panel lines up with, in logical terms. */
@@ -44,10 +59,20 @@ const triggers = {
   plain: "flex cursor-pointer items-center",
   // Fills its row: a field-shaped trigger (a date range).
   block: "flex w-full cursor-pointer items-center",
-  pill: "mk-btn inline-flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg bg-surface-2 px-3.5 text-[12px] font-medium leading-none text-text",
+  // A secondary sm button (Share, the review chip): it was its own 32px grey
+  // pill, the same fill as a disabled button (review, 22 Nov 2026).
+  pill: buttonLook("secondary", "sm"),
 };
 
-const Popover = ({ button, label, align = "end", width = 260, className, trigger = "plain", children, describedBy, onOpen }: PopoverProps) => {
+const iconWidths: Record<ButtonSize, string> = { xs: "w-ctl-xs", sm: "w-ctl-sm", md: "w-ctl-md", lg: "w-ctl-lg" };
+
+function lookClasses(look: PopoverLook): string {
+  if (look === "field") return "mk-field flex w-full min-w-0 items-center gap-ctl-icon text-start";
+  const icon = look.iconOnly ? `${iconWidths[look.size]} !px-0 ${look.variant === "ghost" ? "text-text-muted" : ""}` : "";
+  return `${buttonLook(look.variant, look.size)} ${icon}`;
+}
+
+const Popover = ({ button, look, triggerClassName = "", triggerData, label, align = "end", width = 260, className, trigger = "plain", children, describedBy, onOpen }: PopoverProps) => {
   const [open, setOpen] = useState(false);
   const { mounted, closing } = usePresence(open);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -108,7 +133,10 @@ const Popover = ({ button, label, align = "end", width = 260, className, trigger
           if (!open) onOpen?.();
           setOpen(!open);
         }}
-        className={triggers[trigger]}
+        {...triggerData}
+        data-variant={look && look !== "field" ? look.variant : undefined}
+        data-size={look && look !== "field" ? look.size : undefined}
+        className={`${look ? lookClasses(look) : triggers[trigger]} ${triggerClassName}`}
       >
         {button}
       </button>

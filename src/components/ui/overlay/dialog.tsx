@@ -57,6 +57,8 @@ interface PromptOptions {
   confirmLabel?: string;
   cancelLabel?: string;
   hint?: string;
+  /** `danger` when the answer starts something destructive (a reason for ending a plan): the action turns red. */
+  tone?: "neutral" | "danger";
   isAr?: boolean;
 }
 

@@ -12,7 +12,7 @@ export default function StudioFormsPage() {
   return (
     <div dir={page.isAr ? "rtl" : "ltr"} className="flex h-screen flex-col">
       <StudioHeader isAr={page.isAr} end={<AccountMenu isAr={page.isAr} />} />
-      <PageContainer offline={<NeedsServer isAr={page.isAr} />}>
+      <PageContainer spaced offline={<NeedsServer isAr={page.isAr} />}>
         <FormsListView {...page.view} />
       </PageContainer>
     </div>

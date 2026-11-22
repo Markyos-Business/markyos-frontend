@@ -18,7 +18,7 @@ There are two visual layers. Keep them separate:
 
 | Layer | Use for | Token prefix | Fonts |
 |---|---|---|---|
-| **Product UI** (dark) | The app: dashboards, asset library, review, billing | `--primary`, `--text-*`, `--space-*`… | Inter (+ Thmanya Sans for Arabic) |
+| **Product UI** (dark) | The app: dashboards, asset library, review, billing | `--primary`, `--text-*`, `--space-*`… | Inter (+ IBM Plex Sans Arabic for Arabic) |
 | **Markyos Light** (marketing identity) | Website, social, campaigns, decks | `--mk-*` | Inter display / Bricolage Grotesque for brand; Thmanya Sans for Arabic |
 
 Bricolage Grotesque is the **brand** face (wordmark, marketing display). Never use it in product chrome.
@@ -283,14 +283,49 @@ Widget rows and sunken areas use `--surface-sunken` (white at 4%).
 | 12px oval (`rounded-badge`) | badge |
 
 **In code** every corner is one of the named utilities: `rounded-sm` (4), `rounded-md` (6), `rounded-lg` (8), `rounded-card` (15), `rounded-badge`, `rounded-switch`, `rounded-spark`, `rounded-full`.
-The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, round icon buttons, switches, radios): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label).
+The rule of thumb: a surface on the page (card, panel, dialog, menu) and the rows and tiles inside it are `card`; controls (buttons, fields, tags, icon tiles) are `lg`; tiny marks are `sm`/`md`. Only circles are `full` (avatars, dots, the floating action button, switches, radios; since 2026-11-22 an icon button takes the control corner like every other button): **a button, tab or chip with text is never a pill**, it is `lg` (or `md` for a small status label). **One exception (decided 2026-11-20):** every "choose one" control — mode, language, Edit/Read, canvas width, All/Unread, weights, status — is a pill: a round track with round segments, the chosen one raised on `--surface-0` in the accent. They all draw from `src/components/ui/choice/pill-segments.ts` (`SegmentedToggle`, `SegmentedControl`, `LangToggle`, `ThemeToggle`); never style one by hand.
 Tailwind's `xl`/`2xl`/`3xl` and arbitrary `rounded-[…]` values are refused by `scripts/radius-audit.mjs` (in `npm run check`). The guideline-site templates are exempt: they follow the client brand's own `--g-radius-*` theme.
+
+
+### 2.6 Form controls (decided 2026-11-21, UX-CON-001)
+
+Every input, select, textarea, combobox, date picker and button reads one token set from `tailwind/tokens.js`. Controls of the same size share a height, a corner and a focus treatment, so a search field, a sort select and a button in one row line up.
+
+| Token | Dark | Light | Tailwind |
+|---|---|---|---|
+| `--control-radius` | 8px | 8px | `rounded-control` |
+| `--control-border-width` / `-focus` | 1px / 2px | 1px / 2px | — |
+| `--control-border` (the underline) | white 40% (3.8:1 on `#111`) | ink 50% (3.7:1 on white) | — |
+| `--control-border-hover` | white 56% | ink 64% | — |
+| `--control-border-focus` / `-error` / `-success` / `-warning` | `--accent` / `--danger` / `--success` / `--warning` | same | — |
+| `--control-bg` | `--ink-soft` (white 10%) | `--ink-soft` (ink 6%) | — |
+| `--control-bg-hover` | `--ink-soft` mixed with 6% `--text` | same | — |
+| `--control-bg-disabled` | white 4% | ink 3% | — |
+| `--control-height-xs` / `-sm` / `-md` / `-lg` | 28 / 32 / 40 / 46px; on a touch screen `sm` and `md` are 44px and `xs` buttons get a 44px target | same | `h-ctl-xs` … `h-ctl-lg` |
+| `--control-padding-x-sm` / `-md` / `-lg` | 10 / 14 / 18px | same | `px-ctl-px-sm` … |
+| `--focus-ring-width` / `-offset` / `-color` | 2px / 2px / `--accent` | same | — |
+| Compact field value | 12.5px | same | `text-control-sm` |
+| `--control-gap` (icon to label inside a control) | 8px | same | `gap-ctl-icon` |
+| `--control-padding-y-sm` / `-md` (fields) | 5 / 9px | same | `py-ctl-py-*` |
+| `--field-label-gap` / `-sm` (label and note to field) | 5 / 4px | same | `gap-field-label`, `gap-field-label-sm` |
+| `--control-row-gap` (controls side by side) | 8px | same | `gap-ctl-row` |
+| `--field-stack-gap` / `-compact` (fields in a form; dense panels) | 18 / 8px | same | `gap-field-stack`, `gap-field-stack-compact` |
+| `--form-column-gap` / `--form-section-gap` | 25 / 25px | same | `gap-x-form-col`, `gap-form-section` |
+
+- **Fields** (text, email, password, number, search, textarea, select, combobox, date) keep §6.5's shape: the `--control-bg` ground and a `--control-border` underline, with `--control-radius` on the top corners only. State is the underline: hover, focus (2px accent), error, success, warning; read-only is dashed.
+- **Fields you edit in place are fields** (decided 2026-11-22): click-to-edit text (`EditableField`), the rich-text editor (`RichTextEditor`, `RichTextField`), auto-growing textareas and grid-cell editors all take `.mk-field` (`mk-field-sm` in dense grids), in their read state too, so anything you can type into has the field's ground, top corners and underline. The only typing surfaces drawn otherwise are canvas and document content: the builder canvas, moodboard notes and the Overview document.
+- **Buttons** keep their variant fills and take `--control-radius` and the same heights (`xs` is the dense in-row size, buttons only). No button is round except the floating action button. They show focus with the ring (§1.7); fields show it on the underline. Focus never changes a control's corners.
+- **Toolbar selects** (`SortControl`, `FilterSelectField`) are fields too, not boxes; an active filter takes the accent tint and an accent underline.
+- **Border contrast:** `--control-border` replaces `--border-strong` (white 20%, 1.84:1) as the underline, because WCAG 1.4.11 asks 3:1 of a control's boundary. `scripts/contrast-audit.mjs` holds both themes at 3:1 on every card surface. Card edges (`--hairline-strong`) are not controls and stay as they are.
+- **Spacing around controls** comes from the rows above, all steps of the §2.4 scale: one gap inside controls, one between controls in a row, and two between fields (`FormGrid` and `Fieldset` take `density="compact"` for dense panels). Card padding, page margins and section spacing outside forms are not part of this set.
+- **Enforced** by `scripts/control-audit.mjs` (in `npm run check`, or `npm run lint:controls`): on native and kit controls it refuses arbitrary corner, border, background, shadow, height and padding values, fixed inline styles, Tailwind number heights and number gaps in rows of controls. The baseline (`scripts/control-audit.baseline.json`) is empty since 2026-11-21: every case is on the tokens or marked in place. A deliberate exception — canvas content that scales with zoom, image tiles, a mark inside another control — carries `ctl-audit-ignore: <reason>` on its tag.
+- **Exempt:** guideline-site templates and the public questionnaire follow the client brand's own theme (`--g-*`, `--f-*`).
 
 ---
 
 ## 3. Typography
 
-- **Product UI** uses **Inter** with `font-feature-settings: "cv01","cv05","cv09","cv11"`. Arabic falls through to **Thmanya Sans**.
+- **Product UI** uses **Inter** with `font-feature-settings: "cv01","cv05","cv09","cv11"`. Arabic falls through to **IBM Plex Sans Arabic** (decided 2026-11-19; it replaces Thmanya Sans in the product, loaded with `next/font` in `src/app/fonts.ts`). The `--font-*` values in §2 still show the original export; `tailwind/tokens.js` holds the live stacks.
 - Weights are **400** for body and secondary text and **500** for every heading, value, label and button. Nothing heavier.
 - The scale is fixed: **32 / 26 / 20 / 18 / 16** for headings, **14** for body and **12** for secondary, with the hard-coded line heights from §2.
 - **Overline** (`--type-overline` + `text-transform: uppercase`) is the only place caps appear: tab labels (`LIST`, `GRID`), `SORT:`, `PREV`, `NEXT` and `VIEW ALL`. **Never type copy in caps.**
@@ -337,7 +372,8 @@ Design width 1680×1020. One SurfaceCard per view.
 
 - **Rail:** 84px wide, sticky and full height, with a 1px white-10% separator on the inline-end side. The logo mark sits at the top and the avatar at the bottom.
   - The active item is a 48px rounded square in `--primary-10`, plus a 2px `--primary` bar (with glow) on the rail's inline-end edge.
-  - `expanded` turns it into a 240px sidebar with labels, counts and section headings.
+  - `expanded` turns it into a 300px sidebar (layout of 20 Nov 2026, order of 21 Nov 2026): the brand's mark, name and plan with a switch-brand control; 36px rows with 28px icon tiles (the active one solid accent); and a bottom bar with the signed-in person (opens the account menu) and icon links for Notifications, Team, Settings and Help.
+  - **Brand order (decided 2026-11-21)** follows the work. Top, unlabelled: Overview, Drafts (one review queue, with its count). **Discover and think** / اكتشف وفكّر: Discovery (tabs Questionnaire, Call notes, Analysis), Strategy, Moodboard. **Build and deliver** / ابنِ وسلّم: Assets, Visual identity (Type lab is a tab beside Typography), Guideline site (opens the editor; a green dot when live, and a small arrow that opens the public site). **Run** / أدِر: Departments, Check. Version history is Settings → Activity. The group names show as small headings (`AppSidebar headings`); the collapsed rail keeps a rule instead. New features join a stage, never a new group: Mockups in Build and deliver; Initiatives, Kit and Brand health in Run. Studio and company brands use the same order.
 - **TopBar:** 84px tall and transparent, holding the breadcrumb and title, a search field with a ⌘K hint, 22px icon actions and an initials avatar chip.
 - **Responsive:** below about 1024px the secondary panel collapses. Below about 720px the rail becomes a bottom bar or drawer, toolbars wrap, and wide tables scroll inside an `overflow-x:auto` box.
 
@@ -360,13 +396,18 @@ Props: `padding?: number|string`
 ### 6.2 Button
 46px tall with an 8px radius and a 14px label at weight 500. The icon is optional, 18px, and placed before the label.
 
+> **Sizes (2026-11-21, §2.6):** 46px is the `lg` size. Buttons share their heights with fields — sm 32, md 40, lg 46 (sm and md 44 on touch); xs 28 is for icon-only buttons in dense rows.
+>
+> **Variants (decided 2026-11-22, review item 3):** four, replacing nine. The table below is the product; the full rules (one primary per area, states, icon-only buttons, the lint rule) are in `docs/MARKYOS_COMPONENTS.md`.
+
 | variant | Fill | Label |
 |---|---|---|
 | `primary` | `--primary` | `--on-accent` |
-| `outline` | `--ink-10` + `--inset-outline` | `--text-heading` |
-| `ghost` | `--primary-10` | `--primary` |
+| `secondary` | `--ink-10` + `--inset-outline` | `--text-heading` |
+| `ghost` | transparent (`--ink-10` on hover) | `--text-heading` (icons `--text-muted`) |
+| `danger` | `--status-danger` | `--on-accent` |
 | `light` (marketing CTA only) | `#FFF` | `#000` |
-| disabled | `--bg-light` | `--text-40` |
+| disabled | the variant's own fill and label at 45% opacity, no hover | — |
 
 ```html
 <button class="mk-btn mk-button mk-button--primary"><i class="las la-plus" aria-hidden="true"></i>Add asset</button>
@@ -376,16 +417,18 @@ Props: `padding?: number|string`
   cursor:pointer;transition:var(--transition-state)}
 .mk-button i{font-size:18px}
 .mk-button--primary{background:var(--primary);color:var(--on-accent)}
-.mk-button--outline{background:var(--ink-10);color:var(--text-heading);box-shadow:var(--inset-outline)}
-.mk-button--ghost{background:var(--primary-10);color:var(--primary)}
-.mk-button:disabled{background:var(--bg-light);color:var(--text-40);cursor:not-allowed}
+.mk-button--secondary{background:var(--ink-10);color:var(--text-heading);box-shadow:var(--inset-outline)}
+.mk-button--ghost{background:transparent;color:var(--text-heading)}
+.mk-button--ghost:hover{background:var(--ink-10)}
+.mk-button--danger{background:var(--status-danger);color:var(--on-accent)}
+.mk-button:disabled{opacity:.45;cursor:not-allowed}
 </style>
 ```
-Props: `variant?: 'primary'|'outline'|'ghost'|'light'`, `icon?`, `iconStyle?: 'solid'|'regular'|'brand'`, `disabled?`, `active?` (permanent scrim), `block?`
+Props: `variant?: 'primary'|'secondary'|'ghost'|'danger'`, `size?: 'sm'|'md'|'lg'` (`xs` icon-only), `icon?`, `disabled?` / `disabledReason?`, `loading?`, `active?` (permanent scrim), `block?`, `href?`
 
 ### 6.3 ArrowButton
 A 46×46 icon-only button for next/prev, add and toolbar affordances. It **must** have an `aria-label`.
-Props: `variant?: 'primary'|'outline'`, `icon?` (default `arrow-right`), `disabled?`
+Props: `variant?: 'primary'|'secondary'`, `icon?` (default `arrow-right`), `disabled?`
 
 ### 6.4 LinkButton
 A text-only action at 12px, weight 500 and uppercase, in `--text-muted` (or `--primary` for `tone="primary"`), with an optional 18px icon. Use it for `PREV`, `NEXT` and `VIEW ALL`.
@@ -416,6 +459,8 @@ Placeholders use the real ellipsis character: `Start typing…`
 
 The compact size (`size="sm"`) keeps the underline with a 12.5px value, for inspectors and dense rows.
 
+> **Since 2026-11-21 (§2.6):** the underline is `--control-border` (3:1), the field takes the 8px control corner on its top edge, focus is a 2px accent underline, and the control heights are 40 (md) and 32 (sm).
+
 **Dropdowns are drawn by the kit, never the browser.** `SelectField`, `SelectInput`, `FilterSelectField`, `SortControl` and `Combobox` all open the same floating panel (`DropdownPanel`): the card surface with `shadow-edge-pop`, 40px option rows with a tick on the chosen one, rendered in a portal above dialogs (`z-popover`) so a scrolling drawer never clips it. Keyboard: arrows, Home/End, type-ahead, Enter/Space to pick, Escape/Tab to close.
 
 ### 6.6 Checkbox / Radio / Switch
@@ -443,6 +488,7 @@ The track is 6px standalone and 4px inside counter cards, on `--ink-10`. The ton
 Props: `value 0–100`, `tone?`, `height?`
 
 ### 6.11 Tabs
+- Tabs that navigate are tabs (below). A control that picks one value is a "choose one" pill (§2.5), not a tab.
 - `text`: the active tab is a `--bg-light` pill with an `--inset-outline`.
 - `icon`: the active tab is solid `--primary` with an uppercase overline label.
 - Tabs are 40px tall.
@@ -476,6 +522,8 @@ Charts **emit light**: glowing lines (`filter: var(--glow-line)`), bars that fad
 - **TableWidget:** a `--bg-light` column header in 12px muted text; the first cell is weight 500. Props: `title`, `columns: {label,w?,align?}[]`, `rows`, `tabs?`, `footer?`, `total?`
 
 Chart series order is primary `#0099FF`, then green `#00DE68`, yellow `#FFBB00`, red `#FF0066`, cyan `#00CCFF` and indigo `#8A58FF`.
+
+**Row actions (decided 2026-11-21).** Tables and lists of records have no buttons, icon buttons or action links in their rows or cells. Each row's actions sit in one icon-only ⋯ menu (`ActionsDropdown iconOnly`, or `DataTable rowActions`) at the row's end: the right in English, the left in Arabic. Its accessible name is "<item> actions" / «إجراءات <item>». The menu takes arrow keys, Home/End, Enter and Escape, and focus returns to the ⋯. Clicking the row (or its title, which stretches over the row) opens the item; a row with no detail page isn't clickable. Bulk actions appear only after rows are selected, in a bar above the table. Delete, Remove, Revoke, Reject and Sign out always ask first. A row with nothing to do shows no ⋯. Links that only open the item, such as its name, stay links. Card grids (assets, brands, moodboards, board cards, templates) are not rows and keep their own controls.
 
 ### 6.16 Modules
 - **CalendarMonth:** a Gregorian month grid with tinted event chips. `locale="ar"` gives RTL with Arabic-Indic digits. Props: `year`, `month (0–11)`, `events`, `selected`, `weekStart: 0|1|6`, `locale`, `maxPerDay`

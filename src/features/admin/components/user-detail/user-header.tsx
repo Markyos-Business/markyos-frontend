@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionsDropdown, Avatar, Button, ContentCard, Icon, StatusDot, Tag } from "@/components/ui";
-import { STATUS_TONE } from "../../constants";
+import { STATUS_TONE, roleTone } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { UserActions } from "../../hooks/shared/use-user-actions";
 import type { AdminUser } from "../../types";
@@ -27,21 +27,21 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
           <div dir="ltr" className="truncate text-start text-caption text-text-muted">
             {user.email}
           </div>
-          <div className="flex flex-wrap items-center gap-space-5 pt-space-2">
-            <Tag tone={user.isAdmin ? "primary" : "neutral"}>{c.roles[user.role]}</Tag>
+          <div className="flex flex-wrap items-center gap-ctl-row pt-space-2">
+            <Tag tone={roleTone(user)}>{c.roles[user.role]}</Tag>
             <StatusDot tone={STATUS_TONE[user.status]} label={c.statuses[user.status]} />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-space-4">
+      <div className="flex flex-wrap items-center gap-ctl-row">
         {user.status === "waiting" && (
-          <Button variant="outline" size="sm" icon={<Icon name="envelope" size={16} />} onClick={() => actions.resend(user)}>
+          <Button variant="secondary" size="sm" icon={<Icon name="envelope" size={16} />} onClick={() => actions.resend(user)}>
             {c.actions.resend}
           </Button>
         )}
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           icon={<Icon name="user-shield" size={16} />}
           disabledReason={reason(rules.changeRole)}
@@ -49,9 +49,12 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
         >
           {c.actions.changeRole}
         </Button>
+        <Button variant="secondary" size="sm" disabledReason={reason(rules.changeType)} onClick={() => actions.setTypeFor(user)}>
+          {isAr ? "تغيير نوع الحساب" : "Change account type"}
+        </Button>
         {user.isActive ? (
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user-slash" size={16} />}
             disabledReason={reason(rules.deactivate)}
@@ -61,7 +64,7 @@ export function UserHeader({ user, rules, actions }: UserHeaderProps) {
           </Button>
         ) : (
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user-check" size={16} />}
             disabledReason={reason(rules.reactivate)}

@@ -10,10 +10,19 @@ const en = {
   export: "Export",
   exported: (n: number) => `${n} users exported.`,
 
+  overview: {
+    title: "User overview", scope: "All accounts · select a card to view users",
+    all: "All users", allHint: "Registered accounts and pending invites",
+    activeHint: "Registered accounts with access enabled", pendingHint: "Accounts waiting to complete activation",
+    deactivatedHint: "Registered accounts with access disabled",
+    newUsers: "Registered in the last 30 days", recentActivity: "Signed in during the last 30 days",
+    failed: "User counts could not be loaded.", stale: "Counts could not be refreshed. Showing the last loaded data.", retry: "Retry",
+  },
+
   stats: {
     total: "Total users",
     active: "Active",
-    pending: "Pending invites",
+    pending: "Awaiting setup",
     deactivated: "Deactivated",
     vsLastMonth: "vs last month",
     trend: (direction: "up" | "down" | "neutral", value: string) =>
@@ -35,8 +44,8 @@ const en = {
     lastActive: "Last active",
   },
 
-  roles: { admin: "Admin", member: "Member" },
-  statuses: { active: "Active", deactivated: "Deactivated", waiting: "Waiting to join" },
+  roles: { admin: "Admin", member: "Member", content: "Content manager" },
+  statuses: { active: "Active", deactivated: "Deactivated", waiting: "Awaiting setup" },
   types: { studio: "Studio", freelancer: "Freelancer", company: "Company", none: "No type" },
   locales: { en: "en-US", ar: "ar-SA" },
   stages: {
@@ -110,6 +119,7 @@ const en = {
     help: {
       admin: "Admin: sees every account on Markyos and can change them.",
       member: "Member: uses Markyos with their own brands.",
+      content: "Content manager: runs the website's content (CMS) and nothing else of the admin area.",
     },
   },
 
@@ -202,7 +212,8 @@ const en = {
     notAllowed: "Not allowed",
     items: {
       ownBrands: "Create and edit their own brands",
-      adminArea: "Open the admin area",
+      adminArea: "Open the dashboard and users",
+      websiteContent: "Manage website content (CMS)",
       seeAccounts: "See every account on Markyos",
       invite: "Invite people to Markyos",
       changeRoles: "Change roles and account types",
@@ -236,10 +247,19 @@ const ar: UsersCopy = {
   export: "تصدير",
   exported: (n) => `تم تصدير ${n} مستخدم.`,
 
+  overview: {
+    title: "نظرة عامة على المستخدمين", scope: "كل الحسابات · اختر بطاقة لعرض المستخدمين",
+    all: "كل المستخدمين", allHint: "الحسابات المسجلة والدعوات المعلقة",
+    activeHint: "حسابات مسجلة يُسمح لها بالدخول", pendingHint: "حسابات بانتظار إكمال التفعيل",
+    deactivatedHint: "حسابات مسجلة تم إيقاف وصولها",
+    newUsers: "حسابات مسجلة خلال آخر 30 يومًا", recentActivity: "سجّلوا الدخول خلال آخر 30 يومًا",
+    failed: "تعذر تحميل أعداد المستخدمين.", stale: "تعذر تحديث الأعداد. تظهر آخر بيانات تم تحميلها.", retry: "إعادة المحاولة",
+  },
+
   stats: {
     total: "إجمالي المستخدمين",
     active: "نشط",
-    pending: "دعوات معلّقة",
+    pending: "بانتظار الإعداد",
     deactivated: "معطّل",
     vsLastMonth: "مقارنة بالشهر الماضي",
     trend: (direction, value) =>
@@ -261,8 +281,8 @@ const ar: UsersCopy = {
     lastActive: "آخر نشاط",
   },
 
-  roles: { admin: "مسؤول", member: "عضو" },
-  statuses: { active: "نشط", deactivated: "معطّل", waiting: "بانتظار الانضمام" },
+  roles: { admin: "مسؤول", member: "عضو", content: "مدير المحتوى" },
+  statuses: { active: "نشط", deactivated: "معطّل", waiting: "بانتظار الإعداد" },
   types: { studio: "استوديو", freelancer: "مستقل", company: "شركة", none: "بلا نوع" },
   locales: { en: "en-US", ar: "ar-SA" },
   stages: {
@@ -336,6 +356,7 @@ const ar: UsersCopy = {
     help: {
       admin: "مسؤول: يرى كل الحسابات على ماركيوس ويمكنه تغييرها.",
       member: "عضو: يستخدم ماركيوس مع علاماته الخاصة.",
+      content: "مدير المحتوى: يدير محتوى الموقع (نظام المحتوى) ولا شيء غيره من منطقة الإدارة.",
     },
   },
 
@@ -428,7 +449,8 @@ const ar: UsersCopy = {
     notAllowed: "غير مسموح",
     items: {
       ownBrands: "إنشاء علاماته وتعديلها",
-      adminArea: "فتح منطقة الإدارة",
+      adminArea: "فتح لوحة المعلومات والمستخدمين",
+      websiteContent: "إدارة محتوى الموقع (نظام المحتوى)",
       seeAccounts: "رؤية كل الحسابات على ماركيوس",
       invite: "دعوة أشخاص إلى ماركيوس",
       changeRoles: "تغيير الأدوار وأنواع الحسابات",

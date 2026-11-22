@@ -2,7 +2,8 @@
 
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
-import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
+import { billingCopy, useLimits, useUpgrade } from "@/features/billing";
 import { capabilitiesOn } from "@/lib/data/access";
 import type { TeamRole } from "@/types";
 import { PAGE_SECTION } from "../constants";
@@ -12,6 +13,8 @@ export function useTeamPage(slug: string) {
   const { state } = useApp();
   const account = useCurrentAccount();
   const page = useBrandPage(slug);
+  const limits = useLimits(account);
+  const upgrade = useUpgrade();
   if (!page) return null;
   const { workspace: ws, isAr } = page;
 
@@ -23,10 +26,13 @@ export function useTeamPage(slug: string) {
    * Only owners change the team, so the signed-in account is the owner here.
    * The server refuses the same thing; this says so before anyone tries.
    */
-  const editorLimit = limitsOf(account).editors;
+  const editorLimit = limits.editorsOn(ws);
   const editorsFull = canGovern && editorLimit !== null && ws.team.filter((m) => m.role === "editor").length >= editorLimit;
-  const editorsFullNote =
-    editorLimit === 0
+  // The account type allows editors, but this brand has no plan (billing epic).
+  const editorsNeedPlan = editorsFull && limits.type.editors !== 0 && editorLimit === 0;
+  const editorsFullNote = editorsNeedPlan
+    ? billingCopy(page.isAr).reason.editor.body(ws.name)
+    : editorLimit === 0
       ? page.isAr
         ? `حسابات ${ACCOUNT_TYPES[accountTypeOf(account)].arLabel} تعمل منفردة، فلا يمكنها إضافة محرّرين. أضف الأشخاص كمشاهدين أو عملاء.`
         : `${ACCOUNT_TYPES[accountTypeOf(account)].label} accounts work solo, so they can't add editors. Add people as a viewer or client.`
@@ -49,7 +55,7 @@ export function useTeamPage(slug: string) {
       canEdit,
       editorsFull,
       editorsFullNote,
-      actorName: state.session?.name || state.session?.email || "You",
+      onUpgrade: editorsNeedPlan && myRole === "owner" ? () => upgrade.open({ ws, reason: "editor" }) : undefined,
     },
   };
 }

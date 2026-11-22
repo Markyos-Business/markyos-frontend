@@ -43,7 +43,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(funct
       }
       if (blocked) event.preventDefault(); }}
     onKeyDown={event => { onKeyDown?.(event); if (event.defaultPrevented) return; family.refusedFocus.current = null; if (blocked && ["Enter", " "].includes(event.key)) event.preventDefault(); if (!blocked && event.key === "Delete" && closable) { event.preventDefault(); onClose?.(); } }}
-    className={`mk-btn mk-family-tab relative flex min-h-9 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3 font-medium text-text-muted outline-none ${family.size === "sm" ? "text-caption" : family.size === "lg" ? "min-h-11 text-body px-5" : "min-h-10 text-body px-4"} ${family.fill ? "flex-1" : ""} ${family.variant === "icon" ? "bg-surface-2" : ""} ${className}`}>
+    className={`mk-btn mk-family-tab relative flex min-h-9 shrink-0 items-center justify-center gap-ctl-icon whitespace-nowrap rounded-lg px-3 font-medium text-text-muted outline-none ${family.size === "sm" ? "text-caption" : family.size === "lg" ? "min-h-11 text-body px-5" : "min-h-10 text-body px-4"} ${family.fill ? "flex-1" : ""} ${family.variant === "icon" ? "bg-surface-2" : ""} ${className}`}>
     {icon && <Icon name={icon} size={16} />}{!iconOnly && (children ?? name)}
     {loading ? <span aria-hidden="true" className="h-4 w-5 rounded-sm bg-ink-soft" /> : count !== undefined && <span className="rounded-md bg-ink-soft px-1.5 text-caption" aria-label={`${count} ${countLabel}`}>{count}</span>}
     {unread && <span className="size-1.5 rounded-full bg-accent" role="img" aria-label={unreadLabel} />}

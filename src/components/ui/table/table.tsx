@@ -57,7 +57,7 @@ const Table = ({ columns, label, footer, children }: TableProps) => {
   }, []);
 
   return (
-    <div className="mk-surface overflow-hidden rounded-card bg-surface-1">
+    <div className="mk-surface overflow-hidden rounded-card border border-hairline-strong bg-surface-1">
       <div className="relative">
         <div ref={scrollRef} className="overflow-x-auto">
           <table aria-label={label} className="mk-no-hover w-full border-collapse text-start text-body">
@@ -174,7 +174,7 @@ const TableErrorRow = ({ colSpan, message, onRetry }: TableErrorRowProps) => {
           {message ?? t.loadFailed}
         </p>
         {onRetry && (
-          <Button variant="outline" size="sm" className="mt-space-3" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
+          <Button variant="secondary" size="sm" className="mt-space-3" icon={<Icon name="sync" size={18} />} onClick={onRetry}>
             {t.retry}
           </Button>
         )}

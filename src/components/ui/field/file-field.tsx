@@ -122,7 +122,7 @@ const FileField = ({
         </span>
         {file && !uploading && <IconButton icon="times" label={t.remove(file.name)} disabled={disabled} onClick={onRemove} className="text-text-muted hover:text-text" />}
         {!file && (
-          <Button variant="outline" size="sm" disabled={disabled} onClick={() => inputRef.current?.click()}>
+          <Button variant="secondary" size="sm" disabled={disabled} onClick={() => inputRef.current?.click()}>
             {t.upload}
           </Button>
         )}
@@ -160,7 +160,7 @@ const FileField = ({
           <div className="flex items-center justify-between gap-space-4">
             <span className="truncate text-body text-text-secondary">{file.name}</span>
             {!uploading && (
-              <Button variant="outline" size="sm" icon={<Icon name="trash" size={18} />} onClick={onRemove}>
+              <Button variant="secondary" size="sm" icon={<Icon name="trash" size={18} />} onClick={onRemove}>
                 {t.removeFile}
               </Button>
             )}

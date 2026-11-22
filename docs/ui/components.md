@@ -16,36 +16,44 @@ and shown live at `/dev/components`.
 
 ```tsx
 <Button variant="primary" onClick={save}>Save</Button>
-<Button variant="outline" size="sm" icon={<Icon name="plus" size={18} />}>Add asset</Button>
-<Button variant="link" href="/reset">Forgot?</Button>
+<Button variant="secondary" size="sm" icon={<Icon name="plus" size={16} />}>Add asset</Button>
+<Button variant="ghost" href="/reset">Forgot?</Button>
 ```
 
 | Prop | Type | Default |
 | --- | --- | --- |
-| `variant` | `"primary" \| "outline" \| "ghost" \| "danger" \| "light" \| "link"` | `"outline"` |
-| `size` | `"sm"` (40px) `\| "md"` (46px); ignored by `link` | `"md"` |
-| `icon` | `ReactNode`, an 18px `Icon` before the label | |
+| `variant` | `"primary" \| "secondary" \| "ghost" \| "danger"` (docs/MARKYOS_COMPONENTS.md) | `"secondary"` |
+| `size` | `"sm" \| "md" \| "lg"` for labelled buttons; `"xs"` only for icon-only buttons — see the sizes table under Form controls | `"md"` |
+| `icon` / `iconEnd` | `ReactNode`, an `Icon` before / after the label (16 at xs and sm, 18 at md and lg) | |
 | `active` | keeps the hover scrim on, for the current choice | |
 | `block` | fills the width | |
 | `href` | `string`: renders a Next `Link` instead of a `<button>` | |
-| `className` | adds classes; never use it to override a variant | |
+| `loading` / `status` | `"loading" \| "success" \| "error"` swaps the label for the state, without the button changing width | |
+| `disabledReason` / `locked` | disables it and says why in a tooltip | |
+| `className` | adds layout classes; never a height, corner or fill (the control audit refuses them) | |
 
-The spec's Button (MARKYOS_UI.md §6.2): 46px, an 8px radius, a 14px label at
-weight 500. `primary` is the accent fill, `outline` the neutral tint with a
-hairline, `ghost` the accent tint, `danger` the red fill for a destructive
-confirm, `light` the white marketing call to action. Disabled is the raised
-fill with the 40% ink. Hover and press are the `mk-btn` scrim; `link` just
-underlines. Plus every native `<button>` attribute.
+Four variants, one job each (22 Nov 2026; the full rules are in
+`docs/MARKYOS_COMPONENTS.md`): `primary` the area's one main action (accent
+fill), `secondary` every other action (control ground with a hairline),
+`ghost` quiet actions (transparent until hovered), `danger` a destructive
+confirm. Corner `--control-radius`, height and side padding from the control
+size, an 8px gap between icon and label. Hover and press are the `mk-btn`
+scrim (ghost also takes a soft fill); focus is the 2px accent ring (it never
+changes the corner); disabled keeps its variant's look at 45% opacity, so it
+is never mistaken for an enabled button. Plus every native `<button>`
+attribute.
 
 ### `IconButton`
 
 ```tsx
 <IconButton icon="times" label="Close" onClick={onClose} />
+<IconButton icon="plus" size="sm" shape="round" variant="soft" label="Add page" onClick={add} />
 ```
 
 `icon` (icon name), `label` (required: the accessible name and tooltip),
-`variant`: `quiet` (default, a bare glyph with a 26px hit area), or `primary`
-/ `outline`, the spec's 46px ArrowButton. `iconSize` is 16, 18 or 22.
+`size` (the Button sizes; the button is square at each), `shape: "square" |
+"round"`, `variant`: `quiet` (default, a bare glyph) or any Button variant.
+`iconSize` is 16, 18 or 22.
 
 ## Feedback
 
@@ -79,7 +87,10 @@ const name = await prompt({ title: "Rename", initialValue: brand.name });
 
 `confirm` options: `title`, `body`, `consequences` (listed losses),
 `confirmLabel`, `cancelLabel`, `tone: "neutral" | "danger"`, `confirmPhrase`
-(the action stays disabled until it's typed), `isAr`. Focus is trapped and
+(the action stays disabled until it's typed), `isAr`. `prompt` takes
+`label`, `placeholder`, `initialValue`, `hint` and the same `tone`: a
+required answer that starts something destructive (the reason for ending a
+plan) asks with `tone: "danger"`, so its action is red. Focus is trapped and
 returned to the opener; Escape and the scrim cancel.
 
 ## Layout of a page
@@ -220,6 +231,46 @@ form toggles; the control around it carries the state.
 it would vanish into its ground, and `BrandMark` is a brand's mark,
 reversed or plated on dark grounds.
 
+## Form controls — sizes, variants and states (UX-CON-001)
+
+Every input, select, textarea, combobox, date picker and button reads one
+token set (MARKYOS_UI.md §2.6), so controls of the same size share a height,
+a corner and a focus treatment. Put controls that sit in one row at **one
+size**: a `sm` field gets `sm` buttons.
+
+| Size | Height | Side padding | Value / label | Fields | Buttons | On a touch screen |
+| --- | --- | --- | --- | --- | --- | --- |
+| `xs` | 28px (`h-ctl-xs`) | 10px | 12px | — | `Button`, `IconButton` | 28px look, 44px target |
+| `sm` | 32px (`h-ctl-sm`) | 10px | 12.5px fields, 12px buttons | `size="sm"` | `size="sm"` | 44px |
+| `md` | 40px (`h-ctl-md`) | 14px | 14px | default | default | 44px |
+| `lg` | 46px (`h-ctl-lg`) | 18px | 14px | — | `size="lg"` (a page's one big action) | 46px |
+
+| Control | Shape | Hover | Focus | Error / success / warning | Disabled | Read-only |
+| --- | --- | --- | --- | --- | --- | --- |
+| Fields: `InputField` and its kinds (`EmailField`, `PasswordField`, `NumberField`, `UrlField`, `PhoneField`, `SlugField`), `SearchField`, `TextareaField`, `SelectField` / `SelectInput`, `FilterSelectField` / `SortControl`, `ListboxCombobox`, the `select/` family, `DatePicker`, `TagInput` | `--control-bg` ground, 8px top corners, 1px `--control-border` underline | ground and underline step up | underline 2px accent (no ring, no shift) | underline in the state colour, note below in the same colour | disabled ground and ink | dashed underline, muted ink |
+| `Button`, `IconButton` | variant fill, 8px corners | `mk-btn` scrim | 2px accent ring, 2px offset | `status="error"` shows "Try again" | fill kept, disabled ink, `disabledReason` tooltip | — |
+| `SegmentedControl`, `SegmentedToggle`, `LangToggle`, `ThemeToggle` | pill track, chosen segment raised in the accent | scrim | ring | — | dimmed segment | — |
+| `ActionsDropdown` | the outline button's look; `size="sm" \| "md"` to match its row | scrim | ring | — | per item, with a reason | — |
+
+Spacing around controls is tokens too: `gap-ctl-icon` inside a control,
+`gap-field-label` between a field and its label and note, `gap-ctl-row`
+between controls in a row, `gap-field-stack` between fields in a form
+(`FormGrid` and `Fieldset` take `density="compact"` for dense panels, 8px), and
+`gap-form-section` between sections.
+
+A labelled field with buttons beside it (Copy, Generate, Connect) goes in
+`<div className="mk-field-row">`: the buttons line up with the input itself,
+not with the bottom of the field's block, whether or not a hint or an error
+shows. `SegmentedControl fullWidth` shares a narrow row between its options
+and lets them shrink.
+
+RTL: every control is written with logical properties; select arrows, input
+icons and the action sheet mirror on their own. Contrast: the underline is
+3:1 or better on every surface, the focus underline and ring 4.9:1, both held
+by `scripts/contrast-audit.mjs`. `scripts/control-audit.mjs` refuses one-off
+heights, corners, borders, backgrounds and row gaps on controls. Every
+control in every size, variant and state is at `/dev/controls`.
+
 ## Form — `@/components/ui`
 
 ```tsx
@@ -234,7 +285,7 @@ reversed or plated on dark grounds.
 - `labelRight` (e.g. a "Forgot?" link)
 - `error` (announced, and linked by `aria-describedby`)
 - `hint`
-- `size: "sm" | "lg"`
+- `size: "sm" | "md"` (32 / 40px; 44px on a touch screen)
 - plus native input attributes
 
 `inputClasses(error)`, `labelClasses` and `FieldNote` let a custom field, such
@@ -247,12 +298,12 @@ label, `*` for `required`, hint and error as `InputField`:
 | --- | --- |
 | `TextareaField` | A labelled multi-line box that can be made taller. |
 | `SelectField`, `SelectInput` | A labelled select, or just the select. A value that matches no option shows as such. |
-| `FilterSelectField`, `SortControl` | Pill selects for filter bars, with an optional `icon`. |
+| `FilterSelectField`, `SortControl` | Selects for filter and sort bars, in the field shape, with an optional `icon`; an active filter takes the accent tint and underline. |
 | `Combobox` | A select with search. Use `multiple` for several values and `emptyActions` for "Create …". It works with arrow keys, Enter and Escape. |
 | `SearchableChecklist` | A checklist with search, "Select all shown" and Clear. Use `layout="chips"` for short labels. |
 | `RadioField`, `RadioCardGroup` | One choice from a few, as tiles or as cards with a hint. |
 | `ToggleField`, `ToggleCardGroup` | One setting, or several, as switch cards. The thumb goes to the reading end. |
-| `SegmentedToggle` | Two named modes with a sliding highlight. |
+| `SegmentedToggle`, `SegmentedControl` | Two named modes, or one choice from a few, as the kit pill. `SegmentedControl fullWidth` fills a narrow row. |
 | `OtpField`, `PhoneField` | A one-time code with paste support, and a dial code plus number. Both stay left-to-right. |
 | `ColorPicker`, `ColorField`, `ColorPopover` | The one colour picker: a saturation/brightness square, a hue track, HEX / RGB / HSL / CMYK fields (CMYK marked approximate), Copy, the screen eyedropper where the browser has one, and optional brand `swatches`. `ColorPicker` sits inline (a dialog), `ColorField` is the underline field that opens it, `ColorPopover` opens it from any trigger (an icon on a card). Never `<input type="color">`. |
 | `RepeaterField` | A list of same-shaped rows, with add and remove. |

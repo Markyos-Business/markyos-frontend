@@ -8,7 +8,9 @@ export default function StudioBoardPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <BoardHeader />
-      <BoardView board={board} />
+      <main className="flex flex-1 flex-col">
+        <BoardView board={board} />
+      </main>
     </div>
   );
 }

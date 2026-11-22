@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { Icon } from "@/components/ui";
+import { Icon, PageHeader, Button, ToggleButton } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { LogoSlotCard } from "./logo-slot-card";
 import { ClearspacePanel } from "./clearspace-panel";
@@ -69,32 +69,22 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1
-            className="text-[30px] font-semibold tracking-tight mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isAr ? "الشعار" : "Logo system"}
-          </h1>
-          <p dir="auto" className="bidi-auto text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {isAr
+      <PageHeader
+        title={isAr ? "الشعار" : "Logo system"}
+        description={isAr
               ? "ثلاث خانات. الشعار العربي واللاتيني قفلان منفصلان، والرمز مشترك بينهما. ولكل خانة نسخة فاتحة خاصة بها للخلفيات الداكنة."
               : "Three slots. Arabic and Latin are separate lockups — the mark is shared. Each one can carry its own light version for dark backgrounds."}
-          </p>
-        </div>
-        <button
-          type="button"
+        actions={<>
+        <Button
+          variant="primary"
+          size="md"
           onClick={() => setShowDownload(true)}
-          disabled={!Object.values(ws.logo).some(slot => slot.phase === "attached")}
-          title={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
-          className="h-9 px-[18px] rounded-lg text-[13px] font-semibold cursor-pointer"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
+          disabledReason={Object.values(ws.logo).some(slot => slot.phase === "attached") ? undefined : (isAr ? "أضف شعارًا قبل تنزيل الملفات" : "Add a logo before downloading files")}
         >
           {isAr ? "تنزيل الملفات" : "Download assets"}
-        </button>
-      </div>
+        </Button>
+        </>}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
         {SLOT_ORDER.map((meta) => (
@@ -127,7 +117,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
       */}
       <div className="shrink-0 min-h-[280px] flex gap-4">
         <div
-          className="flex-1 rounded-card p-5 flex flex-col gap-3.5"
+          className="mk-surface flex-1 rounded-card p-5 flex flex-col gap-3.5"
           style={{ background: "var(--surface-1)" }}
         >
           <div className="flex items-center justify-between">
@@ -146,7 +136,10 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               The dark cell draws the uploaded light version when there is one,
               so what's on screen is the file that will actually ship.
             */
-            <div className="flex-1 grid grid-cols-2 gap-3">
+            // A fixed height, not flex-1: stretched to the tall column beside
+            // it, each tile centred its logo near the bottom of the window, so
+            // the pair read as two empty boxes.
+            <div className="h-56 grid grid-cols-2 gap-3">
               <div className="rounded-card grid place-items-center relative" style={{ background: "#111114" }}>
                 <BrandMark
                   src={showcaseSlot.url}
@@ -166,9 +159,12 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
                   className="absolute bottom-2 text-[10px]"
                   style={{ color: showcaseSlot.lightUrl ? "#7ce7ac" : "#b4b4bb" }}
                 >
+                  {/* Only a single-tone mark is reversed for dark grounds; a
+                      coloured one is drawn as uploaded. "Auto-reversed" was
+                      shown either way, under marks that weren't. */}
                   {showcaseSlot.lightUrl
                     ? isAr ? "النسخة الفاتحة" : "light version"
-                    : isAr ? "معكوس تلقائيًا" : "auto-reversed"}
+                    : isAr ? "لا توجد نسخة فاتحة بعد" : "no light version yet"}
                 </span>
               </div>
               <div className="rounded-card grid place-items-center relative" style={{ background: "#f5f5f5" }}>
@@ -208,7 +204,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
           </span>
         </div>
 
-        <div className="w-[280px] shrink-0 rounded-card p-5 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
+        <div className="mk-surface w-[280px] shrink-0 rounded-card p-5 flex flex-col gap-3" style={{ background: "var(--surface-1)" }}>
           <span className="font-semibold text-[13px]">{isAr ? "قائمة الخانات" : "Slot checklist"}</span>
           {SLOT_ORDER.map(({ kind, label, arLabel }) => {
             const filled = ws.logo[kind].phase === "attached";
@@ -244,8 +240,8 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
         />
       </div>
 
-      <div className="rounded-card p-5 flex flex-col gap-4" style={{ background: "var(--surface-1)" }}>
-        <div className="flex flex-col gap-1.5">
+      <div className="mk-surface rounded-card p-5 flex flex-col gap-field-stack" style={{ background: "var(--surface-1)" }}>
+        <div className="flex flex-col gap-field-stack-compact">
           <span className="font-semibold text-[13px]">{isAr ? "إرشادات الاستخدام" : "Usage guidelines"}</span>
           <span dir="auto" className="bidi-auto text-[12px]" style={{ color: "var(--text-faint)" }}>
             {isAr
@@ -263,14 +259,13 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
               setLogoUsageNotes(ws.id, notesDraft.trim());
               setNotesDraft(null);
             }}
-            className="mk-field resize-none"
+            className="mk-field w-full resize-none font-normal leading-prose"
           />
         ) : (
-          <button
+          <button /* button-audit-ignore: click-to-edit notes, drawn as the field it opens */
             type="button"
             onClick={() => setNotesDraft(ws.logoUsageNotes)}
-            className="text-start rounded-lg px-3 py-2.5 text-[14px] cursor-pointer"
-            style={{ background: "var(--surface-2)", color: ws.logoUsageNotes ? "var(--text)" : "var(--text-faint)" }}
+            className={`mk-field w-full cursor-text text-start font-normal leading-prose whitespace-pre-wrap ${ws.logoUsageNotes ? "text-text" : "text-text-faint"}`}
           >
             {ws.logoUsageNotes ||
               (isAr
@@ -281,27 +276,27 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
 
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".08em", color: "var(--text-faint)" }}>
-            {isAr ? "ألوان الشعار الأساسية" : "Main logo colors"}
+            {isAr ? "ألوان الشعار الأساسية" : "Main logo colours"}
           </span>
           {ws.colors.length === 0 ? (
             <span className="text-[12px]" style={{ color: "var(--text-faint)" }}>
-              {isAr ? "أضف الألوان من تبويب الألوان أولًا." : "Add colors on the Color tab first."}
+              {isAr ? "أضف الألوان من تبويب الألوان أولًا." : "Add colours on the Colour tab first."}
             </span>
           ) : (
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-ctl-row flex-wrap">
               {ws.colors.map((c) => {
                 const active = ws.logoColorIds.includes(c.id);
                 return (
-                  <button
+                  <ToggleButton
                     key={c.id}
-                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    pressed={active}
                     onClick={() => toggleLogoColor(c.id)}
-                    className="h-8 ps-2 pe-3 rounded-lg text-[11px] font-semibold cursor-pointer flex items-center gap-2"
-                    style={{ background: active ? "var(--accent-soft)" : "var(--surface-2)", color: active ? "var(--accent-on-soft)" : "var(--text-muted)" }}
                   >
                     <span className="w-4 h-4 rounded-full shrink-0" style={{ background: c.hex, boxShadow: "inset 0 0 0 1px var(--chip-edge)" }} />
                     {c.name}
-                  </button>
+                  </ToggleButton>
                 );
               })}
             </div>

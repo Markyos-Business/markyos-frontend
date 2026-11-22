@@ -82,7 +82,7 @@ export function suffix(lang: Lang): "" | "Ar" {
  * document with some English in it rather than a document full of holes.
  */
 export function resolveStrategy(s: BrandStrategy, lang: Lang): BrandStrategy {
-  if (lang === "en") return s;
+  // Both ways: an English reader of an Arabic-only value sees the Arabic, not a blank card.
   return {
     ...s,
     purpose: read(s.purpose, s.purposeAr, lang),

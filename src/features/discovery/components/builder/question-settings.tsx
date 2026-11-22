@@ -43,7 +43,7 @@ export function QuestionSettings({ question, earlier, onPatch, locked, isAr }: Q
   const options = config.options?.length ?? 0;
 
   return (
-    <div className="flex flex-col gap-space-6">
+    <div className="flex flex-col gap-field-stack">
       <Group title={t("Question", "السؤال")}>
         <SelectField
           label={t("Type", "النوع")}

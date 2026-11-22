@@ -1,76 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { useAccountCopy } from "@/contexts/useAccountCopy";
-import { useAppActions } from "@/contexts/AppContext";
 import { Badge, Button, Section, useToast } from "@/components/ui";
-import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
 
-/** Mapping the client link to the studio's own domain, and the DNS record that verifies it. */
+/*
+ * Custom domain: not available yet (review, 21 Nov 2026).
+ *
+ * This section used to save a domain and then mark it "Verified" after a
+ * timer: nothing checked DNS, and nothing routed the domain to the site, so
+ * a studio could believe its client's domain worked when it never could.
+ * Real support needs DNS verification, the hosting provider's domain setup
+ * and routing by host name, which are production changes. Until then the
+ * section says so plainly and points to the link that does work.
+ */
+const COPY = {
+  en: {
+    title: "Custom domain",
+    soon: "Coming soon",
+    body: "Serving the guideline site on your own domain isn't available yet. Share its Markyos link with clients for now.",
+    copy: "Copy the guideline link",
+    copied: "Guideline link copied.",
+    failed: "Couldn't copy. Open the site and copy the link from the address bar.",
+  },
+  ar: {
+    title: "نطاق خاص",
+    soon: "قريبًا",
+    body: "عرض موقع الدليل على نطاقك الخاص غير متاح بعد. شارك رابطه على ماركيوس مع العملاء حاليًا.",
+    copy: "انسخ رابط الدليل",
+    copied: "نُسخ رابط الدليل.",
+    failed: "تعذّر النسخ. افتح الموقع وانسخ الرابط من شريط العنوان.",
+  },
+};
+
 export function CustomDomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
-  const t = (en: string, ar: string) => (isAr ? ar : en);
-  const copy = useAccountCopy(isAr);
-  const { setCustomDomain, setDomainStatus } = useAppActions();
+  const c = COPY[isAr ? "ar" : "en"];
   const { showToast } = useToast();
-  const [domain, setDomain] = useState(ws.clientAccess.customDomain);
-  const [verifying, setVerifying] = useState(false);
-  const { customDomain, domainStatus } = ws.clientAccess;
+  const path = `/v/${ws.slug}`;
 
-  function connect() {
-    const trimmed = domain.trim();
-    if (!trimmed) return;
-    if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(trimmed)) {
-      showToast(t("Enter a valid domain, like brand.client.com.", "أدخل نطاقًا صحيحًا، مثل brand.client.com."), "danger");
-      return;
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${path}`);
+      showToast(c.copied, "success");
+    } catch {
+      showToast(c.failed, "danger");
     }
-    setCustomDomain(ws.id, trimmed);
-    showToast(t("Domain saved — add the CNAME record below to verify.", "حُفظ النطاق، أضف سجل CNAME أدناه للتحقق."));
-  }
-
-  function verify() {
-    setVerifying(true);
-    window.setTimeout(() => {
-      setDomainStatus(ws.id, "verified");
-      setVerifying(false);
-      showToast(t("Domain verified.", "تم التحقق من النطاق."), "success");
-    }, 1100);
   }
 
   return (
-    <Section title={t("Custom domain", "نطاق خاص")} icon="globe">
-      <p className="-mt-1 text-[13px] text-text-muted">
-        {copy.domainHint}
-      </p>
-      <div className="flex items-end gap-2.5">
-        <InputField label={t("Domain", "النطاق")} dir="ltr" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="brand.client.com" />
-        <Button variant="solid" onClick={connect} className="shrink-0">
-          {t("Connect", "ربط")}
+    <Section title={c.title} icon="globe" right={<Badge tone="neutral">{c.soon}</Badge>}>
+      <p className="-mt-1 text-body text-text-muted">{c.body}</p>
+      <div className="mk-field-row flex flex-wrap items-center gap-ctl-row">
+        <span dir="ltr" className="min-w-0 truncate font-mono text-caption text-text">{path}</span>
+        <Button variant="secondary" size="sm" onClick={() => void copyLink()} className="shrink-0">
+          {c.copy}
         </Button>
       </div>
-      {domainStatus !== "none" && (
-        <div className="flex flex-col gap-3 rounded-card bg-surface-2 p-4">
-          <div className="flex items-center justify-between">
-            <span className="truncate font-mono text-[12px]">{customDomain}</span>
-            <Badge tone={domainStatus === "verified" ? "success" : "warning"}>{domainStatus === "verified" ? t("Verified", "تم التحقق") : t("Pending DNS", "بانتظار DNS")}</Badge>
-          </div>
-          {domainStatus === "pending" && (
-            <>
-              <div className="grid grid-cols-[80px_1fr] gap-x-4 gap-y-1.5 text-[12px]">
-                <span className="text-text-faint">{t("Type", "النوع")}</span>
-                <span className="font-mono">CNAME</span>
-                <span className="text-text-faint">{t("Name", "الاسم")}</span>
-                <span className="font-mono">{customDomain.split(".")[0]}</span>
-                <span className="text-text-faint">{t("Value", "القيمة")}</span>
-                <span className="font-mono text-accent-text">clients.markyos.app</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={verify} disabled={verifying} className="self-start">
-                {verifying ? t("Checking DNS…", "جارٍ فحص DNS…") : t("I've added the CNAME record", "أضفت سجل CNAME")}
-              </Button>
-            </>
-          )}
-        </div>
-      )}
     </Section>
   );
 }

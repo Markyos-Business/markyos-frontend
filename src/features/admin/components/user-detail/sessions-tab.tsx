@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, ContentCard, DataTable, EmptyState, Icon, Tag } from "@/components/ui";
-import type { DataColumn } from "@/components/ui";
+import type { ActionItem, DataColumn } from "@/components/ui";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import type { UserActions } from "../../hooks/shared/use-user-actions";
 import type { UserPage } from "../../hooks/user-detail/use-user-page";
@@ -45,18 +45,10 @@ export function SessionsTab({ user, sessions, actions }: SessionsTabProps) {
         </time>
       ),
     },
-    {
-      key: "signOut",
-      header: c.confirm.signOut,
-      hideHeader: true,
-      sortable: false,
-      cell: (row) => (
-        <Button variant="outline" size="xs" onClick={() => sessions.signOut(row)}>
-          {c.confirm.signOut}
-        </Button>
-      ),
-      className: "text-end",
-    },
+  ];
+
+  const rowActions = (row: AdminSession): ActionItem[] => [
+    { label: c.confirm.signOut, icon: "sign-out-alt", tone: "danger", onSelect: () => sessions.signOut(row) },
   ];
 
   return (
@@ -65,7 +57,7 @@ export function SessionsTab({ user, sessions, actions }: SessionsTabProps) {
       flush
       controls={
         sessions.data?.length ? (
-          <Button variant="danger-soft" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={() => actions.signOutEverywhere(user)}>
+          <Button variant="danger" size="sm" icon={<Icon name="sign-out-alt" size={16} />} onClick={() => actions.signOutEverywhere(user)}>
             {c.actions.signOutAll}
           </Button>
         ) : undefined
@@ -78,6 +70,7 @@ export function SessionsTab({ user, sessions, actions }: SessionsTabProps) {
         rows={sessions.data ?? undefined}
         getRowId={(row) => row.id}
         getRowLabel={sessions.deviceName}
+        rowActions={rowActions}
         loading={sessions.loading}
         error={sessions.error}
         onRetry={sessions.reload}

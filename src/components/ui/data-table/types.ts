@@ -10,6 +10,8 @@ export type DataColumn<T> = {
   className?: string; width?: number; minWidth?: number; filterable?: boolean; filterOptions?: readonly SelectOption[];
   editable?: "text" | "select" | "date"; editOptions?: readonly SelectOption[];
   media?: (row: T) => { src?: string; name: string; meta?: string };
+  /** On a phone card, take the full row and wrap (tags, chips) instead of one truncated line. */
+  mobileWide?: boolean;
 };
 export type ServerPaging = { page: number; pageSize: number; total: number; onPageChange: (p: number) => void; onPageSizeChange?: (n: number) => void };
 export type DataTableState = "idle" | "loading" | "refetching" | "error" | "empty" | "no-permission" | "stale";
@@ -18,6 +20,8 @@ export type SelectionScope = { allMatching: boolean; excludedIds: string[] };
 export type BulkContext<T> = SelectionScope & { ids: string[]; rows: T[]; count: number; search: string; filters: ColumnFiltersState; clear: () => void };
 export type BulkAction<T> = { label: string; progressLabel?: (count: number) => string; onSelect: (selection: BulkContext<T>) => void | Promise<void> };
 export type TableLabels = {
+  /** What the pager counts when the screen doesn't name its rows (`itemLabel`). */
+  rows: string;
   search: string; filters: string; clearFilters: string; columns: string; density: string; compact: string; comfortable: string;
   retry: string; error: string; empty: string; noPermission: string; stale: string; loadMore: string; loadingMore: string;
   noResults: (query: string) => string; selected: (n: number) => string; results: (n: number) => string;

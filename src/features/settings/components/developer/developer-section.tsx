@@ -18,28 +18,27 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
     <Section title={t("Developer", "المطوّرون")} icon="key">
       <Row
         label={t("API key", "مفتاح API")}
-        hint={t("Read-only access to this workspace's published assets and brand data.", "وصول للقراءة فقط إلى أصول هذه المساحة المنشورة وبيانات علامتها.")}
+        hint={t("Read-only access to this brand's published assets and brand data.", "وصول للقراءة فقط إلى أصول هذه العلامة المنشورة وبياناتها.")}
         right={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-ctl-row">
             <code dir="ltr" className="rounded-md bg-surface-2 px-2.5 py-1.5 font-mono text-[12px]">{apiKey}</code>
             <CopyButton
-              variant="link"
+              variant="ghost"
               text={apiKey}
               label={t("Copy", "نسخ")}
               copiedLabel={t("Copied", "تم النسخ")}
               copiedMessage={t("API key copied.", "تم نسخ مفتاح API.")}
               failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             />
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => {
                 setApiKey(ws.id, randomApiKey());
                 showToast(t("API key regenerated — the old key stops working immediately.", "أُعيد توليد المفتاح، ويتوقف القديم عن العمل فورًا."));
               }}
-              className="mk-tap cursor-pointer text-[12px] font-semibold text-text-muted"
             >
               {t("Regenerate", "إعادة توليد")}
-            </button>
+            </Button>
           </div>
         }
       />
@@ -53,7 +52,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
         curl https://api.markyos.com/v1/workspaces/{ws.slug} \{"\n"}
         {"  "}-H &quot;Authorization: Bearer {apiKey}&quot;
       </div>
-      <div className="flex items-end gap-2.5">
+      <div className="mk-field-row">
         <InputField
           label={t("Webhook URL", "رابط Webhook")}
           dir="ltr"
@@ -63,7 +62,7 @@ export function DeveloperSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
           hint={t("Delivery is not active yet. Save a destination for future notifications; use activity history for current updates.", "الإرسال غير مفعّل بعد. احفظ الوجهة للإشعارات المستقبلية، وتابع التحديثات الحالية في سجل النشاط.")}
         />
         <Button
-          variant="soft"
+          variant="secondary"
           onClick={() => {
             setWebhookUrl(ws.id, webhook.trim());
             showToast(t("Webhook URL saved.", "حُفظ رابط Webhook."));

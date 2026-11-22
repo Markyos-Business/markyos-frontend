@@ -90,25 +90,25 @@ export function ShareLinksPanel({
                 : "A read-only link to the full strategy — no editor, no rest of the app."}
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={handleCreate}>
+        <Button variant="secondary" size="sm" onClick={handleCreate}>
           {isAr ? "إنشاء رابط" : "Create link"}
         </Button>
       </div>
 
       {links.length > 0 && (
         <>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="mk-tap gap-1.5 text-[11.5px] font-semibold cursor-pointer self-start"
-            style={{ color: "var(--text-muted)" }}
+            icon={<Icon name={open ? "angle-up" : "angle-down"} size={16} />}
+            className="self-start"
           >
-            <Icon name={open ? "angle-up" : "angle-down"} size={11} />
             {isAr
               ? `${live.length} رابط نشط من ${links.length}`
               : `${live.length} active of ${links.length} link${links.length === 1 ? "" : "s"}`}
-          </button>
+          </Button>
 
           {open && (
             <div className="flex flex-col gap-2">
@@ -138,7 +138,7 @@ export function ShareLinksPanel({
                     </span>
                     {!revoked && (
                       <CopyButton
-                        variant="link"
+                        variant="ghost"
                         text={urlFor(l.id)}
                         label={isAr ? "نسخ" : "Copy"}
                         copiedLabel={isAr ? "تم النسخ" : "Copied"}
@@ -147,8 +147,8 @@ export function ShareLinksPanel({
                         className="shrink-0"
                       />
                     )}
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
                       onClick={() => {
                         if (revoked) {
                           restoreShareLink(ws.id, l.id);
@@ -161,11 +161,9 @@ export function ShareLinksPanel({
                           );
                         }
                       }}
-                      className="text-[11.5px] font-semibold cursor-pointer shrink-0"
-                      style={{ color: revoked ? "var(--text-muted)" : "var(--danger)" }}
                     >
                       {revoked ? (isAr ? "إعادة التفعيل" : "Restore") : isAr ? "إيقاف" : "Revoke"}
-                    </button>
+                    </Button>
                   </div>
                 );
               })}
@@ -174,8 +172,8 @@ export function ShareLinksPanel({
                   sharing that browser. */}
               <p className="text-[11px] leading-[1.5]" style={{ color: "var(--text-faint)" }}>
                 {isAr
-                  ? "تُحفظ بيانات هذا الإصدار في هذا المتصفح، لذا يفتح الرابط من هذا المتصفح فقط."
-                  : "This build keeps its data in this browser, so a link opens for anyone using this browser — not yet across devices."}
+                  ? "في العرض التجريبي، يفتح الرابط في هذا المتصفح فقط."
+                  : "In the demo, a link only opens in this browser."}
               </p>
             </div>
           )}

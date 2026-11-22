@@ -1,5 +1,6 @@
 "use client";
 
+import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button, Icon, Section, useToast } from "@/components/ui";
@@ -17,6 +18,7 @@ import type { Workspace } from "@/types";
  */
 export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
+  const copy = useAccountCopy(isAr);
   const { state, setSubdomain } = useApp();
   const { showToast } = useToast();
   const [draft, setDraft] = useState(ws.clientAccess.subdomain);
@@ -37,7 +39,7 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
       const failed = setSubdomain(ws.id, "");
       if (!failed) {
         setSaved("");
-        showToast(t("Subdomain cleared — the client link falls back to the default.", "مُسح النطاق الفرعي، ويعود رابط العميل إلى الافتراضي."), "success");
+        showToast(isAr ? `مُسح النطاق الفرعي، ويعود ${copy.guidelineLink} إلى الافتراضي.` : `Subdomain cleared. The ${copy.guidelineLink} falls back to the default.`, "success");
       }
       return;
     }
@@ -53,8 +55,8 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
 
   return (
     <Section title={t("Subdomain", "النطاق الفرعي")} icon="link">
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-end gap-2.5">
+      <div className="flex flex-col gap-field-stack-compact">
+        <div className="mk-field-row">
           <InputField
             label={t("Subdomain", "النطاق الفرعي")}
             value={draft}
@@ -68,7 +70,7 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
             error={value && !unchanged ? (error ?? undefined) : undefined}
           />
           <Button
-            variant="solid"
+            variant="primary"
             onClick={commit}
             disabled={unchanged || (!!value && !!error)}
             // The field's own error covers the invalid case on screen, but not
@@ -104,7 +106,7 @@ export function SubdomainSection({ ws, isAr }: { ws: Workspace; isAr: boolean })
         </div>
 
         <span className="text-[12px] text-text-faint">
-          {t("Checked against every brand in your account. Leave it empty and the client link stays", "يُتحقق منه مقابل كل علامات حسابك. اتركه فارغًا ويبقى رابط العميل")}{" "}
+          {isAr ? `يُتحقق منه مقابل كل علامات حسابك. اتركه فارغًا ويبقى ${copy.guidelineLink}` : `Checked against every brand in your account. Leave it empty and the ${copy.guidelineLink} stays`}{" "}
           <span dir="ltr" className="font-mono">/v/{ws.slug}</span>.{" "}
           {t(
             "Your preferred address is saved here. Keep using the Markyos link until this address is activated.",

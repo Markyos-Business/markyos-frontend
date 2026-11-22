@@ -15,7 +15,7 @@ export function ResetSentStep({ reset }: { reset: ResetState }) {
       footer={
         <>
           {c.reset.wrong}
-          <Button type="button" variant="link" onClick={() => reset.setStep("request")}>
+          <Button type="button" variant="ghost" onClick={() => reset.setStep("request")}>
             {c.reset.tryAnother}
           </Button>
         </>

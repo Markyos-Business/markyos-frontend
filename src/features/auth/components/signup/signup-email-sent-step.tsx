@@ -23,7 +23,7 @@ export function SignupEmailSentStep({ setup, onBack }: SignupEmailSentStepProps)
       footer={
         <>
           {c.sent.wrong}
-          <Button variant="link" onClick={onBack}>
+          <Button variant="ghost" onClick={onBack}>
             {c.sent.goBack}
           </Button>
         </>
@@ -39,7 +39,7 @@ export function SignupEmailSentStep({ setup, onBack }: SignupEmailSentStepProps)
           {mail.wait > 0 ? (
             <span>{c.sent.sendAgainIn(mail.wait)}</span>
           ) : (
-            <Button type="button" variant="link" onClick={mail.resend} disabled={mail.busy} className="text-caption">
+            <Button type="button" variant="ghost" onClick={mail.resend} disabled={mail.busy} className="text-caption">
               {c.sent.sendAgain}
             </Button>
           )}

@@ -66,7 +66,15 @@ const TextareaField = ({
     if (!autoGrow || !node) return;
     const line = parseFloat(getComputedStyle(node).lineHeight) || 21;
     node.style.height = "auto";
-    const rows = Math.min(maxRows, Math.max(rest.rows ?? 3, Math.round(node.scrollHeight / line)));
+    // An empty box sizes to its placeholder, which the browser leaves out of
+    // scrollHeight: a three-line hint in a two-line box was cut mid-word.
+    let content = node.scrollHeight;
+    if (!node.value && node.placeholder) {
+      node.value = node.placeholder;
+      content = node.scrollHeight;
+      node.value = "";
+    }
+    const rows = Math.min(maxRows, Math.max(rest.rows ?? 3, Math.round(content / line)));
     node.style.height = `${rows * line}px`;
     node.style.overflowY = node.scrollHeight > rows * line + 1 ? "auto" : "hidden";
   };

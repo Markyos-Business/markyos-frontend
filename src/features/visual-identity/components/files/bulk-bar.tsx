@@ -1,6 +1,7 @@
 "use client";
 
-import { Icon } from "@/components/ui";
+import { saveFile } from "@/lib/download";
+import { Button, Icon, IconButton } from "@/components/ui";
 
 /**
  * Shared selection bar for the asset surfaces. Brand files and each of the
@@ -28,47 +29,23 @@ export function BulkBar({
   const allSelected = count > 0 && count === total;
   return (
     <div
-      className="rounded-card px-4 h-11 flex items-center gap-4 shrink-0"
+      className="rounded-card px-4 h-11 flex items-center gap-ctl-row shrink-0"
       style={{ background: "var(--accent-soft)", boxShadow: "inset 0 0 0 1px var(--accent-ring)" }}
     >
       <span className="text-[12px] font-semibold" style={{ color: "var(--accent-text)" }}>
         {isAr ? `${count} محدد` : `${count} selected`}
       </span>
-      <button
-        type="button"
-        onClick={allSelected ? onClear : onSelectAll}
-        className="text-[12px] font-medium cursor-pointer"
-        style={{ color: "var(--text-secondary)" }}
-      >
+      <Button variant="ghost" size="sm" onClick={allSelected ? onClear : onSelectAll}>
         {allSelected ? (isAr ? "إلغاء التحديد" : "Deselect all") : isAr ? `تحديد الكل (${total})` : `Select all (${total})`}
-      </button>
-      <span className="ms-auto flex items-center gap-3.5">
-        <button
-          type="button"
-          onClick={onDownload}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
-          style={{ color: "var(--accent-text)" }}
-        >
-          <Icon name="download" size={12} />
+      </Button>
+      <span className="ms-auto flex items-center gap-ctl-row">
+        <Button variant="secondary" size="sm" icon={<Icon name="download" size={16} />} onClick={onDownload}>
           {isAr ? "تحميل" : "Download"}
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[12px] font-semibold cursor-pointer flex items-center gap-1.5"
-          style={{ color: "var(--danger)" }}
-        >
-          <Icon name="times" size={12} />
+        </Button>
+        <Button variant="danger" size="sm" icon={<Icon name="times" size={16} />} onClick={onDelete}>
           {isAr ? "حذف" : "Delete"}
-        </button>
-        <button
-          type="button"
-          onClick={onClear}
-          aria-label={isAr ? "إلغاء التحديد" : "Clear selection"}
-          className="mk-icon-btn cursor-pointer"
-        >
-          <Icon name="times" size={13} style={{ color: "var(--text-faint)" }} />
-        </button>
+        </Button>
+        <IconButton icon="times" iconSize={16} size="sm" onClick={onClear} label={isAr ? "إلغاء التحديد" : "Clear selection"} />
       </span>
     </div>
   );
@@ -77,21 +54,15 @@ export function BulkBar({
 /** Triggers a real browser download for each file, in order. */
 export function downloadFiles(files: { url?: string; fileName: string }[]): number {
   const targets = files.filter((f) => !!f.url);
-  for (const f of targets) {
-    const a = document.createElement("a");
-    a.href = f.url!;
-    a.download = f.fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
+  // Fetched and saved, so a file on the media host downloads rather than opening in a tab.
+  for (const f of targets) void saveFile(f.url!, f.fileName);
   return targets.length;
 }
 
 /** A checkbox that sits over an asset thumbnail. */
 export function SelectBox({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) {
   return (
-    <button
+    <button /* button-audit-ignore: an 18px tick box over an asset thumbnail */
       type="button"
       role="checkbox"
       aria-checked={checked}
@@ -103,7 +74,7 @@ export function SelectBox({ checked, onToggle, label }: { checked: boolean; onTo
       // The tick stays 18px and the target around it is 28. Growing the chip
       // itself would put a bigger box over artwork that the thumbnail exists
       // to show.
-      className="w-[28px] h-[28px] -m-[5px] grid place-items-center cursor-pointer"
+      className="w-[28px] h-ctl-xs -m-[5px] grid place-items-center cursor-pointer"
     >
       <span
         className="w-[18px] h-[18px] rounded-sm grid place-items-center"

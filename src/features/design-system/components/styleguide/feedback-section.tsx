@@ -44,7 +44,7 @@ const FeedbackSection = ({ c, isAr }: { c: StyleGuideCopy; isAr: boolean }) => {
         <Button variant="primary" icon={<Icon name="user-plus" size={18} />} onClick={() => setOpen("dialog")}>
           {c.form}
         </Button>
-        <Button variant="outline" onClick={() => setOpen("sheet")}>
+        <Button variant="secondary" onClick={() => setOpen("sheet")}>
           {c.formSheet}
         </Button>
         <Button
@@ -72,7 +72,7 @@ const FeedbackSection = ({ c, isAr }: { c: StyleGuideCopy; isAr: boolean }) => {
         <Button variant="danger" icon={<Icon name="trash" size={18} />} disabledReason={c.table.lastAdmin}>
           {c.confirm}
         </Button>
-        <Button variant="outline" disabledReason={c.table.lastAdmin}>
+        <Button variant="secondary" disabledReason={c.table.lastAdmin}>
           {c.table.deactivate}
         </Button>
       </Demo>

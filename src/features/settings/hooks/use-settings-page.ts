@@ -1,27 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
-import { capabilitiesOn } from "@/lib/data/access";
+import { capabilitiesOn, roleOn } from "@/lib/data/access";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
-import { useToast } from "@/components/ui";
+import { useUrlTab } from "@/hooks/useUrlTab";
+import type { TopBarTab } from "@/features/shell";
+import { billingCopy } from "@/features/billing";
 import { PAGE_SECTION } from "../constants";
 
-/** The settings page: the client link, and finishing a return from checkout. */
+const TABS = ["general", "activity", "billing"] as const;
+export type SettingsTab = (typeof TABS)[number];
+/** Billing is the owner's alone (billing epic 3.3); anyone else is on General. */
+const SHARED_TABS: readonly SettingsTab[] = ["general", "activity"];
+
+/** The settings page: the client link and the Activity tab (saved versions). */
 export function useSettingsPage(slug: string) {
-  const { confirmPurchase, state } = useApp();
+  const { state } = useApp();
   const page = useBrandPage(slug);
   const ws = page?.workspace;
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { showToast } = useToast();
-  // Prices follow the account type: a freelancer, a studio and a company each
-  // pay their own rate per brand (constants/accountTypes.ts).
   const account = useCurrentAccount();
-  const { label: typeLabel, prices } = ACCOUNT_TYPES[accountTypeOf(account)];
+  const { label: typeLabel } = ACCOUNT_TYPES[accountTypeOf(account)];
   const [origin, setOrigin] = useState("");
+  const isOwner = ws ? roleOn(ws, state.session) === "owner" : false;
+  const [tab, setTab] = useUrlTab<SettingsTab>(isOwner ? TABS : SHARED_TABS, "general");
 
   useEffect(() => {
     // Reads the browser's origin to build the client link — not derivable
@@ -30,43 +33,25 @@ export function useSettingsPage(slug: string) {
     setOrigin(window.location.origin);
   }, []);
 
-  useEffect(() => {
-    if (!ws) return;
-    const checkout = searchParams.get("checkout");
-    if (checkout === "success") {
-      const sessionId = searchParams.get("session_id");
-      if (!sessionId) {
-        showToast("Payment could not be verified: the checkout reference is missing.", "danger");
-        return;
-      }
-      let canceled = false;
-      void confirmPurchase(ws.id, sessionId).then(({ status, billing }) => {
-        if (canceled) return;
-        if (status === "paid" || status === "active") {
-          showToast(billing.plan === "pass" ? "Payment verified — Project Pass active." : "Payment verified — monthly plan active.", "success");
-        } else if (status === "refunded") {
-          showToast("This payment was refunded. No plan was activated.");
-        } else if (billing.subscriptionStatus) {
-          showToast("The subscription is not active. Use Manage subscription to review billing.");
-        } else {
-          showToast("Your payment has not activated a plan yet. Check this page again shortly.");
-        }
-        router.replace(`/w/${ws.slug}/settings`);
-      }).catch((error: unknown) => {
-        if (!canceled) showToast(error instanceof Error ? error.message : "Payment could not be verified. Refresh to try again.", "danger");
-      });
-      return () => { canceled = true; };
-    } else if (checkout === "cancelled") {
-      showToast("Checkout cancelled — nothing was charged.");
-      router.replace(`/w/${ws.slug}/settings`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ws?.id, searchParams]);
-
   if (!page || !ws) return null;
+  const capabilities = capabilitiesOn(ws, state.session);
+  const tabs: TopBarTab[] = [
+    { key: "general", label: "General", arLabel: "عام", active: tab === "general", onSelect: () => setTab("general") },
+    // Saved versions and restoring one; it used to sit at the foot of Team & history.
+    { key: "activity", label: "Activity", arLabel: "النشاط", active: tab === "activity", onSelect: () => setTab("activity") },
+    ...(isOwner
+      ? [{ key: "billing", label: billingCopy(false).tab.label, arLabel: billingCopy(true).tab.label, active: tab === "billing", onSelect: () => setTab("billing") }]
+      : []),
+  ];
   return {
-    shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const },
-    view: { ws, isAr: page.isAr, typeLabel, prices, canGovern: capabilitiesOn(ws, state.session).canGovern, clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}` },
+    shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const, tabs },
+    view: {
+      ws, isAr: page.isAr, typeLabel, tab, isOwner,
+      canGovern: capabilities.canGovern,
+      canEdit: capabilities.canEdit,
+      actorName: state.session?.name || state.session?.email || "You",
+      clientLink: origin ? `${origin}/v/${ws.slug}` : `/v/${ws.slug}`,
+    },
   };
 }
 

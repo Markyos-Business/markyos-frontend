@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/contexts/AppContext";
+import { useApp, useCurrentAccount } from "@/contexts/AppContext";
+import { accountTypeOf } from "@/constants/accountTypes";
+import { accountCapabilities } from "@/lib/data/accountExperience";
 import { useToast } from "@/components/ui";
 import type { Workspace, WorkspaceStage } from "@/types";
 import { STAGES } from "../constants";
@@ -28,9 +30,14 @@ export function useBoardPage() {
   const [dragging, setDragging] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<WorkspaceStage | null>(null);
 
+  const account = useCurrentAccount();
+  // Hidden from a company's navigation, and closed to it by address too.
+  const allowed = !account || accountCapabilities(accountTypeOf(account)).board;
+
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");
-  }, [hydrated, state.session, router]);
+    else if (hydrated && !allowed) router.replace("/brands");
+  }, [hydrated, state.session, allowed, router]);
 
   const columns = useMemo(() => {
     const byStage = new Map<WorkspaceStage, Workspace[]>();
@@ -40,7 +47,7 @@ export function useBoardPage() {
     return byStage;
   }, [myWorkspaces]);
 
-  if (!hydrated || !state.session) return null;
+  if (!hydrated || !state.session || !allowed) return null;
 
   function move(ws: Workspace, stage: WorkspaceStage) {
     if (ws.stage === stage) return;

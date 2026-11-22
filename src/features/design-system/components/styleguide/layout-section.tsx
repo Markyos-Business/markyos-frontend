@@ -38,7 +38,7 @@ const LayoutSection = ({ c }: { c: StyleGuideCopy }) => (
         title={c.pageTitle}
         description={c.pageDescription}
         secondaryActions={
-          <Button variant="outline" icon={<Icon name="file-export" size={18} />}>
+          <Button variant="secondary" icon={<Icon name="file-export" size={18} />}>
             {c.export}
           </Button>
         }

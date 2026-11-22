@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Icon } from "@/components/ui";
+import { Icon, PageHeader } from "@/components/ui";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 /** Where a guideline file is dropped or picked. */
@@ -11,13 +11,14 @@ export function ImportDropZone({ onFile }: { onFile: (file: File) => void }) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   return (
     <div className="flex flex-col">
-      <h1 className="mb-space-3 text-h1 font-medium">{t("Import an existing guideline", "استيراد دليل موجود")}</h1>
-      <p className="mb-[26px] max-w-[54ch] text-body text-text-muted">
-        {t(
+      <PageHeader
+        className="mb-[26px]"
+        title={t("Import an existing guideline", "استيراد دليل موجود")}
+        description={t(
           "Upload the PDF or Word file you already have. Markyos renders the pages and samples their colours, reads the fonts the file embeds, and matches any strategy headings it can find — then shows you everything it found before anything is saved.",
           "ارفع ملف PDF أو Word الذي لديك. يعرض ماركيوس الصفحات ويأخذ عينات من ألوانها، ويقرأ الخطوط المضمّنة، ويطابق عناوين الاستراتيجية الموجودة، ثم يعرض كل ما وجده قبل حفظ أي شيء."
         )}
-      </p>
+      />
       <input
         ref={inputRef}
         type="file"

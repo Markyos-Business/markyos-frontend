@@ -17,8 +17,8 @@ const richnessOf = (w: Workspace) =>
   w.approvals.length;
 
 /**
- * The account page: which tab is open (seeded from `?tab=`, so a pasted link
- * opens on the thing it was about), the organisation's numbers, SSO and the
+ * The account page: which tab is open (`?tab=`, so a pasted link opens on
+ * the thing it was about and Back steps through tabs), the organisation's numbers, SSO and the
  * audit log. Reads the URL, so it renders under a Suspense boundary.
  */
 export function useAccountPage() {
@@ -29,7 +29,11 @@ export function useAccountPage() {
   const search = useSearchParams();
   const [ssoDomain, setSsoDomain] = useState("");
   const requested = search.get("tab");
-  const [tab, setTab] = useState<AccountTab>(isAccountTab(requested) ? requested : "profile");
+  // The URL is the tab: account-menu links switch it while already here, and Back returns.
+  const tab: AccountTab = isAccountTab(requested) ? requested : "profile";
+  const setTab = (next: AccountTab) => {
+    if (next !== tab) router.push(`/account?tab=${next}`, { scroll: false });
+  };
 
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");

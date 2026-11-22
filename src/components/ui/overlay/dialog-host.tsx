@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "../button/button";
 import { Icon } from "../icon";
 import type { DialogRequest } from "./dialog";
-import { motionClass } from "@/lib/motion";
+import { Popup } from "../popup";
 
 type DialogHostProps = {
   request: DialogRequest;
@@ -19,10 +19,6 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
   const isAr = !!options.isAr;
   const cancelValue = request.kind === "confirm" ? false : null;
 
-  const panelRef = useRef<HTMLDivElement>(null);
-  const titleId = useId();
-  const bodyId = useId();
-
   const [value, setValue] = useState(
     request.kind === "prompt" ? request.options.initialValue ?? "" : ""
   );
@@ -30,52 +26,6 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
 
   const confirmPhrase = request.kind === "confirm" ? request.options.confirmPhrase : undefined;
   const armed = !confirmPhrase || phrase.trim().toLowerCase() === confirmPhrase.trim().toLowerCase();
-
-  /**
-   * Escape closes, Tab stays inside, and focus goes back where it came from.
-   *
-   * The focus return matters more than it looks: these are triggered from a
-   * row in a list, and without it a keyboard user is dropped at the top of the
-   * document after every rename and has to walk back down the page.
-   */
-  useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
-    const panel = panelRef.current;
-
-    // Focus has to land *inside* the panel or the Tab trap below has nothing
-    // to trap: the opener is still focused, outside the dialog, and the first
-    // Tab walks off into the page behind the scrim. The panel itself is the
-    // fallback for a dialog whose only safe first stop is "read this".
-    const first = panel?.querySelector<HTMLElement>("[data-autofocus]") ?? panel;
-    first?.focus();
-    if (first instanceof HTMLInputElement) first.select();
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onSettle(cancelValue);
-        return;
-      }
-      if (e.key !== "Tab" || !panel) return;
-      const focusable = Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'
-        )
-      );
-      if (focusable.length === 0) return;
-      const edge = e.shiftKey ? focusable[0] : focusable[focusable.length - 1];
-      if (document.activeElement === edge) {
-        e.preventDefault();
-        (e.shiftKey ? focusable[focusable.length - 1] : focusable[0]).focus();
-      }
-    }
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      opener?.focus?.();
-    };
-  }, [onSettle, cancelValue]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -89,56 +39,13 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
     onSettle(true);
   }
 
-  const danger = request.kind === "confirm" && request.options.tone === "danger";
+  const danger = request.options.tone === "danger";
   const cancelLabel = options.cancelLabel ?? (isAr ? "إلغاء" : "Cancel");
   const confirmLabel =
     options.confirmLabel ?? (isAr ? "تأكيد" : request.kind === "prompt" ? "Save" : "Confirm");
 
   return (
-    <div
-      dir={isAr ? "rtl" : "ltr"}
-      className={`fixed inset-0 z-dialog flex items-center justify-center bg-scrim p-6 ${
-        closing ? "pointer-events-none animate-fade-out" : "animate-fade-in-base"
-      }`}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onSettle(cancelValue);
-      }}
-    >
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        tabIndex={-1}
-        aria-labelledby={titleId}
-        aria-describedby={options.body ? bodyId : undefined}
-        className={`flex w-full max-w-110 flex-col gap-space-6 rounded-card bg-surface-1 p-space-10 shadow-edge-modal ${
-          isAr ? "font-arabic" : ""
-        } ${motionClass("dialog", closing)}`}
-        // Inline on purpose: the panel takes focus only so the Tab trap has
-        // somewhere to start, and the focus-ring rule yields to an inline
-        // outline (tailwind/base.js), where it would not yield to a class.
-        style={{ outline: "none" }}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-h4 font-medium text-text">
-            {options.title}
-          </h2>
-          <button
-            type="button"
-            onClick={() => onSettle(cancelValue)}
-            aria-label={cancelLabel}
-            className="-me-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-text-muted"
-          >
-            <Icon name="times" size={16} />
-          </button>
-        </div>
-
-        {options.body && (
-          <p id={bodyId} className="text-body text-text-muted">
-            {options.body}
-          </p>
-        )}
-
+    <Popup open={!closing} onOpenChange={next => { if (!next) onSettle(cancelValue); }} title={options.title} description={options.body} size="sm" dir={isAr ? "rtl" : "ltr"} closeLabel={cancelLabel}>
         {request.kind === "confirm" && request.options.consequences?.length ? (
           <ul className="flex flex-col gap-1.5 rounded-lg bg-surface-sunken px-space-6 py-space-5">
             {request.options.consequences.map((line) => (
@@ -211,7 +118,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
           )}
 
           <div className="flex gap-space-4 justify-end">
-            <Button type="button" variant="outline" onClick={() => onSettle(cancelValue)}>
+            <Button type="button" variant="secondary" onClick={() => onSettle(cancelValue)}>
               {cancelLabel}
             </Button>
             <Button
@@ -229,8 +136,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Popup>
   );
 };
 

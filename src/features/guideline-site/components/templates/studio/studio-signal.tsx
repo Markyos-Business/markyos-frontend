@@ -216,7 +216,7 @@ export function StudioSignal(props: TemplateProps) {
           )}
         </span>
         <div className="flex items-center gap-3">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}

@@ -42,17 +42,20 @@ const Section = ({ title, icon, right, children }: SectionProps) => (
 type RowProps = { label: string; hint?: string; right: ReactNode };
 
 const Row = ({ label, hint, right }: RowProps) => (
-  <div className="flex items-center justify-between gap-space-5">
+  // When the text and the control don't both fit (a phone, a long email
+  // beside a role picker and a remove button), the control drops to its own
+  // line instead of being pushed off the card.
+  <div className="flex flex-wrap items-center justify-between gap-x-space-5 gap-y-space-3">
     {/* Labels and hints are a mix of translated strings and untranslated
         English, and several interpolate counts and timestamps. Each picks
         its own base direction so a Latin hint keeps Latin layout — and its
         trailing full stop — inside the Arabic UI. */}
-    <div>
-      <div dir="auto" className="bidi-auto text-body font-medium">
+    <div className="min-w-0 flex-1 basis-48">
+      <div dir="auto" className="bidi-auto text-body font-medium [overflow-wrap:anywhere]">
         {label}
       </div>
       {hint && (
-        <div dir="auto" className="bidi-auto text-caption text-text-faint">
+        <div dir="auto" className="bidi-auto text-caption text-text-faint [overflow-wrap:anywhere]">
           {hint}
         </div>
       )}
@@ -82,7 +85,7 @@ type SwitchProps = {
 const Switch = ({ checked, onToggle, label, disabled = false, loading = false }: SwitchProps) => (
   <span className="flex shrink-0 items-center gap-space-3">
     {loading && <Icon name="circle-notch" size={16} className="animate-spin text-text-muted" />}
-    <button
+    <button /* ctl-audit-ignore: the spec switch, 40 by 22 (MARKYOS_UI 6.6) */
       type="button"
       role="switch"
       aria-checked={checked}
@@ -92,7 +95,7 @@ const Switch = ({ checked, onToggle, label, disabled = false, loading = false }:
       onClick={onToggle}
       // The button is 24px tall so the target clears WCAG 2.5.8's 24px floor;
       // the switch it draws is the spec's 22px.
-      className="relative flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-switch disabled:cursor-not-allowed disabled:opacity-58"
+      className="mk-shaped relative flex h-5.5 w-10 shrink-0 cursor-pointer items-center rounded-switch disabled:cursor-not-allowed disabled:opacity-58"
     >
       <SwitchMark checked={checked} />
     </button>
@@ -154,18 +157,21 @@ const EditableField = ({
         minRows={multiline ? 3 : 1}
         autoFocus
         aria-label={label}
-        className="rounded-lg bg-surface-2 p-3 text-ui-md leading-prose text-text shadow-edge-accent outline-none"
+        // The kit field (MARKYOS_UI §2.6): its ground, top corners and
+        // underline, the underline turning accent while you type.
+        className="mk-field w-full text-ui-md font-normal leading-prose"
       />
     ) : (
       <button
         type="button"
         onClick={onStart}
         dir="auto"
-        /* p-3 + leading-prose mirror the editor exactly, so switching between
-           reading and editing doesn't shift the text. whitespace-pre-wrap
-           keeps paragraph breaks, which a plain button collapsed into one
-           run-on block. */
-        className={`bidi-auto cursor-pointer rounded-lg bg-surface-2 p-3 text-start text-ui-md leading-prose ${
+        /* Drawn as the field it opens (review, 22 Nov 2026): the same ground,
+           corners, underline and padding as the editor, so it reads as
+           something to type into and the text doesn't shift on click.
+           whitespace-pre-wrap keeps paragraph breaks, which a plain button
+           collapsed into one run-on block. */
+        className={`mk-field bidi-auto w-full cursor-text text-start text-ui-md font-normal leading-prose ${
           richIsEmpty(value) ? "text-text-faint" : "text-text"
         }${rich ? "" : " whitespace-pre-wrap"}`}
       >

@@ -3,6 +3,7 @@
 export { BrandLimitView } from "./components/new/brand-limit-view";
 export { BrandsHeader } from "./components/list/brands-header";
 export { BrandsView } from "./components/list/brands-view";
+export { BrandsWelcome } from "./components/list/brands-welcome";
 export { NewBrandView } from "./components/new/new-brand-view";
 export { WorkspaceCard } from "./components/list/workspace-card";
 export { useBrandsPage } from "./hooks/list/use-brands-page";

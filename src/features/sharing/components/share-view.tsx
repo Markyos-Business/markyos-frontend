@@ -30,8 +30,8 @@ export function ShareView({ share }: { share: SharePageState }) {
         icon="lock"
         title="This link was switched off"
         arTitle="تم إيقاف هذا الرابط"
-        body="The studio revoked it. Ask them to share a new one if you still need access."
-        arBody="أوقفه الاستوديو. اطلب منهم رابطًا جديدًا إن كنت ما زلت بحاجة إليه."
+        body="Whoever shared it switched it off. Ask them for a new one if you still need access."
+        arBody="أوقفه من شاركه معك. اطلب منه رابطًا جديدًا إن كنت ما زلت بحاجة إليه."
         isAr={share.isAr}
       />
     );

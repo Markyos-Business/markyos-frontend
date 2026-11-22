@@ -14,3 +14,4 @@ export { TranslateStrategy, TranslationNotice } from "./components/translate/tra
 export { VisionMissionTab } from "./components/edit/tabs/vision-mission-tab";
 export { translateText, TranslationError } from "./api/strategy.api";
 export type { TranslateDirection } from "./api/strategy.api";
+export { isStrategyTab, strategySectionHref } from "./constants";

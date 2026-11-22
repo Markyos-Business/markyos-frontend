@@ -44,8 +44,10 @@ export function InlineText({
       value: draft,
       onBlur: commit,
       placeholder,
-      className: `w-full outline-none rounded-md px-1.5 py-1 -mx-1.5 bidi-auto ${className}`,
-      style: { background: "var(--surface-1)", boxShadow: "inset 0 0 0 1px var(--accent-edge)", ...style },
+      // The kit's compact field while editing (MARKYOS_UI §2.6), like
+      // InlineTextField: the same underline and corner as every other field.
+      className: `mk-field mk-field-sm w-full bidi-auto ${className}`,
+      style,
     };
     return multiline ? (
       <AutoTextarea {...shared} onChange={setDraft} autoFocus />
@@ -64,12 +66,12 @@ export function InlineText({
   }
 
   return (
-    <button
+    <button /* button-audit-ignore: click-to-edit inline text, it reads as the text itself */
       type="button"
       onClick={() => setDraft(value)}
       dir="auto"
       title={isAr ? "اضغط للتعديل" : "Click to edit"}
-      className={`text-start cursor-text rounded-md px-1.5 py-1 -mx-1.5 transition-colors hover:bg-[var(--surface-1)] bidi-auto ${className}`}
+      className={`text-start cursor-text rounded-md px-1.5 py-1 -mx-1.5 transition-colors hover:bg-surface-1 bidi-auto ${className}`}
       style={style}
     >
       {value || <span style={{ color: "var(--text-faint)" }}>{placeholder}</span>}

@@ -1,9 +1,9 @@
 /**
  * Passwords, and what this build can honestly promise about them.
  *
- * Markyos keeps everything in `localStorage`, so there is no server to hold a
- * password and nothing here can stop someone who already has the browser open.
- * That is worth stating plainly rather than dressing up.
+ * These storage/hash helpers serve the browser-only demo and its legacy data.
+ * API-connected accounts keep their passwords on Django; the browser stores
+ * neither plaintext nor derived backend passwords.
  *
  * What hashing *does* buy, and the reason it is here: people reuse passwords.
  * A plaintext `password` field in `localStorage` hands the same string that
@@ -12,8 +12,8 @@
  * means what is stored opens this app's local gate and nothing else, which is a
  * real difference to a real person even though the gate itself is only a gate.
  *
- * PBKDF2-SHA256 through WebCrypto, 210,000 iterations (the OWASP figure for
- * PBKDF2-HMAC-SHA256), a fresh 16-byte salt per password.
+ * The offline format uses PBKDF2-SHA256, 210,000 iterations and a fresh
+ * 16-byte salt. It is a legacy local gate, not the production hashing policy.
  *
  * Stored strings are self-describing so the format can change later without
  * stranding anyone:

@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, EditableField, Section, EmptyHint } from "@/components/ui";
+import { useToast, EditableField, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { personaIn, strategyText, textKey } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -43,7 +43,7 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-field-stack">
       <Section title={isAr ? "الجمهور المستهدف" : "Target audience"} icon="users">
         {ws.strategyTranslation.unreviewed.includes(textKey("targetAudienceSummary", lang)) && (
           <MachineDraftFlag isAr={uiLang(ws) === "ar"} />
@@ -71,18 +71,13 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
         title={isAr ? "الشخصيات" : "Personas"}
         icon="users"
         right={
-          <button
-            type="button"
-            onClick={() => setAddingPersona((v) => !v)}
-            className="mk-tap text-[12px] font-semibold cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setAddingPersona((v) => !v)}>
             {addingPersona ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-          </button>
+          </Button>
         }
       >
         {addingPersona && (
-          <form onSubmit={submitPersona} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+          <form onSubmit={submitPersona} className="rounded-card p-4 flex flex-col gap-field-stack-compact" style={{ background: "var(--surface-2)" }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <MiniInput
                 value={personaName}
@@ -100,9 +95,9 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
               onChange={setPersonaDesc}
               placeholder={isAr ? "ماذا يحتاجون من هذا الدليل؟" : "What do they need from this guideline?"}
             />
-            <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
+            <Button type="submit" variant="primary" size="sm" className="self-start">
               {isAr ? "إضافة شخصية" : "Add persona"}
-            </button>
+            </Button>
           </form>
         )}
         {ws.strategy.personas.length === 0 ? (
@@ -136,16 +131,16 @@ export function AudienceTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                         onCommit={(next) => updatePersona(ws.id, p.id, isAr ? { roleAr: next } : { role: next })}
                       />
                     </div>
-                    <button
-                      type="button"
+                    <IconButton
+                      icon="times"
+                      iconSize={16}
+                      size="xs"
                       onClick={() => removePersona(ws.id, p.id)}
-                      aria-label={
+                      label={
                         isAr ? `حذف ${shown.name || "الشخصية"}` : `Remove ${shown.name || "persona"}`
                       }
-                      className="mk-icon-btn cursor-pointer shrink-0 transition-opacity opacity-50 hover:opacity-100"
-                    >
-                      <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                    </button>
+                      className="shrink-0"
+                    />
                   </div>
                   <InlineText
                     value={shown.description}

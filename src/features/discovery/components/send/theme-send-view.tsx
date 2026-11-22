@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Badge, Button, CopyButton, EmptyState, Icon, Row, Section, Skeleton, Switch, useDialog, useToast, PageHeader } from "@/components/ui";
 import { InputField, SegmentedToggle, SelectInput } from "@/components/ui";
 import type { Lang } from "@/types";
 import { STATUS_META } from "../../constants";
@@ -46,7 +46,7 @@ const asPublic = (form: DiscoveryForm, logos: LogoChoice[], studioName: string):
 
 /** Theme the client form with the studio's brand, then send the link. */
 export function ThemeSendView({ formId, logos, swatches, studioName, answersHref, builderHref, isAr }: ThemeSendViewProps) {
-  const editor = useFormEditor(formId);
+  const editor = useFormEditor(formId, isAr);
   const { form, run } = editor;
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -89,32 +89,34 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-space-5">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-h3 font-medium">{form.name}</h1>
-          <div className="flex flex-wrap items-center gap-space-4">
+      <PageHeader
+        title={form.name}
+        description={<>
+          <div className="flex flex-wrap items-center gap-ctl-row">
             <Badge tone={status.tone} dot>
               {status[isAr ? "ar" : "en"]}
             </Badge>
             <SaveStatus saving={editor.saving} savedAt={editor.savedAt} error={editor.error} isAr={isAr} />
           </div>
-        </div>
-        <Button variant="outline" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
+        </>}
+        actions={<>
+        <Button variant="secondary" href={builderHref} icon={<Icon name="arrow-left" size={18} />}>
           {t("Questions", "الأسئلة")}
         </Button>
         {form.status !== "draft" && (
-          <Button variant="outline" href={answersHref}>
+          <Button variant="secondary" href={answersHref}>
             {t("Answers", "الإجابات")}
           </Button>
         )}
-      </div>
+        </>}
+      />
 
       <AlertBanner message={editor.error} />
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-field-stack">
           <Section title={t("Theme", "التصميم")} icon="palette">
-            <div className="flex flex-col gap-space-3">
+            <div className="flex flex-col gap-field-stack-compact">
               <span className="text-caption text-text-muted">{t("Logo", "الشعار")}</span>
               <SelectInput
                 aria-label={t("Logo", "الشعار")}
@@ -126,15 +128,15 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
 
             <div className="flex flex-col gap-space-3">
               <span className="text-caption text-text-muted">{t("Accent colour", "لون التمييز")}</span>
-              <div className="flex flex-wrap items-center gap-space-3">
+              <div className="flex flex-wrap items-center gap-ctl-row">
                 {swatches.slice(0, 8).map((s) => (
-                  <button
+                  <button /* button-audit-ignore: a colour swatch that picks the accent */
                     key={s.hex}
                     type="button"
                     aria-label={`${s.name} ${s.hex}`}
                     aria-pressed={form.theme.accent?.toLowerCase() === s.hex.toLowerCase()}
                     onClick={() => save({ theme: { accent: s.hex.toLowerCase() } })}
-                    className={`size-8 rounded-md shadow-[inset_0_0_0_1px_var(--chip-edge)] ${form.theme.accent?.toLowerCase() === s.hex.toLowerCase() ? "outline-2 outline-offset-2 outline-accent" : ""}`}
+                    className={`size-ctl-sm rounded-md shadow-edge-chip ${form.theme.accent?.toLowerCase() === s.hex.toLowerCase() ? "outline-2 outline-offset-2 outline-accent" : ""}`}
                     style={{ background: s.hex }}
                   />
                 ))}
@@ -216,7 +218,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             {link ? (
               <div className="flex flex-col gap-space-3">
                 <span className="text-caption text-text-muted">{t("Client link", "رابط العميل")}</span>
-                <div className="flex flex-wrap items-center gap-space-3">
+                <div className="flex flex-wrap items-center gap-ctl-row">
                   <code dir="ltr" className="min-w-0 flex-1 truncate rounded-md bg-surface-2 px-space-4 py-space-3 text-caption text-text-secondary">
                     {link}
                   </code>
@@ -228,12 +230,12 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                     failedMessage={t("Couldn't copy. Select the link and copy it.", "تعذّر النسخ. حدّد الرابط وانسخه.")}
                   />
                 </div>
-                <div className="flex flex-wrap gap-space-4">
-                  <Button variant="link" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
+                <div className="flex flex-wrap gap-ctl-row">
+                  <Button variant="ghost" onClick={() => run(() => changeLink(form.id, "regenerate"))}>
                     {t("New link", "رابط جديد")}
                   </Button>
                   <Button
-                    variant="link"
+                    variant="ghost"
                     onClick={async () => {
                       const ok = await confirm({
                         title: t("Switch off this link?", "إيقاف هذا الرابط؟"),
@@ -254,7 +256,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
             )}
 
             <div className="grid grid-cols-1 gap-space-6 sm:grid-cols-2">
-              <label className="flex flex-col gap-space-2">
+              <label className="flex flex-col gap-field-stack-compact">
                 <span className="text-caption text-text-muted">{t("Link closes", "يُغلق الرابط")}</span>
                 <input
                   type="date"
@@ -265,7 +267,7 @@ export function ThemeSendView({ formId, logos, swatches, studioName, answersHref
                 />
                 <span className="text-caption text-text-faint">{closes ? formatDay(form.settings.closesAt, isAr) : t("Stays open", "يبقى مفتوحًا")}</span>
               </label>
-              <label className="flex flex-col gap-space-2">
+              <label className="flex flex-col gap-field-stack-compact">
                 <span className="text-caption text-text-muted">{t("Remind after", "تذكير بعد")}</span>
                 <SelectInput
                   aria-label={t("Remind after", "تذكير بعد")}

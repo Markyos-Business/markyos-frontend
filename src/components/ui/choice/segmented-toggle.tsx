@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "../icon";
+import { pillSegment, pillSegmentStyle, pillTrack, pillTrackStyle } from "./pill-segments";
 import { useRadioNavigation } from "./use-radio-navigation";
 
 type Segment = { label: string; icon?: string };
@@ -14,14 +15,15 @@ type SegmentedToggleProps = {
   on: Segment;
   value: boolean;
   onChange: (value: boolean) => void;
+  disabled?: boolean;
 };
 
 /**
  * Two modes for one form ("pick from the list" or "type it in"). Not an
- * on/off switch: both sides are named choices. Drawn like text tabs (spec
- * §6.11): the chosen side is a raised pill with a hairline.
+ * on/off switch: both sides are named choices. Drawn like every "choose one"
+ * control (pill-segments).
  */
-const SegmentedToggle = ({ label, off, on, value, onChange }: SegmentedToggleProps) => {
+const SegmentedToggle = ({ label, off, on, value, onChange, disabled }: SegmentedToggleProps) => {
   // One Tab stop, arrow keys between the two sides (mirrored in Arabic).
   const { group, radioProps } = useRadioNavigation({
     items: [{ value: "off" }, { value: "on" }],
@@ -35,9 +37,9 @@ const SegmentedToggle = ({ label, off, on, value, onChange }: SegmentedTogglePro
         type="button"
         {...radioProps({ value: segValue ? "on" : "off" })}
         onClick={() => onChange(segValue)}
-        className={`flex h-8 flex-1 items-center justify-center gap-space-3 whitespace-nowrap rounded-md px-space-5 text-caption font-medium transition-[background-color,color,box-shadow] ${
-          active ? "bg-surface-2 text-text shadow-edge" : "text-text-muted hover:text-text"
-        }`}
+        disabled={disabled}
+        className={`${pillSegment(!seg.label)} flex-1`}
+        style={pillSegmentStyle(active)}
       >
         {seg.icon && <Icon name={seg.icon} size={16} />}
         {seg.label}
@@ -45,7 +47,7 @@ const SegmentedToggle = ({ label, off, on, value, onChange }: SegmentedTogglePro
     );
   };
   return (
-    <div ref={group} role="radiogroup" aria-label={label} className="inline-flex h-control-sm items-center rounded-lg bg-surface-sunken p-1 shadow-edge-soft">
+    <div ref={group} role="radiogroup" aria-label={label} className={pillTrack} style={pillTrackStyle}>
       {segment(off, false)}
       {segment(on, true)}
     </div>

@@ -95,7 +95,7 @@ describe("rejected creates", () => {
     try {
       await repo.save(state);
       await vi.advanceTimersByTimeAsync(1000);
-      expect(onRefused).toHaveBeenCalledWith(state.workspaces[0], "Invalid slug");
+      expect(onRefused).toHaveBeenCalledWith(state.workspaces[0], expect.objectContaining({ message: "Invalid slug" }));
       await repo.save(state);
       await vi.advanceTimersByTimeAsync(1000);
       expect(calls.length).toBe(start);

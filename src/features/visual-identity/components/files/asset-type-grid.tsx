@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, useDialog, Icon, EmptyHint } from "@/components/ui";
+import { useToast, useDialog, Icon, EmptyState, PageHeader, Button } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { AssetType, Workspace } from "@/types";
 import { fileToDataUrl, formatBytes } from "@/lib/utils";
@@ -91,16 +91,10 @@ export function AssetTypeGrid({
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      {/* Wraps on a narrow window — see the note in BrandFilesContent. */}
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div className="min-w-[16rem] flex-1">
-          <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-            {isAr ? arTitle : title}
-          </h1>
-          <p className="text-[14px] max-w-[62ch]" style={{ color: "var(--text-muted)" }}>
-            {hint}
-          </p>
-        </div>
+      <PageHeader
+        title={isAr ? arTitle : title}
+        description={hint}
+        actions={<>
         <input
           ref={inputRef}
           type="file"
@@ -112,15 +106,11 @@ export function AssetTypeGrid({
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold cursor-pointer shrink-0"
-          style={{ background: "var(--solid)", color: "var(--solid-ink)" }}
-        >
+        <Button variant="primary" size="md" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>
           {isAr ? "رفع ملف" : "Upload"}
-        </button>
-      </div>
+        </Button>
+        </>}
+      />
 
       {selected.size > 0 && (
         <BulkBar
@@ -135,7 +125,12 @@ export function AssetTypeGrid({
       )}
 
       {items.length === 0 ? (
-        <EmptyHint>{isAr ? "لا ملفات هنا بعد." : "Nothing here yet — upload one to get started."}</EmptyHint>
+        <EmptyState
+          icon="image"
+          title={isAr ? `لا ملفات في «${arTitle}» بعد.` : `No ${title.toLowerCase()} yet.`}
+          description={isAr ? "ارفع صورة لتظهر هنا وفي الدليل." : "Upload an image and it shows here and in the guideline."}
+          action={<Button variant="secondary" icon={<Icon name="upload" size={18} />} onClick={() => inputRef.current?.click()}>{isAr ? "رفع ملف" : "Upload"}</Button>}
+        />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {items.map((a) => (
@@ -177,14 +172,14 @@ export function AssetTypeGrid({
                     label={`Select ${a.fileName}`}
                   />
                 </span>
-                <button
+                <button /* button-audit-ignore: an 18px remove chip over the artwork, on its scrim */
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeAsset(ws.id, a.id);
                   }}
                   aria-label={`Remove ${a.fileName}`}
-                  className="absolute top-[3px] end-[3px] w-[28px] h-[28px] grid place-items-center cursor-pointer"
+                  className="absolute top-[3px] end-[3px] w-[28px] h-ctl-xs grid place-items-center cursor-pointer"
                 >
                   {/* The 18px chip stays 18px; only the target around it grows.
                       A scrim over artwork, so it stays dark in both themes —

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Icon } from "@/components/ui";
 import { getBrandTheme } from "../../utils/theme";
 import { bestInkOn, checkContrast, ContrastResult, formatRatio, LEVEL_COLOR, LEVEL_LABEL, levelOf } from "@/lib/contrast";
@@ -17,14 +18,17 @@ import { SlotKind, Workspace } from "@/types";
 
 interface Row {
   label: string;
-  hint?: string;
+  hint?: ReactNode;
   fg: string;
   bg: string;
   /** Large-text rules apply — headings and display numbers, not body copy. */
   large?: boolean;
 }
 
-function Badge({ result, large }: { result: ContrastResult; large?: boolean }) {
+/** The verdict in the reader's language; AA and AAA are the standard's own names. */
+const AR_LEVEL: Record<string, string> = { aaa: "AAA", aa: "AA", "large-only": "للنص الكبير فقط", fail: "لا يجتاز" };
+
+function Badge({ result, large, isAr }: { result: ContrastResult; large?: boolean; isAr: boolean }) {
   // A heading only has to clear 3:1, so judging it against the body-text bar
   // would report a failure that isn't one.
   const level = large
@@ -46,7 +50,7 @@ function Badge({ result, large }: { result: ContrastResult; large?: boolean }) {
         className="text-[10px] font-semibold px-2 py-[3px] rounded-full whitespace-nowrap"
         style={{ background: "var(--surface-2)", color: LEVEL_COLOR[level] }}
       >
-        {large && level !== "fail" ? "AA large" : LEVEL_LABEL[level]}
+        {large && level !== "fail" ? (isAr ? "AA للنص الكبير" : "AA large") : isAr ? AR_LEVEL[level] : LEVEL_LABEL[level]}
       </span>
     </span>
   );
@@ -67,7 +71,7 @@ function Badge({ result, large }: { result: ContrastResult; large?: boolean }) {
  * call sites are unchanged: there the row still fits on one line and the badge
  * still sits at the end.
  */
-function ContrastRow({ row }: { row: Row }) {
+function ContrastRow({ row, isAr }: { row: Row; isAr: boolean }) {
   const result = checkContrast(row.fg, row.bg);
   if (!result) return null;
   return (
@@ -91,25 +95,29 @@ function ContrastRow({ row }: { row: Row }) {
         )}
       </span>
       <span className="shrink-0 ms-auto">
-        <Badge result={result} large={row.large} />
+        <Badge result={result} large={row.large} isAr={isAr} />
       </span>
     </div>
   );
 }
 
 export function ContrastReport({ ws, isAr, compact = false }: { ws: Workspace; isAr: boolean; compact?: boolean }) {
+  // Each colour code keeps its own left-to-right run, so "#" stays in front
+  // of it inside an Arabic sentence.
+  const pair = (fg: string, bg: string): ReactNode =>
+    isAr ? <><bdi dir="ltr">{fg}</bdi> على <bdi dir="ltr">{bg}</bdi></> : `${fg} on ${bg}`;
   const theme = getBrandTheme(ws);
 
   const rows: Row[] = [
     {
       label: isAr ? "نص المتن على أرضية الموقع" : "Body text on the site ground",
-      hint: `${theme.text} on ${theme.canvas}`,
+      hint: pair(theme.text, theme.canvas),
       fg: theme.text,
       bg: theme.canvas,
     },
     {
       label: isAr ? "النص الثانوي على الأرضية" : "Secondary text on the ground",
-      hint: `${theme.textMuted} on ${theme.canvas}`,
+      hint: pair(theme.textMuted, theme.canvas),
       fg: theme.textMuted,
       bg: theme.canvas,
     },
@@ -127,7 +135,7 @@ export function ContrastReport({ ws, isAr, compact = false }: { ws: Workspace; i
     },
     {
       label: isAr ? "نص على البطاقات" : "Text on cards",
-      hint: `${theme.text} on ${theme.surface1}`,
+      hint: pair(theme.text, theme.surface1),
       fg: theme.text,
       bg: theme.surface1,
     },
@@ -179,10 +187,11 @@ export function ContrastReport({ ws, isAr, compact = false }: { ws: Workspace; i
 
       <div className="flex flex-col">
         {rows.map((row) => (
-          <ContrastRow key={row.label} row={row} />
+          <ContrastRow key={row.label} row={row} isAr={isAr} />
         ))}
         {bandInk && (
           <ContrastRow
+            isAr={isAr}
             row={{
               label: isAr ? "عبارة الافتتاح على شريط اللون المميز" : "Statement band on the accent",
               hint: isAr

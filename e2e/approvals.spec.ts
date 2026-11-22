@@ -1,4 +1,4 @@
-import { call, expect, newBrand, newStudio, signIn, test } from "./fixtures";
+import { call, expect, newBrand, newStudio, payBrand, signIn, test } from "./fixtures";
 
 test.describe("approval permissions", () => {
   test.use({ expectedErrors: [[/net::ERR_FAILED/, /status of 409/], { scope: "test" }] });
@@ -7,6 +7,7 @@ test.describe("approval permissions", () => {
     const owner = await newStudio("Layla Owner");
     const editor = await newStudio("Nour Editor");
     const brand = await newBrand(owner);
+    payBrand(brand.id); // editors need a plan on the brand
     const stored = await call(`/brands/${brand.id}/`, { token: owner.token });
     await call(`/brands/${brand.id}/`, { method: "PUT", token: owner.token, body: {
       version: stored.version, data: { ...stored.data, team: [...stored.data.team, { id: "nour", email: editor.email, name: editor.name, role: "editor" }] },
@@ -26,7 +27,8 @@ test.describe("approval permissions", () => {
       await ownerPage.goto(`/w/${brand.slug}/team`);
       await expect(ownerPage.getByText("Add the Arabic secondary logo — شعار", { exact: true })).toBeVisible();
       await ownerPage.getByRole("textbox", { name: "Review note for Add the Arabic secondary logo — شعار", exact: true }).fill("Use the Arabic lockup in both sizes.");
-      await ownerPage.getByRole("button", { name: "Approve", exact: true }).click();
+      await ownerPage.getByRole("button", { name: "Add the Arabic secondary logo — شعار actions", exact: true }).click();
+      await ownerPage.getByRole("menuitem", { name: "Approve", exact: true }).click();
       await expect(ownerPage.getByText("Proposal approved.", { exact: true })).toBeVisible();
       await page.getByRole("button", { name: "Refresh approvals", exact: true }).click();
       await expect(page.getByText("Approved", { exact: true })).toBeVisible();
@@ -59,7 +61,8 @@ test.describe("approval permissions", () => {
     const approvals = await call(`/brands/${brand.id}/approvals/`, { token: owner.token });
     expect(approvals).toHaveLength(1);
     await call(`/brands/${brand.id}/approvals/${approvals[0].id}/decide/`, { method: "POST", token: owner.token, body: { status: "rejected", reviewNote: "Already rejected in another session." } });
-    await page.getByRole("button", { name: "Approve", exact: true }).click();
+    await page.getByRole("button", { name: "Review the new secondary colour. actions", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Approve", exact: true }).click();
     await expect(page.getByRole("alert").filter({ hasText: "This proposal was already decided" })).toBeVisible();
     await expect(page.getByText("Rejected", { exact: true })).toBeVisible();
     await expect(page.getByText("Already rejected in another session.", { exact: true })).toBeVisible();

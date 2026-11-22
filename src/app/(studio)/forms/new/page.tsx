@@ -8,7 +8,7 @@ export default function StudioNewFormPage() {
   if (!page) return null;
   return (
     <div dir={page.isAr ? "rtl" : "ltr"} className="flex h-screen flex-col pt-space-10">
-      <PageContainer offline={<NeedsServer isAr={page.isAr} />}>
+      <PageContainer spaced offline={<NeedsServer isAr={page.isAr} />}>
         <NewFormView {...page.view} />
       </PageContainer>
     </div>

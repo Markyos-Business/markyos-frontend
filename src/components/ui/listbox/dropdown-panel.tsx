@@ -99,6 +99,7 @@ const DropdownPanel = ({ anchor, closing = false, onOutside, width, maxHeight: c
         closing ? "pointer-events-none animate-scale-out" : "animate-scale-in"
       } ${className}`}
       // Which side of the field it opens on: it arrives from there.
+      data-popup-portal
       data-side={place.up ? "top" : "bottom"}
       // The portal sits at the end of the page, outside the field's own
       // direction; it takes the field's, so an English section on an Arabic

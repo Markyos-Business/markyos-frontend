@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCurrentAccount, useAppActions } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
-import { limitsOf } from "@/constants/accountTypes";
+import { useLimits } from "@/features/billing";
 import { EMAIL_RE } from "@/lib/emailList";
 import type { Workspace } from "@/types";
 import type { MemberRole } from "../../types";
@@ -29,7 +29,7 @@ export function useInvitePeople(owned: Workspace[]) {
   const [brands, setBrands] = useState<string[]>([]);
   const [errors, setErrors] = useState<InviteErrors>({});
 
-  const editorLimit = limitsOf(account).editors;
+  const limits = useLimits(account);
   const editorsOn = (w: Workspace) => w.team.filter((m) => m.role === "editor").length;
 
   function reset() {
@@ -55,12 +55,18 @@ export function useInvitePeople(owned: Workspace[]) {
     if (brands.length === 0) next.brands = d.brandsRequired;
 
     const chosen = owned.filter((w) => brands.includes(w.id));
-    if (role === "editor" && editorLimit !== null) {
-      // Editors only fit where the account's seats allow, brand by brand.
-      if (editorLimit === 0) next.role = d.soloNoEditors;
+    if (role === "editor") {
+      // Editors only fit where the seats allow, brand by brand: the account
+      // type's, and none on a brand without a plan (billing epic).
+      if (limits.type.editors === 0) next.role = d.soloNoEditors;
       else {
-        const full = chosen.find((w) => editorsOn(w) + list.length > editorLimit);
-        if (full) next.role = d.editorsFull(full.name);
+        const unpaid = chosen.find((w) => limits.editorsOn(w) === 0);
+        const full = chosen.find((w) => {
+          const cap = limits.editorsOn(w);
+          return cap !== null && editorsOn(w) + list.length > cap;
+        });
+        if (unpaid) next.role = d.editorsNeedPlan(unpaid.name);
+        else if (full) next.role = d.editorsFull(full.name);
       }
     }
     setErrors(next);

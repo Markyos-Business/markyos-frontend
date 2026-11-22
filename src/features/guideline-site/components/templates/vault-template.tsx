@@ -1,5 +1,6 @@
 "use client";
 
+import { initialsFor } from "@/lib/utils";
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import Link from "next/link";
 import { LangToggle, richToPlainText } from "@/components/ui";
@@ -92,7 +93,7 @@ export function VaultTemplate(props: TemplateProps) {
                 {logo.src ? (
                   <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ maxWidth: 18, maxHeight: 18 }} />
                 ) : (
-                  ws.initials
+                  initialsFor(ws.name)
                 )}
               </span>
               <span className="font-semibold text-[15px] truncate" style={{ fontFamily: "var(--font-display)" }}>{ws.name}</span>
@@ -140,7 +141,7 @@ export function VaultTemplate(props: TemplateProps) {
           </nav>
         )}
         <div className="flex items-center gap-3 shrink-0">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
         </div>
       </div>
 
@@ -195,7 +196,7 @@ export function VaultTemplate(props: TemplateProps) {
                           {heroMarkUrl ? (
                             <BrandMark src={heroMarkUrl} lightSrc={mark.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ maxWidth: 24, maxHeight: 24 }} />
                           ) : (
-                            ws.initials
+                            initialsFor(ws.name)
                           )}
                         </span>
                         <SectionHeading

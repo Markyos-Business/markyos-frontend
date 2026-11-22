@@ -28,7 +28,7 @@ export function ResetConfirmStep({ reset }: { reset: ResetState }) {
       }
       footer={
         <>
-          <Button type="button" variant="link" onClick={reset.startOver}>
+          <Button type="button" variant="ghost" onClick={reset.startOver}>
             {c.reset.differentEmail}
           </Button>
         </>

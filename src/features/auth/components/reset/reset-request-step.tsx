@@ -21,13 +21,13 @@ export function ResetRequestStep({ reset }: { reset: ResetState }) {
       footer={
         <>
           {c.reset.remembered}
-          <Button variant="link" href="/login">
+          <Button variant="ghost" href="/login">
             {c.reset.backToLogin}
           </Button>
         </>
       }
     >
-      <form onSubmit={reset.request} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={reset.request} className="flex flex-col gap-field-stack" noValidate>
         <AlertBanner message={reset.errors.form} />
         <InputField
           label={c.fields.email}

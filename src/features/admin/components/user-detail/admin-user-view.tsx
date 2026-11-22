@@ -4,6 +4,7 @@ import { Button, EmptyState, ErrorState, Icon, Skeleton, TabPanel, Tabs, useTabI
 import { USER_TABS } from "../../constants";
 import { useAdminLang } from "../../hooks/shared/use-admin-lang";
 import { useUserPage } from "../../hooks/user-detail/use-user-page";
+import { ChangeTypeDialog } from "../shared/change-type-dialog";
 import { ChangeRoleDialog } from "../shared/change-role-dialog";
 import { ActivityTab } from "./activity-tab";
 import { OverviewTab } from "./overview-tab";
@@ -20,7 +21,7 @@ export function AdminUserView({ id }: { id: string }) {
   const page = useUserPage(id);
   const { user, actions } = page;
   const back = (
-    <Button variant="link" href="/admin/users" icon={<Icon name="arrow-left" size={16} />}>
+    <Button variant="ghost" href="/admin/users" icon={<Icon name="arrow-left" size={16} />}>
       {c.detail.back}
     </Button>
   );
@@ -67,12 +68,13 @@ export function AdminUserView({ id }: { id: string }) {
       />
 
       <TabPanel key={page.tab} id={tabIds.panelId} tabsId={tabIds.id} active={page.tab}>
-        {page.tab === "overview" && <OverviewTab user={account} sessionCount={page.sessions.data?.length ?? null} />}
+        {page.tab === "overview" && <OverviewTab user={account} sessionCount={page.sessions.data?.length ?? null} onChanged={user.reload} />}
         {page.tab === "activity" && <ActivityTab activity={page.activity} />}
         {page.tab === "permissions" && <PermissionsTab user={account} />}
         {page.tab === "sessions" && <SessionsTab user={account} sessions={page.sessions} actions={actions} />}
       </TabPanel>
 
+      {actions.typeFor && <ChangeTypeDialog user={actions.typeFor} onClose={()=>actions.setTypeFor(null)} onSubmit={type=>actions.changeType(actions.typeFor!,type)}/>}
       {actions.roleFor && (
         <ChangeRoleDialog
           open

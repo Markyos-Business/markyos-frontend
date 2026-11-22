@@ -113,7 +113,7 @@ function FieldArray<V extends FieldValues, N extends ArrayPath<V>>({ name, legen
                     }}
                     onDragEnd={() => setDragging(null)}
                     onKeyDown={(e) => onGripKey(e, index)}
-                    className="mt-space-8 grid size-8 shrink-0 cursor-grab place-items-center rounded-md text-text-muted hover:text-text active:cursor-grabbing"
+                    className="mt-space-8 grid size-ctl-sm shrink-0 cursor-grab place-items-center rounded-md text-text-muted hover:text-text active:cursor-grabbing"
                   >
                     <Icon name="grip-vertical" size={18} />
                   </button>
@@ -126,7 +126,7 @@ function FieldArray<V extends FieldValues, N extends ArrayPath<V>>({ name, legen
         </ol>
       )}
       <div className="flex flex-wrap items-center gap-space-4">
-        <Button type="button" variant="outline" size="sm" icon={<Icon name="plus" size={16} />} disabled={full} onClick={() => append(newRow())}>
+        <Button type="button" variant="secondary" size="sm" icon={<Icon name="plus" size={16} />} disabled={full} onClick={() => append(newRow())}>
           {addLabel ?? meta.strings.addRow}
         </Button>
         {full && <span className="text-caption text-text-muted">{meta.strings.maxRows(max!)}</span>}

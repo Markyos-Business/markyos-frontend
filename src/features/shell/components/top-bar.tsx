@@ -1,12 +1,14 @@
 "use client";
 
-import { TabIndicator, tabButtonId } from "@/components/ui";
+import { revealInScroller } from "@/lib/scroll";
+import { HelpButton, type HelpScreen } from "@/features/helpcenter";
+import { Breadcrumb, TabIndicator, tabButtonId } from "@/components/ui";
 import { useTabNavigation } from "@/components/ui";
-import { AccountMenu } from "@/features/account";
+import { NotificationBell } from "@/features/notifications";
 import { SidebarMenuButton } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import type { Workspace } from "@/types";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 export interface TopBarTab {
   key: string;
@@ -18,31 +20,41 @@ export interface TopBarTab {
 }
 
 /** Brand breadcrumb, one global account menu, then page actions and sections. */
-export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, tabsId, panelId }: {
+export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, tabsId, panelId, help }: {
   workspace: Workspace; section: string; arSection?: string; right?: ReactNode;
+  /** The screen's ? button: opens the Help panel on its article (helpcenter help-map). */
+  help?: HelpScreen;
   tabs?: TopBarTab[]; tabsRight?: ReactNode; tabsId: string; panelId: string;
 }) {
   const { uiLang } = useAppActions();
   const isAr = uiLang(workspace) === "ar";
   const active = tabs?.find(tab => tab.active)?.key ?? tabs?.[0]?.key ?? "";
   const { row, tabProps } = useTabNavigation({ tabs: tabs ?? [], active, onChange: key => tabs?.find(tab => tab.key === key)?.onSelect() });
+  // Below lg the tabs are one scrolling row; keep the open one in sight (a deep link to the tenth tab).
+  useEffect(() => {
+    revealInScroller(row.current, row.current?.querySelector<HTMLElement>(`[data-tab-key="${CSS.escape(active)}"]`));
+  }, [active, row]);
   return (
-    <div className="flex shrink-0 flex-col">
-      <header className="mk-no-hover flex min-h-topbar items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
+    // One banner for the breadcrumb, the page actions and the section tabs, so
+    // none of them sits outside a landmark.
+    <header className="flex shrink-0 flex-col">
+      <div className="mk-no-hover flex min-h-topbar items-center gap-ctl-row px-space-6 py-space-4 sm:px-space-10">
         <SidebarMenuButton />
-        <nav aria-label={isAr ? "مسار الصفحة" : "Breadcrumb"} className="flex min-w-0 flex-1 items-center gap-space-3 text-body text-text-muted">
-          <span className="truncate">{workspace.name}</span>
-          <span aria-hidden>/</span>
-          <span className="truncate text-text">{isAr && arSection ? arSection : section}</span>
-        </nav>
-        <AccountMenu isAr={isAr} />
-      </header>
-      {right && <div className="flex flex-wrap items-center gap-space-4 px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
-      {!!tabs?.length && <div className="flex flex-wrap items-start gap-space-3 px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
-        <div ref={row} id={tabsId} role="tablist" aria-label={isAr && arSection ? arSection : section} aria-orientation="horizontal" className="mk-no-hover flex min-w-0 flex-1 flex-wrap items-center gap-space-2">
-          {tabs.map(tab => <button key={tab.key} type="button" role="tab" id={tabButtonId(tabsId, tab.key)}
+        <Breadcrumb className="flex-1" label={isAr ? "مسار الصفحة" : "Breadcrumb"} items={[
+          { label: workspace.name, href: `/w/${workspace.slug}/overview` },
+          { label: isAr && arSection ? arSection : section },
+        ]} />
+        {/* The account sits at the bottom of the brand sidebar; the bell stays here. */}
+        {help && <HelpButton screen={help} />}
+        <NotificationBell isAr={isAr} />
+      </div>
+      {right && <div className="flex flex-wrap items-center gap-ctl-row px-space-6 pb-space-5 *:flex-wrap sm:px-space-10">{right}</div>}
+      {!!tabs?.length && <div className="flex flex-wrap items-start gap-ctl-row px-space-6 pb-space-5 shadow-rule-b sm:px-space-10">
+        {/* One row that scrolls on phones and tablets (Strategy has ten tabs); wraps from lg up. */}
+        <div ref={row} id={tabsId} role="tablist" aria-label={isAr && arSection ? arSection : section} aria-orientation="horizontal" className="mk-tabs mk-no-hover flex min-w-0 flex-1 items-center gap-ctl-row overflow-x-auto pb-space-1 lg:flex-wrap lg:overflow-visible lg:pb-0">
+          {tabs.map(tab => <button /* button-audit-ignore: a tab in the page's tablist */ key={tab.key} type="button" role="tab" id={tabButtonId(tabsId, tab.key)}
             aria-selected={tab.active} aria-controls={panelId} data-tab-key={tab.key} {...tabProps(tab.key)} onClick={tab.onSelect}
-            className={`relative isolate flex h-control-sm cursor-pointer items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body font-medium transition-colors ${tab.active ? "text-text" : "text-text-muted"}`}>
+            className={`relative isolate flex h-control-sm shrink-0 cursor-pointer items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body font-medium transition-colors ${tab.active ? "text-text" : "text-text-muted"}`}>
             {tab.active && <TabIndicator />}
             {isAr ? tab.arLabel : tab.label}
             {tab.empty && <span role="img" aria-label={isAr ? "لا يوجد محتوى بعد" : "Nothing here yet"} title={isAr ? "لا يوجد محتوى بعد" : "Nothing here yet"} className="size-1.5 shrink-0 rounded-full shadow-[inset_0_0_0_1.5px_var(--text-faint)]" />}
@@ -50,6 +62,6 @@ export function TopBar({ workspace, section, arSection, right, tabs, tabsRight, 
         </div>
         {tabsRight}
       </div>}
-    </div>
+    </header>
   );
 }

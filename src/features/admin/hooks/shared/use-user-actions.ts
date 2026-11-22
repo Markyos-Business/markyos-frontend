@@ -1,5 +1,6 @@
 "use client";
 
+import type { AccountType } from "@/types";
 import { useState } from "react";
 import { useDialog, useToast } from "@/components/ui";
 import {
@@ -10,8 +11,8 @@ import {
 } from "../../api/admin.api";
 import type { AdminUser } from "../../types";
 import { useAdminLang } from "./use-admin-lang";
+import { errorText } from "@/lib/api/errorText";
 
-const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 /**
  * What an admin does to one account, from a table row or the account's own
@@ -21,9 +22,11 @@ const message = (err: unknown) => (err instanceof Error ? err.message : String(e
 export function useUserActions(onChanged: (user: AdminUser | null) => void) {
   const { confirm } = useDialog();
   const { showToast } = useToast();
-  const { c, isAr } = useAdminLang();
+  const { c, isAr, lang } = useAdminLang();
+  const message = (err: unknown) => errorText(err, lang);
   // The account whose role dialog is open.
   const [roleFor, setRoleFor] = useState<AdminUser | null>(null);
+  const [typeFor, setTypeFor] = useState<AdminUser | null>(null);
 
   async function run(work: () => Promise<AdminUser | null>, done: string) {
     try {
@@ -63,6 +66,13 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
     } catch (err) {
       return message(err);
     }
+  }
+
+  async function changeType(user: AdminUser, accountType: AccountType): Promise<string | void> {
+    try {
+      onChanged(await updateUser(user.id, { accountType }));
+      showToast(isAr ? "تم تحديث نوع الحساب. تنتقل الاشتراكات إلى السعر الجديد عند التجديد." : "Account type updated. Subscriptions move to the new price at renewal.", "success");
+    } catch (err) { return message(err); }
   }
 
   async function remove(user: AdminUser) {
@@ -107,7 +117,7 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
     }, c.toasts.signedOut);
   }
 
-  return { roleFor, setRoleFor, changeRole, deactivate, reactivate, remove, resend, signOutEverywhere };
+  return { typeFor, setTypeFor, changeType, roleFor, setRoleFor, changeRole, deactivate, reactivate, remove, resend, signOutEverywhere };
 }
 
 export type UserActions = ReturnType<typeof useUserActions>;

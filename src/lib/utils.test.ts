@@ -42,6 +42,10 @@ describe("formatBytes", () => {
     expect(strip(formatBytes(1023))).toBe("1023 KB");
   });
 
+  it("says <1 KB for a file under a kilobyte, not 0 KB", () => {
+    expect(strip(formatBytes(0.4))).toBe("<1 KB");
+  });
+
   it("switches to MB at 1024 KB", () => {
     expect(strip(formatBytes(1024))).toBe("1.0 MB");
     expect(strip(formatBytes(2560))).toBe("2.5 MB");
@@ -79,6 +83,18 @@ describe("formatRelative", () => {
     expect(at(14 * DAY)).toBe("2w ago");
     expect(at(60 * DAY)).toBe("2mo ago");
     expect(at(400 * DAY)).toBe("1y ago");
+  });
+
+  it("writes Arabic out in full, with the dual and plurals", () => {
+    const ar = (ms: number) => formatRelative(now - ms, now, "ar");
+    expect(ar(1 * MIN)).toBe("قبل دقيقة");
+    expect(ar(5 * MIN)).toBe("قبل 5 دقائق");
+    expect(ar(2 * HOUR)).toBe("قبل ساعتين");
+    expect(ar(1 * DAY)).toBe("قبل يوم");
+    expect(ar(2 * DAY)).toBe("قبل يومين");
+    expect(ar(3 * DAY)).toBe("قبل 3 أيام");
+    expect(ar(14 * DAY)).toBe("قبل أسبوعين");
+    expect(ar(400 * DAY)).toBe("قبل سنة");
   });
 
   it("is bidi-safe at every step", () => {

@@ -20,26 +20,36 @@ export const CitationsProvider = ({ value, children }: { value: CitationsContext
   <CitationsContext.Provider value={value}>{children}</CitationsContext.Provider>
 );
 
+/**
+ * A source's short name in the reader's language. The server writes it in
+ * English ("Form · Q12", "Call · 14 Oct · Omar Aziz"); the rest of the label
+ * is a date and a name, which read the same in Arabic.
+ */
+export function sourceLabel(source: SourceRef, isAr: boolean): string {
+  if (!isAr) return source.label;
+  if (source.ref.type === "form") return `استبيان · س${source.ref.number}`;
+  return source.label.replace(/^Call\b/, "مكالمة");
+}
+
 /** "Form · Q12", "Call · 14 Oct · Omar Aziz": each opens its source beside the report. */
 export function CitationChips({ citations }: { citations: Citation[] }) {
   const { index, open, isAr } = useContext(CitationsContext);
   if (!citations?.length) return null;
   return (
-    <ul className="flex flex-wrap gap-space-2" aria-label={isAr ? "المصادر" : "Sources"}>
+    <ul className="flex flex-wrap gap-ctl-row" aria-label={isAr ? "المصادر" : "Sources"}>
       {citations.map((c, i) => {
         const source = index[c.sourceId];
         return (
           <li key={`${c.sourceId}-${i}`}>
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={() => open(c)}
               disabled={!source}
               title={c.quote}
-              className="mk-btn inline-flex h-badge items-center gap-space-1 rounded-md bg-surface-2 px-space-3 text-caption font-medium text-text-muted hover:text-accent-text disabled:cursor-default"
+              icon={<Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />}
             >
-              <Icon name={c.source === "form" ? "clipboard-list" : "phone"} size={16} />
-              <span className="bidi-plain">{source?.label ?? c.sourceId}</span>
-            </button>
+              <span className="bidi-plain">{source ? sourceLabel(source, isAr) : c.sourceId}</span>
+            </Button>
           </li>
         );
       })}
@@ -102,7 +112,7 @@ function CallSource({ source, citation, slug, isAr }: { source: Extract<SourceRe
     <div className="flex flex-col gap-space-5">
       <div className="flex flex-col gap-space-1">
         <span className="bidi-plain text-body font-medium text-text">{note.title}</span>
-        <span className="text-caption text-text-muted">{source.label}</span>
+        <span className="text-caption text-text-muted">{sourceLabel(source, isAr)}</span>
       </div>
       <ol className="flex flex-col gap-space-2">
         {window_.map((line, i) => {
@@ -118,7 +128,7 @@ function CallSource({ source, citation, slug, isAr }: { source: Extract<SourceRe
           );
         })}
       </ol>
-      <Button variant="link" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
+      <Button variant="ghost" href={`/w/${slug}/discovery/calls/${note.id}${turn != null ? `?turn=${turn}` : para != null ? `?para=${para}` : ""}`}>
         <Icon name="phone" size={16} />
         {isAr ? "فتح المكالمة" : "Open the call"}
       </Button>
@@ -138,7 +148,7 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
     <div className="flex flex-col gap-space-5">
       <div className="flex flex-col gap-space-1">
         <span className="bidi-plain text-body font-medium text-text">{source.ref.formName}</span>
-        <span className="text-caption text-text-muted">{source.label}</span>
+        <span className="text-caption text-text-muted">{sourceLabel(source, isAr)}</span>
       </div>
       <div ref={targetRef} className={lit}>
         <h3 dir="auto" className="text-body font-medium text-text-secondary">
@@ -148,7 +158,7 @@ function FormSource({ source, slug, isAr }: { source: Extract<SourceRef, { ref: 
           {question.answer ? answerText(question.answer.value) : isAr ? "لا إجابة" : "Not answered"}
         </p>
       </div>
-      <Button variant="link" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
+      <Button variant="ghost" href={`/w/${slug}/forms/${formId}/answers?q=${questionId}`}>
         <Icon name="clipboard-list" size={16} />
         {isAr ? "فتح الإجابات" : "Open the answers"}
       </Button>

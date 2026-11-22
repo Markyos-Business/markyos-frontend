@@ -50,18 +50,18 @@ function Field({ name, value, path, isAr, set }: FieldProps) {
   if (Array.isArray(value)) {
     const objects = value.length > 0 && typeof value[0] === "object";
     return (
-      <fieldset className="flex flex-col gap-space-4">
+      <fieldset className="flex flex-col gap-field-stack-compact">
         <legend className="mb-space-3 text-caption font-medium text-text-muted">{label}</legend>
         {value.map((item, i) =>
           objects ? (
-            <div key={i} className="flex flex-col gap-space-4 rounded-widget bg-surface-2 p-space-6">
+            <div key={i} className="flex flex-col gap-field-stack-compact rounded-widget bg-surface-2 p-space-6">
               <div className="flex justify-end">
                 <IconButton icon="times" iconSize={16} label={t(`Remove ${label} ${i + 1}`, `حذف ${label} ${i + 1}`)} onClick={() => set(path, value.filter((_, j) => j !== i))} />
               </div>
               <Group value={item} path={[...path, i]} isAr={isAr} set={set} />
             </div>
           ) : (
-            <div key={i} className="flex items-end gap-space-3">
+            <div key={i} className="mk-field-row">
               <div className="flex-1">
                 <InputField label={`${label} ${i + 1}`} dir="auto" value={String(item ?? "")} onChange={(e) => set([...path, i], e.target.value)} />
               </div>
@@ -73,7 +73,7 @@ function Field({ name, value, path, isAr, set }: FieldProps) {
         {(value.length > 0 || !objects) && (
           <Button
             type="button"
-            variant="link"
+            variant="ghost"
             className="self-start"
             icon={<Icon name="plus" size={16} />}
             onClick={() => set(path, [...value, value.length ? blankLike(value[0]) : ""])}
@@ -119,11 +119,11 @@ export function SectionEditor({ editor, isAr }: { editor: SectionEditorState; is
     >
       <AlertBanner message={editor.error} />
       <Group value={editor.draft} path={[]} isAr={isAr} set={editor.set} />
-      <div className="flex gap-space-4">
+      <div className="flex gap-ctl-row">
         <Button type="submit" variant="primary" size="sm" disabled={editor.saving}>
           {editor.saving ? t("Saving…", "جارٍ الحفظ…") : t("Save section", "حفظ القسم")}
         </Button>
-        <Button type="button" variant="outline" size="sm" onClick={editor.cancel} disabled={editor.saving}>
+        <Button type="button" variant="secondary" size="sm" onClick={editor.cancel} disabled={editor.saving}>
           {t("Cancel", "إلغاء")}
         </Button>
       </div>

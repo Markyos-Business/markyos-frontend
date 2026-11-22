@@ -99,11 +99,14 @@ export function brandFontStacks(ws: Workspace): BrandFontStacks {
  */
 export function brandFontVars(fonts: BrandFontStacks, isAr: boolean): Record<string, string> {
   const vars: Record<string, string> = {};
-  if (fonts.latinIsUploaded) vars["--font-sans"] = fonts.latin;
+  // A Latin brand face rarely carries Arabic. Without the Arabic stack behind
+  // it, Arabic words in that face drop to whatever the OS picks (often Arial).
+  const latin = `${fonts.latin}, var(--font-arabic)`;
+  if (fonts.latinIsUploaded) vars["--font-sans"] = latin;
   if (fonts.arabicIsUploaded) vars["--font-arabic"] = fonts.arabic;
   // Display is whichever script is being read: an Arabic guideline set in the
   // Latin display face is the bug this fixes, not a style choice.
-  const display = isAr ? fonts.arabic : fonts.latin;
+  const display = isAr ? fonts.arabic : latin;
   const displayIsReal = isAr ? fonts.arabicIsUploaded : fonts.latinIsUploaded;
   if (displayIsReal) vars["--font-display"] = display;
   return vars;

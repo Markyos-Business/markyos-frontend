@@ -5,6 +5,7 @@
 // section opens with an oversized numbered color-band hero, followed by
 // two-column "label / description" content rows.
 
+import { downloadOnClick } from "@/lib/download";
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
@@ -215,7 +216,7 @@ export function StudioAtlas(props: TemplateProps) {
         )}
 
         <div className="mt-auto flex flex-col gap-3">
-          <LangToggle value={previewLang} onChange={setPreviewLang} size="sm" />
+          <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <button
               type="button"
@@ -523,7 +524,7 @@ function FileResourceCard({ title, files }: { title: string; files: Asset[] }) {
       </div>
       <div className="flex flex-col gap-1.5">
         {files.slice(0, 4).map((f) => (
-          <a key={f.id} href={f.url} download={f.fileName} className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: "var(--g-text-muted)" }}>
+          <a key={f.id} href={f.url} download={f.fileName} onClick={downloadOnClick(f.url, f.fileName)} className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: "var(--g-text-muted)" }}>
             <Icon name="download" size={11} style={{ color: "var(--g-text-faint)" }} />
             <span className="truncate flex-1">{f.fileName}</span>
             <span style={{ color: "var(--g-text-faint)" }}>{formatBytes(f.sizeKB)}</span>

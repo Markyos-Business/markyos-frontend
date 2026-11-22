@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, IconButton } from "@/components/ui";
+import { AssetThumb, Avatar, IconButton } from "@/components/ui";
 import type { Workspace } from "@/types";
-import { formatRelative } from "@/lib/utils";
+import { formatRelative, initialsFor } from "@/lib/utils";
+import { brandMarkUrl } from "@/lib/data/brandSetup";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 
 type BoardCardProps = {
@@ -16,6 +17,7 @@ type BoardCardProps = {
 
 /** One brand on the board: its name, what's waiting, and the arrows that move it. */
 export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: BoardCardProps) {
+  const mark = brandMarkUrl(ws);
   const pendingDrafts = ws.drafts.filter((d) => d.status === "pending").length;
   const { isAr } = useInterfaceLang();
 
@@ -30,25 +32,27 @@ export function BoardCard({ ws, stageIndex, onDragStart, onDragEnd, onMove }: Bo
           19px target, and the mark and the name are one identity, so they
           should be one object to point at. */}
       <Link href={`/w/${ws.slug}/overview`} className="-m-1 flex min-h-[34px] min-w-0 items-center gap-2.5 rounded-lg p-1 text-text">
-        <Avatar initials={ws.initials} size={26} />
+        {mark
+          ? <span className="grid size-[26px] shrink-0 place-items-center overflow-hidden rounded-full bg-surface-2"><AssetThumb src={mark} alt="" ground="--surface-2" style={{ height: 16, width: "auto" }} /></span>
+          : <Avatar initials={initialsFor(ws.name)} size={26} />}
         <span dir="auto" className="bidi-auto truncate text-[12.5px] font-semibold">
           {ws.name}
         </span>
       </Link>
 
       {pendingDrafts > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Link href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
+        <div className="flex flex-wrap items-center gap-ctl-row">
+          <Link /* button-audit-ignore: a count chip on a board card, links to the drafts */ href={`/w/${ws.slug}/drafts`} className="mk-tap rounded-sm bg-accent-soft px-2 text-[10.5px] font-semibold text-accent-on-soft">
             {isAr ? `${pendingDrafts} بانتظار القرار` : `${pendingDrafts} waiting`}
           </Link>
         </div>
       )}
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-ctl-row">
         <span className="text-[10.5px] text-text-faint">{formatRelative(ws.updatedAt)}</span>
         {/* Buttons as well as dragging: drag-and-drop is unusable with a
             keyboard and awkward on a touch screen. */}
-        <span className="ms-auto flex items-center gap-0.5">
+        <span className="ms-auto flex items-center gap-ctl-row">
           <IconButton icon="angle-left" label={isAr ? `إرجاع ${ws.name} مرحلة` : `Move ${ws.name} back a stage`} onClick={() => onMove(-1)} disabled={stageIndex <= 0} className="text-text-muted" />
           <IconButton icon="angle-right" label={isAr ? `تقديم ${ws.name} مرحلة` : `Move ${ws.name} on a stage`} onClick={() => onMove(1)} disabled={stageIndex >= 5} className="text-text-muted" />
         </span>

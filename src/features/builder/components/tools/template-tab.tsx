@@ -18,7 +18,7 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
       <p className="px-1 text-[11.5px] text-text-faint">
         {isAr
           ? "قالب موقع الدليل الذي يراه العميل. لكل قالب نظام تصميمه الخاص، والألوان والشعار والخطوط تُقرأ من هذا المشروع في جميعها."
-          : "The template the client's guideline site is built in. Each one is its own design system; colors, logo and type read from this workspace in all of them."}
+          : "The template the client's guideline site is built in. Each one is its own design system; colours, logo and type come from this brand in all of them."}
       </p>
 
       {(Object.keys(STYLE_META) as GuidelineTemplate[]).map((kind) => (
@@ -61,12 +61,12 @@ export function TemplateTab({ ws, isAr, onSelectStyle, onSelectStudioStyle, onAp
           : `Written for the ${STYLE_META[ws.guidelineTemplate].name} template — everything added stays editable or deletable.`}
       </p>
       {TEMPLATE_SETS[ws.guidelineTemplate].map((t) => (
-        <button
+        <button /* button-audit-ignore: a starter-section card (icon, name, hint) */
           key={t.key}
           type="button"
           onClick={() => onApplyTemplate(t)}
           className={`mk-card flex cursor-pointer items-start gap-2.5 rounded-card p-2.5 text-start ${
-            t.featured ? "bg-accent-soft shadow-edge-primary" : "bg-surface-1 shadow-[inset_0_0_0_1px_transparent]"
+            t.featured ? "bg-accent-soft shadow-edge-primary" : "bg-surface-1 shadow-none"
           }`}
         >
           <Icon name={t.icon} size={16} className="mt-0.5 shrink-0 text-accent-text" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { RichTextEditor, richToPlainText } from "../rich-text/rich-text";
+import { RichTextEditor, richToPlainText, type RichTextEditorProps } from "../rich-text/rich-text";
 import { useUiStrings } from "../ui-strings";
 import { Field, type FieldState } from "./field";
 
@@ -16,14 +16,19 @@ type RichTextFieldProps = FieldState & {
   maxLength?: number;
   minHeight?: number;
   className?: string;
+  /** `article` adds a second heading level, images and dividers. */
+  tools?: RichTextEditorProps["tools"];
+  /** With `article` tools: opens the page's image picker. */
+  onInsertImage?: RichTextEditorProps["onInsertImage"];
 };
 
 /**
- * Formatted text: bold, italic, headings, lists, quotes and links, with the
+ * Formatted text: bold, italic, headings, lists, quotes, links and tables
+ * (plus a second heading level, images and dividers with `tools="article"`), with the
  * kit's own editor. Each paragraph takes its own direction, so Arabic and
  * English can sit in one value. Counts text, not tags. Controlled.
  */
-const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxLength, minHeight, className = "", ...state }: RichTextFieldProps) => {
+const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxLength, minHeight, className = "", tools, onInsertImage, ...state }: RichTextFieldProps) => {
   const { isAr } = useUiStrings();
   const length = richToPlainText(value).length;
   return (
@@ -36,12 +41,9 @@ const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxL
       className={className}
     >
       {(control) => (
-        // The editor draws its own frame; an error rings it.
-        <div
-          aria-busy={control["aria-busy"]}
-          data-state={control["aria-invalid"] ? "error" : undefined}
-          className="rounded-lg data-[state=error]:outline-1 data-[state=error]:outline-danger"
-        >
+        // The editor is a field; an error turns its underline danger
+        // (aria-invalid on the text, `.mk-field:has([aria-invalid])`).
+        <div aria-busy={control["aria-busy"]}>
           <RichTextEditor
             value={value}
             onChange={onChange}
@@ -50,6 +52,8 @@ const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxL
             isAr={isAr}
             minHeight={minHeight}
             maxLength={maxLength}
+            tools={tools}
+            onInsertImage={onInsertImage}
             disabled={control.disabled}
             readOnly={control.readOnly}
             editorProps={{

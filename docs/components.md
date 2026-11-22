@@ -592,3 +592,7 @@ delete or update. The toasts are themed with tokens and announced.
 - **Icons:** arrow-circle-up/down, minus-circle, sort, sort-up, sort-down,
   calendar, ellipsis-v, file-export, filter, user-plus, user-slash,
   user-check, user-shield, laptop and chart-bar.
+
+## Dashboard widgets
+
+The [dashboard widget family](components/dashboard.md) provides branded metric cards, chart cards, gauges, heatmaps, task/people lists, pipelines and shared widget states. Preview `/design-system/dashboard` with `NEXT_PUBLIC_UI_GALLERY=1`. Import from the public UI barrel as `Dashboard.*` or the documented named exports; `MetricCard` avoids colliding with the basic `StatCard`.

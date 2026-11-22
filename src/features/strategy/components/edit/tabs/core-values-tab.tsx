@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
+import { useToast, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { valueIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
@@ -39,18 +39,13 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
       title={isAr ? "القيم الجوهرية" : "Core values"}
       icon="bullseye"
       right={
-        <button
-          type="button"
-          onClick={() => setAdding((v) => !v)}
-          className="mk-tap text-[12px] font-semibold cursor-pointer"
-          style={{ color: "var(--accent-text)" }}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-        </button>
+        </Button>
       }
     >
       {adding && (
-        <form onSubmit={submit} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submit} className="rounded-card p-4 flex flex-col gap-field-stack-compact" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={title}
             onChange={setTitle}
@@ -61,9 +56,9 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setDescription}
             placeholder={isAr ? "ماذا تعني هذه القيمة عمليًا؟" : "What does this actually mean in practice?"}
           />
-          <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة قيمة" : "Add value"}
-          </button>
+          </Button>
         </form>
       )}
       {ws.strategy.coreValues.length === 0 ? (
@@ -83,7 +78,7 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                 className="rounded-card p-4 flex flex-col gap-1 mk-card"
                 style={{ background: "var(--surface-2)" }}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between gap-ctl-row">
                   <InlineText
                     value={shown.title}
                     isAr={isAr}
@@ -91,16 +86,16 @@ export function CoreValuesTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                     className="font-semibold text-[13px] flex-1 min-w-0"
                     onCommit={(next) => updateCoreValue(ws.id, v.id, isAr ? { titleAr: next } : { title: next })}
                   />
-                  <button
-                    type="button"
+                  <IconButton
+                    icon="times"
+                    iconSize={16}
+                    size="xs"
                     onClick={() => removeCoreValue(ws.id, v.id)}
-                    aria-label={
+                    label={
                       isAr ? `حذف ${shown.title || "القيمة"}` : `Remove ${shown.title || "value"}`
                     }
-                    className="mk-icon-btn cursor-pointer shrink-0 transition-opacity opacity-50 hover:opacity-100"
-                  >
-                    <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                  </button>
+                    className="shrink-0"
+                  />
                 </div>
                 <InlineText
                   value={shown.description}

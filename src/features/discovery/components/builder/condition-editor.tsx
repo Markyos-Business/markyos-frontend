@@ -70,8 +70,8 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
             const target = targets.find((t) => t.question.id === condition.questionId)?.question;
             const replace = (patch: Partial<Condition>) => set(conditions.map((c, j) => (j === i ? { ...c, ...patch } : c)));
             return (
-              <div key={i} className="flex flex-col gap-space-3 rounded-lg bg-surface-sunken p-space-5 shadow-edge-soft">
-                <div className="flex items-start gap-space-3">
+              <div key={i} className="flex flex-col gap-field-stack-compact rounded-lg bg-surface-sunken p-space-5 shadow-edge-soft">
+                <div className="flex items-start gap-ctl-row">
                   <SelectInput
                     className="min-w-0 flex-1"
                     aria-label={isAr ? "السؤال" : "Question"}
@@ -111,7 +111,7 @@ export function ConditionEditor({ earlier, visibility, onChange, disabled, isAr 
           })}
           <div>
             <Button
-              variant="link"
+              variant="ghost"
               disabled={disabled}
               onClick={() => {
                 const c = firstCondition();

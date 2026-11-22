@@ -31,13 +31,13 @@ export function VerifyEmailStep({ pending, onVerified, onBack }: VerifyEmailStep
       footer={
         <>
           {copy.back}
-          <Button variant="link" onClick={onBack}>
+          <Button variant="ghost" onClick={onBack}>
             {copy.backLink}
           </Button>
         </>
       }
     >
-      <form onSubmit={verify.submit} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={verify.submit} className="flex flex-col gap-field-stack" noValidate>
         <p className="text-caption text-text-muted">
           {c.verify.sentTo} <span dir="ltr" className="font-medium text-text">{verify.email}</span>
         </p>
@@ -51,7 +51,7 @@ export function VerifyEmailStep({ pending, onVerified, onBack }: VerifyEmailStep
           {verify.wait > 0 ? (
             <span>{c.verify.newCodeIn(verify.wait)}</span>
           ) : (
-            <Button type="button" variant="link" onClick={verify.resend} className="text-caption">
+            <Button type="button" variant="ghost" onClick={verify.resend} className="text-caption">
               {c.verify.newCode}
             </Button>
           )}

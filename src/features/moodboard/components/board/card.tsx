@@ -1,7 +1,8 @@
 "use client";
 
+import { MoodImage } from "./mood-image";
 import { useState } from "react";
-import { ColorPopover, FilterSelectField } from "@/components/ui";
+import { ColorPopover, FilterSelectField, Button, IconButton } from "@/components/ui";
 import { Icon } from "@/components/ui";
 import { contrastRatio } from "@/lib/contrast";
 import type { Asset, MoodboardItem } from "@/types";
@@ -54,6 +55,8 @@ export function CardBody(props: {
   onSampleColor?: (hex: string) => void;
   /** Fill the frame rather than sitting at the image's natural height. */
   fill?: boolean;
+  /** The card's drawn width in board units, so its image is fetched at that size. */
+  width?: number;
 }) {
   return <Body {...props} />;
 }
@@ -97,6 +100,7 @@ function Body({
   onEdit,
   onSampleColor,
   fill,
+  width,
 }: {
   item: MoodboardItem;
   asset?: Asset;
@@ -104,6 +108,7 @@ function Body({
   onEdit: (patch: Partial<MoodboardItem>) => void;
   onSampleColor?: (hex: string) => void;
   fill?: boolean;
+  width?: number;
 }) {
   switch (item.kind) {
     case "asset":
@@ -131,12 +136,10 @@ function Body({
             silently dropped one frame later, with no error and nothing stored.
             The card's own drag is the figure's, in both views.
           */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={asset.url}
+          <MoodImage
+            url={asset.url}
             alt={asset.fileName}
-            loading="lazy"
-            draggable={false}
+            width={width}
             style={
               fill
                 ? { width: "100%", height: "100%", objectFit: "cover", display: "block" }
@@ -144,12 +147,12 @@ function Body({
             }
           />
           {onSampleColor && (
-            <button
+            <button /* ctl-audit-ignore: drawn over the card's image on its dark scrim */ /* button-audit-ignore: overlay on the card's image */
               type="button"
               onClick={() => onSampleColor(asset.url)}
               title={isAr ? "استخرج الألوان من هذه الصورة" : "Read the colours out of this image"}
               aria-label={isAr ? "استخرج الألوان من هذه الصورة" : "Read the colours out of this image"}
-              className="absolute top-2 h-7 w-7 rounded-full grid place-items-center cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="absolute top-2 h-ctl-xs w-7 rounded-full grid place-items-center cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
               style={{ insetInlineEnd: 8, background: "rgba(0,0,0,.62)", color: "#fff" }}
             >
               <Icon name="eye-dropper" size={12} />
@@ -228,7 +231,7 @@ function Swatch({
         dir="auto"
         aria-label={isAr ? "اسم اللون" : "Colour name"}
         onPointerDown={(e) => e.stopPropagation()}
-        className="bidi-auto h-8 px-2.5 bg-transparent outline-none text-[11.5px] shrink-0"
+        className="bidi-auto h-ctl-sm px-2.5 bg-transparent outline-none text-[11.5px] shrink-0"
         style={{ color: "var(--text-muted)" }}
       />
     </div>
@@ -254,8 +257,8 @@ function Note({
       rows={4}
       dir="auto"
       aria-label={isAr ? "نص الملاحظة" : "Note text"}
-      className="bidi-auto w-full bg-transparent outline-none resize-none px-3 py-2.5 text-[12.5px] leading-[1.5]"
-      style={{ color: "var(--text)", minHeight: 96, height: fill ? "100%" : undefined }}
+      className="min-h-24 bidi-auto w-full bg-transparent outline-none resize-none px-3 py-2.5 text-[12.5px] leading-[1.5]"
+      style={{ color: "var(--text)", height: fill ? "100%" : undefined }}
     />
   );
 }
@@ -303,7 +306,7 @@ function LinkCard({
       className="flex flex-col gap-1.5 p-3 no-underline overflow-hidden"
     >
       {fill && item.url && (
-        <a
+        <a /* button-audit-ignore: overlay on a link card, drawn on its scrim */
           href={item.url}
           target="_blank"
           rel="noreferrer noopener"
@@ -316,17 +319,7 @@ function LinkCard({
           <Icon name="external-link-alt" size={10} />
         </a>
       )}
-      {asset?.url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={asset.url}
-          alt=""
-          loading="lazy"
-          draggable={false}
-          className="rounded-lg"
-          style={{ width: "100%", display: "block" }}
-        />
-      )}
+      {asset?.url && <MoodImage url={asset.url} alt="" className="rounded-lg" style={{ width: "100%", display: "block" }} />}
       <span className="flex items-center gap-1.5 text-[10.5px]" style={{ color: "var(--text-faint)" }}>
         <Icon name="link" size={10} />
         <span dir="ltr" className="bidi-auto truncate">{host}</span>
@@ -378,7 +371,9 @@ function Footer({
 
   return (
     <figcaption
-      className="flex items-center gap-1 px-2 h-9 shrink-0"
+      // Wraps rather than clips: on a phone-width tile the size picker
+      // (Small/Medium/Large in words) ran past the card edge.
+      className="flex min-h-9 shrink-0 flex-wrap items-center gap-1 px-2 py-1"
       style={{ background: "var(--surface-1)", boxShadow: "inset 0 1px 0 var(--hairline)" }}
     >
       <span
@@ -394,8 +389,7 @@ function Footer({
         <Icon name="grip-vertical" size={11} />
       </span>
 
-      <button
-        type="button"
+      <Button
         onClick={onVote}
         aria-pressed={mine}
         aria-label={
@@ -404,15 +398,13 @@ function Footer({
             : isAr ? `اختر ${label}` : `Pick ${label}`
         }
         title={count > 0 ? item.votes.join(", ") : isAr ? "لم يخترها أحد بعد" : "Nobody has picked this yet"}
-        className="mk-tap h-6 px-2 rounded-md text-[11px] font-semibold cursor-pointer flex items-center gap-1 shrink-0"
-        style={{
-          background: mine ? "var(--accent-soft)" : "transparent",
-          color: mine ? "var(--accent-on-soft)" : "var(--text-faint)",
-        }}
+        variant={mine ? "secondary" : "ghost"}
+        size="sm"
+        className={mine ? "" : "text-text-faint"}
+        icon={<Icon name="check" size={16} />}
       >
-        <Icon name="check" size={10} />
         {count > 0 ? count : isAr ? "اختر" : "Pick"}
-      </button>
+      </Button>
 
       <span className="ms-auto flex items-center shrink-0">
         <FilterSelectField
@@ -421,36 +413,38 @@ function Footer({
           size="sm"
           value={item.size}
           onChange={(value) => onEdit({ size: value as MoodboardItem["size"] })}
+          // Words, not S/M/L: a lone "M" on every card didn't say it was a size.
           options={[
-            { value: "s", label: "S" },
-            { value: "m", label: "M" },
-            { value: "l", label: "L" },
+            { value: "s", label: isAr ? "صغير" : "Small" },
+            { value: "m", label: isAr ? "متوسط" : "Medium" },
+            { value: "l", label: isAr ? "كبير" : "Large" },
           ]}
         />
         {asset?.credit?.sourceUrl && (
-          <a
+          <IconButton
             href={asset.credit.sourceUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label={isAr ? `مصدر ${label}` : `Source of ${label}`}
+            // An outside page, in a new tab. Button types only a button's
+            // attributes, so the link's own two travel in a spread; Link puts
+            // them on the <a>.
+            external
+            size="xs"
+            icon="external-link-alt"
+            iconSize={16}
+            label={isAr ? `مصدر ${label}` : `Source of ${label}`}
             title={asset.credit.source || asset.credit.sourceUrl}
-            className="mk-icon-btn"
-          >
-            <Icon name="external-link-alt" size={11} style={{ color: "var(--text-faint)" }} />
-          </a>
+          />
         )}
-        <button
-          type="button"
+        <IconButton
+          size="xs"
+          icon="times"
+          iconSize={16}
           onClick={onRemove}
-          aria-label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}
+          label={isAr ? `احذف ${label} من اللوح` : `Take ${label} off the board`}
           title={isAr ? "حذف — يمكن التراجع" : "Delete — you can undo this"}
           // Named for the sweeps, which delete a specific card in both
           // languages and cannot select it by a label that changes with them.
           data-mood-remove
-          className="mk-icon-btn mk-danger-hover cursor-pointer"
-        >
-          <Icon name="times" size={11} style={{ color: "var(--text-faint)" }} />
-        </button>
+        />
       </span>
     </figcaption>
   );

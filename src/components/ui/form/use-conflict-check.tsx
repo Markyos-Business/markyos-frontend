@@ -65,7 +65,7 @@ function useConflictCheck({ version, fetchLatest, onReload, formId }: ConflictCh
           <Button
             type="button"
             size="sm"
-            variant="outline"
+            variant="secondary"
             onClick={() => {
               setConflict(null);
               onReload(conflict);
@@ -76,7 +76,7 @@ function useConflictCheck({ version, fetchLatest, onReload, formId }: ConflictCh
           <Button
             type="button"
             size="sm"
-            variant="danger-soft"
+            variant="danger"
             onClick={() => {
               force.current = true;
               (document.getElementById(formId) as HTMLFormElement | null)?.requestSubmit();

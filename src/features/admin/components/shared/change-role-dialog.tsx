@@ -16,7 +16,7 @@ type ChangeRoleDialogProps = {
   onSubmit: (role: AccountRole) => Promise<string | void>;
 };
 
-/** Admin or member, each with a line on what it means. One account or a selection. */
+/** Admin, member or content manager, each with a line on what it means. One account or a selection. */
 export function ChangeRoleDialog({ open, title, initial, onClose, onSubmit }: ChangeRoleDialogProps) {
   const { c } = useAdminLang();
   const [role, setRole] = useState<AccountRole>(initial);
@@ -28,6 +28,7 @@ export function ChangeRoleDialog({ open, title, initial, onClose, onSubmit }: Ch
         onChange={(v) => setRole(v as AccountRole)}
         options={[
           { value: "member", label: c.roleDialog.help.member },
+          { value: "content", label: c.roleDialog.help.content },
           { value: "admin", label: c.roleDialog.help.admin },
         ]}
       />

@@ -14,6 +14,7 @@ import { createNote, previewFile } from "../../api/call-notes.api";
 import type { CallNote, Participant } from "../../types";
 import { ParticipantsEditor, guessRole, mergeParticipants } from "./participants-editor";
 import { PreviewPanel } from "./preview-panel";
+import { errorText } from "@/lib/api/errorText";
 
 type CallNoteEditorProps = {
   brandId: string;
@@ -39,8 +40,8 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
   const { confirm } = useDialog();
   const { showToast } = useToast();
   const forms = useBrandForms(brandId);
-  const { draft, change, flush, restored, savedAt, saving, error, conflict, unsaved, discardLocal } = useNoteDraft(brandId, note);
-  const { preview, error: previewError } = useParsePreview(draft.body, draft.kind);
+  const { draft, change, flush, restored, savedAt, saving, error, conflict, unsaved, discardLocal } = useNoteDraft(brandId, note, isAr);
+  const { preview, error: previewError } = useParsePreview(draft.body, draft.kind, isAr);
   const [file, setFile] = useState<File | null>(null);
   const [reading, setReading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -78,7 +79,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
       change({ body: read.body, source: read.source, kind: undefined, language: undefined });
       if (!draft.title.trim()) change({ title: picked.name.replace(/\.[^.]+$/, "") });
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That file didn't read.", "تعذّرت قراءة الملف."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That file didn't read.", ar: "تعذّرت قراءة الملف." }), "danger");
       setFile(null);
     }
     setReading(false);
@@ -106,7 +107,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
         router.push(noteHref(created.id));
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't save.", "لم يُحفظ ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't save.", ar: "لم يُحفظ ذلك." }), "danger");
     }
     setSubmitting(false);
   };
@@ -133,11 +134,11 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
           "الصق ملاحظاتك أو النص المفرّغ. تُحفظ بجانب إجابات الاستبيان، ويقرأ التحليل كليهما."
         )}
         actions={
-          <div className="flex items-center gap-space-4">
+          <div className="flex items-center gap-ctl-row">
             {(savedAt || saving || error) && (
               <SaveStatus saving={saving} savedAt={savedAt} error={error} isAr={isAr} />
             )}
-            <Button variant="outline" onClick={() => void cancel()}>
+            <Button variant="secondary" onClick={() => void cancel()}>
               {t("Cancel", "إلغاء")}
             </Button>
             <Button variant="primary" onClick={() => void save()} disabled={submitting || reading} icon={<Icon name="check" size={18} />}>
@@ -162,7 +163,7 @@ export function CallNoteEditor({ brandId, team, note, noteHref, backHref, isAr }
       )}
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="flex min-w-0 flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-field-stack">
           <Card title={t("The call", "المكالمة")}>
             <InputField
               label={t("Title", "العنوان")}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui";
+import { Button, Icon, SegmentedControl, ToggleButton } from "@/components/ui";
 import { ColorPopover } from "@/components/ui";
 import {
   backgroundInkWarning,
@@ -144,21 +144,16 @@ export function DesignInspector({
        */}
       {touched && (
         <div className="flex items-center justify-end">
-          <button
-            type="button"
-            onClick={() => onChange({})}
-            className="mk-tap text-[11px] font-semibold cursor-pointer"
-            style={{ color: "var(--accent-text)" }}
-          >
+          <Button variant="ghost" size="sm" onClick={() => onChange({})}>
             {isAr ? "إعادة الضبط" : "Reset all"}
-          </button>
+          </Button>
         </div>
       )}
 
       {view.scope && (
         <div
-          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45]"
-          style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+          className="flex items-start gap-2 rounded-lg px-2.5 py-2 text-[11px] leading-[1.45] bg-accent-soft text-accent-on-soft"
+          
         >
           <Icon name={view.scope === "rtl" ? "language" : view.scope === "phone" ? "mobile" : "tablet"} size={12} style={{ flexShrink: 0, marginTop: 1 }} />
           <span>
@@ -178,24 +173,13 @@ export function DesignInspector({
        * the per-part options to be real controls with labels rather than a row of
        * unexplained toggles.
        */}
-      <div className="flex rounded-full p-0.5 shrink-0" style={{ background: "var(--surface-1)" }} role="tablist">
-        {TABS.filter((t) => t !== "content" || hasContentTab).map((t) => (
-          <button
-            key={t}
-            type="button"
-            role="tab"
-            aria-selected={active === t}
-            onClick={() => setTab(t)}
-            className="flex-1 h-7 rounded-full text-[10.5px] font-semibold cursor-pointer"
-            style={{
-              background: active === t ? "var(--surface-2)" : "transparent",
-              color: active === t ? "var(--text)" : "var(--text-faint)",
-            }}
-          >
-            {TAB_LABEL[t][isAr ? "ar" : "en"]}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={isAr ? "أقسام الإعدادات" : "Settings sections"}
+        options={TABS.filter((t) => t !== "content" || hasContentTab).map((t) => ({ value: t, label: TAB_LABEL[t][isAr ? "ar" : "en"] }))}
+        value={active}
+        onChange={setTab}
+      />
 
       {active === "content" && sectionId && (
         <>
@@ -283,7 +267,7 @@ export function DesignInspector({
       <Group label={isAr ? "الحجم" : "Size"}>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+            <span className="flex items-center gap-ctl-row text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
               {isAr ? "المقياس" : "Scale"}
               <OverrideDot isAr={isAr} {...overrideProps("scale")} />
             </span>
@@ -361,7 +345,7 @@ export function DesignInspector({
 
       {active === "layout" && (
       <Group label={isAr ? "الظهور" : "Visibility"}>
-        <label className="flex items-center gap-2.5 cursor-pointer">
+        <label className="flex items-center gap-ctl-icon cursor-pointer">
           <input
             type="checkbox"
             checked={resolved.hidden === true}
@@ -473,7 +457,7 @@ function LayoutPicker({
         {options.map((v, i) => {
           const on = v.key === active;
           return (
-            <button
+            <button /* button-audit-ignore: a layout option card (name + description), the whole card is the choice */
               key={v.key}
               type="button"
               aria-pressed={on}
@@ -564,14 +548,15 @@ function OptionsPanel({
                 <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
                   {isAr ? "صيغ القيم" : "Value formats"}
                 </span>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-ctl-row">
                   {COLOR_FORMATS.map((f) => {
                     const picked = on.includes(f);
                     return (
-                      <button
+                      <ToggleButton
                         key={f}
-                        type="button"
-                        aria-pressed={picked}
+                        variant="secondary"
+                        size="sm"
+                        pressed={picked}
                         data-option={`formats:${f}`}
                         onClick={() => {
                           // Order kept canonical rather than click-order, so the
@@ -580,14 +565,9 @@ function OptionsPanel({
                           const next = COLOR_FORMATS.filter((k) => (k === f ? !picked : on.includes(k)));
                           onChange({ formats: next });
                         }}
-                        className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
-                        style={{
-                          background: picked ? "var(--accent-soft)" : "var(--surface-1)",
-                          color: picked ? "var(--accent-on-soft)" : "var(--text-faint)",
-                        }}
                       >
                         {f}
-                      </button>
+                      </ToggleButton>
                     );
                   })}
                 </div>
@@ -657,7 +637,7 @@ function OptionsPanel({
           case "sampleTextAr": {
             const ar = key === "sampleTextAr";
             return (
-              <label key={key} className="flex flex-col gap-1.5">
+              <label key={key} className="flex flex-col gap-field-stack-compact">
                 <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
                   {ar ? (isAr ? "نص العيّنة (عربي)" : "Sample sentence (Arabic)") : isAr ? "نص العيّنة" : "Sample sentence"}
                 </span>
@@ -688,7 +668,7 @@ function OptionsPanel({
             if (!label) return null;
             const checked = options[key] !== false;
             return (
-              <label key={key} className="flex items-center gap-2.5 cursor-pointer">
+              <label key={key} className="flex items-center gap-ctl-icon cursor-pointer">
                 <input
                   type="checkbox"
                   checked={checked}
@@ -755,19 +735,19 @@ function OverrideDot({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={(e) => {
         e.preventDefault();
         onReset(here);
       }}
       title={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
       aria-label={isAr ? "إعادة إلى قيمة سطح المكتب" : "Reset to the Desktop value"}
-      className="mk-tap text-[10px] font-semibold px-1.5 rounded-md cursor-pointer shrink-0"
-      style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+      className="shrink-0"
     >
       {isAr ? "إعادة" : "Reset"}
-    </button>
+    </Button>
   );
 }
 
@@ -799,38 +779,19 @@ function Choice<T extends string | number>({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
+      <span className="flex items-center gap-ctl-row text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>
         {label}
         <OverrideDot scopes={scopes} activeScope={activeScope} onReset={onReset} isAr={isAr} />
       </span>
-      <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "var(--surface-1)" }}>
-        <button
-          type="button"
-          onClick={() => onChange(undefined)}
-          title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-8 px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer shrink-0"
-          style={{
-            background: value === undefined ? "var(--surface-2)" : "transparent",
-            color: value === undefined ? "var(--text)" : "var(--text-faint)",
-          }}
-        >
-          {isAr ? "تلقائي" : "Auto"}
-        </button>
-        {options.map((o) => (
-          <button
-            key={String(o.value)}
-            type="button"
-            onClick={() => onChange(o.value)}
-            className="flex-1 h-8 rounded-full text-[11px] font-semibold cursor-pointer"
-            style={{
-              background: value === o.value ? "var(--accent-soft)" : "transparent",
-              color: value === o.value ? "var(--accent-on-soft)" : "var(--text-faint)",
-            }}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        fullWidth
+        label={label}
+        // "Auto" leaves the template's own choice; the rest are indexed so any
+        // option value (a number, a word) can ride the kit's string values.
+        options={[{ value: "auto", label: isAr ? "تلقائي" : "Auto" }, ...options.map((o, i) => ({ value: String(i), label: o.label }))]}
+        value={value === undefined ? "auto" : String(Math.max(0, options.findIndex((o) => o.value === value)))}
+        onChange={(v) => onChange(v === "auto" ? undefined : options[Number(v)].value)}
+      />
     </div>
   );
 }
@@ -859,27 +820,24 @@ function PaletteColor({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[11px] font-medium" style={{ color: "var(--text-faint)" }}>{label}</span>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <button
-          type="button"
+      <div className="flex items-center gap-ctl-row flex-wrap">
+        <ToggleButton
+          variant="secondary"
+          size="sm"
+          pressed={value === undefined}
           onClick={() => onChange(undefined)}
           title={isAr ? "اترك كما هو في القالب" : "Leave as the template has it"}
-          className="h-7 px-2.5 rounded-md text-[10.5px] font-semibold cursor-pointer"
-          style={{
-            background: value === undefined ? "var(--surface-2)" : "var(--surface-1)",
-            color: value === undefined ? "var(--text)" : "var(--text-faint)",
-          }}
         >
           {isAr ? "تلقائي" : "Auto"}
-        </button>
+        </ToggleButton>
         {ws.colors.map((c) => (
-          <button
+          <button /* button-audit-ignore: a colour swatch */
             key={c.id}
             type="button"
             onClick={() => onChange(c.hex)}
             title={`${c.name} — ${c.hex}`}
             aria-label={c.name}
-            className="w-7 h-7 rounded-full cursor-pointer shrink-0"
+            className="w-7 h-ctl-xs rounded-full cursor-pointer shrink-0"
             style={{
               background: c.hex,
               boxShadow:

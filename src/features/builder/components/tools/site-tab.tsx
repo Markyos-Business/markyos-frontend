@@ -1,10 +1,10 @@
 "use client";
 
+import { SegmentedControl } from "@/components/ui";
 import { useAppActions } from "@/contexts/AppContext";
 import { ContrastReport } from "@/features/guideline-site";
 import type { Workspace } from "@/types";
 import { SITE_MODES } from "../../constants";
-import { Segments } from "../shared/segments";
 
 /** The ground the client's site is set on, with the contrast it produces right underneath. */
 export function SiteTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
@@ -19,11 +19,12 @@ export function SiteTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
 
       <div className="flex flex-col gap-1.5">
         <span className="px-1 text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase">{isAr ? "أرضية الموقع" : "Site ground"}</span>
-        <Segments
+        <SegmentedControl
+          fullWidth
+          label={isAr ? "مظهر الموقع" : "Site appearance"}
           options={SITE_MODES.map((m) => ({ value: m.key, label: isAr ? m.ar : m.en }))}
           value={ws.siteMode}
           onChange={(m) => setSiteMode(ws.id, m)}
-          textClass="text-[11px]"
         />
         <span className="px-1 text-[11px] text-text-faint">
           {isAr

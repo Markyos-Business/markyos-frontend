@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Icon, EmptyHint } from "@/components/ui";
+import { api } from "@/lib/api/client";
+import { checkOutcome } from "../utils/check-score";
+import { complianceCopy } from "../copy";
+import { Button, Icon, EmptyHint, PageHeader, useToast } from "@/components/ui";
 import { LintFinding, LintSeverity, lintCopy, lintParity } from "../utils/copy-lint";
 import { useAppActions } from "@/contexts/AppContext";
 import { Workspace } from "@/types";
@@ -24,6 +27,23 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
   const touched = en.trim().length > 0 || ar.trim().length > 0;
   const total = enFindings.length + arFindings.length + parity.length;
+  const sc = complianceCopy(isAr).save;
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const outcome = useMemo(() => checkOutcome(en, ar, [...enFindings, ...arFindings, ...parity]), [en, ar, enFindings, arFindings, parity]);
+
+  /** Saves the outcome only (score, commonest note, languages): never the text. */
+  async function saveCheck() {
+    setSaving(true);
+    try {
+      await api(`/brands/${encodeURIComponent(ws.id)}/tone-checks/`, { method: "POST", body: outcome });
+      showToast(sc.saved, "success");
+    } catch {
+      showToast(sc.failed, "danger");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   /** Applies a finding's replacement in place, so a fix is one click. */
   function applyFix(lang: "en" | "ar", f: LintFinding) {
@@ -58,16 +78,12 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
 
   return (
     <div className="flex-1 min-h-0 px-7 py-6.5 flex flex-col gap-5 overflow-auto">
-      <div>
-        <h1 className="text-[30px] font-semibold tracking-tight mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
-          {isAr ? "مدقّق النصوص" : "Copy linter"}
-        </h1>
-        <p className="text-[14px] max-w-[70ch]" style={{ color: "var(--text-muted)" }}>
-          {isAr
+      <PageHeader
+        title={isAr ? "مدقّق النصوص" : "Copy linter"}
+        description={isAr
             ? "الصق النسختين الإنجليزية والعربية قبل النشر. يفحص المدقّق النص مقابل مصفوفة النبرة الخاصة بهذه الهوية، ثم يفحص الأخطاء التي لا يراها مدقّق لاتيني: الترقيم العربي، التطويل، خلط الأرقام، وترتيب الاتجاهين."
             : "Paste the English and Arabic before it ships. Every line is checked against this brand's own voice matrix, then against the mistakes a Latin-only linter can't see — Arabic punctuation, tatweel, mixed digits, and bidi ordering."}
-        </p>
-      </div>
+      />
 
       {ws.strategy.voiceTraits.length === 0 ? (
         <div
@@ -87,8 +103,8 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
           {ws.strategy.voiceTraits.map((t) => (
             <span
               key={t.id}
-              className="px-2.5 py-1 rounded-lg font-medium"
-              style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
+              className="px-2.5 py-1 rounded-lg font-medium bg-accent-soft text-accent-on-soft"
+              
               title={isAr ? `افعل: ${t.doExample}\nلا تفعل: ${t.dontExample}` : `Do: ${t.doExample}\nDon't: ${t.dontExample}`}
             >
               {t.trait}
@@ -120,7 +136,7 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
       </div>
 
       {touched && total === 0 && (
-        <div
+        <div /* ctl-audit-ignore: a status line (icon and sentence), not a row of controls */
           className="rounded-card px-4 py-3.5 flex items-center gap-3 text-[13px]"
           style={{ background: "var(--success-soft)", color: "var(--success)" }}
         >
@@ -129,10 +145,18 @@ export function CopyLinterContent({ ws }: { ws: Workspace }) {
         </div>
       )}
 
+      {touched && (
+        <div className="flex flex-wrap items-center gap-ctl-row">
+          <span className="text-body text-text-muted">{sc.score}</span>
+          <bdi dir="ltr" className="text-h4 font-medium tabular-nums text-text">{sc.scoreOf(outcome.score)}</bdi>
+          <Button variant="secondary" size="sm" loading={saving} onClick={() => void saveCheck()} className="ms-auto">
+            {sc.button}
+          </Button>
+        </div>
+      )}
+
       <p className="text-[11.5px] max-w-[70ch]" style={{ color: "var(--text-faint)" }}>
-        {isAr
-          ? "كل قاعدة هنا حرفية وقابلة للتفسير — تطابقت عبارة أو لم تتطابق. لا يُرسل النص إلى أي خادم أو نموذج؛ الفحص يجري في متصفحك، وما تكتبه هنا لا يُحفظ."
-          : "Every rule here is literal and explainable — a phrase matched or it didn't. Nothing is sent to a server or a model; the check runs in your browser, and what you type here isn't saved."}
+        {sc.privacy}
       </p>
     </div>
   );
@@ -195,7 +219,9 @@ function DraftPanel({
         placeholder={placeholder}
         className="mk-field w-full resize-y"
         style={{
-          lineHeight: dir === "rtl" ? 1.85 : 1.6,
+          // One line height for both boxes, so the English and Arabic drafts side
+          // by side are the same height (1.6 and 1.85 made them 175 and 200px).
+          lineHeight: 1.7,
           fontFamily: dir === "rtl" ? "var(--font-arabic)" : "var(--font-sans)",
         }}
       />
@@ -224,14 +250,9 @@ function DraftPanel({
                   {f.excerpt}
                 </span>
                 {f.replacement !== undefined && (
-                  <button
-                    type="button"
-                    onClick={() => onFix(f)}
-                    className="ms-auto shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md cursor-pointer"
-                    style={{ background: "var(--accent-soft)", color: "var(--accent-on-soft)" }}
-                  >
+                  <Button size="sm" onClick={() => onFix(f)} className="ms-auto">
                     {isAr ? "أصلحها" : "Fix"}
-                  </button>
+                  </Button>
                 )}
               </div>
               <p className="text-[12.5px] leading-[1.5]" style={{ color: "var(--text-secondary)" }}>

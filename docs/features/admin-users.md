@@ -11,12 +11,13 @@ The people who run Markyos (platform admins: `User.role = admin`, or a Django
 superuser) need one place to see every account and act on it without opening
 Django's `/admin/`. They use it to:
 
-- see how many people use Markyos and how that moved since last month;
+- see account totals, activation status, recent registrations and sign-ins;
 - find an account by name, email, role, status, account type, language or
   last activity;
 - invite someone (an account that waits for its emailed set-password link);
 - change a role, deactivate or reactivate, remove, resend an invite, and sign
   an account out of one browser or everywhere;
+- approve account-type changes without changing existing Stripe subscriptions;
 - answer "what happened to this account?" from its history.
 
 Studio owners never see this. A member who opens `/admin` is sent to `/brands`,
@@ -94,7 +95,7 @@ components only compose them.
 | Part | Kit components and key props |
 | --- | --- |
 | `AdminUsersView` | `PageHeader` (`breadcrumb`, `title`, `description`, `secondaryActions`=Export `Button` outline, `actions`=Invite `Button` primary) |
-| `UsersStats` | `StatGrid` › 4 × `StatCard` (`label`, `value`, `footnote`="vs last month", `trend`={direction, value, label}, `loading`) |
+| `UsersStats` | `StatGrid` › 4 accessible count buttons with status explanations, selection state and loading placeholders |
 | `UsersFilters` | `FilterBar` (`active`, `onClear`) › `SearchField` (`shortcut`, `onDebouncedChange`), 4 × `FilterSelectField` (`hideLabel`, `icon`), `DateRangeButton` |
 | `UsersTable` | `DataTable<AdminUser>` (`selectable`, `bulkActions`, server `sort` + `paging`, `rowActions`, `getRowLabel`, `onRowClick`, `empty`) with `Avatar`, `Tag`, `StatusDot`; empty states via `EmptyState` |
 | `InviteUsersDialog` | `FormDialog` › `TextareaField`, 3 × `SelectField` |
@@ -187,7 +188,7 @@ interface AdminUser {
 
 | Method and path | Purpose | Notes |
 | --- | --- | --- |
-| `GET stats/` | Totals | `users.now` and `users.monthAgo` (`total`, `active`, `pending`, `deactivated`) feed the trends; `users.activeAdmins` feeds the last-admin rule |
+| `GET stats/` | Totals | `users.now` feeds global count cards; All users includes `total + pending`. `new30d` and `activeLast30d` provide recent context. `users.activeAdmins` feeds the last-admin rule |
 | `GET users/` | Paginated list | `search`, `role`, `status`, `account_type`, `language` (`en`, `ar`, `none`), `last_active_from` / `last_active_to` (ISO dates), `ordering` (`full_name`, `role`, `status`, `last_login`, `brands_owned`, `created_at`; `-` for descending), `page`, `page_size` (max 100) |
 | `POST users/` | Invite | `{ email, name?, role, accountType?, language? }` → 201 `AdminUser`; 400 `{ email }` if taken |
 | `GET users/<id>/` | One account | 404 when it doesn't exist |
@@ -605,3 +606,48 @@ picker) are in `src/components/ui/ui-strings.tsx`, also in both languages.
   each brand's Team page. A studio-wide People view was planned separately.
 - **Audit log UI.** `AdminAction` records every admin change. A platform-wide
   "Admin activity" page would read the same table.
+
+## User overview behavior (16 November 2026)
+
+The four overview counts always cover all accounts, independently of table
+filters. All users includes registered accounts and pending invitations; Active
+means access enabled, not recently online. Recent context reports registered
+accounts created in the last 30 days and accounts that signed in during that
+period. The old percentage trends were removed because `monthAgo` describes
+older accounts in their current states, rather than historical state snapshots.
+
+Selecting a count clears search and advanced filters, resets the page and row
+selection, and opens all users or the selected status. Sort and page size remain.
+Counts show placeholders during initial loading, an em dash on initial failure,
+and an explicit retry message. A refresh failure retains previous data with a
+stale-data message. Both languages use the same data definitions.
+
+## Admin dashboard: attention and activity
+
+`/admin` keeps existing aggregate metrics and charts. Needs attention links to
+unfiltered waiting/deactivated user lists; deactivation is a review category,
+not an inferred failure. Counts come from the existing stats endpoint.
+
+Recent activity reads `GET /admin/activity/`, a platform-admin-only endpoint
+returning at most 12 events ordered newest first. Coverage is account creation,
+email verification and persisted AdminAction records. It is not a complete
+operational or failed-request log. Events include `id`, `kind`, `at`, `detail`,
+`subject` and nullable `userId`. Live subjects link to their activity tab;
+deleted accounts remain readable without a broken link. Session IPs and
+arbitrary action detail fields are excluded from this dashboard payload.
+
+Refresh reloads both stats and activity. Each section handles unavailable data;
+activity has its own Retry, empty state and stale-data notice. Ship the backend
+endpoint with the frontend change. No database migration is required.
+
+## Account-type approval
+
+The detail header includes Change account type. It uses the shared FormDialog and RadioField with English/Arabic labels. Existing brands/editors remain stored; new additions follow the chosen limits. Existing Stripe subscriptions and prices remain unchanged. An untyped verified collaborator may make a first choice in Account → Profile; subsequent changes require administrator approval. See [user lifecycle](user-lifecycle.md).
+
+## Dashboard layout
+
+The dashboard starts with four platform metrics: all accounts (including awaiting setup), unique accounts signed in during 30 days, brands, and unique people on teams. Supporting counts explain setup and team scope. The signup chart and compact Account follow-up card precede breakdowns and recent activity. Cards size to their content instead of stretching to the feed height. On phones, follow-up and recent activity precede the detailed breakdowns.
+
+Recent activity initially shows five events. Show more expands the loaded events; Show less restores the preview. This is not an all-history endpoint: each person's complete recorded history remains linked from their name. Expansion preserves deleted-account labels, timestamps, actor details, independent error/retry feedback, and empty/loading states.
+
+The overview now composes the [shared dashboard widgets](../components/dashboard.md). Signup chart periods are functional: Last 7 days shows daily values; Last 30 days groups the same API series into consecutive 7-day buckets. The footer shows the actual new-account total and daily average for the selected range.

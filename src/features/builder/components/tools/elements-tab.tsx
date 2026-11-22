@@ -47,7 +47,7 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
           if (kinds.length === 0) return null;
           return (
             <div key={cat} className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-1.5 px-1">
+              <div className="flex items-center gap-ctl-row px-1">
                 <Icon name={CATEGORY_META[cat].icon} size={12} className="text-text-faint" />
                 <span className="text-[10.5px] font-semibold tracking-[0.08em] text-text-faint uppercase">
                   {isAr ? CATEGORY_META[cat].arLabel : CATEGORY_META[cat].label}
@@ -56,7 +56,7 @@ export function ElementsTab({ isAr, onAdd, onDraggingKind }: ElementsTabProps) {
               {kinds.map((kind) => {
                 const meta = BLOCK_META[kind];
                 return (
-                  <button
+                  <button /* button-audit-ignore: a block insert tile (draggable card) */
                     key={kind}
                     type="button"
                     onClick={() => onAdd(kind)}

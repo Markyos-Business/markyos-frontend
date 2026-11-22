@@ -6,7 +6,7 @@ type Tone = "neutral" | "info" | "accent" | "success" | "warning";
 
 export const STATUS_META: Record<FormStatus, Bilingual & { tone: Tone }> = {
   draft: { en: "Draft", ar: "مسودة", tone: "neutral" },
-  sent: { en: "Sent", ar: "أُرسل", tone: "info" },
+  sent: { en: "Sent", ar: "مُرسَل", tone: "info" },
   in_progress: { en: "In progress", ar: "قيد الإجابة", tone: "warning" },
   submitted: { en: "Submitted", ar: "مُسلَّم", tone: "success" },
 };

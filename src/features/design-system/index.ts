@@ -3,6 +3,7 @@
 export { StyleGuide } from "./components/styleguide/style-guide";
 export { UiGallery } from "./components/ui-gallery";
 export { MotionGallery } from "./components/motion/motion-gallery";
+export { ControlsGallery } from "./components/controls-gallery";
 
 export { TableSelectGallery } from "./components/table-select-gallery";
 export { FormsGallery } from "./components/forms-gallery";
@@ -10,3 +11,9 @@ export { FormStructureGallery } from "./components/form-structure-gallery";
 export { BadgeGallery } from "./components/badge-gallery";
 
 export { TabsGalleryPage } from "./components/tabs-gallery";
+
+export { PopupGallery } from "./components/popup-gallery";
+
+export { FilterGallery } from "./components/filter-gallery";
+
+export { DashboardGallery } from "./components/dashboard-gallery";

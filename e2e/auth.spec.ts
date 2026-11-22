@@ -2,7 +2,7 @@ import { expect, newStudio, setPasswordFromEmail, signIn, test } from "./fixture
 
 test.describe("accounts", () => {
   test("sign up, stay signed in, sign out", async ({ page }) => {
-    const email = `e2e-${Date.now()}@studio.com`;
+    const email = `e2e-${Date.now()}@example.com`;
     await page.goto("/signup");
     await page.getByRole("radio", { name: /^Studio/ }).click();
     await page.getByRole("button", { name: "Continue", exact: true }).click();
@@ -23,7 +23,10 @@ test.describe("accounts", () => {
     await expect(page).toHaveURL(/\/brands$/);
 
     await page.goto("/account");
-    await page.getByRole("button", { name: "Sign out" }).click();
+    // This browser's session row: Sign out here sits in its ⋯ menu and asks first.
+    await page.getByRole("row", { name: /This browser/ }).getByRole("button", { name: /actions$/ }).click();
+    await page.getByRole("menuitem", { name: "Sign out here", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Sign out", exact: true }).click();
     await page.goto("/brands");
     await expect(page).toHaveURL(/\/login/);
   });

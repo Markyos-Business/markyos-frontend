@@ -9,7 +9,7 @@ export default function TeamPage() {
   const page = useTeamPage(slug);
   if (!page) return null;
   return (
-    <PageShell {...page.shell}>
+    <PageShell {...page.shell} help="brand.team">
       <TeamView {...page.view} />
     </PageShell>
   );

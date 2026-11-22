@@ -30,15 +30,16 @@ export function LoginForm() {
       footer={
         <>
           {c.login.newHere}
-          <Button variant="link" href="/signup">
+          {/* No button height or padding: it reads as the end of the sentence. */}
+          <Button variant="ghost" href="/signup" className="h-auto px-0">
             {c.login.create}
           </Button>
         </>
       }
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-field-stack">
         <SocialSignIn google={google} />
-        <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
+        <form onSubmit={form.submit} className="flex flex-col gap-field-stack" noValidate>
           <AlertBanner message={form.errors.form} />
 
           <InputField
@@ -62,7 +63,7 @@ export function LoginForm() {
             autoComplete="current-password"
           />
 
-          <Button variant="link" href={form.resetHref} className="self-end text-caption font-medium">
+          <Button variant="ghost" href={form.resetHref} className="h-auto self-end px-0 text-caption font-medium">
             {c.login.forgot}
           </Button>
 

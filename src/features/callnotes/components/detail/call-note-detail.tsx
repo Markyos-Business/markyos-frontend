@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, useToast } from "@/components/ui";
+import { Avatar, Badge, Button, EmptyState, Icon, Skeleton, Switch, useDialog, useToast, PageHeader } from "@/components/ui";
 import { SearchField } from "@/components/ui";
 import { useCitationJump } from "@/hooks/useCitationJump";
 import { formatDay } from "@/features/discovery";
@@ -12,6 +12,7 @@ import { deleteNote, restoreNote, setIncluded } from "../../api/call-notes.api";
 import type { CallNote } from "../../types";
 import { callDay, formatMinutes, initials } from "../../utils/format";
 import { NoteParagraphs, OriginalText, TurnList } from "./note-body";
+import { errorText } from "@/lib/api/errorText";
 
 type CallNoteDetailProps = {
   noteId: string;
@@ -49,7 +50,7 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
     try {
       setNote(await setIncluded(current.id, !current.includeInAnalysis));
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't change.", "لم يتغيّر ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't change.", ar: "لم يتغيّر ذلك." }), "danger");
     }
   };
 
@@ -74,7 +75,7 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
       });
       router.push(backHref);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : t("That didn't delete.", "لم يُحذف ذلك."), "danger");
+      showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't delete.", ar: "لم يُحذف ذلك." }), "danger");
     }
   };
 
@@ -82,11 +83,9 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
 
   return (
     <div className="flex flex-col gap-5">
-      <header className="flex flex-wrap items-start gap-space-5">
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-space-3">
-          <h1 className="bidi-plain text-h3 font-medium">
-            {current.title}
-          </h1>
+      <PageHeader
+        title={current.title}
+        description={<div className="mt-space-3 flex flex-col items-start gap-space-3">
           <div className="flex flex-wrap items-center gap-space-4 text-caption text-text-muted">
             <span>{formatDay(callDay(current.callDate), isAr)}</span>
             {formatMinutes(current.durationMinutes, isAr) && <span>· {formatMinutes(current.durationMinutes, isAr)}</span>}
@@ -112,27 +111,29 @@ export function CallNoteDetail({ noteId, editHref, backHref, isAr }: CallNoteDet
               ))}
             </ul>
           )}
-        </div>
-        <div className="flex flex-wrap items-center gap-space-4">
-          <label className="flex items-center gap-space-3 text-body text-text-secondary">
+        </div>}
+        actions={<>
+        <div className="flex flex-wrap items-center gap-ctl-row">
+          <label className="flex items-center gap-ctl-icon text-body text-text-secondary">
             {t("Included in analysis", "مُضمَّنة في التحليل")}
             <Switch label={t("Included in analysis", "مُضمَّنة في التحليل")} checked={current.includeInAnalysis} onToggle={() => canEdit && void toggle()} />
           </label>
           {canEdit && (
             <>
-              <Button variant="outline" size="sm" href={editHref} icon={<Icon name="pen" size={16} />}>
+              <Button variant="secondary" size="sm" href={editHref} icon={<Icon name="pen" size={16} />}>
                 {t("Edit", "تعديل")}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => void remove()} icon={<Icon name="trash" size={16} />}>
+              <Button variant="secondary" size="sm" onClick={() => void remove()} icon={<Icon name="trash" size={16} />}>
                 {t("Delete", "حذف")}
               </Button>
             </>
           )}
         </div>
-      </header>
+        </>}
+      />
 
-      <section className="mk-surface flex flex-col gap-space-6 rounded-card bg-surface-1 p-space-8 sm:p-space-10">
-        <div className="flex flex-wrap items-center justify-between gap-space-5">
+      <section className="mk-surface flex flex-col gap-field-stack rounded-card bg-surface-1 p-space-8 sm:p-space-10">
+        <div className="flex flex-wrap items-center justify-between gap-ctl-row">
           <SearchField
             label={t("Search in these notes", "ابحث في هذه الملاحظات")}
             placeholder={t("Search…", "ابحث…")}

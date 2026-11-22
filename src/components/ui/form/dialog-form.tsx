@@ -5,6 +5,7 @@ import { EXIT } from "@/lib/motion";
 import type { ReactNode } from "react";
 import { useFormContext, type DefaultValues, type FieldValues } from "react-hook-form";
 import { useDialog } from "../overlay/dialog";
+import { PopupPortal } from "../popup/popup-portal";
 import { Modal, type ModalSize } from "../overlay/modal";
 import { useToast } from "../overlay/toast";
 import { useUiStrings } from "../ui-strings";
@@ -82,6 +83,8 @@ const Body = ({ open, onClose, title, label, description, size, submitLabel, can
 
   return (
     <Modal
+      portal={false}
+      busy={meta.submitting}
       open={open}
       title={title}
       label={label}
@@ -106,7 +109,7 @@ function OverlayForm<S extends AnySchema>({ open, onClose, title, label, descrip
   const { t } = useUiStrings();
   const { showToast } = useToast();
   return (
-    <Form
+    <PopupPortal><Form
       {...form}
       label={label ?? (typeof title === "string" ? title : undefined)}
       chrome={false}
@@ -122,7 +125,7 @@ function OverlayForm<S extends AnySchema>({ open, onClose, title, label, descrip
       <Body open={open} onClose={onClose} title={title} label={label} description={description} size={size} submitLabel={submitLabel} cancelLabel={cancelLabel} destructive={destructive} variant={variant} defaults={form.defaultValues as DefaultValues<FieldValues>}>
         {children}
       </Body>
-    </Form>
+    </Form></PopupPortal>
   );
 }
 

@@ -14,7 +14,7 @@ export function AuditLogSection({ entries, hasEntries, onExport }: AccountPageSt
       icon="shield-alt"
       right={
         hasEntries && (
-          <Button variant="link" onClick={onExport} className="text-overline uppercase">
+          <Button variant="ghost" onClick={onExport} className="text-overline uppercase">
             {t("Export JSON", "تصدير JSON")}
           </Button>
         )

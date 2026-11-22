@@ -23,4 +23,4 @@ export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 
 
 /** The top bar's name for the discovery pages. */
-export const PAGE_SECTION = { en: "Discovery", ar: "الاستكشاف" } as const;
+export const PAGE_SECTION = { en: "Discovery", ar: "الاكتشاف" } as const;

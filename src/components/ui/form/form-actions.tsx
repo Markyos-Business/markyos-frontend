@@ -37,18 +37,18 @@ const FormActions = ({ submitLabel, requireChanges = false, cancelLabel, onCance
   const cancel = onCancel ?? (meta.view === false && cancelLabel ? meta.cancelEdit : undefined);
 
   return (
-    <div className={`flex flex-wrap items-center gap-space-3 ${sticky ? "sticky bottom-0 z-sticky -mx-space-2 bg-surface-1 px-space-2 py-space-5 shadow-rule-t" : ""}`}>
+    <div className={`flex flex-wrap items-center gap-ctl-row ${sticky ? "sticky bottom-0 z-sticky -mx-space-2 bg-surface-1 px-space-2 py-space-5 shadow-rule-t" : ""}`}>
       {destructive && (
-        <Button type="button" variant="danger-soft" icon={destructive.icon ? <Icon name={destructive.icon} size={18} /> : undefined} onClick={destructive.onClick}>
+        <Button type="button" variant="danger" icon={destructive.icon ? <Icon name={destructive.icon} size={18} /> : undefined} onClick={destructive.onClick}>
           {destructive.label}
         </Button>
       )}
-      <div className={`flex flex-wrap items-center gap-space-3 ${align === "end" ? "ms-auto" : destructive ? "ms-space-8" : ""}`}>
+      <div className={`flex flex-wrap items-center gap-ctl-row ${align === "end" ? "ms-auto" : destructive ? "ms-space-8" : ""}`}>
         <Button type="submit" variant="primary" loading={meta.submitting} loadingText={meta.strings.submitting} disabled={meta.submitting || (requireChanges && !formState.isDirty)}>
           {submitLabel ?? meta.strings.saveChanges}
         </Button>
         {cancel && (
-          <Button type="button" variant="outline" onClick={cancel}>
+          <Button type="button" variant="secondary" onClick={cancel}>
             {cancelLabel}
           </Button>
         )}

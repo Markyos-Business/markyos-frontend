@@ -39,12 +39,12 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
             e.target.value = "";
           }}
         />
-        <Button variant="link" onClick={() => fileInputRef.current?.click()} className="text-[12px] font-semibold">
+        <Button variant="ghost" onClick={() => fileInputRef.current?.click()} className="text-[12px] font-semibold">
           {isAr ? "ارفع ملف الدليل" : "Upload guideline file"}
         </Button>
       </div>
       {guidelineFile && (
-        <div className="flex items-center gap-2.5 rounded-lg bg-surface-2 px-3 py-2.5">
+        <div className="flex items-center gap-ctl-row rounded-lg bg-surface-2 px-3 py-2.5">
           <Icon name="file-alt" size={14} className="text-text-faint" />
           <span className="flex-1 truncate text-[12px]">{guidelineFile.fileName}</span>
           <span className="font-mono text-[11px] text-text-faint">{formatBytes(guidelineFile.sizeKB)}</span>
@@ -67,7 +67,7 @@ export function GuidelineContentCard({ ws, view, isAr }: GuidelineContentCardPro
         }}
         aria-label={isAr ? `دليل قسم ${view.name}` : `Guideline text for ${view.name}`}
         placeholder={isAr ? "أو اكتب دليل هذا القسم كنص هنا…" : "…or write this department's guidelines as text here."}
-        className="rounded-lg bg-surface-2 p-3 text-[14px] leading-[1.7] text-text outline-none"
+        className="mk-field w-full font-normal leading-prose"
       />
     </div>
   );

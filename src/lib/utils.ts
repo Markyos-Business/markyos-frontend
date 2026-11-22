@@ -1,3 +1,5 @@
+import { plural } from "./i18n/plural";
+
 export function slugify(input: string): string {
   return input
     .trim()
@@ -31,35 +33,55 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+/**
+ * The one character an avatar shows for a name: its first letter, in either
+ * script. One letter, not two, so "Markyos" isn't "MA" and an Arabic name
+ * isn't two disconnected letters. `Array.from` keeps a surrogate pair whole.
+ */
 export function initialsFor(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[1][0]).toUpperCase();
+  const first = Array.from(name.trim().replace(/^[^\p{L}\p{N}]+/u, ""))[0];
+  return first ? first.toLocaleUpperCase() : "?";
 }
 
 /** The page's own language, from <html lang>; English before there is a page. */
 const documentLang = (): "en" | "ar" =>
   typeof document !== "undefined" && document.documentElement.lang === "ar" ? "ar" : "en";
 
-/** "5m ago" / "قبل 5 د", in the page's language unless one is given. */
+/**
+ * Arabic relative time, written out the way people say it: "قبل دقيقة",
+ * "قبل يومين", "قبل 3 أيام", "قبل 11 يومًا". The one-letter forms this used
+ * ("قبل 2 ي") read as code, not Arabic.
+ */
+const AR_UNITS = {
+  minute: { one: "دقيقة", two: "دقيقتين", few: "{n} دقائق", many: "{n} دقيقة", other: "{n} دقيقة" },
+  hour: { one: "ساعة", two: "ساعتين", few: "{n} ساعات", many: "{n} ساعة", other: "{n} ساعة" },
+  day: { one: "يوم", two: "يومين", few: "{n} أيام", many: "{n} يومًا", other: "{n} يوم" },
+  week: { one: "أسبوع", two: "أسبوعين", few: "{n} أسابيع", many: "{n} أسبوعًا", other: "{n} أسبوع" },
+  month: { one: "شهر", two: "شهرين", few: "{n} أشهر", many: "{n} شهرًا", other: "{n} شهر" },
+  year: { one: "سنة", two: "سنتين", few: "{n} سنوات", many: "{n} سنة", other: "{n} سنة" },
+} as const;
+const arAgo = (n: number, unit: keyof typeof AR_UNITS) => `قبل ${plural("ar", n, AR_UNITS[unit])}`;
+
+/** "5m ago" / "قبل 5 دقائق", in the page's language unless one is given. */
 export function formatRelative(ts: number, now: number = Date.now(), lang: "en" | "ar" = documentLang()): string {
   const ar = lang === "ar";
+  // An unknown time says nothing rather than "NaN years ago".
+  if (!Number.isFinite(ts)) return "";
   const diffMs = now - ts;
   const sec = Math.round(diffMs / 1000);
   if (sec < 60) return ar ? "الآن" : ltr("just now");
   const min = Math.round(sec / 60);
-  if (min < 60) return ar ? `قبل ${min} د` : ltr(`${min}m ago`);
+  if (min < 60) return ar ? arAgo(min, "minute") : ltr(`${min}m ago`);
   const hr = Math.round(min / 60);
-  if (hr < 24) return ar ? `قبل ${hr} س` : ltr(`${hr}h ago`);
+  if (hr < 24) return ar ? arAgo(hr, "hour") : ltr(`${hr}h ago`);
   const day = Math.round(hr / 24);
-  if (day < 7) return ar ? `قبل ${day} ي` : ltr(`${day}d ago`);
+  if (day < 7) return ar ? arAgo(day, "day") : ltr(`${day}d ago`);
   const week = Math.round(day / 7);
-  if (week < 5) return ar ? `قبل ${week} أسبوع` : ltr(`${week}w ago`);
+  if (week < 5) return ar ? arAgo(week, "week") : ltr(`${week}w ago`);
   const month = Math.round(day / 30);
-  if (month < 12) return ar ? `قبل ${month} شهر` : ltr(`${month}mo ago`);
+  if (month < 12) return ar ? arAgo(month, "month") : ltr(`${month}mo ago`);
   const year = Math.round(day / 365);
-  return ar ? `قبل ${year} سنة` : ltr(`${year}y ago`);
+  return ar ? arAgo(year, "year") : ltr(`${year}y ago`);
 }
 
 /**
@@ -88,6 +110,8 @@ export function ltr(text: string): string {
 }
 
 export function formatBytes(kb: number): string {
+  // A small SVG is a few hundred bytes; "0 KB" read as an empty file.
+  if (kb > 0 && kb < 1) return ltr("<1 KB");
   if (kb < 1024) return ltr(`${Math.round(kb)} KB`);
   return ltr(`${(kb / 1024).toFixed(1)} MB`);
 }

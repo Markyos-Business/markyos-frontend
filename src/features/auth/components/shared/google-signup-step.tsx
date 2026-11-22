@@ -40,7 +40,7 @@ export function GoogleSignupStep({ google }: { google: GoogleSignInState }) {
         <Button type="button" variant="primary" className="w-full" onClick={google.finish} disabled={!google.chosen || google.busy}>
           {google.busy ? c.signup.creatingAccount : c.signup.submit}
         </Button>
-        <Button type="button" variant="link" onClick={google.cancel}>
+        <Button type="button" variant="ghost" onClick={google.cancel}>
           {c.signup.back}
         </Button>
       </div>

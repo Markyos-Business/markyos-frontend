@@ -33,3 +33,11 @@ export async function removeAvatar(): Promise<Account> {
 export function deleteMyAccount(confirmation: Confirmation): Promise<void> {
   return api<void>("/auth/me/delete/", { method: "POST", body: confirmation });
 }
+
+export async function chooseInitialAccountType(accountType: import("@/types").AccountType): Promise<Account> {
+  return toAccount(await api<ApiAccount>("/auth/account-type/", { method: "POST", body: { accountType } }));
+}
+
+export async function requestEmailChange(email: string, currentPassword: string): Promise<Account> {
+  return toAccount(await api<ApiAccount>("/auth/email-change/", { method: "POST", body: { email, currentPassword } }));
+}

@@ -146,7 +146,10 @@ const DateRangePicker = ({
         <Popover
           label={label}
           align="start"
-          trigger="block"
+          look="field"
+          // The field is the trigger itself: one shape for hover, focus and open.
+          triggerClassName={`h-control-sm gap-space-3 ${value.from ? "" : "text-text-disabled"}`}
+          triggerData={{ "data-state": error ? "error" : undefined }}
           className="w-full"
           width={calendar.hijri ? 520 : 480}
           describedBy={[textId, error || hint ? noteId : null]
@@ -154,10 +157,7 @@ const DateRangePicker = ({
             .join(" ")}
           onOpen={() => setDraft(value)}
           button={
-            <span
-              className={`mk-field flex h-control-sm w-full items-center gap-space-3 text-start ${value.from ? "" : "text-text-disabled"}`}
-              data-state={error ? "error" : undefined}
-            >
+            <>
               <Icon
                 name="calendar"
                 size={18}
@@ -166,7 +166,7 @@ const DateRangePicker = ({
               <span id={textId} className="truncate">
                 {text}
               </span>
-            </span>
+            </>
           }
         >
           {(close) => (
@@ -203,7 +203,7 @@ const DateRangePicker = ({
                 />
                 <div className="flex justify-end gap-space-3">
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="ghost"
                     onClick={() => {
                       setDraft({});
@@ -214,7 +214,7 @@ const DateRangePicker = ({
                     {t.clear}
                   </Button>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="primary"
                     disabled={!valid}
                     onClick={() => {

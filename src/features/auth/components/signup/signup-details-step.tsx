@@ -13,11 +13,11 @@ export function SignupDetailsStep({ form }: { form: SignupFormState }) {
   const { lang, c } = useAuthLang();
   const type = form.accountType ? ACCOUNT_TYPES[form.accountType] : null;
   return (
-    <form onSubmit={form.submit} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={form.submit} className="flex flex-col gap-field-stack" noValidate>
       {type && (
-        <p className="flex items-center justify-between gap-3 px-space-4 text-caption text-text-muted">
+        <p className="flex items-center justify-between gap-ctl-row px-space-4 text-caption text-text-muted">
           <span className="font-medium text-text">{c.signup.typeLine(lang === "ar" ? type.arLabel : type.label)}</span>
-          <Button type="button" variant="link" onClick={form.toType} className="text-caption">
+          <Button type="button" variant="ghost" onClick={form.toType} className="text-caption">
             {c.signup.change}
           </Button>
         </p>

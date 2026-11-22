@@ -44,13 +44,15 @@ export function toAccount(a: ApiAccount): Account {
 export async function signup(
   name: string,
   email: string,
-  accountType: AccountType
+  accountType: AccountType,
+  language?: Lang
 ): Promise<SignupResponse> {
   // No password and no session yet: both come from the emailed link.
   const res = await api<SignupResponse>("/auth/signup/", {
     method: "POST",
     // Where the sign-up came from (a Made with Markyos badge), if anywhere.
-    body: { name, email, accountType, ...signupRefBody() },
+    // The language they signed up in: the app opens in it (billing epic 2.2).
+    body: { name, email, accountType, ...(language ? { language } : {}), ...signupRefBody() },
   });
   clearSignupRef();
   return res;

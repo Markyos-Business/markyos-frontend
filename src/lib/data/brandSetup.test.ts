@@ -37,7 +37,7 @@ describe("first-run setup", () => {
     ws.published = structuredClone(ws);
     expect(brandSetup(ws).find(step => step.key === "publish")?.done).toBe(true);
   });
-  it.each([["Markyos", "M"], ["Wadi Rum", "WR"], ["ماركيوس", "م"]])("uses word initials for %s", (name, initials) => {
+  it.each([["Markyos", "M"], ["Wadi Rum", "W"], ["ماركيوس", "م"], ["  «نجد» للقهوة", "ن"], ["", "?"]])("uses one initial for %s", (name, initials) => {
     expect(brandInitials(name)).toBe(initials);
   });
 });

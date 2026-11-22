@@ -3,13 +3,13 @@ import { useMemo, useState } from "react";
 import { functionalUpdate, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type ExpandedState, type OnChangeFn, type PaginationState, type RowSelectionState, type SortingState, type VisibilityState } from "@tanstack/react-table";
 import type { DataTableProps, SelectionScope } from "./types";
 import { useUiStrings } from "../ui-strings";
-import { tableLabels } from "./labels";
+import { arTableLabels, tableLabels } from "./labels";
 import { selectionCount } from "./model";
 const EMPTY: never[] = [];
 
 export function useDataTable<T>(props: DataTableProps<T>) {
-  const data = props.data ?? props.rows ?? EMPTY; const { t } = useUiStrings();
-  const labels = { ...tableLabels, search: t.search, retry: t.retry, save: t.save, cancel: t.cancel, selected: t.selected, clearFilters: t.clearFilters, selectAll: t.selectAll, clearSelection: t.clearSelection, actions: t.actionsFor, pageSize: t.rowsPerPage, ...props.labels };
+  const data = props.data ?? props.rows ?? EMPTY; const { t, lang } = useUiStrings();
+  const labels = { ...(lang === "ar" ? arTableLabels : tableLabels), search: t.search, retry: t.retry, save: t.save, cancel: t.cancel, selected: t.selected, clearFilters: t.clearFilters, selectAll: t.selectAll, clearSelection: t.clearSelection, actions: t.actionsFor, pageSize: t.rowsPerPage, ...props.labels };
   const [ownSorting, setSorting] = useState<SortingState>(props.defaultSorting ?? []);
   const [ownSelection, setSelection] = useState<RowSelectionState>({});
   const [ownFilters, setFilters] = useState<ColumnFiltersState>(props.defaultFilters ?? []);

@@ -1,3 +1,4 @@
+import { plural } from "@/lib/i18n/plural";
 import type { AnswerValue, ChoiceAnswer, LocalizedText, Option, QuestionConfig, QuestionType } from "../types";
 
 /*
@@ -19,19 +20,48 @@ const OTHER_MAX = 200;
 const LINK_MAX_LENGTH = 2000;
 const URL_RE = /^https?:\/\/[^\s/$.?#][^\s]*$/i;
 
-export class AnswerError extends Error {}
+/**
+ * A refused answer, worded for the person filling in the form in either of
+ * its languages. `message` stays English for logs; show `in(lang)`.
+ */
+export class AnswerError extends Error {
+  constructor(readonly en: string, readonly ar: string) {
+    super(en);
+    this.name = "AnswerError";
+  }
+  in(lang: "en" | "ar"): string {
+    return lang === "ar" ? this.ar : this.en;
+  }
+}
+
+const chars = (n: number) => ({
+  en: plural("en", n, { one: "{n} character", other: "{n} characters" }),
+  ar: plural("ar", n, { one: "حرف واحد", two: "حرفين", few: "{n} أحرف", many: "{n} حرفًا", other: "{n} حرف" }),
+});
+const items = (n: number) => ({
+  en: plural("en", n, { one: "{n} item", other: "{n} items" }),
+  ar: plural("ar", n, { one: "عنصرًا واحدًا", two: "عنصرين", few: "{n} عناصر", many: "{n} عنصرًا", other: "{n} عنصر" }),
+});
+const files = (n: number) => ({
+  en: plural("en", n, { one: "{n} file", other: "{n} files" }),
+  ar: plural("ar", n, { one: "ملفًا واحدًا", two: "ملفين", few: "{n} ملفات", many: "{n} ملفًا", other: "{n} ملف" }),
+});
+const linkCount = (n: number) => ({
+  en: plural("en", n, { one: "{n} link", other: "{n} links" }),
+  ar: plural("ar", n, { one: "رابطًا واحدًا", two: "رابطين", few: "{n} روابط", many: "{n} رابطًا", other: "{n} رابط" }),
+});
 
 /** Code points, as the server counts them, not UTF-16 units. */
 const length = (text: string) => [...text].length;
 
 /** Trim, normalise, drop control characters (keeping bidi marks and joiners), cap. */
 export const cleanText = (value: unknown, limit: number): string => {
-  if (typeof value !== "string") throw new AnswerError("Expected text.");
+  if (typeof value !== "string") throw new AnswerError("Expected text.", "يُتوقع نص.");
   const text = value
     .normalize("NFC")
     .replace(/\p{Cc}/gu, (ch) => (ch === "\n" || ch === "\t" ? ch : ""))
     .trim();
-  if (length(text) > limit) throw new AnswerError(`Keep it under ${limit} characters.`);
+  if (length(text) > limit) throw new AnswerError(`Keep it under ${chars(limit).en}.`, `اجعله أقل من ${chars(limit).ar}.`);
   return text;
 };
 
@@ -48,8 +78,8 @@ const isStringList = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((v) => typeof v === "string");
 
 const checkPicks = (count: number, config: QuestionConfig) => {
-  if (config.minPicks != null && count > 0 && count < config.minPicks) throw new AnswerError(`Pick at least ${config.minPicks}.`);
-  if (config.maxPicks != null && count > config.maxPicks) throw new AnswerError(`Pick at most ${config.maxPicks}.`);
+  if (config.minPicks != null && count > 0 && count < config.minPicks) throw new AnswerError(`Pick at least ${items(config.minPicks).en}.`, `اختر ${items(config.minPicks).ar} على الأقل.`);
+  if (config.maxPicks != null && count > config.maxPicks) throw new AnswerError(`Pick at most ${items(config.maxPicks).en}.`, `اختر ${items(config.maxPicks).ar} على الأكثر.`);
 };
 
 const unique = (list: string[]) => new Set(list).size === list.length;
@@ -70,20 +100,20 @@ export const QUESTION_TYPES: Record<QuestionType, Spec> = {
   },
   choice: {
     validate: (config, value) => {
-      if (!value || typeof value !== "object" || Array.isArray(value)) throw new AnswerError("Expected a choice.");
+      if (!value || typeof value !== "object" || Array.isArray(value)) throw new AnswerError("Choose an answer.", "اختر إجابة.");
       const raw = value as Partial<ChoiceAnswer>;
       const selected = raw.selected ?? [];
-      if (!isStringList(selected)) throw new AnswerError("Expected a list of choices.");
-      if (!unique(selected)) throw new AnswerError("A choice was picked twice.");
+      if (!isStringList(selected)) throw new AnswerError("Choose from the list.", "اختر من القائمة.");
+      if (!unique(selected)) throw new AnswerError("A choice was picked twice.", "اختيرت إجابة مرتين.");
       const allowed = new Set(values(config.options));
-      if (selected.some((s) => !allowed.has(s))) throw new AnswerError("That isn't one of the choices.");
+      if (selected.some((s) => !allowed.has(s))) throw new AnswerError("That isn't one of the choices.", "هذه ليست من الخيارات.");
       let other: string | null = null;
       if (raw.other != null && raw.other !== "") {
-        if (!config.allowOther) throw new AnswerError("This question has no 'something else'.");
+        if (!config.allowOther) throw new AnswerError("This question has no \"something else\" option.", "لا يتضمن هذا السؤال خيار «شيء آخر».");
         other = cleanText(raw.other, OTHER_MAX) || null;
       }
       const count = selected.length + (other ? 1 : 0);
-      if (!config.multiple && count > 1) throw new AnswerError("Pick one.");
+      if (!config.multiple && count > 1) throw new AnswerError("Pick one.", "اختر إجابة واحدة.");
       checkPicks(count, config);
       return { selected, other };
     },
@@ -95,10 +125,10 @@ export const QUESTION_TYPES: Record<QuestionType, Spec> = {
   },
   scale: {
     validate: (config, value) => {
-      if (typeof value !== "number" || !Number.isInteger(value)) throw new AnswerError("Expected a number.");
+      if (typeof value !== "number" || !Number.isInteger(value)) throw new AnswerError("Enter a whole number.", "أدخل رقمًا صحيحًا.");
       const low = config.min ?? 1;
       const high = config.max ?? 5;
-      if (value < low || value > high) throw new AnswerError(`Pick a number from ${low} to ${high}.`);
+      if (value < low || value > high) throw new AnswerError(`Pick a number from ${low} to ${high}.`, `اختر رقمًا من ${low} إلى ${high}.`);
       return value;
     },
     empty: falsy,
@@ -107,9 +137,9 @@ export const QUESTION_TYPES: Record<QuestionType, Spec> = {
   },
   ranking: {
     validate: (config, value) => {
-      if (!isStringList(value)) throw new AnswerError("Expected an order.");
+      if (!isStringList(value)) throw new AnswerError("Put the items in order.", "رتّب العناصر.");
       const expected = values(config.items).sort();
-      if ([...value].sort().join("\u0000") !== expected.join("\u0000")) throw new AnswerError("Rank every item exactly once.");
+      if ([...value].sort().join("\u0000") !== expected.join("\u0000")) throw new AnswerError("Rank every item exactly once.", "رتّب كل عنصر مرة واحدة فقط.");
       return value;
     },
     empty: falsy,
@@ -117,10 +147,10 @@ export const QUESTION_TYPES: Record<QuestionType, Spec> = {
   },
   image_choice: {
     validate: (config, value) => {
-      if (!isStringList(value)) throw new AnswerError("Expected a list of choices.");
-      if (!unique(value)) throw new AnswerError("A choice was picked twice.");
+      if (!isStringList(value)) throw new AnswerError("Choose from the list.", "اختر من القائمة.");
+      if (!unique(value)) throw new AnswerError("A choice was picked twice.", "اختيرت إجابة مرتين.");
       const allowed = new Set(values(config.options));
-      if (value.some((v) => !allowed.has(v))) throw new AnswerError("That isn't one of the choices.");
+      if (value.some((v) => !allowed.has(v))) throw new AnswerError("That isn't one of the choices.", "هذه ليست من الخيارات.");
       checkPicks(value.length, config);
       return value;
     },
@@ -130,24 +160,26 @@ export const QUESTION_TYPES: Record<QuestionType, Spec> = {
   upload: {
     // Asset ids only; the server checks they're this response's own uploads.
     validate: (config, value) => {
-      if (!isStringList(value) || value.some((v) => !v)) throw new AnswerError("Expected a list of files.");
+      if (!isStringList(value) || value.some((v) => !v)) throw new AnswerError("Upload files.", "ارفع ملفات.");
       const max = config.maxFiles ?? 10;
-      if (value.length > max) throw new AnswerError(`Upload at most ${max} files.`);
+      if (value.length > max) throw new AnswerError(`Upload at most ${files(max).en}.`, `ارفع ${files(max).ar} على الأكثر.`);
       return value;
     },
     empty: falsy,
-    serialise: (_c, value) => {
+    serialise: (_c, value, lang) => {
       const n = (value as string[]).length;
-      return `${n} file${n === 1 ? "" : "s"} uploaded`;
+      return lang === "ar"
+        ? plural("ar", n, { one: "رُفع ملف واحد", two: "رُفع ملفان", few: "رُفعت {n} ملفات", many: "رُفع {n} ملفًا", other: "رُفع {n} ملف" })
+        : `${files(n).en} uploaded`;
     },
   },
   link: {
     validate: (config, value) => {
-      if (!Array.isArray(value)) throw new AnswerError("Expected a list of links.");
+      if (!Array.isArray(value)) throw new AnswerError("Add links.", "أضف روابط.");
       const links = value.map((v) => cleanText(v, LINK_MAX_LENGTH)).filter(Boolean);
-      if (links.some((v) => !URL_RE.test(v))) throw new AnswerError("Links start with http:// or https://.");
+      if (links.some((v) => !URL_RE.test(v))) throw new AnswerError("Links start with http:// or https://.", "تبدأ الروابط بـ http:// أو https://.");
       const max = config.maxCount ?? 5;
-      if (links.length > max) throw new AnswerError(`Share at most ${max} links.`);
+      if (links.length > max) throw new AnswerError(`Share at most ${linkCount(max).en}.`, `شارك ${linkCount(max).ar} على الأكثر.`);
       return links;
     },
     empty: falsy,

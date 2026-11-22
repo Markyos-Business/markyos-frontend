@@ -88,9 +88,19 @@ export type PlanKind = "free" | "pass" | "subscription";
 
 export interface Billing {
   plan: PlanKind;
+  /** The latest subscription's status, as its provider reports it (lower case). */
   subscriptionStatus?: string;
   purchasedAt?: number;
-  stripeSessionId?: string;
+  /** "paypal" for a PayPal subscription, "comp" for one an admin gave; absent for Stripe ones. */
+  provider?: "paypal" | "comp";
+  /** Paid up to here (ms): the next billing date, or when a cancelled plan ends. */
+  currentPeriodEnd?: number;
+  /** A renewal failed at this time (ms) and PayPal is retrying it. */
+  paymentFailedAt?: number;
+  /** Paid access lasts until here (ms), from the server's one entitlement rule. */
+  paidUntil?: number;
+  /** In the grace after a failed payment, access ends here (ms) unless it's paid (D6). */
+  graceEndsAt?: number;
 }
 
 // ---- v2.0 ----
@@ -141,6 +151,14 @@ export interface Persona {
   roleAr?: string;
   descriptionAr?: string;
   source?: AnalysisSource;
+}
+
+/** One of the brand's own words: what to say in English and Arabic, and what not to. */
+export interface KeyTerm {
+  id: string;
+  say: string;
+  sayAr: string;
+  avoid: string;
 }
 
 export interface VoiceTrait {
@@ -244,6 +262,8 @@ export interface BrandStrategy {
   uvp: string;
   /** "Personality & tone" — kept as voiceTraits, the existing do/don't matrix. */
   voiceTraits: VoiceTrait[];
+  /** Say / Arabic / Not: the brand's own words (Personality & tone; shown on the brand home). */
+  keyTerms?: KeyTerm[];
   /** The Arabic copy of each narrative field. See the note on Persona. */
   purposeAr?: string;
   missionAr?: string;
@@ -962,6 +982,12 @@ export interface Workspace {
    * point of those is that someone with no account at all can open them.
    */
   ownerAccountId: string;
+  /**
+   * The signed-in reader's role as the server reported it when the brand was
+   * loaded. A client is sent only the brand's metadata, with no team list, so
+   * this is the only way the app knows they belong. Never sent back.
+   */
+  viewerRole?: TeamRole | null;
   slug: string;
   name: string;
   initials: string;
@@ -992,7 +1018,21 @@ export interface Workspace {
   /** Brand main details, shown on Overview. */
   industry: string;
   tagline: string;
+  /** The tagline in Arabic (Overview, 22 Nov 2026); `tagline` is the English one. */
+  taglineAr?: string;
   foundedYear: string;
+  /**
+   * The project path (Overview): steps the owner or an editor chose to skip,
+   * the moodboard chosen as the direction, and when the project was handed
+   * off (owner only; the server keeps an editor's save from changing it).
+   */
+  pathSkips?: PathStepKey[];
+  direction?: { boardId: string; at: number; by?: string } | null;
+  handoff?: { at: number; by?: string } | null;
+  /** A seeded demo brand: the Overview shows the demo banner. */
+  demo?: boolean;
+  /** The brand owner's account type, from the server; decides the Overview's version. */
+  ownerAccountType?: AccountType;
   colors: ColorSwatch[];
   logo: Record<SlotKind, LogoSlot>;
   /** How/when to use the logo, and which colors are its main colors — shown on Visual identity > Logo system. */
@@ -1013,7 +1053,7 @@ export interface Workspace {
   versionHistory: VersionSnapshot[];
   whiteLabel: boolean;
   /**
-   * A paid brand switched "Remove Markyos branding" off to give the credit:
+   * A paid brand switched "Hide the badge" off to give the credit:
    * its public pages show the Made with Markyos badge. Free brands always do,
    * whatever this says; the server decides (apps/brands/branding.py).
    */
@@ -1101,6 +1141,13 @@ export interface Workspace {
   /** The last published copy, or null if this guideline has never gone live. */
   published: PublishedSnapshot | null;
   publishedAt: number | null;
+  /**
+   * The server's answer, on read only: whether /v/<slug> serves the published
+   * site right now, and whether this brand may go live at all (a paid plan).
+   * Absent in the offline demo, where publishing is local.
+   */
+  live?: boolean;
+  canGoLive?: boolean;
 }
 
 /**
@@ -1109,7 +1156,7 @@ export interface Workspace {
  * live brand book without anything reaching its client until it says so.
  * Omitting the publish fields keeps the snapshot from nesting into itself.
  */
-export type PublishedSnapshot = Omit<Workspace, "published" | "publishedAt">;
+export type PublishedSnapshot = Omit<Workspace, "published" | "publishedAt" | "live" | "canGoLive">;
 
 export interface Session {
   /** Which account this session belongs to — the join back to `accounts`. */
@@ -1193,9 +1240,13 @@ export interface Account {
   hasPassword?: boolean;
 }
 
-export type AccountRole = "admin" | "member";
+/** Admin runs the platform; content runs the website's content only. */
+export type AccountRole = "admin" | "member" | "content";
 
 export type AccountType = "studio" | "freelancer" | "company";
+
+/** The project path's steps, in order (Overview, 22 Nov 2026). */
+export type PathStepKey = "discover" | "analyse" | "strategy" | "direction" | "identity" | "kit" | "guide" | "handoff";
 
 export interface AuditEntry {
   id: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader, TabPanel, Tabs, useTabIds } from "@/components/ui";
+import { AppFooter, PageHeader, TabPanel, Tabs, useTabIds } from "@/components/ui";
 import { StudioHeader } from "@/features/shell";
 import { ACCOUNT_TABS } from "../constants";
 import { useAccountPage } from "../hooks/use-account-page";
@@ -21,13 +21,13 @@ export function AccountView() {
     <div className="min-h-screen flex flex-col">
       <StudioHeader isAr={isAr} />
 
-      <div className="flex-1 px-space-6 sm:px-space-10 pb-space-10 flex flex-col gap-5 max-w-190 w-full mx-auto">
+      <main className="flex-1 px-space-6 sm:px-space-10 pt-space-8 pb-space-10 flex flex-col gap-5 max-w-190 w-full mx-auto">
         <PageHeader
           title={t("Account", "الحساب")}
           description={t("Your details and sign-in, what this account is paying for, and the organisation-wide controls.", "بياناتك وتسجيل دخولك، وما يدفعه هذا الحساب، وإعدادات المؤسسة.")}
         />
 
-        <Tabs {...tabIds} label={t("Account", "الحساب")} tabs={ACCOUNT_TABS.map((tab) => ({ ...tab, label: isAr ? tab.arLabel : tab.label }))} active={page.tab} onChange={page.onTab} />
+        <Tabs {...tabIds} label={t("Account", "الحساب")} tabs={ACCOUNT_TABS.map(({ key, icon, label, arLabel }) => ({ key, icon, label: isAr ? arLabel : label }))} active={page.tab} onChange={page.onTab} />
 
         <TabPanel key={page.tab} id={tabIds.panelId} tabsId={tabIds.id} active={page.tab} className="flex flex-col gap-5">
           {page.tab === "profile" && <ProfilePanel />}
@@ -35,12 +35,13 @@ export function AccountView() {
           {page.tab === "organisation" && (
             <>
               <UsageSection {...page.usage} />
-              <SsoSection {...page.sso} />
+              <SsoSection />
               <AuditLogSection {...page.audit} />
             </>
           )}
         </TabPanel>
-      </div>
+        <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
+      </main>
     </div>
   );
 }

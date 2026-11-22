@@ -7,12 +7,12 @@ import { API_ENABLED } from "@/lib/api/client";
 import { endMySession, listMySessions, signOutOtherSessions } from "../../api/account.api";
 import type { MySession } from "../../types";
 import { useAccountLang } from "../shared/use-account-lang";
-
-const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
+import { errorText } from "@/lib/api/errorText";
 
 /** Where you're signed in, and signing other browsers out. */
 export function useMySessions() {
-  const { t, isAr } = useAccountLang();
+  const { t, isAr, lang } = useAccountLang();
+  const message = (err: unknown) => errorText(err, lang);
   const [version, setVersion] = useState(0);
   // The browser-only build has no server sessions to list.
   const sessions = useRequest(() => (API_ENABLED ? listMySessions() : Promise.resolve([])), `my-sessions:${version}`);

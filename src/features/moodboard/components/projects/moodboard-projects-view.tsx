@@ -7,6 +7,8 @@ import { MoodboardFootnote } from "../shared/moodboard-footnote";
 import { MoodboardIntro } from "../shared/moodboard-intro";
 import { TemplatePicker } from "../shared/template-picker";
 import { BoardProjectCard } from "./board-project-card";
+import { useApp, useAppActions } from "@/contexts/AppContext";
+import { capabilitiesOn } from "@/lib/data/access";
 
 /**
  * The moodboard as projects: each board is its own piece of work, opened on
@@ -16,15 +18,18 @@ import { BoardProjectCard } from "./board-project-card";
 export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, onCreate, onUploadNew, onRename, onDuplicate, onDelete }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const assets = new Map(ws.assets.map((a) => [a.id, a]));
+  const { setDirection } = useAppActions();
+  const { state } = useApp();
+  const { canEdit } = capabilitiesOn(ws, state.session);
   const empty = boards.length === 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-space-8 overflow-auto px-7 py-6.5">
-      <div className="flex flex-wrap items-start justify-between gap-space-5">
+      <div className="flex flex-wrap items-start justify-between gap-ctl-row">
         <MoodboardIntro isAr={isAr} compact={false} hidden={false} />
         {!empty && (
-          <div className="flex shrink-0 items-center gap-space-3">
-            <Button variant="outline" icon={<Icon name="upload" size={18} />} onClick={() => fileRef.current?.click()}>
+          <div className="flex shrink-0 items-center gap-ctl-row">
+            <Button variant="secondary" icon={<Icon name="upload" size={18} />} onClick={() => fileRef.current?.click()}>
               {isAr ? "ارفع مراجع" : "Upload references"}
             </Button>
             <Button variant="primary" icon={<Icon name="plus" size={18} />} onClick={() => onPicking(!picking)} aria-expanded={picking}>
@@ -49,7 +54,7 @@ export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, on
       {(picking || empty) && (
         <section className="flex flex-col gap-space-4" aria-label={isAr ? "ابدأ لوحًا جديدًا" : "Start a new board"}>
           {!empty && (
-            <div className="flex items-center justify-between gap-space-3">
+            <div className="flex items-center justify-between gap-ctl-row">
               <h2 className="text-h5 font-medium text-text">{isAr ? "ابدأ لوحًا جديدًا" : "Start a new board"}</h2>
               <IconButton icon="times" label={isAr ? "إغلاق" : "Close"} onClick={() => onPicking(false)} />
             </div>
@@ -70,6 +75,8 @@ export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, on
               onRename={() => onRename(b)}
               onDuplicate={() => onDuplicate(b)}
               onDelete={() => onDelete(b)}
+              chosen={ws.direction?.boardId === b.id}
+              onChooseDirection={canEdit ? (on) => setDirection(ws.id, on ? b.id : null) : undefined}
             />
           ))}
         </Stagger>

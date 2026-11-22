@@ -11,3 +11,47 @@ describe("rich HTML", () => {
     expect(sanitizeRichHtml(html)).toBe(html);
   });
 });
+
+describe("sanitizeRichHtml media", () => {
+  const figure = '<figure><img src="https://cdn.markyos.com/a.png" alt="Logo"><figcaption>Logo</figcaption></figure>';
+
+  it("drops images from brand copy", () => {
+    expect(sanitizeRichHtml(figure)).not.toContain("<img");
+  });
+
+  it("keeps images, figures and captions in articles", () => {
+    const clean = sanitizeRichHtml(figure, { media: true });
+    expect(clean).toContain('<img src="https://cdn.markyos.com/a.png" alt="Logo" />');
+    expect(clean).toContain("<figcaption>Logo</figcaption>");
+  });
+
+  it("never lets a data: or script source through", () => {
+    for (const src of ["data:image/png;base64,AAAA", "javascript:alert(1)", "//evil.test/x.png"]) {
+      expect(sanitizeRichHtml(`<img src="${src}" onerror="x()">`, { media: true })).not.toMatch(/src=|onerror/);
+    }
+  });
+});
+
+describe("sanitizeRichHtml help mode", () => {
+  const html =
+    '<aside class="callout-warning"><p>Careful</p></aside><aside class="evil">x</aside>' +
+    "<pre><code>npm run check</code></pre>" +
+    '<p><a class="video-embed" href="https://youtu.be/abc">v</a><a class="other" href="https://x.test">x</a></p>' +
+    '<iframe src="https://evil.test"></iframe>';
+
+  it("keeps callouts, code and the video marker, and nothing else", () => {
+    const out = sanitizeRichHtml(html, { help: true });
+    expect(out).toContain('<aside class="callout-warning">');
+    expect(out).toContain("<pre><code>npm run check</code></pre>");
+    expect(out).toContain('class="video-embed"');
+    expect(out).not.toContain("evil");
+    expect(out).not.toContain('class="other"');
+    expect(out).not.toContain("iframe");
+  });
+
+  it("leaves them out everywhere else", () => {
+    const out = sanitizeRichHtml(html, { media: true });
+    expect(out).not.toContain("<aside");
+    expect(out).not.toContain("video-embed");
+  });
+});

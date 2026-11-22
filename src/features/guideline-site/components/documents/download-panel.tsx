@@ -144,7 +144,7 @@ export function DownloadPanel({
               {formatBytes(totalKB)}
             </div>
           </div>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             {isAr ? "إلغاء" : "Cancel"}
           </Button>
           <Button variant="primary" onClick={handleDownload} disabled={targetKinds.length === 0 || generating}>
@@ -236,7 +236,7 @@ export function DownloadPanel({
               {link}
             </span>
             <CopyButton
-              variant="link"
+              variant="ghost"
               text={`https://${link}`}
               label={isAr ? "نسخ" : "Copy"}
               copiedLabel={isAr ? "تم النسخ" : "Copied"}

@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Badge } from "@/components/ui";
+import { Badge, Dashboard, DashboardCard } from "@/components/ui";
 import { AssetThumb } from "@/components/ui";
 import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import type { Lang } from "@/types/lang";
 import { brandInitials, brandSetup } from "@/lib/data/brandSetup";
 import { BRANDS_COPY } from "../../copy";
+
+/** First letter up; Arabic has no case, so it passes through. */
+const capitalise = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
 
 /**
  * `role` is the viewer's own role on the brand. Anything but owner means it
@@ -30,32 +33,30 @@ export function WorkspaceCard({
   const symbol = workspace.logo.symbol;
   const hasSymbol = symbol.phase === "attached" && symbol.url;
 
+  const t = (en: string, ar: string) => lang === "ar" ? ar : en;
   return (
-    <Link href={`/w/${workspace.slug}/overview`} className="mk-card rounded-card bg-surface-1 p-space-8 flex flex-col gap-space-5">
-      <div className="mk-surface h-33 rounded-lg grid place-items-center overflow-hidden bg-surface-2">
-        {hasSymbol ? (
-          // Measured against this well rather than against the theme. A brand
-          // whose symbol is a white mark on transparency had a 1.26:1 thumbnail
-          // here — a card that looked like it had no logo on it.
-          <AssetThumb src={symbol.url} alt="" ground="--surface-2" style={{ height: 44, width: "auto" }} />
-        ) : (
-          // The initials are the only thing identifying a brand with no
-          // symbol yet, so they sit at a contrast that can be read.
-          <span className="text-h1 font-medium text-text-faint">{brandInitials(workspace.name)}</span>
-        )}
-      </div>
-      <div className="flex items-start gap-space-4">
-        <div className="flex-1 min-w-0">
-          <div className="text-h5 font-medium truncate">{workspace.name}</div>
-          <div className="text-caption text-text-muted">
-            {c.edited(formatRelative(workspace.updatedAt, undefined, lang))} · {lang === "ar" ? `${complete} من ${setup.length} مكتمل` : `${complete} of ${setup.length} done`}
-          </div>
-          {role && role !== "owner" && <div className="text-caption text-text-muted">{c.sharedWithYou(c.roles[role] ?? role)}</div>}
+    <Link href={`/w/${workspace.slug}/overview`} aria-label={t(`Open ${workspace.name}`, `فتح ${workspace.name}`)} className="mk-card block h-full rounded-card">
+      <DashboardCard
+        title={<span dir="auto">{workspace.name}</span>}
+        subtitle={c.edited(formatRelative(workspace.updatedAt, undefined, lang))}
+        actions={<Badge tone={workspace.sharedStatus === "shared" ? "success" : "neutral"}>{workspace.sharedStatus === "shared" ? c.shared : c.draft}</Badge>}
+        className="h-full"
+        footer={<Dashboard.CardFooterStats items={[
+          // A client gets no working document, so a setup count would be made
+          // up; what they can act on is whether the guideline is out.
+          role === "client"
+            ? { label: t("Guideline", "الدليل"), value: workspace.published ? t("Ready to review", "جاهز للمراجعة") : t("Not published yet", "لم يُنشر بعد") }
+            : { label: t("Brand setup", "إعداد العلامة"), value: t(`${complete} of ${setup.length} done`, `${complete} من ${setup.length} مكتمل`) },
+          // A value stands alone, so it takes a capital; the lowercase word is
+          // for the "shared with you as …" sentence below.
+          { label: t("Your role", "دورك"), value: capitalise(c.roles[role ?? ""] ?? "—") },
+        ]} />}
+      >
+        <div className="mk-surface grid h-33 place-items-center overflow-hidden rounded-widget bg-surface-2">
+          {hasSymbol ? <AssetThumb src={symbol.url} alt="" ground="--surface-2" style={{ height: 44, width: "auto" }} /> : <span className="text-h1 font-medium text-text-muted">{brandInitials(workspace.name)}</span>}
         </div>
-        <Badge tone={workspace.sharedStatus === "shared" ? "success" : "neutral"}>
-          {workspace.sharedStatus === "shared" ? c.shared : c.draft}
-        </Badge>
-      </div>
+        {role && role !== "owner" && <p className="mt-space-3 text-caption text-text-muted">{c.sharedWithYou(c.roles[role] ?? role)}</p>}
+      </DashboardCard>
     </Link>
   );
 }

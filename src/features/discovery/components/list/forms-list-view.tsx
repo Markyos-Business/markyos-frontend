@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import {
   AlertBanner,
   Badge,
@@ -19,7 +20,7 @@ import {
   cellClasses,
   rowClasses,
 } from "@/components/ui";
-import { FilterSelectField, SearchField } from "@/components/ui";
+import { SearchField, SortControl } from "@/components/ui";
 import { STATUS_META, STATUS_ORDER } from "../../constants";
 import { useForms } from "../../hooks/use-forms";
 import { useTemplates } from "../../hooks/use-templates";
@@ -43,10 +44,16 @@ const formHref = (form: FormSummary) => `/w/${form.workspaceSlug}/forms/${form.i
  * Every discovery form, by status: the studio's view of who has been asked
  * what, and who has answered.
  */
+const STATUS_TABS = ["all", ...STATUS_ORDER] as const;
+type StatusTab = (typeof STATUS_TABS)[number];
+
 export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps) {
   const tabIds = useTabIds();
   const [search, setSearch] = useState("");
-  const [query, setQuery] = useState<FormListQuery>({ status: "", ordering: "updated", page: 1, brand: brandId });
+  // The status tab lives in the URL (`?tab=`), so a link opens on it and Back returns.
+  const [statusTab, setStatusTab] = useUrlTab(STATUS_TABS, "all");
+  const [state, setQuery] = useState<FormListQuery>({ status: "", ordering: "updated", page: 1, brand: brandId });
+  const query: FormListQuery = { ...state, status: statusTab === "all" ? "" : statusTab };
   const { data, error, loading, reload } = useForms(query);
   const templates = useTemplates();
 
@@ -95,31 +102,30 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
         }
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-space-5">
+      <div className="flex flex-wrap items-center justify-between gap-ctl-row">
         <Tabs {...tabIds}
           label={isAr ? "حسب الحالة" : "By status"}
           tabs={(["", ...STATUS_ORDER] as (FormStatus | "")[]).map((status) => ({ key: status || "all", label: tab(status) }))}
           active={query.status || "all"}
-          onChange={(key) => setQuery((q) => ({ ...q, status: key === "all" ? "" : (key as FormStatus), page: 1 }))}
+          onChange={(key) => { setStatusTab(key as StatusTab); setQuery((q) => ({ ...q, page: 1 })); }}
         />
-        <div className="flex flex-wrap items-center gap-space-5">
+        <div className="flex flex-wrap items-center gap-ctl-row">
           <SearchField
             label={isAr ? "ابحث في الاستبيانات" : "Search questionnaires"}
             placeholder={isAr ? "ابحث بالاسم أو العميل…" : "Search by name or client…"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <FilterSelectField
-            label={isAr ? "الترتيب" : "Sort"}
+          <SortControl
+            label={isAr ? "ترتيب الاستبيانات" : "Sort questionnaires"}
             hideLabel
-            icon="arrows-v"
-            value={query.ordering ?? "updated"}
-            onChange={(value) => setQuery((q) => ({ ...q, ordering: value as FormListQuery["ordering"], page: 1 }))}
+            defaultLabel={isAr ? "آخر تعديل أولًا" : "Last edited first"}
+            value={query.ordering === "updated" ? "" : query.ordering ?? ""}
+            onChange={(value) => setQuery((q) => ({ ...q, ordering: (value || "updated") as FormListQuery["ordering"], page: 1 }))}
             options={[
-              { value: "updated", label: isAr ? "آخر تعديل" : "Last edited" },
-              { value: "created", label: isAr ? "الأحدث إنشاءً" : "Newest" },
-              { value: "name", label: isAr ? "الاسم" : "Name A–Z" },
-              { value: "status", label: isAr ? "الحالة" : "Status" },
+              { value: "created", label: isAr ? "الأحدث إنشاءً أولًا" : "Newest first" },
+              { value: "name", label: isAr ? "الاسم (أ–ي)" : "Name A–Z" },
+              { value: "status", label: isAr ? "حسب الحالة" : "By status" },
             ]}
           />
         </div>
@@ -176,7 +182,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
               return (
                 <tr key={form.id} className={rowClasses}>
                   <td className={cellClasses}>
-                    <Link href={formHref(form)} className="mk-tap font-medium text-text hover:text-accent-text">
+                    <Link /* button-audit-ignore: the form's name, a text link in its table row */ href={formHref(form)} className="mk-tap font-medium text-text hover:text-accent-text">
                       {form.name}
                     </Link>
                   </td>
@@ -215,7 +221,7 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
 
       {error && (
         <div>
-          <Button variant="outline" size="sm" onClick={reload}>
+          <Button variant="secondary" size="sm" onClick={reload}>
             {isAr ? "حاول مجددًا" : "Try again"}
           </Button>
         </div>

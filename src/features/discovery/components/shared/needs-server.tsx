@@ -8,7 +8,7 @@ export function NeedsServer({ isAr, feature = "discovery" }: { isAr: boolean; fe
   return <EmptyState icon={analysis ? "chart-line" : "clipboard-list"}
     title={isAr ? (analysis ? "تحليل موجز العلامة" : "استبيانات الاستكشاف") : (analysis ? "Brand brief analysis" : "Discovery questionnaires")}
     description={isAr
-      ? (analysis ? "يجمع التحليل إجابات الاستبيان وملاحظات المكالمات في تقرير موثّق بالمصادر. يتوفر في النسخة المتصلة، وليس في العرض التجريبي المحلي." : "اجمع موجز العلامة من خلال استبيان يُشارك برابط. يتوفر في النسخة المتصلة، وليس في العرض التجريبي المحلي.")
-      : (analysis ? "Turn questionnaire answers and call notes into a report with source citations. Available in the connected app, rather than this local demo." : "Collect a brand brief through a questionnaire shared by link. Available in the connected app, rather than this local demo.")}
-    action={<Button href="/brands" variant="outline">{isAr ? "العودة إلى العلامات" : "Back to brands"}</Button>} />;
+      ? (analysis ? "يجمع التحليل إجابات الاستبيان وملاحظات المكالمات في تقرير موثّق بالمصادر. غير متاح في العرض التجريبي." : "اجمع موجز العلامة من خلال استبيان يُشارك برابط. غير متاح في العرض التجريبي.")
+      : (analysis ? "Turn questionnaire answers and call notes into a report with source citations. Not available in the demo." : "Collect a brand brief through a questionnaire shared by link. Not available in the demo.")}
+    action={<Button href="/brands" variant="secondary">{isAr ? "العودة إلى العلامات" : "Back to brands"}</Button>} />;
 }

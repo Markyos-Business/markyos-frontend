@@ -1,17 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { canGoLive } from "@/lib/data/publication";
+import { reviewSite, type SiteFinding } from "../utils/site-review";
+import { plural } from "@/lib/i18n/plural";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useColorNameTranslations } from "@/features/visual-identity";
+import { useUpgrade } from "@/features/billing";
 import { useDialog, useToast } from "@/components/ui";
 import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
 import { useLocalPref } from "@/hooks/useLocalPref";
 import type { BlockKind, BlockStyle, GuidelineTemplate, Lang, StudioStyle } from "@/types";
-import { reviewPage } from "../utils/page-review";
 import { PANEL_W, type ToolTab } from "../constants";
 import { STUDIO_STYLE_META, STYLE_META, type Template } from "../templates";
 import { useBuilderPanels } from "./use-builder-panels";
@@ -46,6 +49,13 @@ export function useBuilderPage(slug: string) {
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
+  const upgrade = useUpgrade();
+  // After paying, publish with the brand as it is then (its billing is the
+  // server's), not as this render saw it.
+  const publishLatest = useRef<() => void>(() => {});
+  useEffect(() => {
+    publishLatest.current = () => void handlePublish();
+  });
   const page = useBrandPage(slug);
   const ws = page?.workspace;
   // The English and Arabic previews both show colour names; fill in the
@@ -80,7 +90,7 @@ export function useBuilderPage(slug: string) {
    * being dragged off the desktop.
    */
   const [draggingKind, setDraggingKind] = useState<BlockKind | null>(null);
-  const { leftOpen, rightOpen, setLeftOpen, setRightOpen } = useBuilderPanels();
+  const { leftOpen, rightOpen, setLeftOpen, setRightOpen, narrow: compact, leftWidth, setLeftWidth } = useBuilderPanels();
 
   /**
    * Selects a section and brings it on screen.
@@ -120,6 +130,21 @@ export function useBuilderPage(slug: string) {
     });
   }, [ws, router]);
 
+  /** Puts the editor on a review finding: its setup screen, or its page and section. */
+  const revealFinding = useCallback((finding: SiteFinding) => {
+    if (finding.href) {
+      router.push(finding.href);
+      return;
+    }
+    if (finding.pageId !== activePageId) {
+      setActivePageId(finding.pageId);
+      // The page's sections mount on the next render; select once they exist.
+      requestAnimationFrame(() => revealFlow(finding.flowId));
+      return;
+    }
+    revealFlow(finding.flowId);
+  }, [activePageId, revealFlow, router]);
+
   /**
    * The review of whichever page is on the canvas.
    *
@@ -129,27 +154,10 @@ export function useBuilderPage(slug: string) {
    * would put a regex sweep in the typing path. `ws` is rebuilt by each edit, so
    * this still re-runs exactly when the page changes.
    */
-  const review = useMemo(() => {
-    if (!ws) return { findings: [], errors: 0, warnings: 0, checked: 0 };
-    const page = activePageId ? ws.pages.find((p) => p.id === activePageId) : undefined;
-    const report = reviewPage({
-      blocks: page ? page.blocks : ws.customBlocks,
-      traits: ws.strategy.voiceTraits,
-      // Only the three the renderer has an empty state for — see
-      // `BrandDataPresence`.
-      brand: {
-        logoSlotsFilled: Object.values(ws.logo).filter((s) => s.phase === "attached").length,
-        colorCount: ws.colors.length,
-        iconAssetCount: ws.assets.filter((a) => a.type === "icon").length,
-      },
-    });
-    const setup = brandSetup(ws).filter(step => step.key !== "publish" && !step.done).map(step => ({
-      id: `setup:${step.key}`, flowId: `setup:${step.key}`, label: step.label, arLabel: step.arLabel,
-      severity: "warning" as const, message: "Brand essentials are missing. Open this setup step before publishing.",
-      arMessage: "أحد أساسيات العلامة غير مكتمل. افتح هذه الخطوة قبل النشر.",
-    }));
-    return { ...report, findings: [...setup, ...report.findings], warnings: report.warnings + setup.length };
-  }, [ws, activePageId]);
+  const review = useMemo(
+    () => (ws ? reviewSite(ws) : { findings: [], errors: 0, warnings: 0, checked: 0, pages: 0 }),
+    [ws],
+  );
 
   /**
    * Keyboard control for the canvas.
@@ -264,31 +272,71 @@ export function useBuilderPage(slug: string) {
   const hasUnpublished = !ws.publishedAt || ws.updatedAt > ws.publishedAt;
 
   /**
-   * Publishing asks once when the review found something broken.
+   * Publishing stops at Must fix and asks once about Worth checking.
    *
-   * It asks rather than refuses. A studio sending a client a half-finished page
-   * to look at is a normal thing to do, and a builder that decides for them
-   * which pages are allowed out would be wrong about that regularly. What it can
-   * do is make sure nobody publishes an empty section without having been told
-   * it was empty.
+   * Must fix is what would put an empty section, a dead link or a missing logo
+   * in front of the public (product decision, 20 Nov 2026), so it blocks, here
+   * and on the server. Worth checking (copy, translations, fonts, purpose) has
+   * fallbacks, so it only asks: a half-finished page is still a page a studio
+   * may want a client to see.
    */
+  async function showWhatToFix() {
+    const count = isAr
+      ? plural("ar", review.errors, { one: "بند واحد", two: "بندان", few: "{n} بنود", many: "{n} بندًا", other: "{n} بند" })
+      : plural("en", review.errors, { one: "{n} item", other: "{n} items" });
+    const show = await confirm({
+      title: isAr ? "لا يمكن النشر بعد" : "This guideline can't be published yet",
+      body: isAr
+        ? `${count} في قائمة «يجب إصلاحه» يترك أقسامًا فارغة أو روابط لا تعمل في الدليل المنشور. أصلحها ثم انشر.`
+        : `${count} under Must fix would leave empty sections or broken links on the published guideline. Fix them, then publish.`,
+      confirmLabel: isAr ? "عرض ما يجب إصلاحه" : "Show what to fix",
+      cancelLabel: isAr ? "إغلاق" : "Close",
+      isAr,
+    });
+    const first = review.findings.find(f => f.severity === "error");
+    if (show && first) revealFinding(first);
+  }
+
+  function askToUpgrade() {
+    upgrade.open({ ws: ws!, reason: "publish", onDone: () => publishLatest.current() });
+  }
+
   async function handlePublish() {
+    // A brand that can't go live (no paid plan) isn't asked to fix anything
+    // first: the upgrade modal opens, and publishing carries on once the
+    // server says the plan is active (billing epic 2.4/2.5).
+    if (!canGoLive(ws!)) {
+      askToUpgrade();
+      return;
+    }
+    // Must fix stops here, and the server refuses the same list if this is skipped.
+    if (review.errors > 0) return showWhatToFix();
     const incomplete = brandSetup(ws!).filter(step => step.key !== "publish" && !step.done);
-    if (review.errors > 0 || incomplete.length > 0) {
+    if (review.warnings > 0 || incomplete.length > 0) {
       const ok = await confirm({
-        title: isAr
-          ? "الدليل يحتاج إلى مراجعة — أتريد النشر؟"
-          : "This guideline needs a review. Publish anyway?",
+        title: isAr ? "أتريد النشر الآن؟" : "Publish now?",
         body: [
-          review.errors > 0 ? (isAr ? `${review.errors} عناصر في هذه الصفحة تحتاج إلى إصلاح. راجع القائمة بجوار زر النشر.` : `${review.errors} thing${review.errors === 1 ? "" : "s"} on this page look${review.errors === 1 ? "s" : ""} broken. Review the list beside Publish.`) : "",
-          incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}. يمكنك المتابعة أو إكمالها أولًا.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}. You can continue or finish these first.`) : "",
+          review.warnings > 0
+            ? isAr
+              ? `${plural("ar", review.warnings, { one: "بند واحد", two: "بندان", few: "{n} بنود", many: "{n} بندًا", other: "{n} بند" })} في قائمة «يستحق المراجعة». يمكنك النشر الآن أو مراجعتها أولًا.`
+              : `${plural("en", review.warnings, { one: "{n} item", other: "{n} items" })} under Worth checking. You can publish now or review them first.`
+            : "",
+          incomplete.length ? (isAr ? `لم تكتمل: ${incomplete.map(step => step.arLabel).join("، ")}.` : `Not complete: ${incomplete.map(step => step.label).join(", ")}.`) : "",
         ].filter(Boolean).join("\n\n"),
-        confirmLabel: isAr ? "انشر على أي حال" : "Publish anyway",
+        confirmLabel: isAr ? "نشر" : "Publish",
         isAr,
       });
       if (!ok) return;
     }
     const result = await publishGuideline(ws!.id);
+    if (!result.ok && result.planRequired) {
+      askToUpgrade();
+      return;
+    }
+    if (!result.ok && result.blocked) {
+      showToast(isAr ? "لم يُنشر الدليل: ما زالت هناك بنود يجب إصلاحها." : "Not published: some Must fix items remain.", "danger");
+      return;
+    }
     if (!result.ok) {
       showToast(isAr ? "لم يُنشر الدليل. حاول مرة أخرى." : `Not published: ${result.message ?? "try again."}`, "danger");
       return;
@@ -422,6 +470,7 @@ export function useBuilderPage(slug: string) {
     selectedId,
     onSelect: setSelectedId,
     revealFlow,
+    revealFinding,
     selected,
     selectedFixedId,
     selectedStyle,
@@ -435,6 +484,9 @@ export function useBuilderPage(slug: string) {
     scope,
     draggingKind,
     onDraggingKind: setDraggingKind,
+    compact,
+    leftWidth,
+    setLeftWidth,
     leftOpen,
     rightOpen,
     setLeftOpen,

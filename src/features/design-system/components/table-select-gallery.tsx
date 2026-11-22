@@ -60,7 +60,7 @@ export function TableSelectGallery() {
   return <UiStringsProvider lang={lang}><main lang={lang} dir={dir} data-table-select-gallery className="min-h-screen min-w-0 bg-canvas text-text">
     <header className="sticky top-0 z-sticky flex flex-wrap items-center justify-between gap-space-4 bg-canvas px-space-6 py-space-4 shadow-rule-b">
       <div><Link href="/design-system" className="text-caption text-accent-text underline">{t("UI library", "مكتبة الواجهة")}</Link><h1 className="text-h3 font-medium">{t("Tables & selects", "الجداول والاختيار")}</h1></div>
-      <div className="flex items-center gap-space-3"><Button variant="outline" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")} data-gallery-language>{isAr ? "English" : "العربية"}</Button><ThemeToggle isAr={isAr} /></div>
+      <div className="flex items-center gap-space-3"><Button variant="secondary" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")} data-gallery-language>{isAr ? "English" : "العربية"}</Button><ThemeToggle isAr={isAr} /></div>
     </header>
     <div className="mx-auto flex max-w-[1440px] min-w-0 flex-col gap-space-8 px-space-4 py-space-8 sm:px-space-8">
       <section aria-label={t("Table playground", "تجربة الجدول")} className="flex min-w-0 flex-col gap-space-5">
@@ -76,7 +76,7 @@ export function TableSelectGallery() {
           getSubRows={mode === "nested" ? row => row.id === "asset-1" ? [{ ...row, id: "child-1", name: "Ramadan story format" }] : undefined : undefined}
           groupBy={mode === "grouped" ? "city" : undefined} editable={active("editable")} onEdit={async (row,key,value) => { await new Promise(resolve => setTimeout(resolve, 350)); if(value === "fail") throw new Error("Demo save failure"); setData(previous => previous.map(item => item.id === row.id ? {...item,[key]:value} : item)); }}
           rowActions={active("actions") ? row => [{ label:t("Open asset", "فتح الأصل"),icon:"external-link-alt",onSelect:()=>setLastAction(row.name) }] : undefined}
-          rowHoverActions={active("actions") ? row => <Button size="xs" variant="outline" onClick={()=>setLastAction(row.name)}>{t("Open", "فتح")}</Button> : undefined}
+          rowHoverActions={active("actions") ? row => <Button size="sm" variant="secondary" onClick={()=>setLastAction(row.name)}>{t("Open", "فتح")}</Button> : undefined}
           stickyHeader stickyColumns={active("sticky") ? {first:true,actions:true} : undefined} columnControls={active("columns")} resizable={active("columns")} reorderColumns={active("columns")} densityControl={active("density")}
           virtualized={mode === "virtualized" ? { height:480 } : false} mobileCard={{primary:"name",secondary:["owner","city","budget","date","status"]}}
           onReorderRows={mode === "reorder" ? setData : undefined}

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { api, ApiError, setAccessToken } from "./client";
+import { api, ApiError, setAccessToken, getAccessToken, refreshSession, setSessionExpiredHandler } from "./client";
 
 beforeEach(() => { setAccessToken(null); vi.stubGlobal("fetch", vi.fn()); });
 afterEach(() => vi.unstubAllGlobals());
@@ -36,5 +36,25 @@ describe("API failure metadata", () => {
   it("retains a typed network failure", async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new TypeError("Network offline"));
     await expect(api("/auth/login/")).rejects.toBeInstanceOf(ApiError);
+  });
+});
+
+ describe("refresh failures", () => {
+  it.each([429, 500, 503])("retains the session on HTTP %s", async (status) => {
+    setAccessToken("existing");
+    const expired = vi.fn();
+    setSessionExpiredHandler(expired);
+    response(401, {});
+    response(status, {}, { "Retry-After": "10" });
+    await expect(api("/brands/")).rejects.toMatchObject({ status });
+    expect(getAccessToken()).toBe("existing");
+    expect(expired).not.toHaveBeenCalled();
+    setSessionExpiredHandler(null);
+  });
+  it("clears a rejected session", async () => {
+    setAccessToken("existing");
+    response(401, {});
+    expect(await refreshSession()).toBe(false);
+    expect(getAccessToken()).toBeNull();
   });
 });

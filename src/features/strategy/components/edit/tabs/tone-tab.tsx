@@ -2,11 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useAppActions } from "@/contexts/AppContext";
-import { useToast, Icon, Section, EmptyHint } from "@/components/ui";
+import { useToast, Icon, Section, EmptyHint, Button, IconButton } from "@/components/ui";
 import { MachineDraftFlag, OtherCopyHint } from "../../shared/bilingual-ui";
 import { traitIn } from "@/features/guideline-site";
 import { Lang, Workspace } from "@/types";
 import { InlineText, MiniInput } from "../../shared/inputs";
+import { KeyTermsSection } from "./key-terms";
 
 export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   const { addVoiceTrait, updateVoiceTrait, removeVoiceTrait, uiLang } = useAppActions();
@@ -41,22 +42,18 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
   }
 
   return (
+    <>
     <Section
       title={isAr ? "الشخصية والنبرة" : "Personality & tone"}
       icon="quote-right"
       right={
-        <button
-          type="button"
-          onClick={() => setAdding((v) => !v)}
-          className="mk-tap text-[12px] font-semibold cursor-pointer"
-          style={{ color: "var(--accent-text)" }}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setAdding((v) => !v)}>
           {adding ? (isAr ? "إلغاء" : "Cancel") : isAr ? "+ إضافة" : "+ Add"}
-        </button>
+        </Button>
       }
     >
       {adding && (
-        <form onSubmit={submitTrait} className="rounded-card p-4 flex flex-col gap-2.5" style={{ background: "var(--surface-2)" }}>
+        <form onSubmit={submitTrait} className="rounded-card p-4 flex flex-col gap-field-stack-compact" style={{ background: "var(--surface-2)" }}>
           <MiniInput
             value={traitName}
             onChange={setTraitName}
@@ -72,9 +69,9 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
             onChange={setTraitDont}
             placeholder={isAr ? "لا تفعل: ما يجب تجنبه" : "Don't: what to avoid"}
           />
-          <button type="submit" className="h-9 rounded-lg text-[12px] font-semibold cursor-pointer self-start px-4" style={{ background: "var(--solid)", color: "var(--solid-ink)" }}>
+          <Button type="submit" variant="primary" size="sm" className="self-start">
             {isAr ? "إضافة سمة" : "Add trait"}
-          </button>
+          </Button>
         </form>
       )}
       {ws.strategy.voiceTraits.length === 0 ? (
@@ -130,16 +127,16 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
                       }
                     />
                   </div>
-                  <button
-                    type="button"
+                  <IconButton
+                    icon="times"
+                    iconSize={16}
+                    size="xs"
                     onClick={() => removeVoiceTrait(ws.id, t.id)}
-                    aria-label={
+                    label={
                       isAr ? `حذف ${shown.trait || "السمة"}` : `Remove ${shown.trait || "trait"}`
                     }
-                    className="mk-icon-btn cursor-pointer self-start mt-1 transition-opacity opacity-50 hover:opacity-100"
-                  >
-                    <Icon name="times" size={14} style={{ color: "var(--text-faint)" }} />
-                  </button>
+                    className="self-start mt-1"
+                  />
                 </div>
                 {flagged && <MachineDraftFlag isAr={uiLang(ws) === "ar"} />}
                 {isAr && (
@@ -154,5 +151,7 @@ export function ToneTab({ ws, lang }: { ws: Workspace; lang: Lang }) {
         </div>
       )}
     </Section>
+    <KeyTermsSection ws={ws} isAr={uiLang(ws) === "ar"} />
+    </>
   );
 }

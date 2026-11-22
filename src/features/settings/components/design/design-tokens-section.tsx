@@ -62,8 +62,8 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
     <Section title={t("Design tokens", "رموز التصميم")} icon="shapes">
       <p className="-mt-1 text-[12.5px] leading-[1.6] text-text-muted">
         {t(
-          "This workspace's palette and type, in the W3C Design Tokens format that Figma Variables, Tokens Studio and Style Dictionary all read. Export it into your Figma library, edit there, and bring the file back to catch drift in either direction.",
-          "ألوان هذه المساحة وخطوطها بصيغة W3C Design Tokens التي يقرأها Figma Variables وTokens Studio وStyle Dictionary. صدّرها إلى مكتبة Figma، وعدّل هناك، ثم أعد الملف لاكتشاف أي اختلاف في الاتجاهين."
+          "This brand's palette and type, in the W3C Design Tokens format that Figma Variables, Tokens Studio and Style Dictionary all read. Export it into your Figma library, edit there, and bring the file back to catch drift in either direction.",
+          "ألوان هذه العلامة وخطوطها بصيغة W3C Design Tokens التي يقرأها Figma Variables وTokens Studio وStyle Dictionary. صدّرها إلى مكتبة Figma، وعدّل هناك، ثم أعد الملف لاكتشاف أي اختلاف في الاتجاهين."
         )}
       </p>
       <Row
@@ -78,7 +78,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
               : `${ws.colors.length} colors + 2 type tokens.`
         }
         right={
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 gap-ctl-row">
             <CopyButton
               size="sm"
               text={serializeTokens(ws)}
@@ -88,7 +88,7 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
               onCopied={markSynced}
               failedMessage={t("Couldn't copy. Select it and copy it by hand.", "تعذّر النسخ. حدّده وانسخه يدويًا.")}
             />
-            <Button variant="outline" size="sm" onClick={downloadTokens}>
+            <Button variant="secondary" size="sm" onClick={downloadTokens}>
               {t("Download", "تنزيل")}
             </Button>
           </div>
@@ -107,9 +107,9 @@ export function DesignTokensSection({ ws, isAr, canGovern }: { ws: Workspace; is
       />
       <Row
         label={t("Import tokens", "استيراد الرموز")}
-        hint={t("Adds colors it doesn't have and updates ones whose hex changed. Nothing is deleted.", "يضيف الألوان غير الموجودة ويحدّث التي تغيّر كودها. لا يُحذف شيء.")}
+        hint={t("Adds colours it doesn't have and updates ones whose hex changed. Nothing is deleted.", "يضيف الألوان غير الموجودة ويحدّث التي تغيّر كودها. لا يُحذف شيء.")}
         right={
-          <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={syncing}>
+          <Button variant="secondary" size="sm" onClick={() => inputRef.current?.click()} disabled={syncing}>
             {syncing ? t("Reading…", "جارٍ القراءة…") : t("Choose file", "اختر ملفًا")}
           </Button>
         }

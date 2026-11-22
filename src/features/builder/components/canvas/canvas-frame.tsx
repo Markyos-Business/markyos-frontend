@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { VIEWPORT_WIDTH } from "@/lib/doc/core/types";
 import type { Breakpoint } from "@/lib/doc/core/types";
+import { useBuilderViewport } from "../../hooks/use-builder-viewport";
 
 /**
  * The canvas, framed at a real viewport width.
@@ -39,7 +40,7 @@ import type { Breakpoint } from "@/lib/doc/core/types";
 const FRAME_HEIGHT: Record<Breakpoint, number> = { desktop: 800, tablet: 1080, phone: 844 };
 
 /**
- * The smallest the frame may be drawn before the canvas scrolls instead.
+ * The smallest scale the steady (panel-reserving) fit may use.
  *
  * With both side panels open on a 1440px screen there are about 634px left for
  * a 1200px desktop frame, so the page was drawn at **51%** — 16px body copy
@@ -47,9 +48,10 @@ const FRAME_HEIGHT: Record<Breakpoint, number> = { desktop: 800, tablet: 1080, p
  * text to rewrite it. The act of selecting a section, which opens the
  * inspector, was what made that section unreadable.
  *
- * Below this the frame holds its size and the canvas scrolls sideways, which is
- * what every other design tool does and what a designer expects. 0.65 keeps
- * body copy above 10px, which is the app's own floor for readable type.
+ * Below this the frame stops holding room for the design panel and fits the
+ * space there really is (see `fit`), so the page is never cut off or scrolled
+ * sideways. 0.65 keeps body copy above 10px, the app's floor for readable type,
+ * whenever the window allows it.
  */
 const MIN_SCALE = 0.65;
 
@@ -93,6 +95,9 @@ export function CanvasFrame({
   const hostRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const width = VIEWPORT_WIDTH[breakpoint];
+  // On a phone or narrow tablet nobody is rewriting a line of a 1200px page:
+  // they are checking it. The whole page fits instead of a cropped corner.
+  const { compact: narrow } = useBuilderViewport();
 
   useEffect(() => {
     const host = hostRef.current;
@@ -100,20 +105,27 @@ export function CanvasFrame({
 
     function fit() {
       if (!host) return;
-      const available = host.clientWidth + reserved;
-      if (available <= 0) return;
-      // Never scale *up*. A phone frame blown up to fill a 27-inch display
-      // would be a picture of nothing anyone owns, and the type would be
-      // unreadably large next to the app's own. And never below MIN_SCALE:
-      // past that the canvas scrolls rather than shrinking further.
-      setScale(Math.min(1, Math.max(MIN_SCALE, available / width)));
+      // A narrow window opens its panels one at a time and starts with both
+      // shut; holding back a panel's width there left the page a sliver.
+      const available = host.clientWidth + (narrow ? 0 : reserved);
+      if (available <= 0 || host.clientWidth <= 0) return;
+      // Never scale *up*: a phone frame blown up to fill a 27-inch display
+      // would be a picture of nothing anyone owns.
+      //
+      // The steady scale (as though the design panel were open, so opening it
+      // doesn't resize the page) is kept while it stays readable. Below
+      // MIN_SCALE it fits the room there really is instead: on a 1024px
+      // screen the old floor drew the page wider than the canvas, cut it off
+      // and scrolled it sideways (review, 21 Nov 2026).
+      const steady = available / width;
+      setScale(Math.min(1, steady >= MIN_SCALE ? steady : host.clientWidth / width));
     }
 
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(host);
     return () => observer.disconnect();
-  }, [width, reserved]);
+  }, [width, reserved, narrow]);
 
   const label =
     breakpoint === "desktop"
@@ -123,10 +135,8 @@ export function CanvasFrame({
         : isAr ? "هاتف" : "Phone";
 
   return (
-    // `overflow-x-auto`, because the scale now has a floor: when the frame is
-    // wider than the space left between the panels, the canvas scrolls rather
-    // than drawing the page too small to edit.
-    <div ref={hostRef} className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-auto">
+    // The frame always fits (see `fit`), so nothing scrolls sideways.
+    <div ref={hostRef} className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden">
       {/* The frame's own chrome is laid out left-to-right whatever the page
           inside it is. It carries no text of its own, and pinning it means the
           scale transform always originates from the same corner as the box it

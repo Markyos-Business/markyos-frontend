@@ -54,7 +54,7 @@ test.describe("discovery forms", () => {
       }
       await page.getByRole("button", { name: "القسم التالي" }).click();
     }
-    await expect(page.getByText("شكرًا لكم، وصلت إجاباتكم.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "وصلت إجاباتك" })).toBeVisible();
 
     const responses = await call(`/discovery/forms/${form.id}/responses/`, { token: studio.token });
     expect(responses.form.status).toBe("submitted");

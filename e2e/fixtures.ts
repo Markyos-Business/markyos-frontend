@@ -59,7 +59,7 @@ const stamp = () => `${Date.now()}${Math.floor(Math.random() * 1000)}`;
 export type Studio = { email: string; token: string; name: string };
 
 export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
-  const email = `e2e-${stamp()}@studio.com`;
+  const email = `e2e-${stamp()}@example.com`;
   await call("/auth/signup/", { method: "POST", body: { name, email, accountType: "studio" } });
   // Usable once the password is set from the emailed link, which signs in.
   const token = new URLSearchParams(setupLink(email).split("?")[1]).get("token");
@@ -70,9 +70,13 @@ export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
 export type Brand = { id: string; slug: string; clientEmail: string };
 
 /** A brand with Omar Aziz on its team as the client. */
-export async function newBrand(studio: Studio, name = "Wadi Rum Coffee"): Promise<Brand> {
+/**
+ * `publishable` adds what the server requires before it publishes (an attached
+ * logo and one colour); without it the brand is as bare as a new one.
+ */
+export async function newBrand(studio: Studio, name = "Wadi Rum Coffee", { publishable = false } = {}): Promise<Brand> {
   const s = stamp();
-  const brand = { id: `b-${s}`, slug: `wadi-rum-${s}`, clientEmail: `omar-${s}@client.sa` };
+  const brand = { id: `b-${s}`, slug: `wadi-rum-${s}`, clientEmail: `omar-${s}@example.org` };
   await call("/brands/", {
     method: "POST",
     token: studio.token,
@@ -83,12 +87,23 @@ export async function newBrand(studio: Studio, name = "Wadi Rum Coffee"): Promis
         name,
         stage: "discovery",
         primaryLocale: "en",
-        colors: [],
+        colors: publishable ? [{ id: "c1", name: "Sand", hex: "#C2A878" }] : [],
+        ...(publishable ? { logo: { symbol: { phase: "attached", url: "/media/e2e-mark.svg" } } } : {}),
         team: [{ id: "omar", name: "Omar Aziz", email: brand.clientEmail, role: "client" }],
       },
     },
   });
   return brand;
+}
+
+/**
+ * Subscribes a brand as a PayPal webhook would: an active monthly plan, paid
+ * now. A brand without a plan has no editors and can't go live (billing epic).
+ */
+export function payBrand(brandId: string) {
+  djangoShell(
+    `from datetime import timedelta; from django.utils import timezone; from apps.brands.models import Checkout, Workspace; w=Workspace.objects.get(pk=${JSON.stringify(brandId)}); now=timezone.now(); Checkout.objects.create(workspace=w, buyer=w.owner, provider="paypal", plan="subscription", account_type=w.owner.account_type or "studio", plan_key="paypal_plan", amount=2900, status="active", paid_at=now, current_period_end=now+timedelta(days=30), session_id=${JSON.stringify(`pp_${brandId}`)}, subscription_id=${JSON.stringify(`I-${brandId}`)})`,
+  );
 }
 
 /** A Rebrand form, sent; only its first text question is required. */

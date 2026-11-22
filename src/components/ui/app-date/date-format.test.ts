@@ -24,8 +24,10 @@ describe("formatDate", () => {
     expect(formatDate(d, "datetime", "en-GB")).toMatch(/PM|AM/);
   });
   it("formats relative time against a fixed now", () => {
-    expect(formatDate(new Date(d.getTime() - 5 * 60_000), "relative", "en", d.getTime())).toBe("5 minutes ago");
-    expect(formatDate(new Date(d.getTime() - 86_400_000), "relative", "en", d.getTime())).toBe("yesterday");
+    // Past times use the app's short style (lib/utils formatRelative).
+    expect(formatDate(new Date(d.getTime() - 19_000), "relative", "en", d.getTime())).toContain("just now");
+    expect(formatDate(new Date(d.getTime() - 5 * 60_000), "relative", "en", d.getTime())).toContain("5m ago");
+    expect(formatDate(new Date(d.getTime() - 86_400_000), "relative", "en", d.getTime())).toContain("1d ago");
   });
 });
 

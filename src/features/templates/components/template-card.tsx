@@ -19,13 +19,13 @@ export function TemplateCard({ template: t, onApply }: { template: Template; onA
       <div className="flex flex-1 flex-col gap-2.5 p-5">
         <h2 className="font-display text-[16px] font-semibold">{name}</h2>
         <p className="flex-1 text-[13px] text-text-muted">{isAr ? t.arTagline : t.tagline}</p>
-        <div dir="ltr" className="flex gap-2 text-[11px] text-text-faint">
+        <div dir="ltr" className="flex gap-ctl-row text-[11px] text-text-faint">
           <span className="rounded-lg bg-surface-2 px-2 py-1">{t.latinFamily}</span>
           <span className="rounded-lg bg-surface-2 px-2 py-1">{t.arabicFamily}</span>
         </div>
         {/* Named for the template it starts: four buttons all reading "Use
             this template" are four identical choices to a screen reader. */}
-        <Button variant="solid" size="sm" block onClick={() => onApply(t)} aria-label={isAr ? `استخدم قالب ${name}` : `Use the ${name} template`} className="mt-1">
+        <Button variant="primary" size="sm" block onClick={() => onApply(t)} aria-label={isAr ? `استخدم قالب ${name}` : `Use the ${name} template`} className="mt-1">
           {isAr ? "استخدم هذا القالب" : "Use this template"}
         </Button>
       </div>

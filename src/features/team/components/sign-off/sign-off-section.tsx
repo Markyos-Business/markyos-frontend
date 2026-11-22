@@ -4,7 +4,7 @@ import { useAccountCopy } from "@/contexts/useAccountCopy";
 import { useAppActions } from "@/contexts/AppContext";
 import { useEffect, useState } from "react";
 import { API_ENABLED } from "@/lib/api/client";
-import { Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
+import { ActionsDropdown, Badge, Button, EmptyHint, Icon, Section, useToast } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
 
@@ -48,7 +48,7 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
     <Section
       title={copy.reviewTitle}
       icon="map-marker"
-      right={<div className="flex items-center gap-2">{openPins.length > 0 && <span className="text-[12px] text-text-muted">{openPins.length} {isAr ? "مفتوحة" : "open"}</span>}{API_ENABLED && <Button variant="link" size="sm" disabled={loading} onClick={() => { setLoading(true); setRefresh((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الملاحظات" : "Refresh notes")}</Button>}</div>}
+      right={<div className="flex items-center gap-2">{openPins.length > 0 && <span className="text-[12px] text-text-muted">{openPins.length} {isAr ? "مفتوحة" : "open"}</span>}{API_ENABLED && <Button variant="ghost" size="sm" disabled={loading} onClick={() => { setLoading(true); setRefresh((n) => n + 1); }}>{loading ? (isAr ? "جارٍ التحميل…" : "Loading…") : (isAr ? "تحديث الملاحظات" : "Refresh notes")}</Button>}</div>}
     >
       {error && <p role="alert" className="text-[13px] text-danger">{error}</p>}
       {pins.length === 0 ? (
@@ -59,7 +59,7 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
             <div key={p.id} className="flex items-start gap-3 rounded-card bg-surface-2 p-3.5 shadow-edge">
               <Icon name={p.resolved ? "check-circle" : "map-marker"} size={14} className={`mt-0.5 shrink-0 ${p.resolved ? "text-success" : "text-warning"}`} />
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-ctl-row">
                   <span dir="auto" className="bidi-auto text-[13px] font-semibold">
                     {p.authorName}
                   </span>
@@ -71,14 +71,12 @@ export function SignOffSection({ ws, canGovern, isAr }: { ws: Workspace; canGove
                 </p>
               </div>
               {!p.resolved && canGovern && (
-                <Button
+                <ActionsDropdown
+                  iconOnly
                   size="sm"
-                  variant="outline"
-                  disabled={pending !== null}
-                  onClick={() => void resolve(p.id)}
-                >
-                  {pending === p.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "تمت المعالجة" : "Mark handled")}
-                </Button>
+                  label={isAr ? `إجراءات ملاحظة ${p.authorName}` : `${p.authorName}'s note actions`}
+                  items={[{ label: pending === p.id ? (isAr ? "جارٍ الحفظ…" : "Saving…") : (isAr ? "تمت المعالجة" : "Mark handled"), icon: "check", tone: "success", disabled: pending !== null, onSelect: () => void resolve(p.id) }]}
+                />
               )}
             </div>
           ))}

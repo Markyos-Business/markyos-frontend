@@ -33,7 +33,7 @@ export function ParticipantsEditor({ participants, onChange, team, isAr }: Parti
   const add = (person: Participant) => onChange([...participants, person]);
 
   return (
-    <div className="flex flex-col gap-space-5">
+    <div className="flex flex-col gap-field-stack">
       {manual.map(({ p, index }) => (
         <div key={index} className="grid grid-cols-[minmax(0,1fr)_140px_auto] items-end gap-space-4">
           <InputField label={t("Name", "الاسم")} value={p.name} dir="auto" onChange={(e) => set(index, { name: e.target.value })} />
@@ -41,14 +41,14 @@ export function ParticipantsEditor({ participants, onChange, team, isAr }: Parti
           <IconButton icon="times" label={t(`Remove ${p.name || "person"}`, `إزالة ${p.name || "الشخص"}`)} onClick={() => remove(index)} />
         </div>
       ))}
-      <div className="flex flex-wrap items-center gap-space-3">
-        <Button variant="outline" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => add({ name: "", role: "client" })}>
+      <div className="flex flex-wrap items-center gap-ctl-row">
+        <Button variant="secondary" size="sm" icon={<Icon name="plus" size={16} />} onClick={() => add({ name: "", role: "client" })}>
           {t("Add person", "إضافة شخص")}
         </Button>
         {suggestions.slice(0, 6).map((m) => (
           <Button
             key={m.id}
-            variant="ghost"
+            variant="secondary"
             size="sm"
             icon={<Icon name="user" size={16} />}
             onClick={() => add({ name: m.name, role: m.role === "client" ? "client" : "studio" })}

@@ -1,78 +1,42 @@
 "use client";
 
-import { Badge, Button, Row, Section } from "@/components/ui";
-import { PasswordField } from "@/features/auth";
+import { AlertBanner, Button, Row, Section } from "@/components/ui";
 import { API_ENABLED } from "@/lib/api/client";
-import { formatRelative } from "@/lib/utils";
 import type { Account } from "@/types";
 import type { ChangePasswordState } from "../../hooks/profile/use-change-password";
 import { useAccountLang } from "../../hooks/shared/use-account-lang";
 
-/** When the password last changed, and the form to change it. */
+/** Request an email link; the new password is entered only after opening it. */
 export function PasswordSection({ account, password }: { account: Account; password: ChangePasswordState }) {
-  const { readable } = password;
-  const { t, isAr } = useAccountLang();
+  const { t } = useAccountLang();
   return (
     <Section title={t("Password", "كلمة المرور")} icon="key">
       <Row
-        label={t("Password", "كلمة المرور")}
-        hint={
-          readable
-            ? t("Stored in readable form by an older version of this app. Change it here and it's replaced with a derived key.", "محفوظة بصيغة مقروءة من نسخة أقدم من التطبيق. غيّرها هنا لتُستبدل بمفتاح مشتق.")
-            : isAr
-              ? `آخر تغيير ${account.passwordUpdatedAt ? formatRelative(account.passwordUpdatedAt) : "الآن"}. يُتحقق منها في كل تسجيل دخول.`
-              : `Last changed ${account.passwordUpdatedAt ? formatRelative(account.passwordUpdatedAt) : "just now"}. It is checked every time you sign in.`
-        }
+        label={t("Update your password by email", "تحديث كلمة المرور عبر البريد")}
+        hint={API_ENABLED ? t(
+          `We'll email a secure link to ${account.email}. Open it to choose a new password.`,
+          `سنرسل رابطًا آمنًا إلى ${account.email}. افتحه لاختيار كلمة مرور جديدة.`,
+        ) : t(
+          "Password emails aren't sent in the demo.",
+          "لا تُرسل رسائل كلمة المرور في العرض التجريبي.",
+        )}
         right={
-          <div className="flex items-center gap-2.5 shrink-0">
-            {!API_ENABLED && <Badge tone={readable ? "warning" : "success"}>{readable ? t("Readable", "مقروءة") : t("Hashed", "مشفّرة")}</Badge>}
-            <Button variant="outline" size="sm" onClick={password.toggle}>
-              {password.open ? t("Cancel", "إلغاء") : t("Change", "تغيير")}
-            </Button>
-          </div>
+          <Button variant="secondary" size="sm" onClick={password.sendLink} disabled={!API_ENABLED || password.busy || password.cooldown > 0}>
+            {password.busy ? t("Sending…", "جارٍ الإرسال…") : password.cooldown > 0 ? t(
+              `Resend in ${password.cooldown}s`, `إعادة الإرسال بعد ${password.cooldown}ث`,
+            ) : password.sentTo ? t("Resend email", "إعادة إرسال البريد") : account.hasPassword === false ? t("Set password", "تعيين كلمة المرور") : t("Change password", "تغيير كلمة المرور")}
+          </Button>
         }
       />
-
-      {password.open && (
-        <form onSubmit={password.submit} className="rounded-widget p-space-8 flex flex-col gap-space-5 bg-surface-sunken shadow-edge-soft">
-          <PasswordField
-            label={t("Current password", "كلمة المرور الحالية")}
-            value={password.current}
-            onChange={(e) => password.setCurrent(e.target.value)}
-            error={password.errors.current}
-            autoComplete="current-password"
-          />
-          <div className="grid sm:grid-cols-2 gap-3">
-            <PasswordField
-              label={t("New password", "كلمة المرور الجديدة")}
-              value={password.next}
-              strength
-              onChange={(e) => password.setNext(e.target.value)}
-              error={password.errors.next}
-              autoComplete="new-password"
-            />
-            <PasswordField
-              label={t("Confirm new password", "تأكيد كلمة المرور الجديدة")}
-              value={password.confirm}
-              onChange={(e) => password.setConfirm(e.target.value)}
-              error={password.errors.confirm}
-              autoComplete="new-password"
-            />
-          </div>
-          <Button type="submit" variant="primary" size="sm" className="self-start" disabled={password.busy}>
-            {password.busy ? t("Saving…", "جارٍ الحفظ…") : t("Change password", "تغيير كلمة المرور")}
-          </Button>
-          {/* Said plainly rather than implied: the browser-only build keeps
-              everything in this browser, so a password there is a local gate,
-              not an account on a server somewhere. What hashing buys is that
-              the string stored there isn't the one that opens your email too. */}
-          <p className="text-caption text-text-faint">
-            {API_ENABLED
-              ? t("Changing it signs you out on every other device. This browser stays signed in.", "تغييرها يسجّل خروجك من كل الأجهزة الأخرى، ويبقى هذا المتصفح مسجّلًا.")
-              : "This build stores your data in this browser, so the password guards this browser's copy — it is never sent anywhere. It is kept as a PBKDF2-derived key rather than the password itself, so what sits in storage can't be read back and tried elsewhere. Clearing site data still erases the account, and a forgotten password is reset from the login screen."}
-          </p>
-        </form>
-      )}
+      <AlertBanner message={password.error} />
+      <AlertBanner tone="success" message={password.sentTo ? t(
+        `Check ${password.sentTo} for your password link. If it hasn't arrived, check spam or resend after the countdown. Your password stays unchanged until you use the link.`,
+        `تحقق من ${password.sentTo} للوصول إلى رابط كلمة المرور. إذا لم يصلك، تحقق من البريد غير المرغوب فيه أو أعد الإرسال بعد انتهاء العد التنازلي. ستبقى كلمة مرورك دون تغيير حتى تستخدم الرابط.`,
+      ) : undefined} />
+      {API_ENABLED && <p className="text-caption text-text-muted">{t(
+        "After you set the new password, other sessions are signed out.",
+        "بعد تعيين كلمة المرور الجديدة، تُسجّل بقية الجلسات خروجها.",
+      )}</p>}
     </Section>
   );
 }
