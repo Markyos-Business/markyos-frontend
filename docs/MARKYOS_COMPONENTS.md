@@ -50,6 +50,17 @@ no variant uses the grey that disabled used to have.
 square, and **requires** `label`, which becomes its `aria-label` and tooltip.
 The ⋯ menu (`ActionsDropdown iconOnly`) is a ghost icon button of its size.
 
+**One element owns every state** (decided 22 Nov 2026). Hover, keyboard
+focus and an open menu are drawn on the trigger itself, never on a box inside
+it or a wrapper around it: one shape, one corner, one ring. A menu or popover
+trigger passes its look to `Popover` (`look={{ variant, size, iconOnly }}`, or
+`look="field"`) instead of drawing a styled `<span>` inside the Popover's
+button. While its menu is open (`aria-expanded="true"`) a trigger shows its
+hover look, no extra layer. A control that keeps its own corner without being
+a kit button (an avatar, a pill segment, a switch) carries `mk-shaped`, so
+its focus ring follows that corner. `e2e/icon-button-states.spec.ts` counts
+the painted layers per state in both themes and both directions.
+
 ## Things that are not buttons
 
 - **Choose-one controls** (Edit/Read, language, device, All/Unread) are the

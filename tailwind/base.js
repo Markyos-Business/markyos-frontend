@@ -1078,6 +1078,14 @@ export const baseStyles = [
       },
     },
   },
+  // A menu trigger that isn't a kit button (the avatar) keeps the hover veil
+  // while its menu is open, as kit buttons do (review, 22 Nov 2026). Only
+  // menu triggers: an expanded accordion or section is not tinted.
+  {
+    "[aria-haspopup][aria-expanded=\"true\"]:not(.mk-btn):not(.mk-field):not(.mk-field-control):not([role=\"combobox\"])": {
+      "background-image": "linear-gradient(var(--hover-veil), var(--hover-veil)) !important",
+    },
+  },
   // Keyboard focus gets the same veil as hover, so nothing a mouse user is
   // shown is withheld from someone tabbing (the focus ring comes on top).
   {
@@ -1273,7 +1281,9 @@ export const baseStyles = [
     // Rounds the ring on things with no corner of their own (a link, a row).
     // Controls keep theirs: an 8px button turning 6px, or a field growing
     // corners, the moment it took focus read as the control changing shape.
-    ":focus-visible:not([style*=\"border-radius\"]):not(.mk-btn):not(.mk-field):not(.mk-field-control):not([role=\"combobox\"])": {
+    // `.mk-shaped` marks the other controls that carry their own corner (a
+    // pill segment, a switch, the avatar menu): their ring follows it.
+    ":focus-visible:not([style*=\"border-radius\"]):not(.mk-btn):not(.mk-field):not(.mk-field-control):not(.mk-shaped):not([role=\"combobox\"])": {
       "border-radius": "6px !important",
     },
   },

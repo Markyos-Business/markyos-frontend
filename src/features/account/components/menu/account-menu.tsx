@@ -82,11 +82,14 @@ export const AccountMenu = memo(function AccountMenu({
       onOpen={checkContentAccess}
       trigger={variant === "row" && !compact ? "block" : "plain"}
       align={variant === "row" ? "start" : "end"}
+      // The trigger takes the shape of what it draws (the row's 8px corner,
+      // the avatar's circle), so hover and the focus ring follow it: one shape.
+      triggerClassName={variant === "row" && !compact ? "mk-shaped gap-space-4 rounded-lg py-space-2 text-start" : "mk-shaped rounded-full"}
       button={variant === "row" && !compact ? (
-        <span className="flex min-w-0 flex-1 items-center gap-space-4 rounded-lg py-space-2 text-start">
+        <>
           <Avatar initials={initials} src={account?.avatarUrl} size={28} />
           <span dir="auto" className="min-w-0 flex-1 truncate text-body font-medium text-text [text-align:match-parent]">{session?.name || session?.email}</span>
-        </span>
+        </>
       ) : <Avatar initials={initials} src={account?.avatarUrl} size={variant === "row" ? 28 : 40} />}
     >
       {(close) => (

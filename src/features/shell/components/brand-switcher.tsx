@@ -27,7 +27,7 @@ export function BrandSwitcher({ currentId, isAr }: { currentId: string; isAr: bo
   const plan = (ws: Workspace) => (ws.billing.plan === "free" ? (isAr ? "خطة مجانية" : "Free plan") : isAr ? "خطة مدفوعة" : "Paid plan");
   const label = isAr ? "التبديل بين العلامات" : "Switch brand";
   return (
-    <Popover label={label} width={280} align="start" button={<span className="grid size-7 place-items-center rounded-lg text-text-muted"><Icon name="sort" size={16} /></span>}>
+    <Popover label={label} width={280} align="start" look={{ variant: "ghost", size: "xs", iconOnly: true }} button={<Icon name="sort" size={16} />}>
       {(close) => (
         <div dir={isAr ? "rtl" : "ltr"} className="flex flex-col py-space-2">
           <div className="flex max-h-80 flex-col overflow-y-auto">

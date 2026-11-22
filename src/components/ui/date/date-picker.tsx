@@ -80,7 +80,7 @@ const DatePicker = ({ label, info, value, onChange, onBlur, placeholder, weekSta
       className={`min-h-field ${className}`}
       action={
         !blocked && (
-          <Popover label={strings?.chooseDate ?? t.chooseDate} align="end" width={hijri ? 340 : 300} button={<Icon name="calendar" size={18} className="text-text-muted" />}>
+          <Popover label={strings?.chooseDate ?? t.chooseDate} align="end" width={hijri ? 340 : 300} look={{ variant: "ghost", size: "xs", iconOnly: true }} button={<Icon name="calendar" size={18} />}>
             {(close) => (
               <div className="p-space-5">
                 <Calendar
