@@ -62,6 +62,8 @@ export interface AdminUser {
   lastLoginAt: string | null;
   brandsOwned: number;
   brandsMember: number;
+  /** On the account's own page (GET /admin/users/<id>/) only: what it may have now. */
+  limits?: AccountLimits;
 }
 
 export interface AdminUserPage {
@@ -157,3 +159,145 @@ export interface DashboardActivity extends Omit<AdminActivity, "kind"> {
   userId: string | null;
   subject: string;
 }
+
+// ---- Billing (billing epic 4.3): the admin billing tool. ----
+// One place for the admin billing contract. Amounts are cents, times are ms.
+
+export type AdminCheckoutProvider = "paypal" | "stripe" | "comp";
+
+/** A row of `GET /admin/billing/checkouts/`: one checkout (subscription, pass or comp) of one brand. */
+export interface AdminCheckout {
+  id: string;
+  /** Null once the brand was deleted. */
+  brand: { id: string; name: string; slug: string } | null;
+  owner: { id: string; email: string; name: string } | null;
+  provider: AdminCheckoutProvider;
+  plan: string;
+  /** Our status, lower case, as stored. */
+  status: string;
+  amount: number | null;
+  currency: string;
+  subscriptionId: string | null;
+  paidAt: number | null;
+  currentPeriodEnd: number | null;
+  paymentFailedAt: number | null;
+  /** PayPal's terms didn't match ours: it grants nothing. */
+  refused: boolean;
+  createdAt: number;
+}
+
+export interface AdminCheckoutPage {
+  count: number;
+  results: AdminCheckout[];
+}
+
+export interface AdminCheckoutQuery {
+  q?: string;
+  status?: string;
+  provider?: string;
+  page?: number;
+}
+
+/** One payment PayPal reported on a checkout. */
+export interface AdminPayment {
+  id: string;
+  kind: "sale" | "refund" | "reversal" | "dispute";
+  amount: number;
+  currency: string;
+  state: string;
+  occurredAt: number;
+}
+
+/** What PayPal says about the subscription right now. */
+export interface AdminPaypalView {
+  status: string;
+  nextBillingAt: number | null;
+  lastPaymentAt: number | null;
+  /** Cents, in PayPal's currency. */
+  lastPaymentAmount: { amount: number; currency: string | null } | null;
+  failedPayments: number;
+}
+
+/** `GET /admin/billing/checkouts/<id>/`. */
+export interface AdminCheckoutDetail extends AdminCheckout {
+  payments: AdminPayment[];
+  cancelReason: string | null;
+  cancelNote: string | null;
+  /** Null for comps, Stripe rows, or when PayPal couldn't be read. */
+  paypal: AdminPaypalView | null;
+  /** Our status and PayPal's disagree: the server decides, the page only says so. */
+  mismatch: boolean;
+  /** D2: the price moves to a new account type at renewal. */
+  pendingPlanChange?: AdminPendingPlanChange | null;
+}
+
+/** A price change waiting for renewal, as an admin sees it (no approval link: that's the owner's). */
+export interface AdminPendingPlanChange {
+  accountType: string;
+  /** Cents a month, in the checkout's currency. */
+  amount: number;
+  effectiveAt: number | null;
+  /** PayPal is waiting for the owner to approve the new price. */
+  approvalPending: boolean;
+  /** Renewals that passed without the owner's approval. */
+  missedRenewals: number;
+}
+
+/** A row of `GET /admin/billing/orphans/`: a PayPal subscription with no live checkout behind it. */
+export interface AdminOrphan {
+  id: number;
+  subscriptionId: string;
+  /** The checkout it once belonged to, if any. */
+  checkoutId: string | null;
+  brandId: string | null;
+  /** PayPal's own word (upper case), or null when it couldn't be read. */
+  paypalStatus: string | null;
+  moneyTaken: boolean;
+  firstSeenAt: number;
+  alertedAt: number | null;
+  cancelledAt: number | null;
+}
+
+/** A row of `GET /admin/billing/audit/`: one admin billing action, with why. */
+export interface AdminAuditEntry {
+  id: string;
+  actor: { id: string; email: string; name: string } | null;
+  action: string;
+  /** Whose account the action touched, and what (`checkout:<id>`, `account:<id>`). */
+  target: { accountId: string | null; email: string | null; subject: string | null };
+  reason: string | null;
+  createdAt: number;
+  before: Record<string, unknown> | null;
+  after: Record<string, unknown> | null;
+}
+
+export interface AdminOrphanPage {
+  count: number;
+  results: AdminOrphan[];
+}
+
+export interface AdminAuditPage {
+  count: number;
+  results: AdminAuditEntry[];
+}
+
+/** `POST /admin/billing/comps/`: a plan at no charge until `expiresAt`. */
+export interface AdminCompRequest {
+  brandId: string;
+  reason: string;
+  expiresAt: number;
+}
+
+/**
+ * An account's limits: a number, or null for unlimited. `override` is set
+ * when an admin changed either; `overridden` says which.
+ */
+export interface AccountLimits {
+  brands: number | null;
+  editors: number | null;
+  override: boolean;
+  overridden?: { brands: boolean; editors: boolean };
+}
+
+/** One limit as sent: a number, null for unlimited, "default" to clear the override. */
+export type LimitInput = number | null | "default";

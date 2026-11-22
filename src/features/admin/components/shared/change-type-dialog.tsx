@@ -36,8 +36,8 @@ export function ChangeTypeDialog({ user, onClose, onSubmit }: {
         }))}
       />
       <p className="text-caption text-text-muted">{t(
-        "Existing brands and editors are kept. New additions follow the selected limits. Existing subscriptions and their prices stay unchanged; future checkout uses this account type.",
-        "ستُحفظ العلامات والمحررون الحاليون. تخضع الإضافات الجديدة لحدود النوع المختار. لن تتغير الاشتراكات الحالية أو أسعارها؛ يستخدم الدفع الجديد نوع الحساب المختار.",
+        "Existing brands and editors are kept. New additions follow the selected limits. Existing subscriptions move to this account type's price at their next renewal; PayPal asks the owner to approve the new price.",
+        "ستُحفظ العلامات والمحررون الحاليون. تخضع الإضافات الجديدة لحدود النوع المختار. تنتقل الاشتراكات الحالية إلى سعر هذا النوع عند تجديدها القادم، ويطلب PayPal من المالك الموافقة على السعر الجديد.",
       )}</p>
     </FormDialog>
   );

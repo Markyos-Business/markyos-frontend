@@ -71,7 +71,7 @@ export function useUserActions(onChanged: (user: AdminUser | null) => void) {
   async function changeType(user: AdminUser, accountType: AccountType): Promise<string | void> {
     try {
       onChanged(await updateUser(user.id, { accountType }));
-      showToast(isAr ? "تم تحديث نوع الحساب. لم تتغير الاشتراكات الحالية." : "Account type updated. Existing subscriptions are unchanged.", "success");
+      showToast(isAr ? "تم تحديث نوع الحساب. تنتقل الاشتراكات إلى السعر الجديد عند التجديد." : "Account type updated. Subscriptions move to the new price at renewal.", "success");
     } catch (err) { return message(err); }
   }
 

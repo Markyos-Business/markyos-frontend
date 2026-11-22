@@ -16,7 +16,7 @@ const pages: Record<string, Name> = {
   "/design-system/tabs": ["Tabs gallery", "معرض التبويبات"],
   "/design-system/forms": ["Forms gallery", "معرض النماذج"], "/design-system/form-structure": ["Form structure gallery", "معرض بنية النماذج"], "/design-system/badge": ["Badge gallery", "معرض الشارة"], "/assets": ["Assets", "الأصول"], "/design-system/table-select": ["Table and select gallery", "معرض الجداول والقوائم"],
   "/dev/components": ["Component library", "مكتبة المكونات"], "/dev/motion": ["Motion library", "مكتبة الحركة"], "/dev/controls": ["Form controls", "عناصر النماذج"],
-  "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"],
+  "/admin": ["Administration", "الإدارة"], "/admin/users": ["Users", "المستخدمون"], "/admin/billing": ["Billing", "الفوترة"],
   "/admin/cms": ["Website content", "محتوى الموقع"],
   "/admin/cms/media": ["Media", "الوسائط"], "/admin/cms/taxonomy": ["Authors and labels", "الكُتّاب والتصنيفات"],
   "/admin/cms/redirects": ["Redirects", "إعادة التوجيه"], "/admin/cms/help/categories": ["Help categories", "تصنيفات المساعدة"], "/admin/cms/help/feedback": ["Article feedback", "آراء القرّاء"], "/admin/cms/help/analytics": ["Help Center analytics", "تحليلات مركز المساعدة"], "/admin/cms/help": ["Help articles", "مقالات المساعدة"], "/admin/cms/traffic": ["Website traffic", "زيارات الموقع"], "/admin/cms/people": ["CMS people", "فريق المحتوى"],
@@ -35,6 +35,7 @@ export function routePageName(pathname: string): Name {
   const path = pathname.replace(/\/$/, "") || "/";
   if (pages[path]) return pages[path];
   if (/^\/admin\/users\/[^/]+$/.test(path)) return ["User details", "تفاصيل المستخدم"];
+  if (/^\/admin\/billing\/[^/]+$/.test(path)) return ["Checkout details", "تفاصيل عملية الدفع"];
   if (/^\/admin\/cms\/articles\/[^/]+$/.test(path)) return ["Edit article", "تحرير المقال"];
   if (/^\/admin\/cms\/help\/articles\/[^/]+$/.test(path)) return ["Edit help article", "تحرير مقالة المساعدة"];
   if (/^\/help\/preview\/[^/]+$/.test(path)) return ["Help article preview", "معاينة مقالة المساعدة"];

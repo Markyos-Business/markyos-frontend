@@ -5,6 +5,8 @@
 export { AdminDashboardView } from "./components/dashboard/admin-dashboard-view";
 export { AdminUsersView } from "./components/users/admin-users-view";
 export { AdminUserView } from "./components/user-detail/admin-user-view";
+export { AdminBillingView } from "./components/billing/admin-billing-view";
+export { CheckoutDetailView } from "./components/billing/checkout-detail-view";
 
 // The admin area's layout: sidebar, top bar, and the members-out guard.
 export { AdminShell } from "./components/shared/admin-shell";

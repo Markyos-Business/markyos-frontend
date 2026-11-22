@@ -135,6 +135,43 @@ const actions = (over: Partial<BrandBillingAnswer["actions"]> = {}): BrandBillin
 const answer = (over: Partial<BrandBillingAnswer>): BrandBillingAnswer => ({ billing: paid, subscription: sub(), actions: actions(), history: [], ...over });
 
 describe("billingView", () => {
+  it("comp: until the server's date, no actions, no banner, no charge", () => {
+    const until = NOW + 90 * DAY;
+    const view = billingView(
+      answer({
+        billing: { plan: "subscription", provider: "comp", paidUntil: until },
+        subscription: sub({ provider: "comp", amount: null, nextChargeAt: null, payerEmail: null }),
+        // Even if the server offered something, a comp shows no buttons.
+        actions: actions({ cancel: true, subscribe: true }),
+      }),
+      NOW,
+    );
+    expect(view).toMatchObject({ comp: true, compUntil: until, status: "active", banner: null, buttons: [], bannerAction: null, nextChargeAt: null, showFreeBody: false, pendingChange: null });
+  });
+
+  it("comp from billing alone (no subscription row)", () => {
+    const view = billingView(answer({ billing: { plan: "subscription", provider: "comp", paidUntil: NOW + DAY }, subscription: null, actions: actions() }), NOW);
+    expect(view).toMatchObject({ comp: true, compUntil: NOW + DAY, buttons: [] });
+  });
+
+  it("a pending plan change is passed through, with or without approval", () => {
+    const change = { accountType: "studio" as const, amount: 4900, effectiveAt: NOW + 20 * DAY, approvalUrl: "https://www.sandbox.paypal.com/webapps/billing/subscriptions/update?ba_token=BA-1" };
+    const view = billingView(answer({ subscription: sub({ pendingPlanChange: change }), actions: actions({ cancel: true }) }), NOW);
+    expect(view.pendingChange).toEqual(change);
+    expect(view.buttons).toEqual(["cancel"]);
+    const lower = billingView(answer({ subscription: sub({ pendingPlanChange: { ...change, amount: 1900, approvalUrl: null } }) }), NOW);
+    expect(lower.pendingChange?.approvalUrl).toBeNull();
+  });
+
+  it("a cancelled plan shows no pending change: it never renews", () => {
+    const change = { accountType: "studio" as const, amount: 4900, effectiveAt: NOW + 20 * DAY, approvalUrl: null };
+    const view = billingView(
+      answer({ subscription: sub({ status: "cancelled", cancelledAt: NOW, accessUntil: NOW + 20 * DAY, pendingPlanChange: change }) }),
+      NOW,
+    );
+    expect(view.pendingChange).toBeNull();
+  });
+
   it("paid: next charge, cancel and update payment in the card", () => {
     const view = billingView(answer({ actions: actions({ cancel: true, updatePaymentUrl: "https://paypal" }) }), NOW);
     expect(view).toMatchObject({ status: "active", banner: null, nextChargeAt: NOW + 20 * DAY, showFreeBody: false, buttons: ["updatePayment", "cancel"] });

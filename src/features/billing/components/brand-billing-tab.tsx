@@ -25,7 +25,7 @@ import type { Billing, Workspace } from "@/types";
 import { billingCopy } from "../copy";
 import { useBrandBilling } from "../hooks/use-brand-billing";
 import { useReactivate } from "../hooks/use-plan-actions";
-import type { BillingHistoryItem, BrandBillingAnswer } from "../types";
+import type { BillingHistoryItem, BrandBillingAnswer, PendingPlanChange } from "../types";
 import { accessEndsAt, billingView, historyState, resumeDate, STATUS_TONE, type BillingButton } from "../utils/billing-state";
 import { CancelPlanDialog } from "./cancel-plan-dialog";
 import { useUpgrade } from "./upgrade-provider";
@@ -135,12 +135,19 @@ function BillingBody({
   const view = billingView(answer, now);
   const { status } = view;
   const type = ws.ownerAccountType ? ACCOUNT_TYPES[ws.ownerAccountType] : null;
-  const planName =
-    billing.plan === "free" ? t.noPlan : billing.plan === "pass" ? t.pass : type ? t.planName(isAr ? type.arLabel : type.label) : t.planName("");
+  const planName = view.comp
+    ? t.compName
+    : billing.plan === "free"
+      ? t.noPlan
+      : billing.plan === "pass"
+        ? t.pass
+        : type
+          ? t.planName(isAr ? type.arLabel : type.label)
+          : t.planName("");
 
   const facts: KeyValueItem[] = [{ label: t.plan, value: planName }];
   if (status !== "none") facts.push({ label: t.status, value: <Badge tone={STATUS_TONE[status]}>{t.statuses[status]}</Badge> });
-  if (sub?.amount != null) facts.push({ label: t.amount, value: <span className="tabular-nums">{t.perMonth(money(sub.amount, sub.currency))}</span> });
+  if (sub?.amount != null && !view.comp) facts.push({ label: t.amount, value: <span className="tabular-nums">{t.perMonth(money(sub.amount, sub.currency))}</span> });
   if (view.nextChargeAt) facts.push({ label: t.nextCharge, value: date(view.nextChargeAt) });
   if (view.resumesOn) facts.push({ label: t.resumesOn, value: date(view.resumesOn) });
   if (view.accessUntil) facts.push({ label: t.accessUntil, value: date(view.accessUntil) });
@@ -200,10 +207,17 @@ function BillingBody({
       )}
       {view.banner === "cancelled" && <AlertBanner tone="info" title={t.cancelledTitle} message={t.cancelledBody(ws.name, date(view.accessUntil))} />}
       {view.banner === "queued" && <AlertBanner tone="info" title={t.queuedTitle} message={t.queuedBody(ws.name, date(view.resumesOn))} />}
+      {view.pendingChange && <PendingChange isAr={isAr} change={view.pendingChange} currency={sub?.currency ?? "usd"} />}
 
       <Section title={t.planTitle} icon="credit-card">
         <KeyValueList items={facts} />
         {view.showFreeBody && <p className="text-body text-text-muted">{t.freeBody(ws.name)}</p>}
+        {view.comp && (
+          <p className="flex items-start gap-space-3 text-body text-text" data-billing-comp>
+            <Icon name="check-circle" size={18} className="mt-0.5 shrink-0 text-accent-text" />
+            {view.compUntil ? t.compUntil(date(view.compUntil)!) : t.compName}
+          </p>
+        )}
         {view.legacy && (
           <p className="flex items-start gap-space-3 text-caption text-text-muted">
             <Icon name="info-circle" size={16} className="mt-0.5 shrink-0" />
@@ -215,6 +229,34 @@ function BillingBody({
 
       <History isAr={isAr} history={answer.history} />
     </>
+  );
+}
+
+/**
+ * D2: the owner's account type changed, so the price moves at renewal. When
+ * PayPal asks the owner to approve the new price, the server sends the link. Amount, type and date are all the server's.
+ */
+function PendingChange({ isAr, change, currency }: { isAr: boolean; change: PendingPlanChange; currency: string }) {
+  const t = billingCopy(isAr).tab;
+  const lang = isAr ? "ar" : "en";
+  const type = ACCOUNT_TYPES[change.accountType];
+  const amount = formatMoney(change.amount / 100, currency.toUpperCase(), lang);
+  const when = change.effectiveAt ? formatDayMonth(new Date(change.effectiveAt), lang, true) : null;
+  const note = t.pendingBody(when, amount, type ? (isAr ? type.arLabel : type.label) : change.accountType);
+  return (
+    <AlertBanner
+      tone="info"
+      title={t.pendingTitle}
+      message={change.approvalUrl ? `${note} ${t.approveBody}` : note}
+      actionPlacement="below"
+      action={
+        change.approvalUrl ? (
+          <LinkButton variant="primary" size="sm" href={change.approvalUrl} external>
+            {t.approve}
+          </LinkButton>
+        ) : undefined
+      }
+    />
   );
 }
 

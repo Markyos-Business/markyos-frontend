@@ -1,16 +1,21 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { AlertBanner, Button, Icon, useDialog, useToast } from "@/components/ui";
+import { AlertBanner, Button, Icon, Skeleton, useDialog, useToast } from "@/components/ui";
 import { api } from "@/lib/api/client";
 import type { Workspace } from "@/types";
-/** Public sandbox/live client id; the plan and price never come from here. */
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "";
 import { startResume } from "../api/billing.api";
 import { billingCopy, type BillingCopy } from "../copy";
 import { billingErrorText } from "../hooks/use-plan-actions";
 import { useCheckoutFlow } from "../hooks/use-checkout-flow";
+import { usePlans } from "../hooks/use-plans";
+import { paypalClient } from "../utils/paypal-client";
+
+/** The build's public client id: a fallback for a server that sends none (never the plan or price). */
+const ENV_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+/** A misconfiguration is reported once per page load, not on every render. */
+let mismatchReported = false;
 
 /**
  * PayPal's button and what happens after it, in place (billing epic 2.5):
@@ -49,8 +54,17 @@ export function CheckoutFlow({
   };
   const flow = useCheckoutFlow(ws, onActive);
   const reported = useRef(false);
+  const client = paypalClient(usePlans(), ENV_CLIENT_ID);
+  const mismatch = client.state === "unavailable" && client.mismatch;
 
-  if (!PAYPAL_CLIENT_ID) return <p className="text-body text-text-muted">{copy.unavailable}</p>;
+  useEffect(() => {
+    if (!mismatch || mismatchReported) return;
+    mismatchReported = true;
+    console.error("PayPal client id mismatch: the server's /billing/plans/ paypal.clientId differs from NEXT_PUBLIC_PAYPAL_CLIENT_ID. Checkout is off until they match.");
+  }, [mismatch]);
+
+  if (client.state === "waiting") return <Skeleton className="h-ctl-md w-full rounded-control" />;
+  if (client.state === "unavailable") return <p className="text-body text-text-muted">{copy.unavailable}</p>;
   if (flow.state === "confirming") {
     return (
       <p role="status" className="flex items-center gap-space-3 text-body text-text">
@@ -78,7 +92,7 @@ export function CheckoutFlow({
     <div className="flex flex-col gap-space-3">
       {flow.state === "failed" && <AlertBanner tone="danger" message={copy.state.failed} />}
       <PayPalScriptProvider
-        options={{ clientId: PAYPAL_CLIENT_ID, vault: true, intent: "subscription", components: "buttons", locale: isAr ? "ar_SA" : "en_US" }}
+        options={{ clientId: client.clientId, vault: true, intent: "subscription", components: "buttons", locale: isAr ? "ar_SA" : "en_US" }}
       >
         <PayPalButtons
           fundingSource="paypal"

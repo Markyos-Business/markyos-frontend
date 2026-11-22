@@ -39,7 +39,7 @@ const DialogHost = ({ request, closing = false, onSettle }: DialogHostProps) => 
     onSettle(true);
   }
 
-  const danger = request.kind === "confirm" && request.options.tone === "danger";
+  const danger = request.options.tone === "danger";
   const cancelLabel = options.cancelLabel ?? (isAr ? "إلغاء" : "Cancel");
   const confirmLabel =
     options.confirmLabel ?? (isAr ? "تأكيد" : request.kind === "prompt" ? "Save" : "Confirm");

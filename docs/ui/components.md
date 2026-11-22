@@ -87,7 +87,10 @@ const name = await prompt({ title: "Rename", initialValue: brand.name });
 
 `confirm` options: `title`, `body`, `consequences` (listed losses),
 `confirmLabel`, `cancelLabel`, `tone: "neutral" | "danger"`, `confirmPhrase`
-(the action stays disabled until it's typed), `isAr`. Focus is trapped and
+(the action stays disabled until it's typed), `isAr`. `prompt` takes
+`label`, `placeholder`, `initialValue`, `hint` and the same `tone`: a
+required answer that starts something destructive (the reason for ending a
+plan) asks with `tone: "danger"`, so its action is red. Focus is trapped and
 returned to the opener; Escape and the scrim cancel.
 
 ## Layout of a page

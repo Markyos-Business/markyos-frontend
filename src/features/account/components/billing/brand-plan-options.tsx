@@ -5,7 +5,7 @@ import type { BadgeTone } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
 import { formatMoney } from "@/lib/i18n/format";
-import { usePlans, useUpgrade } from "@/features/billing";
+import { billingCopy, usePlans, useUpgrade } from "@/features/billing";
 import { PlanCard } from "./plan-card";
 
 type BrandPlanOptionsProps = { ws: Workspace; typeLabel: string; isAr: boolean };
@@ -37,7 +37,8 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
   const plans = usePlans();
   const monthly = plans && ws.ownerAccountType ? plans.types[ws.ownerAccountType].monthly : null;
   const price = plans && monthly !== null ? formatMoney(monthly / 100, plans.currency.toUpperCase(), isAr ? "ar" : "en") : "—";
-  const { plan, purchasedAt, provider, subscriptionStatus, currentPeriodEnd, paymentFailedAt } = ws.billing;
+  const { plan, purchasedAt, provider, subscriptionStatus, currentPeriodEnd, paymentFailedAt, paidUntil } = ws.billing;
+  const comp = provider === "comp";
   const onPayPal = provider === "paypal" && Boolean(subscriptionStatus);
   const running = onPayPal && RUNNING.includes(subscriptionStatus ?? "");
   const status = STATUS[subscriptionStatus ?? ""];
@@ -57,6 +58,12 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
           <Badge tone={plan === "free" ? "neutral" : "accent"}>{plan === "pass" ? t("Project Pass", "تصريح المشروع") : plan === "subscription" ? planName : t("Free", "مجانية")}</Badge>
         }
       />
+
+      {comp && (
+        <p className="text-caption text-text-muted">
+          {paidUntil ? billingCopy(isAr).tab.compUntil(date(paidUntil)) : billingCopy(isAr).tab.compName}
+        </p>
+      )}
 
       {onPayPal && (
         <Row
@@ -92,7 +99,7 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
       </div>
 
       {/* Stripe plans are retired: honoured to the end of 2026, stopped by us on request. */}
-      {!onPayPal && subscriptionStatus && (
+      {!onPayPal && !comp && subscriptionStatus && (
         <p className="text-caption text-text-muted">
           {t(
             "This plan was bought before payments moved to PayPal. It stays active until 31 Dec 2026; contact us to cancel it sooner.",
@@ -101,15 +108,13 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
         </p>
       )}
 
-      {plan !== "subscription" && !running && (
+      {plan !== "subscription" && !running && !comp && (
         <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <PlanCard
             name={planName}
             price={price}
             period={t("/month", "/شهريًا")}
             description={t("A monthly plan for this brand's guideline. Cancel any time.", "خطة شهرية لدليل هذه العلامة، ويمكن إلغاؤها في أي وقت.")}
-            isAr={isAr}
-            active={false}
             action={
               <Button variant="primary" onClick={() => upgrade.open({ ws, reason: "billing" })}>
                 {t("Subscribe", "اشترك")}

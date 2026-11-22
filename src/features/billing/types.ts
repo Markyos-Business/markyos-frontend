@@ -10,6 +10,8 @@ export type Plans = {
   /** False where the staging switch lifts the Free rules. */
   freeRulesApply: boolean;
   types: Record<AccountType, { monthly: number; limits: { brands: number | null; editors: number | null } }>;
+  /** Which PayPal app the server bills through; the button must load the same one (billing epic 4.2). */
+  paypal?: { clientId: string | null; env: "sandbox" | "live" };
 };
 
 /** Why the upgrade modal opened: each paywall moment says what it unlocks. */
@@ -23,7 +25,8 @@ export const CANCEL_NOTE_MAX = 500;
 
 /** The brand's latest subscription as the server describes it; amounts in cents, times in ms. */
 export type BrandSubscription = {
-  provider: "paypal" | "stripe";
+  /** "comp": a plan an admin gave, with nothing to manage. */
+  provider: "paypal" | "stripe" | "comp";
   status: string;
   amount: number | null;
   currency: string;
@@ -39,6 +42,17 @@ export type BrandSubscription = {
   resumeStartsAt: number | null;
   /** Reactivated or suspended after the grace, and PayPal hasn't collected yet: the brand stays on Free until it does. */
   awaitingPayment?: boolean;
+  /** D2: the owner's account type changed; the price moves to it at renewal. */
+  pendingPlanChange?: PendingPlanChange | null;
+};
+
+export type PendingPlanChange = {
+  accountType: AccountType;
+  /** Cents a month, in the subscription's currency. */
+  amount: number;
+  effectiveAt: number | null;
+  /** Set when PayPal asks the owner to approve the new price. */
+  approvalUrl: string | null;
 };
 
 /** What the owner may do now; the app shows only these. */

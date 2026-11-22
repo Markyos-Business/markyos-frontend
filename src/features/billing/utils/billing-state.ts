@@ -1,6 +1,6 @@
 import type { BadgeTone } from "@/components/ui";
 import type { Billing } from "@/types";
-import type { BrandBillingAnswer, BrandSubscription } from "../types";
+import type { BrandBillingAnswer, BrandSubscription, PendingPlanChange } from "../types";
 
 /*
  * How the server's billing reads on screen. Pure mapping only: nothing here
@@ -71,6 +71,16 @@ export function isLegacy(billing: Billing, subscription: BrandSubscription | nul
   return subscription?.provider === "stripe" || billing.plan === "pass";
 }
 
+/** A plan an admin gave: shown with its end date, never managed by the owner. */
+export function isComp(billing: Billing, subscription: BrandSubscription | null): boolean {
+  return subscription?.provider === "comp" || billing.provider === "comp";
+}
+
+/** When a comp ends: the server's date only. */
+export function compUntil(billing: Billing, subscription: BrandSubscription | null): number | null {
+  return billing.paidUntil ?? subscription?.accessUntil ?? billing.currentPeriodEnd ?? null;
+}
+
 /** When a resumed plan first charges: the server's date, else when the paid month ends. */
 export function resumeDate(subscription: BrandSubscription | null): number | null {
   return subscription?.resumeStartsAt ?? subscription?.accessUntil ?? null;
@@ -103,6 +113,11 @@ export type BillingView = {
   status: StatusKey;
   banner: BillingBanner | null;
   legacy: boolean;
+  /** A complimentary plan: "Complimentary plan until <date>" and no actions. */
+  comp: boolean;
+  compUntil: number | null;
+  /** D2: the price moves to the new account type at renewal (and may need approving at PayPal). */
+  pendingChange: PendingPlanChange | null;
   /** "No plan. Subscribe to put it live": only for a brand with nothing running. */
   showFreeBody: boolean;
   nextChargeAt: number | null;
@@ -119,6 +134,7 @@ export function billingView(answer: BrandBillingAnswer, now: number): BillingVie
   const { billing, subscription: sub, actions } = answer;
   const status = statusOf(billing, sub, now);
   const legacy = isLegacy(billing, sub);
+  const comp = isComp(billing, sub);
   const awaiting = Boolean(sub?.awaitingPayment);
   const grace = inGrace(billing, sub, now);
   const suspended = !awaiting && billing.plan === "free" && (billing.subscriptionStatus === "suspended" || sub?.status === "suspended");
@@ -129,7 +145,7 @@ export function billingView(answer: BrandBillingAnswer, now: number): BillingVie
   const bannerAction =
     banner === "grace" && actions.updatePaymentUrl ? "updatePayment" : banner === "suspended" && actions.reactivate ? "reactivate" : null;
   const buttons: BillingButton[] = [];
-  if (!legacy) {
+  if (!legacy && !comp) {
     if (actions.subscribe) buttons.push("subscribe");
     if (actions.resume) buttons.push("resume");
     if (actions.reactivate && bannerAction !== "reactivate") buttons.push("reactivate");
@@ -139,14 +155,18 @@ export function billingView(answer: BrandBillingAnswer, now: number): BillingVie
 
   return {
     status,
-    banner,
+    banner: comp ? null : banner,
     legacy,
-    showFreeBody: billing.plan === "free" && (status === "none" || status === "ended"),
-    nextChargeAt: !cancelled && !awaiting && !queued ? (sub?.nextChargeAt ?? null) : null,
+    comp,
+    compUntil: comp ? compUntil(billing, sub) : null,
+    // A cancelled plan never renews, so a change that waits for the renewal doesn't apply.
+    pendingChange: !comp && !legacy && !cancelled ? (sub?.pendingPlanChange ?? null) : null,
+    showFreeBody: !comp && billing.plan === "free" && (status === "none" || status === "ended"),
+    nextChargeAt: !comp && !cancelled && !awaiting && !queued ? (sub?.nextChargeAt ?? null) : null,
     accessUntil: cancelled ? (sub?.accessUntil ?? accessEndsAt(billing, sub)) : null,
     resumesOn: queued ? (sub?.resumeStartsAt ?? null) : null,
     buttons,
-    bannerAction: legacy ? null : bannerAction,
+    bannerAction: legacy || comp ? null : bannerAction,
   };
 }
 
