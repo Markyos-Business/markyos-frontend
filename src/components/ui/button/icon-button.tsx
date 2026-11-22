@@ -9,6 +9,7 @@ export interface IconButtonProps extends Omit<ButtonProps, "children" | "icon" |
   label: string;
   variant?: IconButtonVariant;
   iconSize?: 16 | 18 | 22;
+  /** "round" is the floating action button's alone; every other button takes the control corner (button-audit refuses it elsewhere). */
   shape?: "square" | "round";
   /** With `href`: opens in a new tab (target _blank, rel noopener noreferrer), like LinkButton's `external`. */
   external?: boolean;

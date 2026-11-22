@@ -8,7 +8,10 @@
 //      (an unstyled <button> wrapping a kit control is fine);
 //   2. an <a> or <Link> drawn as a button: the button classes (`mk-btn`,
 //      `mk-tap`, `mk-icon-btn`), or a control height with a fill or corner.
-//      A link that looks like a button is `<Button href>` / `LinkButton`.
+//      A link that looks like a button is `<Button href>` / `LinkButton`;
+//   3. a round button (`shape="round"`): every button takes the control
+//      corner (MARKYOS_UI §2.6); only the kit's floating action button is
+//      round.
 //
 // A deliberate exception, something that is a button to assistive tech but
 // not a button to look at (a card, a tile, a tree row, a drop zone, a canvas
@@ -52,6 +55,11 @@ for (const file of files(ROOT)) {
   const text = readFileSync(file, "utf8");
   const lines = text.split("\n");
   const lineOf = (index) => text.slice(0, index).split("\n").length;
+  for (const match of text.matchAll(/<(IconButton|Button)\b/g)) {
+    const tag = openingTag(text, match.index);
+    const line = lineOf(match.index);
+    if (/shape="round"/.test(tag) && !/button-audit-ignore:/.test(tag)) problems.push(`${relative(".", file)}:${line}  round <${match[1]}> — buttons take the control corner`);
+  }
   for (const match of text.matchAll(/<(button|a|Link)\b/g)) {
     const tag = openingTag(text, match.index);
     const line = lineOf(match.index);

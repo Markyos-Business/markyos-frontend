@@ -41,12 +41,9 @@ const RichTextField = ({ label, info, value, onChange, onBlur, placeholder, maxL
       className={className}
     >
       {(control) => (
-        // The editor draws its own frame; an error rings it.
-        <div
-          aria-busy={control["aria-busy"]}
-          data-state={control["aria-invalid"] ? "error" : undefined}
-          className="rounded-lg data-[state=error]:outline-1 data-[state=error]:outline-danger"
-        >
+        // The editor is a field; an error turns its underline danger
+        // (aria-invalid on the text, `.mk-field:has([aria-invalid])`).
+        <div aria-busy={control["aria-busy"]}>
           <RichTextEditor
             value={value}
             onChange={onChange}

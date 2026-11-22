@@ -1315,8 +1315,11 @@ export const baseStyles = [
   {
     // Fields tint their background colour so hover interpolates in both
     // directions. A gradient switched on hover cannot animate smoothly.
+    // Not while focused or open: this selector outranks the focus rule, so a
+    // focused field under the pointer showed the hover underline instead of
+    // the accent one (review, 22 Nov 2026).
     "@media (hover: hover) and (pointer: fine)": {
-      ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly])": {
+      ".mk-field:hover:not(:disabled):not(:has(:disabled)):not([data-readonly]):not(:focus):not(:focus-within):not([aria-expanded=\"true\"])": {
         "background-color": "var(--control-bg-hover)",
         "border-bottom-color": "var(--control-border-hover)",
       },
