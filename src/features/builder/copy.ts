@@ -19,8 +19,7 @@ const en = {
       notLiveHint: "Published, but the link doesn't show it: this brand needs a paid plan to go live.",
     },
     upgrade: "Upgrade to publish",
-    upgradeHint: "The guideline site goes live on a paid plan. Choose one in Settings.",
-    planRequired: "Not published: going live needs a paid plan. Choose one in Settings.",
+    upgradeHint: "The guideline site goes live on a paid plan for this brand.",
   },
 };
 
@@ -42,8 +41,7 @@ const ar: BuilderCopy = {
       notLiveHint: "منشور، لكن الرابط لا يعرضه: تحتاج العلامة إلى خطة مدفوعة ليصبح الموقع متاحًا.",
     },
     upgrade: "رقِّ الخطة للنشر",
-    upgradeHint: "يصبح موقع الدليل متاحًا مع خطة مدفوعة. اخترها من الإعدادات.",
-    planRequired: "لم يُنشر: يحتاج النشر إلى خطة مدفوعة. اخترها من الإعدادات.",
+    upgradeHint: "يصبح موقع الدليل متاحًا مع خطة مدفوعة لهذه العلامة.",
   },
 };
 

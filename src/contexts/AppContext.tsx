@@ -315,7 +315,6 @@ interface AppContextValue {
   setDomainStatus: (workspaceId: string, status: DomainStatus) => void;
   /** Claims a subdomain. Returns an error message, or null when it was taken. */
   setSubdomain: (workspaceId: string, subdomain: string) => string | null;
-  confirmPurchase: (workspaceId: string, sessionId: string) => Promise<{ status: string; billing: Billing }>;
   /** Applies billing the server verified (PayPal confirm or cancel), keeping unsaved brand edits. */
   applyServerBilling: (workspaceId: string, billing: Billing) => void;
   // v3.0 developer / Figma
@@ -1030,7 +1029,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (API_ENABLED) {
         try {
           // No password here: the emailed link sets it, and signs them in.
-          const res = await authApi.signup(name.trim(), clean, accountType);
+          const res = await authApi.signup(name.trim(), clean, accountType, langOf(stateRef.current));
           return { setup: { email: res.email, emailSent: res.emailSent } };
         } catch (err) {
           const lang = langOf(stateRef.current);
@@ -1796,19 +1795,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (status === "verified") logAudit("Verified custom domain", workspaceId);
     },
     [mutateWorkspace, touchWorkspace, logAudit]
-  );
-
-  const confirmPurchase = useCallback(
-    async (workspaceId: string, sessionId: string) => {
-      if (!API_ENABLED) throw new Error("Payments aren't available in the demo.");
-      const result = await api<{ status: string; billing: Billing }>("/billing/confirm/", {
-        method: "POST", body: { brandId: workspaceId, sessionId },
-      });
-      // Apply only the server's entitlement, keeping any unsaved brand edits.
-      setState((prev) => withServerBilling(prev, workspaceId, result.billing));
-      return result;
-    },
-    []
   );
 
   const applyServerBilling = useCallback((workspaceId: string, billing: Billing) => {
@@ -3803,7 +3789,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCustomDomain,
       setDomainStatus,
       setSubdomain,
-      confirmPurchase,
       applyServerBilling,
       setApiKey,
       setWebhookUrl,
@@ -3959,7 +3944,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCustomDomain,
       setDomainStatus,
       setSubdomain,
-      confirmPurchase,
       applyServerBilling,
       setApiKey,
       setWebhookUrl,

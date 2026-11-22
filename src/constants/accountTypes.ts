@@ -1,19 +1,5 @@
 import type { Account, AccountType } from "@/types";
 
-type Limits = {
-  /** Brands the account may own; `null` is no limit. */
-  brands: number | null;
-  /** Editors on one brand; `null` is no limit. Viewers and clients never count. */
-  editors: number | null;
-};
-
-type Prices = {
-  /** One-time client access pass, per brand, in USD. */
-  pass: number;
-  /** Monthly subscription, per brand, in USD. */
-  subscription: number;
-};
-
 type AccountTypeInfo = {
   label: string;
   arLabel: string;
@@ -21,8 +7,6 @@ type AccountTypeInfo = {
   description: string;
   arDescription: string;
   icon: string;
-  limits: Limits;
-  prices: Prices;
   /** The brands home: its title and what a brand is to this account. */
   home: { title: string; noun: string; nounPlural: string };
   /** The same in Arabic. */
@@ -33,13 +17,11 @@ type AccountTypeInfo = {
 };
 
 /**
- * Studios, freelancers and companies: what each account type is called,
- * what it may have and what it pays.
+ * Studios, freelancers and companies: what each account type is called.
  *
- * The limits mirror the backend's `apps/accounts/limits.py`, which is what
- * actually enforces them; this copy is here to explain a limit before it is
- * hit. Prices are per brand, and the checkout route reads the type from the
- * server rather than from the browser.
+ * Prices and limits are not kept here: they come from the server's
+ * /billing/plans/ (features/billing, usePlans and useLimits), which is what
+ * the backend enforces and charges (billing epic 2.1).
  */
 const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
   studio: {
@@ -48,8 +30,6 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     description: "Run brands for your clients, with a team.",
     arDescription: "أدِر علامات عملائك مع فريقك.",
     icon: "users",
-    limits: { brands: null, editors: null },
-    prices: { pass: 19, subscription: 29 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One per client brand. You can rename it later." },
@@ -61,8 +41,6 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     description: "Work solo on up to 3 client brands.",
     arDescription: "اعمل منفردًا على 3 علامات لعملائك كحد أقصى.",
     icon: "user",
-    limits: { brands: 3, editors: 0 },
-    prices: { pass: 15, subscription: 19 },
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
     newBrand: { title: "Add a client brand", description: "One per client brand, up to 3. You can rename it later." },
@@ -74,8 +52,6 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
     description: "Govern your own brand across departments.",
     arDescription: "أدِر علامتك الخاصة عبر أقسام شركتك.",
     icon: "sitemap",
-    limits: { brands: 1, editors: null },
-    prices: { pass: 49, subscription: 99 },
     home: { title: "Your brand", noun: "brand", nounPlural: "brands" },
     arHome: { title: "علامتك", noun: "علامة", nounPlural: "علامات" },
     newBrand: {
@@ -91,17 +67,11 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
 
 const ACCOUNT_TYPE_KEYS = Object.keys(ACCOUNT_TYPES) as AccountType[];
 
-const NO_LIMITS: Limits = { brands: null, editors: null };
-
 /**
  * The account's type. A browser-only account from before types existed is a
  * studio, as the backend's migration made every existing account.
  */
 const accountTypeOf = (account: Account | null): AccountType => account?.accountType ?? "studio";
 
-/** What the account may have. Platform admins have no limits. */
-const limitsOf = (account: Account | null): Limits =>
-  account?.isAdmin ? NO_LIMITS : ACCOUNT_TYPES[accountTypeOf(account)].limits;
-
-export { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS, accountTypeOf, limitsOf };
-export type { AccountTypeInfo, Limits, Prices };
+export { ACCOUNT_TYPES, ACCOUNT_TYPE_KEYS, accountTypeOf };
+export type { AccountTypeInfo };

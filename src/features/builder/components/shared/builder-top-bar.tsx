@@ -95,7 +95,7 @@ export function BuilderTopBar(b: BuilderPageState) {
           />
         )}
         {!allowed ? (
-          <Button variant="primary" size="sm" href={`/w/${ws.slug}/settings`} title={words.upgradeHint}>
+          <Button variant="primary" size="sm" onClick={onPublish} title={words.upgradeHint}>
             {words.upgrade}
           </Button>
         ) : (

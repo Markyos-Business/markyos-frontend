@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
-import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
+import { useLimits, useUpgrade } from "@/features/billing";
 import { isReviewerOnly, roleOn } from "@/lib/data/access";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../../constants";
@@ -18,6 +19,8 @@ export function useBrandsPage() {
   const { lang } = useInterfaceLang();
   const account = useCurrentAccount();
   const c = brandsCopyFor(accountTypeOf(account), lang);
+  const limits = useLimits(account);
+  const upgrade = useUpgrade();
 
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");
@@ -35,9 +38,14 @@ export function useBrandsPage() {
   // The account type names what a brand is here ("client brands" for a
   // studio, "your brand" for a company) and how many this account may own.
   const type = ACCOUNT_TYPES[accountTypeOf(account)];
-  const brandLimit = limitsOf(account).brands;
-  const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
+  const brandLimit = limits.type.brands;
+  const mine = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId);
+  const owned = mine.length;
   const atLimit = brandLimit !== null && owned >= brandLimit;
+  // The Free rule (billing epic): one brand without a plan per account.
+  // Subscribing one makes room, so the upgrade modal opens on it.
+  const unpaid = mine.filter((w) => w.billing?.plan === "free");
+  const needsPlan = limits.freeBrands !== null && unpaid.length >= limits.freeBrands ? unpaid[0] : undefined;
   const home = lang === "ar" ? type.arHome : type.home;
   const limitNote = c.limitNote(lang === "ar" ? type.arLabel : type.label, brandLimit, brandLimit === 1 ? home.noun : home.nounPlural);
 
@@ -57,7 +65,11 @@ export function useBrandsPage() {
       c,
       lang,
       onSort: setSort,
-      onNew: () => router.push(atLimit ? "/account?tab=billing" : "/brands/new"),
+      onNew: () => {
+        if (atLimit) return router.push("/brands/new");
+        if (needsPlan) return upgrade.open({ ws: needsPlan, reason: "brand_limit", onDone: () => router.push("/brands/new") });
+        router.push("/brands/new");
+      },
       brands: workspaces.map((ws) => ({ workspace: ws, role: roleOn(ws, state.session) })),
       atLimit,
       limitNote,

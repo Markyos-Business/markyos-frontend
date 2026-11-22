@@ -96,6 +96,16 @@ export async function newBrand(studio: Studio, name = "Wadi Rum Coffee", { publi
   return brand;
 }
 
+/**
+ * Subscribes a brand as a PayPal webhook would: an active monthly plan, paid
+ * now. A brand without a plan has no editors and can't go live (billing epic).
+ */
+export function payBrand(brandId: string) {
+  djangoShell(
+    `from datetime import timedelta; from django.utils import timezone; from apps.brands.models import Checkout, Workspace; w=Workspace.objects.get(pk=${JSON.stringify(brandId)}); now=timezone.now(); Checkout.objects.create(workspace=w, buyer=w.owner, provider="paypal", plan="subscription", account_type=w.owner.account_type or "studio", plan_key="paypal_plan", amount=2900, status="active", paid_at=now, current_period_end=now+timedelta(days=30), session_id=${JSON.stringify(`pp_${brandId}`)}, subscription_id=${JSON.stringify(`I-${brandId}`)})`,
+  );
+}
+
 /** A Rebrand form, sent; only its first text question is required. */
 export async function sentForm(studio: Studio, brand: Brand, name = "Wadi Rum Coffee rebrand") {
   const form = await call("/discovery/forms/", {
