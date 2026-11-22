@@ -1,122 +1,76 @@
 "use client";
 
-import { sanitizeRichHtml } from "@/lib/safeHtml";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useAppActions } from "@/contexts/AppContext";
+import { useEffect, useRef, useState } from "react";
+import { useApp, useAppActions } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
-import { useDialog } from "@/components/ui";
-import { formatRelative } from "@/lib/utils";
-import { PAGE_SECTION, type ToolbarAction } from "../constants";
+import { useSyncStatus } from "@/contexts/useSyncStatus";
+import { useRequest } from "@/hooks/useRequest";
+import { useDialog, useToast } from "@/components/ui";
+import type { PathStepKey } from "@/types";
+import { getOverview } from "../api/overview.api";
+import { overviewCopy } from "../copy";
+import { siteUrl, versionOf } from "../logic";
 
-const countWords = (el: HTMLElement) => (el.textContent || "").trim().split(/\s+/).filter(Boolean).length;
-
-/** The overview page: the rich-text editor, its toolbar, and the preview-language switch. */
+/**
+ * The Overview page (redesign, 22 Nov 2026): one read of the server's
+ * overview for this brand, already filtered by the reader's role, and the
+ * few things it can change (skip a step, hand off). It reads again whenever
+ * this browser's edits reach the server, so a skip or a hand-off shows as
+ * soon as it is stored, not before.
+ */
 export function useOverviewPage(slug: string) {
-  const { setOverview } = useAppActions();
   const page = useBrandPage(slug);
-  const { prompt } = useDialog();
+  const { state } = useApp();
+  const { setPathSkip, setHandoff } = useAppActions();
+  const { confirm } = useDialog();
+  const { showToast } = useToast();
+  const { status } = useSyncStatus();
   const ws = page?.workspace;
-  const editorRef = useRef<HTMLDivElement>(null);
-  const lastInput = useRef<{ id: string; html: string } | null>(null);
-  const [, forceTick] = useState(0);
-  const [wordCount, setWordCount] = useState(0);
+  const request = useRequest(() => (ws ? getOverview(ws.id) : Promise.reject(new Error("no brand"))), ws?.id ?? "");
+  const { reload } = request;
 
+  // A save landed: what the server worked out may have changed.
+  const previous = useRef(status);
   useEffect(() => {
-    const id = window.setInterval(() => forceTick((n) => n + 1), 30000);
-    return () => window.clearInterval(id);
+    if (previous.current !== "saved" && status === "saved") reload();
+    previous.current = status;
+  }, [status, reload]);
+
+  const [origin, setOrigin] = useState("");
+  useEffect(() => {
+    // The browser's origin isn't derivable from React state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read once on mount
+    setOrigin(window.location.origin);
   }, []);
-
-  const workspaceId = ws?.id;
-  const overviewHtml = ws?.overviewHtml;
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor || !workspaceId || overviewHtml === undefined) return;
-    // Our own input already exists in the DOM. Avoid replacing it and moving
-    // the caret; hydration, undo and server copies still update the editor.
-    if (lastInput.current?.id === workspaceId && lastInput.current.html === overviewHtml) return;
-    editor.innerHTML = sanitizeRichHtml(overviewHtml);
-    lastInput.current = null;
-    setWordCount(countWords(editor));
-  }, [workspaceId, overviewHtml]);
-
-  const savedLabel = useMemo(
-    () => (ws ? (page?.isAr ? `حُفظ ${formatRelative(ws.overviewSavedAt)}` : `Saved ${formatRelative(ws.overviewSavedAt)}`) : ""),
-    [ws, page?.isAr]
-  );
 
   if (!page || !ws) return null;
   const { isAr } = page;
+  const data = request.data;
+  const company = versionOf(data?.workspaceType ?? ws.ownerAccountType) === "home";
+  const copy = overviewCopy(isAr, company);
 
-  function handleInput() {
-    if (!editorRef.current || !ws) return;
-    setWordCount(countWords(editorRef.current));
-    const html = sanitizeRichHtml(editorRef.current.innerHTML);
-    lastInput.current = { id: ws.id, html };
-    setOverview(ws.id, html);
+  async function handOff() {
+    if (!ws) return;
+    const ok = await confirm({ title: copy.handoff.title, body: copy.handoff.body, confirmLabel: copy.handoff.confirm });
+    if (!ok) return;
+    setHandoff(ws.id, state.session?.name || state.session?.email || "");
+    showToast(copy.handoff.done);
   }
 
-  /**
-   * `execCommand` works on the live selection, which the dialog takes focus
-   * away from — so the range is cloned first and put back before the link is
-   * applied. Without that the link would wrap nothing.
-   */
-  function handleLink() {
-    const sel = window.getSelection();
-    const saved = sel && sel.rangeCount > 0 ? sel.getRangeAt(0).cloneRange() : null;
-    void (async () => {
-      const url = await prompt({
-        title: isAr ? "إضافة رابط" : "Add a link",
-        label: isAr ? "عنوان الرابط" : "Link URL",
-        placeholder: "https://",
-        confirmLabel: isAr ? "ربط" : "Link",
-        isAr,
-      });
-      editorRef.current?.focus();
-      if (saved) {
-        const live = window.getSelection();
-        live?.removeAllRanges();
-        live?.addRange(saved);
-      }
-      if (!url) return;
-      document.execCommand("createLink", false, url);
-      handleInput();
-    })();
-  }
-
-  function runTool(action: ToolbarAction) {
-    editorRef.current?.focus();
-    switch (action) {
-      case "heading":
-        document.execCommand("formatBlock", false, "h2");
-        break;
-      case "bold":
-        document.execCommand("bold");
-        break;
-      case "italic":
-        document.execCommand("italic");
-        break;
-      case "list":
-        document.execCommand("insertUnorderedList");
-        break;
-      case "quote":
-        document.execCommand("formatBlock", false, "blockquote");
-        break;
-      case "link":
-        handleLink();
-        return; // handleLink syncs once the dialog settles.
-    }
-    handleInput();
-  }
-
-  // The brand's own language, not the reader's: the toast calls it the
-  // preview, and it decides what a client sees at /v/<slug>.
   return {
-    shell: { workspace: ws, section: PAGE_SECTION.en, arSection: PAGE_SECTION.ar, width: "full" as const },
-    savedLabel,
+    shell: { workspace: ws, section: "Overview", arSection: "نظرة عامة", width: "full" as const },
     view: {
-      ws,
+      slug,
       isAr,
-      editor: { editorRef, isAr, contentAr: ws.primaryLocale === "ar", wordCount, savedLabel, onInput: handleInput, onTool: runTool },
+      company,
+      copy,
+      data,
+      loading: request.loading && !data,
+      failed: !!request.failure && !data,
+      onRetry: reload,
+      site: data ? siteUrl(data.site, origin) : "",
+      onSkip: (step: PathStepKey, skipped: boolean) => setPathSkip(ws.id, step, skipped),
+      onHandOff: () => void handOff(),
     },
   };
 }
