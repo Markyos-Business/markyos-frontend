@@ -98,7 +98,10 @@ for (const lang of ["en", "ar"] as const) {
       [`${b}/settings`, "brand settings"],
       [`${b}/overview`, "overview"],
       // An in-place editor, open: the field you type into, and its neighbours at rest.
-      [`${b}/overview`, "overview, editing", (p) => p.locator("main button.bidi-auto").first().click()],
+      // An in-place editor, open (the Overview shows the brand since 22 Nov; Vision & mission still edits in place).
+      [`${b}/strategy/vision-mission`, "strategy vision, editing", (p) => p.locator("main button.mk-field").first().click()],
+      // The brand details and the guideline overview text, moved to Settings.
+      [`${b}/settings`, "brand settings, details"],
       [`${b}/strategy/purpose`, "strategy purpose"],
       [`${b}/strategy/purpose`, "strategy purpose, editing", (p) => p.locator("main button.bidi-auto").first().click()],
       [`${b}/strategy/vision-mission`, "strategy vision"],
@@ -127,10 +130,11 @@ test("a focused field keeps its accent underline under the pointer", async ({ pa
   await signIn(page, studio);
   for (const scheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: scheme });
-    await page.goto(`/w/${brand.slug}/overview`);
+    await page.goto(`/w/${brand.slug}/strategy/vision-mission`);
     await page.locator("main button.mk-field").first().click(); // opens the editor, focused, pointer still on it
-    const editor = page.locator("main textarea.mk-field").first();
-    await expect(editor).toBeFocused();
+    // The rich-text editor: the text has focus, its field frame shows it (focus-within).
+    await expect(page.locator('main [contenteditable="true"]').first()).toBeFocused();
+    const editor = page.locator("main div.mk-field:has([contenteditable])").first();
     await editor.hover();
     const focusLine = await page.evaluate(() => {
       const probe = document.createElement("div");

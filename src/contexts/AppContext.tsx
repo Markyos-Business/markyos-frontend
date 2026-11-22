@@ -62,6 +62,7 @@ import {
   Workspace,
   WorkspaceStage,
   ZoneKind,
+  PathStepKey,
 } from "@/types";
 import type { SectionOptions } from "@/features/guideline-site/utils/section-options";
 import { between, nBetween } from "@/lib/doc/core/order";
@@ -298,7 +299,13 @@ interface AppContextValue {
   updateLogoSlot: (workspaceId: string, kind: SlotKind, patch: Partial<LogoSlot>) => void;
   setLogoUsageNotes: (workspaceId: string, text: string) => void;
   setLogoColorIds: (workspaceId: string, ids: string[]) => void;
-  setBrandDetails: (workspaceId: string, patch: Partial<{ industry: string; tagline: string; foundedYear: string }>) => void;
+  setBrandDetails: (workspaceId: string, patch: Partial<{ industry: string; tagline: string; taglineAr: string; foundedYear: string }>) => void;
+  /** Overview: skip a project-path step, or take the skip back. */
+  setPathSkip: (workspaceId: string, step: PathStepKey, skipped: boolean) => void;
+  /** Overview: the moodboard chosen as the brand's direction, or none. */
+  setDirection: (workspaceId: string, boardId: string | null) => void;
+  /** Overview: hand the project off (owner only; the server enforces it). */
+  setHandoff: (workspaceId: string, by: string) => void;
   toggleClientPassword: (workspaceId: string, enabled: boolean) => void;
   setClientPassword: (workspaceId: string, password: string) => void;
   setCustomDomain: (workspaceId: string, domain: string) => void;
@@ -1562,10 +1569,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const setBrandDetails = useCallback(
-    (workspaceId: string, patch: Partial<{ industry: string; tagline: string; foundedYear: string }>) => {
+    (workspaceId: string, patch: Partial<{ industry: string; tagline: string; taglineAr: string; foundedYear: string }>) => {
       mutateWorkspace(workspaceId, (ws) => touchWorkspace(ws, patch));
     },
     [mutateWorkspace, touchWorkspace]
+  );
+
+  // Project-path records (Overview): not guideline content, so they don't
+  // touch updatedAt and never read as unpublished changes.
+  const setPathSkip = useCallback(
+    (workspaceId: string, step: PathStepKey, skipped: boolean) => {
+      mutateWorkspace(workspaceId, (ws) => {
+        const skips = new Set(ws.pathSkips ?? []);
+        if (skipped) skips.add(step);
+        else skips.delete(step);
+        return { ...ws, pathSkips: [...skips] };
+      });
+    },
+    [mutateWorkspace]
+  );
+
+  const setDirection = useCallback(
+    (workspaceId: string, boardId: string | null) => {
+      mutateWorkspace(workspaceId, (ws) => ({ ...ws, direction: boardId ? { boardId, at: Date.now() } : null }));
+    },
+    [mutateWorkspace]
+  );
+
+  const setHandoff = useCallback(
+    (workspaceId: string, by: string) => {
+      mutateWorkspace(workspaceId, (ws) => ({ ...ws, handoff: { at: Date.now(), by } }));
+    },
+    [mutateWorkspace]
   );
 
   const addColor = useCallback(
@@ -3739,6 +3774,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       uiLang,
       setOverview,
       setBrandDetails,
+      setPathSkip,
+      setDirection,
+      setHandoff,
       addColor,
       updateColor,
       setColorNameTranslation,
@@ -3891,6 +3929,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       uiLang,
       setOverview,
       setBrandDetails,
+      setPathSkip,
+      setDirection,
+      setHandoff,
       addColor,
       updateColor,
       setColorNameTranslation,

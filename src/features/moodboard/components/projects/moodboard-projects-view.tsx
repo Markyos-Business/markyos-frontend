@@ -7,6 +7,8 @@ import { MoodboardFootnote } from "../shared/moodboard-footnote";
 import { MoodboardIntro } from "../shared/moodboard-intro";
 import { TemplatePicker } from "../shared/template-picker";
 import { BoardProjectCard } from "./board-project-card";
+import { useApp, useAppActions } from "@/contexts/AppContext";
+import { capabilitiesOn } from "@/lib/data/access";
 
 /**
  * The moodboard as projects: each board is its own piece of work, opened on
@@ -16,6 +18,9 @@ import { BoardProjectCard } from "./board-project-card";
 export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, onCreate, onUploadNew, onRename, onDuplicate, onDelete }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const assets = new Map(ws.assets.map((a) => [a.id, a]));
+  const { setDirection } = useAppActions();
+  const { state } = useApp();
+  const { canEdit } = capabilitiesOn(ws, state.session);
   const empty = boards.length === 0;
 
   return (
@@ -70,6 +75,8 @@ export function MoodboardProjectsView({ ws, isAr, boards, picking, onPicking, on
               onRename={() => onRename(b)}
               onDuplicate={() => onDuplicate(b)}
               onDelete={() => onDelete(b)}
+              chosen={ws.direction?.boardId === b.id}
+              onChooseDirection={canEdit ? (on) => setDirection(ws.id, on ? b.id : null) : undefined}
             />
           ))}
         </Stagger>

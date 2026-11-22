@@ -6,6 +6,7 @@ import { useAppActions } from "@/contexts/AppContext";
 import { LangToggle, Row, Section, useToast } from "@/components/ui";
 import { InputField } from "@/components/ui";
 import type { Workspace } from "@/types";
+import { BrandDetails } from "./brand-details";
 
 /**
  * Brand — the name lives here because this is where people look for it. It was
@@ -19,6 +20,7 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   return (
     <Section title={isAr ? "العلامة" : "Brand"} icon="shapes">
       <BrandNameRow ws={ws} isAr={isAr} />
+      <BrandDetails ws={ws} isAr={isAr} />
       {/* The brand's own language, which is a different thing from the one the
           studio reads the app in — that is a personal setting and lives in the
           top bar. It is an Owner-level decision about the deliverable: it

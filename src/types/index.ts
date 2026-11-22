@@ -1005,7 +1005,21 @@ export interface Workspace {
   /** Brand main details, shown on Overview. */
   industry: string;
   tagline: string;
+  /** The tagline in Arabic (Overview, 22 Nov 2026); `tagline` is the English one. */
+  taglineAr?: string;
   foundedYear: string;
+  /**
+   * The project path (Overview): steps the owner or an editor chose to skip,
+   * the moodboard chosen as the direction, and when the project was handed
+   * off (owner only; the server keeps an editor's save from changing it).
+   */
+  pathSkips?: PathStepKey[];
+  direction?: { boardId: string; at: number; by?: string } | null;
+  handoff?: { at: number; by?: string } | null;
+  /** A seeded demo brand: the Overview shows the demo banner. */
+  demo?: boolean;
+  /** The brand owner's account type, from the server; decides the Overview's version. */
+  ownerAccountType?: AccountType;
   colors: ColorSwatch[];
   logo: Record<SlotKind, LogoSlot>;
   /** How/when to use the logo, and which colors are its main colors — shown on Visual identity > Logo system. */
@@ -1217,6 +1231,9 @@ export interface Account {
 export type AccountRole = "admin" | "member" | "content";
 
 export type AccountType = "studio" | "freelancer" | "company";
+
+/** The project path's steps, in order (Overview, 22 Nov 2026). */
+export type PathStepKey = "discover" | "analyse" | "strategy" | "direction" | "identity" | "kit" | "guide" | "handoff";
 
 export interface AuditEntry {
   id: string;

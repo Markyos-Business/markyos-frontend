@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ActionsDropdown, Icon } from "@/components/ui";
+import { ActionsDropdown, Icon, Tag } from "@/components/ui";
+import { moodboardCopy } from "../../copy";
 import { formatRelative } from "@/lib/utils";
 import type { Asset, Moodboard } from "@/types";
 import { MOODBOARD_TEMPLATES } from "../../utils/templates";
@@ -15,6 +16,10 @@ type BoardProjectCardProps = {
   onRename: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  /** This board is the brand's chosen direction (the Overview's Direction step). */
+  chosen?: boolean;
+  /** Choose this board as the direction, or take the choice back. Absent for readers. */
+  onChooseDirection?: (on: boolean) => void;
 };
 
 /** What a board looks like from outside: its first images, else its colours. */
@@ -65,7 +70,8 @@ function Preview({ board, assets }: { board: Moodboard; assets: Map<string, Asse
  * how much it holds and when it was last worked on. The whole card opens the
  * board; its menu renames, duplicates or deletes it.
  */
-export function BoardProjectCard({ board, slug, assets, isAr, onRename, onDuplicate, onDelete }: BoardProjectCardProps) {
+export function BoardProjectCard({ board, slug, assets, isAr, onRename, onDuplicate, onDelete, chosen = false, onChooseDirection }: BoardProjectCardProps) {
+  const dc = moodboardCopy(isAr).direction;
   const count = cardCount(board);
   const template = MOODBOARD_TEMPLATES.find((t) => t.key === board.templateKey);
   const edited = board.updatedAt ?? board.createdAt;
@@ -77,6 +83,11 @@ export function BoardProjectCard({ board, slug, assets, isAr, onRename, onDuplic
           <span dir="auto" className="bidi-auto truncate text-body font-medium text-text">
             {board.title}
           </span>
+          {chosen && (
+            <span>
+              <Tag tone="success">{dc.chosen}</Tag>
+            </span>
+          )}
           <span className="flex flex-wrap items-center gap-x-space-3 text-caption text-text-muted">
             {template && (
               <span className="flex items-center gap-space-1">
@@ -101,6 +112,9 @@ export function BoardProjectCard({ board, slug, assets, isAr, onRename, onDuplic
           label={isAr ? `إجراءات ${board.title}` : `Actions for ${board.title}`}
           title={isAr ? `إجراءات ${board.title}` : `${board.title} actions`}
           items={[
+            ...(onChooseDirection
+              ? [{ label: chosen ? dc.unchoose : dc.choose, icon: "palette", onSelect: () => onChooseDirection(!chosen) }]
+              : []),
             { label: isAr ? "أعد التسمية" : "Rename", icon: "pen", onSelect: onRename },
             { label: isAr ? "تكرار" : "Duplicate", icon: "copy", onSelect: onDuplicate },
             { label: isAr ? "حذف" : "Delete", icon: "trash", tone: "danger", onSelect: onDelete },
