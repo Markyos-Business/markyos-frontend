@@ -2,7 +2,7 @@ import { expect, newStudio, setPasswordFromEmail, signIn, test } from "./fixture
 
 test.describe("accounts", () => {
   test("sign up, stay signed in, sign out", async ({ page }) => {
-    const email = `e2e-${Date.now()}@studio.com`;
+    const email = `e2e-${Date.now()}@example.com`;
     await page.goto("/signup");
     await page.getByRole("radio", { name: /^Studio/ }).click();
     await page.getByRole("button", { name: "Continue", exact: true }).click();

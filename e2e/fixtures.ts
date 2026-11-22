@@ -59,7 +59,7 @@ const stamp = () => `${Date.now()}${Math.floor(Math.random() * 1000)}`;
 export type Studio = { email: string; token: string; name: string };
 
 export async function newStudio(name = "Layla Haddad"): Promise<Studio> {
-  const email = `e2e-${stamp()}@studio.com`;
+  const email = `e2e-${stamp()}@example.com`;
   await call("/auth/signup/", { method: "POST", body: { name, email, accountType: "studio" } });
   // Usable once the password is set from the emailed link, which signs in.
   const token = new URLSearchParams(setupLink(email).split("?")[1]).get("token");
@@ -76,7 +76,7 @@ export type Brand = { id: string; slug: string; clientEmail: string };
  */
 export async function newBrand(studio: Studio, name = "Wadi Rum Coffee", { publishable = false } = {}): Promise<Brand> {
   const s = stamp();
-  const brand = { id: `b-${s}`, slug: `wadi-rum-${s}`, clientEmail: `omar-${s}@client.sa` };
+  const brand = { id: `b-${s}`, slug: `wadi-rum-${s}`, clientEmail: `omar-${s}@example.org` };
   await call("/brands/", {
     method: "POST",
     token: studio.token,
