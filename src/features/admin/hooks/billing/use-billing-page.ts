@@ -9,7 +9,7 @@ import type { AdminCheckoutQuery } from "../../types";
 export const BILLING_TABS = ["checkouts", "orphans", "audit"] as const;
 export type BillingTab = (typeof BILLING_TABS)[number];
 
-/** The server's page size for checkouts and the audit log. */
+/** The server's page size for checkouts, orphans and the audit log. */
 export const BILLING_PAGE_SIZE = 25;
 
 const FILTERS = { q: "", status: "", provider: "" } as const;
@@ -27,7 +27,7 @@ export function useBillingPage() {
   const query: AdminCheckoutQuery = useMemo(() => ({ q: values.q, status: values.status, provider: values.provider, page }), [values, page]);
   const checkoutsKey = tab === "checkouts" ? `checkouts:${JSON.stringify(query)}` : "checkouts:off";
   const checkouts = useRequest(() => (tab === "checkouts" ? listCheckouts(query) : Promise.resolve(null)), checkoutsKey);
-  const orphans = useRequest(() => (tab === "orphans" ? listOrphans() : Promise.resolve(null)), `orphans:${tab === "orphans"}`);
+  const orphans = useRequest(() => (tab === "orphans" ? listOrphans(page) : Promise.resolve(null)), tab === "orphans" ? `orphans:${page}` : "orphans:off");
   const audit = useRequest(() => (tab === "audit" ? listAudit(page) : Promise.resolve(null)), tab === "audit" ? `audit:${page}` : "audit:off");
 
   const filtered = (Object.keys(FILTERS) as FilterKey[]).some((k) => values[k] !== "");

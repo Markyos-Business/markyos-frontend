@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  changedLimits,
   checkoutStatus,
+  isOverridden,
   compBounds,
   compRunning,
   diffSummary,
@@ -25,6 +27,8 @@ describe("checkoutStatus", () => {
     expect(checkoutStatus("expired").key).toBe("expired");
     expect(checkoutStatus("paid").key).toBe("paid");
     expect(checkoutStatus("refunded").key).toBe("refunded");
+    expect(checkoutStatus("reversed")).toEqual({ key: "reversed", tone: "danger" });
+    expect(checkoutStatus("refused")).toEqual({ key: "refused", tone: "danger" });
     expect(checkoutStatus("ended").key).toBe("ended");
     expect(checkoutStatus("something_new").key).toBe("other");
     expect(checkoutStatus(null).key).toBe("other");
@@ -80,6 +84,25 @@ describe("limits", () => {
     expect(limitDraft({ brands: 3, editors: null, override: false }, "brands")).toEqual({ choice: "default", value: null });
     expect(limitDraft({ brands: 5, editors: null, override: true }, "brands")).toEqual({ choice: "number", value: 5 });
     expect(limitDraft({ brands: 5, editors: null, override: true }, "editors")).toEqual({ choice: "unlimited", value: null });
+  });
+
+  it("reads each key's own override when the server says which", () => {
+    const limits = { brands: 10, editors: 2, override: true, overridden: { brands: true, editors: false } };
+    expect(isOverridden(limits, "brands")).toBe(true);
+    expect(isOverridden(limits, "editors")).toBe(false);
+    expect(limitDraft(limits, "brands")).toEqual({ choice: "number", value: 10 });
+    // An un-overridden key starts at Default, whatever its effective value.
+    expect(limitDraft(limits, "editors")).toEqual({ choice: "default", value: null });
+    expect(limitDraft({ brands: null, editors: null, override: true, overridden: { brands: false, editors: true } }, "editors")).toEqual({ choice: "unlimited", value: null });
+  });
+
+  it("sends only the limits that changed", () => {
+    const initial = { brands: { choice: "default", value: null }, editors: { choice: "number", value: 2 } } as const;
+    expect(changedLimits(initial, { brands: { choice: "number", value: 5 }, editors: { choice: "number", value: 2 } })).toEqual({ brands: 5 });
+    expect(changedLimits(initial, { brands: { choice: "unlimited", value: null }, editors: { choice: "default", value: null } })).toEqual({ brands: null, editors: "default" });
+    expect(changedLimits(initial, { brands: { choice: "default", value: 7 }, editors: { choice: "number", value: 2 } })).toEqual({});
+    // A number still missing isn't sent.
+    expect(changedLimits(initial, { brands: { choice: "number", value: null }, editors: { choice: "number", value: 2 } })).toEqual({});
   });
 
   it("sends a number, null for unlimited, or default", () => {

@@ -51,7 +51,7 @@ export type PendingPlanChange = {
   /** Cents a month, in the subscription's currency. */
   amount: number;
   effectiveAt: number | null;
-  /** Set when the new price is higher: the owner approves it at PayPal. */
+  /** Set when PayPal asks the owner to approve the new price. */
   approvalUrl: string | null;
 };
 

@@ -6,7 +6,7 @@ import { errorText } from "@/lib/api/errorText";
 import { overrideLimits } from "../../api/admin-billing.api";
 import { useAdminBillingLang } from "../../hooks/shared/use-admin-lang";
 import type { AccountLimits, AdminUser } from "../../types";
-import { limitDraft, limitInput, REASON_MAX, validateLimits, type LimitChoice, type LimitDraft, type LimitErrors } from "../../utils/billing";
+import { changedLimits, isOverridden, limitDraft, REASON_MAX, validateLimits, type LimitChoice, type LimitDraft, type LimitErrors } from "../../utils/billing";
 
 /**
  * What the account may have: brands it owns and editors per brand, as the
@@ -19,7 +19,12 @@ export function LimitsSection({ user, onChanged }: { user: AdminUser; onChanged:
   const [open, setOpen] = useState(false);
   const limits = user.limits;
   if (!limits) return null;
-  const show = (value: number | null) => (value === null ? l.unlimited : <span className="tabular-nums">{value}</span>);
+  const show = (key: "brands" | "editors") => (
+    <span className="inline-flex flex-wrap items-center gap-ctl-row">
+      {limits[key] === null ? l.unlimited : <span className="tabular-nums">{limits[key]}</span>}
+      {isOverridden(limits, key) && <Badge tone="attention">{l.override}</Badge>}
+    </span>
+  );
 
   return (
     <ContentCard
@@ -31,12 +36,12 @@ export function LimitsSection({ user, onChanged }: { user: AdminUser; onChanged:
       }
     >
       <div className="flex flex-col gap-space-4" data-account-limits>
-        <div>{limits.override ? <Badge tone="attention">{l.override}</Badge> : <span className="text-caption text-text-muted">{l.defaults}</span>}</div>
+        {!limits.override && <p className="text-caption text-text-muted">{l.defaults}</p>}
         <KeyValueList
           layout="grid"
           items={[
-            { label: l.brands, value: show(limits.brands) },
-            { label: l.editors, value: show(limits.editors) },
+            { label: l.brands, value: show("brands") },
+            { label: l.editors, value: show("editors") },
           ]}
         />
       </div>
@@ -49,8 +54,9 @@ function LimitsDialog({ user, limits, onClose, onSaved }: { user: AdminUser; lim
   const { b, lang } = useAdminBillingLang();
   const l = b.limits;
   const { showToast } = useToast();
-  const [brands, setBrands] = useState<LimitDraft>(() => limitDraft(limits, "brands"));
-  const [editors, setEditors] = useState<LimitDraft>(() => limitDraft(limits, "editors"));
+  const [initial] = useState(() => ({ brands: limitDraft(limits, "brands"), editors: limitDraft(limits, "editors") }));
+  const [brands, setBrands] = useState<LimitDraft>(initial.brands);
+  const [editors, setEditors] = useState<LimitDraft>(initial.editors);
   const [reason, setReason] = useState("");
   const [errors, setErrors] = useState<LimitErrors>({});
   const options = (["default", "unlimited", "number"] as LimitChoice[]).map((value) => ({ value, label: l.choices[value] }));
@@ -94,8 +100,11 @@ function LimitsDialog({ user, limits, onClose, onSaved }: { user: AdminUser; lim
         const found = validateLimits({ brands, editors, reason });
         setErrors(found);
         if (Object.keys(found).length) return false;
+        // Only what changed: a limit left out stays as it is on the server.
+        const changes = changedLimits(initial, { brands, editors });
+        if (!Object.keys(changes).length) return l.errors.unchanged;
         try {
-          await overrideLimits(user.id, { brands: limitInput(brands)!, editors: limitInput(editors)! }, reason);
+          await overrideLimits(user.id, changes, reason);
           showToast(l.done, "success");
           onSaved();
         } catch (err) {

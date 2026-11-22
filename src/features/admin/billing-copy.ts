@@ -1,5 +1,6 @@
+import { plural } from "@/lib/i18n/plural";
 import type { AdminCheckoutProvider } from "./types";
-import type { CheckoutStatusKey, LimitChoice } from "./utils/billing";
+import type { CheckoutStatus, CheckoutStatusKey, LimitChoice } from "./utils/billing";
 
 // The admin billing tool's words (billing epic 4.3), in English and Arabic
 // (spec §7: sentence case, verb-first buttons, no emoji). Brand names in
@@ -12,6 +13,8 @@ type Copy = {
   tabs: { checkouts: string; orphans: string; audit: string };
   providers: Record<AdminCheckoutProvider, string>;
   statuses: Record<CheckoutStatusKey, string>;
+  /** The status filter's options: one per stored status, so each can be found. */
+  filterStatuses: Record<CheckoutStatus, string>;
   filters: {
     search: string;
     searchLabel: string;
@@ -171,7 +174,14 @@ type Copy = {
     submit: string;
     done: string;
     failed: string;
-    errors: { number: string; reasonRequired: string; reasonTooLong: string };
+    errors: { number: string; reasonRequired: string; reasonTooLong: string; unchanged: string };
+  };
+  /** D2 on the checkout page: the price moves at renewal. */
+  pending: {
+    title: string;
+    body: (type: string, amount: string, date: string | null) => string;
+    approval: string;
+    missed: (n: number) => string;
   };
   reasons: Record<string, string>;
   yes: string;
@@ -193,9 +203,26 @@ const en: Copy = {
     expired: "Expired",
     paid: "Paid",
     refunded: "Refunded",
+    reversed: "Reversed",
     refused: "Refused",
     ended: "Ended",
     other: "Other",
+  },
+  filterStatuses: {
+    pending: "Not sent to PayPal",
+    approval_pending: "Waiting for the buyer's approval",
+    approved: "Approved, not active yet",
+    active: "Active",
+    suspended: "Suspended",
+    refused: "Refused",
+    cancelled: "Cancelled",
+    expired: "Expired",
+    refunded: "Refunded",
+    reversed: "Reversed",
+    paid: "Paid (Project Pass)",
+    canceled: "Cancelled (Stripe)",
+    past_due: "Past due (Stripe)",
+    incomplete_expired: "Expired before paying (Stripe)",
   },
   filters: {
     search: "Search brand or owner",
@@ -363,7 +390,13 @@ const en: Copy = {
     submit: "Save limits",
     done: "Limits saved.",
     failed: "Couldn't save the limits. Try again.",
-    errors: { number: "Enter a whole number from 0.", reasonRequired: "Enter a reason.", reasonTooLong: "Keep the reason under 500 characters." },
+    errors: { number: "Enter a whole number from 0.", reasonRequired: "Enter a reason.", reasonTooLong: "Keep the reason under 500 characters.", unchanged: "Change a limit first." },
+  },
+  pending: {
+    title: "Price change at renewal",
+    body: (type, amount, date) => (date ? `Price change to ${type} (${amount}/month) from ${date}.` : `Price change to ${type} (${amount}/month) from the next renewal.`),
+    approval: "Waiting for the owner's approval at PayPal.",
+    missed: (n) => `Not approved at ${n} ${n === 1 ? "renewal" : "renewals"}.`,
   },
   reasons: {
     too_expensive: "It costs too much",
@@ -392,9 +425,26 @@ const ar: Copy = {
     expired: "منتهٍ",
     paid: "مدفوع",
     refunded: "مسترد",
+    reversed: "معكوس",
     refused: "مرفوض",
     ended: "منتهٍ",
     other: "أخرى",
+  },
+  filterStatuses: {
+    pending: "لم تُرسل إلى PayPal",
+    approval_pending: "بانتظار موافقة المشتري",
+    approved: "موافق عليها ولم تُفعَّل بعد",
+    active: "مفعّل",
+    suspended: "موقوف",
+    refused: "مرفوض",
+    cancelled: "ملغى",
+    expired: "منتهٍ",
+    refunded: "مسترد",
+    reversed: "معكوس",
+    paid: "مدفوع (تصريح المشروع)",
+    canceled: "ملغى (Stripe)",
+    past_due: "متأخر الدفع (Stripe)",
+    incomplete_expired: "انتهى قبل الدفع (Stripe)",
   },
   filters: {
     search: "ابحث باسم العلامة أو المالك",
@@ -562,7 +612,14 @@ const ar: Copy = {
     submit: "حفظ الحدود",
     done: "حُفظت الحدود.",
     failed: "تعذّر حفظ الحدود. حاول مرة أخرى.",
-    errors: { number: "اكتب عددًا صحيحًا من 0 فأكثر.", reasonRequired: "اكتب سببًا.", reasonTooLong: "اجعل السبب أقل من 500 حرف." },
+    errors: { number: "اكتب عددًا صحيحًا من 0 فأكثر.", reasonRequired: "اكتب سببًا.", reasonTooLong: "اجعل السبب أقل من 500 حرف.", unchanged: "غيّر أحد الحدود أولًا." },
+  },
+  pending: {
+    title: "تغيير السعر عند التجديد",
+    body: (type, amount, date) => (date ? `يتغيّر السعر إلى ${type} (${amount} شهريًا) ابتداءً من ${date}.` : `يتغيّر السعر إلى ${type} (${amount} شهريًا) ابتداءً من التجديد القادم.`),
+    approval: "بانتظار موافقة المالك في PayPal.",
+    missed: (n) =>
+      `لم تتم الموافقة في ${plural("ar", n, { one: "تجديد واحد", two: "تجديدين", few: "{n} تجديدات", many: "{n} تجديدًا", other: "{n} تجديد" })}.`,
   },
   reasons: {
     too_expensive: "التكلفة مرتفعة",

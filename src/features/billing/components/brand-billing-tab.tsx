@@ -233,9 +233,8 @@ function BillingBody({
 }
 
 /**
- * D2: the owner's account type changed, so the price moves at renewal. A
- * higher price needs the owner's approval at PayPal; the server says so by
- * sending the link. Amount, type and date are all the server's.
+ * D2: the owner's account type changed, so the price moves at renewal. When
+ * PayPal asks the owner to approve the new price, the server sends the link. Amount, type and date are all the server's.
  */
 function PendingChange({ isAr, change, currency }: { isAr: boolean; change: PendingPlanChange; currency: string }) {
   const t = billingCopy(isAr).tab;

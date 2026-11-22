@@ -227,16 +227,31 @@ export interface AdminCheckoutDetail extends AdminCheckout {
   paypal: AdminPaypalView | null;
   /** Our status and PayPal's disagree: the server decides, the page only says so. */
   mismatch: boolean;
+  /** D2: the price moves to a new account type at renewal. */
+  pendingPlanChange?: AdminPendingPlanChange | null;
+}
+
+/** A price change waiting for renewal, as an admin sees it (no approval link: that's the owner's). */
+export interface AdminPendingPlanChange {
+  accountType: string;
+  /** Cents a month, in the checkout's currency. */
+  amount: number;
+  effectiveAt: number | null;
+  /** PayPal is waiting for the owner to approve the new price. */
+  approvalPending: boolean;
+  /** Renewals that passed without the owner's approval. */
+  missedRenewals: number;
 }
 
 /** A row of `GET /admin/billing/orphans/`: a PayPal subscription with no live checkout behind it. */
 export interface AdminOrphan {
-  id: string;
+  id: number;
   subscriptionId: string;
   /** The checkout it once belonged to, if any. */
   checkoutId: string | null;
   brandId: string | null;
-  paypalStatus: string;
+  /** PayPal's own word (upper case), or null when it couldn't be read. */
+  paypalStatus: string | null;
   moneyTaken: boolean;
   firstSeenAt: number;
   alertedAt: number | null;
@@ -256,6 +271,11 @@ export interface AdminAuditEntry {
   after: Record<string, unknown> | null;
 }
 
+export interface AdminOrphanPage {
+  count: number;
+  results: AdminOrphan[];
+}
+
 export interface AdminAuditPage {
   count: number;
   results: AdminAuditEntry[];
@@ -268,11 +288,15 @@ export interface AdminCompRequest {
   expiresAt: number;
 }
 
-/** An account's limits: a number, or null for unlimited. `override` is set when an admin changed them. */
+/**
+ * An account's limits: a number, or null for unlimited. `override` is set
+ * when an admin changed either; `overridden` says which.
+ */
 export interface AccountLimits {
   brands: number | null;
   editors: number | null;
   override: boolean;
+  overridden?: { brands: boolean; editors: boolean };
 }
 
 /** One limit as sent: a number, null for unlimited, "default" to clear the override. */

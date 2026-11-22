@@ -9,7 +9,9 @@ import { errorText } from "@/lib/api/errorText";
 import { useBillingActions } from "../../hooks/billing/use-billing-actions";
 import { useCheckoutDetail } from "../../hooks/billing/use-checkout-detail";
 import { useAdminBillingLang } from "../../hooks/shared/use-admin-lang";
-import type { AdminCheckoutDetail, AdminPayment } from "../../types";
+import type { AdminCheckoutDetail, AdminPayment, AdminPendingPlanChange } from "../../types";
+import { ACCOUNT_TYPES } from "@/constants/accountTypes";
+import type { AccountType } from "@/types";
 import { compRunning } from "../../utils/billing";
 import { CheckoutStatusBadge } from "./checkout-status-badge";
 import { CompDialog } from "./comp-dialog";
@@ -65,6 +67,7 @@ export function CheckoutDetailView({ id }: { id: string }) {
       <DetailHeader checkout={c} actions={actions} />
       {c.refused && <AlertBanner tone="danger" message={b.detail.refusedBody} />}
       {c.mismatch && <AlertBanner tone="warning" title={b.detail.mismatch} message={b.detail.mismatchBody} />}
+      {c.pendingPlanChange && <PendingChange checkout={c} change={c.pendingPlanChange} />}
       <Compare checkout={c} />
       <Facts checkout={c} />
       <Payments payments={c.payments} />
@@ -127,6 +130,17 @@ function DetailHeader({ checkout: c, actions }: { checkout: AdminCheckoutDetail;
       </div>
     </ContentCard>
   );
+}
+
+/** D2: the price moves to the new account type at renewal; whether the owner has approved it at PayPal. */
+function PendingChange({ checkout: c, change }: { checkout: AdminCheckoutDetail; change: AdminPendingPlanChange }) {
+  const { b, lang, isAr } = useAdminBillingLang();
+  const known = ACCOUNT_TYPES[change.accountType as AccountType];
+  const type = known ? (isAr ? known.arLabel : known.label) : change.accountType;
+  const notes = [b.pending.body(type, money(change.amount, c.currency, lang), change.effectiveAt ? day(change.effectiveAt, lang) : null)];
+  if (change.approvalPending) notes.push(b.pending.approval);
+  if (change.missedRenewals > 0) notes.push(b.pending.missed(change.missedRenewals));
+  return <AlertBanner tone={change.missedRenewals > 0 ? "warning" : "info"} title={b.pending.title} message={notes.join(" ")} />;
 }
 
 /** Ours beside PayPal's, field by field. Rows carry no actions. */

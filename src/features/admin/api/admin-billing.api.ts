@@ -6,7 +6,8 @@ import type {
   AdminCheckoutPage,
   AdminCheckoutQuery,
   AdminCompRequest,
-  AdminOrphan,
+  AdminOrphanPage,
+  AdminUser,
   LimitInput,
 } from "../types";
 
@@ -36,8 +37,9 @@ export function syncCheckout(checkoutId: string, reason?: string): Promise<Admin
   return api<AdminCheckoutDetail>(`/admin/billing/checkouts/${id(checkoutId)}/sync/`, { method: "POST", body: trimmed ? { reason: trimmed } : {} });
 }
 
-export function listOrphans(): Promise<AdminOrphan[]> {
-  return api<AdminOrphan[]>("/admin/billing/orphans/");
+/** Orphaned subscriptions a page at a time (25), newest first. */
+export function listOrphans(page = 1): Promise<AdminOrphanPage> {
+  return api<AdminOrphanPage>(`/admin/billing/orphans/${page > 1 ? `?page=${page}` : ""}`);
 }
 
 export function compPlan(request: AdminCompRequest): Promise<unknown> {
@@ -54,7 +56,10 @@ export async function listAudit(page = 1): Promise<AdminAuditPage> {
   return Array.isArray(answer) ? { count: answer.length, results: answer } : answer;
 }
 
-/** Changes an account's brand and editor limits; the server checks the reason and records it. */
-export function overrideLimits(accountId: string, limits: { brands: LimitInput; editors: LimitInput }, reason: string): Promise<unknown> {
-  return api(`/admin/accounts/${id(accountId)}/limits/`, { method: "POST", body: { ...limits, reason: reason.trim() } });
+/**
+ * Changes an account's brand and/or editor limits; a key left out stays as
+ * it is. The server checks the reason, records it and answers with the account.
+ */
+export function overrideLimits(accountId: string, limits: Partial<Record<"brands" | "editors", LimitInput>>, reason: string): Promise<AdminUser> {
+  return api<AdminUser>(`/admin/accounts/${id(accountId)}/limits/`, { method: "POST", body: { ...limits, reason: reason.trim() } });
 }

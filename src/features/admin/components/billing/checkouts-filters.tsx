@@ -3,17 +3,7 @@
 import { FilterBar, FilterSelectField, SearchField } from "@/components/ui";
 import type { BillingPage } from "../../hooks/billing/use-billing-page";
 import { useAdminBillingLang } from "../../hooks/shared/use-admin-lang";
-
-/** The statuses the filter offers, as the server stores them. */
-const STATUSES = [
-  ["active", "active"],
-  ["approval_pending", "pending"],
-  ["suspended", "suspended"],
-  ["cancelled", "cancelled"],
-  ["expired", "expired"],
-  ["paid", "paid"],
-  ["refunded", "refunded"],
-] as const;
+import { CHECKOUT_STATUSES } from "../../utils/billing";
 
 /** Search by brand or owner, filter by status and provider; all in the URL. */
 export function CheckoutsFilters({ page }: { page: BillingPage }) {
@@ -41,7 +31,7 @@ export function CheckoutsFilters({ page }: { page: BillingPage }) {
         active={!!page.values.status}
         value={page.values.status}
         onChange={(value) => page.filters.set("status", value)}
-        options={[{ value: "", label: f.allStatuses }, ...STATUSES.map(([value, key]) => ({ value, label: b.statuses[key] }))]}
+        options={[{ value: "", label: f.allStatuses }, ...CHECKOUT_STATUSES.map((value) => ({ value, label: b.filterStatuses[value] }))]}
       />
       <FilterSelectField
         label={f.provider}

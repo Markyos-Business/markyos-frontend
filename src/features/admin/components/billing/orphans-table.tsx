@@ -28,7 +28,7 @@ export function OrphansTable({ page }: { page: BillingPage }) {
         </span>
       ),
     },
-    { key: "paypalStatus", header: o.paypalStatus, cell: (row) => <CheckoutStatusBadge status={row.paypalStatus} /> },
+    { key: "paypalStatus", header: o.paypalStatus, cell: (row) => <CheckoutStatusBadge status={row.paypalStatus?.toLowerCase()} /> },
     {
       key: "money",
       header: o.money,
@@ -55,8 +55,8 @@ export function OrphansTable({ page }: { page: BillingPage }) {
         itemLabel={o.itemLabel}
         dir={isAr ? "rtl" : "ltr"}
         columns={columns}
-        rows={page.orphans.data ?? undefined}
-        getRowId={(row) => row.subscriptionId}
+        rows={page.orphans.data?.results}
+        getRowId={(row) => String(row.id)}
         getRowLabel={(row) => row.subscriptionId}
         getRowState={(row) => (row.moneyTaken ? "highlighted" : "idle")}
         loading={page.orphans.loading && !page.orphans.data}
@@ -67,6 +67,7 @@ export function OrphansTable({ page }: { page: BillingPage }) {
           if (row.checkoutId) router.push(`/admin/billing/${encodeURIComponent(row.checkoutId)}`);
         }}
         empty={<EmptyState icon="check-circle" title={o.emptyTitle} description={o.emptyBody} />}
+        paging={page.paging(page.orphans.data?.count ?? 0)}
         mobileCard={{ primary: "subscription", secondary: ["paypalStatus", "money", "cancelled"] }}
         stickyHeader={false}
       />

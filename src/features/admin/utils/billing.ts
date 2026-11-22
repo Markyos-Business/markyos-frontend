@@ -7,7 +7,30 @@ import type { AccountLimits, LimitInput } from "../types";
  * server still checks everything again and decides.
  */
 
-export type CheckoutStatusKey = "active" | "pending" | "suspended" | "cancelled" | "expired" | "paid" | "refunded" | "refused" | "ended" | "other";
+export type CheckoutStatusKey = "active" | "pending" | "suspended" | "cancelled" | "expired" | "paid" | "refunded" | "reversed" | "refused" | "ended" | "other";
+
+/**
+ * Every status a checkout can be stored with (the server's billing_status,
+ * plus a Project Pass's "paid" and the retired Stripe words), each findable
+ * on its own in the status filter.
+ */
+export const CHECKOUT_STATUSES = [
+  "pending",
+  "approval_pending",
+  "approved",
+  "active",
+  "suspended",
+  "refused",
+  "cancelled",
+  "expired",
+  "refunded",
+  "reversed",
+  "paid",
+  "canceled",
+  "past_due",
+  "incomplete_expired",
+] as const;
+export type CheckoutStatus = (typeof CHECKOUT_STATUSES)[number];
 
 /** Our status (or PayPal's), as a word key and a tone. A refused checkout grants nothing, whatever its status. */
 export function checkoutStatus(status: string | null | undefined, refused = false): { key: CheckoutStatusKey; tone: BadgeTone } {
@@ -19,7 +42,9 @@ export function checkoutStatus(status: string | null | undefined, refused = fals
   if (s === "cancelled" || s === "canceled") return { key: "cancelled", tone: "neutral" };
   if (s === "expired" || s === "incomplete_expired") return { key: "expired", tone: "neutral" };
   if (s === "paid") return { key: "paid", tone: "success" };
-  if (s === "refunded" || s === "reversed") return { key: "refunded", tone: "neutral" };
+  if (s === "refunded") return { key: "refunded", tone: "neutral" };
+  if (s === "reversed") return { key: "reversed", tone: "danger" };
+  if (s === "refused") return { key: "refused", tone: "danger" };
   if (s === "ended") return { key: "ended", tone: "neutral" };
   return { key: "other", tone: "neutral" };
 }
@@ -70,9 +95,15 @@ export function validateComp(input: { reason: string; expiresOn: string | null }
 export type LimitChoice = "default" | "unlimited" | "number";
 export type LimitDraft = { choice: LimitChoice; value: number | null };
 
-/** The dialog's starting point for one limit: the override as it stands, or the default. */
+/** Whether one limit is an admin's override: per key when the server says, else the account-wide flag. */
+export function isOverridden(limits: AccountLimits | undefined, key: "brands" | "editors"): boolean {
+  if (!limits) return false;
+  return limits.overridden ? limits.overridden[key] : limits.override;
+}
+
+/** The dialog's starting point for one limit: its override as it stands, or Default when that key isn't overridden. */
 export function limitDraft(limits: AccountLimits | undefined, key: "brands" | "editors"): LimitDraft {
-  if (!limits?.override) return { choice: "default", value: null };
+  if (!limits || !isOverridden(limits, key)) return { choice: "default", value: null };
   const value = limits[key];
   return value === null ? { choice: "unlimited", value: null } : { choice: "number", value };
 }
@@ -84,7 +115,21 @@ export function limitInput(draft: LimitDraft): LimitInput | undefined {
   return draft.value !== null && Number.isInteger(draft.value) && draft.value >= 0 ? draft.value : undefined;
 }
 
-export type LimitErrors = { brands?: "number"; editors?: "number"; reason?: "required" | "tooLong" };
+/**
+ * Only the limits the admin changed, as sent: a key left out stays as it is
+ * on the server. Empty when nothing changed (or a number is missing).
+ */
+export function changedLimits(initial: { brands: LimitDraft; editors: LimitDraft }, next: { brands: LimitDraft; editors: LimitDraft }): Partial<Record<"brands" | "editors", LimitInput>> {
+  const out: Partial<Record<"brands" | "editors", LimitInput>> = {};
+  for (const key of ["brands", "editors"] as const) {
+    const before = limitInput(initial[key]);
+    const after = limitInput(next[key]);
+    if (after !== undefined && after !== before) out[key] = after;
+  }
+  return out;
+}
+
+export type LimitErrors = { brands?: "number"; editors?: "number"; reason?: "required" | "tooLong"; unchanged?: true };
 
 export function validateLimits(input: { brands: LimitDraft; editors: LimitDraft; reason: string }): LimitErrors {
   const errors: LimitErrors = {};
