@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { inter, plexArabic, bricolage } from "./fonts";
 import { AppProvider } from "@/contexts/AppContext";
+import { UpgradeProvider } from "@/features/billing";
 import { ToastProvider, DialogProvider, SkipLink } from "@/components/ui";
 import { SyncNotices } from "@/contexts/SyncNotices";
 import { ThemeProvider } from "@/components/ui";
@@ -51,7 +52,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <SyncNotices />
                 <InterfaceLangSync />
                 <PageTitleSync />
-                <DialogProvider>{children}</DialogProvider>
+                <DialogProvider>
+                  <UpgradeProvider>{children}</UpgradeProvider>
+                </DialogProvider>
               </ToastProvider>
             </InterfaceUiStrings>
           </AppProvider>

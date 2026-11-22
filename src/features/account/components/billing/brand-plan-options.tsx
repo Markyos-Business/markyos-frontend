@@ -4,12 +4,12 @@ import { AlertBanner, Badge, Button, ConfirmButton, formatDate, LinkButton, Row,
 import type { BadgeTone } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
-import { useCheckout } from "../../hooks/use-checkout";
+import { formatMoney } from "@/lib/i18n/format";
+import { usePlans, useUpgrade } from "@/features/billing";
 import { usePayPalSubscription } from "../../hooks/use-paypal-subscription";
-import { PayPalSubscribeButton } from "./paypal-subscribe-button";
 import { PlanCard } from "./plan-card";
 
-type BrandPlanOptionsProps = { ws: Workspace; typeLabel: string; prices: { pass: number; subscription: number }; isAr: boolean };
+type BrandPlanOptionsProps = { ws: Workspace; typeLabel: string; isAr: boolean };
 
 /** Where a PayPal subscriber changes the card or account PayPal charges. */
 const PAYPAL_AUTOPAY = process.env.NEXT_PUBLIC_PAYPAL_ENV === "live"
@@ -35,10 +35,14 @@ const STATUS: Record<string, { en: string; ar: string; tone: BadgeTone }> = {
  * A brand that already has a Project Pass or a Stripe subscription keeps it
  * and can still manage it; new plans are PayPal subscriptions only.
  */
-export function BrandPlanOptions({ ws, typeLabel, prices, isAr }: BrandPlanOptionsProps) {
+export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const planName = isAr ? `خطة ${typeLabel}` : `${typeLabel} plan`;
-  const { managing, manageSubscription } = useCheckout(ws, isAr);
+  const upgrade = useUpgrade();
+  // The price is the server's, for the owner's account type (never a copy here).
+  const plans = usePlans();
+  const monthly = plans && ws.ownerAccountType ? plans.types[ws.ownerAccountType].monthly : null;
+  const price = plans && monthly !== null ? formatMoney(monthly / 100, plans.currency.toUpperCase(), isAr ? "ar" : "en") : "—";
   const paypal = usePayPalSubscription(ws, isAr);
   const { plan, purchasedAt, provider, subscriptionStatus, currentPeriodEnd, paymentFailedAt } = ws.billing;
   const onPayPal = provider === "paypal" && Boolean(subscriptionStatus);
@@ -111,23 +115,30 @@ export function BrandPlanOptions({ ws, typeLabel, prices, isAr }: BrandPlanOptio
         </div>
       )}
 
-      {/* A subscription from before PayPal is still managed where it was bought. */}
+      {/* Stripe plans are retired: honoured to the end of 2026, stopped by us on request. */}
       {!onPayPal && subscriptionStatus && (
-        <Button variant="secondary" onClick={manageSubscription} disabled={managing}>
-          {managing ? t("Opening billing…", "جارٍ فتح الفوترة…") : t("Manage subscription", "إدارة الاشتراك")}
-        </Button>
+        <p className="text-caption text-text-muted">
+          {t(
+            "This plan was bought before payments moved to PayPal. It stays active until 31 Dec 2026; contact us to cancel it sooner.",
+            "اشتُريت هذه الخطة قبل انتقال الدفع إلى PayPal، وتبقى مفعّلة حتى 31 ديسمبر 2026. تواصل معنا لإلغائها قبل ذلك.",
+          )}
+        </p>
       )}
 
       {plan !== "subscription" && !running && (
         <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <PlanCard
             name={planName}
-            price={`$${prices.subscription}`}
+            price={price}
             period={t("/month", "/شهريًا")}
             description={t("A monthly plan for this brand's guideline. Cancel any time.", "خطة شهرية لدليل هذه العلامة، ويمكن إلغاؤها في أي وقت.")}
             isAr={isAr}
             active={false}
-            action={<PayPalSubscribeButton ws={ws} isAr={isAr} />}
+            action={
+              <Button variant="primary" onClick={() => upgrade.open({ ws, reason: "billing" })}>
+                {t("Subscribe", "اشترك")}
+              </Button>
+            }
           />
         </div>
       )}

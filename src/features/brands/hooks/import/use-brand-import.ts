@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui";
 import { analyzeBrandDocument, nameFromFileName, strategyFieldCount, suggestedColors, type DocumentAnalysis } from "../../api/brands.api";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import { errorText } from "@/lib/api/errorText";
+import { useFreeBrandGate } from "@/features/billing";
 
 type ImportStage = "idle" | "extracting" | "review";
 
@@ -15,6 +16,9 @@ export function useBrandImport() {
   const { createWorkspace, addColor, setTypography, setStrategyText, addCoreValue, addCompetitor, addPersona, addVoiceTrait } = useAppActions();
   const { showToast } = useToast();
   const router = useRouter();
+  // Before the upload, not after the analysis: a brand the server would
+  // refuse (Free rule) asks for a plan first (billing epic).
+  const gate = useFreeBrandGate();
   const [stage, setStage] = useState<ImportStage>("idle");
   const [progress, setProgress] = useState("");
   const [fileName, setFileName] = useState("");
@@ -104,7 +108,7 @@ export function useBrandImport() {
     stage,
     fileName,
     progress,
-    onFile: (file: File) => void start(file),
+    onFile: (file: File) => gate(() => void start(file)),
     review: analysis && {
       analysis,
       importName,

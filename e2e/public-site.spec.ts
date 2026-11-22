@@ -51,10 +51,16 @@ test("a free brand is offered an upgrade, and the server refuses to publish it",
 
   await signIn(page, studio);
   await page.goto(`/w/${brand.slug}/builder`);
-  const upgrade = page.getByRole("link", { name: "Upgrade to publish" });
+  const upgrade = page.getByRole("button", { name: "Upgrade to publish" });
   await expect(upgrade).toBeVisible();
-  await expect(upgrade).toHaveAttribute("href", `/w/${brand.slug}/settings`);
   await expect(page.getByRole("button", { name: "Publish", exact: true })).toHaveCount(0);
+  // The one upgrade modal, with the server's price for a studio brand.
+  await upgrade.click();
+  const modal = page.getByRole("dialog", { name: "Publishing needs a plan" });
+  await expect(modal).toBeVisible();
+  await expect(modal.getByText(/USD\s*29 a month, for this brand/)).toBeVisible();
+  await modal.getByRole("button", { name: "Close", exact: true }).first().click();
+  await expect(modal).toHaveCount(0);
 
   const stored = await call(`/brands/${brand.id}/`, { token: studio.token });
   const refused = await fetch(`${API}/brands/${brand.id}/publish/`, {

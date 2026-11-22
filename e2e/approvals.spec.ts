@@ -1,4 +1,4 @@
-import { call, expect, newBrand, newStudio, signIn, test } from "./fixtures";
+import { call, expect, newBrand, newStudio, payBrand, signIn, test } from "./fixtures";
 
 test.describe("approval permissions", () => {
   test.use({ expectedErrors: [[/net::ERR_FAILED/, /status of 409/], { scope: "test" }] });
@@ -7,6 +7,7 @@ test.describe("approval permissions", () => {
     const owner = await newStudio("Layla Owner");
     const editor = await newStudio("Nour Editor");
     const brand = await newBrand(owner);
+    payBrand(brand.id); // editors need a plan on the brand
     const stored = await call(`/brands/${brand.id}/`, { token: owner.token });
     await call(`/brands/${brand.id}/`, { method: "PUT", token: owner.token, body: {
       version: stored.version, data: { ...stored.data, team: [...stored.data.team, { id: "nour", email: editor.email, name: editor.name, role: "editor" }] },

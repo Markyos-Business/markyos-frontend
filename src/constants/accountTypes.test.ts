@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Account } from "@/types";
-import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "./accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf } from "./accountTypes";
 
 const account = (extra: Partial<Account>): Account => ({
   id: "a1",
@@ -20,19 +20,10 @@ describe("account types", () => {
     expect(accountTypeOf(null)).toBe("studio");
   });
 
-  it("gives each type its limits", () => {
-    expect(limitsOf(account({ accountType: "freelancer" }))).toEqual({ brands: 3, editors: 0 });
-    expect(limitsOf(account({ accountType: "company" }))).toEqual({ brands: 1, editors: null });
-    expect(limitsOf(account({ accountType: "studio" }))).toEqual({ brands: null, editors: null });
-  });
-
-  it("puts no limit on a platform admin, whatever the type", () => {
-    expect(limitsOf(account({ isAdmin: true, accountType: "freelancer" }))).toEqual({ brands: null, editors: null });
-  });
-
-  it("prices freelancers under studios and companies over them", () => {
-    const { freelancer, studio, company } = ACCOUNT_TYPES;
-    expect(freelancer.prices.subscription).toBeLessThan(studio.prices.subscription);
-    expect(company.prices.subscription).toBeGreaterThan(studio.prices.subscription);
+  it("keeps no copy of prices or limits (they come from /billing/plans/)", () => {
+    for (const info of Object.values(ACCOUNT_TYPES)) {
+      expect(info).not.toHaveProperty("prices");
+      expect(info).not.toHaveProperty("limits");
+    }
   });
 });

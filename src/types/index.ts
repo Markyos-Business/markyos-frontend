@@ -98,6 +98,10 @@ export interface Billing {
   currentPeriodEnd?: number;
   /** A renewal failed at this time (ms) and PayPal is retrying it. */
   paymentFailedAt?: number;
+  /** Paid access lasts until here (ms), from the server's one entitlement rule. */
+  paidUntil?: number;
+  /** In the grace after a failed payment, access ends here (ms) unless it's paid (D6). */
+  graceEndsAt?: number;
 }
 
 // ---- v2.0 ----

@@ -5,7 +5,8 @@ import { API_ENABLED } from "@/lib/api/client";
 import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useStudioPage } from "@/contexts/pageGuards";
-import { ACCOUNT_TYPES, accountTypeOf, limitsOf } from "@/constants/accountTypes";
+import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
+import { useFreeBrandGate, useLimits } from "@/features/billing";
 import type { StartMode } from "../../constants";
 import { useBrandImport } from "../import/use-brand-import";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
@@ -17,6 +18,8 @@ export function useNewBrandPage() {
   const router = useRouter();
   const account = useCurrentAccount();
   const importer = useBrandImport();
+  const limits = useLimits(account);
+  const gate = useFreeBrandGate();
   const [mode, setMode] = useState<StartMode>("scratch");
   const [name, setName] = useState("");
   const { isAr } = useInterfaceLang();
@@ -27,7 +30,7 @@ export function useNewBrandPage() {
   const type = ACCOUNT_TYPES[accountTypeOf(account)];
   // Reachable by URL even at the limit, so it says so here too; the server
   // refuses the create either way.
-  const brandLimit = limitsOf(account).brands;
+  const brandLimit = limits.type.brands;
   const owned = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId).length;
   if (brandLimit !== null && owned >= brandLimit) {
     return {
@@ -45,8 +48,12 @@ export function useNewBrandPage() {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
-    const ws = createWorkspace(trimmed);
-    router.push(`/w/${ws.slug}/overview`);
+    // One brand without a plan per account (billing epic): the server
+    // refuses another, so subscribe a free one first, then carry on.
+    gate(() => {
+      const ws = createWorkspace(trimmed);
+      router.push(`/w/${ws.slug}/overview`);
+    });
   }
 
   return {

@@ -1,15 +1,15 @@
 "use client";
 
 import { canGoLive } from "@/lib/data/publication";
-import { builderCopy } from "../copy";
 import { reviewSite, type SiteFinding } from "../utils/site-review";
 import { plural } from "@/lib/i18n/plural";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useColorNameTranslations } from "@/features/visual-identity";
+import { useUpgrade } from "@/features/billing";
 import { useDialog, useToast } from "@/components/ui";
 import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
@@ -49,6 +49,13 @@ export function useBuilderPage(slug: string) {
   } = useApp();
   const { showToast } = useToast();
   const { confirm, prompt } = useDialog();
+  const upgrade = useUpgrade();
+  // After paying, publish with the brand as it is then (its billing is the
+  // server's), not as this render saw it.
+  const publishLatest = useRef<() => void>(() => {});
+  useEffect(() => {
+    publishLatest.current = () => void handlePublish();
+  });
   const page = useBrandPage(slug);
   const ws = page?.workspace;
   // The English and Arabic previews both show colour names; fill in the
@@ -290,10 +297,16 @@ export function useBuilderPage(slug: string) {
     if (show && first) revealFinding(first);
   }
 
+  function askToUpgrade() {
+    upgrade.open({ ws: ws!, reason: "publish", onDone: () => publishLatest.current() });
+  }
+
   async function handlePublish() {
-    // A brand that can't go live (no paid plan) isn't asked to fix anything first.
+    // A brand that can't go live (no paid plan) isn't asked to fix anything
+    // first: the upgrade modal opens, and publishing carries on once the
+    // server says the plan is active (billing epic 2.4/2.5).
     if (!canGoLive(ws!)) {
-      showToast(builderCopy(isAr).publication.planRequired, "danger");
+      askToUpgrade();
       return;
     }
     // Must fix stops here, and the server refuses the same list if this is skipped.
@@ -317,7 +330,7 @@ export function useBuilderPage(slug: string) {
     }
     const result = await publishGuideline(ws!.id);
     if (!result.ok && result.planRequired) {
-      showToast(builderCopy(isAr).publication.planRequired, "danger");
+      askToUpgrade();
       return;
     }
     if (!result.ok && result.blocked) {
