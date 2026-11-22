@@ -168,3 +168,31 @@ test("at 360px: one column, header, then what needs attention, then the rest", a
   expect(path).toBeLessThan(soFar);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
+
+test("a block that fails shows its own error and retry; the rest of the page works", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+  seed(brand, FULL);
+  answeredForm(brand);
+  setLang(studio, "en");
+  await signIn(page, studio);
+  // The server names the blocks it couldn't work out; here two of them, once.
+  let broken = true;
+  await page.route("**/brands/*/overview/", async (route) => {
+    const response = await route.fetch();
+    const body = await response.json();
+    if (broken) Object.assign(body, { errors: ["attention", "activity"], attention: [], activity: [] });
+    await route.fulfill({ response, json: body });
+  });
+  await open(page, brand);
+  const attention = page.getByRole("heading", { name: "Needs your attention" }).locator("xpath=ancestor::section[1]");
+  await expect(attention).toContainText("This part couldn't load.");
+  await expect(page.getByRole("heading", { name: "Recent activity" }).locator("xpath=ancestor::section[1]")).toContainText("This part couldn't load.");
+  // Everything else is there and works.
+  await expect(page.getByText("The coffee of Wadi Rum, for people who travel slowly.")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Project path" })).toBeVisible();
+  await expect(primaries(page)).toHaveText("Review drafts");
+  broken = false;
+  await attention.getByRole("button", { name: /Try again|Retry/ }).click();
+  await expect(attention.getByRole("link").first()).toContainText("2 drafts waiting for review");
+});
