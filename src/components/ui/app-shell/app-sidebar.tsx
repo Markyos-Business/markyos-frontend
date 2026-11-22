@@ -267,7 +267,9 @@ export function AppSidebar({
     >
       {/* Who this is: the brand's mark, its name and plan, a way to another brand, and the collapse control. */}
       <div className={`flex shrink-0 items-center gap-space-3 py-space-6 ${collapsed ? "flex-col" : "px-space-2"}`}>
-        <Link href={titleHref} title={collapsed ? title : undefined} className={`mk-tap min-w-0 gap-space-4 ${collapsed ? "justify-center" : "flex-1"}`}>
+        {/* The link takes the tile's 8px corner (mk-shaped), so its press and focus tint is
+            one rounded shape with the tile, not a square block behind it (review, 22 Nov 2026). */}
+        <Link href={titleHref} title={collapsed ? title : undefined} className={`mk-tap mk-shaped min-w-0 gap-space-4 rounded-lg ${collapsed ? "justify-center" : "flex-1"}`}>
           <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-surface-2 text-body font-medium text-text">
             {avatar ?? <MarkyosLogo variant="mark" className="h-[22px]" isAr={isAr} hideBeta />}
           </span>
