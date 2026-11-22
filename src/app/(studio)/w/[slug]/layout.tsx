@@ -8,6 +8,7 @@ import { AppLayout, Sidebar } from "@/features/shell";
 import { UiStringsProvider } from "@/components/ui";
 import { canOpenBrandPage } from "@/lib/data/brandNavigation";
 import { BrandAccessNotice, BrandLoading, ClientBrandHome } from "@/features/shell";
+import { PaymentFailedBanner } from "@/features/billing";
 
 export default function WorkspaceLayout({
   children,
@@ -147,6 +148,8 @@ export default function WorkspaceLayout({
             : `You're a ${role} on this brand, so it's view only. Ask the owner if you need to make changes.`}
         </div>
       )}
+      {/* A failed renewal in its grace, for the owner (billing epic 3.2). */}
+      {!focused && <PaymentFailedBanner ws={ws} isAr={isAr} />}
       {canOpenBrandPage(role, pathname, ws.slug) ? children : <BrandAccessNotice workspace={ws} isAr={isAr} />}
     </AppLayout>
     </UiStringsProvider>

@@ -98,6 +98,7 @@ import { createLocalAdapter } from "@/lib/data/adapters/localAdapter";
 // note on `API_ENABLED`. Brands stay in this browser until they move too.
 import { API_ENABLED, ApiError, api, refreshSession, setSessionExpiredHandler } from "@/lib/api/client";
 import { classifyLoginFailure } from "@/features/auth/utils/login-failure";
+import { billingCopy } from "@/features/billing/copy";
 import * as authApi from "@/features/auth/api/auth.api";
 import type {
   AuthOutcome,
@@ -704,6 +705,8 @@ export interface SyncNotice {
   /** Both languages: the toast layer picks the reader's. */
   message: { en: string; ar: string };
   tone: "default" | "danger";
+  /** A way forward, e.g. to the tab that fixes the refusal. */
+  action?: { label: { en: string; ar: string }; href: string };
 }
 
 function withServerWorkspaces(state: AppState, server: Workspace[]): AppState {
@@ -766,8 +769,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const [slugMoves, setSlugMoves] = useState<Record<string, string>>({});
   const [syncNotice, setSyncNotice] = useState<SyncNotice | null>(null);
-  const notify = (message: SyncNotice["message"], tone: SyncNotice["tone"] = "danger") =>
-    setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message, tone }));
+  const notify = (message: SyncNotice["message"], tone: SyncNotice["tone"] = "danger", action?: SyncNotice["action"]) =>
+    setSyncNotice((prev) => ({ id: (prev?.id ?? 0) + 1, message, tone, action }));
   /** When a viewer's edit was last refused, so a burst of them says so once. */
   const lastRefusedEdit = useRef(0);
   const [repo] = useState<BrandRepository>(() =>
@@ -785,11 +788,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               setSlugMoves((moves) => ({ ...moves, [previousSlug]: ws.slug }));
             }
           },
-          onRefused: (ws, err) =>
+          onRefused: (ws, err) => {
+            // A transfer refused because the brand has an active plan (D4):
+            // say why and lead to cancelling it, not a generic failure.
+            if ((err.data as { code?: unknown } | null)?.code === "transfer_blocked_billing") {
+              const en = billingCopy(false).transfer;
+              const ar = billingCopy(true).transfer;
+              notify({ en: en.body(ws.name), ar: ar.body(ws.name) }, "danger", {
+                label: { en: en.action, ar: ar.action },
+                href: `/w/${ws.slug}/settings?tab=billing&cancel=1`,
+              });
+              return;
+            }
             notify({
               en: `"${ws.name}" wasn't saved: ${errorText(err, "en")}`,
               ar: `لم تُحفظ التغييرات على «${ws.name}». ${errorText(err, "ar")}`,
-            }),
+            });
+          },
           // Taken off the team: the brand leaves this browser too.
           onLost: (ws) => {
             setState((prev) => ({ ...prev, workspaces: prev.workspaces.filter((w) => w.id !== ws.id) }));

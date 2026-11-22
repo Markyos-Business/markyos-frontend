@@ -1,22 +1,16 @@
 "use client";
 
-import { AlertBanner, Badge, Button, ConfirmButton, formatDate, LinkButton, Row, Section } from "@/components/ui";
+import { AlertBanner, Badge, Button, formatDate, Row, Section } from "@/components/ui";
 import type { BadgeTone } from "@/components/ui";
 import { formatRelative } from "@/lib/utils";
 import type { Workspace } from "@/types";
 import { formatMoney } from "@/lib/i18n/format";
 import { usePlans, useUpgrade } from "@/features/billing";
-import { usePayPalSubscription } from "../../hooks/use-paypal-subscription";
 import { PlanCard } from "./plan-card";
 
 type BrandPlanOptionsProps = { ws: Workspace; typeLabel: string; isAr: boolean };
 
-/** Where a PayPal subscriber changes the card or account PayPal charges. */
-const PAYPAL_AUTOPAY = process.env.NEXT_PUBLIC_PAYPAL_ENV === "live"
-  ? "https://www.paypal.com/myaccount/autopay/"
-  : "https://www.sandbox.paypal.com/myaccount/autopay/";
-
-/** PayPal statuses that are still running (and can be cancelled). */
+/** PayPal statuses that are still running. */
 const RUNNING = ["approval_pending", "approved", "active", "suspended"];
 
 const STATUS: Record<string, { en: string; ar: string; tone: BadgeTone }> = {
@@ -32,8 +26,8 @@ const STATUS: Record<string, { en: string; ar: string; tone: BadgeTone }> = {
  * One brand's plan: a monthly subscription through PayPal.
  *
  * Everything shown comes from the billing the server verified with PayPal.
- * A brand that already has a Project Pass or a Stripe subscription keeps it
- * and can still manage it; new plans are PayPal subscriptions only.
+ * Managing it (payment method, cancel, resume) is in the brand's Billing tab
+ * (billing epic 3.3); this links there.
  */
 export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps) {
   const t = (en: string, ar: string) => (isAr ? ar : en);
@@ -43,7 +37,6 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
   const plans = usePlans();
   const monthly = plans && ws.ownerAccountType ? plans.types[ws.ownerAccountType].monthly : null;
   const price = plans && monthly !== null ? formatMoney(monthly / 100, plans.currency.toUpperCase(), isAr ? "ar" : "en") : "—";
-  const paypal = usePayPalSubscription(ws, isAr);
   const { plan, purchasedAt, provider, subscriptionStatus, currentPeriodEnd, paymentFailedAt } = ws.billing;
   const onPayPal = provider === "paypal" && Boolean(subscriptionStatus);
   const running = onPayPal && RUNNING.includes(subscriptionStatus ?? "");
@@ -86,34 +79,17 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
           tone="warning"
           title={t("The last payment failed", "تعذّر الدفع الأخير")}
           message={t(
-            "PayPal is retrying it. The plan stays active until the end of the paid period; update the payment method in PayPal to keep it.",
-            "يعيد PayPal المحاولة. تبقى الخطة مفعّلة حتى نهاية الفترة المدفوعة، وحدّث وسيلة الدفع في PayPal للاحتفاظ بها.",
+            "PayPal is retrying it. Update the payment method from Manage billing to keep the plan.",
+            "يعيد PayPal المحاولة. حدّث وسيلة الدفع من «إدارة الفوترة» للاحتفاظ بالخطة.",
           )}
         />
       )}
 
-      {running && (
-        <div className="flex flex-wrap gap-space-3">
-          <LinkButton variant="secondary" href={PAYPAL_AUTOPAY} external>
-            {t("Update payment method in PayPal", "تحديث وسيلة الدفع في PayPal")}
-          </LinkButton>
-          <ConfirmButton
-            mode="dialog"
-            variant="secondary"
-            disabled={paypal.busy !== null}
-            onConfirm={paypal.cancel}
-            dialogTitle={t("Cancel this subscription?", "إلغاء هذا الاشتراك؟")}
-            dialogDescription={t(
-              "PayPal stops charging. The plan stays active until the end of the period already paid for.",
-              "يتوقف PayPal عن الخصم، وتبقى الخطة مفعّلة حتى نهاية الفترة المدفوعة.",
-            )}
-            cancelLabel={t("Keep subscription", "إبقاء الاشتراك")}
-            confirmLabel={t("Cancel subscription", "إلغاء الاشتراك")}
-          >
-            {paypal.busy === "cancelling" ? t("Cancelling…", "جارٍ الإلغاء…") : t("Cancel subscription", "إلغاء الاشتراك")}
-          </ConfirmButton>
-        </div>
-      )}
+      <div className="flex flex-wrap gap-ctl-row">
+        <Button variant="secondary" href={`/w/${ws.slug}/settings?tab=billing`}>
+          {t("Manage billing", "إدارة الفوترة")}
+        </Button>
+      </div>
 
       {/* Stripe plans are retired: honoured to the end of 2026, stopped by us on request. */}
       {!onPayPal && subscriptionStatus && (
