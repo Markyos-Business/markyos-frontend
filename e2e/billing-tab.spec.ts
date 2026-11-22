@@ -1,6 +1,9 @@
 import { call, expect, newBrand, newStudio, payBrand, signIn, test, type Brand, type Studio } from "./fixtures";
 import {
+  APPROVAL_URL,
   awaitingAnswer,
+  compAnswer,
+  pendingChangeAnswer,
   cancelledAnswer,
   day,
   DAY,
@@ -312,4 +315,38 @@ test("a retired Stripe plan shows what the server says and the contact note, no 
   await expect(plan.getByText(/bought before payments moved to PayPal/)).toBeVisible();
   await expect(plan.getByRole("button")).toHaveCount(0);
   await expect(plan.getByRole("link")).toHaveCount(0);
+});
+
+test("a comped brand says until when and offers nothing to manage", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  await mockBrandBilling(page, compAnswer);
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+  const plan = page.locator("section", { has: page.getByRole("heading", { name: "Plan", exact: true }) });
+  await expect(plan.getByText(`Complimentary plan until ${day(NOW + 90 * DAY)}`)).toBeVisible();
+  await expect(plan.getByText("Complimentary plan", { exact: true })).toBeVisible();
+  await expect(plan.getByRole("button")).toHaveCount(0);
+  await expect(plan.getByRole("link")).toHaveCount(0);
+  await expect(plan.getByText("Monthly amount")).toHaveCount(0);
+});
+
+test("a price that moves at renewal is announced, with PayPal's approval when needed", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  payBrand(brand.id);
+  let approval: string | null = APPROVAL_URL;
+  await mockBrandBilling(page, () => pendingChangeAnswer(approval));
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+  const note = page.getByRole("status").filter({ hasText: "The price changes at renewal" });
+  await expect(note).toContainText(`From ${day(NEXT)} this plan is`);
+  await expect(note).toContainText(/USD\s*49 a month \(Studio\)/);
+  await expect(note).toContainText("PayPal needs your approval");
+  await expect(note.getByRole("link", { name: /Approve the new price at PayPal/ })).toHaveAttribute("href", APPROVAL_URL);
+
+  approval = null;
+  await page.reload();
+  await expect(page.getByText("The price changes at renewal")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Approve the new price/ })).toHaveCount(0);
 });

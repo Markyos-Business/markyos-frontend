@@ -127,3 +127,38 @@ export function failedPayment(brandId: string) {
   );
 }
 
+
+/* Phase 4: a comp and a price that moves at renewal (D2), on the brand's Billing tab. */
+
+export function compAnswer() {
+  const until = NOW + 90 * DAY;
+  return {
+    billing: { plan: "subscription", provider: "comp", subscriptionStatus: "active", paidUntil: until },
+    subscription: {
+      provider: "comp",
+      status: "active",
+      amount: null,
+      currency: "usd",
+      nextChargeAt: null,
+      accessUntil: until,
+      payerEmail: null,
+      paymentFailedAt: null,
+      graceEndsAt: null,
+      cancelledAt: null,
+      cancelReason: null,
+      resumeStartsAt: null,
+    },
+    actions: { subscribe: false, cancel: false, resume: false, reactivate: false, updatePaymentUrl: null },
+    history: [],
+  };
+}
+
+export const APPROVAL_URL = "https://www.sandbox.paypal.com/webapps/billing/subscriptions/update?ba_token=BA-E2E";
+
+export function pendingChangeAnswer(approvalUrl: string | null = APPROVAL_URL) {
+  const paid = paidAnswer();
+  return {
+    ...paid,
+    subscription: { ...paid.subscription, pendingPlanChange: { accountType: "studio", amount: 4900, effectiveAt: NEXT, approvalUrl } },
+  };
+}

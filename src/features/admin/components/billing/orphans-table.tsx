@@ -41,9 +41,9 @@ export function OrphansTable({ page }: { page: BillingPage }) {
           <span className="text-text-muted">{o.noMoney}</span>
         ),
     },
-    { key: "brand", header: o.brand, cell: (row) => <span dir="ltr" className="text-text-muted">{row.workspaceId ?? "—"}</span>, className: "hidden xl:table-cell" },
-    { key: "firstSeen", header: o.firstSeen, cell: (row) => <span className="tabular-nums text-text-muted">{day(row.firstSeenAt, lang)}</span>, className: "hidden md:table-cell" },
-    { key: "alerted", header: o.alerted, cell: (row) => <span className="tabular-nums text-text-muted">{row.alertedAt ? day(row.alertedAt, lang) : o.notYet}</span>, className: "hidden lg:table-cell" },
+    { key: "brand", header: o.brand, cell: (row) => <span dir="ltr" className="text-text-muted">{row.workspaceId ?? "—"}</span>, className: "hidden 2xl:table-cell" },
+    { key: "firstSeen", header: o.firstSeen, cell: (row) => <span className="tabular-nums text-text-muted">{day(row.firstSeenAt, lang)}</span>, className: "hidden lg:table-cell" },
+    { key: "alerted", header: o.alerted, cell: (row) => <span className="tabular-nums text-text-muted">{row.alertedAt ? day(row.alertedAt, lang) : o.notYet}</span>, className: "hidden xl:table-cell" },
     { key: "cancelled", header: o.cancelled, cell: (row) => <span className="tabular-nums text-text-muted">{row.cancelledAt ? day(row.cancelledAt, lang) : o.notYet}</span> },
   ];
 

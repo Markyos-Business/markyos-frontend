@@ -134,6 +134,13 @@ function Compare({ checkout: c }: { checkout: AdminCheckoutDetail }) {
   const { b, lang, isAr } = useAdminBillingLang();
   const d = b.detail;
   const lastPaid = c.payments.find((p) => p.kind === "sale");
+  // Amount over date, so mixed-direction text never runs together in Arabic.
+  const paid = (amount: string, date: string) => (
+    <span className="inline-flex flex-col">
+      <span>{amount}</span>
+      <span className="text-caption text-text-muted">{date}</span>
+    </span>
+  );
   type Row = { key: string; field: string; ours: ReactNode; paypal: ReactNode };
   const rows: Row[] = [
     { key: "status", field: d.status, ours: <CheckoutStatusBadge status={c.status} refused={c.refused} />, paypal: c.paypal ? <CheckoutStatusBadge status={c.paypal.status} /> : "—" },
@@ -141,8 +148,8 @@ function Compare({ checkout: c }: { checkout: AdminCheckoutDetail }) {
     {
       key: "last",
       field: d.lastPayment,
-      ours: lastPaid ? `${money(lastPaid.amount, lastPaid.currency, lang)} · ${day(lastPaid.occurredAt, lang)}` : "—",
-      paypal: c.paypal?.lastPaymentAt ? `${money(c.paypal.lastPaymentAmount, c.currency, lang)} · ${day(c.paypal.lastPaymentAt, lang)}` : "—",
+      ours: lastPaid ? paid(money(lastPaid.amount, lastPaid.currency, lang), day(lastPaid.occurredAt, lang)) : "—",
+      paypal: c.paypal?.lastPaymentAt ? paid(money(c.paypal.lastPaymentAmount, c.currency, lang), day(c.paypal.lastPaymentAt, lang)) : "—",
     },
     { key: "failed", field: d.failedPayments, ours: c.paymentFailedAt ? day(c.paymentFailedAt, lang) : "—", paypal: c.paypal ? String(c.paypal.failedPayments) : "—" },
   ];
