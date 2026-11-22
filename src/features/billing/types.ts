@@ -10,6 +10,8 @@ export type Plans = {
   /** False where the staging switch lifts the Free rules. */
   freeRulesApply: boolean;
   types: Record<AccountType, { monthly: number; limits: { brands: number | null; editors: number | null } }>;
+  /** Which PayPal app the server bills through; the button must load the same one (billing epic 4.2). */
+  paypal?: { clientId: string | null; env: "sandbox" | "live" };
 };
 
 /** Why the upgrade modal opened: each paywall moment says what it unlocks. */
