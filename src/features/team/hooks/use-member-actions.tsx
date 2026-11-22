@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useAccountCopy } from "@/contexts/useAccountCopy";
+import { billingCopy, transferBlocked } from "@/features/billing";
 import { useAppActions } from "@/contexts/AppContext";
 import { useDialog, useToast } from "@/components/ui";
 import type { TeamMember, TeamRole, Workspace } from "@/types";
@@ -15,6 +17,7 @@ export function useMemberActions(ws: Workspace, isAr: boolean) {
   const { removeTeamMember, setTeamRole, transferOwnership } = useAppActions();
   const { showToast } = useToast();
   const { confirm } = useDialog();
+  const router = useRouter();
   const copy = useAccountCopy(isAr);
   const t = (en: string, ar: string) => (isAr ? ar : en);
   const roleName = (r: TeamRole) => (r === "client" ? copy.reviewerLabel : ROLE_LABELS[r][isAr ? "ar" : "en"]);
@@ -29,6 +32,14 @@ export function useMemberActions(ws: Workspace, isAr: boolean) {
    * click. A misclick can repeat a click; nothing can undo the result.
    */
   async function transfer(m: TeamMember) {
+    // An active plan stays with its payer: cancel it at the period end first (D4).
+    // The server refuses the same transfer (transfer_blocked_billing).
+    if (transferBlocked(ws.billing)) {
+      const words = billingCopy(isAr).transfer;
+      const go = await confirm({ title: words.title, body: words.body(ws.name), confirmLabel: words.action, cancelLabel: words.close, isAr });
+      if (go) router.push(`/w/${ws.slug}/settings?tab=billing&cancel=1`);
+      return;
+    }
     const who = m.name || m.email;
     const ok = await confirm({
       title: isAr ? `نقل ملكية ${ws.name}؟` : `Transfer ${ws.name}?`,

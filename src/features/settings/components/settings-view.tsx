@@ -12,10 +12,19 @@ import { SubdomainSection } from "./access/subdomain-section";
 import { WhiteLabelSection } from "./billing/white-label-section";
 import { OwnerOnly } from "./owner-only";
 import { VersionHistorySection } from "@/features/team";
+import { BrandBillingTab } from "@/features/billing";
 
 /** A brand's settings, section by section. Keyed by brand so drafts start over on another brand. */
-export function SettingsView({ ws, isAr, typeLabel, clientLink, canGovern, canEdit, actorName, tab }: SettingsViewProps) {
+export function SettingsView({ ws, isAr, typeLabel, clientLink, canGovern, canEdit, actorName, tab, isOwner }: SettingsViewProps) {
   const locked = !canGovern;
+  if (tab === "billing" && isOwner) {
+    return (
+      <div key={ws.id} className="flex min-h-0 max-w-[720px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
+        <BrandBillingTab ws={ws} isAr={isAr} />
+        <AppFooter lang={isAr ? "ar" : "en"} className="mt-auto" />
+      </div>
+    );
+  }
   if (tab === "activity") {
     return (
       <div key={ws.id} className="flex min-h-0 max-w-[720px] flex-1 flex-col gap-6 overflow-auto px-7 py-6.5">
@@ -48,7 +57,7 @@ export function SettingsView({ ws, isAr, typeLabel, clientLink, canGovern, canEd
       <GuidelineDesignSection ws={ws} isAr={isAr} />
       {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><SubdomainSection ws={ws} isAr={isAr} /></OwnerOnly>}
       {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><CustomDomainSection ws={ws} isAr={isAr} /></OwnerOnly>}
-      <BillingSection ws={ws} isAr={isAr} />
+      <BillingSection ws={ws} isAr={isAr} isOwner={isOwner} />
       <OwnerOnly locked={locked}><WhiteLabelSection ws={ws} typeLabel={typeLabel} isAr={isAr} /></OwnerOnly>
       {SHOW_UNFINISHED_SETTINGS && <OwnerOnly locked={locked}><DeveloperSection ws={ws} isAr={isAr} /></OwnerOnly>}
       <DesignTokensSection ws={ws} isAr={isAr} canGovern={canGovern} />

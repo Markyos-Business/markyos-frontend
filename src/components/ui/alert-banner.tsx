@@ -15,6 +15,8 @@ type AlertBannerProps = {
   title?: string;
   /** A button at the end: Retry, Reload. */
   action?: ReactNode;
+  /** `below` puts the action under the message, for long messages and phone widths. Default `end`. */
+  actionPlacement?: "end" | "below";
   className?: string;
 };
 
@@ -34,7 +36,7 @@ const TONES: Record<AlertTone, { box: string; icon: string; iconInk: string }> =
  * cleared, so the content below slides rather than jumps. It is announced the
  * moment it appears.
  */
-const AlertBanner = ({ message, tone = "danger", title, action, className = "" }: AlertBannerProps) => {
+const AlertBanner = ({ message, tone = "danger", title, action, actionPlacement = "end", className = "" }: AlertBannerProps) => {
   // The last message stays readable while the banner closes over it.
   const [shown, setShown] = useState(message);
   if (message && message !== shown) setShown(message);
@@ -62,8 +64,9 @@ const AlertBanner = ({ message, tone = "danger", title, action, className = "" }
                 <div className="flex min-w-0 flex-1 flex-col gap-space-1">
                   {title && <strong className="font-medium">{title}</strong>}
                   <div>{shown}</div>
+                  {action && actionPlacement === "below" && <div className="mt-space-3 flex flex-wrap gap-ctl-row">{action}</div>}
                 </div>
-                {action && <div className="shrink-0">{action}</div>}
+                {action && actionPlacement === "end" && <div className="shrink-0">{action}</div>}
               </>
             ) : (
               shown

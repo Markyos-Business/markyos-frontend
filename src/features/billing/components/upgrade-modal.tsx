@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Icon, Modal, useUiStrings } from "@/components/ui";
+import { useState } from "react";
+import { Button, formatDayMonth, Icon, Modal, useUiStrings } from "@/components/ui";
 import { formatMoney } from "@/lib/i18n/format";
 import { useSession } from "@/contexts/AppContext";
 import { roleOn } from "@/lib/data/access";
@@ -19,12 +20,15 @@ export function UpgradeModal({
   ws,
   reason,
   count = 1,
+  startsAt,
   onClose,
   onDone,
 }: {
   ws: Workspace;
   reason: UpgradeReason;
   count?: number;
+  /** For resume: when the server says the first charge lands (ms). */
+  startsAt?: number | null;
   onClose: () => void;
   onDone?: () => void;
 }) {
@@ -34,7 +38,11 @@ export function UpgradeModal({
   const words = copy.reason[reason];
   const owner = roleOn(ws, useSession()) === "owner";
   const type = ws.ownerAccountType ? plans?.types[ws.ownerAccountType] : undefined;
-  const subscribed = ws.billing?.plan === "subscription";
+  const resume = reason === "resume";
+  // A cancelled plan is still paid to its end, so resuming is done when the new subscription is.
+  const [resumed, setResumed] = useState(false);
+  const subscribed = resume ? resumed : ws.billing?.plan === "subscription";
+  const date = startsAt ? formatDayMonth(new Date(startsAt), isAr ? "ar" : "en", true) : undefined;
 
   const done = () => {
     onClose();
@@ -46,7 +54,7 @@ export function UpgradeModal({
     <Modal
       onClose={onClose}
       title={words.title}
-      description={reason === "brand_limit" && count > 1 ? copy.manyFree(count, ws.name) : words.body(ws.name)}
+      description={reason === "brand_limit" && count > 1 ? copy.manyFree(count, ws.name) : words.body(ws.name, date)}
       size="sm"
       footer={
         subscribed ? (
@@ -77,7 +85,7 @@ export function UpgradeModal({
         {!owner ? (
           <p className="text-body text-text-muted">{copy.notOwner}</p>
         ) : (
-          <CheckoutFlow ws={ws} isAr={isAr} copy={copy} />
+          <CheckoutFlow ws={ws} isAr={isAr} copy={copy} mode={resume ? "resume" : "subscribe"} onActive={resume ? () => setResumed(true) : undefined} />
         )}
       </div>
     </Modal>

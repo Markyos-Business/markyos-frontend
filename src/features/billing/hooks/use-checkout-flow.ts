@@ -21,6 +21,9 @@ export function outcomeOf(answer: Answer): FlowState | null {
   return null; // approval_pending, approved, none (PayPal or the webhook still on its way)
 }
 
+/** The reason sent when someone abandons a checkout PayPal hasn't confirmed (security L9). */
+export const ABANDON_REASON = "abandoned_checkout";
+
 /** Poll every few seconds for a minute, then say it's slow (never stuck). */
 export const POLL_MS = 3000;
 export const POLL_FOR_MS = 60_000;
@@ -104,7 +107,8 @@ export function useCheckoutFlow(ws: Workspace, onActive?: () => void) {
   const cancel = useCallback(async () => {
     stop();
     try {
-      const answer = await api<Answer>("/billing/paypal/cancel/", { method: "POST", body: { brandId: ws.id } });
+      // Abandoning a checkout PayPal hasn't confirmed; the server takes this reason only for rows not yet active.
+      const answer = await api<Answer>("/billing/paypal/cancel/", { method: "POST", body: { brandId: ws.id, reason: ABANDON_REASON } });
       applyServerBilling(ws.id, answer.billing);
       setState("cancelled");
     } catch {
