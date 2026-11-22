@@ -8,14 +8,14 @@ import type { TeamMember, Workspace } from "@/types";
 import { ROLES, ROLE_TONE } from "../../constants";
 import { useMemberActions } from "../../hooks/use-member-actions";
 
-type TeamTableProps = { ws: Workspace; isAr: boolean; canGovern: boolean; editorsFull: boolean };
+type TeamTableProps = { ws: Workspace; isAr: boolean; canGovern: boolean; editorsFull: boolean; editorsFullNote?: string };
 
 /**
  * The brand's people as a table: who they are and their role. An owner picks
  * the role in the row and finds Make owner and Remove in the row's menu; anyone
  * else sees the role as a badge.
  */
-export function TeamTable({ ws, isAr, canGovern, editorsFull }: TeamTableProps) {
+export function TeamTable({ ws, isAr, canGovern, editorsFull, editorsFullNote }: TeamTableProps) {
   const { roleName, transfer, remove, setRole } = useMemberActions(ws, isAr);
   const t = (en: string, ar: string) => (isAr ? ar : en);
   // The person whose role is being changed, and the role picked in the dialog.
@@ -103,7 +103,11 @@ export function TeamTable({ ws, isAr, canGovern, editorsFull }: TeamTableProps) 
         value={role}
         onChange={(v) => setRoleChoice(v as TeamMember["role"])}
         // Owner isn't offered: it moves only by Make owner.
-        options={ROLES.filter((r) => r !== "owner").map((r) => ({ value: r, label: roleName(r), disabled: r === "editor" && editorsFull && changing?.role !== "editor" }))}
+        options={ROLES.filter((r) => r !== "owner").map((r) => {
+          // A full or unpaid brand says why Editor is off (billing epic).
+          const off = r === "editor" && editorsFull && changing?.role !== "editor";
+          return { value: r, label: roleName(r), disabled: off, description: off ? editorsFullNote : undefined };
+        })}
       />
     </FormDialog>
     </>

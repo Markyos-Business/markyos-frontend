@@ -25,7 +25,7 @@ export function TeamSection({ ws, isAr, canGovern, editorsFull, editorsFullNote,
       {ws.team.length === 0 ? (
         <EmptyHint>{canGovern ? t("Just you so far. Invite editors to collaborate or reviewers to read and leave feedback.", "أنت وحدك حتى الآن. ادعُ محرّرين للعمل معك أو مراجعين للقراءة وإبداء الملاحظات.") : t("No team members yet.", "لا يوجد أعضاء في الفريق بعد.")}</EmptyHint>
       ) : (
-        <TeamTable ws={ws} isAr={isAr} canGovern={canGovern} editorsFull={editorsFull} />
+        <TeamTable ws={ws} isAr={isAr} canGovern={canGovern} editorsFull={editorsFull} editorsFullNote={editorsFullNote} />
       )}
     </Section>
   );

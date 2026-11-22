@@ -1,7 +1,9 @@
 "use client";
 
-import { useAppActions } from "@/contexts/AppContext";
-import { Icon, Row, Section, Switch } from "@/components/ui";
+import { useAppActions, useSession } from "@/contexts/AppContext";
+import { roleOn } from "@/lib/data/access";
+import { Button, Icon, Row, Section, Switch } from "@/components/ui";
+import { billingCopy, useUpgrade } from "@/features/billing";
 import type { Workspace } from "@/types";
 
 /**
@@ -17,6 +19,10 @@ export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; type
   const { setBrandingCredit } = useAppActions();
   const paid = ws.billing.plan !== "free";
   const removed = paid && !ws.brandingCredit;
+  const upgrade = useUpgrade();
+  // Only the owner can subscribe; others see the locked switch and the hint.
+  const session = useSession();
+  const canSubscribe = !paid && roleOn(ws, session) === "owner";
   return (
     <Section title={t("Made with Markyos badge", "شارة «صُنع بماركيوس»")} icon="id-badge">
       <Row
@@ -30,8 +36,8 @@ export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; type
                 )
               : t("Your public pages show the “Made with Markyos” badge. Switch on to remove it.", "تظهر شارة «صُنع بماركيوس» على صفحاتك العامة. فعّله لإزالتها.")
             : t(
-                "Public pages from a free brand show a small “Made with Markyos” badge. Upgrade to remove it from every page at once.",
-                "تظهر شارة «صُنع بماركيوس» الصغيرة على الصفحات العامة للعلامات المجانية. قم بالترقية لإزالتها من كل الصفحات مرة واحدة."
+                "Public pages from a brand without a plan show a small “Made with Markyos” badge. Subscribe this brand to remove it from every page at once.",
+                "تظهر شارة «صُنع بماركيوس» الصغيرة على الصفحات العامة للعلامات بلا خطة. اشترك لهذه العلامة لإزالتها من كل الصفحات مرة واحدة."
               )
         }
         right={
@@ -41,6 +47,11 @@ export function WhiteLabelSection({ ws, typeLabel, isAr }: { ws: Workspace; type
           </span>
         }
       />
+      {canSubscribe && (
+        <Button variant="secondary" size="sm" className="self-start" onClick={() => upgrade.open({ ws, reason: "badge" })}>
+          {billingCopy(isAr).reason.billing.title}
+        </Button>
+      )}
     </Section>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
-import { useLimits, useUpgrade } from "@/features/billing";
+import { useFreeBrandGate, useLimits } from "@/features/billing";
 import { isReviewerOnly, roleOn } from "@/lib/data/access";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../../constants";
@@ -20,7 +20,7 @@ export function useBrandsPage() {
   const account = useCurrentAccount();
   const c = brandsCopyFor(accountTypeOf(account), lang);
   const limits = useLimits(account);
-  const upgrade = useUpgrade();
+  const gate = useFreeBrandGate();
 
   useEffect(() => {
     if (hydrated && !state.session) router.replace("/login");
@@ -42,10 +42,7 @@ export function useBrandsPage() {
   const mine = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId);
   const owned = mine.length;
   const atLimit = brandLimit !== null && owned >= brandLimit;
-  // The Free rule (billing epic): one brand without a plan per account.
-  // Subscribing one makes room, so the upgrade modal opens on it.
-  const unpaid = mine.filter((w) => w.billing?.plan === "free");
-  const needsPlan = limits.freeBrands !== null && unpaid.length >= limits.freeBrands ? unpaid[0] : undefined;
+
   const home = lang === "ar" ? type.arHome : type.home;
   const limitNote = c.limitNote(lang === "ar" ? type.arLabel : type.label, brandLimit, brandLimit === 1 ? home.noun : home.nounPlural);
 
@@ -66,9 +63,10 @@ export function useBrandsPage() {
       lang,
       onSort: setSort,
       onNew: () => {
+        // The account type's limit says so on /brands/new; the Free rule
+        // asks to subscribe a brand first (billing epic).
         if (atLimit) return router.push("/brands/new");
-        if (needsPlan) return upgrade.open({ ws: needsPlan, reason: "brand_limit", onDone: () => router.push("/brands/new") });
-        router.push("/brands/new");
+        gate(() => router.push("/brands/new"));
       },
       brands: workspaces.map((ws) => ({ workspace: ws, role: roleOn(ws, state.session) })),
       atLimit,

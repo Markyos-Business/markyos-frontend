@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { useStudioPage } from "@/contexts/pageGuards";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
-import { useLimits, useUpgrade } from "@/features/billing";
+import { useFreeBrandGate, useLimits } from "@/features/billing";
 import type { StartMode } from "../../constants";
 import { useBrandImport } from "../import/use-brand-import";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
@@ -19,7 +19,7 @@ export function useNewBrandPage() {
   const account = useCurrentAccount();
   const importer = useBrandImport();
   const limits = useLimits(account);
-  const upgrade = useUpgrade();
+  const gate = useFreeBrandGate();
   const [mode, setMode] = useState<StartMode>("scratch");
   const [name, setName] = useState("");
   const { isAr } = useInterfaceLang();
@@ -49,17 +49,11 @@ export function useNewBrandPage() {
     const trimmed = name.trim();
     if (!trimmed) return;
     // One brand without a plan per account (billing epic): the server
-    // refuses another, so subscribe the free one first, then carry on.
-    const unpaid = myWorkspaces.filter((w) => w.ownerAccountId === state.session?.accountId && w.billing?.plan === "free");
-    const create = () => {
+    // refuses another, so subscribe a free one first, then carry on.
+    gate(() => {
       const ws = createWorkspace(trimmed);
       router.push(`/w/${ws.slug}/overview`);
-    };
-    if (limits.freeBrands !== null && unpaid.length >= limits.freeBrands) {
-      upgrade.open({ ws: unpaid[0], reason: "brand_limit", onDone: create });
-      return;
-    }
-    create();
+    });
   }
 
   return {

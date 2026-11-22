@@ -2,6 +2,8 @@
 
 import { Button, Icon, Modal, useUiStrings } from "@/components/ui";
 import { formatMoney } from "@/lib/i18n/format";
+import { useSession } from "@/contexts/AppContext";
+import { roleOn } from "@/lib/data/access";
 import type { Workspace } from "@/types";
 import { billingCopy } from "../copy";
 import { usePlans } from "../hooks/use-plans";
@@ -16,11 +18,13 @@ import { CheckoutFlow } from "./checkout-flow";
 export function UpgradeModal({
   ws,
   reason,
+  count = 1,
   onClose,
   onDone,
 }: {
   ws: Workspace;
   reason: UpgradeReason;
+  count?: number;
   onClose: () => void;
   onDone?: () => void;
 }) {
@@ -28,7 +32,7 @@ export function UpgradeModal({
   const copy = billingCopy(isAr);
   const plans = usePlans();
   const words = copy.reason[reason];
-  const owner = ws.viewerRole === "owner";
+  const owner = roleOn(ws, useSession()) === "owner";
   const type = ws.ownerAccountType ? plans?.types[ws.ownerAccountType] : undefined;
   const subscribed = ws.billing?.plan === "subscription";
 
@@ -42,7 +46,7 @@ export function UpgradeModal({
     <Modal
       onClose={onClose}
       title={words.title}
-      description={words.body(ws.name)}
+      description={reason === "brand_limit" && count > 1 ? copy.manyFree(count, ws.name) : words.body(ws.name)}
       size="sm"
       footer={
         subscribed ? (

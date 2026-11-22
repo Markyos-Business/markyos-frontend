@@ -1,3 +1,4 @@
+import { plural } from "@/lib/i18n/plural";
 import type { UpgradeReason } from "./types";
 
 /*
@@ -16,10 +17,14 @@ type Copy = {
     slow: string;
     keepWaiting: string;
     cancel: string;
+    cancelAsk: string;
+    cancelAskBody: string;
     cancelled: string;
     failed: string;
     refused: string;
   };
+  /** brand_limit when an older account has several brands without a plan. */
+  manyFree: (count: number, brand: string) => string;
   notOwner: string;
   unavailable: string;
   close: string;
@@ -69,10 +74,13 @@ const en: Copy = {
     slow: "PayPal is still confirming. You can close this and carry on: the plan activates on its own, and the brand updates when it does.",
     keepWaiting: "Keep waiting",
     cancel: "Cancel the subscription",
+    cancelAsk: "Cancel this subscription?",
+    cancelAskBody: "PayPal stops it and nothing more is charged. The brand stays without a plan.",
     cancelled: "The subscription was cancelled. Nothing more will be charged.",
     failed: "The subscription couldn't be confirmed. Nothing was granted; try again or contact us.",
     refused: "PayPal's terms didn't match ours, so this subscription grants nothing and will be cancelled. Contact us if you were charged.",
   },
+  manyFree: (n, b) => `Your account has ${n} brands without a plan, and each needs one before you add another. Start with ${b}.`,
   notOwner: "Only the brand's owner can subscribe. Ask them to subscribe this brand.",
   unavailable: "PayPal payments aren't set up yet.",
   close: "Close",
@@ -83,27 +91,27 @@ const ar: Copy = {
   reason: {
     publish: {
       title: "النشر يحتاج إلى خطة",
-      body: (b) => `اشترك في خطة لـ${b} لينشر موقع دليلها. يمكنك مواصلة بنائها مجانًا.`,
+      body: (b) => `اشترك في خطة لـ«${b}» لينشر موقع دليلها. يمكنك مواصلة بنائها مجانًا.`,
       done: "متابعة النشر",
     },
     badge: {
       title: "إخفاء الشارة يحتاج إلى خطة",
-      body: (b) => `العلامة المشتركة تستطيع إخفاء شارة «صُنع بماركيوس». اشترك لـ${b} لإخفائها.`,
+      body: (b) => `العلامة المشتركة تستطيع إخفاء شارة «صُنع بماركيوس». اشترك لـ«${b}» لإخفائها.`,
       done: "تم",
     },
     editor: {
       title: "المحررون يحتاجون إلى خطة لهذه العلامة",
-      body: (b) => `العلامة بلا خطة ليس لها محررون. اشترك لـ${b} لإضافة محررين، أو أضفهم كمشاهدين.`,
+      body: (b) => `العلامة بلا خطة ليس لها محررون. اشترك لـ«${b}» لإضافة محررين، أو أضفهم كمشاهدين.`,
       done: "متابعة",
     },
     brand_limit: {
       title: "اشترك لإضافة علامة أخرى",
-      body: (b) => `في حسابك علامة واحدة بلا خطة: ${b}. اشترك لها لتضيف علامة أخرى.`,
+      body: (b) => `في حسابك علامة واحدة بلا خطة: «${b}». اشترك لها لتضيف علامة أخرى.`,
       done: "إضافة علامة",
     },
     billing: {
       title: "اشترك لهذه العلامة",
-      body: (b) => `خطة شهرية لـ${b}.`,
+      body: (b) => `خطة شهرية لـ«${b}».`,
       done: "تم",
     },
   },
@@ -122,10 +130,14 @@ const ar: Copy = {
     slow: "لا يزال PayPal يؤكد الاشتراك. يمكنك الإغلاق والمتابعة: تتفعّل الخطة تلقائيًا وتتحدّث العلامة عندها.",
     keepWaiting: "مواصلة الانتظار",
     cancel: "إلغاء الاشتراك",
+    cancelAsk: "أتريد إلغاء هذا الاشتراك؟",
+    cancelAskBody: "يوقفه PayPal ولن يُحصَّل أي مبلغ آخر، وتبقى العلامة بلا خطة.",
     cancelled: "أُلغي الاشتراك. لن تُحصَّل أي مبالغ أخرى.",
     failed: "تعذّر تأكيد الاشتراك. لم يُمنح شيء؛ حاول مجددًا أو تواصل معنا.",
     refused: "شروط PayPal لم تطابق شروطنا، فلا يمنح هذا الاشتراك شيئًا وسيُلغى. تواصل معنا إن خُصم منك مبلغ.",
   },
+  manyFree: (n, b) =>
+    `في حسابك ${plural("ar", n, { one: "علامة واحدة", two: "علامتان", few: "{n} علامات", many: "{n} علامة", other: "{n} علامة" })} بلا خطة، وتحتاج كل منها إلى خطة قبل إضافة علامة أخرى. ابدأ بـ«${b}».`,
   notOwner: "وحده مالك العلامة يستطيع الاشتراك. اطلب منه الاشتراك لهذه العلامة.",
   unavailable: "الدفع عبر PayPal غير مُعدّ بعد.",
   close: "إغلاق",

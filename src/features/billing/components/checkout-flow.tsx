@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { AlertBanner, Button, Icon, useToast } from "@/components/ui";
+import { AlertBanner, Button, Icon, useDialog, useToast } from "@/components/ui";
 import { api } from "@/lib/api/client";
 import { errorText } from "@/lib/api/errorText";
 import type { Workspace } from "@/types";
@@ -18,6 +18,19 @@ import { useCheckoutFlow } from "../hooks/use-checkout-flow";
  */
 export function CheckoutFlow({ ws, isAr, copy, onActive }: { ws: Workspace; isAr: boolean; copy: BillingCopy; onActive?: () => void }) {
   const { showToast } = useToast();
+  const { confirm } = useDialog();
+  // Cancelling stops PayPal billing: it asks first, like every destructive action.
+  const cancel = async () => {
+    const ok = await confirm({
+      title: copy.state.cancelAsk,
+      body: copy.state.cancelAskBody,
+      confirmLabel: copy.state.cancel,
+      cancelLabel: copy.state.keepWaiting,
+      tone: "danger",
+      isAr,
+    });
+    if (ok) await flow.cancel();
+  };
   const flow = useCheckoutFlow(ws, onActive);
   const reported = useRef(false);
 
@@ -37,7 +50,7 @@ export function CheckoutFlow({ ws, isAr, copy, onActive }: { ws: Workspace; isAr
         <AlertBanner tone="info" message={copy.state.slow} />
         <div className="flex flex-wrap gap-ctl-row">
           <Button variant="secondary" onClick={flow.keepWaiting}>{copy.state.keepWaiting}</Button>
-          <Button variant="ghost" onClick={() => void flow.cancel()}>{copy.state.cancel}</Button>
+          <Button variant="ghost" onClick={() => void cancel()}>{copy.state.cancel}</Button>
         </div>
       </div>
     );

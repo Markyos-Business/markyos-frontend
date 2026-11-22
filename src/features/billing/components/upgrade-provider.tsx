@@ -6,8 +6,9 @@ import type { Workspace } from "@/types";
 import type { UpgradeReason } from "../types";
 import { UpgradeModal } from "./upgrade-modal";
 
-type Request = { wsId: string; reason: UpgradeReason; onDone?: () => void };
-type Upgrade = { open: (request: { ws: Workspace; reason: UpgradeReason; onDone?: () => void }) => void };
+type Request = { wsId: string; reason: UpgradeReason; count?: number; onDone?: () => void };
+/** `count`: for brand_limit, how many brands are without a plan. */
+type Upgrade = { open: (request: { ws: Workspace; reason: UpgradeReason; count?: number; onDone?: () => void }) => void };
 
 const UpgradeContext = createContext<Upgrade | null>(null);
 
@@ -21,14 +22,14 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
   const { state } = useApp();
   const ws = request ? state.workspaces.find((w) => w.id === request.wsId) : undefined;
 
-  const open = useCallback<Upgrade["open"]>(({ ws, reason, onDone }) => setRequest({ wsId: ws.id, reason, onDone }), []);
+  const open = useCallback<Upgrade["open"]>(({ ws, reason, count, onDone }) => setRequest({ wsId: ws.id, reason, count, onDone }), []);
   const value = useMemo(() => ({ open }), [open]);
 
   return (
     <UpgradeContext.Provider value={value}>
       {children}
       {request && ws && (
-        <UpgradeModal ws={ws} reason={request.reason} onDone={request.onDone} onClose={() => setRequest(null)} />
+        <UpgradeModal ws={ws} reason={request.reason} count={request.count} onDone={request.onDone} onClose={() => setRequest(null)} />
       )}
     </UpgradeContext.Provider>
   );

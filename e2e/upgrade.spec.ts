@@ -39,3 +39,22 @@ test("editors on a brand without a plan point to subscribing it", async ({ page 
   await page.getByRole("button", { name: "Subscribe this brand", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Editors need a plan on this brand" })).toBeVisible();
 });
+
+test("hiding the badge on a brand without a plan offers the subscription", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio, "Sahara Tea");
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings`);
+  await page.getByRole("button", { name: "Subscribe this brand", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Removing the badge needs a plan" })).toBeVisible();
+});
+
+test("the new-brand form asks for a plan before creating a second free brand", async ({ page }) => {
+  const studio = await newStudio();
+  await newBrand(studio, "Sahara Tea");
+  await signIn(page, studio);
+  await page.goto("/brands/new");
+  await page.getByRole("textbox").first().fill("Nile Bakery");
+  await page.getByRole("button", { name: /Create|Continue/ }).first().click();
+  await expect(page.getByRole("dialog", { name: "Subscribe to add another brand" })).toBeVisible();
+});
