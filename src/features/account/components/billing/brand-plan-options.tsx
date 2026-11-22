@@ -108,8 +108,6 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
             price={price}
             period={t("/month", "/شهريًا")}
             description={t("A monthly plan for this brand's guideline. Cancel any time.", "خطة شهرية لدليل هذه العلامة، ويمكن إلغاؤها في أي وقت.")}
-            isAr={isAr}
-            active={false}
             action={
               <Button variant="primary" onClick={() => upgrade.open({ ws, reason: "billing" })}>
                 {t("Subscribe", "اشترك")}

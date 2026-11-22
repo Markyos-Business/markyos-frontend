@@ -104,7 +104,7 @@ export function createApiAdapter(options: {
   onRefused: (workspace: Workspace, err: ApiError) => void;
   /** A brand this account can no longer open: taken off its team. */
   onLost: (workspace: Workspace) => void;
-  /** Entitlements may change through Stripe without changing brand content. */
+  /** The plan can change (a PayPal payment, an admin's comp) without the brand's content changing. */
   onBilling: (workspaceId: string, billing: Workspace["billing"]) => void;
 }): ApiAdapter {
   const local = createLocalAdapter();

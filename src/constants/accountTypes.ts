@@ -38,13 +38,13 @@ const ACCOUNT_TYPES: Record<AccountType, AccountTypeInfo> = {
   freelancer: {
     label: "Freelancer",
     arLabel: "مستقل",
-    description: "Work solo on up to 3 client brands.",
-    arDescription: "اعمل منفردًا على 3 علامات لعملائك كحد أقصى.",
+    description: "Work solo on your client brands.",
+    arDescription: "اعمل منفردًا على علامات عملائك.",
     icon: "user",
     home: { title: "Your clients' brands", noun: "client brand", nounPlural: "client brands" },
     arHome: { title: "علامات عملائك", noun: "علامة عميل", nounPlural: "علامات عملاء" },
-    newBrand: { title: "Add a client brand", description: "One per client brand, up to 3. You can rename it later." },
-    arNewBrand: { title: "أضف علامة عميل", description: "واحدة لكل علامة عميل، حتى 3 علامات، ويمكنك إعادة تسميتها لاحقًا." },
+    newBrand: { title: "Add a client brand", description: "One per client brand. You can rename it later." },
+    arNewBrand: { title: "أضف علامة عميل", description: "واحدة لكل علامة عميل، ويمكنك إعادة تسميتها لاحقًا." },
   },
   company: {
     label: "Company",
