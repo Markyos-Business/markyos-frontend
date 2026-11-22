@@ -70,6 +70,14 @@ type Copy = {
     cancelledTitle: string;
     cancelledBody: (brand: string, date: string | null) => string;
     legacy: string;
+    /** A plan an admin gave (provider "comp"): shown, nothing to manage. */
+    compName: string;
+    compUntil: (date: string) => string;
+    /** D2: the account type changed; the price moves at renewal. */
+    pendingTitle: string;
+    pendingBody: (date: string | null, amount: string, type: string) => string;
+    approveBody: string;
+    approve: string;
     loadFailed: string;
     retry: string;
     codes: { nothing_to_resume: string; nothing_to_reactivate: string };
@@ -222,6 +230,12 @@ const en: Copy = {
     cancelledBody: (b, d) =>
       d ? `${b} keeps the plan until ${d}, then moves to Free. Resume before then to keep it.` : `${b} keeps the plan to the end of the paid month, then moves to Free.`,
     legacy: "This plan was bought before payments moved to PayPal. It stays active until 31 Dec 2026; contact us to cancel it sooner.",
+    compName: "Complimentary plan",
+    compUntil: (d) => `Complimentary plan until ${d}`,
+    pendingTitle: "The price changes at renewal",
+    pendingBody: (d, a, type) => (d ? `From ${d} this plan is ${a} a month (${type}).` : `From the next renewal this plan is ${a} a month (${type}).`),
+    approveBody: "The new price is higher, so PayPal needs your approval before it can charge it.",
+    approve: "Approve the new price at PayPal",
     loadFailed: "Couldn't load billing for this brand.",
     retry: "Try again",
     codes: { nothing_to_resume: "There's nothing to resume on this brand.", nothing_to_reactivate: "There's nothing to reactivate on this brand." },
@@ -386,6 +400,12 @@ const ar: Copy = {
     cancelledBody: (b, d) =>
       d ? `تبقى الخطة لـ«${b}» حتى ${d}، ثم تنتقل إلى الخطة المجانية. استأنفها قبل ذلك للاحتفاظ بها.` : `تبقى الخطة لـ«${b}» حتى نهاية الشهر المدفوع، ثم تنتقل إلى الخطة المجانية.`,
     legacy: "اشتُريت هذه الخطة قبل انتقال الدفع إلى PayPal، وتبقى مفعّلة حتى 31 ديسمبر 2026. تواصل معنا لإلغائها قبل ذلك.",
+    compName: "خطة مُهداة",
+    compUntil: (d) => `خطة مُهداة حتى ${d}`,
+    pendingTitle: "يتغيّر السعر عند التجديد",
+    pendingBody: (d, a, type) => (d ? `ابتداءً من ${d} يصبح سعر هذه الخطة ${a} شهريًا (${type}).` : `ابتداءً من التجديد القادم يصبح سعر هذه الخطة ${a} شهريًا (${type}).`),
+    approveBody: "السعر الجديد أعلى، لذا يحتاج PayPal إلى موافقتك قبل أن يحصّله.",
+    approve: "الموافقة على السعر الجديد في PayPal",
     loadFailed: "تعذّر تحميل الفوترة لهذه العلامة.",
     retry: "إعادة المحاولة",
     codes: { nothing_to_resume: "لا يوجد ما يُستأنف في هذه العلامة.", nothing_to_reactivate: "لا يوجد ما يُعاد تفعيله في هذه العلامة." },
