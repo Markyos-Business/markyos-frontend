@@ -18,7 +18,7 @@ export default function NotFound() {
   const home = account ? homePath(account) : "/login";
   return (
     <main className="flex min-h-screen flex-col items-center gap-space-11 bg-canvas px-space-6 py-space-11">
-      <Link /* button-audit-ignore: the wordmark linking home, mk-tap only sizes its tap target */ href={home} aria-label="Markyos" className="mk-tap">
+      <Link /* button-audit-ignore: the wordmark linking home, mk-tap only sizes its tap target */ href={home} aria-label="Markyos" className="mk-tap mk-shaped rounded-lg">
         <MarkyosLogo variant="wordmark" className="h-4" isAr={isAr} />
       </Link>
       <div className="flex w-full max-w-120 flex-1 flex-col justify-center">

@@ -106,3 +106,43 @@ for (const lang of ["en", "ar"] as const) {
     expect(problems).toEqual([]);
   });
 }
+
+/**
+ * A link or plain button that wraps a painted rounded tile (the sidebar's
+ * logo or brand tile, the wordmark's Beta chip) takes that corner itself, so
+ * its press and focus tint is one shape with the tile, never a square block
+ * behind it. Admin and studio, both themes.
+ */
+test("links around a tile share its corner (admin and studio)", async ({ page }) => {
+  test.setTimeout(240_000);
+  const admin = await newStudio("Abdullah");
+  const brand = await newBrand(admin);
+  await signIn(page, admin);
+  djangoShell(`from apps.accounts.models import User; u=User.objects.get(email=${JSON.stringify(admin.email)}); u.role=User.Role.ADMIN; u.save()`);
+  await page.setViewportSize({ width: 1366, height: 900 });
+  const problems: string[] = [];
+  for (const scheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    for (const path of ["/admin", "/admin/users", "/brands", "/people", `/w/${brand.slug}/overview`, "/no-such-page"]) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle").catch(() => {});
+      problems.push(...(await page.evaluate((where) => {
+        const out: string[] = [];
+        for (const e of document.querySelectorAll<HTMLElement>('a[href], button, [role="button"]')) {
+          if (e.matches(".mk-btn, .mk-field, .mk-field-control, [role=combobox]") || getComputedStyle(e).display === "inline") continue;
+          const own = getComputedStyle(e).borderTopLeftRadius;
+          for (const d of e.querySelectorAll<HTMLElement>("*")) {
+            const ds = getComputedStyle(d);
+            const r = d.getBoundingClientRect();
+            if (ds.backgroundColor === "rgba(0, 0, 0, 0)" || parseFloat(ds.borderTopLeftRadius) === 0 || r.width * r.height < 400) continue;
+            // A circle (an avatar) inside a rounded row is content; a square-cornered wrapper never is.
+            if (parseFloat(own) === 0) out.push(`${where} › "${(e.getAttribute("aria-label") || e.textContent || "").trim().slice(0, 30)}": a square ${e.tagName.toLowerCase()} around a ${ds.borderTopLeftRadius} tile`);
+            break;
+          }
+        }
+        return out;
+      }, `${scheme} ${path.replace(brand.slug, "<b>")}`)));
+    }
+  }
+  expect([...new Set(problems)]).toEqual([]);
+});

@@ -24,7 +24,7 @@ export function AccountHeader({ search }: { search?: ReactNode }) {
   const { state, myWorkspaces } = useApp();
   const links = accountNavigation(accountTypeOf(account), API_ENABLED, isReviewerOnly(myWorkspaces, state.session));
   return <><header className="mk-no-hover flex min-h-topbar shrink-0 flex-wrap items-center gap-space-4 px-space-6 py-space-4 sm:px-space-10">
-    <Link /* button-audit-ignore: the wordmark linking home */ href="/brands" aria-label={isAr ? "العلامات" : "Brands"} className="mk-tap shrink-0"><MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} /></Link>
+    <Link /* button-audit-ignore: the wordmark linking home */ href="/brands" aria-label={isAr ? "العلامات" : "Brands"} className="mk-tap mk-shaped shrink-0 rounded-lg"><MarkyosLogo variant="wordmark" className="h-3.5" isAr={isAr} /></Link>
     <nav aria-label={isAr ? "تنقل الحساب" : "Account navigation"} className="hidden min-w-0 flex-1 flex-wrap items-center gap-space-4 md:flex">
       {links.map(link => <Link /* button-audit-ignore: a link in the account navigation */ key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}
         className={`mk-tap text-body ${pathname === link.href ? "font-medium text-accent-text" : "text-text-muted"}`}>{isAr ? link.arLabel : link.label}</Link>)}
