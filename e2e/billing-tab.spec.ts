@@ -1,5 +1,20 @@
 import { call, expect, newBrand, newStudio, payBrand, signIn, test, type Brand, type Studio } from "./fixtures";
-import { cancelledAnswer, day, DAY, failedAnswer, failedPayment, freeAnswer, mockBrandBilling, NEXT, NOW, paidAnswer } from "./billing-mocks";
+import {
+  awaitingAnswer,
+  cancelledAnswer,
+  day,
+  DAY,
+  failedAnswer,
+  failedPayment,
+  freeAnswer,
+  mockBrandBilling,
+  NEXT,
+  NOW,
+  paidAnswer,
+  queuedResumeAnswer,
+  stripeAnswer,
+  suspendedAnswer,
+} from "./billing-mocks";
 
 /*
  * The brand's Billing tab, cancelling at the period end, the failed-payment
@@ -182,8 +197,8 @@ test("an active plan blocks the transfer and leads to cancelling it", async ({ p
   await page.goto(`/w/${brand.slug}/team`);
   await page.getByRole("button", { name: "Nour Editor actions" }).click();
   await page.getByRole("menuitem", { name: "Make owner" }).click();
-  const block = page.getByRole("dialog", { name: "Cancel the plan first" });
-  await expect(block.getByText("Wadi Rum Coffee has an active plan, so ownership can't move yet.", { exact: false })).toBeVisible();
+  const block = page.getByRole("dialog", { name: "Cancel the subscription first" });
+  await expect(block.getByText("Wadi Rum Coffee has a subscription that can still charge, so ownership can't move yet.", { exact: false })).toBeVisible();
   await block.getByRole("button", { name: "Cancel at period end" }).click();
   await page.waitForURL(/\/settings\?tab=billing/);
   await expect(page.getByRole("dialog", { name: "Cancel the plan for Wadi Rum Coffee" })).toBeVisible();
@@ -209,7 +224,7 @@ test.describe("a transfer the server refuses for billing", () => {
     const dialog = page.getByRole("dialog", { name: "Transfer Wadi Rum Coffee?" });
     await dialog.getByRole("textbox").fill("Wadi Rum Coffee");
     await dialog.getByRole("button", { name: "Transfer" }).click();
-    const toast = page.getByText("Wadi Rum Coffee has an active plan, so ownership can't move yet.", { exact: false });
+    const toast = page.getByText("Wadi Rum Coffee has a subscription that can still charge, so ownership can't move yet.", { exact: false });
     await expect(toast).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(/wasn't saved/)).toHaveCount(0);
     await page.getByRole("button", { name: "Cancel at period end" }).click();
@@ -228,4 +243,73 @@ test("the account's billing panel leads to each brand's Billing tab", async ({ p
   await page.getByRole("link", { name: "Manage billing" }).first().click();
   await page.waitForURL(new RegExp(`/w/${brand.slug}/settings\\?tab=billing`));
   await expect(page.getByText("Studio plan")).toBeVisible();
+});
+
+for (const outcome of ["active", "waiting"] as const) {
+  test(`reactivating a suspended plan says what the server answered (${outcome})`, async ({ page }) => {
+    const studio = await newStudio();
+    const brand = await newBrand(studio);
+    let state: "suspended" | "active" | "waiting" = "suspended";
+    await mockBrandBilling(page, () => (state === "suspended" ? suspendedAnswer() : state === "active" ? paidAnswer() : awaitingAnswer()));
+    await page.route("**/api/v1/billing/paypal/reactivate/", async (route) => {
+      state = outcome;
+      const billing = outcome === "active" ? paidAnswer().billing : awaitingAnswer().billing;
+      // "active" from PayPal either way; only a paid brand means the plan is back.
+      await route.fulfill({ json: { status: "active", billing } });
+    });
+    await signIn(page, studio);
+    await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+    const suspended = page.getByRole("alert").filter({ hasText: "The plan was suspended" });
+    await expect(suspended).toContainText("the plan returns once the payment goes through");
+    await expect(page.getByText(/Subscribe to put its guideline site live/)).toHaveCount(0);
+    await suspended.getByRole("button", { name: "Reactivate" }).click();
+    if (outcome === "active") {
+      await expect(page.getByText("The plan is active again.")).toBeVisible();
+      await expect(page.getByText("Active", { exact: true })).toBeVisible();
+    } else {
+      await expect(page.getByText("Reactivated. The plan returns once PayPal collects the payment.")).toBeVisible();
+      await expect(page.getByText("Reactivated. Wadi Rum Coffee returns to its plan once PayPal collects the payment.")).toBeVisible();
+      await expect(page.getByText("Waiting for payment", { exact: true })).toBeVisible();
+      await expect(page.getByText("Next charge", { exact: true })).toHaveCount(0);
+      await expect(page.getByText(/Subscribe to put its guideline site live/)).toHaveCount(0);
+    }
+  });
+}
+
+test("cancelling a suspended subscription says the brand stays on Free", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  await mockBrandBilling(page, suspendedAnswer);
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+  await page.getByRole("button", { name: "Cancel plan", exact: true }).click();
+  await page.getByRole("radio", { name: "Not using it enough" }).check();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  const offer = page.getByRole("dialog", { name: "Before you cancel" });
+  await expect(offer.getByText("Cancelling stops PayPal from charging this subscription. Wadi Rum Coffee stays on Free.")).toBeVisible();
+  await expect(offer.getByText(/Your plan stays until/)).toHaveCount(0);
+});
+
+test("a queued resume shows when it starts", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  payBrand(brand.id);
+  await mockBrandBilling(page, queuedResumeAnswer);
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+  await expect(page.getByText("Resumes on", { exact: true })).toBeVisible();
+  await expect(page.getByText(`The first charge is on ${day(NEXT)}.`, { exact: false })).toBeVisible();
+  await expect(page.getByText("Next charge", { exact: true })).toHaveCount(0);
+});
+
+test("a retired Stripe plan shows what the server says and the contact note, no actions", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  await mockBrandBilling(page, stripeAnswer);
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings?tab=billing`);
+  const plan = page.locator("section", { has: page.getByRole("heading", { name: "Plan", exact: true }) });
+  await expect(plan.getByText(/bought before payments moved to PayPal/)).toBeVisible();
+  await expect(plan.getByRole("button")).toHaveCount(0);
+  await expect(plan.getByRole("link")).toHaveCount(0);
 });

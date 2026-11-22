@@ -47,6 +47,7 @@ export function cancelledAnswer() {
   return {
     ...paid,
     billing: { ...paidBilling, subscriptionStatus: "cancelled" },
+    // The backend fills resumeStartsAt whenever resume is allowed: the first charge of a resumed plan.
     subscription: { ...paid.subscription, status: "cancelled", nextChargeAt: null, accessUntil: NEXT, cancelledAt: NOW, cancelReason: "too_expensive", resumeStartsAt: NEXT },
     actions: { subscribe: false, cancel: false, resume: true, reactivate: false, updatePaymentUrl: null },
   };
@@ -59,6 +60,49 @@ export function failedAnswer() {
     ...paid,
     billing: { ...paidBilling, paymentFailedAt: failedAt, graceEndsAt: failedAt + 7 * DAY },
     subscription: { ...paid.subscription, paymentFailedAt: failedAt, graceEndsAt: failedAt + 7 * DAY },
+  };
+}
+
+/** Suspended after the grace: on Free, PayPal can still collect; Reactivate is offered. */
+export function suspendedAnswer() {
+  const paid = paidAnswer();
+  const failedAt = NOW - 9 * DAY;
+  return {
+    ...paid,
+    billing: { plan: "free", provider: "paypal", subscriptionStatus: "suspended", currentPeriodEnd: NOW - 2 * DAY, paymentFailedAt: failedAt },
+    subscription: { ...paid.subscription, status: "suspended", nextChargeAt: null, paymentFailedAt: failedAt, graceEndsAt: failedAt + 7 * DAY },
+    actions: { subscribe: false, cancel: true, resume: false, reactivate: true, updatePaymentUrl: "https://www.sandbox.paypal.com/myaccount/autopay/" },
+  };
+}
+
+/** Reactivated, PayPal hasn't collected yet (money first): still on Free. */
+export function awaitingAnswer() {
+  const suspended = suspendedAnswer();
+  return {
+    ...suspended,
+    billing: { ...suspended.billing, subscriptionStatus: "active" },
+    subscription: { ...suspended.subscription, status: "active", awaitingPayment: true },
+    actions: { ...suspended.actions, reactivate: false },
+  };
+}
+
+/** A resume queued after a cancel: a new subscription that starts when the paid month ends. */
+export function queuedResumeAnswer() {
+  const paid = paidAnswer();
+  return {
+    ...paid,
+    subscription: { ...paid.subscription, status: "approved", resumeStartsAt: NEXT, nextChargeAt: NEXT },
+  };
+}
+
+/** A retired Stripe plan, honoured to the end of 2026: shown, never managed here. */
+export function stripeAnswer() {
+  const paid = paidAnswer();
+  return {
+    billing: { plan: "subscription", subscriptionStatus: "active", purchasedAt: NOW - 60 * DAY },
+    subscription: { ...paid.subscription, provider: "stripe", payerEmail: null },
+    actions: { subscribe: false, cancel: false, resume: false, reactivate: false, updatePaymentUrl: null },
+    history: [],
   };
 }
 
