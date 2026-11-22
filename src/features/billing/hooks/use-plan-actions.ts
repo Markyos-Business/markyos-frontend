@@ -7,6 +7,7 @@ import { errorText } from "@/lib/api/errorText";
 import type { Workspace } from "@/types";
 import { reactivatePlan, refusalCode } from "../api/billing.api";
 import { billingCopy } from "../copy";
+import { reactivateOutcome } from "../utils/billing-state";
 
 /** The server's refusal in the reader's language: a known code, or errorText. */
 export function billingErrorText(error: unknown, isAr: boolean, fallback: { en: string; ar: string }): string {
@@ -31,7 +32,8 @@ export function useReactivate(ws: Workspace, onDone: () => void) {
     try {
       const answer = await reactivatePlan(ws.id);
       applyServerBilling(ws.id, answer.billing);
-      showToast(copy.tab.reactivated, "success");
+      // Money first: the plan is back only once PayPal has collected.
+      showToast(reactivateOutcome(answer) === "active" ? copy.tab.reactivated : copy.tab.reactivatedWaiting, "success");
       onDone();
     } catch (error) {
       showToast(billingErrorText(error, isAr, { en: billingCopy(false).tab.reactivateFailed, ar: billingCopy(true).tab.reactivateFailed }), "danger");

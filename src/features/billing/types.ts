@@ -35,8 +35,10 @@ export type BrandSubscription = {
   graceEndsAt: number | null;
   cancelledAt: number | null;
   cancelReason: string | null;
-  /** When a resumed plan would first charge. */
+  /** When a resumed plan would first charge (filled whenever resume is allowed, and once a resume is queued). */
   resumeStartsAt: number | null;
+  /** Reactivated or suspended after the grace, and PayPal hasn't collected yet: the brand stays on Free until it does. */
+  awaitingPayment?: boolean;
 };
 
 /** What the owner may do now; the app shows only these. */

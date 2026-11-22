@@ -26,4 +26,17 @@ describe("billingCopy", () => {
     );
     expect(billingCopy(false).reason.resume.body("Wadi Rum", "18 Dec 2026")).toContain("The first charge is on 18 Dec 2026");
   });
+
+  it("never promises the plan back before PayPal is paid", () => {
+    for (const isAr of [false, true]) {
+      const c = billingCopy(isAr);
+      expect(c.tab.statuses.awaitingPayment).toBeTruthy();
+      expect(c.tab.awaitingBody(isAr ? "وادي رم" : "Wadi Rum")).toContain(isAr ? "«وادي رم»" : "Wadi Rum");
+    }
+    const en = billingCopy(false);
+    expect(en.tab.awaitingBody("Wadi Rum")).toBe("Reactivated. Wadi Rum returns to its plan once PayPal collects the payment.");
+    expect(en.tab.suspendedBody("Wadi Rum")).not.toMatch(/restore/);
+    expect(en.transfer.body("Wadi Rum")).not.toMatch(/active plan/);
+    expect(en.cancelFlow.offerFree("Wadi Rum")).toBe("Cancelling stops PayPal from charging this subscription. Wadi Rum stays on Free.");
+  });
 });

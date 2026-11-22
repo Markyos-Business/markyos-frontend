@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Billing } from "@/types";
-import { outcomeOf } from "./use-checkout-flow";
+import { ABANDON_REASON, outcomeOf } from "./use-checkout-flow";
 
 const free = { plan: "free" } as Billing;
 const paid = { plan: "subscription" } as Billing;
@@ -20,5 +20,11 @@ describe("outcomeOf", () => {
 
   it("keeps waiting while PayPal or the webhook is on its way", () => {
     for (const status of ["approval_pending", "approved", "none"]) expect(outcomeOf({ status, billing: free })).toBeNull();
+  });
+});
+
+describe("abandoning a checkout", () => {
+  it("names itself, so the server can refuse it on an active plan", () => {
+    expect(ABANDON_REASON).toBe("abandoned_checkout");
   });
 });

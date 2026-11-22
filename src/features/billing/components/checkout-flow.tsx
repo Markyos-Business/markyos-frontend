@@ -4,12 +4,12 @@ import { useRef } from "react";
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { AlertBanner, Button, Icon, useDialog, useToast } from "@/components/ui";
 import { api } from "@/lib/api/client";
-import { errorText } from "@/lib/api/errorText";
 import type { Workspace } from "@/types";
 /** Public sandbox/live client id; the plan and price never come from here. */
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "";
 import { startResume } from "../api/billing.api";
-import type { BillingCopy } from "../copy";
+import { billingCopy, type BillingCopy } from "../copy";
+import { billingErrorText } from "../hooks/use-plan-actions";
 import { useCheckoutFlow } from "../hooks/use-checkout-flow";
 
 /**
@@ -99,7 +99,8 @@ export function CheckoutFlow({
               return await actions.subscription.create({ plan_id: planId, custom_id: customId });
             } catch (error) {
               reported.current = true;
-              showToast(errorText(error, isAr ? "ar" : "en", { en: copy.state.failed, ar: copy.state.failed }), "danger");
+              // Refusal codes (nothing_to_resume) in the reader's language.
+              showToast(billingErrorText(error, isAr, { en: billingCopy(false).state.failed, ar: billingCopy(true).state.failed }), "danger");
               throw error;
             }
           }}

@@ -14,18 +14,22 @@ type Step = "reason" | "offer";
  * Cancelling at the period end (billing epic 3.4), in two steps: why
  * (required), then what it means, which is the confirmation. There is no
  * discount: the offer is only that the plan stays to the end of the paid
- * month either way. `endsAt` is the server's date.
+ * month either way (or, on a brand already on Free, that PayPal stops
+ * charging). `endsAt` is the server's date.
  */
 export function CancelPlanDialog({
   ws,
   isAr,
   endsAt,
+  onFree = false,
   onClose,
   onCancelled,
 }: {
   ws: Workspace;
   isAr: boolean;
   endsAt: number | null;
+  /** The brand is already on Free (suspended after the grace): cancelling only stops PayPal charging. */
+  onFree?: boolean;
   onClose: () => void;
   onCancelled: (billing: Billing) => void;
 }) {
@@ -67,7 +71,7 @@ export function CancelPlanDialog({
       size="sm"
       dir={isAr ? "rtl" : "ltr"}
       title={step === "reason" ? words.title(ws.name) : words.offerTitle}
-      description={step === "reason" ? words.description : undefined}
+      description={step === "reason" ? (onFree ? words.descriptionFree : words.description) : undefined}
       footer={
         step === "reason" ? (
           <>
@@ -123,7 +127,7 @@ export function CancelPlanDialog({
       ) : (
         <div className="flex flex-col gap-space-5">
           <AlertBanner message={error} />
-          <p className="text-body text-text">{words.offer(date)}</p>
+          <p className="text-body text-text">{onFree ? words.offerFree(ws.name) : words.offer(date)}</p>
         </div>
       )}
     </Modal>

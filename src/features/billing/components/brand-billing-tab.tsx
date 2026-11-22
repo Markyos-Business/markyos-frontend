@@ -26,7 +26,7 @@ import { billingCopy } from "../copy";
 import { useBrandBilling } from "../hooks/use-brand-billing";
 import { useReactivate } from "../hooks/use-plan-actions";
 import type { BillingHistoryItem, BrandBillingAnswer } from "../types";
-import { accessEndsAt, historyState, inGrace, isLegacy, statusOf, STATUS_TONE, suspendedToFree } from "../utils/billing-state";
+import { accessEndsAt, billingView, historyState, resumeDate, STATUS_TONE, type BillingButton } from "../utils/billing-state";
 import { CancelPlanDialog } from "./cancel-plan-dialog";
 import { useUpgrade } from "./upgrade-provider";
 
@@ -61,7 +61,8 @@ export function BrandBillingTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) 
     setCancelling(false);
     applyServerBilling(ws.id, billing);
     const date = endsAt ? formatDayMonth(new Date(endsAt), isAr ? "ar" : "en", true) : null;
-    showToast(copy.cancelFlow.done(date), "success");
+    // A subscription on a brand already on Free just stops charging.
+    showToast(billing.plan === "free" ? copy.cancelFlow.doneFree : copy.cancelFlow.done(date), "success");
     // Access until and Resume come from the server's next answer.
     request.reload();
   };
@@ -88,6 +89,7 @@ export function BrandBillingTab({ ws, isAr }: { ws: Workspace; isAr: boolean }) 
           ws={ws}
           isAr={isAr}
           endsAt={accessEndsAt(answer.billing, answer.subscription)}
+          onFree={answer.billing.plan === "free"}
           onClose={() => setCancelling(false)}
           onCancelled={(billing) => cancelled(billing, billing.paidUntil ?? accessEndsAt(answer.billing, answer.subscription))}
         />
@@ -130,11 +132,8 @@ function BillingBody({
   const date = (ms: number | null | undefined) => (ms ? formatDayMonth(new Date(ms), lang, true) : null);
   const money = (cents: number, currency: string) => formatMoney(cents / 100, currency.toUpperCase(), lang);
 
-  const status = statusOf(billing, sub, now);
-  const legacy = isLegacy(billing, sub);
-  const grace = inGrace(billing, sub, now);
-  const suspended = suspendedToFree(billing) || (sub?.status === "suspended" && billing.plan === "free");
-  const cancelledPlan = status === "cancelled";
+  const view = billingView(answer, now);
+  const { status } = view;
   const type = ws.ownerAccountType ? ACCOUNT_TYPES[ws.ownerAccountType] : null;
   const planName =
     billing.plan === "free" ? t.noPlan : billing.plan === "pass" ? t.pass : type ? t.planName(isAr ? type.arLabel : type.label) : t.planName("");
@@ -142,65 +141,70 @@ function BillingBody({
   const facts: KeyValueItem[] = [{ label: t.plan, value: planName }];
   if (status !== "none") facts.push({ label: t.status, value: <Badge tone={STATUS_TONE[status]}>{t.statuses[status]}</Badge> });
   if (sub?.amount != null) facts.push({ label: t.amount, value: <span className="tabular-nums">{t.perMonth(money(sub.amount, sub.currency))}</span> });
-  if (sub?.nextChargeAt && !cancelledPlan) facts.push({ label: t.nextCharge, value: date(sub.nextChargeAt) });
-  if (cancelledPlan && sub?.accessUntil) facts.push({ label: t.accessUntil, value: date(sub.accessUntil) });
+  if (view.nextChargeAt) facts.push({ label: t.nextCharge, value: date(view.nextChargeAt) });
+  if (view.resumesOn) facts.push({ label: t.resumesOn, value: date(view.resumesOn) });
+  if (view.accessUntil) facts.push({ label: t.accessUntil, value: date(view.accessUntil) });
   if (sub?.payerEmail) facts.push({ label: t.payer, value: <span dir="ltr">{sub.payerEmail}</span> });
 
   const subscribe = () => upgrade.open({ ws, reason: "billing", onDone: reload });
-  const resume = () => upgrade.open({ ws, reason: "resume", startsAt: sub?.resumeStartsAt ?? null, onDone: reload });
-  const reactivateButton = (
-    <Button variant="primary" size="sm" onClick={() => void reactivate.run(isAr)} loading={reactivate.busy} loadingText={t.reactivating}>
+  const resume = () => upgrade.open({ ws, reason: "resume", startsAt: resumeDate(sub), onDone: reload });
+  const reactivateButton = (inBanner: boolean) => (
+    <Button
+      key="reactivate"
+      variant="primary"
+      size={inBanner ? "sm" : undefined}
+      onClick={() => void reactivate.run(isAr)}
+      loading={reactivate.busy}
+      loadingText={t.reactivating}
+    >
       {t.reactivate}
     </Button>
   );
-  const updatePayment = actions.updatePaymentUrl ? (
-    <LinkButton variant={grace ? "primary" : "secondary"} size="sm" href={actions.updatePaymentUrl} external>
-      {t.updatePayment}
-    </LinkButton>
-  ) : null;
+  const updatePayment = (inBanner: boolean) =>
+    actions.updatePaymentUrl ? (
+      <LinkButton key="update" variant={inBanner ? "primary" : "secondary"} size={inBanner ? "sm" : undefined} href={actions.updatePaymentUrl} external>
+        {t.updatePayment}
+      </LinkButton>
+    ) : null;
 
-  const buttons: ReactNode[] = [];
-  if (actions.subscribe)
-    buttons.push(
+  const render: Record<BillingButton, () => ReactNode> = {
+    subscribe: () => (
       <Button key="subscribe" variant="primary" onClick={subscribe}>
         {t.subscribe}
-      </Button>,
-    );
-  if (actions.resume)
-    buttons.push(
+      </Button>
+    ),
+    resume: () => (
       <Button key="resume" variant="primary" onClick={resume}>
         {t.resume}
-      </Button>,
-    );
-  if (actions.reactivate && !suspended)
-    buttons.push(
-      <Button key="reactivate" variant="primary" onClick={() => void reactivate.run(isAr)} loading={reactivate.busy} loadingText={t.reactivating}>
-        {t.reactivate}
-      </Button>,
-    );
-  if (actions.updatePaymentUrl && !grace)
-    buttons.push(
-      <LinkButton key="update" variant="secondary" href={actions.updatePaymentUrl} external>
-        {t.updatePayment}
-      </LinkButton>,
-    );
-  if (actions.cancel)
-    buttons.push(
+      </Button>
+    ),
+    reactivate: () => reactivateButton(false),
+    updatePayment: () => updatePayment(false),
+    cancel: () => (
       <Button key="cancel" variant="ghost" onClick={onCancel}>
         {t.cancel}
-      </Button>,
-    );
+      </Button>
+    ),
+  };
+  const buttons = view.buttons.map((b) => render[b]());
+  const bannerAction = view.bannerAction === "updatePayment" ? updatePayment(true) : view.bannerAction === "reactivate" ? reactivateButton(true) : undefined;
 
   return (
     <>
-      {grace && <AlertBanner tone="warning" title={t.failedTitle} message={t.failedBody(date(sub?.graceEndsAt ?? billing.graceEndsAt))} action={updatePayment} actionPlacement="below" />}
-      {suspended && <AlertBanner tone="warning" title={t.suspendedTitle} message={t.suspendedBody(ws.name)} action={actions.reactivate ? reactivateButton : undefined} actionPlacement="below" />}
-      {cancelledPlan && <AlertBanner tone="info" title={t.cancelledTitle} message={t.cancelledBody(ws.name, date(sub?.accessUntil ?? accessEndsAt(billing, sub)))} />}
+      {view.banner === "grace" && (
+        <AlertBanner tone="warning" title={t.failedTitle} message={t.failedBody(date(sub?.graceEndsAt ?? billing.graceEndsAt))} action={bannerAction} actionPlacement="below" />
+      )}
+      {view.banner === "awaitingPayment" && <AlertBanner tone="info" message={t.awaitingBody(ws.name)} />}
+      {view.banner === "suspended" && (
+        <AlertBanner tone="warning" title={t.suspendedTitle} message={t.suspendedBody(ws.name)} action={bannerAction} actionPlacement="below" />
+      )}
+      {view.banner === "cancelled" && <AlertBanner tone="info" title={t.cancelledTitle} message={t.cancelledBody(ws.name, date(view.accessUntil))} />}
+      {view.banner === "queued" && <AlertBanner tone="info" title={t.queuedTitle} message={t.queuedBody(ws.name, date(view.resumesOn))} />}
 
       <Section title={t.planTitle} icon="credit-card">
         <KeyValueList items={facts} />
-        {billing.plan === "free" && !suspended && <p className="text-body text-text-muted">{t.freeBody(ws.name)}</p>}
-        {legacy && (
+        {view.showFreeBody && <p className="text-body text-text-muted">{t.freeBody(ws.name)}</p>}
+        {view.legacy && (
           <p className="flex items-start gap-space-3 text-caption text-text-muted">
             <Icon name="info-circle" size={16} className="mt-0.5 shrink-0" />
             {t.legacy}

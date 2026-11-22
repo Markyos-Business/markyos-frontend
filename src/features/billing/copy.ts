@@ -57,6 +57,12 @@ type Copy = {
     reactivating: string;
     reactivated: string;
     reactivateFailed: string;
+    /** Reactivated, PayPal not paid yet (money first). */
+    reactivatedWaiting: string;
+    awaitingBody: (brand: string) => string;
+    resumesOn: string;
+    queuedTitle: string;
+    queuedBody: (brand: string, date: string | null) => string;
     failedTitle: string;
     failedBody: (date: string | null) => string;
     suspendedTitle: string;
@@ -83,6 +89,8 @@ type Copy = {
   cancelFlow: {
     title: (brand: string) => string;
     description: string;
+    /** For a subscription on a brand already back on Free (suspended after the grace). */
+    descriptionFree: string;
     reasonLabel: string;
     reasonRequired: string;
     reasons: Record<CancelReason, string>;
@@ -92,9 +100,11 @@ type Copy = {
     back: string;
     offerTitle: string;
     offer: (date: string | null) => string;
+    offerFree: (brand: string) => string;
     confirm: string;
     cancelling: string;
     done: (date: string | null) => string;
+    doneFree: string;
     failed: string;
   };
   /** Ownership can't move while a plan is active (D4, billing epic 3.6). */
@@ -178,6 +188,7 @@ const en: Copy = {
       active: "Active",
       pending: "Waiting for PayPal",
       paymentFailed: "Payment failed",
+      awaitingPayment: "Waiting for payment",
       suspended: "Suspended",
       cancelled: "Cancelled",
       ended: "Ended",
@@ -197,10 +208,16 @@ const en: Copy = {
     reactivating: "Reactivating…",
     reactivated: "The plan is active again.",
     reactivateFailed: "Couldn't reactivate the plan. Try again.",
+    reactivatedWaiting: "Reactivated. The plan returns once PayPal collects the payment.",
+    awaitingBody: (b) => `Reactivated. ${b} returns to its plan once PayPal collects the payment.`,
+    resumesOn: "Resumes on",
+    queuedTitle: "The plan is resumed",
+    queuedBody: (b, d) =>
+      d ? `The first charge is on ${d}. Until then ${b} keeps the month already paid for.` : `${b} keeps the month already paid for, then the plan carries on.`,
     failedTitle: "The last payment failed",
     failedBody: (d) => (d ? `Update the payment method by ${d} to keep the plan.` : "Update the payment method to keep the plan."),
     suspendedTitle: "The plan was suspended",
-    suspendedBody: (b) => `PayPal couldn't collect the payment, so ${b} is on Free now. Reactivate to collect it and restore the plan.`,
+    suspendedBody: (b) => `PayPal couldn't collect the payment, so ${b} is on Free now. Reactivate to have PayPal try again; the plan returns once the payment goes through.`,
     cancelledTitle: "The plan is cancelled",
     cancelledBody: (b, d) =>
       d ? `${b} keeps the plan until ${d}, then moves to Free. Resume before then to keep it.` : `${b} keeps the plan to the end of the paid month, then moves to Free.`,
@@ -223,6 +240,7 @@ const en: Copy = {
   cancelFlow: {
     title: (b) => `Cancel the plan for ${b}`,
     description: "The plan stays until the end of the month you paid for.",
+    descriptionFree: "Cancelling stops PayPal from charging this subscription.",
     reasonLabel: "Why are you cancelling?",
     reasonRequired: "Choose a reason.",
     reasons: {
@@ -239,14 +257,16 @@ const en: Copy = {
     offerTitle: "Before you cancel",
     offer: (d) =>
       `Your plan stays until ${d ?? "the end of the paid month"} either way. Cancelling stops the next charge, and the brand moves to Free after that. You can resume before then.`,
+    offerFree: (b) => `Cancelling stops PayPal from charging this subscription. ${b} stays on Free.`,
     confirm: "Cancel at period end",
     cancelling: "Cancelling…",
     done: (d) => (d ? `The plan is cancelled. Access lasts until ${d}.` : "The plan is cancelled. Access lasts to the end of the paid month."),
+    doneFree: "The subscription is cancelled. Nothing more will be charged.",
     failed: "Couldn't cancel the plan. Try again.",
   },
   transfer: {
-    title: "Cancel the plan first",
-    body: (b) => `${b} has an active plan, so ownership can't move yet. Cancel the plan at the end of its period, then make the new owner.`,
+    title: "Cancel the subscription first",
+    body: (b) => `${b} has a subscription that can still charge, so ownership can't move yet. Cancel it at the end of its period, then make the new owner.`,
     action: "Cancel at period end",
     close: "Close",
   },
@@ -332,6 +352,7 @@ const ar: Copy = {
       active: "مفعّلة",
       pending: "بانتظار PayPal",
       paymentFailed: "تعذّر الدفع",
+      awaitingPayment: "بانتظار الدفع",
       suspended: "موقوفة",
       cancelled: "ملغاة",
       ended: "منتهية",
@@ -351,10 +372,16 @@ const ar: Copy = {
     reactivating: "جارٍ إعادة التفعيل…",
     reactivated: "عادت الخطة مفعّلة.",
     reactivateFailed: "تعذّرت إعادة تفعيل الخطة. حاول مرة أخرى.",
+    reactivatedWaiting: "أُعيد التفعيل. تعود الخطة حين يحصّل PayPal الدفعة.",
+    awaitingBody: (b) => `أُعيد التفعيل. تعود «${b}» إلى خطتها حين يحصّل PayPal الدفعة.`,
+    resumesOn: "تُستأنف في",
+    queuedTitle: "استُؤنفت الخطة",
+    queuedBody: (b, d) =>
+      d ? `أول دفعة في ${d}، وحتى ذلك الحين تبقى لـ«${b}» الفترة المدفوعة.` : `تبقى لـ«${b}» الفترة المدفوعة، ثم تستمر الخطة.`,
     failedTitle: "تعذّر الدفع الأخير",
     failedBody: (d) => (d ? `حدّث وسيلة الدفع بحلول ${d} للاحتفاظ بالخطة.` : "حدّث وسيلة الدفع للاحتفاظ بالخطة."),
     suspendedTitle: "أُوقفت الخطة",
-    suspendedBody: (b) => `تعذّر على PayPal تحصيل الدفعة، فعادت «${b}» إلى الخطة المجانية. أعد التفعيل لتحصيلها واستعادة الخطة.`,
+    suspendedBody: (b) => `تعذّر على PayPal تحصيل الدفعة، فعادت «${b}» إلى الخطة المجانية. أعد التفعيل ليحاول PayPal مجددًا، وتعود الخطة حين تتم الدفعة.`,
     cancelledTitle: "الخطة ملغاة",
     cancelledBody: (b, d) =>
       d ? `تبقى الخطة لـ«${b}» حتى ${d}، ثم تنتقل إلى الخطة المجانية. استأنفها قبل ذلك للاحتفاظ بها.` : `تبقى الخطة لـ«${b}» حتى نهاية الشهر المدفوع، ثم تنتقل إلى الخطة المجانية.`,
@@ -377,6 +404,7 @@ const ar: Copy = {
   cancelFlow: {
     title: (b) => `إلغاء خطة «${b}»`,
     description: "تبقى الخطة حتى نهاية الشهر المدفوع.",
+    descriptionFree: "يوقف الإلغاء تحصيل PayPal لهذا الاشتراك.",
     reasonLabel: "لماذا تلغي الخطة؟",
     reasonRequired: "اختر سببًا.",
     reasons: {
@@ -393,14 +421,16 @@ const ar: Copy = {
     offerTitle: "قبل الإلغاء",
     offer: (d) =>
       `تبقى خطتك حتى ${d ?? "نهاية الشهر المدفوع"} في الحالتين. يوقف الإلغاء الدفعة التالية، وتنتقل العلامة بعدها إلى الخطة المجانية، ويمكنك استئنافها قبل ذلك.`,
+    offerFree: (b) => `يوقف الإلغاء تحصيل PayPal لهذا الاشتراك، وتبقى «${b}» على الخطة المجانية.`,
     confirm: "إلغاء عند نهاية الفترة",
     cancelling: "جارٍ الإلغاء…",
     done: (d) => (d ? `أُلغيت الخطة، ويبقى الوصول متاحًا حتى ${d}.` : "أُلغيت الخطة، ويبقى الوصول متاحًا حتى نهاية الشهر المدفوع."),
+    doneFree: "أُلغي الاشتراك، ولن يُحصَّل أي مبلغ آخر.",
     failed: "تعذّر إلغاء الخطة. حاول مرة أخرى.",
   },
   transfer: {
-    title: "ألغِ الخطة أولًا",
-    body: (b) => `لدى «${b}» خطة مفعّلة، فلا يمكن نقل ملكيتها الآن. ألغِ الخطة عند نهاية فترتها، ثم عيّن المالك الجديد.`,
+    title: "ألغِ الاشتراك أولًا",
+    body: (b) => `لدى «${b}» اشتراك قد يُحصِّل مبالغ، فلا يمكن نقل ملكيتها الآن. ألغِه عند نهاية فترته، ثم عيّن المالك الجديد.`,
     action: "إلغاء عند نهاية الفترة",
     close: "إغلاق",
   },
