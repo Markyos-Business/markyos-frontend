@@ -8,6 +8,7 @@ import { errorText } from "@/lib/api/errorText";
 import type { Workspace } from "@/types";
 /** Public sandbox/live client id; the plan and price never come from here. */
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "";
+import { startResume } from "../api/billing.api";
 import type { BillingCopy } from "../copy";
 import { useCheckoutFlow } from "../hooks/use-checkout-flow";
 
@@ -15,8 +16,23 @@ import { useCheckoutFlow } from "../hooks/use-checkout-flow";
  * PayPal's button and what happens after it, in place (billing epic 2.5):
  * the plan and the brand link come from our server; approval hands the
  * subscription id to the server, then we wait for PayPal (2.6).
+ *
+ * `mode="resume"` (3.4): the server creates the subscription, starting when
+ * the paid month ends, and the button only asks PayPal to approve it.
  */
-export function CheckoutFlow({ ws, isAr, copy, onActive }: { ws: Workspace; isAr: boolean; copy: BillingCopy; onActive?: () => void }) {
+export function CheckoutFlow({
+  ws,
+  isAr,
+  copy,
+  onActive,
+  mode = "subscribe",
+}: {
+  ws: Workspace;
+  isAr: boolean;
+  copy: BillingCopy;
+  onActive?: () => void;
+  mode?: "subscribe" | "resume";
+}) {
   const { showToast } = useToast();
   const { confirm } = useDialog();
   // Cancelling stops PayPal billing: it asks first, like every destructive action.
@@ -70,6 +86,11 @@ export function CheckoutFlow({ ws, isAr, copy, onActive }: { ws: Workspace; isAr
           createSubscription={async (_data, actions) => {
             reported.current = false;
             try {
+              if (mode === "resume") {
+                // Server-made, with the start date and price on it: approve only.
+                const { subscriptionId } = await startResume(ws.id);
+                return subscriptionId;
+              }
               // Only the brand: the server picks the plan and price (C1).
               const { planId, customId } = await api<{ planId: string; customId: string }>("/billing/paypal/start/", {
                 method: "POST",

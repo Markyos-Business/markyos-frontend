@@ -104,7 +104,8 @@ export function useCheckoutFlow(ws: Workspace, onActive?: () => void) {
   const cancel = useCallback(async () => {
     stop();
     try {
-      const answer = await api<Answer>("/billing/paypal/cancel/", { method: "POST", body: { brandId: ws.id } });
+      // Abandoning a checkout PayPal hasn't confirmed: the server asks every cancel for a reason.
+      const answer = await api<Answer>("/billing/paypal/cancel/", { method: "POST", body: { brandId: ws.id, reason: "other" } });
       applyServerBilling(ws.id, answer.billing);
       setState("cancelled");
     } catch {
