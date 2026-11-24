@@ -74,10 +74,33 @@ const badge = await page.evaluate(() => {
 check("sidebar shows the pending depth", !!badge && badge.includes("2"), badge || "no link");
 
 // ------------------------- 3. accepting warns before overwriting ----
-const acceptButtons = await page.$$('button:has-text("Accept")');
-check("each pending draft offers Accept", acceptButtons.length === 2, `${acceptButtons.length}`);
+// Each draft's actions sit in one ⋯ menu at the row's end (row actions rule,
+// MARKYOS_UI §6.15), so Accept and Reject are menu items, not row buttons.
+const MENUS = 'button[aria-label$=" draft actions"]';
+async function choose(item, index = 0) {
+  const menus = await page.$$(MENUS);
+  if (!menus[index]) return false;
+  await menus[index].click();
+  await page.waitForTimeout(300);
+  const entry = await page.$(`[role="menuitem"]:has-text("${item}")`);
+  if (!entry) {
+    await page.keyboard.press("Escape");
+    return false;
+  }
+  await entry.click();
+  return true;
+}
+const offers = [];
+for (let i = 0; i < (await page.$$(MENUS)).length; i++) {
+  await (await page.$$(MENUS))[i].click();
+  await page.waitForTimeout(300);
+  offers.push(!!(await page.$('[role="menuitem"]:has-text("Accept")')));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(200);
+}
+check("each pending draft offers Accept", offers.length === 2 && offers.every(Boolean), JSON.stringify(offers));
 
-await acceptButtons[0].click();
+await choose("Accept");
 await page.waitForTimeout(600);
 const dialogText = await page.evaluate(() => document.body.innerText);
 check(
@@ -93,8 +116,7 @@ const afterCancel = await readState();
 check("cancelling changes nothing", afterCancel.drafts.every((d) => d.status === "pending"));
 
 // ------------------------------------------------ 4. accept for real ----
-const again = await page.$$('button:has-text("Accept")');
-await again[0].click();
+await choose("Accept");
 await page.waitForTimeout(500);
 const replaceBtn = await page.$('button:has-text("Replace it")');
 check("the confirm offers a named action", !!replaceBtn);
@@ -113,10 +135,13 @@ check(
 check("the decision records who made it", acceptedDraft.decidedBy !== null, String(acceptedDraft.decidedBy));
 
 // ------------------------------------------------------- 5. reject ----
-const rejectBtn = await page.$('button:has-text("Reject")');
-check("the remaining draft can be rejected", !!rejectBtn);
-if (rejectBtn) {
-  await rejectBtn.click();
+const rejected = await choose("Reject");
+check("the remaining draft can be rejected", rejected);
+if (rejected) {
+  await page.waitForTimeout(500);
+  // Reject asks first (destructive actions confirm); confirm if it does.
+  const confirm = await page.$('[role="dialog"] button:has-text("Reject"), [role="alertdialog"] button:has-text("Reject")');
+  if (confirm) await confirm.click();
   await page.waitForTimeout(700);
 }
 
