@@ -26,6 +26,7 @@ import { billingCopy } from "../copy";
 import { useBrandBilling } from "../hooks/use-brand-billing";
 import { useReactivate } from "../hooks/use-plan-actions";
 import type { BillingHistoryItem, BrandBillingAnswer, PendingPlanChange } from "../types";
+import { discountLine } from "../utils/promo";
 import { accessEndsAt, billingView, historyState, resumeDate, STATUS_TONE, type BillingButton } from "../utils/billing-state";
 import { CancelPlanDialog } from "./cancel-plan-dialog";
 import { useUpgrade } from "./upgrade-provider";
@@ -153,6 +154,10 @@ function BillingBody({
   if (view.accessUntil) facts.push({ label: t.accessUntil, value: date(view.accessUntil) });
   if (sub?.payerEmail) facts.push({ label: t.payer, value: <span dir="ltr">{sub.payerEmail}</span> });
 
+  // A promo code's discount, worded from the server's figures only.
+  const discount =
+    sub?.discount && !view.comp ? discountLine(sub.discount, sub.amount, sub.currency, lang, (ms) => formatDayMonth(new Date(ms), lang, true)) : null;
+
   const subscribe = () => upgrade.open({ ws, reason: "billing", onDone: reload });
   const resume = () => upgrade.open({ ws, reason: "resume", startsAt: resumeDate(sub), onDone: reload });
   const reactivateButton = (inBanner: boolean) => (
@@ -216,6 +221,12 @@ function BillingBody({
           <p className="flex items-start gap-space-3 text-body text-text" data-billing-comp>
             <Icon name="check-circle" size={18} className="mt-0.5 shrink-0 text-accent-text" />
             {view.compUntil ? t.compUntil(date(view.compUntil)!) : t.compName}
+          </p>
+        )}
+        {discount && (
+          <p className="flex items-start gap-space-3 text-body text-text" data-billing-discount>
+            <Icon name="tag" size={18} className="mt-0.5 shrink-0 text-accent-text" />
+            <span>{discount}</span>
           </p>
         )}
         {view.legacy && (

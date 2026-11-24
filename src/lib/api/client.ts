@@ -143,17 +143,10 @@ interface RequestOptions {
   headers?: Record<string, string>;
 }
 
-/**
- * Call the API. Resolves to the parsed JSON (undefined for a 204), or throws
- * an `ApiError` retaining transport detail/status. Calling features localize
- * expected failures before displaying them.
- *
- * A 401 on an authenticated call gets one refresh and one retry, so a
- * fifteen-minute access token expiring mid-session is invisible.
- */
-export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
+/** One authenticated request: a 401 gets one refresh and one retry. */
+async function send(path: string, options: RequestOptions): Promise<Response> {
   const json = options.body !== undefined && !(options.body instanceof FormData);
-  const send = () =>
+  const once = () =>
     fetch(`${API_URL}${path}`, {
       method: options.method ?? "GET",
       credentials: "include",
@@ -168,16 +161,28 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
 
   let res: Response;
   try {
-    res = await send();
+    res = await once();
     if (res.status === 401 && accessToken) {
-      if (await refreshSession()) res = await send();
+      if (await refreshSession()) res = await once();
       else onSessionExpired?.();
     }
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError("Can't reach the Markyos server. Check your connection and try again.", 0);
   }
+  return res;
+}
 
+/**
+ * Call the API. Resolves to the parsed JSON (undefined for a 204), or throws
+ * an `ApiError` retaining transport detail/status. Calling features localize
+ * expected failures before displaying them.
+ *
+ * A 401 on an authenticated call gets one refresh and one retry, so a
+ * fifteen-minute access token expiring mid-session is invisible.
+ */
+export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const res = await send(path, options);
   if (res.status === 204) return undefined as T;
   const data: unknown = await res.json().catch(() => null);
   if (!res.ok) {
@@ -186,4 +191,18 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
       res.headers.get("X-Request-ID"), error.retryAfterSeconds);
   }
   return data as T;
+}
+
+/**
+ * A file the API makes (a CSV export), with the same sign-in as `api`:
+ * resolves to its bytes, or throws an `ApiError` like `api` does.
+ */
+export async function apiFile(path: string): Promise<Blob> {
+  const res = await send(path, {});
+  if (!res.ok) {
+    const data: unknown = await res.json().catch(() => null);
+    const error = toApiError(res.status, data, res.headers.get("Retry-After"));
+    throw new ApiError(error.message, error.status, error.fields, error.data, res.headers.get("X-Request-ID"), error.retryAfterSeconds);
+  }
+  return res.blob();
 }

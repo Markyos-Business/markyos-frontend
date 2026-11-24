@@ -44,6 +44,8 @@ export type BrandSubscription = {
   awaitingPayment?: boolean;
   /** D2: the owner's account type changed; the price moves to it at renewal. */
   pendingPlanChange?: PendingPlanChange | null;
+  /** A promo code's discount on this subscription, while it lasts. */
+  discount?: SubscriptionDiscount | null;
 };
 
 export type PendingPlanChange = {
@@ -81,3 +83,106 @@ export type BrandBillingAnswer = {
   actions: BillingActions;
   history: BillingHistoryItem[];
 };
+
+/*
+ * Promo codes (docs/promo-codes-plan.md §4): the one place the app's types for
+ * the promo endpoints live. The server makes the codes and works out every
+ * price; the app shows its answers. Amounts in cents, times in ms.
+ */
+
+/** Why the server refused a code (POST /billing/codes/check/ 400 `code`). */
+export const PROMO_REFUSALS = ["expired", "used_up", "wrong_type", "not_first_purchase", "inactive", "unknown"] as const;
+export type PromoRefusal = (typeof PROMO_REFUSALS)[number];
+
+/** POST /billing/codes/check/ 200: the terms for this brand. `months` null = for as long as the plan runs. */
+export type PromoTerms = {
+  code: string;
+  label: string;
+  firstAmount: number;
+  regularAmount: number;
+  months: number | null;
+  currency: string;
+};
+
+/** The billing summary's `subscription.discount`. `until` null = for as long as the plan runs. */
+export type SubscriptionDiscount = {
+  code: string;
+  label: string;
+  /** Cents a month while the discount lasts. */
+  amount: number;
+  until: number | null;
+  /** Cents a month once it ends; when left out, the subscription's own amount. */
+  regularAmount?: number | null;
+};
+
+export const PROMO_DURATIONS = ["once", "repeating", "forever"] as const;
+export type PromoDuration = (typeof PROMO_DURATIONS)[number];
+
+export const PROMO_STATUSES = ["active", "used_up", "expired", "disabled"] as const;
+export type PromoStatus = (typeof PROMO_STATUSES)[number];
+
+/** POST admin/billing/codes/generate/. Exactly one of percentOff / amountOff. */
+export type PromoGenerateRequest = {
+  count: number;
+  /** Null = unlimited. */
+  usesPerCode: number | null;
+  percentOff?: number;
+  /** Cents. */
+  amountOff?: number;
+  duration: PromoDuration;
+  months?: number;
+  expiresAt?: number;
+  accountTypes?: AccountType[];
+  firstPurchaseOnly: boolean;
+  note: string;
+};
+
+export type PromoBatch = {
+  id: string;
+  note?: string;
+  createdAt?: number;
+};
+
+export type PromoGenerateAnswer = { batch: PromoBatch; codes: { id: string; code: string }[] };
+
+/** One code in the admin list. The discount's own fields, when sent, let the app word it in Arabic too. */
+export type PromoCodeRow = {
+  id: string;
+  code: string;
+  batchId: string;
+  label: string;
+  uses: number;
+  /** Null = unlimited. */
+  maxUses: number | null;
+  status: PromoStatus;
+  expiresAt: number | null;
+  createdAt: number;
+  percentOff?: number | null;
+  amountOff?: number | null;
+  duration?: PromoDuration;
+  months?: number | null;
+  currency?: string;
+};
+
+export type PromoCodePage = { count: number; results: PromoCodeRow[] };
+
+export type PromoRedemption = {
+  brand: { id: string; name: string } | null;
+  owner: { id: string; email: string; name?: string } | null;
+  createdAt: number;
+  /** reserved / active / released, as the server words it. */
+  status: string;
+  /** Cents a month the brand pays now, or null. */
+  payingNow: number | null;
+  currency?: string;
+};
+
+export type PromoCodeDetail = PromoCodeRow & {
+  redemptions: PromoRedemption[];
+  note?: string;
+  firstPurchaseOnly?: boolean;
+  accountTypes?: AccountType[] | null;
+  audit?: { id: string; action: string; reason: string; createdAt: number; actor?: { email: string; name?: string } | null }[];
+};
+
+export type PromoCodeQuery = { batch?: string; status?: string; page?: number };

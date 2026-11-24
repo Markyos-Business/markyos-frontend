@@ -6,4 +6,18 @@ export { usePlans } from "./hooks/use-plans";
 export { limitsFor, useLimits, type Limits } from "./hooks/use-limits";
 export { billingCopy } from "./copy";
 export { historyState, transferBlocked } from "./utils/billing-state";
-export type { Plans, UpgradeReason } from "./types";
+export { PROMO_DURATIONS, PROMO_STATUSES } from "./types";
+export type {
+  Plans,
+  UpgradeReason,
+  PromoBatch,
+  PromoCodeDetail,
+  PromoCodePage,
+  PromoCodeQuery,
+  PromoCodeRow,
+  PromoDuration,
+  PromoGenerateAnswer,
+  PromoGenerateRequest,
+  PromoRedemption,
+  PromoStatus,
+} from "./types";

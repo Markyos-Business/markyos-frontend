@@ -1,5 +1,5 @@
 import { plural } from "@/lib/i18n/plural";
-import type { CancelReason, UpgradeReason } from "./types";
+import type { CancelReason, PromoRefusal, UpgradeReason } from "./types";
 import type { StatusKey, HistoryStateKey } from "./utils/billing-state";
 import type { BillingHistoryItem } from "./types";
 
@@ -32,6 +32,22 @@ type Copy = {
   unavailable: string;
   close: string;
   continue: string;
+  /** Promo codes in the upgrade modal and on the Billing tab (promo-codes-plan §3). */
+  promo: {
+    have: string;
+    label: string;
+    apply: string;
+    applying: string;
+    remove: (code: string) => string;
+    applied: (code: string) => string;
+    empty: string;
+    failed: string;
+    reasons: Record<PromoRefusal, string>;
+    /** The price with a code: months null = for as long as the plan runs, 1 = the first month only. */
+    price: (first: string, regular: string, months: number | null) => string;
+    /** The Billing tab's line; `until` null = for as long as the plan runs. */
+    discount: (code: string, amount: string, until: string | null, regular: string) => string;
+  };
   /** The Billing tab in brand settings (billing epic 3.3). */
   tab: {
     label: string;
@@ -183,6 +199,32 @@ const en: Copy = {
   unavailable: "PayPal payments aren't set up yet.",
   close: "Close",
   continue: "Continue",
+  promo: {
+    have: "Have a code?",
+    label: "Promo code",
+    apply: "Apply",
+    applying: "Checking…",
+    remove: (c) => `Remove code ${c}`,
+    applied: (c) => `Code ${c} applied.`,
+    empty: "Enter a code.",
+    failed: "Couldn't check the code. Try again.",
+    reasons: {
+      expired: "This code has expired.",
+      used_up: "This code has been used up.",
+      wrong_type: "This code isn't for this account type.",
+      not_first_purchase: "This code is for first purchases only.",
+      inactive: "This code is no longer active.",
+      unknown: "This code isn't valid. Check it and try again.",
+    },
+    price: (first, regular, months) =>
+      months === null
+        ? `${first} a month`
+        : months === 1
+          ? `${first} for the first month, then ${regular} a month`
+          : `${first} a month for ${plural("en", months, { one: "{n} month", other: "{n} months" })}, then ${regular} a month`,
+    discount: (code, amount, until, regular) =>
+      until ? `Discount ${code}: ${amount} until ${until}, then ${regular} a month` : `Discount ${code}: ${amount} a month`,
+  },
   tab: {
     label: "Billing",
     description: (b) => `The plan and payments for ${b}.`,
@@ -353,6 +395,32 @@ const ar: Copy = {
   unavailable: "الدفع عبر PayPal غير مُعدّ بعد.",
   close: "إغلاق",
   continue: "متابعة",
+  promo: {
+    have: "لديك رمز خصم؟",
+    label: "رمز الخصم",
+    apply: "تطبيق",
+    applying: "جارٍ التحقق…",
+    remove: (c) => `إزالة الرمز ${c}`,
+    applied: (c) => `طُبّق الرمز ${c}.`,
+    empty: "أدخل الرمز.",
+    failed: "تعذّر التحقق من الرمز. حاول مرة أخرى.",
+    reasons: {
+      expired: "انتهت صلاحية هذا الرمز.",
+      used_up: "استُنفدت مرات استخدام هذا الرمز.",
+      wrong_type: "هذا الرمز لا ينطبق على نوع حسابك.",
+      not_first_purchase: "هذا الرمز للاشتراك الأول فقط.",
+      inactive: "هذا الرمز لم يعد مفعّلًا.",
+      unknown: "هذا الرمز غير صالح. تحقّق منه وحاول مرة أخرى.",
+    },
+    price: (first, regular, months) =>
+      months === null
+        ? `${first} شهريًا`
+        : months === 1
+          ? `${first} للشهر الأول، ثم ${regular} شهريًا`
+          : `${first} شهريًا لمدة ${plural("ar", months, { two: "شهرين", few: "{n} أشهر", other: "{n} شهرًا" })}، ثم ${regular} شهريًا`,
+    discount: (code, amount, until, regular) =>
+      until ? `خصم ${code}: ${amount} حتى ${until}، ثم ${regular} شهريًا` : `خصم ${code}: ${amount} شهريًا`,
+  },
   tab: {
     label: "الفوترة",
     description: (b) => `خطة «${b}» ومدفوعاتها.`,
