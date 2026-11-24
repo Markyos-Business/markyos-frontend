@@ -35,6 +35,7 @@ export function routePageName(pathname: string): Name {
   const path = pathname.replace(/\/$/, "") || "/";
   if (pages[path]) return pages[path];
   if (/^\/admin\/users\/[^/]+$/.test(path)) return ["User details", "تفاصيل المستخدم"];
+  if (/^\/admin\/billing\/codes\/[^/]+$/.test(path)) return ["Promo code", "رمز الخصم"];
   if (/^\/admin\/billing\/[^/]+$/.test(path)) return ["Checkout details", "تفاصيل عملية الدفع"];
   if (/^\/admin\/cms\/articles\/[^/]+$/.test(path)) return ["Edit article", "تحرير المقال"];
   if (/^\/admin\/cms\/help\/articles\/[^/]+$/.test(path)) return ["Edit help article", "تحرير مقالة المساعدة"];

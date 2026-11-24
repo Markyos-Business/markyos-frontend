@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { useRequest } from "@/hooks/useRequest";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { listAudit, listCheckouts, listOrphans } from "../../api/admin-billing.api";
+import { listCodes } from "../../api/admin-promo.api";
 import type { AdminCheckoutQuery } from "../../types";
 
-export const BILLING_TABS = ["checkouts", "orphans", "audit"] as const;
+export const BILLING_TABS = ["checkouts", "codes", "orphans", "audit"] as const;
 export type BillingTab = (typeof BILLING_TABS)[number];
 
 /** The server's page size for checkouts, orphans and the audit log. */
@@ -14,13 +15,15 @@ export const BILLING_PAGE_SIZE = 25;
 
 const FILTERS = { q: "", status: "", provider: "" } as const;
 type FilterKey = keyof typeof FILTERS;
+/** The Codes tab's own filters, apart from the checkouts'. */
+const CODE_FILTERS = { batch: "", codeStatus: "" } as const;
 
 /**
  * The admin billing page: its tab, the checkouts' search and filters and
  * the page, all in the URL. Only the open tab is fetched.
  */
 export function useBillingPage() {
-  const filters = useUrlFilters({ tab: "checkouts", ...FILTERS });
+  const filters = useUrlFilters({ tab: "checkouts", ...FILTERS, ...CODE_FILTERS });
   const { values, page } = filters;
   const tab: BillingTab = (BILLING_TABS as readonly string[]).includes(values.tab) ? (values.tab as BillingTab) : "checkouts";
 
@@ -28,6 +31,10 @@ export function useBillingPage() {
   const checkoutsKey = tab === "checkouts" ? `checkouts:${JSON.stringify(query)}` : "checkouts:off";
   const checkouts = useRequest(() => (tab === "checkouts" ? listCheckouts(query) : Promise.resolve(null)), checkoutsKey);
   const orphans = useRequest(() => (tab === "orphans" ? listOrphans(page) : Promise.resolve(null)), tab === "orphans" ? `orphans:${page}` : "orphans:off");
+  const codeQuery = useMemo(() => ({ batch: values.batch, status: values.codeStatus, page }), [values.batch, values.codeStatus, page]);
+  const codes = useRequest(() => (tab === "codes" ? listCodes(codeQuery) : Promise.resolve(null)), tab === "codes" ? `codes:${JSON.stringify(codeQuery)}` : "codes:off");
+  const codesFiltered = values.batch !== "" || values.codeStatus !== "";
+  const clearCodeFilters = () => filters.setMany({ batch: "", codeStatus: "" });
   const audit = useRequest(() => (tab === "audit" ? listAudit(page) : Promise.resolve(null)), tab === "audit" ? `audit:${page}` : "audit:off");
 
   const filtered = (Object.keys(FILTERS) as FilterKey[]).some((k) => values[k] !== "");
@@ -55,6 +62,9 @@ export function useBillingPage() {
     checkouts,
     orphans,
     audit,
+    codes,
+    codesFiltered,
+    clearCodeFilters,
     paging,
   };
 }

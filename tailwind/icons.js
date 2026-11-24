@@ -486,6 +486,12 @@ export const iconStyles = [
       "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 4.5H7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h7\"/><path d=\"M17.5 8.5 21 12l-3.5 3.5\"/><path d=\"M21 12h-9.5\"/></svg>')",
     },
   },
+  /* Promo codes: a price tag (Line Awesome's la-tag). */
+  {
+    ".la-tag": {
+      "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.5\"/></svg>')",
+    },
+  },
   {
     ".la-receipt": {
       "--i": "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"/><path d=\"M9 8h6M9 12h6\"/></svg>')",
