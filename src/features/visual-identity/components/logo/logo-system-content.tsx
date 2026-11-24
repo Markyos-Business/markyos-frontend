@@ -140,7 +140,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
             // it, each tile centred its logo near the bottom of the window, so
             // the pair read as two empty boxes.
             <div className="h-56 grid grid-cols-2 gap-3">
-              <div className="rounded-card grid place-items-center relative" style={{ background: "#111114" }}>
+              <div className="rounded-card grid place-items-center relative" style={{ background: "#111114", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}>
                 <BrandMark
                   src={showcaseSlot.url}
                   lightSrc={showcaseSlot.lightUrl}
@@ -167,7 +167,7 @@ export function LogoSystemContent({ ws }: { ws: Workspace }) {
                     : isAr ? "لا توجد نسخة فاتحة بعد" : "no light version yet"}
                 </span>
               </div>
-              <div className="rounded-card grid place-items-center relative" style={{ background: "#f5f5f5" }}>
+              <div className="rounded-card grid place-items-center relative" style={{ background: "#f5f5f5", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={showcaseSlot.url} alt="" style={{ width: 170 }} />
                 {/*

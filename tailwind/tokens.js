@@ -167,9 +167,10 @@ export const darkTokens = {
    *
    * The spec's `--on-accent` is white. Kept dark here on purpose: white on
    * #0099FF is 3.0:1, under the 4.5:1 the spec's own definition of done asks
-   * of text, on the label of the primary button.
+   * of text, on the label of the primary button. Pure black (2026-11-25): the
+   * small (12px) button label needs 7:1, and #0b0b0d made 6.56:1; black is 7.0:1.
    */
-  "--accent-ink": "#0b0b0d",
+  "--accent-ink": "#000000",
   "--status-ink": "#0b0b0d",
   /*
    * Ink for something drawn on `--danger`, kept separate from `--status-ink`
@@ -188,8 +189,8 @@ export const darkTokens = {
    *
    * `--hairline-strong` is the **edge of a card**: where one surface stops and
    * another begins, drawn as an inset shadow, never a border (spec §1.4). The
-   * spec draws it at white 10%, which composites to 1.3:1 on a #111 card and
-   * 1.44:1 against the black canvas; `contrast-audit.mjs` holds it there. Well
+   * spec draws it at white 10%; raised to 12% (2026-11-25, his call) so a
+   * card's edge is found on dim screens too. `contrast-audit.mjs` holds the floor. Well
    * below the 3:1 WCAG 1.4.11 asks of a control's boundary, deliberately — a
    * card is not a control, and an edge that loud turns a grid into a cage.
    *
@@ -197,7 +198,7 @@ export const darkTokens = {
    * an input, the one real border in the system.
    */
   "--hairline": "rgba(255, 255, 255, 0.05)",
-  "--hairline-strong": "rgba(255, 255, 255, 0.1)",
+  "--hairline-strong": "rgba(255, 255, 255, 0.12)",
   "--line-strong": "rgba(255, 255, 255, 0.2)",
   /*
    * Form controls (UX-CON-001): one set for every input, select, textarea,

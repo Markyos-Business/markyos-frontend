@@ -19,7 +19,10 @@ const pillSegment = (iconOnly = false) =>
 
 const pillSegmentStyle = (on: boolean): CSSProperties => ({
   background: on ? "var(--surface-0)" : "transparent",
-  color: on ? "var(--accent)" : "var(--text-muted)",
+  // 12px type holds the 7:1 small-type bar in dark: the chosen segment takes
+  // the accent's text tone (--accent: 6.3:1 on the raised segment, --accent-text
+  // 8.9:1; the same blue in light), and the others the secondary step (2026-11-25).
+  color: on ? "var(--accent-text)" : "var(--text-secondary)",
 });
 
 export { pillSegment, pillSegmentStyle, pillTrack, pillTrackStyle };

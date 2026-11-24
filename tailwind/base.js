@@ -1202,14 +1202,14 @@ export const baseStyles = [
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
-    "button:not(:disabled):not([style*=\"cursor\"]), [role=\"button\"]:not([aria-disabled=\"true\"]):not([style*=\"cursor\"]), summary:not([style*=\"cursor\"]), label:has(> input[type=\"checkbox\"]):not([style*=\"cursor\"]), label:has(> input[type=\"radio\"]):not([style*=\"cursor\"])": {
+    "button:not(:disabled):not([aria-disabled=\"true\"]):not([style*=\"cursor\"]), [role=\"button\"]:not([aria-disabled=\"true\"]):not([style*=\"cursor\"]), summary:not([style*=\"cursor\"]), label:has(> input[type=\"checkbox\"]):not([style*=\"cursor\"]), label:has(> input[type=\"radio\"]):not([style*=\"cursor\"])": {
       "cursor": "pointer !important",
     },
   },
   // Kept above utility classes, as this rule was before it moved here: an
   // inline style on the element still wins (the :not guard).
   {
-    "button:disabled:not([style*=\"cursor\"]), [role=\"button\"][aria-disabled=\"true\"]:not([style*=\"cursor\"]), input:disabled:not([style*=\"cursor\"]), select:disabled:not([style*=\"cursor\"])": {
+    "button:disabled:not([style*=\"cursor\"]), button[aria-disabled=\"true\"]:not([style*=\"cursor\"]), [role=\"button\"][aria-disabled=\"true\"]:not([style*=\"cursor\"]), input:disabled:not([style*=\"cursor\"]), select:disabled:not([style*=\"cursor\"])": {
       "cursor": "not-allowed !important",
     },
   },
@@ -1538,7 +1538,10 @@ export const baseStyles = [
     "[data-form-view] .mk-field ::placeholder": { "color": "transparent" },
   },
   {
-    ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible": {
+    // A field shows focus on its underline, so the field and what you type into
+    // keep no ring. Buttons inside one (the rich-text toolbar, a reveal or clear
+    // icon) are separate controls and keep the standard ring (WCAG 2.4.7).
+    ":is(input, textarea, select, div, label, button).mk-field:focus-visible, .mk-field :focus-visible:not(button, [role=\"button\"])": {
       "outline": "none !important",
       "border-radius": "0 !important",
     },
@@ -1657,6 +1660,14 @@ export const baseStyles = [
   {
     ".mk-tap:not([style*=\"min-height\"])": {
       "min-height": "26px !important",
+    },
+  },
+  // And the same floor across, for an icon-only one (the field's info button
+  // was 16px wide): WCAG 2.5.8 asks 24px both ways. Text controls are wider anyway.
+  {
+    ".mk-tap:not([style*=\"min-width\"])": {
+      "min-width": "26px !important",
+      "justify-content": "center",
     },
   },
   /*

@@ -21,10 +21,15 @@ export function brandInitials(name: string) {
 
 /** The brand's logo for an avatar-sized spot: the symbol, else a wordmark in the brand's language. */
 export function brandMarkUrl(ws: Pick<Workspace, "logo" | "primaryLocale">): string | null {
+  return brandMarkSources(ws)?.src ?? null;
+}
+
+/** The same artwork as `brandMarkUrl`, with the brand's own light version when it uploaded one. */
+export function brandMarkSources(ws: Pick<Workspace, "logo" | "primaryLocale">): { src: string; lightSrc?: string } | null {
   const order = ["symbol", ws.primaryLocale === "ar" ? "arabic" : "latin", ws.primaryLocale === "ar" ? "latin" : "arabic"] as const;
   for (const kind of order) {
     const slot = ws.logo?.[kind];
-    if (slot?.phase === "attached" && slot.url) return slot.url;
+    if (slot?.phase === "attached" && slot.url) return { src: slot.url, lightSrc: slot.lightUrl };
   }
   return null;
 }
