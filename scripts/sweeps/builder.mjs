@@ -44,9 +44,10 @@ async function signIn(page) {
 
 async function openBuilder(page) {
   await page.goto(`${BASE}/w/${SLUG}/builder`, { waitUntil: "networkidle" });
-  // The guard that earns its keep: an earlier sweep passed cleanly against a
+  // The tools switch (Layers, Insert, Template, Site) is a "choose one" radio
+  // group since MARKYOS_UI §2.5. The guard that earns its keep: an earlier sweep passed cleanly against a
   // page that had not rendered at all.
-  await page.waitForSelector('[role="tablist"]', { timeout: 15000 });
+  await page.waitForSelector('[role="radiogroup"][aria-label="Guideline tools"]', { timeout: 15000 });
 }
 
 async function run() {
@@ -83,12 +84,14 @@ async function run() {
       wayBack: !!document.querySelector('a[aria-label^="Back to"], a[aria-label^="العودة"]'),
       canvasWidth: frameRegion ? Math.round(frameRegion.getBoundingClientRect().width) : null,
       windowWidth: window.innerWidth,
-      // The ship cluster has to be *over* the canvas, not above it: an element
-      // in flow would push the canvas down and take the row back.
-      shipFloats: (() => {
-        const publish = [...document.querySelectorAll("button")].find((b) => /Publish|نشر/.test(b.textContent || ""));
-        const rail = publish?.closest(".absolute");
-        return !!rail;
+      // Since a1acc0d shipping lives in the editor's one top bar, which replaced
+      // the cluster that floated over (and covered) the canvas.
+      shipInBar: (() => {
+        // "Publish" the first time, "Update" once the guide has been published.
+        const publish = [...document.querySelectorAll("button")].find((b) =>
+          /^(Publish|Update|نشر|تحديث)$/.test((b.textContent || "").trim()),
+        );
+        return !!publish?.closest("header");
       })(),
     };
   });
@@ -96,8 +99,8 @@ async function run() {
   else fail("shell", "the studio navigation rail is still rendered on the editor route");
   if (shell.wayBack) ok("and carries its own way back out");
   else fail("shell", "a full-screen editor with no visible way back to the brand");
-  if (shell.shipFloats) ok("the publish cluster floats over the canvas rather than taking a row");
-  else fail("shell", "the publish cluster is in the page flow, so it costs the canvas a row");
+  if (shell.shipInBar) ok("publishing sits in the editor's one top bar, not over the canvas");
+  else fail("shell", "the publish button is not in the editor's top bar");
   // The number this restructure exists to move. Below two thirds of the window
   // the editor is mostly chrome again.
   const share = shell.canvasWidth && shell.windowWidth ? shell.canvasWidth / shell.windowWidth : 0;
@@ -111,12 +114,12 @@ async function run() {
      would notice. It has to run before the palette drop further down adds a
      section of its own — an earlier version of this check ran at the end and
      blamed the rules for a block the sweep had added itself. */
-  const chip = page.locator('button[aria-label="Review this page"]');
+  const chip = page.locator('button[aria-label="Review before publishing"]');
   if ((await chip.count()) === 0) {
     fail("review", "no review chip in the builder's top bar");
   } else {
     const verdict = (await chip.first().innerText()).trim();
-    if (/to fix|to review|All clear/.test(verdict)) ok(`the review chip states a verdict ("${verdict}")`);
+    if (/to fix|to review|All clear|No issues/.test(verdict)) ok(`the review chip states a verdict ("${verdict}")`);
     else fail("review", `the review chip says something unexpected: "${verdict}"`);
 
     await chip.first().click();
@@ -449,7 +452,7 @@ async function run() {
      the bottom of the page and then had to be dragged up past everything else.
      Dropping it where it belongs is one gesture instead of two, and it is the
      gesture anyone who has used a site builder before will try first. */
-  await page.locator('[role="tab"]:has-text("Insert")').click();
+  await page.locator(':is([role="tab"],[role="radio"]):has-text("Insert")').click();
   await page.waitForTimeout(400);
 
   const paletteCard = page.locator('button:has(div:text-is("Quote"))').first();
@@ -659,17 +662,21 @@ async function run() {
     // checks in this sweep add sections of their own, and a hardcoded 2 made this
     // check a record of how many steps happened to run before it.
     const chipCount = Number(((await chip.first().innerText()).match(/(\d+) to fix/) || [])[1]);
-    await page.locator('button:has-text("Publish")').first().click();
+    // "Publish" the first time, "Update" once the guide has been published.
+    await page.getByRole("button", { name: /^(Publish|Update)\b/ }).first().click();
     await page.waitForTimeout(500);
     const dialog = page.locator('[role="dialog"]');
     if ((await dialog.count()) === 0) {
       fail("review", "publishing a page with errors did not ask first");
     } else {
+      // Since 96d7365 Must fix blocks publishing, as the server does: the dialog
+      // says why and offers no "Publish anyway". Worth checking still only asks.
       const text = (await dialog.first().innerText()).replace(/\s+/g, " ");
-      const counted = new RegExp(`${chipCount} thing(s)? on this page look(s)? broken`).test(text);
+      const refused = /can't be published yet/i.test(text);
+      const counted = new RegExp(`${chipCount} items? under Must fix`).test(text);
       const offersAnyway = (await dialog.locator('button:has-text("Publish anyway")').count()) > 0;
-      if (counted && offersAnyway) ok(`publishing asks first and agrees with the chip's count (${chipCount})`);
-      else fail("review", `the publish warning is wrong: counted=${counted} offersAnyway=${offersAnyway} — "${text.slice(0, 120)}"`);
+      if (refused && counted && !offersAnyway) ok(`Must fix blocks publishing and agrees with the chip's count (${chipCount})`);
+      else fail("review", `the publish block is wrong: refused=${refused} counted=${counted} offersAnyway=${offersAnyway} — "${text.slice(0, 120)}"`);
       await page.keyboard.press("Escape");
       await page.waitForTimeout(250);
     }
@@ -910,7 +917,7 @@ async function run() {
     await section.scrollIntoViewIfNeeded();
     await section.click();
     await page.waitForTimeout(450);
-    const tab = page.locator('button[role="tab"]:has-text("Content")');
+    const tab = page.locator(':is([role="tab"],[role="radio"]):has-text("Content")');
     if ((await tab.count()) === 0) return false;
     await tab.first().click();
     await page.waitForTimeout(350);
@@ -928,7 +935,7 @@ async function run() {
     fail("options", "selecting the colour section gave no Content tab to edit its parts from");
   } else {
     const tabNames = await page.evaluate(() =>
-      [...document.querySelectorAll('button[role="tab"]')].map((b) => b.textContent?.trim())
+      [...document.querySelectorAll('[role="tab"],[role="radio"]')].map((b) => b.textContent?.trim())
     );
     if (["Content", "Style", "Layout"].every((t) => tabNames.includes(t))) ok("the inspector is split into Content, Style and Layout");
     else fail("options", `the inspector tabs are wrong: ${JSON.stringify(tabNames)}`);
@@ -1073,7 +1080,7 @@ async function run() {
      twice. */
   await page.keyboard.press("Escape");
   const countSections = () => page.locator("[data-canvas-frame] .live-flow").count();
-  await page.locator('button[role="tab"]:has-text("Insert")').click();
+  await page.locator(':is([role="tab"],[role="radio"]):has-text("Insert")').click();
   await page.waitForTimeout(250);
   const quoteCard = page.locator('button.mk-card[draggable="true"]').filter({ hasText: "Quote" }).first();
   await quoteCard.scrollIntoViewIfNeeded();
@@ -1110,7 +1117,7 @@ async function run() {
      page never came from. */
   await page.keyboard.press("Control+z");
   await page.waitForTimeout(400);
-  await page.locator('button[role="tab"]:has-text("Insert")').click();
+  await page.locator(':is([role="tab"],[role="radio"]):has-text("Insert")').click();
   await page.waitForTimeout(200);
   const dividerCard = page.locator('button.mk-card[draggable="true"]').filter({ hasText: "Divider" }).first();
   await dividerCard.scrollIntoViewIfNeeded();

@@ -164,7 +164,7 @@ async function run() {
      in the list view. Not because the canvas cannot do it, but because the list
      is the view that has to keep working without a pointer, and a check that
      only ever exercises the drag-and-drop path would not notice if it stopped. */
-  await page.locator('button[role="tab"]:has-text("List")').click();
+  await page.locator('[role="radiogroup"][aria-label="View"] [role="radio"]:has-text("List")').click();
   await page.waitForTimeout(500);
 
   const zones = page.locator("section[aria-label]");
@@ -360,7 +360,7 @@ async function run() {
      against stored state rather than against pixels: a card that *looks* like it
      moved and did not write its position is a card that jumps back on reload,
      which is the failure mode this has to catch. */
-  await page.locator('button[role="tab"]:has-text("Board")').click();
+  await page.locator('[role="radiogroup"][aria-label="View"] [role="radio"]:has-text("Board")').click();
   await page.waitForTimeout(600);
 
   /** Reads the board straight out of storage — the only thing that survives a reload. */
@@ -841,7 +841,7 @@ async function run() {
 
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForTimeout(1500);
-    const boardTab = page.locator('button[role="tab"]:has-text("Board")');
+    const boardTab = page.locator('[role="radiogroup"][aria-label="View"] [role="radio"]:has-text("Board")');
     if ((await boardTab.count()) > 0) await boardTab.click();
     await page.waitForTimeout(1200);
 
@@ -882,9 +882,11 @@ async function run() {
   // ------------------------------------------------- never on the client ---
   await page.goto(`${BASE}/w/${SLUG}/builder`, { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
-  const publish = page.locator('button:has-text("Publish")');
-  if ((await publish.count()) > 0 && (await publish.first().isEnabled())) {
-    await publish.first().click();
+  // "Publish" the first time, "Update" once the guide has been published.
+  const publish = page.getByRole("button", { name: /^(Publish|Update)\b/ }).first();
+  await publish.waitFor({ timeout: 8000 }).catch(() => {});
+  if ((await publish.count()) > 0 && (await publish.isEnabled())) {
+    await publish.click();
     await page.waitForTimeout(1200);
   }
   const leaked = await page.evaluate(() => {

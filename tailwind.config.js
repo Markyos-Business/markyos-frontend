@@ -68,7 +68,7 @@ const config = {
         // Text and icons on an `accent-soft` fill.
         "accent-on-soft": "var(--accent-on-soft, light-dark(#0055ff, #85caff))",
         // Text on a solid `accent` fill, and the accent's focus ring and edge.
-        "accent-ink": "var(--accent-ink, light-dark(#ffffff, #0b0b0d))",
+        "accent-ink": "var(--accent-ink, light-dark(#ffffff, #000000))",
         "accent-ring": "var(--accent-ring, light-dark(rgba(0, 85, 255, 0.22), rgba(0, 153, 255, 0.18)))",
         "accent-edge": "var(--accent-edge, light-dark(rgba(0, 85, 255, 0.55), rgba(0, 153, 255, 0.55)))",
 
@@ -79,7 +79,7 @@ const config = {
         // Borders are drawn as inset rings in these, not 1px borders. The one
         // real border, an input's underline, rests in `line-strong`.
         hairline: "var(--hairline, light-dark(#e5e5e5, rgba(255, 255, 255, 0.05)))",
-        "hairline-strong": "var(--hairline-strong, light-dark(rgba(10, 10, 10, 0.106), rgba(255, 255, 255, 0.1)))",
+        "hairline-strong": "var(--hairline-strong, light-dark(rgba(10, 10, 10, 0.106), rgba(255, 255, 255, 0.12)))",
         "line-strong": "var(--line-strong, light-dark(rgba(10, 10, 10, 0.32), rgba(255, 255, 255, 0.2)))",
         "chip-edge": "var(--chip-edge, rgba(130, 130, 138, 0.5))",
 

@@ -8,7 +8,7 @@ const WS = "nadeen-studio";
 // A 500 error page has a DOM. This sweep proves exploration assets stay off
 // public surfaces, and an error page trivially satisfies that — so a dead
 // server would read as a pass here, which is the worst case of all.
-await assertServerUp(BASE, [`/w/${WS}/visual-identity`, `/v/${WS}`]);
+await assertServerUp(BASE, [`/w/${WS}/assets`, `/v/${WS}`]);
 
 const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {});
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -47,7 +47,9 @@ check(
 );
 
 // ------------------------------------------------- 2. the UI exposes status ----
-await page.goto(`${BASE}/w/${WS}/visual-identity`);
+// The status filters and the details panel live on the Assets page; Visual
+// identity stopped listing every file when the library moved there.
+await page.goto(`${BASE}/w/${WS}/assets`);
 await page.waitForLoadState("networkidle");
 await page.waitForTimeout(600);
 
@@ -91,7 +93,8 @@ if (detailBtn) {
 }
 
 // -------------------------------------------- 3. move it to exploration ----
-const explorationBtn = await page.$('button[aria-pressed="false"]:has-text("Exploration")');
+// Status is one choice of three, so the panel draws it as a radio group.
+const explorationBtn = await page.$('[role="radio"][aria-checked="false"]:has-text("Exploration")');
 check("exploration control is present in the detail panel", !!explorationBtn);
 if (explorationBtn) {
   await explorationBtn.click();
@@ -109,8 +112,14 @@ await page.goto(`${BASE}/w/${WS}/builder`);
 await page.waitForLoadState("networkidle");
 await page.waitForTimeout(900);
 
-const publishBtn = await page.$('button:has-text("Publish")');
-check("publish button found", !!publishBtn);
+// "Publish" the first time, "Update" once the guide has been published.
+const publishLoc = page.getByRole("button", { name: /^(Publish|Update)\b/ }).first();
+const publishBtn = await publishLoc.waitFor({ timeout: 8000 }).then(() => publishLoc, () => null);
+check(
+  "publish button found",
+  !!publishBtn,
+  publishBtn ? "" : (await page.$$eval("button", (els) => els.map((e) => (e.textContent || "").trim()).filter(Boolean))).slice(0, 15).join(" | "),
+);
 if (publishBtn) {
   await publishBtn.click();
   await page.waitForTimeout(1200);

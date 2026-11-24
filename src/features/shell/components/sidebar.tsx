@@ -7,10 +7,10 @@ import type { TeamRole, Workspace } from "@/types";
 import { AppSidebar, type SidebarItem } from "@/components/ui";
 import { AccountMenu } from "@/features/account";
 import { useHelpPanel } from "@/features/helpcenter";
-import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
+import { brandInitials, brandMarkSources } from "@/lib/data/brandSetup";
 import { marketingHref } from "@/lib/marketing";
 import { isLive } from "@/lib/data/publication";
-import { BrandSwitcher } from "./brand-switcher";
+import { BrandAvatarArt, BrandSwitcher } from "./brand-switcher";
 import { SIDEBAR_RAILS } from "@/lib/sidebarRails";
 import { roleOn } from "@/lib/data/access";
 import { API_ENABLED } from "@/lib/api/client";
@@ -70,7 +70,7 @@ export function Sidebar({ workspace }: { workspace: Workspace }) {
       id={workspace.id}
       name={workspace.name}
       reviewHref={role === "client" ? publishedGuidelineHref(workspace) : null}
-      logo={brandMarkUrl(workspace)}
+      logo={brandMarkSources(workspace)}
       paid={workspace.billing.plan !== "free"}
       live={isLive(workspace)}
       // The same set the library lists: uploaded files plus the attached logo files.
@@ -88,7 +88,7 @@ type BrandSidebarProps = {
   id: string;
   name: string;
   reviewHref: string | null;
-  logo: string | null;
+  logo: { src: string; lightSrc?: string } | null;
   paid: boolean;
   live: boolean;
   assetCount: number;
@@ -116,8 +116,7 @@ const BrandSidebar = memo(function BrandSidebar({ pathname, isAr, role, slug, id
     title={name} titleHref="/brands" storageKey={SIDEBAR_RAILS.studio} isAr={isAr}
     collapseLabels={isAr ? {collapse:"طيّ القائمة",expand:"توسيع القائمة"} : {collapse:"Collapse sidebar",expand:"Expand sidebar"}}
     rootProps={{"data-studio-nav":""}} sections={sections} headings
-    // eslint-disable-next-line @next/next/no-img-element -- a stored brand file, any origin
-    avatar={logo ? <img src={logo} alt="" className="size-full object-contain p-1" /> : brandInitials(name)}
+    avatar={logo ? <BrandAvatarArt sources={logo} /> : brandInitials(name)}
     subtitle={isClient ? (isAr ? "مراجعة" : "Review") : paid ? (isAr ? "خطة مدفوعة" : "Paid plan") : (isAr ? "خطة مجانية" : "Free plan")}
     switcher={<BrandSwitcher currentId={id} isAr={isAr} />}
     account={(collapsed) => <AccountMenu variant="row" compact={collapsed} isAr={isAr} />}

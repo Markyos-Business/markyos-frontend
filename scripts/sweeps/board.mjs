@@ -59,8 +59,10 @@ await page.waitForLoadState("networkidle");
 await page.waitForTimeout(700);
 
 let body = await page.evaluate(() => document.body.innerText);
-check("the board renders", /Studio board/.test(body));
-check("it says plainly it is not a CRM", /not a CRM/i.test(body));
+check("the board renders", /Brand board/.test(body));
+// The intro became one line in 262081e ("Every brand you own, by stage…"), and
+// the "not a CRM" sentence went with it; the board still only tracks stages.
+check("it says what the board is for", /by stage/i.test(body));
 
 const cols = await page.$$eval('section[aria-label]', (els) => els.map((e) => e.getAttribute("aria-label")));
 const boardCols = cols.filter((c) => /brand/.test(c));
