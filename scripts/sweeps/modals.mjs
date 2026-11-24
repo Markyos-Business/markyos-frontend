@@ -75,18 +75,26 @@ const click = (selector) => async () => {
   if (el) await el.click();
 };
 
-await page.goto(`${BASE}/w/${SLUG}/visual-identity`, { waitUntil: "networkidle" });
+// Asset details open from the Assets page (the library moved off Visual identity).
+await page.goto(`${BASE}/w/${SLUG}/assets`, { waitUntil: "networkidle" });
 await page.waitForTimeout(1400);
 await escapes("the asset detail sheet", click('button[aria-label^="Details for"]'));
 
+await page.goto(`${BASE}/w/${SLUG}/visual-identity`, { waitUntil: "networkidle" });
+await page.waitForTimeout(1400);
 await page.locator('button[data-tab-key="color"]').click();
 await page.waitForTimeout(1200);
-await escapes("the colour editor", click('button:has-text("Add color")'));
+await escapes("the colour editor", click('button:has-text("Add colour")'));
 await escapes("the extract-from-logo reader", click('button:has-text("Pick from logo")'));
 
 await page.goto(`${BASE}/w/${SLUG}/strategy`, { waitUntil: "networkidle" });
 await page.waitForTimeout(1200);
-await escapes("the strategy importer", click('button:has-text("Import from file")'));
+// Import sits in Strategy's More menu with "Fill another language".
+await escapes("the strategy importer", async () => {
+  await click('button[aria-label="More"], button:has-text("More")')();
+  await page.waitForTimeout(300);
+  await click('[role="menuitem"]:has-text("Import from file")')();
+});
 
 await page.goto(`${BASE}/w/${SLUG}/departments`, { waitUntil: "networkidle" });
 await page.waitForTimeout(1200);
@@ -96,7 +104,7 @@ await escapes("the instructions importer", click('button:has-text("Build from fi
    Without it, dismissing a panel drops the caret at the top of the document,
    so the next Tab starts again from the sidebar rather than returning to the
    control that opened the panel — a small loss of place, every time. */
-await page.goto(`${BASE}/w/${SLUG}/visual-identity`, { waitUntil: "networkidle" });
+await page.goto(`${BASE}/w/${SLUG}/assets`, { waitUntil: "networkidle" });
 await page.waitForTimeout(1400);
 const opener = await page.$('button[aria-label^="Details for"]');
 if (!opener) {

@@ -1,6 +1,6 @@
 import { ApiError, api } from "@/lib/api/client";
 import type { Billing } from "@/types";
-import type { BrandBillingAnswer, CancelReason } from "../types";
+import type { BrandBillingAnswer, CancelReason, PromoCheckAnswer } from "../types";
 
 /*
  * The billing endpoints the Billing tab calls (billing epic 3.3–3.6). Every
@@ -32,4 +32,30 @@ export function refusalCode(error: unknown): string | null {
   if (!(error instanceof ApiError)) return null;
   const code = (error.data as { code?: unknown } | null)?.code;
   return typeof code === "string" ? code : null;
+}
+
+/** What a promo code gives this brand: `{valid: true, …terms}` or `{valid: false, reason}`, both 200. Throttled by the server (429). */
+export function checkCode(brandId: string, code: string): Promise<PromoCheckAnswer> {
+  return api<PromoCheckAnswer>("/billing/codes/check/", { method: "POST", body: { brandId, code } });
+}
+
+/**
+ * Starts a checkout and returns the PayPal subscription id for the button.
+ * Without a code the server names the plan and the button creates the
+ * subscription on it; with a code the server reserves a use and creates the
+ * subscription itself on the code's plan, so the button only approves it
+ * (plan §2, like resume); a code it refuses is a 400 `{detail, code}`. The
+ * browser never names a plan or a price.
+ */
+export async function startSubscription(
+  brandId: string,
+  code: string | null,
+  create: (plan: { plan_id: string; custom_id: string }) => Promise<string>,
+): Promise<string> {
+  if (code) {
+    const { subscriptionId } = await api<{ subscriptionId: string; customId: string }>("/billing/paypal/start/", { method: "POST", body: { brandId, code } });
+    return subscriptionId;
+  }
+  const { planId, customId } = await api<{ planId: string; customId: string }>("/billing/paypal/start/", { method: "POST", body: { brandId } });
+  return create({ plan_id: planId, custom_id: customId });
 }

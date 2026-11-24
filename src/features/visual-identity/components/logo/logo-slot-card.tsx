@@ -161,7 +161,7 @@ export function LogoSlotCard({
             ? "inset 0 0 0 1px var(--hairline-strong)"
             : selected && slot.phase === "attached"
             ? "inset 0 0 0 1px var(--accent-edge)"
-            : "none",
+            : "inset 0 0 0 1px var(--hairline-strong)", // every card has an edge (MARKYOS_UI §1.4)
       }}
       onClick={() => slot.phase === "attached" && onSelect(kind)}
     >
@@ -293,7 +293,8 @@ export function LogoSlotCard({
       ) : (
         <div
           className="h-[150px] rounded-card relative grid place-items-center overflow-hidden"
-          style={{ background: "var(--surface-2)" }}
+          // The artwork well: its own edge, or its 1.08:1 fill vanishes into the card.
+          style={{ background: "var(--surface-2)", boxShadow: "inset 0 0 0 1px var(--hairline-strong)" }}
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
         >

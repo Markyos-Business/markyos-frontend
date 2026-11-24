@@ -3,14 +3,15 @@
 import { useEffect, useRef } from "react";
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { AlertBanner, Button, Icon, Skeleton, useDialog, useToast } from "@/components/ui";
-import { api } from "@/lib/api/client";
 import type { Workspace } from "@/types";
-import { startResume } from "../api/billing.api";
+import { startResume, startSubscription } from "../api/billing.api";
 import { billingCopy, type BillingCopy } from "../copy";
 import { billingErrorText } from "../hooks/use-plan-actions";
 import { useCheckoutFlow } from "../hooks/use-checkout-flow";
 import { usePlans } from "../hooks/use-plans";
+import type { PromoRefusal } from "../types";
 import { paypalClient } from "../utils/paypal-client";
+import { promoRefusal } from "../utils/promo";
 
 /** The build's public client id: a fallback for a server that sends none (never the plan or price). */
 const ENV_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
@@ -31,12 +32,18 @@ export function CheckoutFlow({
   copy,
   onActive,
   mode = "subscribe",
+  code = null,
+  onCodeRefused,
 }: {
   ws: Workspace;
   isAr: boolean;
   copy: BillingCopy;
   onActive?: () => void;
   mode?: "subscribe" | "resume";
+  /** A promo code the server accepted: start sends it back, and the server makes the subscription. */
+  code?: string | null;
+  /** The server refused the code at start (used up or expired since Apply). */
+  onCodeRefused?: (reason: PromoRefusal) => void;
 }) {
   const { showToast } = useToast();
   const { confirm } = useDialog();
@@ -97,6 +104,8 @@ export function CheckoutFlow({
         <PayPalButtons
           fundingSource="paypal"
           style={{ layout: "horizontal", shape: "rect", color: "blue", label: "subscribe", height: 40, tagline: false }}
+          // A code applied or removed changes how the subscription is made.
+          forceReRender={[code]}
           createSubscription={async (_data, actions) => {
             reported.current = false;
             try {
@@ -105,14 +114,16 @@ export function CheckoutFlow({
                 const { subscriptionId } = await startResume(ws.id);
                 return subscriptionId;
               }
-              // Only the brand: the server picks the plan and price (C1).
-              const { planId, customId } = await api<{ planId: string; customId: string }>("/billing/paypal/start/", {
-                method: "POST",
-                body: { brandId: ws.id },
-              });
-              return await actions.subscription.create({ plan_id: planId, custom_id: customId });
+              // Only the brand (and a code): the server picks the plan and price (C1).
+              return await startSubscription(ws.id, code, (plan) => actions.subscription.create(plan));
             } catch (error) {
               reported.current = true;
+              const refused = code ? promoRefusal(error) : null;
+              if (refused) {
+                showToast(copy.promo.reasons[refused], "danger");
+                onCodeRefused?.(refused);
+                throw error;
+              }
               // Refusal codes (nothing_to_resume) in the reader's language.
               showToast(billingErrorText(error, isAr, { en: billingCopy(false).state.failed, ar: billingCopy(true).state.failed }), "danger");
               throw error;

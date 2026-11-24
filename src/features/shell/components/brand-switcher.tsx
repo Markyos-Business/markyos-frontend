@@ -1,18 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { Icon, Popover } from "@/components/ui";
+import { BrandMark, Icon, Popover, useTheme } from "@/components/ui";
 import { useApp } from "@/contexts/AppContext";
-import { brandInitials, brandMarkUrl } from "@/lib/data/brandSetup";
+import { brandInitials, brandMarkSources } from "@/lib/data/brandSetup";
 import type { Workspace } from "@/types";
 
+/**
+ * A brand's logo artwork for an avatar tile in the app's chrome. Through the
+ * kit's `BrandMark` with `plate`, so a dark logo on the dark sidebar gets its
+ * light version or a plate instead of vanishing into the tile.
+ */
+export function BrandAvatarArt({ sources }: { sources: { src: string; lightSrc?: string } }) {
+  const { resolved } = useTheme();
+  return <BrandMark src={sources.src} lightSrc={sources.lightSrc} alt="" onDark={resolved === "dark"} plate className="size-full object-contain p-1" fallbackSize={16} />;
+}
+
 /** A brand's mark at avatar size: its logo, else one letter. */
-function BrandMark({ ws, size }: { ws: Workspace; size: "sm" | "md" }) {
-  const logo = brandMarkUrl(ws);
+function BrandAvatar({ ws, size }: { ws: Workspace; size: "sm" | "md" }) {
+  const logo = brandMarkSources(ws);
   return (
     <span className={`grid shrink-0 place-items-center overflow-hidden rounded-lg bg-surface-2 text-body font-medium text-text ${size === "md" ? "size-9" : "size-8"}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- a stored brand file, any origin */}
-      {logo ? <img src={logo} alt="" className="size-full object-contain p-1" /> : brandInitials(ws.name)}
+      {logo ? <BrandAvatarArt sources={logo} /> : brandInitials(ws.name)}
     </span>
   );
 }
@@ -41,7 +50,7 @@ export function BrandSwitcher({ currentId, isAr }: { currentId: string; isAr: bo
                   aria-current={current ? "page" : undefined}
                   className="mk-nav-item flex items-center gap-space-4 px-space-5 py-space-3"
                 >
-                  <BrandMark ws={ws} size="md" />
+                  <BrandAvatar ws={ws} size="md" />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span dir="auto" className="truncate text-body font-medium text-text [text-align:match-parent]">{ws.name}</span>
                     <span className="truncate text-caption text-text-muted">{plan(ws)}</span>

@@ -8,8 +8,11 @@ import { roleOn } from "@/lib/data/access";
 import type { Workspace } from "@/types";
 import { billingCopy } from "../copy";
 import { usePlans } from "../hooks/use-plans";
+import { usePromoCode } from "../hooks/use-promo-code";
 import type { UpgradeReason } from "../types";
+import { promoPriceLine } from "../utils/promo";
 import { CheckoutFlow } from "./checkout-flow";
+import { PromoCodeField } from "./promo-code-field";
 
 /**
  * The one upgrade modal (billing epic 2.4): every paywall moment opens it
@@ -21,6 +24,7 @@ export function UpgradeModal({
   reason,
   count = 1,
   startsAt,
+  initialCode,
   onClose,
   onDone,
 }: {
@@ -29,6 +33,8 @@ export function UpgradeModal({
   count?: number;
   /** For resume: when the server says the first charge lands (ms). */
   startsAt?: number | null;
+  /** A promo code to start with, from a `?code=` link; still checked by the server on Apply. */
+  initialCode?: string | null;
   onClose: () => void;
   onDone?: () => void;
 }) {
@@ -42,6 +48,8 @@ export function UpgradeModal({
   // A cancelled plan is still paid to its end, so resuming is done when the new subscription is.
   const [resumed, setResumed] = useState(false);
   const subscribed = resume ? resumed : ws.billing?.plan === "subscription";
+  // A resumed plan starts at the full price (plan §1), so it takes no code.
+  const promo = usePromoCode(ws.id, resume ? null : initialCode);
   const date = startsAt ? formatDayMonth(new Date(startsAt), isAr ? "ar" : "en", true) : undefined;
 
   const done = () => {
@@ -67,8 +75,13 @@ export function UpgradeModal({
       <div className="flex flex-col gap-space-6">
         {type && plans && (
           <div className="flex flex-col gap-space-2">
-            <p className="text-title text-text">{copy.price(formatMoney(type.monthly / 100, plans.currency.toUpperCase(), isAr ? "ar" : "en"))}</p>
+            <p className="text-title text-text" data-upgrade-price>
+              {promo.terms
+                ? promoPriceLine(promo.terms, isAr ? "ar" : "en")
+                : copy.price(formatMoney(type.monthly / 100, plans.currency.toUpperCase(), isAr ? "ar" : "en"))}
+            </p>
             <p className="text-caption text-text-muted">{copy.terms}</p>
+            {owner && !resume && !subscribed && <PromoCodeField promo={promo} copy={copy} isAr={isAr} />}
           </div>
         )}
         <div className="flex flex-col gap-space-3">
@@ -85,7 +98,15 @@ export function UpgradeModal({
         {!owner ? (
           <p className="text-body text-text-muted">{copy.notOwner}</p>
         ) : (
-          <CheckoutFlow ws={ws} isAr={isAr} copy={copy} mode={resume ? "resume" : "subscribe"} onActive={resume ? () => setResumed(true) : undefined} />
+          <CheckoutFlow
+            ws={ws}
+            isAr={isAr}
+            copy={copy}
+            mode={resume ? "resume" : "subscribe"}
+            code={promo.terms?.code ?? null}
+            onCodeRefused={promo.refused}
+            onActive={resume ? () => setResumed(true) : undefined}
+          />
         )}
       </div>
     </Modal>

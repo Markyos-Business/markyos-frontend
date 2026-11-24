@@ -37,7 +37,7 @@ const Breadcrumb = ({ items, label, className = "" }: BreadcrumbProps) => {
             {index === last ? (
               <bdi aria-current="page" className="truncate text-text">{item.label}</bdi>
             ) : item.href ? (
-              <Link href={item.href} className="truncate text-text-muted no-underline"><bdi>{item.label}</bdi></Link>
+              <Link href={item.href} className="truncate py-0.5 text-text-muted no-underline" /* 21px line + 4 = a 25px target (WCAG 2.5.8) */><bdi>{item.label}</bdi></Link>
             ) : (
               <bdi className="truncate">{item.label}</bdi>
             )}

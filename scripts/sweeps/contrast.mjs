@@ -62,7 +62,9 @@ const AUDIT = (smallFloor) => {
     if (!el.offsetParent && getComputedStyle(el).position !== "fixed") continue;
     if (el.getAttribute("aria-hidden") === "true") continue;
     if (el.closest("[aria-hidden='true']")) continue;
-    if (el.disabled) continue;
+    // Disabled controls are exempt from contrast (WCAG 1.4.3). The kit marks a
+    // button disabled *with a reason* by aria-disabled, so its tooltip still opens.
+    if (el.disabled || el.closest("[aria-disabled='true'], :disabled")) continue;
     // Own text only — a container's ratio is its children's problem.
     const text = [...el.childNodes]
       .filter((n) => n.nodeType === 3)

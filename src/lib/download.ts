@@ -11,13 +11,18 @@ export async function saveFile(url: string, fileName: string): Promise<void> {
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(String(res.status));
-    const blobUrl = URL.createObjectURL(await res.blob());
-    clickDownload(blobUrl, fileName);
-    // Revoked after the click has been handed to the browser.
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 30_000);
+    saveBlob(await res.blob(), fileName);
   } catch {
     window.open(url, "_blank", "noopener");
   }
+}
+
+/** Save bytes already in hand (a CSV export) under a name. */
+export function saveBlob(blob: Blob, fileName: string): void {
+  const blobUrl = URL.createObjectURL(blob);
+  clickDownload(blobUrl, fileName);
+  // Revoked after the click has been handed to the browser.
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 30_000);
 }
 
 function clickDownload(href: string, fileName: string) {

@@ -70,6 +70,9 @@ const HONEST_CURSORS = new Set([
   "nesw-resize",
   "ew-resize",
   "ns-resize",
+  // A panel splitter: what dragging a column edge looks like everywhere.
+  "col-resize",
+  "row-resize",
 ]);
 
 const PAGES = [
@@ -132,7 +135,9 @@ const COLLECT = `(() => {
       opacity: s.opacity,
       boxShadow: s.boxShadow,
       transform: s.transform,
-      borderColor: s.borderTopColor + '|' + s.borderInlineStartColor,
+      // The bottom edge too: a field's hover and focus land on its underline
+      // (MARKYOS_UI §2.6), which the top and start edges never show.
+      borderColor: s.borderTopColor + '|' + s.borderInlineStartColor + '|' + s.borderBottomColor,
       outline: s.outlineStyle + ' ' + s.outlineWidth + ' ' + s.outlineColor,
       textDecoration: s.textDecorationLine,
       filter: s.filter,
@@ -173,8 +178,24 @@ const COLLECT = `(() => {
     out.push({
       index,
       tag: el.tagName.toLowerCase(),
-      // A tab panel is a keyboard entry point to content, not an action.
-      contentPanel: el.getAttribute("role") === "tabpanel",
+      // Keyboard stops that are not actions, so they owe no pointer cursor or
+      // hover: a tab panel; a scroll region made focusable so a keyboard can
+      // scroll it (WCAG 2.1.1); a table row that takes focus for arrow-key
+      // navigation but opens nothing (only \`data-clickable\` rows do).
+      contentPanel: el.getAttribute("role") === "tabpanel"
+        || (!el.getAttribute("role") && el.tagName === "DIV" && /(auto|scroll)/.test(s.overflowX + s.overflowY))
+        || (el.matches("tr[data-data-row]") && !el.hasAttribute("data-clickable")),
+      // A skip link is visually hidden (1px) until it takes focus, then full size.
+      hiddenUntilFocus: el.tagName === "A" && (r.width <= 1 || r.height <= 1),
+      // A splitter: dragged by its edge, operable by arrow keys (WCAG 2.5.8's
+      // equivalent-control exception); its feedback is painted on an inner grip.
+      separator: el.getAttribute("role") === "separator",
+      // Selected already (the current page, the chosen tab): pressing it again
+      // does nothing, so it owes no hover.
+      selected: el.getAttribute("aria-pressed") === "true" || el.hasAttribute("aria-current"),
+      // Inside a field, what you type into shows focus on the field's underline,
+      // not with a ring of its own; buttons inside a field still need the ring.
+      inField: !!el.closest(".mk-field") && !el.matches('button, [role="button"]'),
       desc: describe(el),
       disabled: el.disabled === true || el.getAttribute('aria-disabled') === 'true',
       /*
@@ -221,7 +242,7 @@ const FINGERPRINT_AT = (i) => `(() => {
     opacity: s.opacity,
     boxShadow: s.boxShadow,
     transform: s.transform,
-    borderColor: s.borderTopColor + '|' + s.borderInlineStartColor,
+    borderColor: s.borderTopColor + '|' + s.borderInlineStartColor + '|' + s.borderBottomColor,
     outline: s.outlineStyle + ' ' + s.outlineWidth + ' ' + s.outlineColor,
     textDecoration: s.textDecorationLine,
     filter: s.filter,
@@ -234,6 +255,14 @@ const FINGERPRINT_AT = (i) => `(() => {
 // ------------------------------------------------------------- helpers ----
 
 function parseRgb(value) {
+  // \`color-mix()\` resolves to \`color(srgb r g b / a)\` with channels 0–1: the
+  // fields' hover fill is one, and reading it as "no colour" hid the change.
+  const srgb = String(value).match(/color\(srgb ([^)]+)\)/);
+  if (srgb) {
+    const parts = srgb[1].split(/[\s/]+/).filter(Boolean).map(Number);
+    if (parts.length < 3 || parts.some(Number.isNaN)) return null;
+    return { r: parts[0] * 255, g: parts[1] * 255, b: parts[2] * 255, a: parts.length > 3 ? parts[3] : 1 };
+  }
   const m = String(value).match(/rgba?\(([^)]+)\)/);
   if (!m) return null;
   const parts = m[1].split(/[,\s/]+/).filter(Boolean).map(Number);
@@ -402,7 +431,7 @@ async function auditPage(page, theme, name, path) {
   // ------------------------------------------- Fitts's Law / SC 2.5.8 ----
   for (const el of elements) {
     stats.sized++;
-    if (el.inlineInText || el.editable) continue;
+    if (el.inlineInText || el.editable || el.hiddenUntilFocus || el.separator) continue;
     if (el.width < TARGET_MIN || el.height < TARGET_MIN) {
       record(
         "target-size",
@@ -453,7 +482,9 @@ async function auditPage(page, theme, name, path) {
       }
       continue;
     }
-    if (el.tag === "select" || el.tag === "input" || el.contentPanel) continue;
+    // Typing surfaces (contenteditable) draw the text caret natively whatever
+    // \`cursor\` computes to, so they owe no pointer either.
+    if (el.tag === "select" || el.tag === "input" || el.contentPanel || el.editable) continue;
     // A resize corner and a connection port are interactive and are *not*
     // pointers: `nwse-resize` and `crosshair` are what those gestures look like
     // everywhere, and reporting them would be this check insisting on a
@@ -467,7 +498,7 @@ async function auditPage(page, theme, name, path) {
   // Sampled rather than exhaustive: a page with 120 controls would take a
   // minute to hover through, and the patterns repeat. Every distinct element
   // *shape* is covered because the sample is spread across the list.
-  const sample = elements.filter((e) => !e.disabled && !e.editable && !e.contentPanel);
+  const sample = elements.filter((e) => !e.disabled && !e.editable && !e.contentPanel && !e.separator && !e.selected);
   const step = Math.max(1, Math.floor(sample.length / 30));
   for (let i = 0; i < sample.length; i += step) {
     const el = sample[i];
@@ -541,7 +572,7 @@ async function auditPage(page, theme, name, path) {
   await page.waitForTimeout(150);
 
   // -------------------------------------------------------- focus ----
-  const focusSample = elements.filter((e) => !e.disabled);
+  const focusSample = elements.filter((e) => !e.disabled && !e.inField && !e.editable);
   const fstep = Math.max(1, Math.floor(focusSample.length / 20));
   for (let i = 0; i < focusSample.length; i += fstep) {
     const el = focusSample[i];
