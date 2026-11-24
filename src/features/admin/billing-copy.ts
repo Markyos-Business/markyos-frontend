@@ -10,7 +10,7 @@ type Copy = {
   title: string;
   description: string;
   tabsLabel: string;
-  tabs: { checkouts: string; orphans: string; audit: string };
+  tabs: { checkouts: string; codes: string; orphans: string; audit: string };
   providers: Record<AdminCheckoutProvider, string>;
   statuses: Record<CheckoutStatusKey, string>;
   /** The status filter's options: one per stored status, so each can be found. */
@@ -193,7 +193,7 @@ const en: Copy = {
   title: "Billing",
   description: "Checkouts, PayPal subscriptions and comps on every brand",
   tabsLabel: "Billing sections",
-  tabs: { checkouts: "Checkouts", orphans: "Orphans", audit: "Audit log" },
+  tabs: { checkouts: "Checkouts", codes: "Codes", orphans: "Orphans", audit: "Audit log" },
   providers: { paypal: "PayPal", stripe: "Stripe", comp: "Comp" },
   statuses: {
     active: "Active",
@@ -290,6 +290,10 @@ const en: Copy = {
     noChange: "No field changed",
     actions: {
       comp_granted: "Comp granted",
+      promo_generated: "Promo codes generated",
+      promo_disabled: "Promo code disabled",
+      promo_batch_disabled: "Promo batch disabled",
+      promo_exported: "Promo codes exported",
       comp_ended: "Comp ended",
       billing_synced: "Synced from PayPal",
       limits_changed: "Limits overridden",
@@ -415,7 +419,7 @@ const ar: Copy = {
   title: "الفوترة",
   description: "عمليات الدفع واشتراكات PayPal والخطط المُهداة لكل العلامات",
   tabsLabel: "أقسام الفوترة",
-  tabs: { checkouts: "عمليات الدفع", orphans: "اشتراكات يتيمة", audit: "سجل التدقيق" },
+  tabs: { checkouts: "عمليات الدفع", codes: "رموز الخصم", orphans: "اشتراكات يتيمة", audit: "سجل التدقيق" },
   providers: { paypal: "PayPal", stripe: "Stripe", comp: "مُهداة" },
   statuses: {
     active: "مفعّل",
@@ -512,6 +516,10 @@ const ar: Copy = {
     noChange: "لم يتغيّر أي حقل",
     actions: {
       comp_granted: "أُهديت خطة",
+      promo_generated: "أُنشئت رموز خصم",
+      promo_disabled: "أُوقف رمز خصم",
+      promo_batch_disabled: "أُوقفت دفعة رموز",
+      promo_exported: "صُدّرت رموز خصم",
       comp_ended: "أُنهيت الخطة المُهداة",
       billing_synced: "مزامنة من PayPal",
       limits_changed: "تعديل الحدود",
