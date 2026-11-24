@@ -16,9 +16,7 @@ export function PromoCodeField({ promo, copy, isAr }: { promo: PromoCodeState; c
   if (promo.terms) {
     return (
       <div className="flex flex-wrap items-center gap-ctl-row" data-promo-applied>
-        <span dir="ltr">
-          <FilterChip label={promo.terms.code} onRemove={promo.remove} removeLabel={p.remove(promo.terms.code)} />
-        </span>
+        <FilterChip label={promo.terms.code} onRemove={promo.remove} removeLabel={p.remove(promo.terms.code)} />
         <span role="status" className="sr-only">
           {p.applied(promo.terms.code)}
         </span>

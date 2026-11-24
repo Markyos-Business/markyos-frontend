@@ -29,7 +29,7 @@ export function CodesTable({ page, actions }: { page: BillingPage; actions: Prom
         </span>
       ),
     },
-    { key: "discount", header: t.discount, cell: (row) => <span dir="auto">{discountLabel(row, lang)}</span> },
+    { key: "discount", header: t.discount, mobileWide: true, cell: (row) => <span dir="auto">{discountLabel(row, lang)}</span> },
     { key: "uses", header: t.uses, cell: (row) => <span className="tabular-nums">{p.uses(row.uses, row.maxUses)}</span> },
     {
       key: "batch",
