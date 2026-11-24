@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Plans } from "@/features/billing";
-import { DEFAULT_GENERATE, discountLabel, discountedCents, previewLines, toGenerateRequest, validateGenerate, type GenerateForm } from "./promo";
+import { DEFAULT_GENERATE, discountLabel, discountedCents, previewLines, toGenerateRequest, usesLabel, validateGenerate, type GenerateForm } from "./promo";
 import { endOfDay } from "./billing";
 
 const plans = {
@@ -69,14 +69,29 @@ describe("validateGenerate", () => {
 });
 
 describe("toGenerateRequest", () => {
-  it("sends the plan's defaults", () => {
-    expect(toGenerateRequest(form())).toEqual({ count: 1, usesPerCode: 1, percentOff: 50, duration: "repeating", months: 3, firstPurchaseOnly: true, note: "Launch partners" });
+  it("sends the plan's defaults with nested discount and duration", () => {
+    expect(toGenerateRequest(form())).toEqual({
+      count: 1,
+      usesPerCode: 1,
+      discount: { kind: "percent", value: 50 },
+      duration: { kind: "repeating", months: 3 },
+      firstPurchaseOnly: true,
+      note: "Launch partners",
+    });
   });
   it("sends cents, the end of the last day, and only some types", () => {
     const request = toGenerateRequest(form({ kind: "amount", amountOff: 5.5, duration: "forever", expiresOn: "2027-01-31", accountTypes: ["studio", "company"], usesPerCode: null }));
-    expect(request).toMatchObject({ amountOff: 550, duration: "forever", expiresAt: endOfDay("2027-01-31"), accountTypes: ["studio", "company"], usesPerCode: null });
-    expect(request).not.toHaveProperty("percentOff");
-    expect(request).not.toHaveProperty("months");
+    expect(request).toMatchObject({
+      discount: { kind: "amount", value: 550 },
+      duration: { kind: "forever" },
+      expiresAt: endOfDay("2027-01-31"),
+      accountTypes: ["studio", "company"],
+      usesPerCode: null,
+    });
+    expect(request.duration).not.toHaveProperty("months");
+  });
+  it("sends once without months", () => {
+    expect(toGenerateRequest(form({ duration: "once" })).duration).toEqual({ kind: "once" });
   });
   it("leaves out account types when all are ticked", () => {
     expect(toGenerateRequest(form({ accountTypes: ["studio", "freelancer", "company"] }))).not.toHaveProperty("accountTypes");
@@ -91,12 +106,20 @@ describe("discountedCents", () => {
 
 describe("discountLabel", () => {
   it("words the discount from its fields in both languages", () => {
-    const row = { label: "server", percentOff: 50, amountOff: null, duration: "repeating" as const, months: 3 };
-    expect(discountLabel(row, "en")).toBe("50% for 3 months");
-    expect(discountLabel(row, "ar")).toBe("50٪ لمدة 3 أشهر");
-    expect(discountLabel({ ...row, percentOff: null, amountOff: 500, duration: "once", currency: "usd" }, "en").replace(/\s/g, " ")).toBe("USD 5 off for the first month");
+    const discount = { kind: "percent" as const, value: 50, duration: "repeating" as const, months: 3 };
+    expect(discountLabel(discount, "en")).toBe("50% off for 3 months");
+    expect(discountLabel(discount, "ar")).toBe("خصم 50٪ لمدة 3 أشهر");
+    expect(discountLabel({ kind: "amount", value: 500, duration: "once", months: 1 }, "en").replace(/\s/g, " ")).toBe("USD 5 off the first month");
+    expect(discountLabel({ kind: "percent", value: 20, duration: "forever", months: null }, "en")).toBe("20% off forever");
+    expect(discountLabel({ kind: "percent", value: 20, duration: "forever", months: null }, "ar")).toBe("خصم 20٪ دائمًا");
   });
-  it("falls back to the server's label", () => {
-    expect(discountLabel({ label: "50% for 3 months" }, "ar")).toBe("50% for 3 months");
+});
+
+describe("usesLabel", () => {
+  it("says used of the limit, with uses held by unpaid checkouts", () => {
+    expect(usesLabel({ used: 1, reserved: 0, limit: 1 }, "en")).toBe("1 of 1");
+    expect(usesLabel({ used: 2, reserved: 1, limit: 5 }, "en")).toBe("2 of 5 (1 reserved)");
+    expect(usesLabel({ used: 3, reserved: 0, limit: null }, "en")).toBe("3 of no limit");
+    expect(usesLabel({ used: 0, reserved: 1, limit: 1 }, "ar")).toBe("0 من 1 (1 محجوز)");
   });
 });

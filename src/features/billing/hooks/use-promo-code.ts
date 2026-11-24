@@ -5,7 +5,7 @@ import { errorText } from "@/lib/api/errorText";
 import { checkCode } from "../api/billing.api";
 import { billingCopy } from "../copy";
 import type { PromoRefusal, PromoTerms } from "../types";
-import { normaliseCode, promoRefusal } from "../utils/promo";
+import { normaliseCode, readCheck } from "../utils/promo";
 
 /** What went wrong with a code: a refusal (one sentence per reason) or any other failure, worded when shown. */
 export type PromoProblem = { kind: "empty" } | { kind: "refused"; reason: PromoRefusal } | { kind: "failed"; error: unknown };
@@ -50,12 +50,13 @@ export function usePromoCode(brandId: string, initial?: string | null) {
     setBusy(true);
     setProblem(null);
     try {
-      const answer = await checkCode(brandId, code);
-      if (mine === run.current) setTerms(answer);
-    } catch (error) {
+      const answer = readCheck(await checkCode(brandId, code));
       if (mine !== run.current) return;
-      const reason = promoRefusal(error);
-      setProblem(reason ? { kind: "refused", reason } : { kind: "failed", error });
+      if ("terms" in answer) setTerms(answer.terms);
+      else setProblem({ kind: "refused", reason: answer.refused });
+    } catch (error) {
+      // Throttled, offline or a server fault: errorText words it.
+      if (mine === run.current) setProblem({ kind: "failed", error });
     } finally {
       if (mine === run.current) setBusy(false);
     }

@@ -10,7 +10,9 @@ export { PROMO_DURATIONS, PROMO_STATUSES } from "./types";
 export type {
   Plans,
   UpgradeReason,
+  PromoAuditEntry,
   PromoBatch,
+  PromoDiscount,
   PromoCodeDetail,
   PromoCodePage,
   PromoCodeQuery,

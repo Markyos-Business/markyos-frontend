@@ -25,6 +25,8 @@ type Copy = {
   };
   /** "1 of 1"; `max` null = no limit. */
   uses: (used: number, max: number | null) => string;
+  /** Uses held by checkouts not yet paid: "(1 reserved)". */
+  reserved: (n: number) => string;
   /** "50% for 3 months", from the discount's own fields. */
   discount: { percent: (n: string) => string; amount: (a: string) => string; duration: (d: PromoDuration, months: number | null) => string; join: (off: string, when: string) => string };
   actions: { open: string; copy: string; disable: string; disableBatch: string; rowActions: (code: string) => string };
@@ -129,6 +131,7 @@ type Copy = {
     date: string;
     redemptionStatus: string;
     payingNow: string;
+    paysUntil: (date: string) => string;
     redemptionStatuses: Record<string, string>;
     deletedBrand: string;
     audit: string;
@@ -154,11 +157,12 @@ const en: Copy = {
     never: "No expiry",
   },
   uses: (used, max) => (max === null ? `${used} of no limit` : `${used} of ${max}`),
+  reserved: (n) => `(${n} reserved)`,
   discount: {
-    percent: (n) => `${n}%`,
+    percent: (n) => `${n}% off`,
     amount: (a) => `${a} off`,
     duration: (d, months) =>
-      d === "once" ? "for the first month" : d === "forever" ? "for as long as the plan runs" : `for ${plural("en", months ?? 0, { one: "{n} month", other: "{n} months" })}`,
+      d === "once" ? "the first month" : d === "forever" ? "forever" : `for ${plural("en", months ?? 0, { one: "{n} month", other: "{n} months" })}`,
     join: (off, when) => `${off} ${when}`,
   },
   actions: { open: "Open code", copy: "Copy code", disable: "Disable code", disableBatch: "Disable batch", rowActions: (code) => `${code} actions` },
@@ -277,7 +281,8 @@ const en: Copy = {
     date: "Date",
     redemptionStatus: "Status",
     payingNow: "Pays now",
-    redemptionStatuses: { reserved: "Reserved", active: "Active", released: "Released" },
+    paysUntil: (d) => `until ${d}`,
+    redemptionStatuses: { reserved: "Reserved", active: "Active", ended: "Ended", released: "Released" },
     deletedBrand: "Deleted brand",
     audit: "Audit log",
     auditEmpty: "No admin actions on this code yet.",
@@ -302,14 +307,15 @@ const ar: Copy = {
     never: "بلا انتهاء",
   },
   uses: (used, max) => (max === null ? `${used} بلا حد` : `${used} من ${max}`),
+  reserved: (n) => `(${n} محجوز)`,
   discount: {
-    percent: (n) => `${n}٪`,
+    percent: (n) => `خصم ${n}٪`,
     amount: (a) => `خصم ${a}`,
     duration: (d, months) =>
       d === "once"
         ? "للشهر الأول"
         : d === "forever"
-          ? "طوال مدة الاشتراك"
+          ? "دائمًا"
           : `لمدة ${plural("ar", months ?? 0, { one: "شهر واحد", two: "شهرين", few: "{n} أشهر", other: "{n} شهرًا" })}`,
     join: (off, when) => `${off} ${when}`,
   },
@@ -429,7 +435,8 @@ const ar: Copy = {
     date: "التاريخ",
     redemptionStatus: "الحالة",
     payingNow: "يدفع الآن",
-    redemptionStatuses: { reserved: "محجوز", active: "نشط", released: "مُحرَّر" },
+    paysUntil: (d) => `حتى ${d}`,
+    redemptionStatuses: { reserved: "محجوز", active: "نشط", ended: "منتهٍ", released: "مُحرَّر" },
     deletedBrand: "علامة محذوفة",
     audit: "سجل التدقيق",
     auditEmpty: "لا إجراءات إدارية على هذا الرمز بعد.",

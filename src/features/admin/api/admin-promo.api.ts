@@ -29,12 +29,14 @@ export function generateCodes(request: PromoGenerateRequest): Promise<PromoGener
   return api<PromoGenerateAnswer>("/admin/billing/codes/generate/", { method: "POST", body: request });
 }
 
-export function disableCode(codeId: string, reason: string): Promise<unknown> {
-  return api(`/admin/billing/codes/${id(codeId)}/disable/`, { method: "POST", body: { reason: reason.trim() } });
+/** Answers with the code's fresh detail. A code already disabled is a 400 `already_disabled`. */
+export function disableCode(codeId: string, note: string): Promise<PromoCodeDetail> {
+  return api<PromoCodeDetail>(`/admin/billing/codes/${id(codeId)}/disable/`, { method: "POST", body: { note: note.trim() } });
 }
 
-export function disableBatch(batchId: string, reason: string): Promise<unknown> {
-  return api(`/admin/billing/batches/${id(batchId)}/disable/`, { method: "POST", body: { reason: reason.trim() } });
+/** Disables the batch and every code in it not yet disabled. */
+export function disableBatch(batchId: string, note: string): Promise<{ batch: unknown; disabled: number }> {
+  return api(`/admin/billing/batches/${id(batchId)}/disable/`, { method: "POST", body: { note: note.trim() } });
 }
 
 /** A batch's codes as the server's CSV (signed in like every admin call). */

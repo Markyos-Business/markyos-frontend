@@ -1,4 +1,4 @@
-import type { Plans, PromoCodeRow, PromoDuration, PromoGenerateRequest, PromoStatus } from "@/features/billing";
+import type { Plans, PromoDiscount, PromoDuration, PromoGenerateRequest, PromoStatus } from "@/features/billing";
 import type { BadgeTone } from "@/components/ui";
 import { formatMoney, formatNumber } from "@/lib/i18n/format";
 import type { AccountType } from "@/types";
@@ -100,18 +100,16 @@ export function validateGenerate(form: GenerateForm, today: Date, plans?: Plans 
   return errors;
 }
 
-/** The request for a valid form. Account types go only when some, not all, are ticked. */
+/** The request for a valid form: amounts in cents; account types only when some, not all, are ticked. */
 export function toGenerateRequest(form: GenerateForm): PromoGenerateRequest {
   const request: PromoGenerateRequest = {
     count: form.count!,
     usesPerCode: form.usesPerCode,
-    duration: form.duration,
+    discount: form.kind === "percent" ? { kind: "percent", value: form.percentOff! } : { kind: "amount", value: Math.round(form.amountOff! * 100) },
+    duration: form.duration === "repeating" ? { kind: "repeating", months: form.months! } : { kind: form.duration },
     firstPurchaseOnly: form.firstPurchaseOnly,
     note: form.note.trim(),
   };
-  if (form.kind === "percent") request.percentOff = form.percentOff!;
-  else request.amountOff = Math.round(form.amountOff! * 100);
-  if (form.duration === "repeating") request.months = form.months!;
   if (form.expiresOn) request.expiresAt = endOfDay(form.expiresOn);
   if (form.accountTypes.length && form.accountTypes.length < ALL_TYPES.length) request.accountTypes = [...form.accountTypes];
   return request;
@@ -138,12 +136,18 @@ export function previewLines(form: GenerateForm, plans: Plans, lang: Lang, typeL
   return lines;
 }
 
-/** "50% for 3 months", in the reader's language from the code's own fields; the server's label otherwise. */
-export function discountLabel(row: Pick<PromoCodeRow, "label" | "percentOff" | "amountOff" | "duration" | "months" | "currency">, lang: Lang): string {
+/** "50% off for 3 months", in the reader's language, from the discount's own fields (the server's label is English only). */
+export function discountLabel(discount: PromoDiscount, lang: Lang, currency = "usd"): string {
   const d = ADMIN_PROMO_COPY[lang].discount;
-  if (!row.duration || (row.percentOff == null && row.amountOff == null)) return row.label;
-  const off = row.percentOff != null ? d.percent(formatNumber(row.percentOff, lang)) : d.amount(money(row.amountOff!, row.currency ?? "usd", lang));
-  return d.join(off, d.duration(row.duration, row.months ?? null));
+  const off = discount.kind === "percent" ? d.percent(formatNumber(discount.value, lang)) : d.amount(money(discount.value, currency, lang));
+  return d.join(off, d.duration(discount.duration, discount.months));
+}
+
+/** "1 of 1", with any uses held by checkouts not yet paid. */
+export function usesLabel(uses: { used: number; reserved: number; limit: number | null }, lang: Lang): string {
+  const p = ADMIN_PROMO_COPY[lang];
+  const line = p.uses(uses.used, uses.limit);
+  return uses.reserved > 0 ? `${line} ${p.reserved(uses.reserved)}` : line;
 }
 
 export const PROMO_STATUS_TONE: Record<PromoStatus, BadgeTone> = { active: "success", used_up: "neutral", expired: "warning", disabled: "danger" };

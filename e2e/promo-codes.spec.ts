@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { djangoShell, expect, newBrand, newStudio, PASSWORD, signIn, test, type Studio } from "./fixtures";
 import { day, freeAnswer, mockBrandBilling, NOW, paidAnswer } from "./billing-mocks";
-import { codeRow, mockCodeCheck, mockPromoAdmin, TERMS } from "./promo-mocks";
+import { codeRow, DISCOUNT, mockCodeCheck, mockPromoAdmin, NEW_BATCH } from "./promo-mocks";
 
 /*
  * Promo codes (docs/promo-codes-plan.md §3): the admin Codes tab, the code
@@ -17,6 +17,7 @@ const REASONS: [string, string][] = [
   ["wrong_type", "This code isn't for this account type."],
   ["not_first_purchase", "This code is for first purchases only."],
   ["inactive", "This code is no longer active."],
+  ["already_redeemed", "You've already used this code."],
   ["unknown", "This code isn't valid. Check it and try again."],
 ];
 
@@ -52,7 +53,7 @@ test.describe("admin codes", () => {
 
     const table = page.getByRole("table", { name: "Promo codes" });
     await expect(table.getByText("MRK-7KQ1-XP2M")).toBeVisible();
-    await expect(table.getByText("50% for 3 months").first()).toBeVisible();
+    await expect(table.getByText("50% off for 3 months").first()).toBeVisible();
     await expect(table.getByText("1 of 1")).toBeVisible();
     await expect(table.getByText("Used up")).toBeVisible();
     // No buttons in the rows but the one ⋯ each.
@@ -85,9 +86,8 @@ test.describe("admin codes", () => {
     expect(sent.find((s) => s.path === "/admin/billing/codes/generate/")?.body).toEqual({
       count: 5,
       usesPerCode: 1,
-      percentOff: 50,
-      duration: "repeating",
-      months: 3,
+      discount: { kind: "percent", value: 50 },
+      duration: { kind: "repeating", months: 3 },
       accountTypes: ["studio"],
       firstPurchaseOnly: true,
       note: "First five studios, one each",
@@ -99,13 +99,13 @@ test.describe("admin codes", () => {
 
     const download = page.waitForEvent("download");
     await result.getByRole("button", { name: "Download CSV" }).click();
-    expect((await download).suggestedFilename()).toBe("promo-codes-batch-new-0002.csv");
-    expect(sent.some((s) => s.path === "/admin/billing/codes.csv" && s.search.get("batch") === "batch-new-0002")).toBe(true);
+    expect((await download).suggestedFilename()).toBe(`promo-codes-${NEW_BATCH}.csv`);
+    expect(sent.some((s) => s.path === "/admin/billing/codes.csv" && s.search.get("batch") === NEW_BATCH)).toBe(true);
 
     // They stay in the list; "Show this batch" filters to them.
     await result.getByRole("button", { name: "Show this batch" }).click();
     await expect(result).toBeHidden();
-    await expect(page).toHaveURL(/batch=batch-new-0002/);
+    await expect(page).toHaveURL(new RegExp(`batch=${NEW_BATCH}`));
     await expect(table.locator("tbody tr")).toHaveCount(5);
   });
 
@@ -123,7 +123,7 @@ test.describe("admin codes", () => {
     await dialog.getByRole("textbox", { name: "Reason" }).fill("Sent to the wrong person");
     await confirm.click();
     await expect(page.getByText("MRK-7KQ2-XP2M disabled")).toBeVisible();
-    expect(sent.find((s) => s.path === "/admin/billing/codes/pc-2/disable/")?.body).toEqual({ reason: "Sent to the wrong person" });
+    expect(sent.find((s) => s.path === "/admin/billing/codes/pc-2/disable/")?.body).toEqual({ note: "Sent to the wrong person" });
     await expect(page.getByRole("table", { name: "Promo codes" }).locator("tbody tr").nth(1).getByText("Disabled")).toBeVisible();
 
     // Cancelling the batch confirm sends nothing.
@@ -145,6 +145,8 @@ test.describe("admin codes", () => {
     const redemptions = page.getByRole("table", { name: "Redemptions" });
     await expect(redemptions.getByText("Wadi Rum Coffee")).toBeVisible();
     await expect(redemptions.getByText(money("USD 14.50"))).toBeVisible();
+    await expect(redemptions.getByText(/^until /)).toBeVisible();
+    await expect(page.getByText("Promo codes generated")).toBeVisible();
     await expect(page.getByText("Launch partners, one each").first()).toBeVisible();
 
     await page.getByRole("button", { name: "Disable batch" }).click();
@@ -152,14 +154,11 @@ test.describe("admin codes", () => {
     await dialog.getByRole("textbox", { name: "Reason" }).fill("Campaign over");
     await dialog.getByRole("button", { name: "Disable batch" }).click();
     await expect(page.getByText("Batch disabled")).toBeVisible();
-    expect(sent.find((s) => s.path === "/admin/billing/batches/batch-launch-0001/disable/")?.body).toEqual({ reason: "Campaign over" });
+    expect(sent.find((s) => s.path === "/admin/billing/batches/6f1c2a90-0000-4000-8000-000000000001/disable/")?.body).toEqual({ note: "Campaign over" });
   });
 });
 
 test.describe("the upgrade modal", () => {
-  // A refused code is the server's 400, which the browser logs.
-  test.use({ expectedErrors: [/status of 400/] });
-
   async function openModal(page: Page) {
     const studio = await newStudio();
     const brand = await newBrand(studio);
@@ -174,7 +173,7 @@ test.describe("the upgrade modal", () => {
 
   test("a valid code shows the server's price with a removable chip", async ({ page }) => {
     const { modal, brand } = await openModal(page);
-    const sent = await mockCodeCheck(page, () => ({ terms: TERMS }));
+    const sent = await mockCodeCheck(page, () => ({}));
 
     await modal.getByRole("button", { name: "Have a code?" }).click();
     const field = modal.getByRole("textbox", { name: "Promo code" });
@@ -194,7 +193,7 @@ test.describe("the upgrade modal", () => {
   test("each refused code says why in one sentence", async ({ page }) => {
     const { modal } = await openModal(page);
     let reason = "expired";
-    await mockCodeCheck(page, () => ({ refuse: reason }));
+    await mockCodeCheck(page, () => ({ reason }));
     await modal.getByRole("button", { name: "Have a code?" }).click();
     const field = modal.getByRole("textbox", { name: "Promo code" });
     for (const [code, sentence] of REASONS) {
@@ -229,7 +228,7 @@ test("the billing tab shows a running discount", async ({ page }) => {
   const until = NOW + 90 * 86_400_000;
   await mockBrandBilling(page, () => {
     const paid = paidAnswer();
-    return { ...paid, subscription: { ...paid.subscription, amount: 2900, discount: { code: "EARLY50", label: "50% for 3 months", amount: 1450, until } } };
+    return { ...paid, subscription: { ...paid.subscription, amount: 2900, discount: { code: "EARLY50", label: "50% off for 3 months", amount: 1450, until, regularAmount: 2900, discount: DISCOUNT } } };
   });
   await signIn(page, studio);
   await page.goto(`/w/${brand.slug}/settings?tab=billing`);

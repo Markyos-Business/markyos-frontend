@@ -90,99 +90,124 @@ export type BrandBillingAnswer = {
  * price; the app shows its answers. Amounts in cents, times in ms.
  */
 
-/** Why the server refused a code (POST /billing/codes/check/ 400 `code`). */
-export const PROMO_REFUSALS = ["expired", "used_up", "wrong_type", "not_first_purchase", "inactive", "unknown"] as const;
+/** Why the server refused a code: `reason` of a check, or `code` of a refused start. */
+export const PROMO_REFUSALS = ["expired", "used_up", "wrong_type", "not_first_purchase", "inactive", "already_redeemed", "unknown"] as const;
 export type PromoRefusal = (typeof PROMO_REFUSALS)[number];
 
-/** POST /billing/codes/check/ 200: the terms for this brand. `months` null = for as long as the plan runs. */
-export type PromoTerms = {
-  code: string;
-  label: string;
-  firstAmount: number;
-  regularAmount: number;
+export const PROMO_DURATIONS = ["once", "repeating", "forever"] as const;
+export type PromoDuration = (typeof PROMO_DURATIONS)[number];
+
+/** A batch's discount: `value` is a percent, or cents for `amount`; `months` is 1 for once, null for forever. */
+export type PromoDiscount = {
+  kind: "percent" | "amount";
+  value: number;
+  duration: PromoDuration;
   months: number | null;
-  currency: string;
 };
 
-/** The billing summary's `subscription.discount`. `until` null = for as long as the plan runs. */
+/** POST /billing/codes/check/: always 200, valid or not. */
+export type PromoCheckAnswer =
+  | { valid: false; reason: string }
+  | {
+      valid: true;
+      code: string;
+      label: string;
+      terms: { discount: PromoDiscount; currency: string; amount: number; regularAmount: number; months: number | null };
+    };
+
+/** An accepted code's terms for this brand, as the modal holds them. `months` null = for as long as the plan runs. */
+export type PromoTerms = { code: string; label: string } & Extract<PromoCheckAnswer, { valid: true }>["terms"];
+
+/** The billing summary's `subscription.discount`, while it lasts. `until` null = for as long as the plan runs. */
 export type SubscriptionDiscount = {
   code: string;
   label: string;
   /** Cents a month while the discount lasts. */
   amount: number;
   until: number | null;
-  /** Cents a month once it ends; when left out, the subscription's own amount. */
-  regularAmount?: number | null;
+  /** Cents a month once it ends. */
+  regularAmount: number | null;
+  discount: PromoDiscount;
 };
-
-export const PROMO_DURATIONS = ["once", "repeating", "forever"] as const;
-export type PromoDuration = (typeof PROMO_DURATIONS)[number];
 
 export const PROMO_STATUSES = ["active", "used_up", "expired", "disabled"] as const;
 export type PromoStatus = (typeof PROMO_STATUSES)[number];
 
-/** POST admin/billing/codes/generate/. Exactly one of percentOff / amountOff. */
+/** POST admin/billing/codes/generate/. */
 export type PromoGenerateRequest = {
   count: number;
   /** Null = unlimited. */
   usesPerCode: number | null;
-  percentOff?: number;
-  /** Cents. */
-  amountOff?: number;
-  duration: PromoDuration;
-  months?: number;
+  /** `value`: a percent, or cents for `amount`. */
+  discount: { kind: "percent" | "amount"; value: number };
+  duration: { kind: PromoDuration; months?: number };
   expiresAt?: number;
   accountTypes?: AccountType[];
   firstPurchaseOnly: boolean;
   note: string;
 };
 
+export type PromoPerson = { id: string; email: string; name?: string | null };
+
+/** A batch: the settings its codes share. */
 export type PromoBatch = {
   id: string;
-  note?: string;
-  createdAt?: number;
+  note: string;
+  label: string;
+  discount: PromoDiscount;
+  usesPerCode: number | null;
+  expiresAt: number | null;
+  accountTypes: AccountType[];
+  firstPurchaseOnly: boolean;
+  codes: number;
+  createdAt: number;
+  createdBy: PromoPerson | null;
+  disabledAt: number | null;
 };
 
-export type PromoGenerateAnswer = { batch: PromoBatch; codes: { id: string; code: string }[] };
-
-/** One code in the admin list. The discount's own fields, when sent, let the app word it in Arabic too. */
+/** One code in the admin list. */
 export type PromoCodeRow = {
   id: string;
   code: string;
   batchId: string;
+  /** English; the app words the discount itself from `discount`. */
   label: string;
-  uses: number;
-  /** Null = unlimited. */
-  maxUses: number | null;
+  discount: PromoDiscount;
+  /** `limit` null = unlimited; `reserved` are checkouts not yet paid. */
+  uses: { used: number; reserved: number; limit: number | null };
   status: PromoStatus;
   expiresAt: number | null;
   createdAt: number;
-  percentOff?: number | null;
-  amountOff?: number | null;
-  duration?: PromoDuration;
-  months?: number | null;
-  currency?: string;
+  disabledAt: number | null;
 };
+
+export type PromoGenerateAnswer = { batch: PromoBatch; codes: PromoCodeRow[] };
 
 export type PromoCodePage = { count: number; results: PromoCodeRow[] };
 
 export type PromoRedemption = {
-  brand: { id: string; name: string } | null;
-  owner: { id: string; email: string; name?: string } | null;
-  createdAt: number;
-  /** reserved / active / released, as the server words it. */
+  id: string;
+  /** reserved / active / ended / released. */
   status: string;
-  /** Cents a month the brand pays now, or null. */
-  payingNow: number | null;
-  currency?: string;
+  brand: { id: string; name: string; slug: string } | null;
+  owner: PromoPerson | null;
+  checkoutId: string;
+  subscriptionStatus: string;
+  reservedAt: number | null;
+  activatedAt: number | null;
+  releasedAt: number | null;
+  endedAt: number | null;
+  endReason: string | null;
+  /** Cents a month now, and until when the discounted price lasts (null when it isn't discounted now, or forever). */
+  paysNow: { amount: number | null; currency: string; until: number | null };
 };
 
+export type PromoAuditEntry = { id: string; action: string; actor: PromoPerson | null; reason: string | null; createdAt: number };
+
 export type PromoCodeDetail = PromoCodeRow & {
+  batch: PromoBatch;
   redemptions: PromoRedemption[];
-  note?: string;
-  firstPurchaseOnly?: boolean;
-  accountTypes?: AccountType[] | null;
-  audit?: { id: string; action: string; reason: string; createdAt: number; actor?: { email: string; name?: string } | null }[];
+  audit: PromoAuditEntry[];
 };
 
 export type PromoCodeQuery = { batch?: string; status?: string; page?: number };

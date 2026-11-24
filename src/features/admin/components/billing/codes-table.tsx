@@ -7,7 +7,7 @@ import type { PromoCodeRow } from "@/features/billing";
 import type { BillingPage } from "../../hooks/billing/use-billing-page";
 import type { PromoActions } from "../../hooks/billing/use-promo-actions";
 import { useAdminPromoLang } from "../../hooks/shared/use-admin-lang";
-import { discountLabel, shortBatch } from "../../utils/promo";
+import { discountLabel, shortBatch, usesLabel } from "../../utils/promo";
 import { CodeStatusBadge } from "./code-status-badge";
 import { codeActions } from "./code-row-actions";
 import { day } from "./format";
@@ -29,8 +29,8 @@ export function CodesTable({ page, actions }: { page: BillingPage; actions: Prom
         </span>
       ),
     },
-    { key: "discount", header: t.discount, mobileWide: true, cell: (row) => <span dir="auto">{discountLabel(row, lang)}</span> },
-    { key: "uses", header: t.uses, cell: (row) => <span className="tabular-nums">{p.uses(row.uses, row.maxUses)}</span> },
+    { key: "discount", header: t.discount, mobileWide: true, cell: (row) => <span dir="auto">{discountLabel(row.discount, lang)}</span> },
+    { key: "uses", header: t.uses, cell: (row) => <span className="tabular-nums">{usesLabel(row.uses, lang)}</span> },
     {
       key: "batch",
       header: t.batch,

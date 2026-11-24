@@ -214,6 +214,7 @@ const en: Copy = {
       wrong_type: "This code isn't for this account type.",
       not_first_purchase: "This code is for first purchases only.",
       inactive: "This code is no longer active.",
+      already_redeemed: "You've already used this code.",
       unknown: "This code isn't valid. Check it and try again.",
     },
     price: (first, regular, months) =>
@@ -410,6 +411,7 @@ const ar: Copy = {
       wrong_type: "هذا الرمز لا ينطبق على نوع حسابك.",
       not_first_purchase: "هذا الرمز للاشتراك الأول فقط.",
       inactive: "هذا الرمز لم يعد مفعّلًا.",
+      already_redeemed: "سبق أن استخدمت هذا الرمز.",
       unknown: "هذا الرمز غير صالح. تحقّق منه وحاول مرة أخرى.",
     },
     price: (first, regular, months) =>

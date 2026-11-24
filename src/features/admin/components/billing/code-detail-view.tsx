@@ -5,11 +5,12 @@ import { Badge, Button, ContentCard, CopyButton, DataTable, EmptyHint, EmptyStat
 import type { DataColumn, KeyValueItem } from "@/components/ui";
 import { ACCOUNT_TYPES } from "@/constants/accountTypes";
 import type { PromoCodeDetail, PromoRedemption } from "@/features/billing";
+import type { AccountType } from "@/types";
 import { errorText } from "@/lib/api/errorText";
 import { usePromoActions } from "../../hooks/billing/use-promo-actions";
 import { useCodeDetail } from "../../hooks/billing/use-code-detail";
 import { useAdminPromoLang } from "../../hooks/shared/use-admin-lang";
-import { discountLabel, shortBatch } from "../../utils/promo";
+import { ALL_TYPES, discountLabel, shortBatch, usesLabel } from "../../utils/promo";
 import { CodeStatusBadge } from "./code-status-badge";
 import { day, money } from "./format";
 
@@ -68,11 +69,11 @@ export function CodeDetailView({ id }: { id: string }) {
               {c.code}
             </h1>
             <p dir="auto" className="text-body text-text-muted">
-              {discountLabel(c, lang)}
+              {discountLabel(c.discount, lang)}
             </p>
             <div className="flex flex-wrap items-center gap-ctl-row pt-space-2">
               <CodeStatusBadge status={c.status} />
-              <Badge tone="neutral">{p.uses(c.uses, c.maxUses)}</Badge>
+              <Badge tone="neutral">{usesLabel(c.uses, lang)}</Badge>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-ctl-row">
@@ -104,10 +105,12 @@ export function CodeDetailView({ id }: { id: string }) {
 function Facts({ code: c }: { code: PromoCodeDetail }) {
   const { p, lang, isAr } = useAdminPromoLang();
   const d = p.detail;
-  const types = c.accountTypes?.length ? c.accountTypes.map((t) => (ACCOUNT_TYPES[t] ? (isAr ? ACCOUNT_TYPES[t].arLabel : ACCOUNT_TYPES[t].label) : t)).join(isAr ? "، " : ", ") : d.allTypes;
+  const batch = c.batch;
+  const typeName = (t: string) => (t in ACCOUNT_TYPES ? (isAr ? ACCOUNT_TYPES[t as AccountType].arLabel : ACCOUNT_TYPES[t as AccountType].label) : t);
+  const allTypes = batch.accountTypes.length === 0 || ALL_TYPES.every((t) => batch.accountTypes.includes(t));
   const items: KeyValueItem[] = [
-    { label: d.discount, value: <span dir="auto">{discountLabel(c, lang)}</span> },
-    { label: d.uses, value: <span className="tabular-nums">{p.uses(c.uses, c.maxUses)}</span> },
+    { label: d.discount, value: <span dir="auto">{discountLabel(c.discount, lang)}</span> },
+    { label: d.uses, value: <span className="tabular-nums">{usesLabel(c.uses, lang)}</span> },
     {
       label: d.batch,
       value: (
@@ -118,10 +121,10 @@ function Facts({ code: c }: { code: PromoCodeDetail }) {
     },
     { label: d.expires, value: c.expiresAt ? day(c.expiresAt, lang) : p.table.never },
     { label: d.created, value: day(c.createdAt, lang) },
+    { label: d.firstPurchase, value: batch.firstPurchaseOnly ? d.yes : d.no },
+    { label: d.types, value: allTypes ? d.allTypes : batch.accountTypes.map(typeName).join(isAr ? "، " : ", ") },
   ];
-  if (c.firstPurchaseOnly !== undefined) items.push({ label: d.firstPurchase, value: c.firstPurchaseOnly ? d.yes : d.no });
-  if (c.accountTypes !== undefined) items.push({ label: d.types, value: types });
-  if (c.note) items.push({ label: d.note, value: <span dir="auto">{c.note}</span> });
+  if (batch.note) items.push({ label: d.note, value: <span dir="auto">{batch.note}</span> });
   return (
     <ContentCard title={d.facts}>
       <KeyValueList layout="grid" items={items} />
@@ -147,9 +150,18 @@ function Redemptions({ redemptions }: { redemptions: PromoRedemption[] }) {
           "—"
         ),
     },
-    { key: "date", header: d.date, cell: (r) => <span className="tabular-nums">{day(r.createdAt, lang)}</span> },
+    { key: "date", header: d.date, cell: (r) => <span className="tabular-nums">{day(r.activatedAt ?? r.reservedAt, lang)}</span> },
     { key: "status", header: d.redemptionStatus, cell: (r) => <Badge tone={r.status === "active" ? "success" : "neutral"}>{d.redemptionStatuses[r.status] ?? r.status}</Badge> },
-    { key: "paying", header: d.payingNow, cell: (r) => <span className="tabular-nums">{money(r.payingNow, r.currency ?? "usd", lang)}</span> },
+    {
+      key: "paying",
+      header: d.payingNow,
+      cell: (r) => (
+        <span className="inline-flex flex-col">
+          <span className="tabular-nums">{money(r.paysNow.amount, r.paysNow.currency, lang)}</span>
+          {r.paysNow.until && <span className="text-caption text-text-muted">{d.paysUntil(day(r.paysNow.until, lang))}</span>}
+        </span>
+      ),
+    },
   ];
   return (
     <ContentCard title={d.redemptions} flush>
@@ -164,7 +176,7 @@ function Redemptions({ redemptions }: { redemptions: PromoRedemption[] }) {
           dir={isAr ? "rtl" : "ltr"}
           columns={columns}
           rows={redemptions}
-          getRowId={(r) => `${r.brand?.id ?? "deleted"}-${r.createdAt}`}
+          getRowId={(r) => r.id}
           getRowLabel={(r) => r.brand?.name ?? d.deletedBrand}
           stickyHeader={false}
           mobileCard={{ primary: "brand", secondary: ["owner", "date", "status", "paying"] }}
@@ -178,13 +190,13 @@ function Redemptions({ redemptions }: { redemptions: PromoRedemption[] }) {
 function Audit({ code: c }: { code: PromoCodeDetail }) {
   const { p, b, lang, isAr } = useAdminPromoLang();
   const d = p.detail;
-  const entries = c.audit ?? [];
+  const entries = c.audit;
   type Entry = (typeof entries)[number];
   const columns: DataColumn<Entry>[] = [
     { key: "date", header: d.date, cell: (e) => <span className="tabular-nums">{day(e.createdAt, lang)}</span> },
     { key: "action", header: b.audit.action, cell: (e) => b.audit.actions[e.action] ?? e.action },
     { key: "actor", header: b.audit.actor, cell: (e) => (e.actor ? <span dir="ltr">{e.actor.email}</span> : b.audit.system) },
-    { key: "reason", header: b.audit.reason, cell: (e) => <span dir="auto">{e.reason}</span> },
+    { key: "reason", header: b.audit.reason, cell: (e) => <span dir="auto">{e.reason ?? "—"}</span> },
   ];
   return (
     <ContentCard title={d.audit} flush>
