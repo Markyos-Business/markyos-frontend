@@ -1,5 +1,5 @@
 import type { Page, Route } from "@playwright/test";
-import { expect, newBrand, newStudio, signIn, test } from "./fixtures";
+import { djangoShell, expect, newBrand, newStudio, signIn, test } from "./fixtures";
 import { freeAnswer, mockBrandBilling } from "./billing-mocks";
 
 /*
@@ -51,22 +51,27 @@ test("a brand kept from the free site names the brand that holds it", async ({ p
   await expect(page.getByText("Wadi Rum Coffee has no plan. Your free site is Nile Bakery. Unpublish it, or subscribe to publish this one.")).toBeVisible();
 });
 
-test("an unpaid brand that may take the free site publishes, and says so first", async ({ page }) => {
-  const studio = await newStudio();
-  const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
-  await mockBrandBilling(page, mayPublishFree);
-  await signIn(page, studio);
-  await page.goto(`/w/${brand.slug}/builder`);
-  // Publish, not Upgrade to publish: the server says the free slot is open.
-  await page.getByRole("button", { name: "Publish", exact: true }).click();
-  const confirm = page.getByRole("dialog");
-  await expect(confirm.getByText("Your first guideline site is free. It shows the Made with Markyos badge.")).toBeVisible();
-  // The server holds the line: here it refuses (the slot was taken meanwhile) and the app explains.
-  await refusePublish(page);
-  await confirm.getByRole("button", { name: "Publish", exact: true }).click();
-  const modal = page.getByRole("dialog", { name: "Your free site is in use" });
-  await expect(modal).toBeVisible();
-  await expect(modal.getByText("Your free site is Nile Bakery. Unpublish it, or subscribe to publish this one.")).toBeVisible();
+test.describe("a publish the server refuses", () => {
+  // The mocked free_site_in_use refusal is a 402 in the console.
+  test.use({ expectedErrors: [[/status of 402/], { scope: "test" }] });
+
+  test("an unpaid brand that may take the free site publishes, and says so first", async ({ page }) => {
+    const studio = await newStudio();
+    const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+    await mockBrandBilling(page, mayPublishFree);
+    await signIn(page, studio);
+    await page.goto(`/w/${brand.slug}/builder`);
+    // Publish, not Upgrade to publish: the server says the free slot is open.
+    await page.getByRole("button", { name: "Publish", exact: true }).click();
+    const confirm = page.getByRole("dialog");
+    await expect(confirm.getByText("Your first guideline site is free. It shows the Made with Markyos badge.")).toBeVisible();
+    // The server holds the line: here it refuses (the slot was taken meanwhile) and the app explains.
+    await refusePublish(page);
+    await confirm.getByRole("button", { name: "Publish", exact: true }).click();
+    const modal = page.getByRole("dialog", { name: "Your free site is in use" });
+    await expect(modal).toBeVisible();
+    await expect(modal.getByText("Your free site is Nile Bakery. Unpublish it, or subscribe to publish this one.")).toBeVisible();
+  });
 });
 
 test("with the free site taken, publishing explains and offers the subscription", async ({ page }) => {
@@ -85,8 +90,8 @@ test("in Arabic, the Billing tab names the free site's brand in Arabic", async (
   const studio = await newStudio();
   const brand = await newBrand(studio, "Wadi Rum Coffee");
   await mockBrandBilling(page, slotTaken);
+  djangoShell(`from apps.accounts.models import User; User.objects.filter(email=${JSON.stringify(studio.email)}).update(admin_lang="ar")`);
   await signIn(page, studio);
-  await page.evaluate(() => localStorage.setItem("markyos.lang", "ar"));
   await page.goto(`/w/${brand.slug}/settings?tab=billing`);
   await expect(page.locator("[dir=rtl]").first()).toBeVisible();
   await expect(page.getByText(/موقعك المجاني هو «Nile Bakery»/)).toBeVisible();
