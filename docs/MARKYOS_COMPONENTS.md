@@ -122,8 +122,8 @@ it says "you can type here" and the text doesn't move when it opens. Never a
 grey box with all four corners round: that is a card, not a field.
 
 **Not fields:** canvas and document content (the builder canvas, moodboard
-notes, the Overview document) keep their own look; "choose one" pills
-(`SegmentedControl`) are §2.5's pill segments.
+notes, the Overview document) keep their own look; "choose one" controls
+(`SegmentedControl`) are §2.5's segmented track, shaped like a button.
 
 ```tsx
 <InputField label="Brand name" value={name} onChange={setName} />
