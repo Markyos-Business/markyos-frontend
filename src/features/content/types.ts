@@ -99,3 +99,44 @@ export type ArticleDraft = {
   tagIds: number[];
   translations: Record<ContentLocale, TranslationDraft>;
 };
+
+/** One page of a list the server pages (DRF's shape). */
+export type Paged<T> = { count: number; next: string | null; previous: string | null; results: T[] };
+
+/** Which list a website sign-up joined. */
+export type SignupTopic = "newsletter" | "contact" | "beta_studio" | "beta_company";
+
+/** An address left on markyos.com: the newsletter, the contact list or a beta. */
+export type WebsiteSignup = {
+  id: number;
+  email: string;
+  topic: SignupTopic;
+  locale: ContentLocale;
+  country: string;
+  createdAt: string;
+};
+
+/** What a contact-form message is about. */
+export type MessageTopic = "sales" | "support" | "studios" | "press" | "security" | "feature" | "other";
+
+/** A message sent through the website's contact form. */
+export type ContactMessage = {
+  id: number;
+  name: string;
+  email: string;
+  topic: MessageTopic;
+  who: string;
+  company: string;
+  country: string;
+  phone: string;
+  replyLanguage: string;
+  locale: ContentLocale;
+  message: string;
+  createdAt: string;
+  /** Whether the team was emailed about it; `emailError` says why not. */
+  emailed: boolean;
+  emailError: string;
+};
+
+/** A private, unindexed link to a draft on the website. */
+export type ArticlePreview = { token: string; expiresAt: string; paths: Record<ContentLocale, string> };

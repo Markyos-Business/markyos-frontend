@@ -14,8 +14,8 @@ export type CmsNavSection = { key: string; label: string; items: NavItem[] };
  * The CMS part of the admin sidebar, for this person.
  *
  * Sections list only what the server lets them open: the content kinds in
- * their sections, the library, and (content admins only) redirects, traffic
- * and people. `role` is null for someone with no content access.
+ * their sections, the library, and (content admins only) the website's inbox
+ * (sign-ups and messages), redirects, traffic and people. `role` is null for someone with no content access.
  */
 export function useCmsNav(): { loading: boolean; role: string | null; sections: CmsNavSection[] } {
   const pathname = usePathname();
@@ -65,6 +65,15 @@ export function useCmsNav(): { loading: boolean; role: string | null; sections: 
     // Content admins only; the server refuses the rest anyway.
     ...(data.canPublish
       ? [
+          // What visitors leave on markyos.com (LR-13). An open message keeps "Messages" lit.
+          {
+            key: "cms-inbox",
+            label: c.nav.inbox,
+            items: [
+              page("signups", c.nav.signups, "list-ul"),
+              { ...page("messages", c.nav.messages, "envelope"), active: pathname.startsWith(`${CMS_HOME}/messages`) },
+            ],
+          },
           {
             key: "cms-manage",
             label: c.nav.cmsManage,

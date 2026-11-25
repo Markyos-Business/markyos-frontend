@@ -9,12 +9,18 @@ export function useRemove() {
   const { c, lang } = useContentLang();
   const { confirm } = useDialog();
   const { showToast } = useToast();
-  return async (run: () => Promise<unknown>, reload: () => void, title: string = c.common.confirmRemove) => {
-    const ok = await confirm({ title, confirmLabel: c.common.remove, tone: "danger" });
+  return async (
+    run: () => Promise<unknown>,
+    reload: () => void,
+    title: string = c.common.confirmRemove,
+    // Words for a delete rather than a removal: the body under the title, the button and the toast.
+    words: { body?: string; confirmLabel?: string; done?: string } = {},
+  ) => {
+    const ok = await confirm({ title, body: words.body, confirmLabel: words.confirmLabel ?? c.common.remove, tone: "danger" });
     if (!ok) return;
     try {
       await run();
-      showToast(c.common.removed, "success");
+      showToast(words.done ?? c.common.removed, "success");
       reload();
     } catch (e: unknown) {
       showToast(errorText(e, lang), "danger");
