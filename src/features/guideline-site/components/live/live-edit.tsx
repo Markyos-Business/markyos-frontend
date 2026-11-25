@@ -333,17 +333,27 @@ export function SectionNoteProvider({ lookup, children }: { lookup: (id: string)
 export function SectionNote({
   sectionId,
   placeholder = "Add guidance for this section",
+  fallback = "",
   className = "",
   style,
 }: {
   sectionId: string;
   placeholder?: string;
+  /**
+   * The brand's own wording to show until the studio writes a note — the
+   * hero's opening line falls back to the tagline or positioning (see
+   * `siteCopy`). It renders on the published site and in the editor alike,
+   * so the canvas shows what the client will see; editing it stores the
+   * studio's own line, which wins from then on. The placeholder prompt only
+   * appears in the editor when there is neither.
+   */
+  fallback?: string;
   className?: string;
   style?: React.CSSProperties;
 }) {
   const { enabled, setSectionNote } = useLiveEdit();
   const c = useEditCopy();
-  const value = useContext(SectionNoteContext)(sectionId);
+  const value = useContext(SectionNoteContext)(sectionId) || fallback;
   if (!enabled && !value) return null;
   return (
     <EditableText
