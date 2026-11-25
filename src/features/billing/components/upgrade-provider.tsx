@@ -11,10 +11,13 @@ import { UpgradeModal } from "./upgrade-modal";
 /** `/brands?code=EARLY50`: a promo code the next upgrade modal starts with (plan §3). */
 const CODE_PARAM = "code";
 
-type Request = { wsId: string; reason: UpgradeReason; count?: number; startsAt?: number | null; onDone?: () => void };
-/** `count`: for brand_limit, how many brands are without a plan. `startsAt`: for resume, the server's first charge date. */
+type Request = { wsId: string; reason: UpgradeReason; count?: number; startsAt?: number | null; freeSite?: string | null; onDone?: () => void };
+/**
+ * `count`: for brand_limit, how many brands are without a plan. `startsAt`: for resume, the server's first charge date.
+ * `freeSite`: for free_site, the name of the brand the server says holds the free site.
+ */
 type Upgrade = {
-  open: (request: { ws: Workspace; reason: UpgradeReason; count?: number; startsAt?: number | null; onDone?: () => void }) => void;
+  open: (request: { ws: Workspace; reason: UpgradeReason; count?: number; startsAt?: number | null; freeSite?: string | null; onDone?: () => void }) => void;
 };
 
 const UpgradeContext = createContext<Upgrade | null>(null);
@@ -31,14 +34,14 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
 
   const linkCode = useLinkCode();
 
-  const open = useCallback<Upgrade["open"]>(({ ws, reason, count, startsAt, onDone }) => setRequest({ wsId: ws.id, reason, count, startsAt, onDone }), []);
+  const open = useCallback<Upgrade["open"]>(({ ws, reason, count, startsAt, freeSite, onDone }) => setRequest({ wsId: ws.id, reason, count, startsAt, freeSite, onDone }), []);
   const value = useMemo(() => ({ open }), [open]);
 
   return (
     <UpgradeContext.Provider value={value}>
       {children}
       {request && ws && (
-        <UpgradeModal ws={ws} reason={request.reason} count={request.count} startsAt={request.startsAt} initialCode={linkCode} onDone={request.onDone} onClose={() => setRequest(null)} />
+        <UpgradeModal ws={ws} reason={request.reason} count={request.count} startsAt={request.startsAt} freeSite={request.freeSite} initialCode={linkCode} onDone={request.onDone} onClose={() => setRequest(null)} />
       )}
     </UpgradeContext.Provider>
   );

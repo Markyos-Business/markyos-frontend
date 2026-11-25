@@ -622,7 +622,14 @@ interface AppContextValue {
   setSiteMode: (workspaceId: string, mode: Workspace["siteMode"]) => void;
   /** Copies the current draft to the live site clients see. */
   /** Publishes on the server when signed in; resolves with what happened. */
-  publishGuideline: (workspaceId: string) => Promise<{ ok: boolean; blocked?: boolean; planRequired?: boolean; message?: string }>;
+  publishGuideline: (workspaceId: string) => Promise<{
+    ok: boolean;
+    blocked?: boolean;
+    planRequired?: boolean;
+    freeSiteInUse?: boolean;
+    freeSiteBrand?: { id: string; name: string } | null;
+    message?: string;
+  }>;
   /** Takes the live site down; the draft is untouched. */
   unpublishGuideline: (workspaceId: string) => Promise<{ ok: boolean; message?: string }>;
   addTemplateBlocks: (workspaceId: string, blocks: Omit<PageBlock, "id" | "order">[], pageId?: string) => void;

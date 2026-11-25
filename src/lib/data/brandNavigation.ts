@@ -12,7 +12,13 @@ export function canOpenBrandPage(role: TeamRole | null, pathname: string, slug: 
   return role !== "client" || !INTERNAL_BRAND_SECTIONS.has(section);
 }
 
-/** A published snapshot still needs a paid brand plan; passwords remain enforced by the viewer. */
+/**
+ * The client's link to the published site, only while the server says the
+ * link serves it (`live`: a paid plan, or the account's free site since
+ * 25 Nov 2026). Without the server's word (the offline demo, an older
+ * server) a paid plan is still the rule. Passwords remain enforced by the viewer.
+ */
 export function publishedGuidelineHref(workspace: Workspace): string | null {
-  return workspace.published && workspace.billing.plan !== "free" ? `/v/${workspace.slug}` : null;
+  const live = workspace.live ?? workspace.billing.plan !== "free";
+  return workspace.published && live ? `/v/${workspace.slug}` : null;
 }

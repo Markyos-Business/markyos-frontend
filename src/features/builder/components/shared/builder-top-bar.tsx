@@ -4,7 +4,8 @@ import { ActionsDropdown, Badge, Button, ButtonGroup, IconButton, LinkButton, us
 import type { BuilderPageState } from "../../hooks/use-builder-page";
 import { ViewSwitcher } from "../canvas/view-switcher";
 import { ReviewChip } from "../review/review-panel";
-import { canGoLive, isLive, publishedButNotLive } from "@/lib/data/publication";
+import { isLive, publishedButNotLive } from "@/lib/data/publication";
+import { billingCopy } from "@/features/billing";
 import { builderCopy } from "../../copy";
 
 /**
@@ -17,7 +18,7 @@ import { builderCopy } from "../../copy";
  * designed.
  */
 export function BuilderTopBar(b: BuilderPageState) {
-  const { ws, isAr, hasUnpublished, review, revealFinding, previewHref, onPublish, onUnpublish } = b;
+  const { ws, isAr, hasUnpublished, review, revealFinding, previewHref, onPublish, onUnpublish, canPublish, freeSite } = b;
   const { showToast } = useToast();
   // Under 1024px the bar is one row that never wraps: the status keeps only
   // its dot, the review chip its count, and View/Copy move into More. The view
@@ -28,8 +29,10 @@ export function BuilderTopBar(b: BuilderPageState) {
   // brand without a paid plan isn't shown on its link (review, 21 Nov 2026).
   const live = isLive(ws);
   const notLive = publishedButNotLive(ws);
-  const allowed = canGoLive(ws);
+  // The server's `canGoLive`, or its word on the account's free site (use-builder-page).
+  const allowed = canPublish;
   const words = builderCopy(isAr).publication;
+  const free = billingCopy(isAr).freeSite;
   const upToDate = live && !hasUnpublished;
   const back = isAr ? `العودة إلى ${ws.name}` : `Back to ${ws.name}`;
   const status = notLive
@@ -38,7 +41,7 @@ export function BuilderTopBar(b: BuilderPageState) {
     ? { tone: "neutral" as const, text: isAr ? "غير منشور" : "Not published" }
     : hasUnpublished
       ? { tone: "warning" as const, text: isAr ? "تغييرات غير منشورة" : "Unpublished changes" }
-      : { tone: "success" as const, text: isAr ? "منشور" : "Published" };
+      : { tone: "success" as const, text: isAr ? "منشور" : "Published", hint: freeSite?.kind === "this" ? words.status.freeSite : undefined };
 
   async function copyLink() {
     try {
@@ -61,7 +64,7 @@ export function BuilderTopBar(b: BuilderPageState) {
         {narrow ? (
           <span title={status.text} className="shrink-0"><Badge tone={status.tone} dot><span className="sr-only">{status.text}</span></Badge></span>
         ) : (
-          <span title={"hint" in status ? status.hint : undefined}><Badge tone={status.tone} dot>{status.text}</Badge></span>
+          <span title={"hint" in status && status.hint ? status.hint : undefined}><Badge tone={status.tone} dot>{status.text}</Badge></span>
         )}
       </div>
 
@@ -95,7 +98,7 @@ export function BuilderTopBar(b: BuilderPageState) {
           />
         )}
         {!allowed ? (
-          <Button variant="primary" size="sm" onClick={onPublish} title={words.upgradeHint}>
+          <Button variant="primary" size="sm" onClick={onPublish} title={freeSite?.kind === "taken" ? free.taken(freeSite.brand?.name ?? null) : words.upgradeHint}>
             {words.upgrade}
           </Button>
         ) : (
@@ -103,6 +106,8 @@ export function BuilderTopBar(b: BuilderPageState) {
           variant="primary"
           size="sm"
           onClick={onPublish}
+          // Going live on the free slot says so before the click (the confirm says it again).
+          title={freeSite?.kind === "available" && !live ? free.note : undefined}
           // Says why it is disabled in the kit's tooltip: a `title` never shows on a disabled button, so it looked broken.
           disabledReason={upToDate ? (isAr ? "لا توجد تغييرات منذ آخر نشر." : "Nothing has changed since the last publish.") : undefined}
         >

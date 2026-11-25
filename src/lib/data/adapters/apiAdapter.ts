@@ -77,8 +77,26 @@ export type VoteOutcome =
 /**
  * `blocked`: the server refused because Must fix items remain (`publish_blocked`).
  * `planRequired`: going live needs a paid plan (`plan_required`, 402).
+ * `freeSiteInUse`: the account's one free site is another brand's
+ * (`free_site_in_use`); `freeSiteBrand` names it when the server does.
  */
-export type PublishOutcome = { ok: true } | { ok: false; unsupported?: boolean; blocked?: boolean; planRequired?: boolean; message: string };
+export type PublishOutcome =
+  | { ok: true }
+  | {
+      ok: false;
+      unsupported?: boolean;
+      blocked?: boolean;
+      planRequired?: boolean;
+      freeSiteInUse?: boolean;
+      freeSiteBrand?: { id: string; name: string } | null;
+      message: string;
+    };
+
+/** The brand a `free_site_in_use` refusal names, if it names one in the expected shape. */
+function refusedFreeSite(data: unknown): { id: string; name: string } | null {
+  const brand = (data as { freeSiteBrand?: unknown } | null)?.freeSiteBrand as { id?: unknown; name?: unknown } | null | undefined;
+  return brand && typeof brand.id === "string" && typeof brand.name === "string" ? { id: brand.id, name: brand.name } : null;
+}
 
 const withoutVotes = (boards: Workspace["moodboards"]) =>
   boards.map((b) => ({ ...b, zones: b.zones.map((z) => ({ ...z, items: z.items.map((i) => ({ ...i, votes: [] })) })) }));
@@ -347,8 +365,13 @@ export function createApiAdapter(options: {
           await adopt(body.current, ws.slug);
           return { ok: false, message: "Someone saved changes just now. Check them, then publish again." };
         }
-        if (err.status === 402 && (err.data as { code?: string } | null)?.code === "plan_required") {
+        const code = (err.data as { code?: string } | null)?.code;
+        if (err.status === 402 && code === "plan_required") {
           return { ok: false, planRequired: true, message: err.message };
+        }
+        // The free slot is taken: the same refusal shape, a new code (25 Nov 2026).
+        if (err.status >= 400 && err.status < 500 && code === "free_site_in_use") {
+          return { ok: false, planRequired: true, freeSiteInUse: true, freeSiteBrand: refusedFreeSite(err.data), message: err.message };
         }
         if (err.status === 400 && (err.data as { code?: string } | null)?.code === "publish_blocked") {
           return { ok: false, blocked: true, message: err.message };
