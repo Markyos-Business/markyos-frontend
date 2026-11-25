@@ -1,7 +1,11 @@
-import { api } from "@/lib/api/client";
+import { api, apiFile } from "@/lib/api/client";
 import type {
   ArticleDoc,
   ArticleDraft,
+  ArticlePreview,
+  ContactMessage,
+  Paged,
+  WebsiteSignup,
   ArticleRow,
   Author,
   Category,
@@ -132,3 +136,29 @@ export const grantAccess = (p: { email: string; role: Person["role"]; sections: 
 export const updateAccess = (id: number, p: Partial<Pick<Person, "role" | "sections" | "notes">>) =>
   api<Person>(`/content/people/${id}/`, { method: "PATCH", body: p });
 export const revokeAccess = (id: number) => api<void>(`/content/people/${id}/`, { method: "DELETE" });
+
+// ---- the website's inbox: sign-ups and contact messages -------------------------
+
+/** `?topic=&q=&page=` with the empty ones left out. */
+const inboxQuery = (q: { topic?: string; q?: string; page?: number }) => {
+  const params = new URLSearchParams();
+  if (q.topic) params.set("topic", q.topic);
+  if (q.q) params.set("q", q.q);
+  if (q.page && q.page > 1) params.set("page", String(q.page));
+  const s = params.toString();
+  return s ? `?${s}` : "";
+};
+export type InboxQuery = { topic?: string; q?: string; page?: number };
+
+export const listSignups = (q: InboxQuery) => api<Paged<WebsiteSignup>>(`/content/signups/${inboxQuery(q)}`);
+/** Every sign-up the filters match, as the server's CSV. */
+export const exportSignups = (q: InboxQuery) => apiFile(`/content/signups/export/${inboxQuery({ ...q, page: undefined })}`);
+export const deleteSignup = (id: number) => api<void>(`/content/signups/${id}/`, { method: "DELETE" });
+
+export const listMessages = (q: InboxQuery) => api<Paged<ContactMessage>>(`/content/messages/${inboxQuery(q)}`);
+export const getMessage = (id: string) => api<ContactMessage>(`/content/messages/${encodeURIComponent(id)}/`);
+export const exportMessages = (q: InboxQuery) => apiFile(`/content/messages/export/${inboxQuery({ ...q, page: undefined })}`);
+export const deleteMessage = (id: number) => api<void>(`/content/messages/${id}/`, { method: "DELETE" });
+
+/** A seven-day, unindexed link to the article as saved, on the website. */
+export const createPreview = (id: string) => api<ArticlePreview>(`/content/articles/${id}/preview/`, { method: "POST" });

@@ -12,3 +12,6 @@ export { TaxonomyView } from "./components/library/taxonomy-view";
 export { RedirectsView } from "./components/manage/redirects-view";
 export { TrafficView } from "./components/manage/traffic-view";
 export { PeopleView } from "./components/manage/people-view";
+export { SignupsView } from "./components/inbox/signups-view";
+export { MessagesView } from "./components/inbox/messages-view";
+export { MessageDetailView } from "./components/inbox/message-detail-view";

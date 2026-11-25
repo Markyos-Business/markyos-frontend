@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/lib/api/client";
 import { useToast } from "@/components/ui";
-import { deleteArticle, getArticle, publishArticle, saveArticle, unpublishArticle, restoreVersion } from "../api/content.api";
+import { createPreview, deleteArticle, getArticle, publishArticle, saveArticle, unpublishArticle, restoreVersion } from "../api/content.api";
+import { MARKETING_URL } from "@/lib/marketing";
 import type { ArticleDoc, ArticleDraft, ContentLocale, TranslationDraft } from "../types";
 import { useContentLang } from "./use-content-lang";
 import { errorText } from "@/lib/api/errorText";
@@ -50,7 +51,7 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
   const [saved, setSaved] = useState<ArticleDraft | null>(null);
   // The load failure itself; it becomes words at render, in the reader's language.
   const [error, setError] = useState<unknown>(null);
-  const [busy, setBusy] = useState<null | "save" | "publish" | "unpublish" | "delete" | "restore">(null);
+  const [busy, setBusy] = useState<null | "save" | "publish" | "unpublish" | "delete" | "restore" | "preview">(null);
 
   const adopt = useCallback(
     (next: ArticleDoc) => {
@@ -117,6 +118,37 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
     return handle("publish", () => publishArticle(doc.id, version), c.editor.published);
   };
 
+  /**
+   * Opens the article as saved on the website, in `locale`, in a new tab.
+   * Unsaved edits are saved first (the same path as Save), so the preview
+   * shows what is on screen. The tab is opened at the click, before the
+   * calls, so the browser doesn't treat it as an unasked pop-up.
+   */
+  const preview = async (locale: ContentLocale) => {
+    if (!doc || !draft) return false;
+    const tab = window.open("", "_blank");
+    const fail = (message?: string) => {
+      tab?.close();
+      if (message) showToast(message, "danger");
+      return false;
+    };
+    if (dirty && !(await handle("save", () => saveArticle(doc.id, draft, doc.version), c.editor.saved))) return fail();
+    setBusy("preview");
+    try {
+      const link = await createPreview(doc.id);
+      const url = `${MARKETING_URL}${link.paths[locale] ?? link.paths.ar}`;
+      if (!tab) return fail(c.editor.previewBlocked);
+      // The website gets no handle back on this page.
+      tab.opener = null;
+      tab.location.href = url;
+      return true;
+    } catch (e: unknown) {
+      return fail(errorText(e, lang));
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const unpublish = () => (doc ? handle("unpublish", () => unpublishArticle(doc.id), c.editor.takenDown) : Promise.resolve(false));
   const remove = () => (doc ? handle("delete", () => deleteArticle(doc.id)) : Promise.resolve(false));
 
@@ -124,5 +156,5 @@ export function useArticleEditor(id: string, lookups: { categoryIdBySlug: (slug:
     setDraft((d) => (d ? { ...d, translations: { ...d.translations, [locale]: { ...d.translations[locale], ...patch } } } : d));
   const patch = (next: Partial<ArticleDraft>) => setDraft((d) => (d ? { ...d, ...next } : d));
 
-  return { doc, draft, error: error === null ? null : errorText(error, lang), busy, dirty, restore: (number:number) => doc ? handle("restore", () => restoreVersion(id, number, doc.version)) : Promise.resolve(false), save, publish, unpublish, remove, setTranslation, patch };
+  return { doc, draft, error: error === null ? null : errorText(error, lang), busy, dirty, restore: (number:number) => doc ? handle("restore", () => restoreVersion(id, number, doc.version)) : Promise.resolve(false), save, publish, preview, unpublish, remove, setTranslation, patch };
 }

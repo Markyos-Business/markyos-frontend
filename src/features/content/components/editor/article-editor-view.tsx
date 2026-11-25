@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ import {
   StatusDot,
   TextareaField,
   ToggleField,
+  Tooltip,
   UploadButton,
   useDialog,
   useToast,
@@ -68,6 +69,9 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
   );
   const editor = useArticleEditor(id, lookups);
   const { doc, draft } = editor;
+  // The language tab on screen, which Preview opens. Null until chosen: the
+  // article's first written language until then.
+  const [tab, setTab] = useState<ContentLocale | null>(null);
 
   if (editor.error) return <EmptyState icon="exclamation-circle" title={editor.error} description="" />;
   if (!doc || !draft) return <EditorSkeleton />;
@@ -81,6 +85,23 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
     const item = await picker.pick();
     return item ? { url: item.url, alt: locale === "ar" ? item.altAr || item.altEn : item.altEn || item.altAr } : null;
   };
+
+  const written = (l: ContentLocale) => !!(draft.translations[l].title.trim() || draft.translations[l].bodyHtml.trim());
+  const shownTab: ContentLocale = tab ?? (written("en") || !written("ar") ? "en" : "ar");
+  // An empty language has no page on the website; preview the other one.
+  const previewLocale: ContentLocale = written(shownTab) ? shownTab : shownTab === "en" ? "ar" : "en";
+  const previewButton = (
+    <Tooltip content={t.previewHelp} side="bottom">
+      <Button
+        variant="secondary"
+        icon={<Icon name="external-link-alt" size={18} />}
+        onClick={() => void editor.preview(previewLocale)}
+        disabled={!!editor.busy}
+      >
+        {editor.busy === "preview" ? t.previewing : t.preview}
+      </Button>
+    </Tooltip>
+  );
 
   const remove = async () => {
     const ok = await confirm({ title: t.removeTitle, body: t.removeBody, confirmLabel: t.remove, tone: "danger" });
@@ -104,13 +125,16 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
               <Button variant="secondary" onClick={() => void editor.save()} disabled={!editor.dirty || !!editor.busy}>
                 {editor.busy === "save" ? t.saving : t.save}
               </Button>
+              {previewButton}
               {canPublish && (
                 <Button onClick={() => void editor.publish()} disabled={!!editor.busy || (doc.isPublished && !doc.hasUnpublishedChanges && !editor.dirty)}>
                   {doc.isPublished ? t.update : t.publish}
                 </Button>
               )}
             </>
-          ) : undefined
+          ) : (
+            previewButton
+          )
         }
         secondaryActions={<><VersionHistory id={id} version={doc.version} canWrite={canWrite} dirty={editor.dirty} busy={!!editor.busy} onRestore={editor.restore}/>{          canPublish ? (
             <>
@@ -131,6 +155,8 @@ function Editor({ id, taxonomy }: { id: string; taxonomy: Taxonomy }) {
         <section className="mk-surface rounded-card bg-surface-1 p-space-8">
           <LanguageTabs
             label={f.body}
+            value={shownTab}
+            onValueChange={(v) => setTab(v === "ar" ? "ar" : "en")}
             arabicValue={draft.translations.ar.title}
             english={<TranslationFields locale="en" draft={draft.translations.en} readOnly={!canWrite} onChange={(p) => editor.setTranslation("en", p)} onInsertImage={() => chooseImage("en")} pickCover={picker.pick} />}
             arabic={<TranslationFields locale="ar" draft={draft.translations.ar} readOnly={!canWrite} onChange={(p) => editor.setTranslation("ar", p)} onInsertImage={() => chooseImage("ar")} pickCover={picker.pick} />}
