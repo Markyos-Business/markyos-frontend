@@ -116,7 +116,7 @@ export function ColorChips({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boole
       data-layout="chips"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-2.5"
+      className="grid grid-cols-3 @min-[640px]:grid-cols-5 @min-[1024px]:grid-cols-6 gap-2.5"
     >
       {ws.colors.map((c) => {
         const shown = colorFormats(c.hex).filter((f) => wanted.includes(f.label as ColorFormatKey))[0];
@@ -204,7 +204,7 @@ export function ColorFeature({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boo
       </div>
 
       {rest.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 @min-[640px]:grid-cols-4 gap-3">
           {rest.map((c) => {
             const chipInk = bestInkOn(c.hex)?.ink ?? "#000000";
             return (
@@ -253,7 +253,7 @@ export function LogoLockups({
       data-layout="lockups"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      className="grid grid-cols-1 @min-[640px]:grid-cols-2 gap-4"
     >
       {attachedSlots.map((kind) => (
         <div key={kind} className="p-8 grid place-items-center h-[220px]" style={gPlate}>
@@ -302,7 +302,7 @@ export function LogoHero({
           <div
             data-cols={opts.columns ? "" : undefined}
             style={columnVars(opts.columns)}
-            className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+            className="grid grid-cols-2 @min-[640px]:grid-cols-3 gap-4"
           >
             {rest.map((kind) => (
               <div key={kind} className="p-6 grid place-items-center h-[140px]" style={gPlateSm}>
@@ -389,7 +389,7 @@ export function TypeScaleTable({ ws, isAr, opts = {} }: { ws: Workspace; isAr: b
 export function TypePoster({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolean; opts?: SectionOptions }) {
   const scripts = scriptsFor(opts);
   return (
-    <div data-layout="poster" className={`grid gap-4 ${scripts.length > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}>
+    <div data-layout="poster" className={`grid gap-4 ${scripts.length > 1 ? "@min-[768px]:grid-cols-2" : "grid-cols-1"}`}>
       {SCRIPTS.filter((s) => scripts.includes(s.script)).map((s) => (
         <div key={s.script} className="p-7 flex flex-col gap-5" style={gPlate}>
           <div
@@ -445,7 +445,7 @@ export function PhotoFeature({ assets, opts = {} }: { assets: Asset[]; opts?: Se
         <div
           data-cols={opts.columns ? "" : undefined}
           style={columnVars(opts.columns)}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+          className="grid grid-cols-2 @min-[640px]:grid-cols-4 gap-3"
         >
           {rest.map((a) => (
             <div key={a.id} className="overflow-hidden h-[110px]" style={gPlateSm}>
@@ -496,7 +496,7 @@ export function IconNamed({ assets, onDark, opts = {} }: { assets: Asset[]; onDa
       data-layout="named"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3"
+      className="grid grid-cols-3 @min-[640px]:grid-cols-4 @min-[1024px]:grid-cols-6 gap-3"
     >
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-1.5 m-0">
@@ -519,7 +519,7 @@ export function IconDense({ assets, onDark, opts = {} }: { assets: Asset[]; onDa
       data-layout="dense"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-10 gap-2"
+      className="grid grid-cols-6 @min-[640px]:grid-cols-8 @min-[1024px]:grid-cols-10 gap-2"
     >
       {assets.map((a) => (
         <div key={a.id} className="grid place-items-center h-[52px]" style={gPlateSm}>
@@ -542,7 +542,7 @@ export function IconDense({ assets, onDark, opts = {} }: { assets: Asset[]; onDa
  * next caption bug.
  */
 export function MockupRows({ assets, columns, opts = {} }: { assets: Asset[]; columns: 1 | 3; opts?: SectionOptions }) {
-  const cls = columns === 1 ? "grid gap-4 grid-cols-1" : "grid gap-3 grid-cols-2 sm:grid-cols-3";
+  const cls = columns === 1 ? "grid gap-4 grid-cols-1" : "grid gap-3 grid-cols-2 @min-[640px]:grid-cols-3";
   const height = columns === 1 ? 420 : 170;
   return (
     <div

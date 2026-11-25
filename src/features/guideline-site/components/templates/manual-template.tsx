@@ -34,6 +34,8 @@ import { themeCssVars } from "../../utils/theme";
 import { bestInkOn } from "@/lib/contrast";
 import { colorFormats } from "@/lib/utils";
 import { TemplateProps } from "../../types";
+import { SiteMenu } from "../shared/site-menu";
+import { siteCopy } from "../../utils/site-copy";
 
 /** Manual's own wording for the derived sections, until a studio renames one. */
 const TITLES: SectionTitles = {
@@ -56,7 +58,7 @@ const TITLES: SectionTitles = {
 };
 
 /**
- * The rail is 300px, written into the two `md:grid-cols-[300px_1fr]` classes
+ * The rail is 300px, written into the two `@min-[768px]:grid-cols-[300px_1fr]` classes
  * rather than held here: Tailwind scans source for literal class names, so a
  * value interpolated from a constant would never generate a rule.
  */
@@ -100,6 +102,7 @@ export function ManualTemplate(props: TemplateProps) {
     publishedDepartments,
   };
   const runningHead = isAr ? "دليل الهوية" : "Brand Guidelines";
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
 
   /**
    * The bodies the printed form does differently.
@@ -141,23 +144,30 @@ export function ManualTemplate(props: TemplateProps) {
             scrolling 35 screens is a worse manual. This bar stays thin and
             ruled so it reads as part of the binding rather than as chrome. */}
         <div
-          className="sticky top-0 z-sticky h-12 flex items-center justify-between px-6 md:px-10 gap-4 backdrop-blur"
+          className="sticky top-0 z-sticky h-12 flex items-center justify-between px-6 @min-[768px]:px-10 gap-4 backdrop-blur"
           style={{
             background: "color-mix(in srgb, var(--g-canvas) 88%, transparent)",
             boxShadow: "inset 0 -1px 0 var(--g-hairline)",
           }}
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            {logo.src ? (
+            {logo.isLockup ? (
+              /* A height, not a max-height: a lockup SVG with only a viewBox
+                 has no intrinsic size and collapsed to nothing when capped. */
               <BrandMark
                 src={logo.src}
                 lightSrc={logo.lightSrc}
                 alt={ws.name}
                 onDark={!theme.isLight}
-                style={{ maxHeight: 20, maxWidth: 150 }}
+                style={{ height: 20, width: "auto", maxWidth: "min(150px, 45cqi)" }}
               />
             ) : (
-              <span className="font-semibold text-[14px] truncate">{ws.name}</span>
+              <>
+                {logo.src && (
+                  <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ width: 20, height: 20, flexShrink: 0 }} />
+                )}
+                <span className="font-semibold text-[14px] truncate">{ws.name}</span>
+              </>
             )}
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -170,19 +180,29 @@ export function ManualTemplate(props: TemplateProps) {
               <Link
                 key={p.id}
                 href={`/v/${ws.slug}/p/${p.slug}`}
-                className="text-[12px] hidden sm:inline"
+                className="text-[12px] hidden @min-[640px]:inline"
                 style={{ color: activePage?.id === p.id ? "var(--g-text)" : "var(--g-text-faint)" }}
               >
                 {isAr ? p.arName : p.name}
               </Link>
             ))}
             <LangToggle value={previewLang} onChange={setPreviewLang} />
+            <SiteMenu
+              className="@min-[640px]:hidden"
+              ws={ws}
+              isAr={isAr}
+              sections={sections}
+              activeId={activeId}
+              scrollTo={scrollTo}
+              pages={pages}
+              activePage={activePage}
+            />
           </div>
         </div>
 
         {!activePage && (
           <>
-            <Cover ws={ws} markSrc={mark.src} lightMarkSrc={mark.lightSrc} runningHead={runningHead} />
+            <Cover ws={ws} markSrc={mark.src} lightMarkSrc={mark.lightSrc} subtitle={copy.subtitle} />
             <ContentsPage sections={sections} pages={pages} ws={ws} isAr={isAr} scrollTo={scrollTo} />
           </>
         )}
@@ -210,14 +230,14 @@ export function ManualTemplate(props: TemplateProps) {
                   <StatementBand
                     text={statementText}
                     isAr={isAr}
-                    className="px-6 md:px-16 py-20"
+                    className="px-6 @min-[768px]:px-16 py-20"
                     style={{ background: "var(--g-invert-bg)" }}
-                    textClassName="bidi-auto max-w-[900px] mx-auto text-[26px] md:text-[34px] font-semibold leading-[1.35]"
+                    textClassName="bidi-auto max-w-[900px] mx-auto text-[26px] @min-[768px]:text-[34px] font-semibold leading-[1.35]"
                     textStyle={{ fontFamily: "var(--font-display)", color: "var(--g-invert-ink)" }}
                     noteStyle={{ color: "var(--g-invert-ink)", opacity: 0.72 }}
                   />
                 ) : item.kind === "block" && item.block.kind === "divider" ? (
-                  <div className="px-6 md:px-16">
+                  <div className="px-6 @min-[768px]:px-16">
                     <BlockRenderer block={item.block} ws={ws} isAr={isAr} />
                   </div>
                 ) : (
@@ -247,6 +267,7 @@ export function ManualTemplate(props: TemplateProps) {
                       title={label}
                       titleId={item.id}
                       noteId={item.id}
+                      noteFallback={item.id === "overview" ? copy.purpose || copy.lead : undefined}
                       active={activeId === item.id}
                     >
                       {item.kind === "block" ? (
@@ -269,7 +290,7 @@ export function ManualTemplate(props: TemplateProps) {
                   </>
                 )}
               </FlowShell>
-              <div className="px-6 md:px-16">
+              <div className="px-6 @min-[768px]:px-16">
                 <InsertPoint afterId={item.id} isAr={isAr} after={label} />
               </div>
             </Fragment>
@@ -277,7 +298,7 @@ export function ManualTemplate(props: TemplateProps) {
         })}
 
         {attachedSlots.length > 0 && (
-          <div className="px-6 md:px-16 py-16 flex justify-center" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+          <div className="px-6 @min-[768px]:px-16 py-16 flex justify-center" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
             <button
               type="button"
               onClick={() => setDownloadOpen(true)}
@@ -312,19 +333,20 @@ function Cover({
   ws,
   markSrc,
   lightMarkSrc,
-  runningHead,
+  subtitle,
 }: {
   ws: TemplateProps["ws"];
   markSrc?: string;
   lightMarkSrc?: string;
-  runningHead: string;
+  /** The tagline, else "Brand guidelines" (see `siteCopy`). */
+  subtitle: string;
 }) {
   return (
     <div
-      className="relative flex flex-col justify-end px-6 md:px-14 pb-16 md:pb-24"
+      className="relative flex flex-col justify-end px-6 @min-[768px]:px-14 pb-16 @min-[768px]:pb-24"
       style={{ background: "var(--g-invert-bg)", color: "var(--g-invert-ink)", minHeight: "72vh" }}
     >
-      <div className="absolute top-0 inset-x-6 md:inset-x-14 flex items-center gap-6 pt-10">
+      <div className="absolute top-0 inset-x-6 @min-[768px]:inset-x-14 flex items-center gap-6 pt-10">
         <div className="flex-1" style={{ height: 1, background: "var(--g-invert-hairline)" }} />
         {markSrc && (
           <BrandMark src={markSrc} lightSrc={lightMarkSrc} alt="" onDark style={{ maxHeight: 54, maxWidth: 90 }} />
@@ -335,7 +357,9 @@ function Cover({
         className="bidi-auto"
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(44px, 7vw, 86px)",
+          // Against the page, not the window: in the editor's 390px frame a
+          // 7vw size still read the 1440px window and ran off the cover.
+          fontSize: "clamp(36px, 12cqi, 86px)",
           lineHeight: 1.02,
           fontWeight: 700,
           letterSpacing: "-.03em",
@@ -345,10 +369,12 @@ function Cover({
           maxWidth: "14ch",
         }}
       >
-        {runningHead}
-      </h2>
-      <p dir="auto" className="bidi-auto mt-4 text-[15px]" style={{ opacity: 0.7 }}>
+        {/* The cover names the brand; it used to say "Brand Guidelines" in
+            86px and leave the brand's name as the caption (review, 25 Nov 2026). */}
         {ws.name}
+      </h2>
+      <p dir="auto" className="bidi-auto mt-4 text-[15px] max-w-[52ch]" style={{ opacity: 0.7 }}>
+        {subtitle}
       </p>
     </div>
   );
@@ -370,11 +396,11 @@ function ContentsPage({
 }) {
   if (sections.length === 0) return null;
   return (
-    <div className="px-6 md:px-14 py-16 md:py-24" style={{ boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
+    <div className="px-6 @min-[768px]:px-14 py-16 @min-[768px]:py-24" style={{ boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
       {/* The rail-and-page spread is the book's layout, but a 300px rail beside
           content does not fit a 390px screen — below md the heading simply sits
           above its list instead of beside it. */}
-      <div className="grid gap-10 md:gap-14 md:grid-cols-[300px_1fr]">
+      <div className="grid gap-10 @min-[768px]:gap-14 @min-[768px]:grid-cols-[300px_1fr]">
         <h2
           style={{
             fontFamily: "var(--font-display)",
@@ -386,7 +412,7 @@ function ContentsPage({
         >
           {isAr ? "المحتويات" : "Table of Contents"}
         </h2>
-        <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3 self-start">
+        <div className="grid gap-x-10 gap-y-7 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3 self-start">
           {sections.map((s, i) => (
             <button
               key={s.id}
@@ -441,10 +467,10 @@ function ChapterOpener({
 }) {
   return (
     <div
-      className="relative flex flex-col justify-end px-6 md:px-14 pb-14 md:pb-20"
+      className="relative flex flex-col justify-end px-6 @min-[768px]:px-14 pb-14 @min-[768px]:pb-20"
       style={{ background: "var(--g-invert-bg)", color: "var(--g-invert-ink)", minHeight: "56vh" }}
     >
-      <div className="absolute top-0 inset-x-6 md:inset-x-14 flex items-center gap-6 pt-10">
+      <div className="absolute top-0 inset-x-6 @min-[768px]:inset-x-14 flex items-center gap-6 pt-10">
         <div className="flex-1" style={{ height: 1, background: "var(--g-invert-hairline)" }} />
         {markSrc && (
           <BrandMark src={markSrc} lightSrc={lightMarkSrc} alt={brandName} onDark style={{ maxHeight: 44, maxWidth: 76 }} />
@@ -453,7 +479,7 @@ function ChapterOpener({
       <div
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(38px, 6vw, 72px)",
+          fontSize: "clamp(34px, 10cqi, 72px)",
           lineHeight: 1.04,
           fontWeight: 700,
           letterSpacing: "-.03em",
@@ -482,6 +508,7 @@ function Page({
   title,
   titleId,
   noteId,
+  noteFallback,
   children,
 }: {
   id?: string;
@@ -494,18 +521,20 @@ function Page({
   title: string;
   titleId?: string;
   noteId?: string;
+  /** The brand's own line, shown until the studio writes a note here. */
+  noteFallback?: string;
   active?: boolean;
   children: ReactNode;
 }) {
   return (
     <div
       id={id}
-      className="scroll-mt-12 px-6 md:px-14 py-12 md:py-16"
+      className="scroll-mt-12 px-6 @min-[768px]:px-14 py-12 @min-[768px]:py-16"
       style={{ boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}
     >
-      <div className="grid gap-10 md:gap-14 items-start md:grid-cols-[minmax(0,300px)_1fr]">
+      <div className="grid gap-10 @min-[768px]:gap-14 items-start @min-[768px]:grid-cols-[minmax(0,300px)_1fr]">
         <div
-          className="flex flex-col gap-7 md:sticky md:top-20"
+          className="flex flex-col gap-7 @min-[768px]:sticky @min-[768px]:top-20"
           style={{ minWidth: 0 }}
         >
           {/* The running head: chapter on one side, publication on the other —
@@ -554,6 +583,7 @@ function Page({
           {noteId && (
             <SectionNote
               sectionId={noteId}
+              fallback={noteFallback}
               placeholder={isAr ? "أضف شرحًا لهذه الصفحة" : "Add a note for this page"}
               style={{ fontSize: "var(--g-body-size)", lineHeight: "var(--g-lead)", color: "var(--g-text-muted)" }}
             />

@@ -319,10 +319,20 @@ export function themeCssVars(t: BrandTheme): Record<string, string> {
     "--g-card-shadow": cardShadow,
     "--g-rhythm": `${ds.rhythm}px`,
 
-    "--g-hero-size": `${ds.display.hero}px`,
+    /*
+     * Display sizes are fluid against the page, not fixed.
+     *
+     * A 54px headline set in a 390px column broke mid-word ("Bra / nd / gui /
+     * deli / ne") and a 64px one ran off the edge (review, 25 Nov 2026). `cqi`
+     * is a percentage of the template root's width — the page in the editor's
+     * framed canvas and the window on the published site alike — so the type
+     * reaches the design system's size on a wide page and steps down with the
+     * page, never below a floor that still reads as a headline.
+     */
+    "--g-hero-size": fluidSize(ds.display.hero, 28),
     "--g-hero-tracking": ds.display.tracking,
     "--g-hero-weight": String(ds.display.weight),
-    "--g-section-size": `${ds.display.section}px`,
+    "--g-section-size": fluidSize(ds.display.section, 22),
     "--g-body-size": `${ds.body.size}px`,
     "--g-lead": String(ds.body.lead),
     "--g-label-size": `${ds.label.size}px`,
@@ -374,4 +384,14 @@ export function themeCssVars(t: BrandTheme): Record<string, string> {
     "--hairline": t.hairline,
     "--hairline-strong": t.hairline,
   };
+}
+
+/**
+ * `clamp(floor, slope, max)`: the size reaches `max` on a 900px-wide page and
+ * shrinks with it below that, never under `floor` (or `max`, if smaller).
+ */
+export function fluidSize(max: number, floor: number): string {
+  const min = Math.min(max, floor);
+  const slope = Math.round((max / 900) * 100 * 100) / 100;
+  return `clamp(${min}px, ${slope}cqi, ${max}px)`;
 }

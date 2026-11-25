@@ -423,8 +423,8 @@ export function DeckTemplate(props: TemplateProps) {
                   sectionId={i === 0 ? "logo" : undefined}
                   title={i === 0 ? sectionTitle("logo", label) : label}
                   note={t(
-                    `Minimum clearspace: ${slot.clearspaceMultiplier}× the mark's height on every side.`,
-                    `المسافة الآمنة الدنيا: ${slot.clearspaceMultiplier}× ارتفاع الشعار من كل جانب.`
+                    `Minimum clearspace: ${slot.clearspaceMultiplier ?? 0.5}× the mark's height on every side.`,
+                    `المسافة الآمنة الدنيا: ${slot.clearspaceMultiplier ?? 0.5}× ارتفاع الشعار من كل جانب.`
                   )}
                   markUrl={markUrl}
                 >

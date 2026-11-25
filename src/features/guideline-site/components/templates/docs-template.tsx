@@ -3,7 +3,7 @@
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { LangToggle, Button, Icon, richToPlainText } from "@/components/ui";
+import { LangToggle, Button, Icon } from "@/components/ui";
 import { BrandMark } from "@/components/ui";
 import { navLogo } from "../../utils/brand-logo";
 import { DownloadPanel } from "../documents/download-panel";
@@ -13,7 +13,8 @@ import { ColorGrid, FixedSectionBody, SignOffPanel, StatementBand } from "../con
 import { flowLabel, SectionTitles } from "../live/flow-helpers";
 import { themeCssVars } from "../../utils/theme";
 import { gBody, gHero, gLabel, gSectionTitle } from "../shared/surface";
-import { formatRelative } from "@/lib/utils";
+import { CompactBar } from "../shared/site-menu";
+import { siteCopy } from "../../utils/site-copy";
 import { TemplateProps } from "../../types";
 
 /** Docs' own wording for the derived sections, until a studio renames one. */
@@ -68,10 +69,8 @@ export function DocsTemplate(props: TemplateProps) {
   const bandText = "var(--g-accent-ink)";
   const logo = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
-  const heroTitle = sectionTitle(
-    "overview-title",
-    richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية البصرية" : "Brand guideline")
-  );
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
+  const heroTitle = sectionTitle("overview-title", copy.heroTitle);
 
   /**
    * Docs is a reference site rather than a scroller, so its colour section
@@ -99,7 +98,7 @@ export function DocsTemplate(props: TemplateProps) {
       style={{ ...themeCssVars(theme), background: "var(--g-canvas)", color: "var(--g-text)", fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
       <div
-        className="w-[280px] shrink-0 hidden md:flex flex-col gap-6 h-screen sticky top-0 overflow-y-auto px-6 py-8"
+        className="w-[240px] @min-[1024px]:w-[280px] shrink-0 hidden @min-[768px]:flex flex-col gap-6 h-screen sticky top-0 overflow-y-auto px-6 py-8"
         style={{ boxShadow: isAr ? "inset -1px 0 0 var(--g-hairline)" : "inset 1px 0 0 var(--g-hairline)" }}
       >
         {logo.isLockup ? (
@@ -136,8 +135,8 @@ export function DocsTemplate(props: TemplateProps) {
           </div>
         )}
         <div className="flex flex-col gap-0.5" style={{ ...gLabel, color: "var(--g-text-faint)" }}>
-          <span>{isAr ? "دليل الهوية البصرية" : "Visual identity guidelines"}</span>
-          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}` : `Updated: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}`}</span>
+          <span dir="auto" className="bidi-auto">{copy.subtitle}</span>
+          {copy.updated && <span>{copy.updated}</span>}
         </div>
 
         <nav className="flex flex-col gap-0.5">
@@ -206,8 +205,22 @@ export function DocsTemplate(props: TemplateProps) {
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col">
+        <CompactBar
+          className="@min-[768px]:hidden"
+          ws={ws}
+          isAr={isAr}
+          sections={sections}
+          activeId={activeId}
+          scrollTo={scrollTo}
+          pages={pages}
+          activePage={activePage}
+          previewLang={previewLang}
+          setPreviewLang={setPreviewLang}
+          onDark={!theme.isLight}
+          onDownload={attachedSlots.length > 0 ? () => setDownloadOpen(true) : undefined}
+        />
         {activePage && (
-          <div className="px-8 md:px-16 py-14 max-w-[900px]">
+          <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-14 max-w-[900px]">
             <h2 dir="auto" className="bidi-auto" style={gHero}>
               {isAr ? activePage.arName : activePage.name}
             </h2>
@@ -221,11 +234,11 @@ export function DocsTemplate(props: TemplateProps) {
               <Fragment key={item.id}>
                 <FlowShell flowId={item.id} kind={item.kind} label={label} style={item.style} accent={theme.accent}>
                   {item.id === "overview" ? (
-                    <div id="overview" className="px-8 md:px-16 py-14 flex flex-col gap-6 scroll-mt-0 max-w-[900px]">
+                    <div id="overview" className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-14 flex flex-col gap-6 scroll-mt-0 max-w-[900px]">
                       <SectionHeading
                         sectionId="overview-eyebrow"
                         as="span"
-                        value={sectionTitle("overview-eyebrow", ws.name)}
+                        value={sectionTitle("overview-eyebrow", copy.eyebrow)}
                         style={{ ...gLabel, color: "var(--g-text-faint)" }}
                       />
                       <SectionHeading
@@ -237,6 +250,7 @@ export function DocsTemplate(props: TemplateProps) {
                       <SectionNote
                         sectionId="overview"
                         placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+                        fallback={copy.openingLine}
                         style={gBody}
                       />
                       {ws.overviewHtml && <div dir="auto" className="bidi-auto docs-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />}
@@ -246,14 +260,14 @@ export function DocsTemplate(props: TemplateProps) {
                     <StatementBand
                       text={statementText}
                       isAr={isAr}
-                      className="px-8 md:px-16 py-12"
+                      className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-12"
                       style={{ background: "var(--g-accent)" }}
-                      textClassName="bidi-auto max-w-[900px] text-[22px] md:text-[26px] font-semibold leading-[1.4]"
+                      textClassName="bidi-auto max-w-[900px] text-[22px] @min-[768px]:text-[26px] font-semibold leading-[1.4]"
                       textStyle={{ fontFamily: "var(--font-display)", color: bandText }}
                       noteStyle={{ color: bandText, opacity: 0.75 }}
                     />
                   ) : item.kind === "block" && item.block.kind === "divider" ? (
-                    <div className="px-8 md:px-16">
+                    <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16">
                       <BlockRenderer block={item.block} ws={ws} isAr={isAr} />
                     </div>
                   ) : (
@@ -266,7 +280,7 @@ export function DocsTemplate(props: TemplateProps) {
                     </Band>
                   )}
                 </FlowShell>
-                <div className="px-8 md:px-16">
+                <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16">
                   <InsertPoint afterId={item.id} isAr={isAr} after={label} />
                 </div>
               </Fragment>
@@ -306,7 +320,7 @@ function Band({
       {/* Full-bleed band, content on the body's own measure — a chapter number
           pinned to the far edge of a wide screen stops reading as part of the
           heading it numbers. */}
-      <div className="px-8 md:px-16 py-8" style={{ background: "var(--g-accent)" }}>
+      <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-8" style={{ background: "var(--g-accent)" }}>
         <div className="max-w-[900px] flex items-baseline justify-between gap-6">
           <SectionHeading
             sectionId={id}
@@ -318,7 +332,7 @@ function Band({
           </span>
         </div>
       </div>
-      <div className="px-8 md:px-16 py-10 flex flex-col gap-5 max-w-[900px]">
+      <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-10 flex flex-col gap-5 max-w-[900px]">
         <SectionNote sectionId={id} style={gBody} />
         {children}
       </div>

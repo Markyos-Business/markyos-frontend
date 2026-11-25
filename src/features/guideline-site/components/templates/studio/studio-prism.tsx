@@ -7,7 +7,9 @@
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { LangToggle, Icon, richToPlainText } from "@/components/ui";
+import { LangToggle, Icon } from "@/components/ui";
+import { SiteMenu } from "../../shared/site-menu";
+import { siteCopy } from "../../../utils/site-copy";
 import { BrandMark } from "@/components/ui";
 import { navLogo } from "../../../utils/brand-logo";
 import { DownloadPanel } from "../../documents/download-panel";
@@ -77,7 +79,8 @@ export function StudioPrism(props: TemplateProps) {
   const navActive = theme.isLight ? "rgba(0,0,0,.08)" : "rgba(255,255,255,.14)";
   const logo = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
-  const heroTitle = sectionTitle("overview-title", richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية" : "Brand guideline"));
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
+  const heroTitle = sectionTitle("overview-title", copy.heroTitle);
 
   return (
     <SectionNoteProvider lookup={sectionNote}>
@@ -110,7 +113,7 @@ export function StudioPrism(props: TemplateProps) {
         }}
       >
         <span
-          className="h-8 ps-2 pe-3.5 text-[12.5px] font-semibold flex items-center gap-2"
+          className="h-8 ps-2 pe-3.5 text-[12.5px] font-semibold flex items-center gap-2 shrink-0 whitespace-nowrap"
           style={{ ...gPill, background: "var(--g-text)", color: "var(--g-canvas)" }}
         >
           {/* This chip inverts the site's ground — it's dark on a light site
@@ -122,7 +125,7 @@ export function StudioPrism(props: TemplateProps) {
               lightSrc={logo.lightSrc}
               alt={ws.name}
               onDark={theme.isLight}
-              style={{ maxHeight: 18, maxWidth: 150 }}
+              style={{ height: 18, width: "auto", maxWidth: "min(150px, 40cqi)" }}
             />
           ) : (
             <>
@@ -135,14 +138,14 @@ export function StudioPrism(props: TemplateProps) {
                   style={{ maxWidth: 18, maxHeight: 18, flexShrink: 0 }}
                 />
               )}
-              {ws.name}
+              <span className="truncate max-w-[40cqi]">{ws.name}</span>
             </>
           )}
         </span>
         {activePage && (
           <Link
             href={`/v/${ws.slug}`}
-            className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden sm:flex items-center"
+            className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden @min-[640px]:flex items-center"
             style={{ ...gPill, color: navInk }}
           >
             {isAr ? "الرئيسية" : "Home"}
@@ -155,7 +158,7 @@ export function StudioPrism(props: TemplateProps) {
               key={s.id}
               type="button"
               onClick={() => scrollTo(s.id)}
-              className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden sm:flex items-center"
+              className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden @min-[640px]:flex items-center"
               style={{ ...gPill, background: active ? navActive : "transparent", color: navInk }}
             >
               {isAr ? s.arLabel : s.label}
@@ -168,7 +171,7 @@ export function StudioPrism(props: TemplateProps) {
             <Link
               key={p.id}
               href={`/v/${ws.slug}/p/${p.slug}`}
-              className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden sm:flex items-center"
+              className="h-8 px-3.5 text-[12.5px] font-medium cursor-pointer whitespace-nowrap hidden @min-[640px]:flex items-center"
               style={{ ...gPill, background: active ? navActive : "transparent", color: navInk }}
             >
               {isAr ? p.arName : p.name}
@@ -178,6 +181,17 @@ export function StudioPrism(props: TemplateProps) {
         <span className="ps-1">
           <LangToggle value={previewLang} onChange={setPreviewLang} />
         </span>
+        {/* Below 640px of page the section links fold away; the menu holds them. */}
+        <SiteMenu
+          className="@min-[640px]:hidden"
+          ws={ws}
+          isAr={isAr}
+          sections={sections}
+          activeId={activeId}
+          scrollTo={scrollTo}
+          pages={pages}
+          activePage={activePage}
+        />
       </nav>
 
       {activePage && (
@@ -198,15 +212,16 @@ export function StudioPrism(props: TemplateProps) {
               {item.id === "overview" ? (
                 <>
                   <Hero
-                    eyebrow={sectionTitle("overview-eyebrow", `{ ${ws.name.toUpperCase()} }`)}
+                    eyebrow={sectionTitle("overview-eyebrow", `{ ${copy.eyebrow.toUpperCase()} }`)}
                     title={heroTitle}
                     subtitle={isAr ? "نظام التصميم" : "DESIGN SYSTEM"}
                     heroText={heroText}
                     accent={theme.accent}
                     isAr={isAr}
+                    openingLine={copy.openingLine}
                   />
                   {sections.length > 0 && <Index ws={ws} sections={sections} scrollTo={scrollTo} isAr={isAr} />}
-                  <div id="overview" className="px-8 md:px-16 py-14 max-w-[900px] mx-auto flex flex-col gap-5 scroll-mt-0">
+                  <div id="overview" className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 py-14 max-w-[900px] mx-auto flex flex-col gap-5 scroll-mt-0">
                     {ws.overviewHtml && <div dir="auto" className="bidi-auto studio-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />}
                     <SignOffPanel ws={ws} section="overview" isAr={isAr} />
                   </div>
@@ -215,9 +230,9 @@ export function StudioPrism(props: TemplateProps) {
                 <StatementBand
                   text={statementText}
                   isAr={isAr}
-                  className="px-8 md:px-16 py-14"
+                  className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 py-14"
                   style={{ background: "var(--g-accent)" }}
-                  textClassName="bidi-auto max-w-[900px] mx-auto text-[22px] md:text-[28px] font-semibold leading-[1.4] text-center"
+                  textClassName="bidi-auto max-w-[900px] mx-auto text-[22px] @min-[768px]:text-[28px] font-semibold leading-[1.4] text-center"
                   // The band is filled with the accent, so its ink is solved
                   // against the accent — not against the page ground, which is
                   // a different colour and a different question.
@@ -225,7 +240,7 @@ export function StudioPrism(props: TemplateProps) {
                   noteStyle={{ color: "var(--g-accent-ink)", opacity: 0.75, textAlign: "center" }}
                 />
               ) : item.kind === "block" && item.block.kind === "divider" ? (
-                <div className="px-8 md:px-16 max-w-[900px] mx-auto">
+                <div className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 max-w-[900px] mx-auto">
                   <BlockRenderer block={item.block} ws={ws} isAr={isAr} />
                 </div>
               ) : (
@@ -238,7 +253,7 @@ export function StudioPrism(props: TemplateProps) {
                 </Section>
               )}
             </FlowShell>
-            <div className="px-8 md:px-16 max-w-[900px] mx-auto">
+            <div className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 max-w-[900px] mx-auto">
               <InsertPoint afterId={item.id} isAr={isAr} after={label} />
             </div>
           </Fragment>
@@ -276,6 +291,7 @@ function Hero({
   heroText,
   accent,
   isAr,
+  openingLine = "",
   children,
 }: {
   eyebrow: string;
@@ -284,12 +300,14 @@ function Hero({
   heroText: string;
   accent: string;
   isAr?: boolean;
+  /** The brand's own opening line, shown until the studio writes one. */
+  openingLine?: string;
   children?: ReactNode;
 }) {
   const editable = isAr !== undefined;
   return (
     <div
-      className="min-h-[62vh] flex flex-col items-center justify-center text-center px-8 gap-4"
+      className="min-h-[62vh] flex flex-col items-center justify-center text-center px-5 @min-[640px]:px-8 pt-24 pb-12 gap-4"
       style={{ background: `radial-gradient(circle at 30% 100%, ${accent} 0%, transparent 55%), var(--g-canvas)` }}
     >
       {editable ? (
@@ -309,13 +327,13 @@ function Hero({
           as="h2"
           value={title}
           className="bidi-auto font-semibold tracking-tight leading-[0.95]"
-          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(44px, 9vw, 110px)", color: heroText }}
+          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 11cqi, 110px)", color: heroText }}
         />
       ) : (
         <h2
           dir="auto"
           className="bidi-auto font-semibold tracking-tight leading-[0.95]"
-          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(44px, 9vw, 110px)", color: heroText }}
+          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 11cqi, 110px)", color: heroText }}
         >
           {title}
         </h2>
@@ -330,6 +348,7 @@ function Hero({
         <SectionNote
           sectionId="overview"
           placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+          fallback={openingLine}
           className="text-[15px] leading-[1.6] max-w-[52ch]"
           style={{ color: heroText, opacity: 0.8 }}
         />
@@ -353,7 +372,7 @@ function Index({
   isAr: boolean;
 }) {
   return (
-    <div className="px-8 md:px-16 py-14" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+    <div className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 py-14" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <div className="max-w-[900px] mx-auto flex flex-col gap-5">
         <div className="flex items-baseline gap-3">
           <span className="text-[12px] font-medium" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)" }}>
@@ -422,10 +441,10 @@ function Sitemap({
 }) {
   const bandText = "var(--g-accent-ink)";
   return (
-    <div className="px-8 md:px-16 py-16" style={{ background: "var(--g-accent)" }}>
-      <div className="max-w-[900px] mx-auto grid md:grid-cols-[1fr_2fr] gap-8">
+    <div className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 py-16" style={{ background: "var(--g-accent)" }}>
+      <div className="max-w-[900px] mx-auto grid @min-[768px]:grid-cols-[1fr_2fr] gap-8">
         <div>
-          <h2 className="text-[30px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)", color: bandText }}>
+          <h2 className="font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6cqi, 30px)", color: bandText }}>
             {isAr ? "الفهرس الكامل" : "Sitemap"}
           </h2>
           <span className="text-[13px]" style={{ color: bandText, opacity: 0.7 }}>
@@ -462,13 +481,13 @@ function Sitemap({
 
 function Section({ id, index, title, children }: { id: string; index: number; title: string; children: ReactNode }) {
   return (
-    <div id={id} className="px-8 md:px-16 py-16 scroll-mt-0" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+    <div id={id} className="px-5 @min-[640px]:px-8 @min-[768px]:px-16 py-16 scroll-mt-0" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <div className="max-w-[900px] mx-auto flex flex-col gap-6">
         <div className="flex items-baseline gap-3">
           <span className="text-[12px] font-medium" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)" }}>
             {`{ ${String(index).padStart(2, "0")} }`}
           </span>
-          <SectionHeading sectionId={id} value={title} className="text-[34px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }} />
+          <SectionHeading sectionId={id} value={title} className="font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(26px, 7cqi, 34px)" }} />
         </div>
         <SectionNote sectionId={id} className="text-[16px] leading-[1.7] max-w-[62ch] -mt-2" style={{ color: "var(--g-text-muted)" }} />
         {children}

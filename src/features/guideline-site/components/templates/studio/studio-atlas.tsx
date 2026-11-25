@@ -20,7 +20,9 @@ import { flowLabel, SectionTitles } from "../../live/flow-helpers";
 import { themeCssVars } from "../../../utils/theme";
 import { gCardSm, gLabel, gPill } from "../../shared/surface";
 import { Asset, PageBlock } from "@/types";
-import { formatBytes, formatRelative, hexToRgb, rgbToCmyk } from "@/lib/utils";
+import { formatBytes, hexToRgb, rgbToCmyk } from "@/lib/utils";
+import { CompactBar } from "../../shared/site-menu";
+import { siteCopy, updatedLabel } from "../../../utils/site-copy";
 import { TemplateProps } from "../../../types";
 
 /** A short, real one-line preview of what a section actually contains —
@@ -105,6 +107,7 @@ export function StudioAtlas(props: TemplateProps) {
   // Atlas opens on the brand's name rather than its purpose — the purpose gets
   // its own labelled row below, the way a reference portal lists a field.
   const heroTitle = sectionTitle("overview-title", ws.name);
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
 
   /**
    * Atlas lists colour values in its own label/value rows rather than the
@@ -132,7 +135,7 @@ export function StudioAtlas(props: TemplateProps) {
       style={{ ...themeCssVars(theme), background: "var(--g-canvas)", color: "var(--g-text)", fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
       <div
-        className="w-[300px] shrink-0 hidden md:flex flex-col gap-6 h-screen sticky top-0 overflow-y-auto px-6 py-8"
+        className="w-[240px] @min-[1024px]:w-[300px] shrink-0 hidden @min-[768px]:flex flex-col gap-6 h-screen sticky top-0 overflow-y-auto px-6 py-8"
         style={{ boxShadow: isAr ? "inset -1px 0 0 var(--g-hairline)" : "inset 1px 0 0 var(--g-hairline)" }}
       >
         {logo.isLockup ? (
@@ -141,7 +144,9 @@ export function StudioAtlas(props: TemplateProps) {
             lightSrc={logo.lightSrc}
             alt={ws.name}
             onDark={!theme.isLight}
-            style={{ maxHeight: 34, maxWidth: "100%" }}
+            // A height, not a max-height: a lockup SVG with only a viewBox
+            // has no intrinsic size and collapsed to nothing when capped.
+            style={{ height: 34, width: "auto", maxWidth: "100%", alignSelf: "flex-start" }}
           />
         ) : (
           <div className="flex items-center gap-2.5 font-semibold text-[16px]" style={{ fontFamily: "var(--font-display)" }}>
@@ -159,8 +164,8 @@ export function StudioAtlas(props: TemplateProps) {
           </div>
         )}
         <div className="flex flex-col gap-0.5 text-[10px] font-semibold uppercase" style={{ letterSpacing: ".08em", color: "var(--g-text-faint)" }}>
-          <span>{isAr ? "دليل الهوية البصرية" : "Visual identity guidelines"}</span>
-          <span>{isAr ? `آخر تحديث: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}` : `Updated: ${formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}`}</span>
+          <span dir="auto" className="bidi-auto">{copy.subtitle}</span>
+          {copy.updated && <span>{copy.updated}</span>}
         </div>
 
         <nav className="flex flex-col gap-0.5">
@@ -234,9 +239,23 @@ export function StudioAtlas(props: TemplateProps) {
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col">
+        <CompactBar
+          className="@min-[768px]:hidden"
+          ws={ws}
+          isAr={isAr}
+          sections={sections}
+          activeId={activeId}
+          scrollTo={scrollTo}
+          pages={pages}
+          activePage={activePage}
+          previewLang={previewLang}
+          setPreviewLang={setPreviewLang}
+          onDark={!theme.isLight}
+          onDownload={attachedSlots.length > 0 ? () => setDownloadOpen(true) : undefined}
+        />
         {activePage && (
-          <div className="px-8 md:px-16 py-16 max-w-[980px]">
-            <h2 dir="auto" className="bidi-auto text-[38px] font-semibold tracking-tight leading-[1.15]" style={{ fontFamily: "var(--font-display)" }}>
+          <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-16 max-w-[980px]">
+            <h2 dir="auto" className="bidi-auto font-semibold tracking-tight leading-[1.15]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 7cqi, 38px)" }}>
               {isAr ? activePage.arName : activePage.name}
             </h2>
           </div>
@@ -249,22 +268,23 @@ export function StudioAtlas(props: TemplateProps) {
               <Fragment key={item.id}>
                 <FlowShell flowId={item.id} kind={item.kind} label={label} style={item.style} accent={theme.accent}>
                   {item.id === "overview" ? (
-                    <div id="overview" className="px-8 md:px-16 py-16 flex flex-col gap-6 scroll-mt-0 max-w-[980px]">
+                    <div id="overview" className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-16 flex flex-col gap-6 scroll-mt-0 max-w-[980px]">
                       <SectionHeading
                         sectionId="overview-title"
                         value={heroTitle}
-                        className="bidi-auto text-[38px] font-semibold tracking-tight leading-[1.15]"
-                        style={{ fontFamily: "var(--font-display)" }}
+                        className="bidi-auto font-semibold tracking-tight leading-[1.15]"
+                        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 7cqi, 38px)" }}
                       />
                       <SectionNote
                         sectionId="overview"
                         placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+                        fallback={copy.lead}
                         className="text-[16px] leading-[1.7]"
                         style={{ color: "var(--g-text-muted)" }}
                       />
-                      {ws.strategy.purpose && (
+                      {copy.purpose && (
                         <Row label={isAr ? "الغاية" : "Purpose"}>
-                          <p dir="auto" className="bidi-auto text-[16px] leading-[1.7]" style={{ color: "var(--g-text-muted)" }}>{richToPlainText(ws.strategy.purpose)}</p>
+                          <p dir="auto" className="bidi-auto text-[16px] leading-[1.7]" style={{ color: "var(--g-text-muted)" }}>{copy.purpose}</p>
                         </Row>
                       )}
                       {ws.overviewHtml && (
@@ -278,14 +298,14 @@ export function StudioAtlas(props: TemplateProps) {
                     <StatementBand
                       text={statementText}
                       isAr={isAr}
-                      className="px-8 md:px-16 py-12"
+                      className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-12"
                       style={{ background: "var(--g-accent)" }}
-                      textClassName="bidi-auto max-w-[980px] text-[22px] md:text-[26px] font-semibold leading-[1.4]"
+                      textClassName="bidi-auto max-w-[980px] text-[22px] @min-[768px]:text-[26px] font-semibold leading-[1.4]"
                       textStyle={{ fontFamily: "var(--font-display)", color: bandText }}
                       noteStyle={{ color: bandText, opacity: 0.75 }}
                     />
                   ) : item.kind === "block" && item.block.kind === "divider" ? (
-                    <div className="px-8 md:px-16">
+                    <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16">
                       <BlockRenderer block={item.block} ws={ws} isAr={isAr} />
                     </div>
                   ) : (
@@ -306,7 +326,7 @@ export function StudioAtlas(props: TemplateProps) {
                     </Band>
                   )}
                 </FlowShell>
-                <div className="px-8 md:px-16">
+                <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16">
                   <InsertPoint afterId={item.id} isAr={isAr} after={label} />
                 </div>
               </Fragment>
@@ -333,7 +353,7 @@ export function StudioAtlas(props: TemplateProps) {
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 md:gap-6 items-start">
+    <div className="grid grid-cols-1 @min-[1100px]:grid-cols-[140px_1fr] gap-2 @min-[1100px]:gap-6 items-start">
       <span className="text-[12px] font-semibold uppercase pt-1" style={{ letterSpacing: ".08em", color: "var(--g-text-faint)" }}>{label}</span>
       {children}
     </div>
@@ -370,28 +390,28 @@ function Band({
           viewport instead stranded it half a screen away from the title it
           belongs to, which read as two unrelated things rather than one
           chapter opener. */}
-      <div className="relative overflow-hidden px-8 md:px-16 py-10" style={{ background: "var(--g-accent)" }}>
+      <div className="relative overflow-hidden px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-10" style={{ background: "var(--g-accent)" }}>
         <div className="relative max-w-[980px] flex items-center min-h-[52px]">
           <span
             className="absolute -top-8 select-none pointer-events-none font-semibold"
-            style={{ insetInlineEnd: 0, fontFamily: "var(--font-display)", fontSize: 130, color: bandText, opacity: 0.16, lineHeight: 1 }}
+            style={{ insetInlineEnd: 0, fontFamily: "var(--font-display)", fontSize: "clamp(84px, 20cqi, 130px)", color: bandText, opacity: 0.16, lineHeight: 1 }}
           >
             {String(index).padStart(2, "0")}
           </span>
           <SectionHeading
             sectionId={id}
             value={title}
-            className="relative text-[30px] font-semibold tracking-tight"
-            style={{ fontFamily: "var(--font-display)", color: bandText }}
+            className="relative font-semibold tracking-tight"
+            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6cqi, 30px)", color: bandText }}
           />
         </div>
       </div>
-      <div className="px-8 md:px-16 py-10 flex flex-col gap-5 max-w-[980px]">
+      <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-10 flex flex-col gap-5 max-w-[980px]">
         <SectionNote sectionId={id} className="text-[16px] leading-[1.7]" style={{ color: "var(--g-text-muted)" }} />
         {children}
       </div>
       {(prev || next) && (
-        <div className="px-8 md:px-16 pb-10 flex items-center justify-between max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)", paddingTop: 20 }}>
+        <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 pb-10 flex items-center justify-between max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)", paddingTop: 20 }}>
           {prev ? (
             <button type="button" onClick={() => scrollTo(prev.id)} className="text-[12px] font-medium cursor-pointer flex items-center gap-1.5" style={{ color: "var(--g-text-faint)" }}>
               <Icon name="arrow-left" size={11} />
@@ -426,7 +446,9 @@ function SwatchGrid({ colors, isAr }: { colors: TemplateProps["ws"]["colors"]; i
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-3">
+    // Two columns only once the page clears the 300px sidebar with room to
+    // spare: at 768px each card was ~220px and the CMYK values broke per digit.
+    <div className="grid @min-[1100px]:grid-cols-2 gap-3">
       {colors.map((c) => {
         const rgb = hexToRgb(c.hex);
         const cmyk = rgb ? rgbToCmyk(rgb) : null;
@@ -485,11 +507,11 @@ function ResourcesSection({
   if (attachedSlots.length === 0 && fonts.length === 0 && images.length === 0 && icons.length === 0) return null;
 
   return (
-    <div id="resources" className="px-8 md:px-16 py-16 flex flex-col gap-6 scroll-mt-0 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+    <div id="resources" className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-16 flex flex-col gap-6 scroll-mt-0 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <h2 className="text-[13px] font-semibold uppercase" style={{ letterSpacing: ".1em", color: "var(--g-text-faint)" }}>
         {isAr ? "الموارد" : "Resources"}
       </h2>
-      <div className="grid md:grid-cols-2 gap-3">
+      <div className="grid @min-[768px]:grid-cols-2 gap-3">
         {attachedSlots.length > 0 && (
           <ResourceCard title={isAr ? "حزمة الشعار" : "Logo suite"} count={attachedSlots.length} action={{ label: isAr ? "تحميل" : "Download", onClick: onDownloadLogo }} />
         )}
@@ -547,10 +569,10 @@ function Footer({ ws, isAr }: { ws: TemplateProps["ws"]; isAr: boolean }) {
     .filter((s) => s.url.trim().length > 0);
 
   return (
-    <div className="px-8 md:px-16 py-14 flex flex-col gap-6 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+    <div className="px-5 @min-[640px]:px-8 @min-[1024px]:px-16 py-14 flex flex-col gap-6 max-w-[980px]" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
       <div>
-        <div className="font-semibold text-[15px]" style={{ fontFamily: "var(--font-display)" }}>{isAr ? "دليل الهوية البصرية" : "Visual Identity Guidelines"}</div>
-        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{isAr ? "محدَّث" : "Updated"} {formatRelative(ws.updatedAt, undefined, isAr ? "ar" : "en")}</div>
+        <div dir="auto" className="bidi-auto font-semibold text-[15px]" style={{ fontFamily: "var(--font-display)" }}>{ws.name}</div>
+        <div className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>{updatedLabel(ws, isAr ? "ar" : "en")}</div>
       </div>
 
       {contactEmail && (
