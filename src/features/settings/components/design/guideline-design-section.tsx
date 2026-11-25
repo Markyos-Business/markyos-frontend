@@ -8,7 +8,7 @@ export function GuidelineDesignSection({ ws, isAr }: { ws: Workspace; isAr: bool
     <Section title={t("Guideline site design", "تصميم موقع الدليل")} icon="layer-group">
       <Row
         label={t("Style, pages, and prebuilt sections", "النمط والصفحات والأقسام الجاهزة")}
-        hint={t("Pick Vault, Docs, or Studio, add extra pages, and drop in prebuilt sections — all editable afterward.", "اختر Vault أو Docs أو Studio، وأضف صفحات، وضع أقسامًا جاهزة، وكلها قابلة للتعديل لاحقًا.")}
+        hint={t("Pick a template, add pages, and drop in prebuilt sections. Everything stays editable.", "اختر قالبًا، وأضف صفحات، وضع أقسامًا جاهزة، وكلها قابلة للتعديل لاحقًا.")}
         right={
           <Button variant="secondary" size="sm" href={`/w/${ws.slug}/builder`} className="shrink-0">
             {t("Open editor", "فتح المحرر")}
