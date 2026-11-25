@@ -3,7 +3,7 @@
 import { initialsFor } from "@/lib/utils";
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import Link from "next/link";
-import { LangToggle, richToPlainText } from "@/components/ui";
+import { LangToggle } from "@/components/ui";
 import { DownloadPanel } from "../documents/download-panel";
 import { BlockRenderer } from "../content/block-renderer";
 import { BrandMark } from "@/components/ui";
@@ -13,6 +13,8 @@ import { FixedSectionBody, SignOffPanel, StatementBand } from "../content/conten
 import { flowLabel, SectionTitles } from "../live/flow-helpers";
 import { themeCssVars } from "../../utils/theme";
 import { gBody, gHero, gLabel, gPill } from "../shared/surface";
+import { SiteMenu } from "../shared/site-menu";
+import { siteCopy } from "../../utils/site-copy";
 import { TemplateProps } from "../../types";
 import { Fragment, ReactNode } from "react";
 
@@ -69,10 +71,8 @@ export function VaultTemplate(props: TemplateProps) {
   const heroMarkUrl = mark.src;
   const topNav = sections.filter((s) => TOP_NAV_IDS.includes(s.id));
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
-  const heroTitle = sectionTitle(
-    "overview-title",
-    richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية البصرية" : "Brand guideline")
-  );
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
+  const heroTitle = sectionTitle("overview-title", copy.heroTitle);
 
   return (
     <SectionNoteProvider lookup={sectionNote}>
@@ -82,11 +82,14 @@ export function VaultTemplate(props: TemplateProps) {
       data-guideline-surface=""
       style={{ ...themeCssVars(theme), background: "var(--g-canvas)", color: "var(--g-text)", fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
-      <div className="h-16 shrink-0 flex items-center justify-between px-8 gap-6" style={{ boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
-        <div className="flex items-center gap-2.5 shrink-0 min-w-0">
+      <div className="h-16 shrink-0 flex items-center justify-between px-5 @min-[640px]:px-8 gap-4 @min-[640px]:gap-6" style={{ boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
+        <div className="flex items-center gap-2.5 min-w-0">
           {logo.isLockup ? (
             /* The lockup already says the brand's name, so it stands alone. */
-            <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ maxHeight: 26, maxWidth: 190 }} />
+            /* A height, not a max-height: a lockup SVG with only a viewBox has
+               no intrinsic size, and capped on both axes it laid out at 0×0 —
+               the bar showed no logo at all. */
+            <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ height: 26, width: "auto", maxWidth: "min(190px, 45cqi)" }} />
           ) : (
             <>
               <span className="w-8 h-8 grid place-items-center font-semibold text-[13px] overflow-hidden shrink-0" style={{ ...gPill, background: "var(--g-surface-2)" }}>
@@ -101,7 +104,7 @@ export function VaultTemplate(props: TemplateProps) {
           )}
         </div>
         {(topNav.length > 0 || pages.length > 0 || activePage) && (
-          <nav className="hidden lg:flex items-center gap-1 min-w-0">
+          <nav className="hidden @min-[1024px]:flex items-center gap-1 min-w-0">
             {activePage && (
               <Link
                 href={`/v/${ws.slug}`}
@@ -142,11 +145,23 @@ export function VaultTemplate(props: TemplateProps) {
         )}
         <div className="flex items-center gap-3 shrink-0">
           <LangToggle value={previewLang} onChange={setPreviewLang} />
+          {/* The contents rail folds away below 768px of page; this is where
+              it goes instead. */}
+          <SiteMenu
+            className="@min-[768px]:hidden"
+            ws={ws}
+            isAr={isAr}
+            sections={sections}
+            activeId={activeId}
+            scrollTo={scrollTo}
+            pages={pages}
+            activePage={activePage}
+          />
         </div>
       </div>
 
-      <div className="flex-1 flex max-w-[1120px] w-full mx-auto px-8 py-10 gap-12">
-        <nav className="w-[180px] shrink-0 hidden md:block">
+      <div className="flex-1 flex max-w-[1120px] w-full mx-auto px-5 @min-[640px]:px-8 py-8 @min-[640px]:py-10 gap-12">
+        <nav className="w-[180px] shrink-0 hidden @min-[768px]:block">
           <div className="sticky top-10 flex flex-col gap-0.5">
             <div className="px-3 pb-2.5" style={{ ...gLabel, color: "var(--g-text-faint)" }}>
               {isAr ? "المحتويات" : "Contents"}
@@ -202,7 +217,7 @@ export function VaultTemplate(props: TemplateProps) {
                         <SectionHeading
                           sectionId="overview-eyebrow"
                           as="span"
-                          value={sectionTitle("overview-eyebrow", ws.name)}
+                          value={sectionTitle("overview-eyebrow", copy.eyebrow)}
                           style={{ ...gLabel, color: "var(--g-text-faint)" }}
                         />
                       </div>
@@ -220,6 +235,7 @@ export function VaultTemplate(props: TemplateProps) {
                       <SectionNote
                         sectionId="overview"
                         placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+                        fallback={copy.openingLine}
                         className="max-w-[62ch]"
                         style={gBody}
                       />
@@ -232,9 +248,9 @@ export function VaultTemplate(props: TemplateProps) {
                     <StatementBand
                       text={statementText}
                       isAr={isAr}
-                      className="-mx-8 md:mx-0 px-8 py-10"
+                      className="-mx-5 @min-[640px]:-mx-8 @min-[768px]:mx-0 px-5 @min-[640px]:px-8 py-10"
                       style={{ background: "var(--g-accent)", borderRadius: "var(--g-radius-lg)" }}
-                      textClassName="bidi-auto text-[22px] md:text-[26px] font-semibold leading-[1.4] max-w-[52ch]"
+                      textClassName="bidi-auto text-[22px] @min-[768px]:text-[26px] font-semibold leading-[1.4] max-w-[52ch]"
                       // Solved against the accent rather than assumed: a pale
                       // brand colour needs dark type here, a deep one needs light.
                       textStyle={{ fontFamily: "var(--font-display)", color: "var(--g-accent-ink)" }}

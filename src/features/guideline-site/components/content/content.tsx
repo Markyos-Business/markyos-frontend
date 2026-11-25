@@ -76,7 +76,7 @@ export function LogoGrid({
       data-layout="full"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+      className="grid grid-cols-2 @min-[640px]:grid-cols-3 gap-4"
     >
       {attachedSlots.map((kind) => {
         const slot = ws.logo[kind];
@@ -92,7 +92,9 @@ export function LogoGrid({
 
 export function ClearspaceCaption({ ws, attachedSlots, isAr }: { ws: Workspace; attachedSlots: SlotKind[]; isAr: boolean }) {
   if (attachedSlots.length === 0) return null;
-  const value = ws.logo[attachedSlots[0]].clearspaceMultiplier;
+  // A brand made through the API can lack the multiplier; 0.5 is the
+  // default every new logo slot gets (AppContext), never "undefined×".
+  const value = ws.logo[attachedSlots[0]].clearspaceMultiplier ?? 0.5;
   return (
     <p className="text-[12px]" style={{ color: "var(--g-text-faint)" }}>
       {isAr ? `المسافة الآمنة الدنيا: ${value}× ارتفاع الشعار من كل جانب.` : `Minimum clearspace: ${value}× the mark's height on every side.`}
@@ -113,7 +115,8 @@ export function ClearspaceCaption({ ws, attachedSlots, isAr }: { ws: Workspace; 
 const CLEARSPACE_MARK = 68;
 
 export function ClearspaceDiagram({ slot, onDark, isAr }: { slot: LogoSlot; onDark: boolean; isAr: boolean }) {
-  const pad = Math.round(CLEARSPACE_MARK * slot.clearspaceMultiplier);
+  const multiplier = slot.clearspaceMultiplier ?? 0.5;
+  const pad = Math.round(CLEARSPACE_MARK * multiplier);
   return (
     <div className="p-8 flex flex-col items-center gap-4" style={gPlate}>
       <div
@@ -127,8 +130,8 @@ export function ClearspaceDiagram({ slot, onDark, isAr }: { slot: LogoSlot; onDa
       </div>
       <span className="text-[11px] text-center" style={{ color: "var(--g-text-faint)" }}>
         {isAr
-          ? `المساحة المتقطعة = ${slot.clearspaceMultiplier}× ارتفاع الشعار. لا شيء يدخل داخلها.`
-          : `The dashed margin is ${slot.clearspaceMultiplier}× the mark's height. Nothing enters it.`}
+          ? `المساحة المتقطعة = ${multiplier}× ارتفاع الشعار. لا شيء يدخل داخلها.`
+          : `The dashed margin is ${multiplier}× the mark's height. Nothing enters it.`}
       </span>
     </div>
   );
@@ -152,7 +155,7 @@ export function LogoVariations({ ws, slot, isAr }: { ws: Workspace; slot: LogoSl
     { key: "invert", label: "Reversed", arLabel: "معكوس", bg: theme.invertBg, edge: false },
   ];
   return (
-    <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 grid-cols-2 @min-[1024px]:grid-cols-4">
       {grounds.map((g) => (
         <figure key={g.key} className="flex flex-col gap-2 m-0">
           <div
@@ -216,7 +219,7 @@ const MISUSE: { key: string; label: string; arLabel: string; css: React.CSSPrope
 
 export function MisuseGrid({ slot, onDark, isAr }: { slot: LogoSlot; onDark: boolean; isAr: boolean }) {
   return (
-    <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 grid-cols-2 @min-[1024px]:grid-cols-3">
       {MISUSE.map((rule) => (
         <figure key={rule.key} className="flex flex-col gap-2 m-0">
           <div className="relative grid place-items-center h-[130px] px-5 overflow-hidden" style={gPlate}>
@@ -335,7 +338,7 @@ export function PatternGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
     <div className="flex flex-col gap-5">
       {patterns.map((a) => (
         <figure key={a.id} className="flex flex-col gap-2 m-0">
-          <div className="grid gap-3 sm:grid-cols-[160px_1fr]">
+          <div className="grid gap-3 @min-[640px]:grid-cols-[160px_1fr]">
             <div className="grid place-items-center h-[160px] p-3 overflow-hidden" style={gPlate}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={a.url} alt={a.fileName} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
@@ -352,7 +355,7 @@ export function PatternGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
       ))}
 
       {graphics.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 @min-[640px]:grid-cols-3 gap-3">
           {graphics.map((a) => (
             <div key={a.id} className="grid place-items-center h-[130px] p-4 overflow-hidden" style={gPlate}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -381,7 +384,7 @@ export function SocialProfiles({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const onInvert = !isLightHex(theme.invertBg);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 @min-[640px]:grid-cols-2">
       {links.map((l) => {
         const handle = handleFromUrl(l.url);
         return (
@@ -414,7 +417,7 @@ export function SocialProfiles({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
           </a>
         );
       })}
-      <p className="text-[11.5px] sm:col-span-2" style={{ color: "var(--g-text-faint)" }}>
+      <p className="text-[11.5px] @min-[640px]:col-span-2" style={{ color: "var(--g-text-faint)" }}>
         {isAr
           ? "الصورة الرمزية هي الرمز فقط على اللون المميز، والغلاف باللون الداكن للعلامة."
           : "The avatar is the symbol on the accent; the header is the brand's own dark."}
@@ -471,7 +474,7 @@ export function ColorGrid({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boolea
       data-layout="cards"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+      className="grid grid-cols-2 @min-[640px]:grid-cols-3 @min-[1024px]:grid-cols-4 gap-4"
     >
       {ws.colors.map((c) => {
         const open = openId === c.id;
@@ -622,7 +625,7 @@ function ScriptSpecimen({
         <span dir="auto" className="bidi-auto text-[12px] truncate" style={{ color: "var(--g-text-faint)" }}>{family}</span>
       </div>
 
-      <div dir={dir} style={{ fontFamily, fontSize: 64, lineHeight: 1.05, letterSpacing: script === "latin" ? "-.03em" : undefined, fontWeight: 500 }}>
+      <div dir={dir} style={{ fontFamily, fontSize: "clamp(40px, 12cqi, 64px)", overflowWrap: "break-word", lineHeight: 1.05, letterSpacing: script === "latin" ? "-.03em" : undefined, fontWeight: 500 }}>
         {showing}
       </div>
 
@@ -675,7 +678,7 @@ export function TypeSpecimen({ ws, isAr, opts = {} }: { ws: Workspace; isAr: boo
     <div
       data-layout="specimen"
       // One script fills the width rather than leaving half the section empty.
-      className={`grid gap-4 ${scripts.length > 1 ? "md:grid-cols-2" : "grid-cols-1"}`}
+      className={`grid gap-4 ${scripts.length > 1 ? "@min-[768px]:grid-cols-2" : "grid-cols-1"}`}
     >
       {scripts.includes("latin") && (
         <ScriptSpecimen
@@ -714,7 +717,7 @@ export function PhotoGrid({ assets, opts = {} }: { assets: Asset[]; opts?: Secti
       data-layout="grid"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+      className="grid grid-cols-2 @min-[640px]:grid-cols-3 gap-4"
     >
       {assets.map((a) => (
         <div key={a.id} className="overflow-hidden" style={{ ...gPlate, height: tile.height }}>
@@ -737,7 +740,7 @@ export function IconGrid({ assets, onDark = true, opts = {} }: { assets: Asset[]
       data-layout="grid"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid grid-cols-4 sm:grid-cols-6 gap-3"
+      className="grid grid-cols-4 @min-[640px]:grid-cols-6 gap-3"
     >
       {assets.map((a) => (
         <div key={a.id} className="grid place-items-center h-[72px]" style={gPlateSm}>
@@ -750,7 +753,7 @@ export function IconGrid({ assets, onDark = true, opts = {} }: { assets: Asset[]
 
 export function PersonaGrid({ personas }: { personas: Persona[] }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 @min-[640px]:grid-cols-2 gap-4">
       {personas.map((p) => (
         <div key={p.id} className="p-5 flex flex-col gap-1.5" style={gCard}>
           <span className="font-semibold text-[14px]">{p.name}</span>
@@ -771,7 +774,7 @@ export function VoiceList({ traits, isAr }: { traits: VoiceTrait[]; isAr: boolea
               either script regardless of the page language, so each picks its
               own base direction rather than inheriting the page's. */}
           <span dir="auto" className="bidi-auto font-semibold text-[13px]" style={{ color: "var(--g-accent)" }}>{t.trait}</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2.5">
+          <div className="grid grid-cols-1 @min-[640px]:grid-cols-2 gap-4 mt-2.5">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-semibold uppercase" style={{ color: "var(--success)" }}>{isAr ? "افعل" : "Do"}</span>
               <span dir="auto" className="bidi-auto text-[13px]" style={{ color: "var(--g-text-muted)" }}>{t.doExample}</span>
@@ -956,7 +959,7 @@ export function MockupGrid({ assets, opts = {} }: { assets: Asset[]; opts?: Sect
       data-layout="two-up"
       data-cols={opts.columns ? "" : undefined}
       style={columnVars(opts.columns)}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid gap-4 @min-[640px]:grid-cols-2"
     >
       {assets.map((a) => (
         <figure key={a.id} className="flex flex-col gap-2 m-0">

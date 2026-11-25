@@ -13,7 +13,8 @@
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode, useState } from "react";
 import Link from "next/link";
-import { Icon, LangToggle, richToPlainText } from "@/components/ui";
+import { Icon, LangToggle } from "@/components/ui";
+import { siteCopy } from "../../../utils/site-copy";
 import { DownloadPanel } from "../../documents/download-panel";
 import { BlockRenderer } from "../../content/block-renderer";
 import { BrandMark } from "@/components/ui";
@@ -172,7 +173,8 @@ export function StudioSignal(props: TemplateProps) {
   } = props;
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const heroTitle = sectionTitle("overview-title", richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية" : "Brand guideline"));
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
+  const heroTitle = sectionTitle("overview-title", copy.heroTitle);
   const navLogoArt = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
   const runs = chapterRuns(flow);
@@ -190,7 +192,7 @@ export function StudioSignal(props: TemplateProps) {
       data-guideline-surface=""
       style={{ ...themeCssVars(theme), background: "var(--g-canvas)", color: "var(--g-text)", fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)" }}
     >
-      <div className="sticky top-0 z-sticky h-16 flex items-center justify-between px-6 md:px-10" style={{ background: "var(--g-canvas)", boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
+      <div className="sticky top-0 z-sticky h-16 flex items-center justify-between gap-3 px-5 @min-[768px]:px-10" style={{ background: "var(--g-canvas)", boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}>
         <span className="flex items-center gap-2.5 min-w-0">
           {navLogoArt.isLockup ? (
             <BrandMark
@@ -198,7 +200,7 @@ export function StudioSignal(props: TemplateProps) {
               lightSrc={navLogoArt.lightSrc}
               alt={ws.name}
               onDark={!theme.isLight}
-              style={{ maxHeight: 28, maxWidth: 200 }}
+              style={{ height: 28, width: "auto", maxWidth: "min(200px, 50cqi)" }}
             />
           ) : (
             <>
@@ -222,7 +224,7 @@ export function StudioSignal(props: TemplateProps) {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={isAr ? "القائمة" : "Menu"}
             aria-expanded={menuOpen}
-            className="w-9 h-9 grid place-items-center cursor-pointer"
+            className="w-11 h-11 grid place-items-center cursor-pointer"
             style={{ ...gPill, background: "var(--g-surface-1)" }}
           >
             <Icon name={menuOpen ? "times" : "bars"} size={15} />
@@ -231,14 +233,14 @@ export function StudioSignal(props: TemplateProps) {
 
         {menuOpen && (
           <div
-            className="absolute top-[72px] w-[260px] p-2 flex flex-col gap-0.5 z-dropdown"
-            style={{ insetInlineEnd: 16, borderRadius: "var(--g-radius-lg)", background: "var(--g-surface-1)", boxShadow: "0 12px 40px rgba(0,0,0,.5)" }}
+            className="absolute top-[72px] p-2 flex flex-col gap-0.5 z-dropdown overflow-y-auto"
+            style={{ insetInlineEnd: 16, width: "min(260px, calc(100cqi - 32px))", maxHeight: "min(70vh, 560px)", borderRadius: "var(--g-radius-lg)", background: "var(--g-surface-1)", boxShadow: "0 12px 40px rgba(0,0,0,.5)" }}
           >
             {activePage && (
               <Link
                 href={`/v/${ws.slug}`}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-between px-3.5 py-2.5 text-[13px] cursor-pointer"
+                className="flex items-center justify-between px-3.5 min-h-11 text-[13px] cursor-pointer"
                 style={{ borderRadius: "var(--g-radius-md)", color: "var(--g-text-faint)" }}
               >
                 {isAr ? "الرئيسية" : "Home"}
@@ -253,7 +255,7 @@ export function StudioSignal(props: TemplateProps) {
                   scrollTo(s.id);
                   setMenuOpen(false);
                 }}
-                className="flex items-center justify-between px-3.5 py-2.5 text-[13px] text-start cursor-pointer"
+                className="flex items-center justify-between px-3.5 min-h-11 text-[13px] text-start cursor-pointer"
                 style={{ borderRadius: "var(--g-radius-md)", background: activeId === s.id ? "var(--g-surface-2)" : "transparent", color: activeId === s.id ? "var(--g-text)" : "var(--g-text-faint)" }}
               >
                 {isAr ? s.arLabel : s.label}
@@ -265,7 +267,7 @@ export function StudioSignal(props: TemplateProps) {
                 key={p.id}
                 href={`/v/${ws.slug}/p/${p.slug}`}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-between px-3.5 py-2.5 text-[13px] cursor-pointer"
+                className="flex items-center justify-between px-3.5 min-h-11 text-[13px] cursor-pointer"
                 style={{ borderRadius: "var(--g-radius-md)", color: activePage?.id === p.id ? "var(--g-text)" : "var(--g-text-faint)" }}
               >
                 {isAr ? p.arName : p.name}
@@ -278,7 +280,7 @@ export function StudioSignal(props: TemplateProps) {
 
       {activePage && (
         <div className="min-h-[56vh] flex flex-col items-center justify-center text-center px-8 gap-5">
-          <h2 dir="auto" className="bidi-auto font-semibold tracking-tight leading-[0.98]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 8vw, 92px)" }}>
+          <h2 dir="auto" className="bidi-auto font-semibold tracking-tight leading-[0.98]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(34px, 10cqi, 92px)" }}>
             {isAr ? activePage.arName : activePage.name}
           </h2>
         </div>
@@ -306,7 +308,7 @@ export function StudioSignal(props: TemplateProps) {
                         <SectionHeading
                           sectionId="overview-eyebrow"
                           as="span"
-                          value={sectionTitle("overview-eyebrow", isAr ? "دليل الهوية" : "Brand guideline")}
+                          value={sectionTitle("overview-eyebrow", copy.eyebrow)}
                           className="px-3 py-1.5"
                           style={{ ...gLabel, ...gPill, background: "var(--g-surface-1)", color: "var(--g-text-faint)", fontFamily: "ui-monospace, Menlo, monospace" }}
                         />
@@ -314,12 +316,13 @@ export function StudioSignal(props: TemplateProps) {
                           sectionId="overview-title"
                           value={heroTitle}
                           className="bidi-auto font-semibold tracking-tight leading-[0.98]"
-                          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 8vw, 92px)" }}
+                          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(34px, 10cqi, 92px)" }}
                           render={TWO_TONE}
                         />
                         <SectionNote
                           sectionId="overview"
                           placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+                          fallback={copy.openingLine}
                           className="text-[15px] leading-[1.7] max-w-[640px]"
                           style={{ color: "var(--g-text-muted)" }}
                         />
@@ -334,7 +337,7 @@ export function StudioSignal(props: TemplateProps) {
                         isAr={isAr}
                         className="py-14 px-8"
                         style={{ background: "var(--g-accent)" }}
-                        textClassName="bidi-auto max-w-[760px] mx-auto text-[20px] md:text-[26px] font-semibold leading-[1.4] text-center"
+                        textClassName="bidi-auto max-w-[760px] mx-auto text-[20px] @min-[768px]:text-[26px] font-semibold leading-[1.4] text-center"
                         // Solved against the accent this band is filled with,
                         // rather than against the page ground — a different
                         // colour, and the wrong question to ask here.
@@ -439,7 +442,7 @@ function Chapter({
   return (
     <div className="flex flex-col">
       {words.length > 0 && (
-        <div className="px-8 md:px-16 pt-20 pb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
+        <div className="px-8 @min-[768px]:px-16 pt-20 pb-10 flex flex-col @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between gap-4" style={{ boxShadow: "inset 0 1px 0 var(--g-hairline)" }}>
           <div className="flex items-start gap-4">
             <span className="text-[13px] font-semibold mt-2" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)" }}>{code}</span>
             {/*
@@ -448,18 +451,18 @@ function Chapter({
               each line is its own editable field. Editing them as one string
               would mean guessing where to break it back apart.
             */}
-            <h2 className="font-semibold tracking-tight leading-[0.95]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(30px, 5vw, 56px)" }}>
+            <h2 className="font-semibold tracking-tight leading-[0.95]" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 7cqi, 56px)" }}>
               <SectionHeading as="span" sectionId={`${id}.0`} value={words[0]} style={{ color: "var(--g-accent)" }} />
               <br />
               <SectionHeading as="span" sectionId={`${id}.1`} value={words[1]} />
             </h2>
           </div>
           {description && (
-            <p className="max-w-[36ch] text-[13px] md:text-end" style={{ color: "var(--g-text-faint)" }}>{description}</p>
+            <p className="max-w-[36ch] text-[13px] @min-[768px]:text-end" style={{ color: "var(--g-text-faint)" }}>{description}</p>
           )}
         </div>
       )}
-      <div className="flex flex-col gap-10 px-8 md:px-16 py-10 max-w-[900px] mx-auto w-full">{children}</div>
+      <div className="flex flex-col gap-10 px-8 @min-[768px]:px-16 py-10 max-w-[900px] mx-auto w-full">{children}</div>
     </div>
   );
 }
@@ -480,7 +483,7 @@ function Panel({
   children: ReactNode;
 }) {
   return (
-    <div id={id} className="p-6 md:p-8 flex flex-col gap-5 scroll-mt-20" style={{ ...gCard, background: "var(--g-surface-1)" }}>
+    <div id={id} className="p-6 @min-[768px]:p-8 flex flex-col gap-5 scroll-mt-20" style={{ ...gCard, background: "var(--g-surface-1)" }}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2 min-w-0">
           <SectionHeading as="h3" sectionId={id} value={title} style={gSectionTitle} />
@@ -564,7 +567,7 @@ function InputKit({ isAr }: { isAr: boolean }) {
     { label: isAr ? "رقم التوجيه" : "Routing Number", placeholder: "02140", hint: isAr ? "يجب أن يتكون الرقم من 9 خانات بالضبط." : "Must be exactly 9 digits.", tone: "error" as const },
   ];
   return (
-    <div className="grid md:grid-cols-3 gap-3">
+    <div className="grid @min-[768px]:grid-cols-3 gap-3">
       {fields.map((f) => (
         <div key={f.label} className="flex flex-col gap-1.5">
           <span className="text-[11px] font-medium uppercase" style={{ letterSpacing: ".06em", color: "var(--g-text-faint)" }}>{f.label}</span>
@@ -590,7 +593,7 @@ function InputKit({ isAr }: { isAr: boolean }) {
 function CardKit({ ws, theme, isAr }: { ws: TemplateProps["ws"]; theme: TemplateProps["theme"]; isAr: boolean }) {
   const assetCount = ws.assets.length;
   return (
-    <div className="grid md:grid-cols-2 gap-3">
+    <div className="grid @min-[768px]:grid-cols-2 gap-3">
       <div className="p-4 flex flex-col gap-2.5" style={{ ...gCardSm, background: "var(--g-surface-2)" }}>
         <div className="flex items-center gap-2">
           <span className="w-7 h-7 rounded-full grid place-items-center text-[12px] font-bold" style={{ background: theme.accent, color: "var(--g-accent-ink)" }}>#</span>

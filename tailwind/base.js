@@ -313,6 +313,22 @@ export const baseStyles = [
     },
   },
   /*
+   * Headlines on the guideline page wrap by word and stay on the page.
+   *
+   * A brand's headline is set large in a column that can be 360px wide, and a
+   * single long word ("Guidelines", "الاستراتيجية") is wider than that at hero
+   * size. `break-word` breaks such a word only when it cannot fit on a line of
+   * its own, never letter by letter in a column that has room for words, and
+   * `balance` keeps a two-line headline from leaving one word alone on the
+   * second line (review, 25 Nov 2026).
+   */
+  {
+    "[data-guideline-surface] :is(h1, h2, h3)": {
+      "overflow-wrap": "break-word",
+      "text-wrap": "balance",
+    },
+  },
+  /*
    * A studio's own column count, on any section grid that offers one.
    *
    * The element sets three custom properties (`lib/sectionOptions.ts`,
