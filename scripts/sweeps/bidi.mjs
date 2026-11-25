@@ -98,7 +98,13 @@ await page.waitForTimeout(600);
 let total = 0;
 for (const slug of PAGES) {
   await page.goto(`${BASE}/w/${WS}/${slug}`);
-  await page.waitForLoadState("networkidle");
+  // "networkidle" is a heuristic: a page that keeps one request open (a poll,
+  // a stream) never reaches it, and on CI's slower runner that made this sweep
+  // time out at random (runs #155 and #159, 2026-11-25) while the page itself
+  // was fine. Give it 10s to settle, then measure what has rendered.
+  await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {
+    console.log(`  (${slug}: network still busy after 10s, measuring the rendered page)`);
+  });
   await page.waitForTimeout(500);
 
   // Walk every tab on the page, not just the default one.

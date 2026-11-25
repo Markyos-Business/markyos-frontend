@@ -42,12 +42,15 @@ fi
 
 # ---- which job failed -------------------------------------------------------
 FAILED="$(printf '%s' "${NEEDS_JSON:-{\}}" | jq -r '[to_entries[] | select(.value.result == "failure") | .key] | join(", ")' 2>/dev/null)"
-if [ "${NOTIFY_TEST:-}" = "1" ]; then FAILED="all jobs passed"; fi
+# In a test run, say what the jobs actually did (a test still posts when one failed).
+if [ "${NOTIFY_TEST:-}" = "1" ]; then
+  if [ -n "$FAILED" ]; then FAILED="failed at ${FAILED}"; else FAILED="all jobs passed"; fi
+fi
 [ -n "$FAILED" ] || FAILED="CI"
 
 # ---- message ----------------------------------------------------------------
 if [ "${NOTIFY_TEST:-}" = "1" ]; then
-  HEADLINE="🧪  Test message: Slack notifications work (nothing failed)"
+  HEADLINE="🧪  Test message: Slack notifications work"
 elif [ -n "$ENV_LABEL" ]; then
   HEADLINE="❌  ${ENV_LABEL} deploy blocked (CI failed at ${FAILED})"
 else
