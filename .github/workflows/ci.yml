@@ -22,6 +22,13 @@ on:
     branches: [main, release/staging-v1]
   pull_request:
   workflow_dispatch:
+    inputs:
+      notify_test:
+        # Sends one test message to SLACK_WEBHOOK_URL_TEST (never the real
+        # channels) after the checks, to see the Slack format end to end.
+        description: Send a Slack test message (to SLACK_WEBHOOK_URL_TEST)
+        type: boolean
+        default: false
 
 # A second push to the same branch makes the first run's answer worthless.
 concurrency:
@@ -134,3 +141,35 @@ jobs:
       - name: Stop the server
         if: always()
         run: kill "$(cat /tmp/server.pid)" || true
+
+  # ---------------------------------------------------------- notify-failure --
+  # Slack, 2026-11-25: one message when CI fails on a push to a branch that
+  # deploys (release/staging-v1 -> staging, main -> production), so the team
+  # knows why a deploy is held back. Passing runs and pull requests send
+  # nothing; deploy results come from the Vercel Slack app and a Railway
+  # webhook. The message logic is scripts/notify-slack.sh, the same in all
+  # three repos. It never fails: the run's result is the jobs above.
+  notify-failure:
+    name: notify Slack on failure
+    needs: [check, sweeps]
+    if: >-
+      always() && (
+        (github.event_name == 'push' && contains(needs.*.result, 'failure')) ||
+        (github.event_name == 'workflow_dispatch' && inputs.notify_test)
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Notify Slack
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          GH_TOKEN: ${{ github.token }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL_PROD: ${{ secrets.SLACK_WEBHOOK_URL_PROD }}
+          SLACK_WEBHOOK_URL_TEST: ${{ secrets.SLACK_WEBHOOK_URL_TEST }}
+          NOTIFY_TEST: ${{ github.event_name == 'workflow_dispatch' && inputs.notify_test && '1' || '0' }}
+        run: bash scripts/notify-slack.sh
