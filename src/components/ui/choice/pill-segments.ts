@@ -16,9 +16,13 @@ import type { CSSProperties } from "react";
 const pillTrack = "inline-flex shrink-0 items-center gap-0.5 rounded-control bg-ink-soft p-0.5 shadow-edge";
 const pillTrackStyle: CSSProperties = {};
 
-/** `iconOnly` makes a 28px square; text segments keep the height and grow sideways. */
+/**
+ * `iconOnly` makes a 28px square; text segments keep the height and grow
+ * sideways. On a touch screen segments are 40px, so the control is 44px like
+ * the sm/md buttons beside it (§2.6).
+ */
 const pillSegment = (iconOnly = false) =>
-  `mk-shaped flex h-7 cursor-pointer items-center justify-center gap-space-2 whitespace-nowrap rounded-md text-caption font-medium transition-[background-color,color] disabled:cursor-not-allowed disabled:opacity-50 ${iconOnly ? "w-7" : "px-space-4"}`;
+  `mk-shaped flex h-7 [@media(pointer:coarse)]:h-10 cursor-pointer items-center justify-center gap-space-2 whitespace-nowrap rounded-md text-caption font-medium transition-[background-color,color] disabled:cursor-not-allowed disabled:opacity-50 ${iconOnly ? "w-7 [@media(pointer:coarse)]:w-10" : "px-space-4"}`;
 
 const pillSegmentStyle = (on: boolean): CSSProperties => ({
   background: on ? "var(--surface-0)" : "transparent",
