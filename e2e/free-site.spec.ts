@@ -6,9 +6,10 @@ import { freeAnswer, mockBrandBilling } from "./billing-mocks";
  * The first guideline site is free (owner, 25 Nov 2026): one brand per
  * account may be live without a plan, with the Made with Markyos badge. The
  * billing answer's freeSite / canPublishFree / freeSiteBrand and the
- * `free_site_in_use` refusal are mocked with page.route until the backend
- * lands; the brands and accounts are the real backend's. The app only shows
- * what the server says: the server refuses a publish the slot doesn't allow.
+ * `free_site_in_use` refusal are mocked with page.route where a test only
+ * checks wording; the brands and accounts are the real backend's. Where the
+ * builder's own answer matters (its `canGoLive`), `takeFreeSite` really takes
+ * the slot. The server refuses a publish the slot doesn't allow.
  */
 
 const HOLDER = { id: "b-holder", name: "Nile Bakery" };
@@ -16,6 +17,18 @@ const HOLDER = { id: "b-holder", name: "Nile Bakery" };
 const thisIsTheFreeSite = () => ({ ...freeAnswer, freeSite: true, canPublishFree: false, freeSiteBrand: HOLDER });
 const mayPublishFree = () => ({ ...freeAnswer, freeSite: false, canPublishFree: true, freeSiteBrand: null });
 const slotTaken = () => ({ ...freeAnswer, freeSite: false, canPublishFree: false, freeSiteBrand: HOLDER });
+
+/**
+ * Gives the studio a published, unpaid "Nile Bakery" that holds the free site,
+ * straight in the database: a second unpaid brand through the API would be
+ * refused (free_brand_limit) before it could publish.
+ */
+function takeFreeSite(email: string) {
+  const id = `b-holder-${Date.now().toString(36)}`;
+  djangoShell(
+    `from apps.accounts.models import User; from apps.brands.models import Workspace; u=User.objects.get(email=${JSON.stringify(email)}); Workspace.objects.create(id=${JSON.stringify(id)}, owner=u, slug=${JSON.stringify(id)}, name="Nile Bakery", data={"id": ${JSON.stringify(id)}, "name": "Nile Bakery", "published": {"name": "Nile Bakery"}}, free_site=True)`,
+  );
+}
 
 /** POST /brands/<id>/publish/ refused: the free site is another brand's. */
 async function refusePublish(page: Page) {
@@ -77,6 +90,7 @@ test.describe("a publish the server refuses", () => {
 test("with the free site taken, publishing explains and offers the subscription", async ({ page }) => {
   const studio = await newStudio();
   const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+  takeFreeSite(studio.email);
   await mockBrandBilling(page, slotTaken);
   await signIn(page, studio);
   await page.goto(`/w/${brand.slug}/builder`);
