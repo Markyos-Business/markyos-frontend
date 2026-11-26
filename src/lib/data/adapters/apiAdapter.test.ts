@@ -211,6 +211,14 @@ describe("publishSite refusals (the first guideline site is free, 25 Nov 2026)",
     expect(result).toMatchObject({ ok: false, planRequired: true });
     expect(result).not.toHaveProperty("freeSiteInUse");
   });
+
+  it("reports an editor's refused free-site claim as owner-only, not as an upgrade", async () => {
+    const result = await refusedWith(
+      new ApiError("Only the brand's owner can publish it as the account's free site.", 403, {}, { code: "free_site_owner_only" }),
+    );
+    expect(result).toMatchObject({ ok: false, ownerOnly: true });
+    expect(result).not.toHaveProperty("planRequired");
+  });
 });
 
 describe("voteOnCard", () => {

@@ -79,6 +79,7 @@ export type VoteOutcome =
  * `planRequired`: going live needs a paid plan (`plan_required`, 402).
  * `freeSiteInUse`: the account's one free site is another brand's
  * (`free_site_in_use`); `freeSiteBrand` names it when the server does.
+ * `ownerOnly`: only the brand's owner may claim the free site (`free_site_owner_only`, 403).
  */
 export type PublishOutcome =
   | { ok: true }
@@ -89,6 +90,7 @@ export type PublishOutcome =
       planRequired?: boolean;
       freeSiteInUse?: boolean;
       freeSiteBrand?: { id: string; name: string } | null;
+      ownerOnly?: boolean;
       message: string;
     };
 
@@ -372,6 +374,9 @@ export function createApiAdapter(options: {
         // The free slot is taken: the same refusal shape, a new code (25 Nov 2026).
         if (err.status >= 400 && err.status < 500 && code === "free_site_in_use") {
           return { ok: false, planRequired: true, freeSiteInUse: true, freeSiteBrand: refusedFreeSite(err.data), message: err.message };
+        }
+        if (err.status === 403 && code === "free_site_owner_only") {
+          return { ok: false, ownerOnly: true, message: err.message };
         }
         if (err.status === 400 && (err.data as { code?: string } | null)?.code === "publish_blocked") {
           return { ok: false, blocked: true, message: err.message };

@@ -353,6 +353,10 @@ export function useBuilderPage(slug: string) {
       askToUpgrade({ kind: "taken", brand: result.freeSiteBrand ?? (freeSite?.kind === "taken" ? freeSite.brand : null) });
       return;
     }
+    if (!result.ok && result.ownerOnly) {
+      showToast(billingCopy(isAr).freeSite.ownerOnly, "danger");
+      return;
+    }
     if (!result.ok && result.planRequired) {
       askToUpgrade();
       return;

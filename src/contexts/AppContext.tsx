@@ -628,6 +628,7 @@ interface AppContextValue {
     planRequired?: boolean;
     freeSiteInUse?: boolean;
     freeSiteBrand?: { id: string; name: string } | null;
+    ownerOnly?: boolean;
     message?: string;
   }>;
   /** Takes the live site down; the draft is untouched. */

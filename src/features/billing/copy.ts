@@ -54,6 +54,8 @@ type Copy = {
     tabTaken: (brand: string, name: string | null) => string;
     /** Taking the free site offline frees the slot. */
     freed: string;
+    /** An editor tried to publish an unpaid brand as the account's free site. */
+    ownerOnly: string;
   };
   /** Promo codes in the upgrade modal and on the Billing tab (promo-codes-plan §3). */
   promo: {
@@ -245,6 +247,7 @@ const en: Copy = {
     tabAvailable: (b) => `${b} has no plan. Your first guideline site is free and shows the Made with Markyos badge, so ${b} can publish now. Subscribe to remove the badge and add editors.`,
     tabTaken: (b, n) => `${b} has no plan. ${enTaken(n)}`,
     freed: "Your free site can now go to another brand.",
+    ownerOnly: "Not published: only the brand's owner can publish it as the account's free site. Ask them to publish it, or subscribe.",
   },
   promo: {
     have: "Have a code?",
@@ -458,6 +461,7 @@ const ar: Copy = {
     tabAvailable: (b) => `لا توجد خطة لـ«${b}». موقع دليلك الأول مجاني وتظهر عليه شارة «صُنع بماركيوس»، فيمكنك نشر «${b}» الآن. اشترك لإزالة الشارة وإضافة محررين.`,
     tabTaken: (b, n) => `لا توجد خطة لـ«${b}». ${arTaken(n)}`,
     freed: "يمكن الآن نقل موقعك المجاني إلى علامة أخرى.",
+    ownerOnly: "لم يُنشر الدليل: وحده مالك العلامة يمكنه نشرها موقعًا مجانيًا للحساب. اطلب منه نشرها، أو اشترك.",
   },
   promo: {
     have: "لديك رمز خصم؟",
