@@ -34,7 +34,7 @@ export function ChipPicker<T extends string>({ options, value, onChange, tone = 
           disabled={o.disabled}
           title={o.title}
           onClick={() => onChange(o.value)}
-          className={`h-ctl-sm cursor-pointer rounded-full px-3 text-[11px] font-semibold ${value === o.value ? chosen[tone] : "bg-surface-1 text-text-muted"}`}
+          className={`h-ctl-sm cursor-pointer rounded-control px-3 text-[11px] font-semibold ${value === o.value ? chosen[tone] : "bg-surface-1 text-text-muted"}`}
         >
           {o.label}
         </button>

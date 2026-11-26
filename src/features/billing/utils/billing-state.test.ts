@@ -6,6 +6,7 @@ import {
   accessEndsAt,
   billingView,
   failureBannerDue,
+  freeSiteOf,
   historyState,
   inGrace,
   isLegacy,
@@ -253,5 +254,42 @@ describe("resumeDate and reactivateOutcome", () => {
     expect(reactivateOutcome({ status: "active", billing: paid })).toBe("active");
     expect(reactivateOutcome({ status: "active", billing: free })).toBe("waiting");
     expect(reactivateOutcome({ status: "suspended", billing: free })).toBe("waiting");
+  });
+});
+
+describe("freeSiteOf (the first guideline site is free, 25 Nov 2026)", () => {
+  const answer = (over: Partial<BrandBillingAnswer> = {}): BrandBillingAnswer => ({
+    billing: free,
+    subscription: null,
+    actions: { subscribe: true, cancel: false, resume: false, reactivate: false, updatePaymentUrl: null },
+    history: [],
+    ...over,
+  });
+
+  it("says this brand is the free site", () => {
+    expect(freeSiteOf(answer({ freeSite: true, canPublishFree: false, freeSiteBrand: { id: "b1", name: "Wadi Rum Coffee" } }), "b1")).toEqual({ kind: "this" });
+  });
+
+  it("says an unpaid brand may take the free slot", () => {
+    expect(freeSiteOf(answer({ freeSite: false, canPublishFree: true, freeSiteBrand: null }), "b2")).toEqual({ kind: "available" });
+  });
+
+  it("names the brand holding the slot", () => {
+    expect(freeSiteOf(answer({ freeSite: false, canPublishFree: false, freeSiteBrand: { id: "b1", name: "Wadi Rum Coffee" } }), "b2")).toEqual({
+      kind: "taken",
+      brand: { id: "b1", name: "Wadi Rum Coffee" },
+    });
+  });
+
+  it("falls back to the plan rule on an older server, a paid brand or no answer", () => {
+    expect(freeSiteOf(answer(), "b2")).toBeNull();
+    expect(freeSiteOf(answer({ billing: paid, canPublishFree: true }), "b2")).toBeNull();
+    expect(freeSiteOf(null, "b2")).toBeNull();
+    // Nothing to name: the free rules may not apply (staging switch); the server decides.
+    expect(freeSiteOf(answer({ freeSite: false, canPublishFree: false, freeSiteBrand: null }), "b2")).toBeNull();
+  });
+
+  it("never reads its own brand as taken", () => {
+    expect(freeSiteOf(answer({ freeSite: false, canPublishFree: false, freeSiteBrand: { id: "b2", name: "Nile Bakery" } }), "b2")).toBeNull();
   });
 });

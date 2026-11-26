@@ -65,8 +65,8 @@ export interface DesignSystem {
 export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   vault: {
     id: "vault",
-    name: "Vault",
-    arName: "فولت",
+    name: "Editorial dark",
+    arName: "تحريري داكن",
     note: "Editorial archive. Dark ground, hairline-outlined cards, numbered chapters in small caps.",
     arNote: "أرشيف تحريري. خلفية داكنة، بطاقات بحدود شعرية، وفصول مرقّمة بأحرف صغيرة.",
     polarity: "dark",
@@ -82,8 +82,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   docs: {
     id: "docs",
-    name: "Docs",
-    arName: "دوكس",
+    name: "Technical manual",
+    arName: "دليل تقني",
     note: "Technical manual. Light paper, near-square corners, generous line height, accent used sparingly.",
     arNote: "دليل تقني. ورق فاتح، زوايا شبه قائمة، تباعد أسطر مريح، ولون مميز مستخدم بحذر.",
     polarity: "light",
@@ -99,8 +99,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   prism: {
     id: "prism",
-    name: "Prism",
-    arName: "بريزم",
+    name: "Colour showcase",
+    arName: "عرض لوني",
     note: "Colour-forward showcase. Heavily brand-tinted ground, big soft corners, oversized display type.",
     arNote: "عرض يقدّم اللون أولًا. خلفية مشبعة بلون العلامة، زوايا كبيرة ناعمة، وخط عريض ضخم.",
     polarity: "dark",
@@ -116,8 +116,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   atlas: {
     id: "atlas",
-    name: "Atlas",
-    arName: "أطلس",
+    name: "Soft reference",
+    arName: "مرجع هادئ",
     note: "Reference manual. Softly tinted paper, filled cards, quiet accent, a sidebar you read down.",
     arNote: "مرجع منهجي. ورق بلمسة لونية خفيفة، بطاقات ممتلئة، لون مميز هادئ، وقائمة جانبية تُقرأ.",
     polarity: "light",
@@ -133,8 +133,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   signal: {
     id: "signal",
-    name: "Signal",
-    arName: "سيجنال",
+    name: "Bold dark",
+    arName: "داكن جريء",
     note: "High-contrast dark. Square corners, cards that cast a shadow, wide monospaced labels, loud accent.",
     arNote: "تباين عالٍ وداكن. زوايا قائمة، بطاقات بظل بارز، عناوين متباعدة، ولون مميز صريح.",
     polarity: "dark",
@@ -150,8 +150,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   manual: {
     id: "manual",
-    name: "Manual",
-    arName: "الدليل المطبوع",
+    name: "Brand book",
+    arName: "كتيّب الهوية",
     note: "Printed brand book. White pages, a fixed title rail, hairline rules, dark chapter openers.",
     arNote: "كتيّب هوية مطبوع. صفحات بيضاء، عمود عناوين ثابت، خطوط شعرية، وفواصل فصول داكنة.",
     // The pages are white; the chapter openers invert to a dark ground, which
@@ -172,8 +172,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   mosaic: {
     id: "mosaic",
-    name: "Mosaic",
-    arName: "الفسيفساء",
+    name: "Bento hub",
+    arName: "لوحة بلاطات",
     note: "Brand hub. A bento grid of tiles — the whole identity at a glance, not a scroll you work down.",
     arNote: "لوحة هوية. شبكة بلاطات تعرض الهوية كاملة في لقطة واحدة، لا تمريرًا طويلًا.",
     // The one light system that is loud with the brand's colour. Atlas is light
@@ -197,8 +197,8 @@ export const DESIGN_SYSTEMS: Record<DesignSystemId, DesignSystem> = {
   },
   deck: {
     id: "deck",
-    name: "Deck",
-    arName: "عرض تقديمي",
+    name: "Slides",
+    arName: "شرائح",
     note: "Presentation frames. No corners at all, full-bleed colour, display type at slide scale.",
     arNote: "شرائح عرض. بلا زوايا، ألوان تملأ الإطار، وخط بمقاس الشريحة.",
     polarity: "dark",

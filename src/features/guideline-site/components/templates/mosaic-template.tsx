@@ -20,7 +20,9 @@ import { initialsFor } from "@/lib/utils";
 import { sanitizeRichHtml } from "@/lib/safeHtml";
 import { Fragment, ReactNode } from "react";
 import Link from "next/link";
-import { Icon, LangToggle, richToPlainText } from "@/components/ui";
+import { Icon, LangToggle } from "@/components/ui";
+import { SiteMenu } from "../shared/site-menu";
+import { siteCopy } from "../../utils/site-copy";
 import { DownloadPanel } from "../documents/download-panel";
 import { BlockRenderer } from "../content/block-renderer";
 import { BrandMark } from "@/components/ui";
@@ -65,7 +67,7 @@ const TITLES: SectionTitles = {
 const HALF_WIDTH = new Set(["photography", "patterns", "icons", "app-icon", "social"]);
 
 function spanOf(id: string): string {
-  return HALF_WIDTH.has(id) ? "lg:col-span-6" : "lg:col-span-12";
+  return HALF_WIDTH.has(id) ? "@min-[1024px]:col-span-6" : "@min-[1024px]:col-span-12";
 }
 
 export function MosaicTemplate(props: TemplateProps) {
@@ -97,10 +99,8 @@ export function MosaicTemplate(props: TemplateProps) {
   const mark = navMark(ws);
   const logo = navLogo(ws, isAr);
   const fixedCtx = { ws, isAr, onDark: !theme.isLight, attachedSlots, photoAssets, iconAssets, mockupAssets, publishedDepartments };
-  const heroTitle = sectionTitle(
-    "overview-title",
-    richToPlainText(ws.strategy.purpose) || (isAr ? "دليل الهوية البصرية" : "Brand guideline")
-  );
+  const copy = siteCopy(ws, isAr ? "ar" : "en");
+  const heroTitle = sectionTitle("overview-title", copy.heroTitle);
 
   return (
     <SectionNoteProvider lookup={sectionNote}>
@@ -113,12 +113,12 @@ export function MosaicTemplate(props: TemplateProps) {
       {/* One bar, and the download lives in it. A floating pill over a grid of
           tiles covers a tile; here there is a natural place to put it. */}
       <div
-        className="sticky top-0 z-sticky flex items-center gap-4 px-5 md:px-8 h-16 shrink-0"
+        className="sticky top-0 z-sticky flex items-center gap-4 px-5 @min-[768px]:px-8 h-16 shrink-0"
         style={{ background: "var(--g-canvas)", boxShadow: "inset 0 -1px 0 var(--g-hairline)" }}
       >
-        <div className="flex items-center gap-2.5 shrink-0 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           {logo.isLockup ? (
-            <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ maxHeight: 26, maxWidth: 180 }} />
+            <BrandMark src={logo.src} lightSrc={logo.lightSrc} alt={ws.name} onDark={!theme.isLight} style={{ height: 26, width: "auto", maxWidth: "min(180px, 40cqi)" }} />
           ) : (
             <>
               <span className="w-8 h-8 grid place-items-center font-semibold text-[13px] overflow-hidden shrink-0" style={{ ...gPill, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}>
@@ -135,7 +135,7 @@ export function MosaicTemplate(props: TemplateProps) {
 
         {/* The contents as a scrollable row of chips — a hub's nav, not a
             document's table of contents down the side. */}
-        <nav className="hidden md:flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto mk-chiprow">
+        <nav className="hidden @min-[768px]:flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto mk-chiprow">
           {activePage && (
             <Link
               href={`/v/${ws.slug}`}
@@ -179,30 +179,42 @@ export function MosaicTemplate(props: TemplateProps) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2.5 shrink-0 ms-auto md:ms-0">
+        <div className="flex items-center gap-2.5 shrink-0 ms-auto @min-[768px]:ms-0">
           <LangToggle value={previewLang} onChange={setPreviewLang} />
           {attachedSlots.length > 0 && (
             <button
               type="button"
               onClick={() => setDownloadOpen(true)}
-              className="h-9 px-4 text-[12.5px] font-semibold cursor-pointer flex items-center gap-2"
+              aria-label={isAr ? "تحميل الأصول" : "Download assets"}
+              className="h-11 min-w-11 px-3.5 @min-[640px]:px-4 text-[12.5px] font-semibold cursor-pointer flex items-center justify-center gap-2"
               style={{ ...gPill, background: "var(--g-accent)", color: "var(--g-accent-ink)" }}
             >
               <Icon name="download" size={13} />
-              <span className="hidden sm:inline">{isAr ? "تحميل الأصول" : "Download"}</span>
+              <span className="hidden @min-[640px]:inline">{isAr ? "تحميل الأصول" : "Download"}</span>
             </button>
           )}
+          {/* The chip row folds away below 768px of page; the menu holds it. */}
+          <SiteMenu
+            className="@min-[768px]:hidden"
+            ws={ws}
+            isAr={isAr}
+            sections={sections}
+            activeId={activeId}
+            scrollTo={scrollTo}
+            pages={pages}
+            activePage={activePage}
+          />
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1240px] mx-auto px-5 md:px-8 py-6 md:py-8">
+      <div className="flex-1 w-full max-w-[1240px] mx-auto px-5 @min-[768px]:px-8 py-6 @min-[768px]:py-8">
         {activePage && (
           <h2 dir="auto" className="bidi-auto mb-6" style={gHero}>
             {isAr ? activePage.arName : activePage.name}
           </h2>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start pb-24">
+        <div className="grid grid-cols-1 @min-[1024px]:grid-cols-12 gap-4 items-start pb-24">
           {flow.map((item, i) => {
             const label = flowLabel(item, sectionTitle, TITLES, isAr, i);
             const isDivider = item.kind === "block" && item.block.kind === "divider";
@@ -211,7 +223,7 @@ export function MosaicTemplate(props: TemplateProps) {
               // a wrapper of its own only while editing, so putting the span on
               // it would give the canvas a different layout from the published
               // page — the one thing this editor is built not to do.
-              <div key={item.id} className={`min-w-0 ${isDivider ? "lg:col-span-12" : spanOf(item.id)}`}>
+              <div key={item.id} className={`min-w-0 ${isDivider ? "@min-[1024px]:col-span-12" : spanOf(item.id)}`}>
                 <FlowShell flowId={item.id} kind={item.kind} label={label} style={item.style} accent={theme.accent}>
                   {item.id === "overview" ? (
                     <BentoHero
@@ -223,6 +235,8 @@ export function MosaicTemplate(props: TemplateProps) {
                       markSrc={mark.src}
                       markLightSrc={mark.lightSrc}
                       heroTitle={heroTitle}
+                      openingLine={copy.openingLine}
+                      eyebrow={copy.eyebrow}
                       sectionTitle={sectionTitle}
                       attachedSlots={attachedSlots}
                     />
@@ -230,9 +244,9 @@ export function MosaicTemplate(props: TemplateProps) {
                     <StatementBand
                       text={statementText}
                       isAr={isAr}
-                      className="p-8 md:p-10"
+                      className="p-8 @min-[768px]:p-10"
                       style={{ background: "var(--g-accent)", borderRadius: "var(--g-radius-lg)" }}
-                      textClassName="bidi-auto text-[24px] md:text-[32px] font-semibold leading-[1.3] max-w-[24ch]"
+                      textClassName="bidi-auto text-[24px] @min-[768px]:text-[32px] font-semibold leading-[1.3] max-w-[24ch]"
                       textStyle={{ fontFamily: "var(--font-display)", color: "var(--g-accent-ink)" }}
                       noteStyle={{ color: "var(--g-accent-ink)", opacity: 0.78 }}
                     />
@@ -279,7 +293,7 @@ export function MosaicTemplate(props: TemplateProps) {
  */
 function Tile({ id, index, title, children }: { id: string; index: number; title: string; children: ReactNode }) {
   return (
-    <section id={id} className="p-5 md:p-7 flex flex-col gap-5 scroll-mt-20" style={gCard}>
+    <section id={id} className="p-5 @min-[768px]:p-7 flex flex-col gap-5 scroll-mt-20" style={gCard}>
       <div className="flex items-baseline gap-2.5 flex-wrap">
         <span
           className="px-2 py-1 shrink-0"
@@ -312,6 +326,8 @@ function BentoHero({
   markSrc,
   markLightSrc,
   heroTitle,
+  openingLine,
+  eyebrow,
   sectionTitle,
   attachedSlots,
 }: {
@@ -323,6 +339,8 @@ function BentoHero({
   markSrc?: string;
   markLightSrc?: string;
   heroTitle: string;
+  openingLine: string;
+  eyebrow: string;
   sectionTitle: TemplateProps["sectionTitle"];
   attachedSlots: TemplateProps["attachedSlots"];
 }) {
@@ -334,9 +352,9 @@ function BentoHero({
   ];
 
   return (
-    <div id="overview" className="grid grid-cols-2 lg:grid-cols-6 gap-4 scroll-mt-20">
+    <div id="overview" className="grid grid-cols-2 @min-[1024px]:grid-cols-6 gap-4 scroll-mt-20">
       {/* The brand, filled with its own colour. */}
-      <div className="col-span-2 lg:col-span-4 p-7 md:p-9 flex flex-col gap-4 min-h-[280px]" style={{ background: "var(--g-accent)", borderRadius: "var(--g-radius-lg)" }}>
+      <div className="col-span-2 @min-[1024px]:col-span-4 p-7 @min-[768px]:p-9 flex flex-col gap-4 min-h-[280px]" style={{ background: "var(--g-accent)", borderRadius: "var(--g-radius-lg)" }}>
         <div className="flex items-center gap-3">
           {markSrc && (
             <span className="w-11 h-11 grid place-items-center overflow-hidden shrink-0">
@@ -348,7 +366,7 @@ function BentoHero({
           <SectionHeading
             sectionId="overview-eyebrow"
             as="span"
-            value={sectionTitle("overview-eyebrow", ws.name)}
+            value={sectionTitle("overview-eyebrow", eyebrow)}
             style={{ ...gLabel, color: "var(--g-accent-ink)", opacity: 0.8 }}
           />
         </div>
@@ -361,6 +379,7 @@ function BentoHero({
         <SectionNote
           sectionId="overview"
           placeholder={isAr ? "أضف سطرًا تمهيديًا" : "Add an opening line"}
+          fallback={openingLine}
           className="max-w-[52ch] text-[14.5px] leading-[1.6]"
           style={{ color: "var(--g-accent-ink)", opacity: 0.82 }}
         />
@@ -392,7 +411,7 @@ function BentoHero({
       </div>
 
       {/* The type, at a size you can judge it at. */}
-      <div className="col-span-1 lg:col-span-2 p-5 flex flex-col gap-2 justify-between min-h-[150px]" style={gPlate}>
+      <div className="col-span-1 @min-[1024px]:col-span-2 p-5 flex flex-col gap-2 justify-between min-h-[150px]" style={gPlate}>
         <span style={{ ...gLabel, color: "var(--g-text-faint)" }}>{isAr ? "الخطوط" : "Type"}</span>
         <span style={{ fontFamily: isAr ? "var(--font-arabic)" : "var(--font-sans)", fontSize: 52, lineHeight: 1, fontWeight: 600 }}>
           {isAr ? "أ ب" : "Aa"}
@@ -403,7 +422,7 @@ function BentoHero({
       </div>
 
       {/* Real counts off real data — nothing here is a marketing number. */}
-      <div className="col-span-1 lg:col-span-2 p-5 grid grid-cols-2 gap-3 content-center min-h-[150px]" style={gPlate}>
+      <div className="col-span-1 @min-[1024px]:col-span-2 p-5 grid grid-cols-2 gap-3 content-center min-h-[150px]" style={gPlate}>
         {facts.map((f) => (
           <div key={f.label} className="flex flex-col">
             <span className="text-[24px] font-semibold leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--g-accent)" }}>
@@ -434,12 +453,12 @@ function BentoHero({
       </div>
 
       {ws.overviewHtml && (
-        <div className="col-span-2 lg:col-span-6 p-6 md:p-7" style={gCard}>
+        <div className="col-span-2 @min-[1024px]:col-span-6 p-6 @min-[768px]:p-7" style={gCard}>
           <div dir="auto" className="bidi-auto mosaic-overview" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(ws.overviewHtml) }} />
         </div>
       )}
 
-      <div className="col-span-2 lg:col-span-6">
+      <div className="col-span-2 @min-[1024px]:col-span-6">
         <SignOffPanel ws={ws} section="overview" isAr={isAr} />
       </div>
     </div>

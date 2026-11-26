@@ -16,10 +16,11 @@ const en = {
   publication: {
     status: {
       notLive: "Not live",
-      notLiveHint: "Published, but the link doesn't show it: this brand needs a paid plan to go live.",
+      notLiveHint: "Published, but the link doesn't show it: this brand has no plan and isn't your free site.",
+      freeSite: "Your free site. It shows the Made with Markyos badge.",
     },
     upgrade: "Upgrade to publish",
-    upgradeHint: "The guideline site goes live on a paid plan for this brand.",
+    upgradeHint: "Subscribe this brand to put its guideline site live.",
   },
 };
 
@@ -38,10 +39,11 @@ const ar: BuilderCopy = {
   publication: {
     status: {
       notLive: "غير متاح للعملاء",
-      notLiveHint: "منشور، لكن الرابط لا يعرضه: تحتاج العلامة إلى خطة مدفوعة ليصبح الموقع متاحًا.",
+      notLiveHint: "منشور، لكن الرابط لا يعرضه: العلامة بلا خطة وليست موقعك المجاني.",
+      freeSite: "موقعك المجاني، وتظهر عليه شارة «صُنع بماركيوس».",
     },
     upgrade: "رقِّ الخطة للنشر",
-    upgradeHint: "يصبح موقع الدليل متاحًا مع خطة مدفوعة لهذه العلامة.",
+    upgradeHint: "اشترك لهذه العلامة لنشر موقع دليلها.",
   },
 };
 

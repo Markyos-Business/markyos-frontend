@@ -8,6 +8,7 @@ import { brandFontStacks } from "../utils/brand-fonts";
 import { BlockStyle, DepartmentView, GuidePage, Lang, PageBlock, SlotKind, Workspace } from "@/types";
 import { brandSocialLinks, graphicAssets, patternAssets } from "../utils/guideline-assets";
 import { departmentHasContent } from "../components/documents/department-document";
+import { strategyText } from "../utils/strategy-lang";
 import { strategyNarrativeFilled } from "../components/documents/strategy-document";
 import type { TocSection } from "../types";
 import { usePublishedSite } from "./use-published-site";
@@ -217,7 +218,7 @@ export function useGuidelineViewer(slug: string, pageSlug?: string, mode: "publi
    * An override alone is enough to give the band content, so it can also say
    * something a brand has no mission field for at all.
    */
-  const statementText = ws ? (titleOverrides["statement-text"]?.[previewLang] || richToPlainText(ws.strategy.mission)) : "";
+  const statementText = ws ? (titleOverrides["statement-text"]?.[previewLang] || richToPlainText(strategyText(ws.strategy, "mission", previewLang))) : "";
 
   const availableFixed: TocSection[] = !ws
     ? []

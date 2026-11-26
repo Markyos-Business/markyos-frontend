@@ -7,6 +7,7 @@ import { TeamRole, Workspace } from "@/types";
 import { formatRelative } from "@/lib/utils";
 import type { Lang } from "@/types/lang";
 import { brandInitials, brandSetup } from "@/lib/data/brandSetup";
+import { isShared } from "@/lib/data/publication";
 import { BRANDS_COPY } from "../../copy";
 
 /** First letter up; Arabic has no case, so it passes through. */
@@ -39,7 +40,7 @@ export function WorkspaceCard({
       <DashboardCard
         title={<span dir="auto">{workspace.name}</span>}
         subtitle={c.edited(formatRelative(workspace.updatedAt, undefined, lang))}
-        actions={<Badge tone={workspace.sharedStatus === "shared" ? "success" : "neutral"}>{workspace.sharedStatus === "shared" ? c.shared : c.draft}</Badge>}
+        actions={<Badge tone={isShared(workspace) ? "success" : "neutral"}>{isShared(workspace) ? c.shared : c.draft}</Badge>}
         className="h-full"
         footer={<Dashboard.CardFooterStats items={[
           // A client gets no working document, so a setup count would be made

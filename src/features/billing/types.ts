@@ -5,8 +5,12 @@ export type Plans = {
   currency: string;
   interval: "month";
   perBrand: true;
-  /** A brand without a plan: how many an account may own, and its editors. */
-  free: { brands: number; editors: number | null };
+  /**
+   * A brand without a plan: how many an account may own, its editors, and how
+   * many of them may have a live guideline site (the first one is free, decided
+   * 25 Nov 2026). `publishedSites` is absent on an older server.
+   */
+  free: { brands: number; editors: number | null; publishedSites?: number };
   /** False where the staging switch lifts the Free rules. */
   freeRulesApply: boolean;
   types: Record<AccountType, { monthly: number; limits: { brands: number | null; editors: number | null } }>;
@@ -15,7 +19,7 @@ export type Plans = {
 };
 
 /** Why the upgrade modal opened: each paywall moment says what it unlocks. */
-export type UpgradeReason = "publish" | "badge" | "editor" | "brand_limit" | "billing" | "resume";
+export type UpgradeReason = "publish" | "free_site" | "badge" | "editor" | "brand_limit" | "billing" | "resume";
 
 /** Why an owner cancels (POST /billing/paypal/cancel/). */
 export const CANCEL_REASONS = ["too_expensive", "not_using", "missing_feature", "switching", "other"] as const;
@@ -76,12 +80,27 @@ export type BillingHistoryItem = {
   occurredAt: number;
 };
 
+/** The brand whose guideline site is the owner's one free live site. */
+export type FreeSiteBrand = { id: string; name: string };
+
 /** GET /billing/brands/<id>/ (owner only). */
 export type BrandBillingAnswer = {
   billing: Billing;
   subscription: BrandSubscription | null;
   actions: BillingActions;
   history: BillingHistoryItem[];
+  /*
+   * The first guideline site is free (25 Nov 2026). All three are the
+   * server's answer and absent on an older server, where the app keeps
+   * today's rule (a plan to go live). The server refuses a publish the
+   * slot doesn't allow (`free_site_in_use`) whatever the app shows.
+   */
+  /** This brand is the owner's free live site. */
+  freeSite?: boolean;
+  /** This brand has no plan and may go live now on the free slot. */
+  canPublishFree?: boolean;
+  /** The owner's current free-site brand, or null. */
+  freeSiteBrand?: FreeSiteBrand | null;
 };
 
 /*

@@ -210,7 +210,7 @@ export function DownloadPanel({
                 key={v}
                 type="button"
                 onClick={() => toggleVariant(v)}
-                className="text-[12px] font-semibold px-3.5 py-2.5 rounded-full cursor-pointer"
+                className="text-[12px] font-semibold px-3.5 py-2.5 rounded-control cursor-pointer"
                 style={{
                   background: variants.has(v) ? "var(--solid)" : "var(--surface-2)",
                   color: variants.has(v) ? "var(--solid-ink)" : "var(--text-secondary)",

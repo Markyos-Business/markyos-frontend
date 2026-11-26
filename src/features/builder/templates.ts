@@ -300,8 +300,8 @@ export const STYLE_META: Record<GuidelineTemplate, { name: string; arName: strin
     arDescription: DESIGN_SYSTEMS.docs.arNote,
   },
   studio: {
-    name: "Studio",
-    arName: "Studio",
+    name: "Studio sites",
+    arName: "مواقع الاستوديو",
     description: "Three separate design systems to choose between.",
     arDescription: "ثلاثة أنظمة تصميم منفصلة للاختيار من بينها.",
   },

@@ -27,7 +27,7 @@ import { useBrandBilling } from "../hooks/use-brand-billing";
 import { useReactivate } from "../hooks/use-plan-actions";
 import type { BillingHistoryItem, BrandBillingAnswer, PendingPlanChange } from "../types";
 import { discountLine } from "../utils/promo";
-import { accessEndsAt, billingView, historyState, resumeDate, STATUS_TONE, type BillingButton } from "../utils/billing-state";
+import { accessEndsAt, billingView, freeSiteOf, historyState, resumeDate, STATUS_TONE, type BillingButton } from "../utils/billing-state";
 import { CancelPlanDialog } from "./cancel-plan-dialog";
 import { useUpgrade } from "./upgrade-provider";
 
@@ -153,6 +153,19 @@ function BillingBody({
   if (view.resumesOn) facts.push({ label: t.resumesOn, value: date(view.resumesOn) });
   if (view.accessUntil) facts.push({ label: t.accessUntil, value: date(view.accessUntil) });
   if (sub?.payerEmail) facts.push({ label: t.payer, value: <span dir="ltr">{sub.payerEmail}</span> });
+  // The first guideline site is free (25 Nov 2026): the server's word on this brand's slot.
+  const free = freeSiteOf(answer, ws.id);
+  const f = copy.freeSite;
+  if (free?.kind === "this") facts.push({ label: f.label, value: <Badge tone="success">{f.isThis}</Badge> });
+  if (free?.kind === "available") facts.push({ label: f.label, value: <Badge tone="neutral">{f.available}</Badge> });
+  const freeBody =
+    free?.kind === "this"
+      ? f.tabThis(ws.name)
+      : free?.kind === "available"
+        ? f.tabAvailable(ws.name)
+        : free?.kind === "taken"
+          ? f.tabTaken(ws.name, free.brand?.name ?? null)
+          : t.freeBody(ws.name);
 
   // A promo code's discount, worded from the server's figures only.
   const discount =
@@ -216,7 +229,11 @@ function BillingBody({
 
       <Section title={t.planTitle} icon="credit-card">
         <KeyValueList items={facts} />
-        {view.showFreeBody && <p className="text-body text-text-muted">{t.freeBody(ws.name)}</p>}
+        {(view.showFreeBody || free) && (
+          <p className="text-body text-text-muted" data-billing-free-site={free?.kind}>
+            {freeBody}
+          </p>
+        )}
         {view.comp && (
           <p className="flex items-start gap-space-3 text-body text-text" data-billing-comp>
             <Icon name="check-circle" size={18} className="mt-0.5 shrink-0 text-accent-text" />

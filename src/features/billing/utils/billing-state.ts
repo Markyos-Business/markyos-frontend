@@ -1,6 +1,6 @@
 import type { BadgeTone } from "@/components/ui";
 import type { Billing } from "@/types";
-import type { BrandBillingAnswer, BrandSubscription, PendingPlanChange } from "../types";
+import type { BrandBillingAnswer, BrandSubscription, FreeSiteBrand, PendingPlanChange } from "../types";
 
 /*
  * How the server's billing reads on screen. Pure mapping only: nothing here
@@ -174,3 +174,27 @@ export function billingView(answer: BrandBillingAnswer, now: number): BillingVie
 export function reactivateOutcome(answer: { status: string; billing: Billing }): "active" | "waiting" {
   return answer.status === "active" && answer.billing.plan !== "free" ? "active" : "waiting";
 }
+
+/**
+ * The first guideline site is free (25 Nov 2026), as the server describes it
+ * for an unpaid brand:
+ *
+ * - `this`: this brand is the owner's free live site.
+ * - `available`: this brand may go live now on the free slot.
+ * - `taken`: another brand holds the slot (`brand`, when the server names it).
+ *
+ * Null for a paid brand, without an answer, or when an older server sends
+ * none of the fields: the app then keeps today's rule (a plan to go live).
+ * This only names the server's answer; the server refuses what it doesn't allow.
+ */
+export type FreeSite = { kind: "this" } | { kind: "available" } | { kind: "taken"; brand: FreeSiteBrand | null };
+
+export function freeSiteOf(answer: Pick<BrandBillingAnswer, "billing" | "freeSite" | "canPublishFree" | "freeSiteBrand"> | null | undefined, brandId: string): FreeSite | null {
+  if (!answer || answer.billing.plan !== "free") return null;
+  if (answer.freeSite === true) return { kind: "this" };
+  if (answer.canPublishFree === true) return { kind: "available" };
+  const holder = answer.freeSiteBrand;
+  if (holder && holder.id !== brandId) return { kind: "taken", brand: holder };
+  return null;
+}
+

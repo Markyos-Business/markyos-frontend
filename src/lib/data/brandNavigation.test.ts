@@ -34,4 +34,11 @@ describe("guideline review shortcut", () => {
     expect(publishedGuidelineHref({ ...workspace, published: null })).toBeNull();
     expect(publishedGuidelineHref({ ...workspace, billing: { plan: "free" } })).toBeNull();
   });
+
+  it("follows the server's live answer: the account's free site is offered, a link it doesn't serve isn't", () => {
+    const [workspace] = buildInitialWorkspaces();
+    expect(publishedGuidelineHref({ ...workspace, billing: { plan: "free" }, live: true })).toBe(`/v/${workspace.slug}`);
+    expect(publishedGuidelineHref({ ...workspace, billing: { plan: "free" }, live: false })).toBeNull();
+    expect(publishedGuidelineHref({ ...workspace, billing: { plan: "subscription" }, live: false })).toBeNull();
+  });
 });
