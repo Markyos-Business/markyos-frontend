@@ -18,7 +18,7 @@ export function BrandSection({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const { showToast } = useToast();
   const copy = useAccountCopy(isAr);
   return (
-    <Section title={isAr ? "العلامة" : "Brand"} icon="shapes">
+    <Section title={isAr ? "العلامة" : "Brand"} icon="id-badge">
       <BrandNameRow ws={ws} isAr={isAr} />
       <BrandDetails ws={ws} isAr={isAr} />
       {/* The brand's own language, which is a different thing from the one the
