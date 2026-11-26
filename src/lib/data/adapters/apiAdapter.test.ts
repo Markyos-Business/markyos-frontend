@@ -175,6 +175,52 @@ describe("publishSite", () => {
   });
 });
 
+describe("publishSite refusals (the first guideline site is free, 25 Nov 2026)", () => {
+  beforeEach(() => {
+    calls.length = 0;
+    vi.stubGlobal("window", { localStorage: memoryStorage(), sessionStorage: memoryStorage() });
+  });
+
+  async function refusedWith(error: ApiError) {
+    const repo = adapter();
+    const state = signedInState();
+    await repo.save(state);
+    const brand = state.workspaces[0];
+    vi.mocked(api)
+      .mockImplementationOnce(async () => ({ id: brand.id, slug: brand.slug, version: 2, data: brand, fileBase: "" }))
+      .mockRejectedValueOnce(error);
+    const result = await repo.publishSite(brand.id, true);
+    await repo.endSession();
+    return result;
+  }
+
+  it("names the brand holding the free site when the server refuses with free_site_in_use", async () => {
+    const result = await refusedWith(
+      new ApiError("Your free site is in use.", 402, {}, { detail: "Your free site is in use.", code: "free_site_in_use", freeSiteBrand: { id: "b-wadi", name: "Wadi Rum Coffee" } }),
+    );
+    expect(result).toMatchObject({ ok: false, freeSiteInUse: true, planRequired: true, freeSiteBrand: { id: "b-wadi", name: "Wadi Rum Coffee" } });
+  });
+
+  it("still reports free_site_in_use when the server names no brand", async () => {
+    const result = await refusedWith(new ApiError("Your free site is in use.", 402, {}, { code: "free_site_in_use" }));
+    expect(result).toMatchObject({ ok: false, freeSiteInUse: true, freeSiteBrand: null });
+  });
+
+  it("keeps plan_required as before, without the free-site flag", async () => {
+    const result = await refusedWith(new ApiError("Publishing needs a paid plan.", 402, {}, { code: "plan_required" }));
+    expect(result).toMatchObject({ ok: false, planRequired: true });
+    expect(result).not.toHaveProperty("freeSiteInUse");
+  });
+
+  it("reports an editor's refused free-site claim as owner-only, not as an upgrade", async () => {
+    const result = await refusedWith(
+      new ApiError("Only the brand's owner can publish it as the account's free site.", 403, {}, { code: "free_site_owner_only" }),
+    );
+    expect(result).toMatchObject({ ok: false, ownerOnly: true });
+    expect(result).not.toHaveProperty("planRequired");
+  });
+});
+
 describe("voteOnCard", () => {
   beforeEach(() => {
     calls.length = 0;

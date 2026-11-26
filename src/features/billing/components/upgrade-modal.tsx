@@ -24,6 +24,7 @@ export function UpgradeModal({
   reason,
   count = 1,
   startsAt,
+  freeSite,
   initialCode,
   onClose,
   onDone,
@@ -33,6 +34,8 @@ export function UpgradeModal({
   count?: number;
   /** For resume: when the server says the first charge lands (ms). */
   startsAt?: number | null;
+  /** For free_site: the brand the server says holds the account's free site. */
+  freeSite?: string | null;
   /** A promo code to start with, from a `?code=` link; still checked by the server on Apply. */
   initialCode?: string | null;
   onClose: () => void;
@@ -62,7 +65,7 @@ export function UpgradeModal({
     <Modal
       onClose={onClose}
       title={words.title}
-      description={reason === "brand_limit" && count > 1 ? copy.manyFree(count, ws.name) : words.body(ws.name, date)}
+      description={reason === "brand_limit" && count > 1 ? copy.manyFree(count, ws.name) : words.body(ws.name, date, freeSite)}
       size="sm"
       footer={
         subscribed ? (

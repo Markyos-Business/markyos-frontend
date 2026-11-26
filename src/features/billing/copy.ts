@@ -9,8 +9,11 @@ import type { BillingHistoryItem } from "./types";
  * never told about clients or studios.
  */
 type Copy = {
-  /** `date`: for resume, when the first charge lands ("18 Dec 2026"). */
-  reason: Record<UpgradeReason, { title: string; body: (brand: string, date?: string) => string; done: string }>;
+  /**
+   * `date`: for resume, when the first charge lands ("18 Dec 2026").
+   * `freeSite`: for free_site, the brand holding the account's free site.
+   */
+  reason: Record<UpgradeReason, { title: string; body: (brand: string, date?: string, freeSite?: string | null) => string; done: string }>;
   price: (amount: string) => string;
   terms: string;
   includes: { title: string; publish: string; badge: string; editors: string; brands: string };
@@ -32,6 +35,28 @@ type Copy = {
   unavailable: string;
   close: string;
   continue: string;
+  /**
+   * The first guideline site is free (25 Nov 2026): one unpaid brand per
+   * account may be live, with the Made with Markyos badge. Every string here
+   * names the server's answer (billing-state `freeSiteOf`).
+   */
+  freeSite: {
+    /** Before publishing a brand that takes the free slot. */
+    note: string;
+    /** Another brand holds the slot; `name` null when the server doesn't say which. */
+    taken: (name: string | null) => string;
+    /** The brand's Billing tab and settings. */
+    label: string;
+    isThis: string;
+    available: string;
+    tabThis: (brand: string) => string;
+    tabAvailable: (brand: string) => string;
+    tabTaken: (brand: string, name: string | null) => string;
+    /** Taking the free site offline frees the slot. */
+    freed: string;
+    /** An editor tried to publish an unpaid brand as the account's free site. */
+    ownerOnly: string;
+  };
   /** Promo codes in the upgrade modal and on the Billing tab (promo-codes-plan §3). */
   promo: {
     have: string;
@@ -137,11 +162,24 @@ type Copy = {
   banner: { failed: (brand: string, date: string) => string; action: string };
 };
 
+/** "Your free site is <name>…": the wording the owner decided (25 Nov 2026). */
+const enTaken = (name: string | null) =>
+  name
+    ? `Your free site is ${name}. Unpublish it, or subscribe to publish this one.`
+    : "Your free site is live on another brand. Unpublish it, or subscribe to publish this one.";
+const arTaken = (name: string | null) =>
+  name ? `موقعك المجاني هو «${name}». أوقف نشره، أو اشترك لنشر هذه العلامة.` : "موقعك المجاني منشور لعلامة أخرى. أوقف نشره، أو اشترك لنشر هذه العلامة.";
+
 const en: Copy = {
   reason: {
     publish: {
       title: "Publishing needs a plan",
       body: (b) => `Subscribe ${b} to put its guideline site live. You can keep building it for free.`,
+      done: "Continue publishing",
+    },
+    free_site: {
+      title: "Your free site is in use",
+      body: (_b, _d, free) => enTaken(free ?? null),
       done: "Continue publishing",
     },
     badge: {
@@ -199,6 +237,18 @@ const en: Copy = {
   unavailable: "PayPal payments aren't set up yet.",
   close: "Close",
   continue: "Continue",
+  freeSite: {
+    note: "Your first guideline site is free. It shows the Made with Markyos badge.",
+    taken: enTaken,
+    label: "Guideline site",
+    isThis: "Free site",
+    available: "Free to publish",
+    tabThis: (b) => `${b} is your account's free site: its guideline site is live with the Made with Markyos badge. Subscribe to remove the badge and add editors.`,
+    tabAvailable: (b) => `${b} has no plan. Your first guideline site is free and shows the Made with Markyos badge, so ${b} can publish now. Subscribe to remove the badge and add editors.`,
+    tabTaken: (b, n) => `${b} has no plan. ${enTaken(n)}`,
+    freed: "Your free site can now go to another brand.",
+    ownerOnly: "Not published: only the brand's owner can publish it as the account's free site. Ask them to publish it, or subscribe.",
+  },
   promo: {
     have: "Have a code?",
     label: "Promo code",
@@ -340,6 +390,11 @@ const ar: Copy = {
       body: (b) => `اشترك في خطة لـ«${b}» لينشر موقع دليلها. يمكنك مواصلة بنائها مجانًا.`,
       done: "متابعة النشر",
     },
+    free_site: {
+      title: "موقعك المجاني مستخدم",
+      body: (_b, _d, free) => arTaken(free ?? null),
+      done: "متابعة النشر",
+    },
     badge: {
       title: "إخفاء الشارة يحتاج إلى خطة",
       body: (b) => `العلامة المشتركة تستطيع إخفاء شارة «صُنع بماركيوس». اشترك لـ«${b}» لإخفائها.`,
@@ -396,6 +451,18 @@ const ar: Copy = {
   unavailable: "الدفع عبر PayPal غير مُعدّ بعد.",
   close: "إغلاق",
   continue: "متابعة",
+  freeSite: {
+    note: "موقع دليلك الأول مجاني، وتظهر عليه شارة «صُنع بماركيوس».",
+    taken: arTaken,
+    label: "موقع الدليل",
+    isThis: "موقع مجاني",
+    available: "النشر مجاني",
+    tabThis: (b) => `«${b}» هي موقعك المجاني: موقع دليلها منشور وتظهر عليه شارة «صُنع بماركيوس». اشترك لإزالة الشارة وإضافة محررين.`,
+    tabAvailable: (b) => `لا توجد خطة لـ«${b}». موقع دليلك الأول مجاني وتظهر عليه شارة «صُنع بماركيوس»، فيمكنك نشر «${b}» الآن. اشترك لإزالة الشارة وإضافة محررين.`,
+    tabTaken: (b, n) => `لا توجد خطة لـ«${b}». ${arTaken(n)}`,
+    freed: "يمكن الآن نقل موقعك المجاني إلى علامة أخرى.",
+    ownerOnly: "لم يُنشر الدليل: وحده مالك العلامة يمكنه نشرها موقعًا مجانيًا للحساب. اطلب منه نشرها، أو اشترك.",
+  },
   promo: {
     have: "لديك رمز خصم؟",
     label: "رمز الخصم",

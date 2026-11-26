@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/components/ui";
 import type { Workspace } from "@/types";
+import { isShared } from "@/lib/data/publication";
 import { isAccountTab } from "../constants";
 import type { AccountTab } from "../types";
 import { useAccountLang } from "./shared/use-account-lang";
@@ -73,7 +74,7 @@ export function useAccountPage() {
     usage: {
       stats: {
         workspaces: workspaces.length,
-        shared: workspaces.filter((w) => w.sharedStatus === "shared").length,
+        shared: workspaces.filter(isShared).length,
         colors: workspaces.reduce((n, w) => n + w.colors.length, 0),
         logos: workspaces.reduce((n, w) => n + Object.values(w.logo).filter((s) => s.phase === "attached").length, 0),
         signOffs: workspaces.reduce((n, w) => n + w.signOffPins.length, 0),

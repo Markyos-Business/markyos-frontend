@@ -2,7 +2,7 @@ import { PublicPageShell } from "@/components/ui";
 import { ClientGuideView } from "@/features/guideline-site";
 import { getPublicBadge } from "@/lib/api/public-badge";
 
-/** A brand's published guideline site. Free brands can't publish one, so its badge shows only if a paid brand opts to give the credit. */
+/** A brand's published guideline site. The server says whether the badge shows: on the account's free site (a brand without a plan), or a paid brand that gives the credit. */
 export default async function ClientViewerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const badge = await getPublicBadge("guide", slug);

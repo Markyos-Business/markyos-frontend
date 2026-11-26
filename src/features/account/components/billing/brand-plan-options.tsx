@@ -52,7 +52,10 @@ export function BrandPlanOptions({ ws, typeLabel, isAr }: BrandPlanOptionsProps)
         hint={
           purchasedAt
             ? isAr ? `مفعّلة منذ ${formatRelative(purchasedAt)}` : `Active since ${formatRelative(purchasedAt)}`
-            : t("No active plan. This guideline isn't shareable until a plan is active.", "لا توجد خطة مفعّلة، ولا يمكن مشاركة هذا الدليل حتى تُفعَّل خطة.")
+            : t(
+                "No active plan. Your first guideline site is free with the Made with Markyos badge; other brands need a plan to go live.",
+                "لا توجد خطة مفعّلة. موقع دليلك الأول مجاني وتظهر عليه شارة «صُنع بماركيوس»، وتحتاج العلامات الأخرى إلى خطة لنشر مواقعها.",
+              )
         }
         right={
           <Badge tone={plan === "free" ? "neutral" : "accent"}>{plan === "pass" ? t("Project Pass", "تصريح المشروع") : plan === "subscription" ? planName : t("Free", "مجانية")}</Badge>

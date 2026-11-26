@@ -6,6 +6,7 @@ import { useApp, useCurrentAccount } from "@/contexts/AppContext";
 import { ACCOUNT_TYPES, accountTypeOf } from "@/constants/accountTypes";
 import { useFreeBrandGate, useLimits } from "@/features/billing";
 import { isReviewerOnly, roleOn } from "@/lib/data/access";
+import { isShared } from "@/lib/data/publication";
 import { useInterfaceLang } from "@/contexts/useInterfaceLang";
 import type { BrandSort } from "../../constants";
 import { brandsCopyFor } from "../../copy";
@@ -33,7 +34,7 @@ export function useBrandsPage() {
     return [...filtered].sort((a, b) => (sort === "name" ? a.name.localeCompare(b.name) : b.updatedAt - a.updatedAt));
   }, [myWorkspaces, query, sort]);
 
-  const sharedCount = myWorkspaces.filter((w) => w.sharedStatus === "shared").length;
+  const sharedCount = myWorkspaces.filter(isShared).length;
 
   // The account type names what a brand is here ("client brands" for a
   // studio, "your brand" for a company) and how many this account may own.

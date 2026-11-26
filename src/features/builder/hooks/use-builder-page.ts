@@ -1,6 +1,6 @@
 "use client";
 
-import { canGoLive } from "@/lib/data/publication";
+import { canGoLive, isLive } from "@/lib/data/publication";
 import { reviewSite, type SiteFinding } from "../utils/site-review";
 import { plural } from "@/lib/i18n/plural";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -9,7 +9,8 @@ import { brandSetup } from "@/lib/data/brandSetup";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { useColorNameTranslations } from "@/features/visual-identity";
-import { useUpgrade } from "@/features/billing";
+import { billingCopy, useFreeSite, useUpgrade } from "@/features/billing";
+import type { FreeSite } from "@/features/billing";
 import { useDialog, useToast } from "@/components/ui";
 import { scopeForView } from "@/lib/doc/core/rules";
 import type { Breakpoint, ViewContext } from "@/lib/doc/core/types";
@@ -58,6 +59,9 @@ export function useBuilderPage(slug: string) {
   });
   const page = useBrandPage(slug);
   const ws = page?.workspace;
+  // The first guideline site is free (25 Nov 2026): the server's word on this
+  // unpaid brand, for its owner. Null otherwise, and the plan rule stands.
+  const freeSite = useFreeSite(ws);
   // The English and Arabic previews both show colour names; fill in the
   // missing language while an editor is here.
   useColorNameTranslations(ws);
@@ -206,6 +210,9 @@ export function useBuilderPage(slug: string) {
 
   if (!page || !ws) return null;
   const { isAr } = page;
+  // May this brand go live: the server's `canGoLive`, or its word that this
+  // brand is (or may take) the account's free site. Display only.
+  const canPublish = canGoLive(ws) || freeSite?.kind === "this" || freeSite?.kind === "available";
   const sortedPages = [...ws.pages].sort((a, b) => a.order - b.order);
   const activePage = activePageId ? sortedPages.find((p) => p.id === activePageId) : undefined;
   /**
@@ -297,25 +304,38 @@ export function useBuilderPage(slug: string) {
     if (show && first) revealFinding(first);
   }
 
-  function askToUpgrade() {
-    upgrade.open({ ws: ws!, reason: "publish", onDone: () => publishLatest.current() });
+  /**
+   * The upgrade modal; publishing carries on once the server says the plan
+   * is active. When the free site is another brand's, the modal says which
+   * and offers to subscribe this one instead.
+   */
+  function askToUpgrade(taken?: Extract<FreeSite, { kind: "taken" }>) {
+    upgrade.open({
+      ws: ws!,
+      reason: taken ? "free_site" : "publish",
+      freeSite: taken?.brand?.name ?? null,
+      onDone: () => publishLatest.current(),
+    });
   }
 
   async function handlePublish() {
-    // A brand that can't go live (no paid plan) isn't asked to fix anything
-    // first: the upgrade modal opens, and publishing carries on once the
-    // server says the plan is active (billing epic 2.4/2.5).
-    if (!canGoLive(ws!)) {
-      askToUpgrade();
+    // A brand that can't go live isn't asked to fix anything first: the
+    // upgrade modal opens (billing epic 2.4/2.5). The free site counts as
+    // allowed only on the server's word; the server still decides.
+    if (!canPublish) {
+      askToUpgrade(freeSite?.kind === "taken" ? freeSite : undefined);
       return;
     }
     // Must fix stops here, and the server refuses the same list if this is skipped.
     if (review.errors > 0) return showWhatToFix();
     const incomplete = brandSetup(ws!).filter(step => step.key !== "publish" && !step.done);
-    if (review.warnings > 0 || incomplete.length > 0) {
+    // Taking the free slot is said once, before it happens.
+    const takesFreeSite = freeSite?.kind === "available" && !isLive(ws!);
+    if (review.warnings > 0 || incomplete.length > 0 || takesFreeSite) {
       const ok = await confirm({
         title: isAr ? "أتريد النشر الآن؟" : "Publish now?",
         body: [
+          takesFreeSite ? billingCopy(isAr).freeSite.note : "",
           review.warnings > 0
             ? isAr
               ? `${plural("ar", review.warnings, { one: "بند واحد", two: "بندان", few: "{n} بنود", many: "{n} بندًا", other: "{n} بند" })} في قائمة «يستحق المراجعة». يمكنك النشر الآن أو مراجعتها أولًا.`
@@ -329,6 +349,14 @@ export function useBuilderPage(slug: string) {
       if (!ok) return;
     }
     const result = await publishGuideline(ws!.id);
+    if (!result.ok && result.freeSiteInUse) {
+      askToUpgrade({ kind: "taken", brand: result.freeSiteBrand ?? (freeSite?.kind === "taken" ? freeSite.brand : null) });
+      return;
+    }
+    if (!result.ok && result.ownerOnly) {
+      showToast(billingCopy(isAr).freeSite.ownerOnly, "danger");
+      return;
+    }
     if (!result.ok && result.planRequired) {
       askToUpgrade();
       return;
@@ -359,7 +387,9 @@ export function useBuilderPage(slug: string) {
       showToast(isAr ? "تعذّر إيقاف الموقع. حاول مرة أخرى." : `Still online: ${result.message ?? "try again."}`, "danger");
       return;
     }
-    showToast(isAr ? "الموقع غير متاح الآن للعملاء." : "The site is offline. Clients can no longer open it.", "success");
+    const offline = isAr ? "الموقع غير متاح الآن للعملاء." : "The site is offline. Clients can no longer open it.";
+    // Unpublishing the free site frees the slot for another brand.
+    showToast(freeSite?.kind === "this" ? `${offline} ${billingCopy(isAr).freeSite.freed}` : offline, "success");
   }
 
   function handleAutoFill() {
@@ -495,6 +525,8 @@ export function useBuilderPage(slug: string) {
     autoFillCount,
     previewHref,
     hasUnpublished,
+    canPublish,
+    freeSite,
     undo,
     redo,
     canUndo,
