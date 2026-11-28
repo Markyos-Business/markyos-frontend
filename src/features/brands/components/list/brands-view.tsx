@@ -33,8 +33,11 @@ export function BrandsView({ title, description, sort, onSort, onNew, brands, at
         subtitle={description}
         secondaryActions={<SortControl label={lang === "ar" ? "ترتيب العلامات" : "Sort brands"} value={sort === "updated" ? "" : sort} defaultLabel={c.lastEdited}
               options={[{value:"name",label:c.nameAz}]} onChange={value => onSort(value === "name" ? "name" : "updated")} />}
-        primaryAction={reviewer ? undefined : <Button variant="primary" icon={atLimit ? undefined : <Icon name="plus" size={18} />} title={atLimit ? limitNote : undefined} onClick={onNew}>
-              {atLimit ? c.reviewPlans : c.newWorkspace}
+        // The page's main action is always making a brand. At the account's
+        // limit it still opens /brands/new, which says why; the plans link is
+        // the dashed tile in the grid, not the page's one primary button.
+        primaryAction={reviewer ? undefined : <Button variant="primary" icon={<Icon name="plus" size={18} />} onClick={onNew}>
+              {c.newWorkspace}
             </Button>}
       />
 
