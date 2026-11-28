@@ -76,6 +76,70 @@ export function reviewSite(ws: Workspace): SiteReport {
       findings.push({ ...f, id: `${page.id ?? "home"}:${f.id}`, pageId: page.id, pageName: page.name, arPageName: page.arName });
     }
   }
+  findings.push(...sectionTextGaps(ws));
   const errors = findings.filter((f) => f.severity === "error").length;
   return { findings, errors, warnings: findings.length - errors, checked, pages: pages.length };
+}
+
+/** The built-in sections' names, for findings about the studio's own text on them. */
+const SECTION_NAMES: Record<string, [string, string]> = {
+  overview: ["Overview", "نظرة عامة"],
+  "overview-eyebrow": ["Overview", "نظرة عامة"],
+  "overview-title": ["Overview", "نظرة عامة"],
+  statement: ["Statement", "العبارة"],
+  strategy: ["Strategy", "الاستراتيجية"],
+  logo: ["Logo", "الشعار"],
+  misuse: ["Misuse", "استخدامات خاطئة"],
+  "app-icon": ["App icon", "أيقونة التطبيق"],
+  color: ["Color", "الألوان"],
+  typography: ["Type", "الخطوط"],
+  mockups: ["In use", "التطبيقات"],
+  photography: ["Photo", "التصوير"],
+  patterns: ["Pattern", "النقوش"],
+  icons: ["Icons", "الأيقونات"],
+  personas: ["Personas", "الشخصيات"],
+  voice: ["Voice", "الصوت"],
+};
+
+/**
+ * The studio's own words on the built-in sections, checked for both languages.
+ *
+ * Authored sections are checked block by block in page-review. The built-in
+ * ones (Logo, Color…) carry only what a studio types onto them: a note under
+ * the heading and a renamed heading. Neither falls back like a block does — a
+ * note written in one language is simply absent from the other site, and a
+ * heading renamed in one language leaves the other on the template's wording —
+ * so both are warnings: nothing breaks, but the two sites now say different
+ * things.
+ */
+function sectionTextGaps(ws: Workspace): SiteFinding[] {
+  const has = (v: string | undefined) => !!v && v.replace(/<[^>]*>/g, "").trim().length > 0;
+  const out: SiteFinding[] = [];
+  const where = { pageId: null, pageName: "Home", arPageName: "الرئيسية" };
+  const name = (id: string) => SECTION_NAMES[id] ?? [id, id];
+  for (const [id, note] of Object.entries(ws.sectionNotes ?? {})) {
+    const [label, arLabel] = name(id);
+    if (has(note?.en) && !has(note?.ar)) {
+      out.push({ ...where, id: `home:${id}:note-ar-missing`, flowId: id, severity: "warning", label, arLabel,
+        message: "Note written in English only — the Arabic site leaves it out.",
+        arMessage: "الملاحظة مكتوبة بالإنجليزية فقط — لا تظهر في الموقع العربي." });
+    } else if (has(note?.ar) && !has(note?.en)) {
+      out.push({ ...where, id: `home:${id}:note-en-missing`, flowId: id, severity: "warning", label, arLabel,
+        message: "Note written in Arabic only — the English site leaves it out.",
+        arMessage: "الملاحظة مكتوبة بالعربية فقط — لا تظهر في الموقع الإنجليزي." });
+    }
+  }
+  for (const [id, title] of Object.entries(ws.sectionTitles ?? {})) {
+    const [label, arLabel] = name(id);
+    if (has(title?.en) && !has(title?.ar)) {
+      out.push({ ...where, id: `home:${id}:title-ar-missing`, flowId: id, severity: "warning", label, arLabel,
+        message: "Heading renamed in English only — the Arabic site keeps the template's heading.",
+        arMessage: "غُيّر العنوان بالإنجليزية فقط — يبقى عنوان القالب في الموقع العربي." });
+    } else if (has(title?.ar) && !has(title?.en)) {
+      out.push({ ...where, id: `home:${id}:title-en-missing`, flowId: id, severity: "warning", label, arLabel,
+        message: "Heading renamed in Arabic only — the English site keeps the template's heading.",
+        arMessage: "غُيّر العنوان بالعربية فقط — يبقى عنوان القالب في الموقع الإنجليزي." });
+    }
+  }
+  return out;
 }

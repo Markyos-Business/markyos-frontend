@@ -42,3 +42,27 @@ describe("reviewSite", () => {
     expect(report.errors).toBe(report.findings.filter((f) => f.severity === "error").length);
   });
 });
+
+describe("reviewSite: the studio's text on built-in sections", () => {
+  const ws = () => buildInitialWorkspaces()[0];
+
+  it("flags a note written in one language only, naming the side it is missing from", () => {
+    const findings = reviewSite({ ...ws(), sectionNotes: { logo: { en: "Keep clear space around it." }, color: { ar: "الأساسي أولًا." } } }).findings;
+    const logo = findings.find((f) => f.id === "home:logo:note-ar-missing");
+    const color = findings.find((f) => f.id === "home:color:note-en-missing");
+    expect(logo).toMatchObject({ severity: "warning", flowId: "logo", label: "Logo" });
+    expect(color).toMatchObject({ severity: "warning", flowId: "color", arLabel: "الألوان" });
+  });
+
+  it("flags a heading renamed in one language only, and nothing once both are written", () => {
+    const one = reviewSite({ ...ws(), sectionTitles: { typography: { en: "Type in use" } } }).findings;
+    expect(one.some((f) => f.id === "home:typography:title-ar-missing")).toBe(true);
+    const both = reviewSite({ ...ws(), sectionTitles: { typography: { en: "Type in use", ar: "الخطوط في الاستخدام" } }, sectionNotes: {} }).findings;
+    expect(both.some((f) => f.id.startsWith("home:typography:"))).toBe(false);
+  });
+
+  it("never blocks publishing", () => {
+    const report = reviewSite({ ...ws(), sectionNotes: { logo: { en: "Note" } }, sectionTitles: { color: { ar: "ألوان" } } });
+    expect(report.findings.filter((f) => /:(note|title)-(ar|en)-missing$/.test(f.id)).every((f) => f.severity === "warning")).toBe(true);
+  });
+});
