@@ -11,6 +11,9 @@ const en = {
     taglineAr: "Tagline (Arabic)",
     taglineHint: "A short line that sums up the brand",
     taglineArHint: "سطر قصير يلخّص العلامة",
+    /** Under an empty tagline whose other language is written (language parity, 28 Nov 2026). */
+    taglineMissingAr: "Not written in Arabic yet: the Arabic guideline shows the English tagline.",
+    taglineMissingEn: "Not written in English yet: the English guideline shows the Arabic tagline.",
     founded: "Founded",
     foundedHint: "e.g. 2019",
     saved: "Saved.",
@@ -30,6 +33,8 @@ const ar: SettingsCopy = {
     taglineAr: "الشعار الترويجي (بالعربية)",
     taglineHint: "A short line that sums up the brand",
     taglineArHint: "سطر قصير يلخّص العلامة",
+    taglineMissingAr: "لم يُكتب بالعربية بعد: يعرض الدليل العربي الشعار الإنجليزي.",
+    taglineMissingEn: "لم يُكتب بالإنجليزية بعد: يعرض الدليل الإنجليزي الشعار العربي.",
     founded: "سنة التأسيس",
     foundedHint: "مثل: 2019",
     saved: "تم الحفظ.",

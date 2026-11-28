@@ -21,8 +21,11 @@ export function BrandDetails({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
       <FormGrid>
         <DetailInput ws={ws} field="industry" label={c.industry} placeholder={c.industryHint} />
         <DetailInput ws={ws} field="foundedYear" label={c.founded} placeholder={c.foundedHint} dir="ltr" />
-        <DetailInput ws={ws} field="tagline" label={c.tagline} placeholder={c.taglineHint} dir="ltr" />
-        <DetailInput ws={ws} field="taglineAr" label={c.taglineAr} placeholder={c.taglineArHint} dir="rtl" />
+        {/* An empty tagline whose other language is written says what the guideline shows instead. */}
+        <DetailInput ws={ws} field="tagline" label={c.tagline} placeholder={c.taglineHint} dir="ltr"
+          hint={!ws.tagline?.trim() && ws.taglineAr?.trim() ? c.taglineMissingEn : undefined} />
+        <DetailInput ws={ws} field="taglineAr" label={c.taglineAr} placeholder={c.taglineArHint} dir="rtl"
+          hint={!ws.taglineAr?.trim() && ws.tagline?.trim() ? c.taglineMissingAr : undefined} />
       </FormGrid>
       <RichTextField
         label={c.overview}
@@ -36,7 +39,7 @@ export function BrandDetails({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   );
 }
 
-function DetailInput({ ws, field, label, placeholder, dir = "auto" }: { ws: Workspace; field: DetailKey; label: string; placeholder: string; dir?: "auto" | "ltr" | "rtl" }) {
+function DetailInput({ ws, field, label, placeholder, dir = "auto", hint }: { ws: Workspace; field: DetailKey; label: string; placeholder: string; dir?: "auto" | "ltr" | "rtl"; hint?: string }) {
   const { setBrandDetails } = useAppActions();
   const saved = ws[field] ?? "";
   const [draft, setDraft] = useState(saved);
@@ -46,6 +49,7 @@ function DetailInput({ ws, field, label, placeholder, dir = "auto" }: { ws: Work
       value={draft}
       dir={dir}
       placeholder={placeholder}
+      hint={hint}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={() => {
         const next = draft.trim();
