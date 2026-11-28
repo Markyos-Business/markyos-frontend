@@ -78,3 +78,20 @@ test("an empty tagline says the guideline shows the other one", async ({ page })
   await arabic.press("Enter");
   await expect(page.getByText(/Not written in Arabic yet/)).toHaveCount(0);
 });
+
+test("a note on a built-in section written in one language is flagged in the review", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+  djangoShell(
+    `from apps.brands.models import Workspace; w=Workspace.objects.get(pk=${JSON.stringify(brand.id)}); w.data["sectionNotes"]={"logo":{"en":"Keep clear space around the mark."}}; w.save()`,
+  );
+  await signIn(page, studio);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`/w/${brand.slug}/builder`);
+  await page.getByRole("button", { name: "Review before publishing" }).click();
+  const finding = page.getByRole("button", { name: /Note written in English only/ });
+  await expect(finding).toBeVisible();
+  // It opens the section it is about.
+  await finding.click();
+  await expect(page.locator('[data-flow-id="logo"][data-active]')).toBeVisible();
+});
