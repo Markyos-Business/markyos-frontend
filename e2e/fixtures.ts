@@ -106,6 +106,15 @@ export function payBrand(brandId: string) {
   );
 }
 
+/** A Rebrand form left as a draft (never sent). */
+export async function draftForm(studio: Studio, brand: Brand, name = "Wadi Rum Coffee kickoff", primaryLanguage: "ar" | "en" = "ar") {
+  return call("/discovery/forms/", {
+    method: "POST",
+    token: studio.token,
+    body: { brandId: brand.id, name, templateKey: "rebrand", languages: ["ar", "en"], primaryLanguage },
+  });
+}
+
 /** A Rebrand form, sent; only its first text question is required. */
 export async function sentForm(studio: Studio, brand: Brand, name = "Wadi Rum Coffee rebrand") {
   const form = await call("/discovery/forms/", {

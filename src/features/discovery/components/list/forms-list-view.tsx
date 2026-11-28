@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import {
+  ActionsDropdown,
   AlertBanner,
   Badge,
   Button,
@@ -19,7 +21,11 @@ import {
   useTabIds,
   cellClasses,
   rowClasses,
+  useDialog,
+  useToast,
 } from "@/components/ui";
+import { errorText } from "@/lib/api/errorText";
+import { deleteForm, duplicateForm } from "../../api/discovery.api";
 import { SearchField, SortControl } from "@/components/ui";
 import { STATUS_META, STATUS_ORDER } from "../../constants";
 import { useForms } from "../../hooks/use-forms";
@@ -56,6 +62,48 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
   const query: FormListQuery = { ...state, status: statusTab === "all" ? "" : statusTab };
   const { data, error, loading, reload } = useForms(query);
   const templates = useTemplates();
+  const router = useRouter();
+  const { confirm } = useDialog();
+  const { showToast } = useToast();
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const t = (en: string, ar: string) => (isAr ? ar : en);
+  const failed = (err: unknown) => showToast(errorText(err, isAr ? "ar" : "en", { en: "That didn't work. Try again.", ar: "لم ينجح ذلك. حاول مرة أخرى." }), "danger");
+
+  /** A new draft with the same questions, never the answers or the link; opened in the builder. */
+  async function duplicate(form: FormSummary) {
+    setBusyId(form.id);
+    try {
+      const copy = await duplicateForm(form.id);
+      showToast(t(`Duplicated as "${copy.name}".`, `نُسخ باسم «${copy.name}».`), "success");
+      router.push(`/w/${form.workspaceSlug}/forms/${copy.id}/edit`);
+    } catch (err) {
+      failed(err);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  /** Drafts only: a sent questionnaire keeps its answers (the server refuses too). */
+  async function remove(form: FormSummary) {
+    const ok = await confirm({
+      title: t("Delete this questionnaire?", "حذف هذا الاستبيان؟"),
+      body: t(`"${form.name}" and its questions are deleted. It was never sent, so no answers are lost.`, `سيُحذف «${form.name}» وأسئلته. لم يُرسل قط، فلن تضيع أي إجابات.`),
+      confirmLabel: t("Delete", "حذف"),
+      tone: "danger",
+      isAr,
+    });
+    if (!ok) return;
+    setBusyId(form.id);
+    try {
+      await deleteForm(form.id);
+      showToast(t(`"${form.name}" deleted.`, `حُذف «${form.name}».`), "success");
+      reload();
+    } catch (err) {
+      failed(err);
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   // Search waits for a pause in typing, and starts again from page one.
   useEffect(() => {
@@ -84,6 +132,8 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
     { key: "status", label: isAr ? "الحالة" : "Status" },
     { key: "answered", label: isAr ? "الإجابات" : "Answered", className: "hidden sm:table-cell" },
     { key: "activity", label: isAr ? "آخر نشاط" : "Last activity", className: "hidden md:table-cell" },
+    // The row's one ⋯ menu (MARKYOS_UI §6.15): at the row's end, named for the questionnaire.
+    { key: "actions", label: <span className="sr-only">{isAr ? "الإجراءات" : "Actions"}</span>, className: "w-12" },
   ];
 
   return (
@@ -211,6 +261,25 @@ export function FormsListView({ brandId, newFormHref, isAr }: FormsListViewProps
                   </td>
                   <td className={`${cellClasses} hidden text-caption font-medium text-text-muted md:table-cell`}>
                     {formatAgo(form.lastActivityAt, isAr)}
+                  </td>
+                  <td className={`${cellClasses} text-end`}>
+                    <ActionsDropdown
+                      iconOnly
+                      size="sm"
+                      align="end"
+                      label={t(`${form.name} actions`, `إجراءات ${form.name}`)}
+                      items={[
+                        { label: t("Duplicate", "إنشاء نسخة"), icon: "copy", onSelect: () => void duplicate(form), disabled: busyId === form.id },
+                        {
+                          label: t("Delete", "حذف"),
+                          icon: "trash",
+                          tone: "danger",
+                          onSelect: () => void remove(form),
+                          disabled: form.status !== "draft" || busyId === form.id,
+                          reason: form.status !== "draft" ? t("A sent questionnaire keeps its answers, so it can't be deleted.", "الاستبيان المُرسل يحتفظ بإجاباته، لذا لا يمكن حذفه.") : undefined,
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
               );
