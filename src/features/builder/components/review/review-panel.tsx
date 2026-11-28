@@ -21,12 +21,15 @@ import type { SiteFinding, SiteReport } from "../../utils/site-review";
 /** One row, or a counted row standing for a group of identical ones. */
 type Row =
   | { kind: "one"; finding: SiteFinding }
-  | { kind: "group"; count: number; first: SiteFinding };
+  | { kind: "group"; group: NonNullable<SiteFinding["group"]>; count: number; first: SiteFinding };
 
+/** One counted row per group: "no Arabic yet" (English-first) and "no English yet" (Arabic-first). */
 function rowsOf(findings: SiteFinding[]): Row[] {
-  const grouped = findings.filter((f) => f.group === "ar-missing");
   const rows: Row[] = findings.filter((f) => !f.group).map((finding) => ({ kind: "one", finding }));
-  if (grouped.length > 0) rows.push({ kind: "group", count: grouped.length, first: grouped[0] });
+  for (const group of ["ar-missing", "en-missing"] as const) {
+    const grouped = findings.filter((f) => f.group === group);
+    if (grouped.length > 0) rows.push({ kind: "group", group, count: grouped.length, first: grouped[0] });
+  }
   return rows;
 }
 
@@ -82,7 +85,7 @@ export function ReviewChip({
           const f = row.kind === "one" ? row.finding : row.first;
           return (
             <button /* button-audit-ignore: a two-line finding row in the review list (mk-nav-item) */
-              key={row.kind === "one" ? f.id : `group:ar-missing:${f.severity}`}
+              key={row.kind === "one" ? f.id : `group:${row.group}:${f.severity}`}
               type="button"
               data-review-row={f.severity}
               onClick={() => {
@@ -99,7 +102,9 @@ export function ReviewChip({
               <span className="min-w-0 flex-1">
                 <span className="block text-[11.5px] font-medium">
                   {row.kind === "group"
-                    ? count(isAr, row.count, { one: "{n} field with no Arabic yet", other: "{n} fields with no Arabic yet" }, { one: "حقل واحد بلا نص عربي", two: "حقلان بلا نص عربي", few: "{n} حقول بلا نص عربي", many: "{n} حقلًا بلا نص عربي", other: "{n} حقل بلا نص عربي" })
+                    ? row.group === "en-missing"
+                      ? count(isAr, row.count, { one: "{n} field with no English yet", other: "{n} fields with no English yet" }, { one: "حقل واحد بلا نص إنجليزي", two: "حقلان بلا نص إنجليزي", few: "{n} حقول بلا نص إنجليزي", many: "{n} حقلًا بلا نص إنجليزي", other: "{n} حقل بلا نص إنجليزي" })
+                      : count(isAr, row.count, { one: "{n} field with no Arabic yet", other: "{n} fields with no Arabic yet" }, { one: "حقل واحد بلا نص عربي", two: "حقلان بلا نص عربي", few: "{n} حقول بلا نص عربي", many: "{n} حقلًا بلا نص عربي", other: "{n} حقل بلا نص عربي" })
                     : isAr ? f.arLabel : f.label}
                   {showPage && row.kind === "one" && (
                     <span className="font-normal" style={{ color: "var(--text-faint)" }}> · <bdi>{isAr ? f.arPageName : f.pageName}</bdi></span>
@@ -107,7 +112,9 @@ export function ReviewChip({
                 </span>
                 <span className="block text-[11px] mt-0.5" style={{ color: "var(--text-faint)" }}>
                   {row.kind === "group"
-                    ? isAr ? "سيظهر النص الإنجليزي في الموقع العربي." : "The Arabic site will show the English text."
+                    ? row.group === "en-missing"
+                      ? isAr ? "لن يظهر شيء مكانها في الموقع الإنجليزي." : "The English site shows nothing in their place."
+                      : isAr ? "سيظهر النص الإنجليزي في الموقع العربي." : "The Arabic site will show the English text."
                     : isAr ? f.arMessage : f.message}
                 </span>
               </span>

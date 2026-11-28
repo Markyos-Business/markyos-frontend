@@ -216,3 +216,19 @@ describe("what blocks publishing", () => {
     expect(report.errors).toBe(0);
   });
 });
+
+describe("reviewPage: Arabic-only text and the brand's language", () => {
+  const block = { id: "b1", order: 0, kind: "text", arTitle: "قصتنا", arText: "نحمّص القهوة." } as PageBlock;
+
+  it("blocks an English-first brand, whose English site would show a gap", () => {
+    const findings = reviewPage({ blocks: [block] }).findings.filter((f) => f.id.includes("en-missing"));
+    expect(findings.length).toBe(2);
+    expect(findings.every((f) => f.severity === "error" && !f.group)).toBe(true);
+  });
+
+  it("only flags it, counted as one group, for an Arabic-first brand", () => {
+    const findings = reviewPage({ blocks: [block], arabicFirst: true }).findings.filter((f) => f.id.includes("en-missing"));
+    expect(findings.length).toBe(2);
+    expect(findings.every((f) => f.severity === "warning" && f.group === "en-missing")).toBe(true);
+  });
+});

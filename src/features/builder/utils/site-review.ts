@@ -70,7 +70,7 @@ export function reviewSite(ws: Workspace): SiteReport {
   const findings: SiteFinding[] = [...setup];
   let checked = 0;
   for (const page of pages) {
-    const report = reviewPage({ blocks: page.blocks, traits: ws.strategy.voiceTraits, brand });
+    const report = reviewPage({ blocks: page.blocks, traits: ws.strategy.voiceTraits, brand, arabicFirst: ws.primaryLocale === "ar" });
     checked += report.checked;
     for (const f of report.findings) {
       findings.push({ ...f, id: `${page.id ?? "home"}:${f.id}`, pageId: page.id, pageName: page.name, arPageName: page.arName });

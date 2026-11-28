@@ -49,7 +49,7 @@ export interface ReviewFinding {
    * Everything else stays one row per problem, because everything else is local
    * to the block it is about.
    */
-  group?: "ar-missing";
+  group?: "ar-missing" | "en-missing";
 }
 
 export interface ReviewReport {
@@ -106,8 +106,10 @@ export function reviewPage(input: {
   /** Voice traits, for the copy rules. Empty is fine — the rest still run. */
   traits?: VoiceTrait[];
   brand?: BrandDataPresence;
+  /** The brand writes Arabic first: Arabic-only text is a gap to check, not a blocker. */
+  arabicFirst?: boolean;
 }): ReviewReport {
-  const { blocks, traits = [], brand = EMPTY_PRESENCE } = input;
+  const { blocks, traits = [], brand = EMPTY_PRESENCE, arabicFirst = false } = input;
   const findings: ReviewFinding[] = [];
 
   /** Children keyed by the container they sit in, for the columns rule. */
@@ -130,7 +132,7 @@ export function reviewPage(input: {
     };
 
     emptiness(block, add, brand, childCount);
-    translation(block, add);
+    translation(block, add, arabicFirst);
     links(block, add);
     copy(block, add, traits);
   }
@@ -243,7 +245,7 @@ function emptiness(block: PageBlock, add: Add, brand: BrandDataPresence, childCo
  * Getting this the wrong way round would flag the normal state of a page being
  * written as broken, and the actually-broken one as a nicety.
  */
-function translation(block: PageBlock, add: Add) {
+function translation(block: PageBlock, add: Add, arabicFirst: boolean) {
   const pairs: [string, string, string | undefined, string | undefined][] = [
     ["title", "heading", block.title, block.arTitle],
     ["text", "text", block.text, block.arText],
@@ -256,6 +258,17 @@ function translation(block: PageBlock, add: Add) {
         `No Arabic ${what} — the Arabic site will show the English one.`,
         `لا يوجد ${what === "heading" ? "عنوان" : "نص"} عربي — سيظهر النص الإنجليزي في الموقع العربي.`,
         "ar-missing"
+      );
+    } else if (has(ar) && !has(en) && arabicFirst) {
+      // An Arabic-first brand may publish in Arabic alone (28 Nov 2026), so
+      // this is the mirror of "ar-missing": worth checking, counted as one.
+      // The server agrees (`publish_check.py`, arabic_first).
+      add(
+        `en-missing-${key}`,
+        "warning",
+        `No English ${what} — the English site shows nothing here.`,
+        `لا يوجد ${what === "heading" ? "عنوان" : "نص"} إنجليزي — لن يظهر شيء هنا في الموقع الإنجليزي.`,
+        "en-missing"
       );
     } else if (has(ar) && !has(en)) {
       add(

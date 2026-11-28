@@ -1,4 +1,4 @@
-import { call, djangoShell, expect, newBrand, newStudio, signIn, test } from "./fixtures";
+import { API, call, djangoShell, expect, newBrand, newStudio, signIn, test } from "./fixtures";
 
 /**
  * Language parity (UX audit, 28 Nov 2026): a strategy written in one language
@@ -94,4 +94,29 @@ test("a note on a built-in section written in one language is flagged in the rev
   // It opens the section it is about.
   await finding.click();
   await expect(page.locator('[data-flow-id="logo"][data-active]')).toBeVisible();
+});
+
+test("an Arabic-first brand may publish a section written only in Arabic", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+  djangoShell(
+    `from apps.brands.models import Workspace; w=Workspace.objects.get(pk=${JSON.stringify(brand.id)}); w.data["primaryLocale"]="ar"; w.primary_locale="ar"; w.data["customBlocks"]=[{"id":"s1","kind":"text","order":0,"arTitle":"قصتنا","arText":"نحمّص القهوة في وادي رم."}]; w.save()`,
+  );
+  await signIn(page, studio);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`/w/${brand.slug}/builder`);
+  // Worth checking, counted once — not Must fix.
+  const review = page.getByRole("button", { name: "Review before publishing" });
+  await expect(review).toContainText(/to review/);
+  await review.click();
+  await expect(page.getByText(/fields? with no English yet/)).toBeVisible();
+
+  // And the server lets it through (the free first site).
+  const stored = await call(`/brands/${brand.id}/`, { token: studio.token });
+  const published = await fetch(`${API}/brands/${brand.id}/publish/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${studio.token}` },
+    body: JSON.stringify({ version: stored.version }),
+  });
+  expect(published.status).toBe(200);
 });
