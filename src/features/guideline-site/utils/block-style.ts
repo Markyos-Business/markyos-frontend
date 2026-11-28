@@ -54,15 +54,6 @@ export function isEmptyStyle(style: BlockStyle | undefined): boolean {
   );
 }
 
-/** The keys a narrower width or the other direction is allowed to change. */
-export const RESPONSIVE_KEYS: Array<keyof ResponsiveStyle> = [
-  "align",
-  "scale",
-  "padding",
-  "width",
-  "hidden",
-];
-
 /**
  * The style that actually applies in a given view.
  *

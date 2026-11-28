@@ -31,7 +31,6 @@ import {
   DepartmentViewItem,
   DeptInstructionSection,
   Draft,
-  DomainStatus,
   GuidelineTemplate,
   GuidePage,
   Lang,
@@ -312,8 +311,6 @@ interface AppContextValue {
   setHandoff: (workspaceId: string, by: string) => void;
   toggleClientPassword: (workspaceId: string, enabled: boolean) => void;
   setClientPassword: (workspaceId: string, password: string) => void;
-  setCustomDomain: (workspaceId: string, domain: string) => void;
-  setDomainStatus: (workspaceId: string, status: DomainStatus) => void;
   /** Claims a subdomain. Returns an error message, or null when it was taken. */
   setSubdomain: (workspaceId: string, subdomain: string) => string | null;
   /** Applies billing the server verified (PayPal confirm or cancel), keeping unsaved brand edits. */
@@ -1799,26 +1796,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [mutateWorkspace, touchWorkspace]
   );
 
-  const setCustomDomain = useCallback(
-    (workspaceId: string, domain: string) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, {
-          clientAccess: { ...ws.clientAccess, customDomain: domain, domainStatus: domain ? "pending" : "none" },
-        })
-      );
-    },
-    [mutateWorkspace, touchWorkspace]
-  );
-
-  const setDomainStatus = useCallback(
-    (workspaceId: string, status: DomainStatus) => {
-      mutateWorkspace(workspaceId, (ws) =>
-        touchWorkspace(ws, { clientAccess: { ...ws.clientAccess, domainStatus: status } })
-      );
-      if (status === "verified") logAudit("Verified custom domain", workspaceId);
-    },
-    [mutateWorkspace, touchWorkspace, logAudit]
-  );
 
   const applyServerBilling = useCallback((workspaceId: string, billing: Billing) => {
     setState((prev) => withServerBilling(prev, workspaceId, billing));
@@ -3809,8 +3786,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLogoColorIds,
       toggleClientPassword,
       setClientPassword,
-      setCustomDomain,
-      setDomainStatus,
       setSubdomain,
       applyServerBilling,
       setApiKey,
@@ -3964,8 +3939,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLogoColorIds,
       toggleClientPassword,
       setClientPassword,
-      setCustomDomain,
-      setDomainStatus,
       setSubdomain,
       applyServerBilling,
       setApiKey,

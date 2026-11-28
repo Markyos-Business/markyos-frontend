@@ -79,8 +79,6 @@ export type Op =
   | { kind: "clearOverride"; id: string; scope: OverrideScope; key: string }
   | { kind: "setContent"; id: string; field: string; locale: Locale; value: string };
 
-export type OpKind = Op["kind"];
-
 /**
  * Which view an edit is being made from.
  *
@@ -127,5 +125,3 @@ export const VIEWPORT_WIDTH: Record<Breakpoint, number> = {
   tablet: 810,
   phone: 390,
 };
-
-export const BREAKPOINTS: Breakpoint[] = ["desktop", "tablet", "phone"];

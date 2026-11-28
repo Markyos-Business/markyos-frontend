@@ -73,8 +73,6 @@ export const OPERATORS_FOR: Record<QuestionType, ConditionOperator[]> = {
   link: [],
 };
 
-export const LANGUAGE_LABELS = { en: { en: "English", ar: "الإنجليزية" }, ar: { en: "Arabic", ar: "العربية" } } as const;
-
 /** The top bar's name for each discovery page. */
 export const PAGE_SECTIONS = {
   forms: { en: "Discovery questionnaires", ar: "استبيانات الاستكشاف" },

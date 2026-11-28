@@ -231,14 +231,3 @@ export function designSystemFor(
 export function designSystemOf(ws: Workspace): DesignSystem {
   return designSystemFor(ws.guidelineTemplate, ws.studioStyle);
 }
-
-export const DESIGN_SYSTEM_ORDER: DesignSystemId[] = [
-  "vault",
-  "docs",
-  "prism",
-  "atlas",
-  "signal",
-  "manual",
-  "mosaic",
-  "deck",
-];
