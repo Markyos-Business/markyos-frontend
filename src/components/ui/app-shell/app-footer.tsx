@@ -30,10 +30,11 @@ export function AppFooter({ lang, className = "" }: { lang: "en" | "ar"; classNa
           © {new Date().getFullYear()} {c.label}
         </span>
         <nav aria-label={c.label}>
-          <ul className="flex flex-wrap gap-x-space-6 gap-y-space-3">
+          <ul className="flex flex-wrap gap-x-space-6 gap-y-space-3 [@media(pointer:coarse)]:gap-y-0">
             {LINKS.map(([key, path]) => (
               <li key={key}>
-                <a href={marketingHref(path, lang)} target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-text">
+                {/* About 44px tall on touch screens (WCAG 2.5.8 asks 24); unchanged under a mouse. */}
+                <a href={marketingHref(path, lang)} target="_blank" rel="noopener noreferrer" className="inline-block text-text-muted hover:text-text [@media(pointer:coarse)]:py-space-5">
                   {c[key]}
                 </a>
               </li>
