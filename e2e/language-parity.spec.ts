@@ -42,3 +42,39 @@ test("a strategy written in English says what is still to write in Arabic", asyn
   await page.getByRole("radio", { name: /قراءة/ }).click();
   await expect(page.getByText("بعض هذه الاستراتيجية لم يُكتب بالعربية بعد، فيظهر بالإنجليزية.")).toBeVisible();
 });
+
+test("a colour name says whether it has a name in the other language", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio, "Wadi Rum Coffee", { publishable: true });
+  // The free translator, answered here: nothing at first, then a name.
+  let answer = "";
+  await page.route("**/api.mymemory.translated.net/**", (route) =>
+    route.fulfill({ status: 200, json: { responseStatus: 200, responseData: { translatedText: answer } } }),
+  );
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/visual-identity?tab=color`);
+  await expect(page.getByText("Sand", { exact: true })).toBeVisible();
+  await expect(page.getByText("No Arabic name yet")).toBeVisible();
+  // Bilingual labels on the card's edit button.
+  await expect(page.getByRole("button", { name: "Edit Sand" })).toBeVisible();
+
+  answer = "رملي";
+  await page.reload();
+  await expect(page.getByText("رملي")).toBeVisible();
+  await expect(page.getByText("No Arabic name yet")).toHaveCount(0);
+});
+
+test("an empty tagline says the guideline shows the other one", async ({ page }) => {
+  const studio = await newStudio();
+  const brand = await newBrand(studio);
+  await signIn(page, studio);
+  await page.goto(`/w/${brand.slug}/settings`);
+  const english = page.getByRole("textbox", { name: "Tagline (English)" });
+  await english.fill("Coffee from the desert");
+  await english.press("Enter");
+  await expect(page.getByText("Not written in Arabic yet: the Arabic guideline shows the English tagline.")).toBeVisible();
+  const arabic = page.getByRole("textbox", { name: "Tagline (Arabic)" });
+  await arabic.fill("قهوة من الصحراء");
+  await arabic.press("Enter");
+  await expect(page.getByText(/Not written in Arabic yet/)).toHaveCount(0);
+});
