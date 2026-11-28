@@ -27,4 +27,5 @@ export { DESIGN_SYSTEMS } from "./utils/design-system";
 export { COLOR_FORMATS, COLUMN_CHOICES, SECTION_OPTIONS, hasOptions, resolveOptions } from "./utils/section-options";
 export type { OptionKey, SectionOptions } from "./utils/section-options";
 export { resolveVariantKey, variantsFor } from "./utils/section-variants";
-export { personaIn, strategyText, textKey, traitIn, valueIn } from "./utils/strategy-lang";
+export { missingIn, personaIn, strategyParity, strategyText, textKey, traitIn, valueIn } from "./utils/strategy-lang";
+export type { StrategyParity, StrategySectionKey } from "./utils/strategy-lang";
