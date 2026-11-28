@@ -58,7 +58,7 @@ export function defaultDeveloper(): DeveloperSettings {
 
 /** Every competitive analysis starts with one column; the studio adds its own. */
 export function defaultCompetitorColumns(): CompetitorColumn[] {
-  return [{ id: "notes", label: "Notes" }];
+  return [{ id: "notes", label: "Notes", labelAr: "ملاحظات" }];
 }
 
 export function defaultVoiceTrait(trait: string, doExample: string, dontExample: string): VoiceTrait {

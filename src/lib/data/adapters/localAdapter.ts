@@ -4,6 +4,7 @@ import {
   AppState,
   Asset,
   Competitor,
+  CompetitorColumn,
   PositioningOption,
   Moodboard,
   PublishedSnapshot,
@@ -343,7 +344,11 @@ function migrate(parsed: AppState): AppState {
         (c: Competitor) => ({ ...c, cells: c.cells ?? {} })
       ),
       competitorColumns: Array.isArray(ws.strategy?.competitorColumns)
-        ? ws.strategy.competitorColumns
+        ? // The default "Notes" column shipped without its Arabic label, so
+          // every Arabic brand showed an English column head; give it back.
+          ws.strategy.competitorColumns.map((c: CompetitorColumn) =>
+            c.id === "notes" && c.label === "Notes" && !c.labelAr ? { ...c, labelAr: "ملاحظات" } : c
+          )
         : defaultCompetitorColumns(),
       positioningStatement: typeof ws.strategy?.positioningStatement === "string" ? ws.strategy.positioningStatement : "",
       uvp: typeof ws.strategy?.uvp === "string" ? ws.strategy.uvp : "",

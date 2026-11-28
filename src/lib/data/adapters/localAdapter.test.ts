@@ -33,3 +33,18 @@ describe("repairWorkspaces", () => {
     expect(typeof repaired.logo.symbol.clearspaceMultiplier).toBe("number");
   });
 });
+
+describe("repairWorkspaces: the default competitor column", () => {
+  it("gives the default Notes column its Arabic label, leaving renamed columns alone", () => {
+    const base = buildInitialWorkspaces()[0];
+    const ws = {
+      ...base,
+      strategy: { ...base.strategy, competitorColumns: [{ id: "notes", label: "Notes" }, { id: "price", label: "Price" }] },
+    } as Workspace;
+    const [repaired] = createLocalAdapter().repairWorkspaces([ws], state([ws]));
+    expect(repaired.strategy.competitorColumns).toEqual([
+      { id: "notes", label: "Notes", labelAr: "ملاحظات" },
+      { id: "price", label: "Price" },
+    ]);
+  });
+});
