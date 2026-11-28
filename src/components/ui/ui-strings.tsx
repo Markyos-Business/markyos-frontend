@@ -11,6 +11,10 @@ import { createContext, useContext, type ReactNode } from "react";
 const en = {
   errorTitle: "Something went wrong",
   errorBody: "This couldn't load. Try again.",
+  /** A page that crashed (src/app/error.tsx). */
+  pageErrorTitle: "This page couldn't load",
+  pageErrorBody: "Try again. If it keeps happening, go back to your brands; nothing you saved is lost.",
+  backToBrands: "Back to brands",
   retry: "Retry",
   search: "Search",
   clearFilters: "Clear filters",
@@ -295,6 +299,9 @@ type UiStrings = typeof en;
 const ar: UiStrings = {
   errorTitle: "حدث خطأ ما",
   errorBody: "تعذّر التحميل. حاول مرة أخرى.",
+  pageErrorTitle: "تعذّر تحميل هذه الصفحة",
+  pageErrorBody: "حاول مرة أخرى. وإن تكرر ذلك، فعُد إلى علاماتك؛ فلن يضيع شيء مما حفظته.",
+  backToBrands: "العودة إلى العلامات",
   retry: "إعادة المحاولة",
   search: "بحث",
   clearFilters: "مسح عوامل التصفية",
