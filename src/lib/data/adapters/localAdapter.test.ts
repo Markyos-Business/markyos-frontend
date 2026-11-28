@@ -23,4 +23,13 @@ describe("repairWorkspaces", () => {
     expect(repaired.logo.latin.phase).toBeDefined();
     expect(repaired.logo.arabic.phase).toBeDefined();
   });
+
+  it("fills in the fields a slot is missing, keeping the ones it has", () => {
+    const base = buildInitialWorkspaces()[0];
+    const slot = { phase: "attached", url: "/media/mark.svg" };
+    const partial = { ...base, logo: { ...base.logo, symbol: slot } } as unknown as Workspace;
+    const [repaired] = createLocalAdapter().repairWorkspaces([partial], state([partial]));
+    expect(repaired.logo.symbol).toMatchObject(slot);
+    expect(typeof repaired.logo.symbol.clearspaceMultiplier).toBe("number");
+  });
 });

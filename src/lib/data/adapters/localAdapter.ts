@@ -305,12 +305,13 @@ function migrate(parsed: AppState): AppState {
     tagline: typeof ws.tagline === "string" ? ws.tagline : "",
     foundedYear: typeof ws.foundedYear === "string" ? ws.foundedYear : "",
     colors: Array.isArray(ws.colors) ? ws.colors : [],
-    // Slot by slot: a brand made through the API or an import can carry only
-    // some slots, and one missing slot took the whole Visual identity page down.
+    // Slot by slot and field by field: a brand made through the API or an
+    // import can carry only some slots, or a slot with only some fields, and a
+    // missing slot (or its clearspace) took the whole Visual identity page down.
     logo: {
-      arabic: ws.logo?.arabic ?? emptySlot("arabic"),
-      latin: ws.logo?.latin ?? emptySlot("latin"),
-      symbol: ws.logo?.symbol ?? emptySlot("symbol"),
+      arabic: { ...emptySlot("arabic"), ...ws.logo?.arabic },
+      latin: { ...emptySlot("latin"), ...ws.logo?.latin },
+      symbol: { ...emptySlot("symbol"), ...ws.logo?.symbol },
     },
     logoUsageNotes: typeof ws.logoUsageNotes === "string" ? ws.logoUsageNotes : "",
     logoColorIds: Array.isArray(ws.logoColorIds) ? ws.logoColorIds : [],
