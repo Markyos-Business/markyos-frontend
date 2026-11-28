@@ -45,20 +45,27 @@ test("publish → open the public link → the site renders", async ({ page, bro
   await expect(page.getByText("Not available yet")).toHaveCount(0);
 });
 
-test("a free brand is offered an upgrade, and the server refuses to publish it", async ({ page }) => {
+test("with the free site taken, a free brand is offered an upgrade, and the server refuses to publish it", async ({ page }) => {
   const studio = await newStudio();
   const brand = await newBrand(studio, "Sahara Tea", { publishable: true });
+  // The account's one free site is already another brand's (25 Nov 2026: the
+  // first guideline site is free), written straight to the database because a
+  // second unpaid brand can't be created through the API.
+  const holder = `b-holder-${Date.now().toString(36)}`;
+  djangoShell(
+    `from apps.accounts.models import User; from apps.brands.models import Workspace; u=User.objects.get(email=${JSON.stringify(studio.email)}); Workspace.objects.create(id=${JSON.stringify(holder)}, owner=u, slug=${JSON.stringify(holder)}, name="Nile Bakery", data={"id": ${JSON.stringify(holder)}, "name": "Nile Bakery", "published": {"name": "Nile Bakery"}}, free_site=True)`,
+  );
 
   await signIn(page, studio);
   await page.goto(`/w/${brand.slug}/builder`);
   const upgrade = page.getByRole("button", { name: "Upgrade to publish" });
   await expect(upgrade).toBeVisible();
   await expect(page.getByRole("button", { name: "Publish", exact: true })).toHaveCount(0);
-  // The one upgrade modal, with the server's price for a studio brand.
+  // The one upgrade modal, naming the brand that holds the free site.
   await upgrade.click();
-  const modal = page.getByRole("dialog", { name: "Publishing needs a plan" });
+  const modal = page.getByRole("dialog", { name: "Your free site is in use" });
   await expect(modal).toBeVisible();
-  await expect(modal.getByText(/USD\s*29 a month, for this brand/)).toBeVisible();
+  await expect(modal.getByText(/Nile Bakery/)).toBeVisible();
   await modal.getByRole("button", { name: "Close", exact: true }).first().click();
   await expect(modal).toHaveCount(0);
 
@@ -69,7 +76,7 @@ test("a free brand is offered an upgrade, and the server refuses to publish it",
     body: JSON.stringify({ version: stored.version }),
   });
   expect(refused.status).toBe(402);
-  expect((await refused.json()).code).toBe("plan_required");
+  expect((await refused.json()).code).toBe("free_site_in_use");
 });
 
 test("a brand published while free shows Not live, and its link agrees", async ({ page }) => {
