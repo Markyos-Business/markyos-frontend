@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { Badge } from "@/components/ui";
 import { revealInScroller } from "@/lib/scroll";
+import type { Lang } from "@/types";
 import { STRATEGY_TABS, strategySectionHref, type StrategyTab } from "../../constants";
 import { strategyCopy } from "../../copy";
 
@@ -21,11 +23,17 @@ export function StrategySectionNav({
   slug,
   current,
   empty,
+  toWrite,
+  lang,
   isAr,
 }: {
   slug: string;
   current: StrategyTab;
   empty: Record<StrategyTab, boolean>;
+  /** Fields written only in the other language, per section, in the language being edited. */
+  toWrite: Record<StrategyTab, number>;
+  /** The language being edited. */
+  lang: Lang;
   isAr: boolean;
 }) {
   const c = strategyCopy(isAr).sections;
@@ -76,7 +84,15 @@ export function StrategySectionNav({
                 <span aria-hidden className="w-5 shrink-0 text-caption tabular-nums text-text-faint">{i + 1}</span>
                 {/* One line in the phone's sideways strip; wrapped, never cut, in the desktop list ("Target audience & perso…"). */}
                 <span dir="auto" className="bidi-auto min-w-0 flex-1 truncate lg:overflow-visible lg:whitespace-normal">{isAr ? t.arLabel : t.label}</span>
-                {empty[t.key] && (
+                {toWrite[t.key] > 0 && (
+                  // A count, not a dot: the dot says "nothing here", this says
+                  // "written in the other language, not yet in this one" — so
+                  // it wins over the dot, which would call that section empty.
+                  <span role="img" aria-label={c.toWrite(toWrite[t.key], c.language[lang])} title={c.toWrite(toWrite[t.key], c.language[lang])}>
+                    <Badge tone="warning" size="sm">{toWrite[t.key]}</Badge>
+                  </span>
+                )}
+                {empty[t.key] && toWrite[t.key] === 0 && (
                   <span
                     role="img"
                     aria-label={c.empty}

@@ -8,6 +8,13 @@ const en = {
     nav: "Strategy sections",
     sequence: "Previous and next section",
     empty: "Nothing here yet",
+    /** A section written in one language with fields still missing in the one being edited. */
+    toWrite: (n: number, language: string) => `${n} ${n === 1 ? "field" : "fields"} still to write in ${language}`,
+    /** The editor's summary line, over every section. */
+    toWriteTotal: (n: number, sections: number, language: string) =>
+      `${n} ${n === 1 ? "field" : "fields"} in ${sections} ${sections === 1 ? "section" : "sections"} ${n === 1 ? "is" : "are"} written in the other language only. Until you write them in ${language}, readers of the ${language} guideline see them in the other language.`,
+    language: { en: "English", ar: "Arabic" },
+    firstToWrite: "Go to the first",
     description: "The layer above the files: why this brand exists, who it is for, and how it sounds. Pick a section from the list.",
   },
   keyTerms: {
@@ -36,6 +43,11 @@ const ar: StrategyCopy = {
     nav: "أقسام الاستراتيجية",
     sequence: "القسم السابق والتالي",
     empty: "لا يوجد محتوى بعد",
+    toWrite: (n: number, language: string) => (n === 1 ? `حقل واحد بقي لكتابته ب${language}` : n === 2 ? `حقلان بقيا لكتابتهما ب${language}` : `${n} حقول بقيت لكتابتها ب${language}`),
+    toWriteTotal: (n: number, sections: number, language: string) =>
+      `${n === 1 ? "حقل واحد" : n === 2 ? "حقلان" : `${n} حقول`} في ${sections === 1 ? "قسم واحد" : sections === 2 ? "قسمين" : `${sections} أقسام`} مكتوبة باللغة الأخرى فقط. وإلى أن تكتبها ب${language}، يراها قرّاء الدليل ب${language} باللغة الأخرى.`,
+    language: { en: "الإنجليزية", ar: "العربية" },
+    firstToWrite: "انتقل إلى أولها",
     description: "الطبقة التي تعلو الملفات: لماذا توجد العلامة، ولمن، وبأي صوت. اختر قسمًا من القائمة.",
   },
   keyTerms: {

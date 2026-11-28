@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/contexts/AppContext";
 import { useBrandPage } from "@/contexts/pageGuards";
 import { capabilitiesOn } from "@/lib/data/access";
+import { strategyParity } from "@/features/guideline-site";
 import { isStrategyTab, PAGE_SECTION, strategySectionHref, type StrategyMode, type StrategyTab } from "../constants";
 
 /**
@@ -58,6 +59,14 @@ export function useStrategyPage(slug: string, section: string) {
     tone: s.voiceTraits.length === 0,
   };
 
+  /**
+   * Fields written in the other language only, per section, in the language
+   * being written. "Not empty" was all a section could say before, so a
+   * strategy written in English read as finished while you edited the Arabic.
+   */
+  const parity = strategyParity(s);
+  const toWrite = Object.fromEntries(Object.entries(parity).map(([key, row]) => [key, row[lang]])) as Record<StrategyTab, number>;
+
   return {
     ws,
     isAr,
@@ -78,7 +87,7 @@ export function useStrategyPage(slug: string, section: string) {
     },
     importOpen: canEdit && importOpen,
     onCloseImport: () => setImportOpen(false),
-    edit: { ws, isAr, lang, tab, slug, emptyTabs },
+    edit: { ws, isAr, lang, tab, slug, emptyTabs, toWrite },
   };
 }
 
