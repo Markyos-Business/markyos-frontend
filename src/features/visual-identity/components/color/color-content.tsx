@@ -9,7 +9,7 @@ import { ContrastReport } from "@/features/guideline-site";
 import { ColorSwatch, SlotKind, Workspace } from "@/types";
 import { contrastRatio, hexToRgb, rgbToCmyk } from "@/lib/utils";
 import { useColorNameTranslations } from "../../hooks/use-color-name-translations";
-import { nameLang } from "@/lib/data/colorNames";
+import { nameLang, needsNameTranslation } from "@/lib/data/colorNames";
 import { plural } from "@/lib/i18n/plural";
 
 type EditorState = { mode: "add" } | { mode: "edit"; color: ColorSwatch };
@@ -87,7 +87,25 @@ export function ColorContent({ ws }: { ws: Workspace }) {
               />
               <div className="px-4 py-3.5 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-ctl-row">
-                  <span className="font-semibold text-[14px] truncate">{c.name}</span>
+                  <div className="flex min-w-0 flex-col">
+                    <span className="font-semibold text-[14px] truncate">{c.name}</span>
+                    {/* The name in the other language, or that there isn't one yet: the
+                        guide in that language otherwise shows this name unannounced. */}
+                    {c.name.trim() && (() => {
+                      const other = nameLang(c.name) === "ar" ? "en" : "ar";
+                      const missing = needsNameTranslation(c);
+                      const text = missing
+                        ? other === "ar"
+                          ? isAr ? "لا اسم عربي بعد" : "No Arabic name yet"
+                          : isAr ? "لا اسم إنجليزي بعد" : "No English name yet"
+                        : c.nameTranslation!.text;
+                      return (
+                        <span dir={missing ? undefined : other === "ar" ? "rtl" : "ltr"} className={`truncate text-caption ${missing ? "text-warning" : "text-text-muted"}`}>
+                          {text}
+                        </span>
+                      );
+                    })()}
+                  </div>
                   <div className="flex items-center gap-ctl-row shrink-0">
                     {c.isPrimary && (
                       <span
@@ -102,8 +120,8 @@ export function ColorContent({ ws }: { ws: Workspace }) {
                       iconSize={16}
                       size="xs"
                       onClick={() => setEditor({ mode: "edit", color: c })}
-                      label={`Edit ${c.name}`}
-                      title={`Edit, set primary, or delete ${c.name}`}
+                      label={isAr ? `تعديل ${c.name}` : `Edit ${c.name}`}
+                      title={isAr ? `تعديل ${c.name}، أو جعله أساسيًا، أو حذفه` : `Edit, set primary, or delete ${c.name}`}
                     />
                   </div>
                 </div>
