@@ -69,12 +69,13 @@ export function StrategySectionNav({
                 href={strategySectionHref(slug, t.key)}
                 aria-current={on ? "page" : undefined}
                 // button-audit-ignore: a link in the sections list, drawn as a nav item
-                className={`flex min-h-ctl-md items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body ${
+                className={`flex min-h-ctl-md items-center gap-space-3 whitespace-nowrap rounded-lg px-space-4 text-body lg:whitespace-normal lg:py-space-2 ${
                   on ? "bg-surface-2 font-medium text-text shadow-edge" : "text-text-muted"
                 }`}
               >
                 <span aria-hidden className="w-5 shrink-0 text-caption tabular-nums text-text-faint">{i + 1}</span>
-                <span dir="auto" className="bidi-auto min-w-0 flex-1 truncate">{isAr ? t.arLabel : t.label}</span>
+                {/* One line in the phone's sideways strip; wrapped, never cut, in the desktop list ("Target audience & perso…"). */}
+                <span dir="auto" className="bidi-auto min-w-0 flex-1 truncate lg:overflow-visible lg:whitespace-normal">{isAr ? t.arLabel : t.label}</span>
                 {empty[t.key] && (
                   <span
                     role="img"
