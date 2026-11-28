@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } fr
 import { AlertBanner } from "../alert-banner";
 import { Button } from "../button/button";
 import { Popup } from "../popup";
+import { showFirstError } from "../form/show-first-error";
 import { useUiStrings } from "../ui-strings";
 export type FormDialogProps = {
   open: boolean; title: string; description?: ReactNode; submitLabel: string; cancelLabel?: string;
@@ -24,16 +25,22 @@ export function FormDialog({ open, title, description, submitLabel, cancelLabel,
       setBusy(false);
     }
   }, [open]);
+  const formRef = useRef<HTMLFormElement>(null);
+  // A refused submit moves to what refused it (show-first-error.ts).
+  const showError = () => showFirstError(() => formRef.current);
   async function submit(event: FormEvent) {
     event.preventDefault(); if (pending.current) return;
     const current = session.current; pending.current = true; setBusy(true); setError(null);
-    try { const failed = await onSubmit(); if (!alive.current || current !== session.current) return; if (typeof failed === "string") setError(failed); else if (failed !== false) onClose(); }
-    catch { if (alive.current && current === session.current) setError(errorMessage ?? t.form.inlineFailed); }
+    try {
+      const failed = await onSubmit(); if (!alive.current || current !== session.current) return;
+      if (typeof failed === "string") { setError(failed); showError(); } else if (failed === false) showError(); else onClose();
+    }
+    catch { if (alive.current && current === session.current) { setError(errorMessage ?? t.form.inlineFailed); showError(); } }
     finally { if (current === session.current) { pending.current = false; if (alive.current) setBusy(false); } }
   }
   return <Popup open={open} onOpenChange={next => { if (!next) onClose(); }} title={title} description={description} size="sm" variant={variant === "sheet" ? "sheet" : "center"} dir={isAr ? "rtl" : "ltr"} busy={busy}
     footer={<><Button type="button" variant="secondary" onClick={onClose} disabled={busy}>{cancelLabel ?? t.cancel}</Button><Button type="submit" variant="primary" form={formId} disabled={busy}>{busy ? t.saving : submitLabel}</Button></>}>
-    <form id={formId} noValidate onSubmit={submit} className="flex min-w-0 flex-col gap-space-5"><AlertBanner message={error} />{children}</form>
+    <form ref={formRef} id={formId} noValidate onSubmit={submit} className="flex min-w-0 flex-col gap-space-5"><AlertBanner message={error} />{children}</form>
   </Popup>;
 }
 export const FormSheet = (props: Omit<FormDialogProps, "variant">) => <FormDialog {...props} variant="sheet" />;

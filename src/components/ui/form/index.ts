@@ -20,6 +20,7 @@ export * from "./form-section";
 export * from "./form-skeleton";
 export * from "./review-step";
 export * from "./settings-layout";
+export * from "./show-first-error";
 export * from "./sticky-save-bar";
 export * from "./use-conflict-check";
 export * from "./use-leave-guard";

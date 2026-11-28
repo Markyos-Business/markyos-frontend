@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { AlertBanner, Button, Icon, PageHeader, Skeleton } from "@/components/ui";
+import { useRef, useState } from "react";
+import { AlertBanner, Button, Icon, PageHeader, Skeleton, showFirstError } from "@/components/ui";
 import { InputField, RadioCardGroup, RadioField, SegmentedToggle, SelectField } from "@/components/ui";
 import type { Lang } from "@/types";
 import { useTemplates } from "../../hooks/use-templates";
@@ -36,6 +36,8 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
   const [errors, setErrors] = useState<{ name?: string; template?: string; form?: string }>({});
   const [busy, setBusy] = useState(false);
   const lang = isAr ? "ar" : "en";
+  // Create sits below the templates; a refused create brings its reason into view.
+  const root = useRef<HTMLDivElement>(null);
 
   const chosen = templates.data?.find((t) => t.key === template);
 
@@ -44,7 +46,7 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
     if (!name.trim()) field.name = isAr ? "سمِّ الاستبيان." : "Name the questionnaire.";
     if (!template) field.template = isAr ? "اختر قالبًا أو ابدأ من الصفر." : "Pick a template, or start blank.";
     setErrors(field);
-    if (Object.keys(field).length) return;
+    if (Object.keys(field).length) return showFirstError(() => root.current);
     setBusy(true);
     try {
       const picked: Lang[] = languages === "both" ? ["ar", "en"] : [languages];
@@ -59,11 +61,12 @@ export function NewFormView({ brands, defaultBrandId, isAr, onCreated, onCancel 
     } catch (err) {
       setErrors({ form: errorText(err, lang, { en: "That didn't save.", ar: "لم يُحفظ ذلك." }) });
       setBusy(false);
+      showFirstError(() => root.current);
     }
   }
 
   return (
-    <div className="flex flex-col gap-field-stack">
+    <div ref={root} className="flex flex-col gap-field-stack">
       <PageHeader
         title={isAr ? "استبيان جديد" : "New questionnaire"}
         description={isAr ? "اختر من أين تبدأ؛ يمكنك تعديل كل سؤال لاحقًا." : "Choose a starting point; every question can be edited after."}
