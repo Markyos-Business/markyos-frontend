@@ -1,6 +1,6 @@
 import { nBetween } from "@/lib/doc/core/order";
 import { uid } from "@/lib/utils";
-import { MOODBOARD_TEMPLATES, templateByKey } from "./templates";
+import { templateByKey } from "./templates";
 import type { MoodboardZone, ZoneKind } from "@/types";
 
 /**
@@ -30,21 +30,6 @@ export function zonesFromTemplate(templateKey: string | undefined): MoodboardZon
     order: keys[i],
     items: [],
   }));
-}
-
-/** The tray every board ends with. */
-export function unsortedZone(order: string): MoodboardZone {
-  const spec = MOODBOARD_TEMPLATES[0].zones.find((z) => z.kind === "unsorted");
-  return {
-    id: uid(),
-    kind: "unsorted",
-    title: spec?.title ?? "Unsorted",
-    arTitle: spec?.arTitle ?? "غير مصنّف",
-    instructions: spec?.instructions,
-    arInstructions: spec?.arInstructions,
-    order,
-    items: [],
-  };
 }
 
 /** Where a card of this kind naturally belongs, for "add a swatch" and friends. */

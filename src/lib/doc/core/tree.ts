@@ -1,5 +1,5 @@
 import { compareSiblings } from "./order";
-import type { BlockNode, DocState } from "./types";
+import type { BlockNode } from "./types";
 
 /**
  * Turning the flat node map back into a tree, and the safety checks that go
@@ -122,8 +122,4 @@ export function toTree(nodes: Record<string, BlockNode>): TreeNode[] {
     return { ...node, children };
   }
   return roots(nodes).map(build);
-}
-
-export function emptyDoc(pageId: string): DocState {
-  return { pageId, version: 0, nodes: {} };
 }

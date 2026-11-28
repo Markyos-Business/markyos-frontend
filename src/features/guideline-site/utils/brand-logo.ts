@@ -79,8 +79,3 @@ export function navLogo(ws: Workspace, isAr: boolean): NavLogo {
   }
   return { ...markSources(ws.logo.symbol), isLockup: false };
 }
-
-/** Whether this slot has a light version the studio uploaded itself. */
-export function hasLightVersion(slot: LogoSlot | undefined): boolean {
-  return !!slot?.lightUrl;
-}

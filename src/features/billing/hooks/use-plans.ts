@@ -35,9 +35,3 @@ function subscribe(fn: () => void) {
 export function usePlans(): Plans | null {
   return useSyncExternalStore(subscribe, () => plans, () => null);
 }
-
-/** For tests: forget what was loaded. */
-export function resetPlans() {
-  plans = null;
-  loading = null;
-}

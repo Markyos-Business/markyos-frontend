@@ -1,5 +1,4 @@
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
-export const ACCEPTED_EXTENSIONS = ["svg", "png"] as const;
 
 export function extensionOf(fileName: string): string {
   const parts = fileName.split(".");

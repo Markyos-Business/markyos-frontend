@@ -1,4 +1,4 @@
-import type { BlockNode, Breakpoint, Locale, Localized, ViewContext } from "./types";
+import type { BlockNode, Locale, Localized, ViewContext } from "./types";
 
 /**
  * What a node's properties actually are, in a given view.
@@ -114,10 +114,3 @@ export function isHidden(
   return resolveProps(node, ctx)["hidden"] === true;
 }
 
-/** Every breakpoint a node carries at least one override for. */
-export function overriddenBreakpoints(node: Pick<BlockNode, "overrides">): Breakpoint[] {
-  const out: Breakpoint[] = [];
-  if (Object.keys(node.overrides?.bp?.tablet ?? {}).length) out.push("tablet");
-  if (Object.keys(node.overrides?.bp?.phone ?? {}).length) out.push("phone");
-  return out;
-}

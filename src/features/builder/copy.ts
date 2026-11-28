@@ -47,5 +47,4 @@ const ar: BuilderCopy = {
   },
 };
 
-export const BUILDER_COPY = { en, ar };
 export const builderCopy = (isAr: boolean): BuilderCopy => (isAr ? ar : en);

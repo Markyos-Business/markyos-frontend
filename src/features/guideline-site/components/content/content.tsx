@@ -265,9 +265,9 @@ export function MisuseGrid({ slot, onDark, isAr }: { slot: LogoSlot; onDark: boo
  *
  * Only the symbol is used, because the sizes below are exactly where a full
  * lockup stops being legible — which is the rule this section exists to state.
- * The browser-tab strip shows the workspace's own custom domain when one has
- * been set and the brand's name otherwise; inventing a plausible domain would
- * put a URL the client does not own into their own guideline.
+ * The browser-tab strip shows the brand's name and no address: custom domains
+ * aren't served yet, and inventing a plausible domain would put a URL the
+ * client does not own into their own guideline.
  */
 const ICON_SIZES = [64, 48, 32, 16];
 
@@ -275,7 +275,6 @@ export function AppIconGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
   const slot = navMarkSlot(ws);
   const theme = getBrandTheme(ws);
   const onAccent = !isLightHex(theme.accent);
-  const domain = ws.clientAccess.customDomain.trim();
 
   return (
     <div className="flex flex-col gap-5">
@@ -311,11 +310,6 @@ export function AppIconGrid({ ws, isAr }: { ws: Workspace; isAr: boolean }) {
           <span dir="auto" className="bidi-auto text-[12px] truncate">{ws.name}</span>
           <Icon name="times" size={10} style={{ color: "var(--g-text-faint)", flexShrink: 0 }} />
         </div>
-        {domain && (
-          <span dir="ltr" className="text-[11px] truncate" style={{ fontFamily: "ui-monospace, Menlo, monospace", color: "var(--g-text-faint)" }}>
-            {domain}
-          </span>
-        )}
       </div>
     </div>
   );

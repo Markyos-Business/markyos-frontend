@@ -7,5 +7,3 @@ export const ACCOUNT_TABS: { key: AccountTab; label: string; arLabel: string; ic
 ];
 
 export const isAccountTab = (v: string | null): v is AccountTab => v === "profile" || v === "billing" || v === "organisation";
-
-export const SSO_PROVIDERS = ["Okta", "Azure AD", "Google"];

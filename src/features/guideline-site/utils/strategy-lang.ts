@@ -1,4 +1,4 @@
-import { BrandStrategy, CoreValue, Competitor, Lang, Persona, StrategyTextField, VoiceTrait } from "@/types";
+import { BrandStrategy, CoreValue, Lang, Persona, StrategyTextField, VoiceTrait } from "@/types";
 
 /**
  * Reading the strategy in one of its two languages.
@@ -52,15 +52,6 @@ export function traitIn(t: VoiceTrait, lang: Lang, fallback = true) {
     trait: f(t.trait, t.traitAr, lang),
     doExample: f(t.doExample, t.doExampleAr, lang),
     dontExample: f(t.dontExample, t.dontExampleAr, lang),
-  };
-}
-
-export function competitorIn(c: Competitor, lang: Lang, fallback = true) {
-  const f = fallback ? read : edit;
-  return {
-    name: f(c.name, c.nameAr, lang),
-    notes: f(c.notes, c.notesAr, lang),
-    cell: (columnId: string) => f(c.cells?.[columnId], c.cellsAr?.[columnId], lang),
   };
 }
 
