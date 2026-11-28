@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { Icon, RichText, richIsEmpty } from "@/components/ui";
-import { resolveStrategy } from "../../utils/strategy-lang";
+import { missingIn, resolveStrategy, strategyParity } from "../../utils/strategy-lang";
 import { withSwatchNamesIn } from "@/lib/data/colorNames";
 import { BrandStrategy, Lang, Workspace } from "@/types";
 
@@ -157,7 +157,15 @@ export function StrategyDocument({
   // Flattened to one language up front, so nothing below this line has to
   // know the strategy (or a colour's name) is bilingual at all.
   const ws = withSwatchNamesIn(source, lang ?? (isAr ? "ar" : "en"));
-  const s = resolveStrategy(ws.strategy, lang ?? (isAr ? "ar" : "en"));
+  const reading = lang ?? (isAr ? "ar" : "en");
+  const s = resolveStrategy(ws.strategy, reading);
+  /*
+   * How much of what follows is shown in the other language. resolveStrategy
+   * falls back so a half-translated strategy reads as one document, but it
+   * used to do it silently: an Arabic reader met English paragraphs with no
+   * word on why. One quiet line says so, in the reader's language.
+   */
+  const fellBack = missingIn(strategyParity(source.strategy), reading);
   const omit = (id: string) => omitChapters.includes(id);
   /** These fields hold markup, so emptiness is a text question, not a trim. */
   const has = (v: string) => !richIsEmpty(v);
@@ -180,6 +188,16 @@ export function StrategyDocument({
 
   return (
     <div className="flex flex-col gap-10">
+      {fellBack > 0 && (
+        <p role="note" className="flex items-start gap-2 text-[13px]" style={{ color: t.faint }}>
+          <Icon name="language" size={16} />
+          <span>
+            {reading === "ar"
+              ? "بعض هذه الاستراتيجية لم يُكتب بالعربية بعد، فيظهر بالإنجليزية."
+              : "Some of this strategy isn't written in English yet, so it's shown in Arabic."}
+          </span>
+        </p>
+      )}
       {!omit("purpose") && has(s.purpose) && (
         <Chapter id={`${idPrefix}purpose`} n={num()} title={isAr ? "الغاية" : "Purpose"} t={t}>
           {/* The purpose is the one line everything else hangs off, so it is set
